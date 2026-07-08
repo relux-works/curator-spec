@@ -1960,3 +1960,20 @@ Linux Foundation-hosted vendor-neutral governance initiative for AI agent standa
 | skill-forge (prefix.dev) | https://prefix.dev/skill-forge | ~100 | Conda package signing | Conda-packaged skills for pixi-skills. Inherits conda signing infrastructure. |
 
 CocoaSkill consumes skills from any git repository regardless of registry listing. These registries serve as discovery tools; CocoaSkill references repositories directly via git URLs in the Skillfile (§5.2).
+
+<!-- relux-ecosystem:start -->
+
+## About Relux Works
+
+This project is part of the open-source ecosystem of
+[Relux Works](https://relux.works), an AI-native software development studio.
+We build fixed-price MVPs, rescue vibe-coded apps, run local AI inference, and
+train teams to work with coding agents — and we open-source much of the
+infrastructure behind it.
+
+- Full catalog: [relux.works/en/open-source](https://relux.works/en/open-source/)
+- Agentic enablement: [agent harnesses & team training](https://relux.works/en/agentic-enablement/)
+- Hire us the agent-native way — point your assistant at `https://api.relux.works/mcp`
+- Contact: ivan@relux.works
+
+<!-- relux-ecosystem:end -->
