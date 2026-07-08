@@ -9,9 +9,9 @@
 
 ## Abstract
 
-CocoaSkill is a dependency manager for AI agent skills — reusable instruction packages that give coding agents specialized capabilities. The skill ecosystem is young, growing rapidly, and lacks standard tooling for declarative dependency management, reproducible installation, or supply chain security.
+CocoaSkill is a dependency manager for AI agent skills: reusable instruction packages that give coding agents specialized capabilities. The skill ecosystem is young, growing rapidly, and lacks standard tooling for declarative dependency management, reproducible installation, or supply chain security.
 
-The architecture draws from classical dependency managers (Bundler, SPM, Gradle, Cargo) but addresses problems specific to an infrastructure that remains immature. Skills are a new embodiment of source code: even a plain markdown skill file with no executables can be a vector for prompt injection, and as skills grow in complexity they inevitably pull in binaries and other executables that demand security policies no less rigorous than industry best practice. Existing tools offer varying degrees of content scanning, yet few defend against supply chain attacks: publisher impersonation, artifact tampering, silent content mutation within a pinned version, and post-install substitution of verified artifacts. These are threats that content scanning alone cannot detect — they require public key cryptography. CocoaSkill closes this gap with an SSH certificate-based signing model, hierarchical CA trust, and pluggable identity verification — the first PKI purpose-built for agent skill artifacts.
+The architecture draws from classical dependency managers (Bundler, SPM, Gradle, Cargo) but addresses problems specific to an infrastructure that remains immature. Skills are a new embodiment of source code: even a plain markdown skill file with no executables can be a vector for prompt injection, and as skills grow in complexity they inevitably pull in binaries and other executables that demand security policies no less rigorous than industry best practice. Existing tools offer varying degrees of content scanning, yet few defend against supply chain attacks: publisher impersonation, artifact tampering, silent content mutation within a pinned version, and post-install substitution of verified artifacts. These are threats that content scanning alone cannot detect; they require public key cryptography. CocoaSkill closes this gap with an SSH certificate-based signing model, hierarchical CA trust, and pluggable identity verification: the first PKI purpose-built for agent skill artifacts.
 
 ---
 
@@ -23,7 +23,7 @@ The architecture draws from classical dependency managers (Bundler, SPM, Gradle,
    - 3.1 [High-Level Architecture](#31-high-level-architecture)
    - 3.2 [Directory Layout](#32-directory-layout)
    - 3.3 [Data Flow](#33-data-flow)
-4. [Skillspec — Skill Author Manifest](#4-skillspec--skill-author-manifest)
+4. [Skillspec: Skill Author Manifest](#4-skillspec--skill-author-manifest)
    - 4.1 [Required Fields](#41-required-fields)
    - 4.2 [Content Types](#42-content-types)
    - 4.3 [Assets and Scripts](#43-assets-and-scripts)
@@ -32,7 +32,7 @@ The architecture draws from classical dependency managers (Bundler, SPM, Gradle,
    - 4.6 [Executable Distribution](#46-executable-distribution)
    - 4.7 [Build Targets](#47-build-targets)
    - 4.8 [Full Skillspec Example](#48-full-skillspec-example)
-5. [Skillfile — Project Manifest](#5-skillfile--project-manifest)
+5. [Skillfile: Project Manifest](#5-skillfile--project-manifest)
    - 5.1 [Skill Declarations](#51-skill-declarations)
    - 5.2 [Source Types](#52-source-types)
    - 5.3 [Version Constraints](#53-version-constraints)
@@ -42,7 +42,7 @@ The architecture draws from classical dependency managers (Bundler, SPM, Gradle,
    - 5.7 [Context Mode](#57-context-mode)
    - 5.8 [Install Method](#58-install-method)
    - 5.9 [Full Skillfile Example](#59-full-skillfile-example)
-6. [Skillfile.lock — Lockfile](#6-skillfilelock--lockfile)
+6. [Skillfile.lock: Lockfile](#6-skillfilelock--lockfile)
    - 6.1 [Lockfile Fields](#61-lockfile-fields)
    - 6.2 [Frozen Mode](#62-frozen-mode)
    - 6.3 [Full Lockfile Example](#63-full-lockfile-example)
@@ -154,7 +154,7 @@ The name "CocoaSkill" alludes to CocoaPods, the first dependency manager for iOS
 | **CA** | Certificate Authority. An ed25519 key pair used to sign skills. Can be hierarchical (root CA → intermediate CA → skill). |
 | **Adapter** | A generated configuration that delivers installed skills into the directory structure expected by a specific agent (Claude Code, Cursor, Codex CLI, Gemini CLI, etc.). |
 | **Stripped install** | Installation mode where only raw skill content (SKILL.md, templates, examples) is copied into the project. Build scripts, CI configuration, tests, CLI source code, and other non-skill files are excluded. |
-| **Global cache** | `~/.cocoaskills/cache/` — a checkout-aware cache of fetched skill repositories. Shared across all projects on the machine. Agents have no direct access to this directory. |
+| **Global cache** | `~/.cocoaskills/cache/`: a checkout-aware cache of fetched skill repositories. Shared across all projects on the machine. Agents have no direct access to this directory. |
 | **Worktree** | A git worktree. CocoaSkill supports per-worktree skill installations when a repository uses multiple worktrees. |
 
 ---
@@ -280,7 +280,7 @@ Skillfile.lock (written/updated)
 
 ---
 
-## 4. Skillspec — Skill Author Manifest
+## 4. Skillspec: Skill Author Manifest
 
 The `Skillspec.yml` file resides in the root of a skill repository. It describes the skill's metadata, contents, requirements, and signing information.
 
@@ -515,7 +515,7 @@ depends_on:
 
 ---
 
-## 5. Skillfile — Project Manifest
+## 5. Skillfile: Project Manifest
 
 The `Skillfile` resides in the project repository root. It declares skill dependencies, trust configuration, security policy, and agent targets. It is committed to version control.
 
@@ -659,11 +659,11 @@ context_mode: default    # default | managed
 
 **`managed`**: Opt-in. csk takes ownership of assembling a unified agent context file from installed skills. See §8.2 for details and current limitations.
 
-**Background — the root context management problem:**
+**Background: the root context management problem:**
 
-Agent root context files (CLAUDE.md, agents.md, .cursorrules) are growing in size and complexity. Projects accumulate instructions from multiple sources — team conventions, skill references, project-specific rules, architectural decisions — into a single file with no structure, no versioning of individual sections, and no validation of what enters the agent's context window. There is no mechanism to audit which instructions are active, detect contradictions between sections, or prevent irrelevant content from consuming context tokens.
+Agent root context files (CLAUDE.md, agents.md, .cursorrules) are growing in size and complexity. Projects accumulate instructions from multiple sources (team conventions, skill references, project-specific rules, architectural decisions) into a single file with no structure, no versioning of individual sections, and no validation of what enters the agent's context window. There is no mechanism to audit which instructions are active, detect contradictions between sections, or prevent irrelevant content from consuming context tokens.
 
-CocoaSkill's `managed` mode is an initial step toward solving this problem by assembling skill-contributed context sections in a deterministic order with injection protection. However, the broader problem of root context lifecycle management — merging hand-written project instructions with skill-contributed sections, auditing the combined context, managing context across multiple agents with different format requirements — is an unsolved area of this specification. Future revisions will address this with a dedicated root context sub-manager. Until then, `managed` mode is opt-in and limited to skill-contributed content assembly as described in §8.3.
+CocoaSkill's `managed` mode is an initial step toward solving this problem by assembling skill-contributed context sections in a deterministic order with injection protection. However, the broader problem of root context lifecycle management (merging hand-written project instructions with skill-contributed sections, auditing the combined context, managing context across multiple agents with different format requirements) is an unsolved area of this specification. Future revisions will address this with a dedicated root context sub-manager. Until then, `managed` mode is opt-in and limited to skill-contributed content assembly as described in §8.3.
 
 ### 5.8 Install Method
 
@@ -671,7 +671,7 @@ CocoaSkill's `managed` mode is an initial step toward solving this problem by as
 install_method: symlink    # symlink | copy
 ```
 
-**`symlink`** (default): `.agents/skills/<skill-name>/` is a symlink pointing to the stripped projection in the global cache (`~/.cocoaskills/cache/<repo-hash>/<commit-sha>/stripped/<skill-name>/`). The stripped projection is generated during the Fetch phase (§7.2) and contains only the files declared in `entry`, `assets`, and `scripts` — identical content to what a copy would produce. Symlink mode saves disk space when the same skill is used across multiple projects.
+**`symlink`** (default): `.agents/skills/<skill-name>/` is a symlink pointing to the stripped projection in the global cache (`~/.cocoaskills/cache/<repo-hash>/<commit-sha>/stripped/<skill-name>/`). The stripped projection is generated during the Fetch phase (§7.2) and contains only the files declared in `entry`, `assets`, and `scripts`; the content is identical to what a copy would produce. Symlink mode saves disk space when the same skill is used across multiple projects.
 
 **`copy`**: The stripped skill content is copied as real files into `.agents/skills/<skill-name>/`. All skill files reside physically within the project directory. Copy mode is required for strict sandbox environments where the agent's filesystem access is restricted to the project directory and cannot follow symlinks to external paths (Docker containers with project-only mounts, CI runners with limited filesystem access, enterprise agents with directory ACLs).
 
@@ -723,7 +723,7 @@ security:
 
 ---
 
-## 6. Skillfile.lock — Lockfile
+## 6. Skillfile.lock: Lockfile
 
 The lockfile is generated by `csk install` and committed to version control. It records the exact resolved state of every skill dependency, enabling reproducible installations across machines and over time.
 
@@ -944,10 +944,10 @@ Assembly order within the generated file:
 
 1. **Header comment**: `<!-- Generated by CocoaSkill — DO NOT EDIT -->`.
 2. **Injection protection header** (§9.9).
-3. **Persona** content — skills with `type: persona`.
-4. **Context** content — skills with `type: context`.
-5. **Skill** content — skills with `type: skill`.
-6. **Toolchain** content — skills with `type: toolchain` are referenced by path, not inlined.
+3. **Persona** content: skills with `type: persona`.
+4. **Context** content: skills with `type: context`.
+5. **Skill** content: skills with `type: skill`.
+6. **Toolchain** content: skills with `type: toolchain` are referenced by path, not inlined.
 
 Within each type group, skills appear in the order declared in Skillfile.
 
@@ -973,7 +973,7 @@ The audit does not inspect files outside the skill repository.
 
 Languages are classified into tiers based on csk's audit capability:
 
-**Tier 1 — Full AST-level audit.** csk parses the source into an AST and performs deep static analysis. Skills using only Tier 1 languages install without audit-related warnings.
+**Tier 1: Full AST-level audit.** csk parses the source into an AST and performs deep static analysis. Skills using only Tier 1 languages install without audit-related warnings.
 
 | Language | Audit Method |
 |----------|-------------|
@@ -982,7 +982,7 @@ Languages are classified into tiers based on csk's audit capability:
 | Python | tree-sitter-python |
 | Bash/Shell | tree-sitter-bash, plus pattern matching for dangerous builtins |
 
-**Tier 2 — Pattern-based audit.** csk performs regex and heuristic-based analysis. Skills using Tier 2 languages install with a warning about reduced audit depth.
+**Tier 2: Pattern-based audit.** csk performs regex and heuristic-based analysis. Skills using Tier 2 languages install with a warning about reduced audit depth.
 
 | Language | Audit Method |
 |----------|-------------|
@@ -990,7 +990,7 @@ Languages are classified into tiers based on csk's audit capability:
 | TypeScript/JavaScript | Pattern matching |
 | Ruby | Pattern matching |
 
-**Tier 3 — Unauditable.** csk cannot analyze the source. Skills containing Tier 3 language source code install only with explicit `--trust-unaudited` flag. The Skillfile.lock records who accepted the risk and when.
+**Tier 3: Unauditable.** csk cannot analyze the source. Skills containing Tier 3 language source code install only with explicit `--trust-unaudited` flag. The Skillfile.lock records who accepted the risk and when.
 
 All languages not listed in Tier 1 or Tier 2 are Tier 3.
 
@@ -1369,7 +1369,7 @@ https://github.com/<username>/.well-known/cocoaskill-ca.pub
 
 ### 12.4 Key Pinning and Trust Bootstrapping
 
-CocoaSkill uses the SSH certificate model to eliminate TOFU (Trust On First Use). Trust is established declaratively in the Skillfile, which is committed to version control. Team members who clone the repository receive the trust configuration as part of the project — identical to how SSH `@cert-authority` entries in a shared `known_hosts` file eliminate TOFU prompts for all users.
+CocoaSkill uses the SSH certificate model to eliminate TOFU (Trust On First Use). Trust is established declaratively in the Skillfile, which is committed to version control. Team members who clone the repository receive the trust configuration as part of the project, identical to how SSH `@cert-authority` entries in a shared `known_hosts` file eliminate TOFU prompts for all users.
 
 **Trust bootstrapping flow:**
 
@@ -1841,7 +1841,7 @@ The following files **must** be committed to version control:
 **SSH certificates: the better SSH experience**  
 Jan-Piet Mens, April 2026  
 https://jpmens.net/2026/04/03/ssh-certificates-the-better-ssh-experience/  
-Primary inspiration for the CocoaSkill signing model. Demonstrates that SSH Certificate Authorities provide a superior trust model compared to TOFU (Trust On First Use) with equivalent implementation complexity. CocoaSkill adapts the SSH CA pattern — CA key pairs, signed certificates with principals and validity periods, `@cert-authority` trust declarations — to the skill package signing domain. The article's key insight (trust established once via configuration, eliminating interactive prompts and non-deterministic trust state) directly shaped §10–§12 of this specification.
+Primary inspiration for the CocoaSkill signing model. Demonstrates that SSH Certificate Authorities provide a superior trust model compared to TOFU (Trust On First Use) with equivalent implementation complexity. CocoaSkill adapts the SSH CA pattern (CA key pairs, signed certificates with principals and validity periods, `@cert-authority` trust declarations) to the skill package signing domain. The article's key insight (trust established once via configuration, eliminating interactive prompts and non-deterministic trust state) directly shaped §10–§12 of this specification.
 
 **Snyk ToxicSkills: Malicious AI Agent Skills on ClawHub**  
 Snyk Security Research, February 2026  
@@ -1860,12 +1860,12 @@ De facto standard skill format adopted by 44+ agents. CocoaSkill preserves full 
 
 **SSH Certificate Format (Internet-Draft)**  
 draft-miller-ssh-cert-06  
-Technical specification of the SSH certificate format used by OpenSSH. CocoaSkill's certificate fields (§10.3) — `key_id`, `serial`, `principals`, `valid_after`, `valid_before`, `extensions` — map directly to this format via `golang.org/x/crypto/ssh`.
+Technical specification of the SSH certificate format used by OpenSSH. CocoaSkill's certificate fields (§10.3), namely `key_id`, `serial`, `principals`, `valid_after`, `valid_before`, and `extensions`, map directly to this format via `golang.org/x/crypto/ssh`.
 
 ### 20.2 Existing Alternatives
 
 **npx skills (Vercel Labs)**  
-https://github.com/vercel-labs/skills — Registry: https://skills.sh  
+https://github.com/vercel-labs/skills; registry: https://skills.sh  
 Largest ecosystem (87K+ indexed skills, 44 agent support). Project-local installation by default. Clean UX for adding individual skills (`npx skills add <owner/repo>`).  
 **Strengths adopted by CocoaSkill:** project-local scope, git-based installation, multi-agent support.  
 **Gaps CocoaSkill addresses:** no declarative manifest (skills are added imperatively, one at a time), no reproducible lockfile (partial `skills-lock.json` exists but is output-only, not used for restore), no version pinning beyond git tree SHA, no dependency resolution, no security scanning or code signing.
@@ -1898,7 +1898,7 @@ Best security features among imperative tools: `asm audit security`, TUI dashboa
 https://github.com/rohitg00/skillkit  
 Format auto-translation (SKILL.md ↔ .cursorrules ↔ .mdc), memory persistence, multi-machine mesh (P2P skill distribution).  
 **Strengths:** format translation is valuable for multi-agent delivery.  
-**Gaps:** breadth over depth — not a dependency manager. Format translation is a feature CocoaSkill may adopt in a future version.
+**Gaps:** breadth over depth, not a dependency manager. Format translation is a feature CocoaSkill may adopt in a future version.
 
 ### 20.3 Adjacent Infrastructure Projects
 
