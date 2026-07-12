@@ -554,443 +554,272 @@ A schema 5 skill that exports one command, depends on a provider skill and an MC
 
 ---
 
-## 5. Skillfile: Project Manifest
+## 6. Skillfile: Project Manifest
 
-The `Skillfile` resides in the project repository root. It declares skill dependencies, trust configuration, security policy, and agent targets. It is committed to version control.
+`Skillfile.json` at the project root declares which skills the project uses. It is committed to version control; generated directories are not.
 
-The Skillfile uses YAML syntax.
+### 6.1 Format (schema 1)
 
-### 5.1 Skill Declarations
-
-```yaml
-skills:
-  - name: ios-tuist-conventions
-    git: "https://github.com/user/ios-tuist-skill.git"
-    tag: "v1.0.2"
-    type: skill
-    
-  - name: swift6-migration
-    git: "https://github.com/user/swift6-skill.git"
-    revision: "a1b2c3d4e5f6"
-    type: skill
-    
-  - name: xflow-project-context
-    git: "git@gitlab.com:relux/xflow-context.git"
-    branch: main
-    type: context
-
-  # Monorepo: multiple skills in one repository
-  - name: pdf
-    git: "https://github.com/anthropics/skills.git"
-    tag: "v1.0"
-    path: "pdf/"
-
-  # Skill without Skillspec.yml: inline overrides
-  - name: community-linter
-    git: "https://github.com/someone/linter-skill.git"
-    tag: "v2.0"
-    entry: "SKILL.md"
-    assets: ["templates/", "examples/"]
+```json
+{
+  "schema_version": 1,
+  "project": { "alias": "my-project" },
+  "agents": ["claude_code", "codex_cli", "cursor"],
+  "locale": "ru",
+  "skills": [
+    {
+      "name": "skill-youtrack",
+      "git": "git@git.example.com:skills/skill-youtrack.git",
+      "tag": "v1.3.0"
+    }
+  ]
+}
 ```
 
-Each skill entry requires `name` and `git`. Exactly one of `tag`, `revision`, or `branch` must be specified.
+Rules, all MUST unless stated otherwise:
 
-**Optional fields:**
+- `schema_version` is the integer 1. Unknown versions are rejected with an upgrade error.
+- `project.alias` is an optional non-empty string naming the project for hybrid targeting (Section 9.3).
+- `agents` is a list of agent identifiers (Section 10). It selects which adapter directories are produced. Unknown agents are ignored with a warning.
+- `locale` is an optional locale code; it overrides the machine `preferred_locale` for this project.
+- `skills` is a list of declaration objects. Each declares:
+  - `name`: a skill identifier (Section 5.2), unique within the file.
+  - `source`: optional path under the machine `skills_root` where the source repository lives; defaults to `name`. Each path segment MUST be a valid identifier, which excludes `..`, absolute paths, and option-like segments.
+  - `git`: optional git URL used to clone the source repository when it is absent from `skills_root`.
+  - Exactly one of `tag`, `branch`, or `revision` with a non-empty string value. Branch declarations are allowed here, at the project level; skill-to-skill requirements do not accept them (Section 5.7).
 
-| Field | Description |
-|-------|-------------|
-| `type` | Content type override (§4.2). If omitted, read from Skillspec.yml or default to `skill`. |
-| `path` | Subdirectory within the git repository containing the skill. Required for monorepos hosting multiple skills. csk treats this subdirectory as the skill root: Skillspec.yml is read from `<path>/Skillspec.yml`, entry file from `<path>/<entry>`. |
-| `entry` | Path to the primary skill file, relative to the skill root. Overrides `entry` in Skillspec.yml. Required when the skill repository has no Skillspec.yml. |
-| `assets` | List of files and directories to include, relative to the skill root. Overrides `assets` in Skillspec.yml. Required when the skill repository has no Skillspec.yml and has assets to include. |
+### 6.2 Development Substitutions: Skillfile.dev.json
 
-When `entry` or `assets` are specified in the Skillfile, they take precedence over values in Skillspec.yml. This enables consumption of skills that have no Skillspec.yml (the majority of the existing ecosystem) without requiring the skill author to add one.
+`Skillfile.dev.json` sits next to `Skillfile.json`, is never committed, and belongs to the managed `.gitignore` block. It substitutes providers locally during development instead of hand-editing installed copies.
 
-### 5.2 Source Types
-
-| Source | Syntax | Lockfile Behavior |
-|--------|--------|-------------------|
-| Git tag | `tag: "v1.0.2"` | Resolves tag to commit SHA at install time. Lockfile records SHA. |
-| Git revision | `revision: "a1b2c3d4e5f6"` | Uses exact commit. Lockfile records full SHA. |
-| Git branch | `branch: main` | Resolves branch HEAD to commit SHA at install time. Lockfile records SHA. |
-
-In v0.1, only git sources are supported. Registry sources are reserved for future versions.
-
-### 5.3 Version Constraints
-
-When using `tag`, the tag value is treated as a literal string match. Semver range constraints (e.g., `">=1.0,<2.0"`) are reserved for registry-based sources in future versions.
-
-For git sources, version immutability is guaranteed by the lockfile: the resolved commit SHA is recorded and verified on subsequent installs.
-
-### 5.4 Trust Configuration
-
-```yaml
-trust:
-  default_policy: signed_only     # signed_only | audit_unsigned | allow_unsigned
-  
-  ca:
-    - identifier: relux.codes
-      # Key discovered via DNS TXT: _cocoaskill-ca.relux.codes
-      scope: ["ios-*", "swift6-*"]
-      
-    - identifier: bigcorp.com
-      key: "ed25519:AAAAC3NzaC1lZDI1NTE5..."
-      scope: ["*"]
-      only_intermediate: ["ios-team.bigcorp.com"]
-      
-    - identifier: personal.dev
-      key: "ed25519:AAAAB2..."
-      scope: ["*"]
-      except_intermediate: ["revoked-team.personal.dev"]
-  
-  pinned_keys:
-    - key: "ed25519:age1qf3..."
-      comment: "Ivan's signing key, verified in person"
+```json
+{
+  "substitutions": {
+    "skill-wiki": { "path": "../skill-wiki" },
+    "skill-tracker": { "git": "git@git.example.com:forks/skill-tracker.git",
+                       "ref": { "kind": "branch", "value": "fix-pagination" } }
+  }
+}
 ```
 
-**`default_policy`**:
-- `signed_only`: Skills without valid signatures are rejected. Recommended for teams and CI.
-- `audit_unsigned`: Unsigned skills trigger an interactive audit prompt. The developer must explicitly accept.
-- `allow_unsigned`: Unsigned skills install without prompts. Suitable for early development and experimentation only.
+Rules:
 
-**`ca`**: List of trusted Certificate Authorities. Each entry has an `identifier` (domain name). The `key` field is optional: if omitted, csk discovers the public key via DNS TXT record (§12.2). `scope` is a list of glob patterns matching skill names this CA is trusted to sign. `only_intermediate` restricts trust to listed intermediate CAs under this root. `except_intermediate` excludes listed intermediate CAs.
+- The only top-level field is `substitutions`; unknown fields are rejected.
+- Each entry declares exactly one of `path` (a local checkout, resolved against the project root when relative; it MUST be a git repository, and its `HEAD` is used) or `git` plus a `ref` object whose `kind` may be `tag`, `revision`, or `branch`. Branches are allowed here by design: substitutions are a development device.
+- A substitution replaces every requirement of that name across the whole closure, and unification checks are skipped for the substituted name.
+- Installations with active substitutions MUST print one `SUBSTITUTION <name> -> <target>` line per entry, and the install marker records the substitution. When strict audit mode is enabled, an install with active substitutions MUST fail.
+- Git substitutions clone outside `skills_root` (the reference implementation uses `~/.cocoaskills/dev/<name>`) so a substitution never shadows the declared source repository.
 
-**`pinned_keys`**: Directly trusted public keys, bypassing CA chain verification. Equivalent to SSH `@cert-authority` entries that trust a specific key.
+### 6.3 Managed .gitignore Block
 
-### 5.5 Security Policy
-
-```yaml
-security:
-  executables: signed_only         # signed_only | warn | allow_unsigned
-  checksum_verify: true
-  audit_on_install: true           # Run source audit on every install
-  trusted_audit_keys: ["keys/team.pub"]
-```
-
-**`executables`**: Policy for prebuilt binary artifacts within skills.
-- `signed_only`: Binaries without valid signatures are rejected.
-- `warn`: Unsigned binaries trigger a warning; installation proceeds.
-- `allow_unsigned`: No signature check on binaries.
-
-**`checksum_verify`**: When true, SHA256 checksums of all artifacts are verified against values declared in Skillspec.yml.
-
-**`audit_on_install`**: When true, `csk install` implicitly runs source audit (equivalent to `--audit` flag).
-
-### 5.6 Agent Targets
-
-```yaml
-agents:
-  - claude_code
-  - cursor
-  - codex_cli
-  - gemini
-```
-
-Lists the agents for which csk generates adapters during the Adapt phase (§7.7). csk creates the appropriate directory structure and symlinks for each listed agent.
-
-### 5.7 Context Mode
-
-```yaml
-context_mode: default    # default | managed
-```
-
-**`default`**: csk installs skills into `.agents/skills/` and creates agent directory symlinks. The developer is responsible for referencing skills in their own context files (CLAUDE.md, agents.md, etc.). This is the default and recommended mode.
-
-**`managed`**: Opt-in. csk takes ownership of assembling a unified agent context file from installed skills. See §8.2 for details and current limitations.
-
-**Background: the root context management problem:**
-
-Agent root context files (CLAUDE.md, agents.md, .cursorrules) are growing in size and complexity. Projects accumulate instructions from multiple sources (team conventions, skill references, project-specific rules, architectural decisions) into a single file with no structure, no versioning of individual sections, and no validation of what enters the agent's context window. There is no mechanism to audit which instructions are active, detect contradictions between sections, or prevent irrelevant content from consuming context tokens.
-
-CocoaSkill's `managed` mode is an initial step toward solving this problem by assembling skill-contributed context sections in a deterministic order with injection protection. However, the broader problem of root context lifecycle management (merging hand-written project instructions with skill-contributed sections, auditing the combined context, managing context across multiple agents with different format requirements) is an unsolved area of this specification. Future revisions will address this with a dedicated root context sub-manager. Until then, `managed` mode is opt-in and limited to skill-contributed content assembly as described in §8.3.
-
-### 5.8 Install Method
-
-```yaml
-install_method: symlink    # symlink | copy
-```
-
-**`symlink`** (default): `.agents/skills/<skill-name>/` is a symlink pointing to the stripped projection in the global cache (`~/.cocoaskills/cache/<repo-hash>/<commit-sha>/stripped/<skill-name>/`). The stripped projection is generated during the Fetch phase (§7.2) and contains only the files declared in `entry`, `assets`, and `scripts`; the content is identical to what a copy would produce. Symlink mode saves disk space when the same skill is used across multiple projects.
-
-**`copy`**: The stripped skill content is copied as real files into `.agents/skills/<skill-name>/`. All skill files reside physically within the project directory. Copy mode is required for strict sandbox environments where the agent's filesystem access is restricted to the project directory and cannot follow symlinks to external paths (Docker containers with project-only mounts, CI runners with limited filesystem access, enterprise agents with directory ACLs).
-
-Both modes produce identical content in `.agents/skills/`. The agent sees the same files regardless of install method. The choice affects only storage and portability.
-
-### 5.9 Full Skillfile Example
-
-```yaml
-# Skillfile
-
-skills:
-  - name: ios-tuist-conventions
-    git: "https://github.com/user/ios-tuist-skill.git"
-    tag: "v1.0.2"
-    type: skill
-    
-  - name: swift6-migration
-    git: "https://github.com/user/swift6-skill.git"
-    revision: "a1b2c3d4e5f6"
-    type: skill
-    
-  - name: xflow-project-context
-    git: "git@gitlab.com:relux/xflow-context.git"
-    branch: main
-    type: context
-
-agents:
-  - claude_code
-  - cursor
-  - codex_cli
-
-context_mode: default
-install_method: symlink
-
-trust:
-  default_policy: signed_only
-  ca:
-    - identifier: relux.codes
-      scope: ["ios-*", "swift6-*", "xflow-*"]
-  pinned_keys:
-    - key: "ed25519:age1qf3..."
-      comment: "Ivan's key"
-
-security:
-  executables: signed_only
-  checksum_verify: true
-  audit_on_install: false
-```
+Generated paths MUST be ignored by git before installation proceeds. The required entries are `.agents/` plus the adapter directory of every selected agent (Section 10.1). The installer verifies this with `git check-ignore` probes; a project that does not ignore the paths is skipped with a message. `csk init` writes the block, appending only missing entries under a `# CocoaSkill` comment; `csk install --fix-gitignore` repairs it. When `Skillfile.dev.json` is present it MUST be ignored as well.
 
 ---
 
-## 6. Skillfile.lock: Lockfile
+## 7. Machine and System Configuration
 
-The lockfile is generated by `csk install` and committed to version control. It records the exact resolved state of every skill dependency, enabling reproducible installations across machines and over time.
+### 7.1 User Configuration
 
-### 6.1 Lockfile Fields
+The machine configuration lives at `~/.cocoaskills/config.json` (overridable through the `CSK_CONFIG` environment variable). Schema version 1. Fields:
 
-Each resolved skill entry contains:
+| Field | Type | Meaning |
+|-------|------|---------|
+| `schema_version` | int, required | 1 |
+| `skills_root` | string, required | Directory holding source skill repositories |
+| `default_agents` | list of strings | Agents used when a project declares none; default `["codex_cli"]` |
+| `preferred_locale` | string, optional | Locale used when the Skillfile declares none |
+| `adapter_mode` | `auto` \| `symlink` \| `copy` | How adapter entries materialize; default `auto` (symlink with copy fallback) |
+| `worktree_alias_pattern` | regex string | Pattern extracting checkout aliases for worktrees; default `[A-Z]+-[0-9]+` |
+| `projects` | object, required | Registered projects: alias to `{path, agents, project_alias, checkout_alias}` |
+| `allowed_sources` | list of strings | Canonical `host/path` prefixes the resolver may fetch from (Section 8.2) |
+| `audit` | object | Source audit and registry policy configuration (Sections 12 and 13) |
+| `audit_registries` | list | Trusted audit registries: `{name, url, public_keys, enabled}` (Section 13) |
+| `disable_builtin_registries` | bool | Drop built-in default registries; default false |
 
-| Field | Description |
-|-------|-------------|
-| `source` | Git repository URL. |
-| `version` | Skill version from Skillspec.yml. |
-| `resolved_ref` | The original ref from Skillfile (tag, branch name, or revision). |
-| `commit` | Full 40-character git commit SHA. |
-| `integrity` | `sha256:` prefixed hex digest of the installed (stripped) file tree. Computed using the deterministic algorithm below, independent of git. |
-| `cert_serial` | Serial number of the skill's signing certificate. Absent if unsigned. |
-| `cert_ca` | Public key fingerprint of the signing CA. Absent if unsigned. |
-| `cert_expires` | Expiration timestamp of the skill's certificate in ISO 8601 format. Absent if unsigned. |
-| `audit_sha` | SHA of the last successful audit. Absent if never audited. |
-| `audit_date` | Timestamp of last audit in ISO 8601. Absent if never audited. |
+Registry entries require a non-empty `name`, an `http(s)` `url` unique across the list, and string `public_keys`.
 
-**Integrity hash algorithm:**
+### 7.2 Enforced System Configuration
 
-The integrity hash is computed deterministically over the stripped file tree. The algorithm is platform-independent and does not rely on git tree SHA (which varies with line endings and filesystem metadata).
+An organization distributes an enforced configuration file read before the user config: `/etc/cocoaskills/config.json` on Unix, `%ProgramData%\cocoaskills\config.json` on Windows (overridable through `CSK_SYSTEM_CONFIG`).
 
-```
-1. Enumerate all files in the stripped skill directory recursively.
-2. Sort the file list lexicographically by relative path (forward slash separator, UTF-8 byte order).
-3. For each file, compute: file_entry = relative_path + "\0" + raw_file_content_bytes
-4. Concatenate all file entries separated by "\0": payload = file_entry_1 + "\0" + file_entry_2 + "\0" + ...
-5. integrity = "sha256:" + hex(SHA-256(payload))
-```
+Merge semantics, all MUST:
 
-All file content is read as raw bytes. No line ending normalization is applied. Symlinks are resolved to their target content before hashing. Empty directories are excluded. This ensures identical content produces identical hashes regardless of operating system, filesystem, or git configuration.
+- Keys listed in the system config field `locked` take their value from the system config. A conflicting user value is ignored with a warning naming the system config path.
+- A key that is locked but not set in the system config is a configuration error.
+- System keys not listed in `locked` act as defaults; the user config may override them.
+- Lockable keys are `audit_registries`, `disable_builtin_registries`, `allowed_sources`, and `audit`.
 
-### 6.2 Frozen Mode
-
-`csk install --frozen` performs the following checks:
-
-1. `Skillfile.lock` must exist.
-2. Every skill in `Skillfile` must have a corresponding entry in `Skillfile.lock`.
-3. Every entry in `Skillfile.lock` must match the currently resolvable state (commit SHA matches remote, integrity hash matches content).
-4. If any check fails, csk exits with a non-zero exit code and a descriptive error. No files are modified.
-
-Frozen mode is designed for CI/CD pipelines.
-
-### 6.3 Full Lockfile Example
-
-```yaml
-# Skillfile.lock
-# AUTO-GENERATED BY csk install — DO NOT EDIT
-
-version: 1
-generated_at: "2026-04-09T14:30:00Z"
-csk_version: "0.1.0"
-
-resolved:
-  ios-tuist-conventions:
-    source: "https://github.com/user/ios-tuist-skill.git"
-    version: "1.0.2"
-    resolved_ref: "v1.0.2"
-    commit: "abc123def456789012345678901234567890abcd"
-    integrity: "sha256:fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210"
-    cert_serial: 42
-    cert_ca: "SHA256:A5ZBb5b/GbAv03EAb8fmDzv4p+q0g8Ulxrt8QZpbamM"
-    cert_expires: "2027-03-26T14:05:47Z"
-    audit_sha: "abc123def456789012345678901234567890abcd"
-    audit_date: "2026-04-09T14:30:00Z"
-    
-  swift6-migration:
-    source: "https://github.com/user/swift6-skill.git"
-    version: "0.3.1"
-    resolved_ref: "a1b2c3d4e5f6"
-    commit: "a1b2c3d4e5f60000000000000000000000000000"
-    integrity: "sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    
-  xflow-project-context:
-    source: "git@gitlab.com:relux/xflow-context.git"
-    version: "2.0.0"
-    resolved_ref: "main"
-    commit: "0000111122223333444455556666777788889999"
-    integrity: "sha256:aaaa1111bbbb2222cccc3333dddd4444eeee5555ffff6666000011112222abcd"
-```
+This is the mechanism for centrally distributing registry trust and source policy through device management.
 
 ---
 
-## 7. Installation Process
+## 8. Resolution and Installation
 
-### 7.1 Resolve Phase
+Installation is driven by `csk install`. For each selected project the phases below run in order. Any failure marks the project failed; nothing about a failing skill is left half-installed.
 
-csk reads the Skillfile and determines the set of required skills. For each skill:
+### 8.1 Phase Order
 
-- If `tag` is specified, resolve the tag to a commit SHA via `git ls-remote`.
-- If `revision` is specified, use the value directly (expanding short SHAs via `git ls-remote`).
-- If `branch` is specified, resolve the branch HEAD to a commit SHA via `git ls-remote`.
+1. Load `Skillfile.json`; absent means the project is skipped.
+2. Determine effective agents: the Skillfile `agents`, else the project entry in the machine config, else `default_agents`.
+3. Enforce the managed `.gitignore` block (Section 6.3).
+4. Load dev substitutions; fail under strict audit; report each substitution.
+5. Load hybrid declarations and extend the manifest (Section 9.3).
+6. Determine the effective locale: Skillfile `locale`, else `preferred_locale`.
+7. Build the dependency closure (Section 8.3), which fetches sources, applies the source allowlist, takes snapshots, and parses manifests.
+8. Validate every skill (`csk skill check` rules); collect warnings, fail on errors.
+9. Detect active command collisions across the closure (Section 8.4).
+10. Check declared dependencies: system commands on `PATH`, legacy skill-command dependencies satisfied.
+11. Verify MCP server requirements (Section 11); emit static availability warnings.
+12. Emit migration warnings for legacy `dependencies.commands` entries of type `skill`.
+13. Run the source audit gate (Section 12); a blocked result fails the install.
+14. Resolve skills against trusted audit registries (Section 13); a verified revocation fails, strict registry policy fails unknown artifacts, attestations are collected for markers.
+15. Detect moved tags: a tag whose recorded commit in the previous install marker differs from the newly resolved commit produces a warning, or an error under `--strict-tags`.
+16. In dry-run mode, print the plan and stop before any file changes.
+17. Record the project as a runtime consumer (Section 8.7).
+18. For every closure node in provider-before-consumer order: install runtime commands (Section 8.6) for the active command set, then install context plus marker, or a marker only for nodes without active context (Section 8.5).
+19. Remove installed skills that are no longer expected, remove stale command shims, write the environment files `.agents/env.sh` and `.agents/env.ps1`, and refresh agent adapters (Section 10).
+20. After all projects, garbage-collect unreferenced runtime store entries.
 
-If a `Skillfile.lock` exists and the resolved SHA matches the locked SHA, the skill is marked as up-to-date and Fetch is skipped.
+### 8.2 Source Fetching and the Allowlist
 
-### 7.2 Fetch Phase
+Source repositories live under `skills_root/<source>`. A missing repository is cloned from the declared `git` URL. Cloning MUST restrict git transports to `file`, `git`, `http`, `https`, and `ssh` (the reference implementation sets `GIT_ALLOW_PROTOCOL`), MUST refuse empty or dash-prefixed URLs, and MUST pass the URL positionally after `--`. Submodules are unsupported; a snapshot containing `.gitmodules` fails. Symbolic and hard links inside git archives are rejected, and archive extraction MUST prevent path escapes.
 
-For each skill that requires fetching:
+Every artifact carries a canonical source identity: `host/path` with the transport removed, the host lowercased, a trailing `.git` stripped, and the path kept case-sensitive. SSH and HTTPS URLs of one repository yield one identity. Local filesystem sources have no identity.
 
-1. Compute a deterministic cache key from the repository URL.
-2. Check `~/.cocoaskills/cache/<repo-hash>/<commit-sha>/`. If present, skip clone.
-3. If not cached, clone the repository (shallow where possible) and checkout the target commit.
-4. Store in cache.
+`allowed_sources` gates network fetches: before cloning a declared git source, its identity MUST match one of the configured prefixes. Matching is segment-aware: `host/skills` matches `host/skills/x` and never `host/skills-evil`. An empty allowlist allows everything; local sources always pass.
 
-Git operations use HTTPS or SSH based on the URL scheme. Authentication relies on the developer's existing git credential configuration (`~/.gitconfig`, SSH agent, credential helpers). csk does not implement its own authentication.
+Refs resolve as follows: `tag` resolves `refs/tags/<value>` to a commit; `revision` resolves `<value>^{commit}`; `branch` prefers `refs/remotes/origin/<value>` and falls back to a local head. Snapshots are produced with `git archive` at the resolved commit and cached per source and commit under the csk home (`cache/<source>/<commit>/snapshot`).
 
-### 7.3 Audit Phase
+### 8.3 Closure Resolution
 
-Runs when `--audit` flag is present or when `security.audit_on_install` is true in Skillfile.
+Direct Skillfile declarations enter the closure as full-mode requirements rooted in the synthetic consumer `<project>`. Processing a node adds its `dependencies.skills` entries to the queue with the node as consumer. Rules, all MUST:
 
-1. For each skill, read the Skillspec.yml and determine all source files, scripts, assets, and Makefiles.
-2. Check audit cache (`~/.cocoaskills/audit-cache/<skill>@<sha>.audit`). If the SHA matches and the cached audit passed, skip.
-3. Run the audit pipeline (§9) on all applicable files.
-4. On pass: record in audit cache. On fail: report findings and halt installation.
+- Within one closure, a skill name resolves to exactly one commit and one canonical source identity.
+- When two requirements name the same skill from different repositories (different identities), resolution fails with a source conflict naming both requirement chains.
+- When two requirements pin refs that resolve to different commits, resolution fails with a version conflict naming both chains and both commits. Different refs resolving to the same commit unify.
+- A requirement whose `commands` narrowing names a command the provider does not export as a script command is an error.
+- Dependency cycles are an error naming the cycle members.
+- The result is ordered providers before consumers, deterministically.
 
-### 7.4 Verify Phase (Environment)
+Activation is edge-based. A node's context is active when any incoming edge has mode `full` or `context`. Its active command set is: all exported script commands when any edge is `full`; otherwise the union over `runtime` edges of their command narrowing (an unnarrowed runtime edge activates all exported commands).
 
-1. Read `environment.platform` from each Skillspec.yml. If the current platform is not listed, halt with an error naming the skill and its required platforms.
-2. Read `environment.requires` from each Skillspec.yml. For each requirement:
-   - Execute the `check` command.
-   - If `pattern` is specified, extract the version string via regex.
-   - If `version` is specified, compare the extracted version against the constraint using semver.
-   - On failure, display the requirement name, expected version, actual state, and `hint` commands (if provided). Halt installation.
-3. Read `.signatures/` from each skill repository. Verify code signatures and certificate chains (§10.5). Apply the trust policy from Skillfile (§5.4). On failure, display the verification result and halt installation.
+### 8.4 Command Collisions
 
-### 7.5 Build Phase (Executables)
+Across the closure, one active command name MUST have exactly one owner. Collision detection runs over active commands only: two skills may export the same name as long as at most one activation makes it live.
 
-If a skill declares `build` targets in Skillspec.yml:
+### 8.5 Install Markers
 
-1. Audit the Makefile (§9.4).
-2. For each build target, verify that the declared `language` is in the auditable language whitelist (§9.2). If the language is not in Tier 1, apply the appropriate audit level.
-3. Execute the Makefile within a controlled environment:
-   - Working directory: the cached skill repository.
-   - Environment variables: `CSK_BUILD_DIR`, `CSK_OUTPUT_DIR` (both within the cache directory).
-4. Verify that build outputs exist at the declared `output` paths.
-5. Compute checksums of build outputs.
+Every installed node carries a marker file `.csk-install.json` in its installed directory (context installs) or in a marker-only directory (runtime-only nodes; adapters never mirror those). Marker fields:
 
-### 7.6 Install Phase
+```json
+{
+  "schema_version": 1,
+  "name": "...", "source": "...",
+  "ref_kind": "tag", "ref": "v1.2.0", "commit": "<full sha>",
+  "content_sha256": "sha256:<hex>",
+  "locale": "ru", "agents": ["claude_code"],
+  "commands": ["exported script commands"],
+  "dependencies": ["declared dependency names"],
+  "skill_schema_version": 5,
+  "runtime_roots": ["scripts"],
+  "installed_at": "<UTC ISO-8601, Z suffix>",
+  "files": ["installed context files"],
+  "git": "<declared url, when present>",
+  "requirements": ["dependencies.skills names, when present"],
+  "mcp_servers": {"server": ["agents where found"]},
+  "attestation": {"registry": "...", "status": "audited", "key_id": "..."},
+  "activation": {"context": true, "commands": ["active commands"]},
+  "requirers": ["consumers"],
+  "substituted": "<description, when substituted>"
+}
+```
 
-**Stripped projection generation:**
+An installation is up to date only when ref kind, ref, commit, locale, agents, activation, substitution, MCP findings, and attestation all match the marker, and the content hash recomputed from the installed directory equals `content_sha256`. The recomputation makes local tampering visible on the next install. Directory replacement MUST be atomic (stage, back up, rename, roll back on failure).
 
-After fetching a skill into `~/.cocoaskills/cache/<repo-hash>/<commit-sha>/full/`, csk generates the stripped projection at `~/.cocoaskills/cache/<repo-hash>/<commit-sha>/stripped/<skill-name>/`. The projection contains only the files declared in `entry`, `assets`, and `scripts` fields of Skillspec.yml. All other files are excluded (§7.8). The stripped projection is generated once and reused across projects.
+The content hash is computed over the installed files exclusive of the marker itself: files sorted by POSIX-style relative path, each contributing `relpath NUL content`, records joined with `NUL`, hashed with SHA-256 and prefixed `sha256:`.
 
-**Installation per skill:**
+### 8.6 Runtime Store and Command Shims
 
-1. Read `install_method` from Skillfile (default: `symlink`).
-2. Create `.agents/skills/<skill-name>/`.
-3. **Symlink mode:** Create a directory symlink from `.agents/skills/<skill-name>` to the stripped projection in the global cache (`~/.cocoaskills/cache/<repo-hash>/<commit-sha>/stripped/<skill-name>/`).
-4. **Copy mode:** Copy all files from the stripped projection into `.agents/skills/<skill-name>/` as real files. The resulting directory is fully self-contained within the project.
-5. Copy declared `scripts` into `.agents/bin/`, preserving the `name` as the filename.
-6. Copy or symlink prebuilt `executables` (matching the current platform) into `.agents/bin/`.
-7. Copy build outputs (from §7.5) into `.agents/bin/`.
-8. Generate `.agents/env.sh` (§14.4).
-9. Generate `.agents/manifest.json` containing the complete index of installed skills with their metadata, paths, versions, and certificate information.
+Command runtimes live once per machine in `~/.cocoaskills/runtime/<skill>/<commit>/`. When a skill declares `runtime_roots`, those directories are copied there (atomically, keyed by commit; an existing entry is reused). Without runtime roots, a single command file is copied to `runtime/<skill>/<commit>/bin/<command>`.
 
-### 7.7 Adapt Phase
+For every active command the installer writes a shim into the project `.agents/bin/`: on Unix a relative symlink to the runtime file (made executable), on Windows a `<command>.cmd` wrapper invoking the runtime path. Command paths MUST NOT escape the snapshot. Stale shims for commands no longer active are removed.
 
-For each agent listed in Skillfile `agents`:
+`.agents/env.sh` and `.agents/env.ps1` are generated helpers that prepend `.agents/bin` to `PATH` and export `CSK_PROJECT_ROOT`; shell integration is specified in Section 14.
 
-1. Look up the agent's expected skill directory from either the skill's `compatible_agents` mapping or csk's built-in defaults.
-2. Create the agent's skill directory if it does not exist.
-3. Create a symlink from the agent's skill directory to `.agents/skills/<skill-name>/` for each installed skill.
-4. If `context_mode` is `managed`, assemble the agent's context file (§8.3).
+### 8.7 Consumers and Garbage Collection
 
-### 7.8 Stripped Installation
-
-The following files and directories are always excluded from the installed skill directory:
-
-- `.git/`
-- `.github/`, `.gitlab-ci.yml`, and other CI configuration
-- `.signatures/`
-- `Skillspec.yml`
-- `Makefile`, `CMakeLists.txt`, and build system files
-- `cmd/`, `src/`, `Sources/`, `pkg/`, and source code directories declared in `build.targets[].source_dir`
-- `test/`, `tests/`, `spec/`, `__tests__/`
-- `README.md`, `README`, `CHANGELOG.md`
-- `LICENSE`, `LICENSE.md`, `LICENSE.txt`
-- `requirements.txt`, `package.json`, `go.mod`, `go.sum`
-- `setup/` (setup scripts for environment provisioning)
-- `*.pyc`, `__pycache__/`, `.DS_Store`
-
-Only files declared in `entry`, `assets`, and `scripts` fields of Skillspec.yml are included. Everything else is stripped.
+Every successful project install records the project path in a machine-level consumer registry (`~/.cocoaskills/consumers.json`). Runtime garbage collection scans registered projects and consumers for markers referencing `runtime/<skill>/<commit>` entries and deletes unreferenced entries; consumer entries whose checkout disappeared or holds no markers are pruned.
 
 ---
 
-## 8. Multi-Agent Delivery
+## 9. Install Scopes
 
-### 8.1 Agent Adapters
+### 9.1 Project Scope
 
-csk maintains a built-in registry of known agents and their expected directory structures:
+The default. Skills declared in the project Skillfile install into the project checkout (`.agents/skills`, `.agents/bin`, adapter directories). Different projects hold different versions independently.
 
-| Agent | Skill Directory | Context File |
-|-------|----------------|--------------|
-| Claude Code | `.claude/skills/` | `CLAUDE.md` |
-| Cursor | `.cursor/rules/` | `.cursorrules` |
-| Codex CLI | `.agents/skills/` | `agents.md` |
-| Gemini CLI | `.gemini/skills/` | `.gemini/context.md` |
+### 9.2 Global Scope
 
-This registry is extensible. Skill authors may override these defaults via `compatible_agents` in Skillspec.yml. Project maintainers may override via `agents` in Skillfile.
+Machine-wide skills live under `~/.cocoaskills/global/`: a global `Skillfile.json` of the same schema, installed context in `global/skills/`, command shims in `global/bin/`, and generated `env.sh`/`env.ps1`. Managed through `csk global init|add|remove|install|update|status|upgrade`. Global adapters mirror into the home-level agent directories (`~/.claude/skills`, `~/.codex/skills`, `~/.cursor/rules`, `~/.gemini/skills`), and for native-discovery agents into `~/.agents/skills` (Section 10.2).
 
-For each listed agent, csk creates symlinks from the agent's expected directory into `.agents/skills/`. The `.agents/skills/` directory is the single source of truth; agent directories contain only symlinks.
+### 9.3 Hybrid Scope
 
-### 8.2 Context Modes
+Hybrid skills are stored once per machine and activated only for targeted projects, leaving nothing in the target repository. The declaration lives in `~/.cocoaskills/hybrid/Skillfile.json`: standard schema 1 plus a required per-skill `targets` list. A target matches a project by declared alias (config alias, config `project_alias`, or Skillfile `project.alias`), by exact resolved path, or by path glob.
 
-**Default mode**: csk creates `.agents/skills/` and agent-specific symlinks. The developer manually references skills in their own context files (CLAUDE.md, agents.md, etc.). csk does not read or modify existing context files. This is the recommended mode for projects that already have hand-written context files.
+During a project install, applicable hybrid declarations join the effective manifest. Shadowing order is project, then hybrid, then global: a project declaration of the same name shadows the hybrid entry (reported as a message). Hybrid nodes and the parts of their closures unreachable from project declarations materialize in the machine-level hybrid store (`~/.cocoaskills/hybrid/skills/`), rendered once per machine with the machine locale; project adapters then mirror both the project store and the hybrid store. Closure resolution, audit, and registry gates apply to hybrid skills unchanged.
 
-**Managed mode** (opt-in via `context_mode: managed`): csk generates a separate skills context file (e.g., `.agents/context/claude-skills.md`) containing assembled skill content ordered by type priority (§4.2). csk does not overwrite existing hand-written context files (CLAUDE.md, agents.md). The generated file is referenced from the agent's context via the agent's native include mechanism where supported.
+---
 
-Managed mode is limited in scope. It assembles skill-contributed content only. It does not manage, validate, or audit hand-written project context. The broader problem of root context lifecycle management is acknowledged but unsolved in this version of the specification (see §5.7).
+## 10. Multi-Agent Delivery
 
-### 8.3 Context Assembly (Managed Mode)
+### 10.1 Adapters
 
-When `context_mode` is `managed`, csk generates `.agents/context/<agent>-skills.md` for each target agent. The generated file is self-contained and does not depend on or modify existing context files.
+The canonical installed context lives in `.agents/skills/`. Adapters mirror it into the directories each agent reads:
 
-Assembly order within the generated file:
+| Agent id | Project directory | Home directory (global scope) |
+|----------|-------------------|-------------------------------|
+| `claude_code` | `.claude/skills` | `~/.claude/skills` |
+| `codex_cli` | `.codex/skills` | `~/.codex/skills` |
+| `cursor` | `.cursor/rules` | `~/.cursor/rules` |
+| `gemini` | `.gemini/skills` | `~/.gemini/skills` |
 
-1. **Header comment**: `<!-- Generated by CocoaSkill — DO NOT EDIT -->`.
-2. **Injection protection header** (§9.9).
-3. **Persona** content: skills with `type: persona`.
-4. **Context** content: skills with `type: context`.
-5. **Skill** content: skills with `type: skill`.
-6. **Toolchain** content: skills with `type: toolchain` are referenced by path, not inlined.
+Adapter entries are symlinks, or full copies where symlinks are unavailable (`adapter_mode`: `auto`, `symlink`, `copy`). Each adapter directory carries a ledger `.csk-managed.json` (schema 1, sorted `entries`) recording which entries the tool manages. Managed entries that fall out of the expected set are removed; an existing unmanaged entry with the same name MUST fail the refresh rather than be overwritten. Unknown agent identifiers are ignored with a warning listing known agents.
 
-Within each type group, skills appear in the order declared in Skillfile.
+### 10.2 Native-Discovery Agents
 
-The developer is responsible for referencing the generated file from their agent's root context. For Claude Code, this is done via `@.agents/context/claude_code-skills.md` in CLAUDE.md. For agents that do not support file references, the developer may include the generated content manually.
+`opencode` and `windsurf` discover the canonical `.agents/skills/` directory natively and receive no project-level mirror. For global installs, their entries mirror into `~/.agents/skills` so the skills are visible outside any project checkout.
+
+---
+
+## 11. MCP Server Requirements
+
+Skills declare MCP server requirements in `dependencies.mcp_servers` (Section 5.8). Verification is read-only: implementations MUST NOT launch or install MCP servers.
+
+### 11.1 Configuration Surfaces
+
+A server counts as configured for an agent when its name appears in one of that agent's configuration files:
+
+| Agent | Project-level | User-level |
+|-------|---------------|------------|
+| `claude_code` | `.mcp.json` | `~/.claude.json` |
+| `cursor` | `.cursor/mcp.json` | `~/.cursor/mcp.json` |
+| `codex_cli` | `.codex/config.toml` | `~/.codex/config.toml` |
+| `gemini` | `.gemini/settings.json` | `~/.gemini/settings.json` |
+| `opencode` | `opencode.json`, `opencode.jsonc` | `~/.config/opencode/opencode.json(c)` |
+| `windsurf` | none | `~/.codeium/windsurf/mcp_config.json` |
+
+JSON files declare servers under `mcpServers`; Codex TOML under `mcp_servers`; OpenCode under `mcp`, where an entry with `"enabled": false` does not count. For Claude Code, a server listed in `disabledMcpjsonServers` of `.claude/settings.json` or `.claude/settings.local.json` does not count: the agent will not activate a rejected server. Missing or malformed configuration files count as configuring no servers.
+
+### 11.2 Verification Semantics
+
+For each requirement, each target agent resolves to configured or not. Agents without a known configuration surface resolve to not configured. With `required_in: "any"` the requirement fails when no target agent has the server; with `"all"` it fails naming every agent that lacks it. Failure messages MUST include the declared `hint`. The install marker records, per server, the agents where it was found.
+
+### 11.3 Static Availability Warnings
+
+Two conditions produce warnings without failing the install:
+
+- Every entry for a configured server is positively a stdio server whose command does not resolve on `PATH` (a string `command`, or an argv list for OpenCode). Entries that may be remote produce no warning.
+- A server is declared only in project-level configuration for an agent: agents gate project-level config behind checkout trust, so the server may sit pending in a fresh clone.
 
 ---
 
