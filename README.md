@@ -287,238 +287,270 @@ Skillfile.lock (written/updated)
 
 ---
 
-## 4. Skillspec: Skill Author Manifest
+## 4. Skill Package Format
 
-The `Skillspec.yml` file resides in the root of a skill repository. It describes the skill's metadata, contents, requirements, and signing information.
+A skill is a git repository (or a directory inside one) whose root contains a `SKILL.md` file. Everything else is optional. CocoaSkills consumes skills in this format and installs a filtered view of them into consuming projects.
 
-### 4.1 Required Fields
+### 4.1 Package Layout
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `name` | string | Unique skill identifier. Lowercase, alphanumeric, hyphens allowed. |
-| `version` | string | Semantic version (e.g., `1.0.2`). |
-| `description` | string | Human-readable description of the skill's purpose. |
-| `type` | enum | One of: `skill`, `context`, `persona`, `toolchain`. See §4.2. |
-| `entry` | string | Path to the primary skill file, relative to repository root. Typically `SKILL.md`. |
-
-### 4.2 Content Types
-
-| Type | Purpose | Injection Priority |
-|------|---------|-------------------|
-| `skill` | Procedural instructions for the agent (how to do X). | Standard |
-| `context` | Project background, architectural decisions, conventions. | High (injected first) |
-| `persona` | Agent behavioral configuration (tone, constraints, role). | Highest (injected before all other content) |
-| `toolchain` | Tool configuration files (linter configs, formatter settings, test runner setups). | Low (referenced by path, not injected into context) |
-
-Injection priority determines the order in which skill content appears in the assembled agent context file during managed mode (§8.2). Higher priority content appears earlier in the file.
-
-### 4.3 Assets and Scripts
-
-```yaml
-assets:
-  - templates/
-  - examples/
-  - data/reference.json
-
-scripts:
-  - name: generate_module
-    path: scripts/generate_module.sh
-    interpreter: bash
-  - name: validate_schema
-    path: scripts/validate.py
-    interpreter: python3
+```text
+skill-example/
+├── SKILL.md              # required: agent-facing instructions with YAML frontmatter
+├── csk-skill.json        # optional: machine manifest (Section 5)
+├── agents/               # context: agent-specific material (also: agents/openai.yaml interface hints)
+├── references/           # context: supporting documents for the model
+├── .skill_triggers/      # context: per-locale activation trigger catalogs
+├── assets/               # context: static resources
+├── templates/            # context: reusable templates
+├── examples/             # context: usage examples
+├── data/                 # context: data files
+├── locales/
+│   └── metadata.json     # localization metadata (Section 4.3)
+├── scripts/              # runtime: command sources (Section 5.3)
+└── tests/, README.md, …  # developer-facing, never installed
 ```
 
-**Assets** are files and directories copied verbatim into the installed skill directory alongside the entry file.
+`SKILL.md` MUST exist at the package root. An installer MUST fail the installation of a skill whose snapshot has no `SKILL.md`.
 
-**Scripts** are executable helpers provided by the skill. They are copied into `.agents/bin/` with their declared interpreter. The `name` field determines the filename in `.agents/bin/`.
+### 4.2 Context Whitelist
 
-### 4.4 Environment Requirements
+Installation separates model-facing context from everything else. Only the following root entries are copied into the installed context directory (`.agents/skills/<name>/` in a project):
 
-CocoaSkill verifies that declared environment requirements are satisfied. CocoaSkill does not install runtimes or tools. If a requirement is not met, installation halts with an actionable error message.
-
-```yaml
-environment:
-  platform: [macos, linux]
-  
-  requires:
-    - name: python3
-      version: ">=3.10"
-      check: "python3 --version"
-      pattern: "Python (.*)"       # Regex to extract version from check output
-      hint:
-        brew: "brew install python@3.12"
-        mise: "mise install python@3.12"
-        apt: "sudo apt install python3.12"
-        
-    - name: swiftlint
-      version: ">=0.54"
-      check: "swiftlint version"
-      hint:
-        brew: "brew install swiftlint"
-        
-    - name: jq
-      check: "jq --version"
-      # version omitted: presence check only
+```text
+SKILL.md  agents/  references/  .skill_triggers/  assets/  templates/  examples/  data/
 ```
 
-**`platform`**: Required operating systems. Valid values: `macos`, `linux`, `windows`. Installation fails on unlisted platforms.
+Additionally, `scripts/` is copied into context only when the skill declares no commands in its manifest and a `scripts/` directory exists. A skill that exports commands keeps its `scripts/` out of the model context; command sources are delivered through the runtime store instead (Section 8).
 
-**`requires`**: Each entry specifies a runtime or tool the skill depends on. The `check` field is a shell command whose output is matched against `pattern` (if provided) to extract a version string. The extracted version is compared against `version` using semver. If `version` is omitted, only presence is checked. `hint` provides platform-specific installation commands displayed to the developer on failure.
+Within the copied roots, entries matching any of the following patterns MUST be excluded at any depth:
 
-### 4.5 Multi-Agent Compatibility
-
-```yaml
-compatible_agents:
-  claude_code:
-    skill_dir: .claude/skills/
-  cursor:
-    skill_dir: .cursor/rules/
-  codex_cli:
-    skill_dir: .agents/skills/
-  gemini:
-    skill_dir: .gemini/skills/
+```text
+.git  .github  .gitlab-ci.yml  .venv  __pycache__  *.pyc  node_modules
+tests  test  __tests__  README*  CHANGELOG*  LICENSE*  Makefile
+setup.py  pyproject.toml  requirements*.txt  .DS_Store  .gitignore
 ```
 
-Each entry names an agent and the directory where the agent expects skill files. During the Adapt phase (§7.7), csk creates symlinks from each agent's expected directory into `.agents/skills/<skill-name>/`.
+Directories listed in `runtime_roots` (Section 5.3) MUST also be excluded from context, even when they fall under a whitelisted root. Context installation MUST be atomic: implementations stage into a temporary directory and replace the previous installation only on success.
 
-If `compatible_agents` is omitted, the skill is assumed compatible with all agents. csk uses default directory mappings for known agents.
+This whitelist is the mechanism behind the context and runtime separation: the model sees short, relevant instructions, while executable material lives in a managed runtime outside the agent context.
 
-### 4.6 Executable Distribution
+### 4.3 Localization
 
-Skills may ship prebuilt binary executables. All prebuilt executables require code signing (§10).
+Localization is optional. A skill that ships no `locales/metadata.json` and no `.skill_triggers/` installs identically under any project locale.
 
-```yaml
-executables:
-  - name: skill-lint
-    description: "Validates project against skill conventions"
-    
-    signing:
-      required: true
-      algorithm: ed25519
-      public_key_discovery:
-        - dns: "_cocoaskill-ca.relux.codes"
-        - github: "ivanoparin/.well-known/cocoaskill-ca.pub"
-    
-    distributions:
-      - platform: { os: macos, arch: arm64 }
-        artifact: bin/skill-lint-darwin-arm64
-        checksum: "sha256:abc123def456..."
-        signature: bin/skill-lint-darwin-arm64.sig
-        
-      - platform: { os: linux, arch: x86_64 }
-        artifact: bin/skill-lint-linux-amd64
-        checksum: "sha256:789abc012def..."
-        signature: bin/skill-lint-linux-amd64.sig
+When localization metadata is present, the following rules apply:
+
+- `locales/metadata.json` MUST contain an object field `locales` mapping locale codes to objects. Per-locale objects MAY carry `description`, `display_name`, `short_description`, and `default_prompt`.
+- `.skill_triggers/` MUST be a directory; it contains one `<locale>.md` catalog per locale. Trigger phrases are list items (`- phrase`) outside fenced code blocks.
+- A locale is **consistent** when it appears both as a key in `locales` and as a `.skill_triggers/<locale>.md` file. At least one consistent locale MUST exist when localization metadata is present; otherwise installation fails.
+- If the selected project locale is consistent, the installer renders it: the `description` from metadata replaces the `description` field in the installed `SKILL.md` frontmatter (preserving `name`), trigger phrases are written as a `triggers` list in the frontmatter, and `agents/openai.yaml`, when present, is rewritten from `display_name`, `short_description`, and `default_prompt`.
+- If the selected locale is not consistent but another consistent locale exists, the installer MUST install the source `SKILL.md` unchanged and emit a warning naming the available catalogs. Locale warnings MUST be emitted even when the installation is otherwise up to date.
+
+### 4.4 Relationship to the Common SKILL.md Convention
+
+The package format is a constrained profile of the SKILL.md convention used across the agent ecosystem: a markdown instruction file with YAML frontmatter (`name`, `description`, optional `triggers`) plus supporting directories. Any CocoaSkills skill is readable by tools that understand plain SKILL.md packages. The profile adds three constraints: the context whitelist (Section 4.2), the optional machine manifest `csk-skill.json` (Section 5), and the localization contract (Section 4.3). It deliberately excludes arbitrary top-level content from the agent context.
+
+---
+
+## 5. The csk-skill.json Manifest
+
+`csk-skill.json` at the package root declares the machine-facing contract of a skill: exported commands, runtime file layout, declared capabilities, and dependencies. Skills without commands or dependencies do not need one.
+
+### 5.1 Schema Versions
+
+The manifest MUST contain an integer field `schema_version`. Implementations targeting this specification MUST accept versions 1 through 5 and MUST reject any other value with an error that tells the user to upgrade the tool.
+
+| Version | Adds |
+|---------|------|
+| 1 | `commands` (single-file scripts and system checks) |
+| 2 | `runtime_roots`, `dependencies.commands`, strict field validation |
+| 3 | `capabilities` (required from this version on) |
+| 4 | `dependencies.skills` (skill-to-skill requirements) |
+| 5 | `dependencies.mcp_servers` (MCP server requirements) |
+
+Each version is additive over the previous one. For `schema_version` 2 and newer, implementations MUST reject unknown top-level fields; the allowed set is `schema_version`, `runtime_roots`, `commands`, `dependencies`, plus `capabilities` for version 3 and newer. For version 3 and newer, `capabilities` MUST be present. Gating MUST be enforced downward as well: `dependencies` requires version 2, `dependencies.skills` requires version 4, `dependencies.mcp_servers` requires version 5.
+
+### 5.2 Identifiers
+
+Skill names, command names, and MCP server names become filesystem path components (shim filenames, runtime directories). They MUST match:
+
+```text
+^[A-Za-z0-9][A-Za-z0-9._-]*$
 ```
 
-**`distributions`**: Each entry specifies a platform-specific prebuilt binary. `platform.os` is one of `macos`, `linux`, `windows`. `platform.arch` is one of `arm64`, `x86_64`. `artifact` is the path within the skill repository. `checksum` is a `sha256:` prefixed hex digest of the artifact. `signature` is the path to the detached signature file.
+This rules out path separators, leading dashes, and anything that could escape a designated directory.
 
-### 4.7 Build Targets
+### 5.3 runtime_roots
 
-Skills may include source code for tools that require compilation. A Makefile in the skill repository manages the build. csk audits the Makefile before execution (§9.4).
+`runtime_roots` (schema 2+) lists the directories that skill commands need at execution time:
 
-```yaml
-build:
-  system: make
-  targets:
-    - name: lint-tool
-      language: go
-      source_dir: cmd/lint-tool/
-      output: bin/lint-tool
-      
-    - name: gen-module
-      language: swift
-      source_dir: Sources/GenModule/
-      output: bin/gen-module
-      
-  allowed_operations:
-    - compile
-    - link
-    - copy_to_output
+```json
+"runtime_roots": ["scripts"]
 ```
 
-**`system`**: Build system. `make` is the only supported value in v0.1.
+Each entry MUST be a POSIX-style relative path (no backslashes, no `..`, no empty or `.` segments, no doubled slashes) that exists in the package and is a directory. Entries MUST be unique and pairwise disjoint: no root may contain another. Runtime roots are copied to the machine-level runtime store keyed by skill and commit (Section 8.6) and are excluded from the model context (Section 4.2).
 
-**`targets`**: Each entry names a build target with its language, source directory, and output path. The `language` must be in the auditable language whitelist (§9.2).
+### 5.4 commands
 
-**`allowed_operations`**: Whitelist of operation categories permitted in the Makefile. csk rejects Makefiles containing operations outside this list.
+`commands` maps exported command names to command objects. Two types exist.
 
-### 4.8 Full Skillspec Example
+**Script commands** point at files inside the package:
 
-```yaml
-name: ios-tuist-conventions
-version: 1.0.2
-description: "Tuist project structure conventions and module generation for iOS projects"
-type: skill
-entry: SKILL.md
-format: skill.md
-
-assets:
-  - templates/
-  - examples/
-
-scripts:
-  - name: generate_module
-    path: scripts/generate_module.sh
-    interpreter: bash
-
-environment:
-  platform: [macos]
-  requires:
-    - name: tuist
-      version: ">=4.0"
-      check: "tuist version"
-      hint:
-        brew: "brew install tuist"
-    - name: swiftlint
-      version: ">=0.54"
-      check: "swiftlint version"
-      hint:
-        brew: "brew install swiftlint"
-
-compatible_agents:
-  claude_code:
-    skill_dir: .claude/skills/
-  cursor:
-    skill_dir: .cursor/rules/
-  codex_cli:
-    skill_dir: .agents/skills/
-
-executables:
-  - name: tuist-lint
-    description: "Validates Tuist project structure against conventions"
-    signing:
-      required: true
-      algorithm: ed25519
-      public_key_discovery:
-        - dns: "_cocoaskill-ca.relux.codes"
-    distributions:
-      - platform: { os: macos, arch: arm64 }
-        artifact: bin/tuist-lint-darwin-arm64
-        checksum: "sha256:a1b2c3d4e5f6..."
-        signature: bin/tuist-lint-darwin-arm64.sig
-
-build:
-  system: make
-  targets:
-    - name: tuist-lint
-      language: go
-      source_dir: cmd/tuist-lint/
-      output: bin/tuist-lint
-  allowed_operations:
-    - compile
-    - link
-    - copy_to_output
-
-depends_on:
-  - name: swift-common-conventions
-    version: ">=1.0,<2.0"
+```json
+"commands": {
+  "ytx": { "type": "script", "unix_path": "scripts/ytx", "win_path": "scripts/ytx.cmd" }
+}
 ```
 
-**`depends_on`**: Declares dependencies on other skills. csk resolves these transitively. Reserved for future use; the field is parsed and validated in v0.1 but dependency resolution is limited to a flat list (no transitive resolution).
+Paths MUST be relative paths inside the package. For schema 2 and newer: at least one of `unix_path` or `win_path` MUST be present, the referenced file MUST exist, no fields other than `type`, `unix_path`, `win_path` are allowed, and when `runtime_roots` is non-empty every command path MUST fall inside one of the roots.
 
-**`format`**: Declares the format of the entry file. `skill.md` indicates SKILL.md-compatible format (§17.1). This ensures CocoaSkill does not invent a new skill content format.
+**System commands** assert that an externally installed binary is available:
+
+```json
+"commands": {
+  "wiki": { "type": "system", "command": "wiki", "hint": "Install the wiki CLI through project bootstrap." }
+}
+```
+
+`command` MUST be a non-empty string; `hint` is optional. A system command is resolved against `PATH` at install time; a missing binary MUST fail the installation of that skill with the hint. Implementations MUST NOT install a skill into a partially working state.
+
+A skill MUST only export commands it owns. Declaring another skill's command creates a shim collision with the real owner.
+
+### 5.5 capabilities
+
+`capabilities` (required from schema 3) declares the boundaries within which the skill is expected to operate. It is an audit and review surface, not a runtime sandbox.
+
+```json
+"capabilities": {
+  "network": ["youtrack.example.com"],
+  "filesystem": "repo",
+  "exec": ["python3"],
+  "secrets": ["youtrack-cli"],
+  "env_read": ["HOME"],
+  "prompt_scope": "Read and update tracker issues within the selected project."
+}
+```
+
+Field rules:
+
+- `network`: `"none"` (default) or a list of host globs. Entries MUST NOT contain whitespace, `/`, or `\`.
+- `filesystem`: `"repo"` (default), `"home-config"`, or a list of paths. Relative paths MUST NOT contain `..`; entries MUST NOT start with `-` or contain NUL.
+- `exec`: `"none"` (default) or a list of bare executable names (no paths, no spaces, no leading `-`).
+- `secrets`: `"none"` (default) or a list of secret or keyring entry names.
+- `env_read`: a list (default empty) of environment variable names (`[A-Za-z_][A-Za-z0-9_]*`).
+- `prompt_scope`: optional non-empty sentence describing the intended purpose.
+
+List values MUST be unique. Unknown capability fields MUST be rejected. The audit pipeline compares observed behavior against these declarations (Section 12).
+
+### 5.6 dependencies.commands
+
+Command-level dependencies name tools the skill invokes but does not export.
+
+```json
+"dependencies": {
+  "commands": {
+    "glab": { "type": "system", "command": "glab", "hint": "Install the GitLab CLI through project bootstrap." }
+  }
+}
+```
+
+`type: "system"` follows the same resolution rule as system commands: present on `PATH` or the skill fails to install with the hint.
+
+The legacy form `type: "skill"` (fields `skill`, `command`, optional `hint`) declares that another installed skill provides the command. It remains accepted for compatibility, MUST NOT create a shim, and implementations SHOULD print a migration warning pointing at `dependencies.skills`. New skills MUST use `dependencies.skills` instead.
+
+### 5.7 dependencies.skills
+
+Schema 4 introduces self-contained skill-to-skill requirements. Each entry carries everything needed to fetch the provider:
+
+```json
+"dependencies": {
+  "skills": {
+    "skill-wiki": {
+      "git": "git@git.example.com:skills/skill-wiki.git",
+      "ref": { "kind": "tag", "value": "v1.4.2" },
+      "mode": "runtime",
+      "commands": ["wk"]
+    }
+  }
+}
+```
+
+Validation rules, all MUST:
+
+- `git` is a non-empty source URL.
+- `ref` is an object `{ "kind": "tag" | "revision", "value": <non-empty> }`. `kind: "branch"` is rejected with a dedicated error. A `version` field is rejected: version ranges are not part of the protocol. Values containing range markers (`^`, `~`, `>`, `<`, `*`, or whitespace) are rejected.
+- `mode` is one of `full` (default), `runtime`, `context`. `full` activates the provider's context and commands for the consumer; `runtime` activates only its commands; `context` activates only its context.
+- `commands` is allowed only with `mode: "runtime"` and, when present, is a non-empty list of command identifiers narrowing which provider commands are activated. Duplicates are dropped preserving order.
+
+Requirement resolution across the project is specified in Section 8 (closure resolution).
+
+### 5.8 dependencies.mcp_servers
+
+Schema 5 introduces requirements on MCP servers configured in the consuming agent environments:
+
+```json
+"dependencies": {
+  "mcp_servers": {
+    "google-sheets": {
+      "hint": "Connect the Google Sheets MCP server in your agent environment configuration.",
+      "transport": "http",
+      "required_in": "any"
+    }
+  }
+}
+```
+
+- `hint` is REQUIRED and non-empty; it is shown when the requirement is not met.
+- `transport` is optional documentation: `stdio` or `http`.
+- `required_in` selects the check semantics: `any` (default) requires the server name to be configured in at least one target agent environment; `all` requires it in every target agent environment.
+
+The server name MUST match the name under which the server is registered in agent configuration files. Verification behavior and the per-agent configuration surfaces are specified in Section 11. CocoaSkills never launches or installs MCP servers; it verifies their presence in configuration.
+
+### 5.9 No Install Hooks
+
+The manifest is declarative. Fields such as `install`, `post_install`, `check`, or any other executable hook are not part of any schema version and MUST be rejected through unknown-field validation (schema 2+). An implementation MUST NOT execute code from a skill package during installation. This is a load-bearing security property: installation reads and copies files, verifies declarations, and nothing else.
+
+### 5.10 Legacy Runtime Manifest
+
+When no `csk-skill.json` exists but the package contains `agents/runtime.json`, implementations MUST read it as a legacy command map: an object field `commands` mapping command identifiers to relative file paths. A path ending in `.cmd` doubles as the Windows entry point. New skills MUST NOT use this format. When neither file exists, the skill is a pure context skill: it installs context and exports nothing.
+
+### 5.11 Complete Example
+
+A schema 5 skill that exports one command, depends on a provider skill and an MCP server:
+
+```json
+{
+  "schema_version": 5,
+  "runtime_roots": ["scripts"],
+  "capabilities": {
+    "network": ["api.example.com"],
+    "filesystem": "repo",
+    "exec": ["python3"],
+    "secrets": "none",
+    "env_read": ["HOME"],
+    "prompt_scope": "Prepare the team's weekly report from tracker and spreadsheet data."
+  },
+  "commands": {
+    "report": { "type": "script", "unix_path": "scripts/report", "win_path": "scripts/report.cmd" }
+  },
+  "dependencies": {
+    "commands": {
+      "python3": { "type": "system", "command": "python3", "hint": "Install Python through project bootstrap." }
+    },
+    "skills": {
+      "skill-tracker": {
+        "git": "git@git.example.com:skills/skill-tracker.git",
+        "ref": { "kind": "tag", "value": "v2.1.0" },
+        "mode": "runtime",
+        "commands": ["trk"]
+      }
+    },
+    "mcp_servers": {
+      "google-sheets": { "hint": "Connect the Google Sheets MCP server in your agent environment." }
+    }
+  }
+}
+```
 
 ---
 
