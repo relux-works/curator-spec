@@ -256,7 +256,7 @@ This whitelist is the mechanism behind the context and runtime separation: the m
 
 Localization is optional. A skill that ships no `locales/metadata.json` and no `.skill_triggers/` installs identically under any project locale.
 
-When localization metadata is present, the following rules apply:
+The rules below apply when the project selects a locale (Skillfile `locale` or machine `preferred_locale`) and localization metadata is present; with no selected locale, skills install without localization checks or rendering:
 
 - `locales/metadata.json` MUST contain an object field `locales` mapping locale codes to objects. Per-locale objects MAY carry `description`, `display_name`, `short_description`, and `default_prompt`.
 - `.skill_triggers/` MUST be a directory; it contains one `<locale>.md` catalog per locale. Trigger phrases are list items (`- phrase`) outside fenced code blocks.
@@ -751,7 +751,7 @@ For each skill in the closure:
 
 1. Compute the snapshot content hash (Section 8.5 algorithm, over the raw snapshot).
 2. Look up a cached verdict keyed by content hash, backend name, model, prompt version, and ruleset version. A hit skips analysis; the decision is recomputed from the cached findings under the current policy.
-3. Run the static canary: a self-test that plants known-bad fixtures and checks that detectors fire. A failing canary blocks the audit entirely.
+3. Run the static canary (once per audit run): a self-test that plants known-bad fixtures and checks that detectors fire. A failing canary blocks the audit entirely. Backend canaries likewise run once per audit run.
 4. Run static detectors over the snapshot, comparing observed behavior against the declared capabilities (Section 5.5). Findings carry an id, a surface (`code`, `prompt`, `manifest`), a category, a severity (`info`, `low`, `medium`, `high`, `critical`), evidence, a detector name, a confidence, a verifiability flag, an optional file location, and an optional capability violation (capability, declared, observed).
 5. Optionally run a backend for deeper analysis: `null` (no-op, default), `command` (an operator-supplied local command), or `codex` (an LLM backend). Backends have their own canary. A backend request larger than `audit.max_request_bytes` is skipped and replaced by a high-severity `audit.request.too-large` finding.
 6. Cloud egress control: a backend marked cloud MAY only receive skills whose source classifies as `public` under `audit.source_policy` (pattern rules over source and git URL; default class `internal`). Otherwise the audit fails with an egress error. File contents sent to a cloud backend are redacted (secret scrubbing) and the redaction is recorded as a finding.
