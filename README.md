@@ -24,127 +24,101 @@ The goal of this specification is interoperability. An independent skill manager
 
 ## Table of Contents
 
-1. [Overview](#1-overview)
-2. [Terminology](#2-terminology)
-3. [Architecture](#3-architecture)
-   - 3.1 [High-Level Architecture](#31-high-level-architecture)
-   - 3.2 [Directory Layout](#32-directory-layout)
-   - 3.3 [Data Flow](#33-data-flow)
-4. [Skillspec: Skill Author Manifest](#4-skillspec--skill-author-manifest)
-   - 4.1 [Required Fields](#41-required-fields)
-   - 4.2 [Content Types](#42-content-types)
-   - 4.3 [Assets and Scripts](#43-assets-and-scripts)
-   - 4.4 [Environment Requirements](#44-environment-requirements)
-   - 4.5 [Multi-Agent Compatibility](#45-multi-agent-compatibility)
-   - 4.6 [Executable Distribution](#46-executable-distribution)
-   - 4.7 [Build Targets](#47-build-targets)
-   - 4.8 [Full Skillspec Example](#48-full-skillspec-example)
-5. [Skillfile: Project Manifest](#5-skillfile--project-manifest)
-   - 5.1 [Skill Declarations](#51-skill-declarations)
-   - 5.2 [Source Types](#52-source-types)
-   - 5.3 [Version Constraints](#53-version-constraints)
-   - 5.4 [Trust Configuration](#54-trust-configuration)
-   - 5.5 [Security Policy](#55-security-policy)
-   - 5.6 [Agent Targets](#56-agent-targets)
-   - 5.7 [Context Mode](#57-context-mode)
-   - 5.8 [Install Method](#58-install-method)
-   - 5.9 [Full Skillfile Example](#59-full-skillfile-example)
-6. [Skillfile.lock: Lockfile](#6-skillfilelock--lockfile)
-   - 6.1 [Lockfile Fields](#61-lockfile-fields)
-   - 6.2 [Frozen Mode](#62-frozen-mode)
-   - 6.3 [Full Lockfile Example](#63-full-lockfile-example)
-7. [Installation Process](#7-installation-process)
-   - 7.1 [Resolve Phase](#71-resolve-phase)
-   - 7.2 [Fetch Phase](#72-fetch-phase)
-   - 7.3 [Audit Phase](#73-audit-phase)
-   - 7.4 [Verify Phase (Environment)](#74-verify-phase-environment)
-   - 7.5 [Build Phase (Executables)](#75-build-phase-executables)
-   - 7.6 [Install Phase](#76-install-phase)
-   - 7.7 [Adapt Phase](#77-adapt-phase)
-   - 7.8 [Stripped Installation](#78-stripped-installation)
-8. [Multi-Agent Delivery](#8-multi-agent-delivery)
-   - 8.1 [Agent Adapters](#81-agent-adapters)
-   - 8.2 [Context Modes](#82-context-modes)
-   - 8.3 [Context Assembly (Managed Mode)](#83-context-assembly-managed-mode)
-9. [Security: Source Audit](#9-security-source-audit)
-   - 9.1 [Audit Scope](#91-audit-scope)
-   - 9.2 [Language Tiers](#92-language-tiers)
-   - 9.3 [Audit Rules](#93-audit-rules)
-   - 9.4 [Makefile Audit](#94-makefile-audit)
-   - 9.5 [Markdown/Skill Content Audit](#95-markdownskill-content-audit)
-   - 9.6 [Dependency Trust Levels](#96-dependency-trust-levels)
-   - 9.7 [Audit Cache](#97-audit-cache)
-   - 9.8 [Audit Modes](#98-audit-modes)
-   - 9.9 [Injection Protection Context](#99-injection-protection-context)
-10. [Security: Code Signing](#10-security-code-signing)
-    - 10.1 [Signing Model](#101-signing-model)
-    - 10.2 [CA Key Pair](#102-ca-key-pair)
-    - 10.3 [Skill Certificate](#103-skill-certificate)
-    - 10.4 [Signature Storage in Skill Repository](#104-signature-storage-in-skill-repository)
-    - 10.5 [Verification Process](#105-verification-process)
-11. [Security: CA Hierarchy](#11-security-ca-hierarchy)
-    - 11.1 [Hierarchy Model](#111-hierarchy-model)
-    - 11.2 [CA Certificate](#112-ca-certificate)
-    - 11.3 [Constraints](#113-constraints)
-    - 11.4 [Chain Verification](#114-chain-verification)
-    - 11.5 [Maximum Chain Depth](#115-maximum-chain-depth)
-12. [Security: Trust Providers](#12-security-trust-providers)
-    - 12.1 [Provider Interface](#121-provider-interface)
-    - 12.2 [Domain Verification](#122-domain-verification)
-    - 12.3 [GitHub Verification](#123-github-verification)
-    - 12.4 [Key Pinning and Trust Bootstrapping](#124-key-pinning-and-trust-bootstrapping)
-    - 12.5 [Future Providers](#125-future-providers)
-    - 12.6 [Provider Selection in Skillfile](#126-provider-selection-in-skillfile)
-13. [Security: Revocation](#13-security-revocation)
-    - 13.1 [Revocation List Format](#131-revocation-list-format)
-    - 13.2 [Revocation Discovery](#132-revocation-discovery)
-    - 13.3 [Revocation of Intermediate CAs](#133-revocation-of-intermediate-cas)
-14. [Shell Integration](#14-shell-integration)
-    - 14.1 [Shell Hook](#141-shell-hook)
-    - 14.2 [direnv Support](#142-direnv-support)
-    - 14.3 [Manual Activation](#143-manual-activation)
-    - 14.4 [env.sh Contents](#144-envsh-contents)
-15. [CLI Reference](#15-cli-reference)
-    - 15.1 [Project Commands](#151-project-commands)
-    - 15.2 [CA Commands](#152-ca-commands)
-    - 15.3 [Skill Author Commands](#153-skill-author-commands)
-    - 15.4 [Shell Commands](#154-shell-commands)
-    - 15.5 [Global Flags](#155-global-flags)
-16. [CI/CD Integration](#16-cicd-integration)
-17. [Compatibility](#17-compatibility)
-    - 17.1 [SKILL.md Format](#171-skillmd-format)
-    - 17.2 [AGENTS.md Format](#172-agentsmd-format)
-    - 17.3 [Existing Skill Registries](#173-existing-skill-registries)
-18. [Version Scope: v0.1](#18-version-scope-v01)
-    - 18.1 [Included in v0.1](#181-included-in-v01)
-    - 18.2 [Deferred to v0.2+](#182-deferred-to-v02)
-19. [Implementation Details](#19-implementation-details)
-    - 19.1 [Language and Dependencies](#191-language-and-dependencies)
-    - 19.2 [Key Go Packages](#192-key-go-packages)
-    - 19.3 [Cross-Compilation Targets](#193-cross-compilation-targets)
-    - 19.4 [Distribution](#194-distribution)
-20. [References](#20-references)
-    - 20.1 [Key Articles and Research](#201-key-articles-and-research)
-    - 20.2 [Existing Alternatives](#202-existing-alternatives)
-    - 20.3 [Adjacent Infrastructure Projects](#203-adjacent-infrastructure-projects)
-    - 20.4 [Standards and Governance](#204-standards-and-governance)
-    - 20.5 [Skill Registries](#205-skill-registries)
+- [1. Overview](#1-overview)
+- [2. Terminology](#2-terminology)
+- [3. Architecture](#3-architecture)
+  - [3.1 Machine Layout](#31-machine-layout)
+  - [3.2 Project Layout](#32-project-layout)
+  - [3.3 Data Flow](#33-data-flow)
+- [4. Skill Package Format](#4-skill-package-format)
+  - [4.1 Package Layout](#41-package-layout)
+  - [4.2 Context Whitelist](#42-context-whitelist)
+  - [4.3 Localization](#43-localization)
+  - [4.4 Relationship to the Common SKILL.md Convention](#44-relationship-to-the-common-skillmd-convention)
+- [5. The csk-skill.json Manifest](#5-the-csk-skilljson-manifest)
+  - [5.1 Schema Versions](#51-schema-versions)
+  - [5.2 Identifiers](#52-identifiers)
+  - [5.3 runtime_roots](#53-runtime_roots)
+  - [5.4 commands](#54-commands)
+  - [5.5 capabilities](#55-capabilities)
+  - [5.6 dependencies.commands](#56-dependenciescommands)
+  - [5.7 dependencies.skills](#57-dependenciesskills)
+  - [5.8 dependencies.mcp_servers](#58-dependenciesmcp_servers)
+  - [5.9 No Install Hooks](#59-no-install-hooks)
+  - [5.10 Legacy Runtime Manifest](#510-legacy-runtime-manifest)
+  - [5.11 Complete Example](#511-complete-example)
+- [6. Skillfile: Project Manifest](#6-skillfile-project-manifest)
+  - [6.1 Format (schema 1)](#61-format-schema-1)
+  - [6.2 Development Substitutions: Skillfile.dev.json](#62-development-substitutions-skillfiledevjson)
+  - [6.3 Managed .gitignore Block](#63-managed-gitignore-block)
+- [7. Machine and System Configuration](#7-machine-and-system-configuration)
+  - [7.1 User Configuration](#71-user-configuration)
+  - [7.2 Enforced System Configuration](#72-enforced-system-configuration)
+- [8. Resolution and Installation](#8-resolution-and-installation)
+  - [8.1 Phase Order](#81-phase-order)
+  - [8.2 Source Fetching and the Allowlist](#82-source-fetching-and-the-allowlist)
+  - [8.3 Closure Resolution](#83-closure-resolution)
+  - [8.4 Command Collisions](#84-command-collisions)
+  - [8.5 Install Markers](#85-install-markers)
+  - [8.6 Runtime Store and Command Shims](#86-runtime-store-and-command-shims)
+  - [8.7 Consumers and Garbage Collection](#87-consumers-and-garbage-collection)
+- [9. Install Scopes](#9-install-scopes)
+  - [9.1 Project Scope](#91-project-scope)
+  - [9.2 Global Scope](#92-global-scope)
+  - [9.3 Hybrid Scope](#93-hybrid-scope)
+- [10. Multi-Agent Delivery](#10-multi-agent-delivery)
+  - [10.1 Adapters](#101-adapters)
+  - [10.2 Native-Discovery Agents](#102-native-discovery-agents)
+- [11. MCP Server Requirements](#11-mcp-server-requirements)
+  - [11.1 Configuration Surfaces](#111-configuration-surfaces)
+  - [11.2 Verification Semantics](#112-verification-semantics)
+  - [11.3 Static Availability Warnings](#113-static-availability-warnings)
+- [12. Source Audit](#12-source-audit)
+  - [12.1 Pipeline](#121-pipeline)
+  - [12.2 Decisions and Policy](#122-decisions-and-policy)
+- [13. Audit Registry Protocol](#13-audit-registry-protocol)
+  - [13.1 Records](#131-records)
+  - [13.2 Canonical Bytes and Signatures](#132-canonical-bytes-and-signatures)
+  - [13.3 Client Resolution: Deny-Wins Federation](#133-client-resolution-deny-wins-federation)
+  - [13.4 Snapshot Verification](#134-snapshot-verification)
+  - [13.5 Caching and Offline Grace](#135-caching-and-offline-grace)
+  - [13.6 Registry Service HTTP API](#136-registry-service-http-api)
+  - [13.7 Submission, Tokens, and Countersigning](#137-submission-tokens-and-countersigning)
+  - [13.8 Transparency Log](#138-transparency-log)
+  - [13.9 Air-Gapped Federation: Bundles](#139-air-gapped-federation-bundles)
+  - [13.10 Publishing from the Client](#1310-publishing-from-the-client)
+- [14. Shell Integration](#14-shell-integration)
+  - [14.1 Shell Hook](#141-shell-hook)
+  - [14.2 Environment Files](#142-environment-files)
+- [15. CLI Reference](#15-cli-reference)
+- [16. CI/CD Integration](#16-cicd-integration)
+- [17. Conformance and Compatibility](#17-conformance-and-compatibility)
+  - [17.1 Conformance for Independent Implementations](#171-conformance-for-independent-implementations)
+  - [17.2 SKILL.md Compatibility](#172-skillmd-compatibility)
+  - [17.3 Coexisting Tools](#173-coexisting-tools)
+- [18. Reference Implementation Notes](#18-reference-implementation-notes)
+- [Appendix A: Future Work (Non-Normative)](#appendix-a-future-work-non-normative)
+- [Appendix B: Field Reference: csk-skill.json](#appendix-b-field-reference-csk-skilljson)
+- [Appendix C: Field Reference: Skillfile.json](#appendix-c-field-reference-skillfilejson)
+- [References](#references)
 
 ---
 
 ## 1. Overview
 
-CocoaSkill is a dependency manager for AI agent skills and contexts. It provides declarative, reproducible, security-audited installation of agent skill packages into project repositories.
+CocoaSkills is a dependency manager for AI agent skills and contexts. It provides declarative, reproducible, security-gated installation of agent skill packages into project repositories.
 
-CocoaSkill solves three problems:
+CocoaSkills solves three problems:
 
-1. **Non-declarative skill management.** Most existing tools support project-local installation, but the dominant workflow remains imperative: skills are added one at a time, with limited or no manifest-driven resolution, lockfile-based reproducibility, or stripped installation that excludes non-skill content from the agent's context window. Isolated solutions exist for parts of this problem, but no single tool combines declarative manifests, deterministic locking, security verification, and multi-agent delivery into a unified workflow.
+1. **Non-declarative skill management.** The dominant workflow in the ecosystem remains imperative: skills are added one at a time, with limited manifest-driven resolution and no separation between what the model reads and what the machine executes. CocoaSkills combines a committed project manifest, transitive dependency resolution with exact references, a context and runtime split, and multi-agent delivery into one workflow.
 
-2. **Non-reproducible environments.** Few reliable mechanisms exist to guarantee that every developer on a team operates with the same set of skills at the same versions. Most tools lack lockfiles, frozen install modes, or content integrity verification. This leads to version drift, silent breakage from upstream skill changes, and "works on my machine" failures. The absence of integrity verification is also a security exposure: a modified artifact is indistinguishable from a legitimate one.
+2. **Non-reproducible environments.** Teams need every developer and CI runner to operate with the same skills at the same versions. CocoaSkills pins every skill to an exact git reference, resolves each closure name to exactly one commit and one source identity, records install markers with content hashes, and detects local tampering and moved tags on the next install.
 
-3. **Fragmented supply chain security.** Some tools provide content scanning and pattern-based vulnerability detection, but the security coverage across the ecosystem remains uneven and narrowly scoped. Content audit addresses one class of threats; it does not protect against supply chain attacks such as publisher impersonation, artifact tampering, or silent content mutation within a pinned version. Code signing and digital signature verification for skill executables and source files are completely absent from the ecosystem. No existing tool verifies the identity of a skill publisher or the integrity of skill artifacts through a cryptographic chain of trust. Confirmed malicious skill incidents (ClawHavoc, January 2026: 341 poisoned skills) demonstrate that skills execute within the agent's trust boundary, making the attack surface equivalent to arbitrary code execution.
+3. **Fragmented supply chain security.** Content scanning alone does not protect against publisher impersonation, artifact tampering, or silent content mutation within a pinned version. CocoaSkills layers defenses: a machine-level source allowlist, declared capabilities, a manifest that cannot execute code at install time, a static audit gate, and an audit registry protocol where machines verify Ed25519-signed audit and revocation records from registries they explicitly trust (Section 13).
 
-The name "CocoaSkill" alludes to CocoaPods, the first dependency manager for iOS development, which brought order to a similarly immature ecosystem.
+The name "CocoaSkills" alludes to CocoaPods, the first dependency manager for iOS development, which brought order to a similarly immature ecosystem.
+
+This document is the protocol and format specification. The reference implementation is the `csk` CLI at [github.com/ivanopcode/cocoaskills](https://github.com/ivanopcode/cocoaskills); a conforming independent implementation interoperates with the same skills, projects, and registries (Section 17).
 
 ---
 
@@ -152,138 +126,82 @@ The name "CocoaSkill" alludes to CocoaPods, the first dependency manager for iOS
 
 | Term | Definition |
 |------|-----------|
-| **Skill** | A reusable instruction package for an AI coding agent. Typically a SKILL.md file with optional assets, templates, examples, and scripts. |
-| **Context** | Project-level background information, architectural decisions, and conventions provided to an agent. |
-| **Skillspec** | A YAML manifest (`Skillspec.yml`) in the root of a skill repository. Declares the skill's metadata, assets, environment requirements, executables, and signing information. Authored by the skill publisher. |
-| **Skillfile** | A project-level manifest declaring which skills to install, from which sources, at which versions, with trust and security configuration. Authored by the project maintainer. Committed to version control. |
-| **Skillfile.lock** | A generated lockfile pinning exact commit SHAs, content integrity hashes, and certificate metadata for every resolved skill. Committed to version control. |
-| **csk** | The CocoaSkill CLI binary (`cocoaskills-cli`). |
-| **CA** | Certificate Authority. An ed25519 key pair used to sign skills. Can be hierarchical (root CA → intermediate CA → skill). |
-| **Adapter** | A generated configuration that delivers installed skills into the directory structure expected by a specific agent (Claude Code, Cursor, Codex CLI, Gemini CLI, etc.). |
-| **Stripped install** | Installation mode where only raw skill content (SKILL.md, templates, examples) is copied into the project. Build scripts, CI configuration, tests, CLI source code, and other non-skill files are excluded. |
-| **Global cache** | `~/.cocoaskills/cache/`: a checkout-aware cache of fetched skill repositories. Shared across all projects on the machine. Agents have no direct access to this directory. |
-| **Worktree** | A git worktree. CocoaSkill supports per-worktree skill installations when a repository uses multiple worktrees. |
+| **Skill** | A reusable instruction package for an AI coding agent: a `SKILL.md` file with optional context directories, commands, and dependencies (Section 4). |
+| **Context skill** | A skill without commands; it installs agent-facing content only. |
+| **csk-skill.json** | The machine manifest of a skill: commands, runtime layout, capabilities, dependencies. Schema versions 1 through 5 (Section 5). |
+| **Skillfile** | `Skillfile.json`: the committed project manifest declaring skills at exact git references (Section 6). |
+| **Dev substitution** | A non-committed local override of a provider through `Skillfile.dev.json` (Section 6.2). |
+| **Closure** | The set of declared skills plus every transitive skill requirement, unified by name to one commit and one source, ordered providers first (Section 8.3). |
+| **Activation mode** | How a requirement consumes its provider: `full`, `runtime`, or `context` (Section 5.7). |
+| **Install marker** | `.csk-install.json`: the per-skill record of what was installed, including the content hash and attestations (Section 8.5). |
+| **Content hash** | A deterministic SHA-256 over an installed tree, `sha256:<hex>` (Section 8.5). |
+| **Source identity** | The canonical `host/path` form of a git source; SSH and HTTPS URLs of one repository share one identity (Section 8.2). |
+| **Runtime store** | `~/.cocoaskills/runtime/<skill>/<commit>/`: machine-level storage of command runtimes, shared across projects (Section 8.6). |
+| **Shim** | A per-project (or global) entry in `.agents/bin/` pointing at a runtime store file (Section 8.6). |
+| **Adapter** | A managed mirror of installed context into the directory a specific agent reads (Section 10). |
+| **Scope** | Where a skill is declared and activated: project, global, or hybrid (Section 9). |
+| **Audit registry** | A service serving Ed25519-signed audit records about skill artifacts; machines pin registry keys out of band (Section 13). |
+| **Attestation** | The verified registry record that authorized an install, recorded in the marker (Section 13.3). |
+| **Snapshot (registry)** | A signed commitment to the registry log head, used for rollback and freeze detection (Section 13.4). |
+| **csk** | The reference implementation CLI. |
 
 ---
 
 ## 3. Architecture
 
-### 3.1 High-Level Architecture
+### 3.1 Machine Layout
 
-```
-┌─────────────────────────────────────────────────────┐
-│                   Skill Repository                   │
-│  (GitHub / GitLab / any git host)                    │
-│                                                      │
-│  Skillspec.yml ── SKILL.md ── assets/ ── .signatures/│
-└──────────────────────┬──────────────────────────────┘
-                       │  git clone/fetch
-                       ▼
-┌─────────────────────────────────────────────────────┐
-│              ~/.cocoaskills/                          │
-│              Global Cache (checkout-aware)            │
-│                                                      │
-│  cache/<repo-hash>/<commit-sha>/                     │
-│    ├── full/        (complete checkout)               │
-│    └── stripped/    (skill content only, no extras)   │
-│  audit-cache/<package>@<sha>.audit                   │
-│  ca/  (user's own CA keys)                           │
-└──────────────────────┬──────────────────────────────┘
-                       │  symlink to stripped/ or copy
-                       ▼
-┌─────────────────────────────────────────────────────┐
-│              Project Repository                      │
-│                                                      │
-│  Skillfile                                           │
-│  Skillfile.lock                                      │
-│                                                      │
-│  .agents/                                            │
-│  ├── skills/            (installed skill content)    │
-│  │   ├── ios-tuist/     (stripped: SKILL.md + assets)│
-│  │   └── swift6/                                     │
-│  ├── bin/               (skill-provided executables) │
-│  ├── env.sh             (PATH and env vars)          │
-│  └── manifest.json      (index for agents)           │
-│                                                      │
-│  .claude/skills/ ──symlink──► .agents/skills/        │
-│  .cursor/rules/  ──symlink──► .agents/skills/        │
-│  .codex/skills/  ──symlink──► .agents/skills/        │
-│  CLAUDE.md       ──generated by adapter──            │
-│  agents.md       ──generated by adapter──            │
-└─────────────────────────────────────────────────────┘
-```
-
-### 3.2 Directory Layout
-
-**Global cache (`~/.cocoaskills/`):**
-
-```
+```text
 ~/.cocoaskills/
-├── cache/                          # Fetched repositories
-│   └── <repo-hash>/
-│       └── <commit-sha>/
-│           ├── full/              # Complete git checkout (for audit, build)
-│           └── stripped/          # Skill content projection (entry + assets + scripts only)
-├── audit-cache/                   # Audit results
-│   └── <skill>@<sha>.audit        # Cached audit pass
-├── revocation-cache/              # Cached revocation lists
-├── ca/                            # User's own CA key pairs
-│   └── <ca-name>/
-│       ├── ca                     # Private key
-│       └── ca.pub                 # Public key
-└── config.yml                     # Global csk configuration
+├── config.json              # machine configuration (Section 7.1)
+├── consumers.json           # registry of project checkouts for GC (Section 8.7)
+├── cache/
+│   ├── <source>/<commit>/snapshot/   # immutable source snapshots (git archive)
+│   └── registry/            # audit registry record cache and snapshot state (Section 13.5)
+├── runtime/<skill>/<commit>/         # command runtimes shared across projects (Section 8.6)
+├── audit/<hash-prefix>/...           # audit verdict cache and trust pins (Section 12)
+├── dev/<skill>/             # clones for git dev substitutions (Section 6.2)
+├── global/
+│   ├── Skillfile.json       # global scope manifest (Section 9.2)
+│   ├── skills/              # installed global context
+│   ├── bin/                 # global command shims
+│   └── env.sh, env.ps1
+└── hybrid/
+    ├── Skillfile.json       # hybrid scope manifest with per-skill targets (Section 9.3)
+    └── skills/              # hybrid store, rendered once per machine
 ```
 
-**Project directory (`.agents/`):**
+Skill source repositories live separately under the configured `skills_root`.
 
-```
-.agents/
-├── skills/                        # Stripped skill content
-│   ├── <skill-name>/
-│   │   ├── SKILL.md
-│   │   ├── templates/
-│   │   └── examples/
-│   └── <skill-name>/
-├── bin/                           # Executables provided by skills
-│   ├── <tool-name>                # Prebuilt binary or symlink
-│   └── <script-name>.sh           # Helper scripts from skills
-├── env.sh                         # Source-able environment
-├── activate                       # Alias for env.sh
-└── manifest.json                  # Machine-readable index of installed skills
+### 3.2 Project Layout
+
+```text
+project/
+├── Skillfile.json           # committed
+├── Skillfile.dev.json       # never committed (managed .gitignore)
+├── .agents/                 # generated, never committed
+│   ├── skills/<name>/       # installed context + .csk-install.json markers
+│   ├── bin/                 # command shims
+│   ├── env.sh, env.ps1      # PATH helpers
+├── .claude/skills/          # adapter mirrors (per selected agent)
+├── .codex/skills/
+├── .cursor/rules/
+└── .gemini/skills/
 ```
 
 ### 3.3 Data Flow
 
-The installation pipeline executes seven phases in strict order:
+```text
+Skillfile.json + Skillfile.dev.json + hybrid manifest
+  -> closure resolution (fetch, allowlist, snapshots, manifests)   Section 8.2-8.3
+  -> gates: skill validation, collisions, dependencies, MCP,
+            source audit, audit registries, moved tags             Sections 8.1, 11, 12, 13
+  -> materialization: runtime store + shims, context + markers,
+            cleanup, env files, adapters                           Sections 8.5-8.6, 10
+  -> garbage collection over consumers                             Section 8.7
+```
 
-```
-Skillfile
-  │
-  ▼
-[1. Resolve]  → Read Skillfile, determine required skills and versions
-  │
-  ▼
-[2. Fetch]    → Clone/fetch repositories into ~/.cocoaskills/cache/
-  │
-  ▼
-[3. Audit]    → Static analysis of source code (if --audit flag)
-  │
-  ▼
-[4. Verify]   → Check environment requirements (runtimes, tools, platform)
-  │              Check code signatures and certificate chains
-  │
-  ▼
-[5. Build]    → Compile executables from source via audited Makefile (if applicable)
-  │
-  ▼
-[6. Install]  → Stripped copy into .agents/skills/, executables into .agents/bin/
-  │
-  ▼
-[7. Adapt]    → Generate agent-specific configurations and symlinks
-  │
-  ▼
-Skillfile.lock (written/updated)
-```
+The full phase order is normative and specified in Section 8.1.
 
 ---
 
@@ -943,388 +861,211 @@ A registry exports a signed bundle: `{schema_version: 1, records, snapshot, publ
 
 ### 14.1 Shell Hook
 
-The shell hook automatically activates the CocoaSkill environment when the developer navigates into a project directory containing `.agents/env.sh`.
-
-**Installation:**
-
 ```bash
-# Add to ~/.zshrc or ~/.bashrc:
-eval "$(csk shell-init)"
+# ~/.zshrc or ~/.bashrc:
+eval "$(csk shell-init zsh)"    # or bash
 ```
 
-**Behavior:**
-
-- On `cd` into a directory containing `.agents/env.sh` (or any parent directory), the hook sources `.agents/env.sh`.
-- On `cd` out of the project directory, the hook restores the previous PATH and environment variables.
-- The hook locates `.agents/env.sh` by searching upward from the current directory, matching git worktree boundaries.
-
-### 14.2 direnv Support
-
-If the developer uses direnv, `csk install` generates a `.envrc` file:
-
-```bash
-# .envrc (generated by csk)
-source_env .agents/env.sh
+```powershell
+csk shell-init powershell   # prints the hook; add it to the PowerShell profile
 ```
 
-csk detects the presence of `.envrc` or `.direnvrc` in the project and appends to it rather than overwriting. If direnv is not used, this file is not generated.
+Hook behavior:
 
-### 14.3 Manual Activation
+- On every prompt (and on `chpwd` under zsh), the hook searches upward from the current directory for `.agents/env.sh` and sources the first one found, saving the previous `PATH`.
+- Leaving the project restores the saved `PATH` and clears the activation state (`CSK_ACTIVE_ENV`, `CSK_OLD_PATH`).
+- Unless `--no-global` is passed to `shell-init`, the hook also sources the global environment file (`<csk home>/global/env.sh`) once, honoring a `CSK_CONFIG` override.
 
-For CI pipelines and scripts:
+### 14.2 Environment Files
 
-```bash
-source .agents/env.sh
-# or
-. .agents/activate
+`.agents/env.sh` and `.agents/env.ps1` are generated during installation. They locate themselves (bash `BASH_SOURCE`, zsh prompt expansion, `$0` fallback), export `CSK_PROJECT_ROOT`, and prepend `.agents/bin` to `PATH`. The global counterparts export `CSK_GLOBAL_ROOT` and prepend `global/bin`.
+
+Effective command precedence:
+
+```text
+project .agents/bin  >  global ~/.cocoaskills/global/bin  >  system PATH
 ```
 
-Both files are identical in content. `activate` is provided as a convenience alias familiar to Python `venv` users.
-
-### 14.4 env.sh Contents
-
-```bash
-# .agents/env.sh — generated by csk, do not edit
-export PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/bin" && pwd):$PATH"
-export CSK_PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-export CSK_SKILLS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/skills" && pwd)"
-```
-
-The file sets `PATH` to include `.agents/bin/` as the first entry, ensuring skill-provided executables take precedence. `CSK_PROJECT_ROOT` and `CSK_SKILLS_DIR` provide absolute paths for use in scripts and tools.
+For CI and scripts, sourcing `.agents/env.sh` directly is equivalent to hook activation.
 
 ---
 
 ## 15. CLI Reference
 
-### 15.1 Project Commands
+This section is informative: it documents the reference implementation surface an interoperable tool SHOULD mirror in behavior, not necessarily in flags.
 
-| Command | Description |
-|---------|-------------|
-| `csk init` | Creates an empty Skillfile in the current directory. Prompts for agent targets and context mode. |
-| `csk add <name> --git <url> --tag <tag>` | Adds a skill entry to Skillfile and runs install for that skill. Accepts `--tag`, `--revision`, or `--branch`. Optional `--path` for monorepo skills, `--entry` and `--assets` for skills without Skillspec.yml. |
-| `csk remove <name>` | Removes a skill entry from Skillfile, deletes installed files, and updates Skillfile.lock. |
-| `csk install` | Resolves, fetches, verifies, installs, and adapts all skills declared in Skillfile. Updates Skillfile.lock. |
-| `csk install --frozen` | CI mode. Installs from Skillfile.lock without re-resolving. Fails if lockfile is out of date or missing. |
-| `csk install --audit` | Runs source audit on all skills during installation. Blocks on critical/high findings. |
-| `csk install --audit-interactive` | Runs source audit interactively. Prompts for confirmation on each finding. |
-| `csk install --trust-unaudited` | Permits installation of skills containing Tier 3 language source code without audit. Records acceptance in Skillfile.lock. |
-| `csk update` | Re-resolves all skills to their latest matching versions. Fetches, verifies, installs, and updates Skillfile.lock. |
-| `csk update <skill-name>` | Re-resolves a single skill. |
-| `csk list` | Displays all installed skills with versions, commit SHAs, and signing status. |
-| `csk audit <skill-name>` | Runs standalone source audit on an installed skill. |
-| `csk verify` | Verifies all installed skills against Skillfile.lock (integrity hashes, signatures, certificate expiration). |
-| `csk clean` | Removes `.agents/` directory and all agent symlinks. Does not modify Skillfile or Skillfile.lock. |
+| Command | Behavior |
+|---------|----------|
+| `csk bootstrap` | Create the machine config interactively or from flags. |
+| `csk init [path]` | Create `Skillfile.json` and the managed `.gitignore` block. |
+| `csk add <name> --tag\|--branch\|--revision <ref> [--git <url>] [--source <dir>]` | Add or replace a declaration, then install. |
+| `csk remove <name>` | Remove a declaration. |
+| `csk install [target] [--all] [--dry-run] [--verbose] [--strict-tags] [--audit [advisory\|strict]]` | Apply the manifest (Section 8.1). |
+| `csk update` | Fetch all source repositories under `skills_root`. |
+| `csk upgrade [target]` | `update`, then `install`. |
+| `csk status [target] [--all] [--check] [--json] [--attest]` | Manifest vs installed state; `--attest` re-checks installed artifacts against trusted registries; `--check` makes drift a non-zero exit. |
+| `csk list` | Configured projects and declared skills. |
+| `csk project add\|resolve` | Manage registered projects; resolve which project a path belongs to. |
+| `csk config show` | Print the effective configuration. |
+| `csk skill check <dir> [--locale <code>] [--json]` | Validate one skill package: strict format errors and advisory warnings. |
+| `csk global init\|add\|remove\|list\|status\|install\|update\|upgrade` | Global scope management (Section 9.2). |
+| `csk hybrid add\|remove\|list\|status` | Hybrid scope management (Section 9.3). |
+| `csk audit [target] [--all] [--global] [--json]` | Run the audit standalone. |
+| `csk audit --allow <content-hash> --reason <text>` | Pin trust for an artifact (Section 12.2). |
+| `csk audit --publish <record.json> --registry <url> [--token <token>]` | Submit a signed record to a registry (Section 13.10). |
+| `csk gc` | Remove unreferenced runtime entries, snapshot cache entries, and dead consumer entries. |
+| `csk shell-init <zsh\|bash\|powershell> [--no-global]` | Print the shell hook. |
 
-### 15.2 CA Commands
-
-| Command | Description |
-|---------|-------------|
-| `csk ca init --name <name> --id <identifier>` | Creates a new CA key pair in `~/.cocoaskills/ca/<name>/`. Prompts for passphrase. |
-| `csk ca issue-intermediate --subject-name <name> --subject-id <id> --subject-key <key> --scope <patterns> --max-depth <n> --validity <duration>` | Issues an intermediate CA certificate signed by the current CA. |
-| `csk ca revoke --serial <n>` | Adds a certificate serial to the revocation list. |
-| `csk ca revoke --key <fingerprint>` | Adds a key fingerprint to the revocation list. |
-| `csk ca publish-revocation` | Publishes the updated revocation list to the configured endpoint. |
-
-### 15.3 Skill Author Commands
-
-| Command | Description |
-|---------|-------------|
-| `csk skill init` | Creates a Skillspec.yml template in the current directory. |
-| `csk skill validate` | Validates Skillspec.yml in the current repository. Checks required fields, file references, and format. |
-| `csk skill sign --ca <ca-path> --version <version>` | Signs the skill release. Generates `.signatures/` directory with MANIFEST, signatures, and certificate. Increments serial. |
-| `csk skill audit` | Runs self-audit on the current skill repository. Reports findings that would block installation. |
-
-### 15.4 Shell Commands
-
-| Command | Description |
-|---------|-------------|
-| `csk shell-init` | Outputs shell hook code for the current shell (zsh, bash, fish). Intended for `eval "$(csk shell-init)"` in shell rc file. |
-
-### 15.5 Global Flags
-
-| Flag | Description |
-|------|-------------|
-| `--verbose` / `-v` | Verbose output. Displays each phase of the installation pipeline. |
-| `--quiet` / `-q` | Minimal output. Only errors and final status. |
-| `--no-color` | Disable colored output. |
-| `--config <path>` | Path to global csk configuration file. Default: `~/.cocoaskills/config.yml`. |
+Exit codes distinguish success, partial failure, and blocked results (audit block, registry revocation, failed checks).
 
 ---
 
 ## 16. CI/CD Integration
 
-Recommended CI pipeline:
+CI uses the same commands as developers. A typical pipeline:
 
 ```yaml
-# .github/workflows/skills.yml
 steps:
   - uses: actions/checkout@v4
-  
   - name: Install csk
-    run: |
-      curl -sSL https://cocoaskill.dev/install.sh | sh
-      echo "$HOME/.cocoaskills/bin" >> $GITHUB_PATH
-      
-  - name: Install skills (frozen)
-    run: csk install --frozen
-    
-  - name: Verify signatures
-    run: csk verify
-    
-  - name: Audit skills
-    run: csk install --audit
+    run: pipx install cocoaskills
+  - name: Install skills
+    run: csk install .
+  - name: Check state
+    run: csk status . --check
 ```
 
-**`csk install --frozen`** guarantees that CI uses the exact same skill versions as the developer. If Skillfile.lock is out of date relative to Skillfile, the step fails.
-
-**`csk verify`** re-checks integrity hashes and certificate validity of already-installed skills. Detects tampering between install and verify steps.
-
-**Revocation check in CI:** During `--frozen` installs, csk uses cached revocation lists. For CI pipelines that require fresh revocation data, run `csk verify --refresh-revocation` as a separate step.
+Reproducibility in CI comes from exact references in the committed `Skillfile.json` and marker verification, with `--strict-tags` available to fail on a tag that moved since the last recorded install. Registry gates (Section 13) apply in CI exactly as on developer machines; an organization pins registries and policy through the enforced system config (Section 7.2).
 
 ---
 
-## 17. Compatibility
+## 17. Conformance and Compatibility
 
-### 17.1 SKILL.md Format
+### 17.1 Conformance for Independent Implementations
 
-CocoaSkill is fully compatible with the SKILL.md specification (Anthropic, December 2025). The `entry` file in a Skillspec.yml is a standard SKILL.md file. CocoaSkill does not modify, transform, or extend the SKILL.md format. CocoaSkill manages the packaging, delivery, and verification around SKILL.md files.
+An implementation conforms to this specification when:
 
-Skills authored without a Skillspec.yml can be consumed by CocoaSkill: the developer specifies the path to the SKILL.md within the repository in the Skillfile. csk generates a minimal in-memory Skillspec with the name derived from the repository and directory name.
+1. It consumes the skill package format of Section 4 (including the context whitelist and localization) and the `csk-skill.json` schemas 1 through 5 of Section 5 with all validation rules, and rejects what the reference rejects (unknown fields, ranges, branch requirements, install hooks).
+2. It reads and writes `Skillfile.json` schema 1 and honors `Skillfile.dev.json` semantics (Section 6).
+3. It resolves closures with the unification, conflict, cycle, ordering, and activation semantics of Section 8.3, gated by the source allowlist over canonical identities (Section 8.2).
+4. It produces the installation layout of Sections 8.5, 8.6, and 10: whitelisted context, install markers with the exact content hash algorithm, a commit-keyed runtime store, shims, managed adapters. Markers written by one conforming implementation MUST be readable by another; up-to-date detection and tamper detection then work across tools.
+5. It never executes skill-provided code at install time.
+6. It verifies MCP requirements read-only per Section 11.
+7. It implements the audit registry client of Section 13: canonical bytes, Ed25519 verification against pinned keys, artifact matching, deny-wins federation, snapshot verification with persisted monotonic versions, cache TTL and offline grace, and the install semantics of revoked, deprecated, and unknown results, including the enforced system configuration (Section 7.2).
+8. Its registry service, when it provides one, implements the API, countersigning, transparency log, and bundle semantics of Sections 13.6 through 13.9.
 
-### 17.2 AGENTS.md Format
+The source audit (Section 12) is a machine-local policy layer; implementations MAY differ in detectors and backends, but MUST honor the decision semantics of Section 12.2 when audit is enabled, and MUST treat canary failure as a blocking condition.
 
-In managed context mode, csk generates an `agents.md` file for Codex CLI and compatible agents. This file follows the AGENTS.md convention (OpenAI). csk generates parallel files for other agents (`CLAUDE.md`, `.cursorrules`) following each agent's expected format.
+### 17.2 SKILL.md Compatibility
 
-### 17.3 Existing Skill Registries
+The package format is a constrained profile of the SKILL.md convention (Section 4.4). CocoaSkills does not transform skill content beyond localization rendering (Section 4.3); any tool that reads plain SKILL.md packages can read installed CocoaSkills context.
 
-CocoaSkill consumes skills from any git repository. Skills published on skills.sh (Vercel), ClawHub, SkillShield, or any other registry are installable via their git URL. CocoaSkill does not depend on or integrate with any specific registry's API.
+### 17.3 Coexisting Tools
 
----
-
-## 18. Version Scope: v0.1
-
-### 18.1 Included in v0.1
-
-| Feature | Scope |
-|---------|-------|
-| Skillfile manifest (YAML) | Full: git sources, tag/revision/branch, type annotations |
-| Skillfile.lock | Full: commit SHA, integrity hash, cert metadata, audit metadata |
-| `csk install` / `csk install --frozen` | Full pipeline: resolve → fetch → verify → install → adapt |
-| Stripped installation | Full: whitelist of included files from Skillspec |
-| Multi-agent delivery | Symlink-based for Claude Code, Cursor, Codex CLI, Gemini CLI |
-| Context mode: managed and default | Full: assembly of context files, per-type ordering |
-| Source audit | Tier 1 languages (Go, Swift, Python, Bash), OWASP/Snyk-informed rules |
-| Makefile audit | Whitelist approach |
-| Markdown audit | Prompt injection, hidden instructions, data exfiltration patterns |
-| Code signing | ed25519 via golang.org/x/crypto/ssh, MANIFEST-based |
-| CA hierarchy | Root + intermediate, max depth 4, scope/platform/expiry constraints |
-| Trust: domain verification | DNS TXT (_cocoaskill-ca.<domain>) |
-| Trust: GitHub verification | .well-known repository |
-| Trust: key pinning | Explicit pinning in Skillfile, committed to VCS |
-| Revocation | Revocation list format, HTTPS and DNS discovery |
-| Environment verification | Platform check, runtime/tool presence and version check |
-| Shell integration | Shell hook (zsh/bash), direnv support, manual activation |
-| CLI | All commands in §15 |
-| Global cache | `~/.cocoaskills/cache/`, checkout-aware |
-| CI/CD | `--frozen` mode, `csk verify` |
-
-### 18.2 Deferred to v0.2+
-
-| Feature | Target Version | Notes |
-|---------|---------------|-------|
-| Registry-based sources | v0.2 | `source: registry` in Skillfile, with mandatory signing |
-| Transitive dependency resolution | v0.2 | `depends_on` in Skillspec.yml fully resolved |
-| Sigstore trust provider | v0.2 | Rekor transparency log integration |
-| PGP Web of Trust provider | v0.2 | Multi-signature verification |
-| Namecoin trust provider | v0.3 | Decentralized identity |
-| Skill format translation | v0.2 | SKILL.md ↔ .cursorrules ↔ .mdc automatic conversion |
-| Tier 2 language audit (Rust, TypeScript, Ruby) | v0.2 | Pattern-based audit rules |
-| Per-worktree lockfile override | v0.2 | `Skillfile.lock.local` for worktree-specific overrides |
+Skills remain consumable from any git host by URL. Adapter directories carry a managed-entries ledger so CocoaSkills never deletes or overwrites entries it does not manage (Section 10.1); manually placed skills coexist with managed ones.
 
 ---
 
-## 19. Implementation Details
+## 18. Reference Implementation Notes
 
-### 19.1 Language and Dependencies
+This section is informative.
 
-CocoaSkill CLI is implemented in Go. The compiled binary is statically linked with zero runtime dependencies. The only system prerequisite is `git` (for repository operations via `go-git` fallback to system git when needed).
-
-### 19.2 Key Go Packages
-
-| Package | Purpose |
-|---------|---------|
-| `golang.org/x/crypto/ssh` | SSH certificate generation, signing, and verification. Pure Go. |
-| `github.com/go-git/go-git/v5` | Git clone, fetch, checkout. Pure Go, no libgit2 dependency. |
-| `go/parser`, `go/ast` | Go source code AST parsing for Tier 1 audit. |
-| `github.com/smacker/go-tree-sitter` | Tree-sitter bindings for Swift, Python, Bash AST parsing. |
-| `gopkg.in/yaml.v3` | YAML parsing for Skillspec.yml, Skillfile, and Skillfile.lock. |
-| `github.com/miekg/dns` | DNS TXT record queries for domain verification and revocation discovery. |
-| Standard library | `crypto/sha256`, `crypto/ed25519`, `encoding/base64`, `net/http`, `os/exec`, `path/filepath`, `regexp` |
-
-### 19.3 Cross-Compilation Targets
-
-| OS | Architecture | Binary Name |
-|----|-------------|-------------|
-| macOS | arm64 | `csk-darwin-arm64` |
-| macOS | x86_64 | `csk-darwin-amd64` |
-| Linux | arm64 | `csk-linux-arm64` |
-| Linux | x86_64 | `csk-linux-amd64` |
-| Windows | x86_64 | `csk-windows-amd64.exe` |
-
-### 19.4 Distribution
-
-- **Homebrew**: `brew install cocoaskill`
-- **Go install**: `go install github.com/reluxworks/cocoaskill/cmd/csk@latest`
-- **Direct download**: Pre-built binaries from GitHub Releases, with SHA256 checksums and GPG signatures.
-- **Install script**: `curl -sSL https://cocoaskill.dev/install.sh | sh` (detects platform and downloads the correct binary).
+- The reference implementation is Python 3.11+, distributed as `cocoaskills` on PyPI (`pipx install cocoaskills`), through a Homebrew tap, and as a source repository. The installed runtime keeps zero third-party dependencies; Ed25519 verification is vendored in pure Python. The only system prerequisite is `git`.
+- The reference registry service (`csk-registry`) is a separate Python package (FastAPI, SQLite WAL) with a CLI: `genkey`, `issue-token`, `sign-record`, `export-snapshot`, `export-bundle`, `import-bundle`, `verify-chain`, `serve`. Server-side signing uses the `cryptography` package; that dependency never enters the client.
+- Windows is a first-class target: `win_path` command entries, `.cmd` shims, PowerShell hooks, and `%ProgramData%` system config.
 
 ---
 
-## Appendix A: .gitignore Recommendations
+## Appendix A: Future Work (Non-Normative)
 
-```gitignore
-# CocoaSkill — installed skills (reproducible via Skillfile.lock)
-.agents/
+Ideas from the original 0.1.0 draft that are not part of the implemented protocol. They may return in future revisions; nothing in this appendix is normative.
 
-# Agent-specific directories (symlinks managed by csk)
-.claude/skills/
-.cursor/rules/
-.codex/skills/
-.gemini/skills/
-```
-
-The following files **must** be committed to version control:
-
-- `Skillfile`
-- `Skillfile.lock`
+- **Lockfile (`Skillfile.lock`) and frozen installs.** The implemented protocol reaches reproducibility through exact references, closure unification, and markers; a generated lockfile with `--frozen` semantics remains attractive for branch declarations and audit metadata pinning.
+- **Version ranges and constraint resolution.** Requirements accept exact tags or revisions only. Ranges (`^`, `~`, comparison operators) would need a resolver and a lockfile first.
+- **SSH certificate signing, CA hierarchies, trust providers, revocation lists.** The original design placed a per-publisher PKI (SSH certificates, root and intermediate CAs, DNS and GitHub identity verification, revocation list discovery) on skill artifacts. The implemented protocol covers revocation and attestation through registry-side Ed25519 signing (Section 13); publisher-side artifact signing remains future work.
+- **Skillspec.yml author manifest.** Superseded by `csk-skill.json`. A richer author manifest (descriptions, format translation hints, build targets) could layer on top without breaking the current schemas.
+- **Build phase for executables.** The implemented protocol copies runtime files as-is and never builds. Audited build recipes (for example whitelisted Makefile operations) were designed but not implemented.
+- **Format translation.** Automatic conversion between SKILL.md, `.cursorrules`, `.mdc`, and similar formats.
+- **Registry-based skill sources.** Installing skills by registry coordinates instead of git URLs.
 
 ---
 
-## Appendix B: Default Agent Directory Mappings
+## Appendix B: Field Reference: csk-skill.json
 
-| Agent | Skill Directory | Context File | Symlink Strategy |
-|-------|----------------|--------------|-----------------|
-| Claude Code | `.claude/skills/` | `CLAUDE.md` | Per-skill symlink into `.agents/skills/<name>/` |
-| Cursor | `.cursor/rules/` | `.cursorrules` | Per-skill symlink into `.agents/skills/<name>/` |
-| Codex CLI | `.agents/skills/` | `agents.md` | Direct (same directory) |
-| Gemini CLI | `.gemini/skills/` | `.gemini/context.md` | Per-skill symlink into `.agents/skills/<name>/` |
-| Windsurf | `.windsurf/skills/` | `.windsurfrules` | Per-skill symlink into `.agents/skills/<name>/` |
-| Generic | `.agents/skills/` | `agents.md` | Direct (same directory) |
+| Field | Since | Required | Description |
+|-------|-------|----------|-------------|
+| `schema_version` | 1 | yes | Integer 1 through 5 |
+| `commands` | 1 | no | Exported commands: `script` (`unix_path`, `win_path`) or `system` (`command`, `hint`) |
+| `runtime_roots` | 2 | no | Disjoint POSIX-relative directories copied to the runtime store |
+| `dependencies.commands` | 2 | no | `system` requirements; legacy `skill` form |
+| `capabilities` | 3 | yes (3+) | `network`, `filesystem`, `exec`, `secrets`, `env_read`, `prompt_scope` |
+| `dependencies.skills` | 4 | no | Requirements: `git`, `ref {kind: tag\|revision, value}`, `mode`, `commands` |
+| `dependencies.mcp_servers` | 5 | no | MCP requirements: `hint` (required), `transport`, `required_in` |
 
----
+## Appendix C: Field Reference: Skillfile.json
 
-## Appendix C: Audit Rule Severity Levels
+| Field | Required | Description |
+|-------|----------|-------------|
+| `schema_version` | yes | Integer 1 |
+| `project.alias` | no | Project alias for hybrid targeting |
+| `agents` | no | Target agents (Section 10) |
+| `locale` | no | Project locale |
+| `skills[].name` | yes | Skill identifier, unique |
+| `skills[].source` | no | Path under `skills_root`; defaults to name |
+| `skills[].git` | no | Clone URL for a missing source |
+| `skills[].tag` / `branch` / `revision` | exactly one | Exact reference |
 
-| Severity | Behavior on `--audit` | Behavior on `--audit-interactive` |
-|----------|----------------------|----------------------------------|
-| Critical | Installation blocked. No override. | Displayed. Developer may accept with explicit justification recorded in audit cache. |
-| High | Installation blocked. No override. | Displayed. Developer may accept with explicit justification recorded in audit cache. |
-| Medium | Warning displayed. Installation proceeds. | Displayed. Developer may accept or reject. |
-| Low | Logged (visible with `--verbose`). Installation proceeds. | Logged. No prompt. |
-
----
-
-## Appendix D: Skillspec.yml Field Reference
-
-| Field | Required | Type | Description |
-|-------|----------|------|-------------|
-| `name` | yes | string | Skill identifier |
-| `version` | yes | string | Semver version |
-| `description` | yes | string | Human-readable description |
-| `type` | yes | enum | `skill` \| `context` \| `persona` \| `toolchain` |
-| `entry` | yes | string | Path to primary skill file |
-| `format` | no | string | Content format (default: `skill.md`) |
-| `assets` | no | list[string] | Files/directories to include |
-| `scripts` | no | list[object] | Executable helper scripts |
-| `environment` | no | object | Platform and runtime requirements |
-| `environment.platform` | no | list[string] | Required OS (`macos`, `linux`, `windows`) |
-| `environment.requires` | no | list[object] | Runtime/tool version requirements |
-| `compatible_agents` | no | object | Agent-specific directory overrides |
-| `executables` | no | list[object] | Prebuilt binary distributions |
-| `build` | no | object | Source code build configuration |
-| `build.system` | yes (if build) | string | Build system (`make`) |
-| `build.targets` | yes (if build) | list[object] | Build target definitions |
-| `build.allowed_operations` | yes (if build) | list[string] | Makefile operation whitelist |
-| `depends_on` | no | list[object] | Skill dependencies (reserved, flat resolution in v0.1) |
-| `signing` | no | object | Signing configuration (within executables) |
+Hybrid manifests add a required per-skill `targets` list (Section 9.3).
 
 ---
 
-## Appendix E: Skillfile Field Reference
+## References
 
-| Field | Required | Type | Description |
-|-------|----------|------|-------------|
-| `skills` | yes | list[object] | Skill dependency declarations |
-| `skills[].name` | yes | string | Skill identifier |
-| `skills[].git` | yes | string | Git repository URL |
-| `skills[].tag` | conditional | string | Git tag (exactly one of tag/revision/branch required) |
-| `skills[].revision` | conditional | string | Git commit SHA |
-| `skills[].branch` | conditional | string | Git branch name |
-| `skills[].type` | no | enum | Content type override |
-| `skills[].path` | no | string | Subdirectory within repo for monorepo skills |
-| `skills[].entry` | no | string | Primary skill file path override (for skills without Skillspec.yml) |
-| `skills[].assets` | no | list[string] | Asset paths override (for skills without Skillspec.yml) |
-| `agents` | no | list[string] | Target agents for adapter generation |
-| `context_mode` | no | enum | `managed` \| `default` (default: `default`) |
-| `install_method` | no | enum | `symlink` \| `copy` (default: `symlink`) |
-| `trust` | no | object | Trust configuration |
-| `trust.default_policy` | no | enum | `signed_only` \| `audit_unsigned` \| `allow_unsigned` |
-| `trust.ca` | no | list[object] | Trusted CA declarations |
-| `trust.pinned_keys` | no | list[object] | Directly trusted public keys |
-| `security` | no | object | Security policy |
-| `security.executables` | no | enum | `signed_only` \| `warn` \| `allow_unsigned` |
-| `security.checksum_verify` | no | boolean | Verify artifact checksums (default: true) |
-| `security.audit_on_install` | no | boolean | Auto-audit on install (default: false) |
-
----
-
-## 20. References
-
-### 20.1 Key Articles and Research
+### Key Articles and Research
 
 **SSH certificates: the better SSH experience**  
 Jan-Piet Mens, April 2026  
 https://jpmens.net/2026/04/03/ssh-certificates-the-better-ssh-experience/  
-Primary inspiration for the CocoaSkill signing model. Demonstrates that SSH Certificate Authorities provide a superior trust model compared to TOFU (Trust On First Use) with equivalent implementation complexity. CocoaSkill adapts the SSH CA pattern (CA key pairs, signed certificates with principals and validity periods, `@cert-authority` trust declarations) to the skill package signing domain. The article's key insight (trust established once via configuration, eliminating interactive prompts and non-deterministic trust state) directly shaped §10–§12 of this specification.
+Primary inspiration for the publisher signing model explored in the original draft (now Appendix A). Demonstrates that SSH Certificate Authorities provide a stronger trust model than TOFU (Trust On First Use) with comparable implementation complexity. The article's key insight (trust established once via configuration, eliminating interactive prompts and non-deterministic trust state) also shaped the implemented registry key pinning model (Section 13).
 
 **Snyk ToxicSkills: Malicious AI Agent Skills on ClawHub**  
 Snyk Security Research, February 2026  
 https://snyk.io/blog/toxicskills-malicious-ai-agent-skills-clawhub/  
-Scanned 3,984 agent skills. Found 36.82% with at least one security flaw, 13.4% at critical severity, and 76 confirmed malicious payloads. The ClawHavoc campaign (January 2026) poisoned 341 skills on ClawHub. This research validates the necessity of CocoaSkill's source audit (§9) and code signing (§10) features. Specific attack patterns from this study informed the audit rules in §9.3 and §9.5.
+Scanned 3,984 agent skills. Found 36.82% with at least one security flaw, 13.4% at critical severity, and 76 confirmed malicious payloads. The ClawHavoc campaign (January 2026) poisoned 341 skills on ClawHub. This research validates the necessity of the CocoaSkills source audit (Section 12) and registry revocation (Section 13). Specific attack patterns from this study informed the audit detectors.
 
 **OWASP Agentic Skills Top 10 (AST10)**  
 OWASP Foundation, 2026  
 https://owasp.org/www-project-agentic-skills-top-10/  
-Catalogues the ten most critical security risks in agentic skill ecosystems: prompt injection, data exfiltration, privilege escalation, supply chain compromise, and others. CocoaSkill's audit rules (§9.3, §9.5) use AST10 categories as the primary taxonomy for detection patterns.
+Catalogues the ten most critical security risks in agentic skill ecosystems: prompt injection, data exfiltration, privilege escalation, supply chain compromise, and others. The CocoaSkills audit detectors use AST10 categories as a primary taxonomy for detection patterns (Section 12).
 
 **SKILL.md Specification**  
 Anthropic, December 2025  
 https://agentskills.io/specification  
-De facto standard skill format adopted by 44+ agents. CocoaSkill preserves full compatibility with this format (§17.1). The Skillspec.yml is a metadata wrapper around SKILL.md, adding dependency management, signing, and environment requirements without modifying the skill content format itself.
+De facto standard skill format adopted by 44+ agents. CocoaSkills preserves compatibility with this format (Section 17.2): csk-skill.json is a metadata companion to SKILL.md, adding dependency management and capability declarations without modifying the skill content format itself.
 
 **SSH Certificate Format (Internet-Draft)**  
 draft-miller-ssh-cert-06  
-Technical specification of the SSH certificate format used by OpenSSH. CocoaSkill's certificate fields (§10.3), namely `key_id`, `serial`, `principals`, `valid_after`, `valid_before`, and `extensions`, map directly to this format via `golang.org/x/crypto/ssh`.
+Technical specification of the SSH certificate format used by OpenSSH. The publisher certificate design of the original draft (Appendix A) mapped directly to this format.
 
-### 20.2 Existing Alternatives
+### Existing Alternatives
 
 **npx skills (Vercel Labs)**  
 https://github.com/vercel-labs/skills; registry: https://skills.sh  
 Largest ecosystem (87K+ indexed skills, 44 agent support). Project-local installation by default. Clean UX for adding individual skills (`npx skills add <owner/repo>`).  
-**Strengths adopted by CocoaSkill:** project-local scope, git-based installation, multi-agent support.  
-**Gaps CocoaSkill addresses:** no declarative manifest (skills are added imperatively, one at a time), no reproducible lockfile (partial `skills-lock.json` exists but is output-only, not used for restore), no version pinning beyond git tree SHA, no dependency resolution, no security scanning or code signing.
+**Strengths adopted by CocoaSkills:** project-local scope, git-based installation, multi-agent support.  
+**Gaps CocoaSkills addresses:** no declarative manifest (skills are added imperatively, one at a time), no reproducible lockfile (partial `skills-lock.json` exists but is output-only, not used for restore), no version pinning beyond git tree SHA, no dependency resolution, no security gating.
 
 **pixi-skills (pavelzw)**  
 https://github.com/pavelzw/pixi-skills  
 The only existing tool with a full manifest (`pixi.toml`), deterministic lockfile (`pixi.lock` with SAT-solved resolution), and frozen lockfile mode for CI. Resolves skill dependencies alongside runtime dependencies (Python, Node.js, CLI tools) via conda-forge and PyPI.  
-**Strengths recognized by CocoaSkill:** deterministic lockfile model, frozen install for CI, dependency resolution.  
-**Gaps that prevent adoption:** requires conda ecosystem (recipe.yaml + rattler-build publishing ceremony), two-step install process (pixi install + pixi-skills manage), heavy `.pixi/` directory, small skill catalog (~100 vs 87K on skills.sh), npm/cargo/gem dependencies still require manual task steps. CocoaSkill takes a purpose-built approach that avoids the conda packaging overhead while achieving equivalent reproducibility guarantees.
+**Strengths recognized by CocoaSkills:** deterministic lockfile model, frozen install for CI, dependency resolution.  
+**Gaps that prevent adoption:** requires conda ecosystem (recipe.yaml + rattler-build publishing ceremony), two-step install process (pixi install + pixi-skills manage), heavy `.pixi/` directory, small skill catalog (~100 vs 87K on skills.sh), npm/cargo/gem dependencies still require manual task steps. CocoaSkills takes a purpose-built approach that avoids the conda packaging overhead while reaching reproducibility through exact references and install markers.
 
 **vskill (verified-skill.com)**  
 https://verified-skill.com  
 Security-first skill verification tool (111K indexed skills). Three-tier trust model (Scanned / Verified / Certified). 38 deterministic security rules plus LLM-based intent analysis. Lockfile with SHA-256 and trust tier metadata.  
-**Strengths recognized by CocoaSkill:** security scanning as a first-class concern, trust tiering concept, deterministic rule-based analysis.  
-**Gaps that prevent adoption:** not a dependency manager (no manifest, no install-from-manifest, no dependency resolution). Complementary tool, not a replacement. CocoaSkill integrates equivalent scanning capabilities (§9) alongside dependency management and adds code signing, which vskill does not provide.
+**Strengths recognized by CocoaSkills:** security scanning as a first-class concern, trust tiering concept, deterministic rule-based analysis.  
+**Gaps that prevent adoption:** not a dependency manager (no manifest, no install-from-manifest, no dependency resolution). Complementary tool, not a replacement. CocoaSkills integrates scanning (Section 12) alongside dependency management and adds registry-backed attestation and revocation (Section 13), which vskill does not provide.
 
 **skillman (pi0/unjs)**  
 https://github.com/pi0/skillman  
@@ -1342,56 +1083,56 @@ Best security features among imperative tools: `asm audit security`, TUI dashboa
 https://github.com/rohitg00/skillkit  
 Format auto-translation (SKILL.md ↔ .cursorrules ↔ .mdc), memory persistence, multi-machine mesh (P2P skill distribution).  
 **Strengths:** format translation is valuable for multi-agent delivery.  
-**Gaps:** breadth over depth, not a dependency manager. Format translation is a feature CocoaSkill may adopt in a future version.
+**Gaps:** breadth over depth, not a dependency manager. Format translation is a feature CocoaSkills may adopt in a future version (Appendix A).
 
-### 20.3 Adjacent Infrastructure Projects
+### Adjacent Infrastructure Projects
 
-The following projects are out of scope for CocoaSkill v0.1. They address problems adjacent to skill dependency management and may be integrated or referenced in future versions.
+The following projects are out of scope for the current protocol. They address problems adjacent to skill dependency management and may be integrated or referenced in future versions.
 
 **Sigstore (sigstore.dev)**  
 https://www.sigstore.dev/  
-Keyless code signing and transparency logging. The Rekor transparency log provides a public, immutable audit trail of all signing events. CocoaSkill's trust provider interface (§12.1) is designed to support Sigstore as a future plugin. Sigstore would add a centralized but transparent verification path alongside CocoaSkill's domain verification and key pinning.
+Keyless code signing and transparency logging. The Rekor transparency log provides a public, immutable audit trail of all signing events. A future trust provider layer (Appendix A) could support Sigstore. The implemented registry already keeps a hash-chained transparency log (Section 13.8); Rekor would add a public, external one.
 
 **mise (jdx/mise)**  
 https://github.com/jdx/mise  
-Polyglot runtime version manager (successor to asdf). Manages Node.js, Python, Go, Ruby, and other runtime installations per-project via `.mise.toml`. CocoaSkill delegates runtime installation to tools like mise (§4.4): the Skillspec declares required runtimes, csk verifies their presence, and `hint` fields can reference mise installation commands. CocoaSkill complements mise rather than replacing it.
+Polyglot runtime version manager (successor to asdf). Manages Node.js, Python, Go, Ruby, and other runtime installations per-project via `.mise.toml`. CocoaSkills delegates system tool installation to tools like mise: a skill declares system commands (Section 5.6), csk verifies their presence on PATH, and `hint` fields can reference mise installation commands. CocoaSkills complements mise rather than replacing it.
 
 **direnv (direnv/direnv)**  
 https://github.com/direnv/direnv  
-Per-directory environment variable management. CocoaSkill generates `.envrc` files for direnv users (§14.2) to automatically activate the skill environment when entering a project directory. direnv is an optional integration, not a dependency.
+Per-directory environment variable management. The implemented shell hook (Section 14) covers the same activation need; direnv users can source `.agents/env.sh` from `.envrc` themselves. Generated direnv files were part of the original draft only.
 
 **tree-sitter (tree-sitter/tree-sitter)**  
 https://github.com/tree-sitter/tree-sitter  
-Incremental parsing framework supporting 100+ languages. CocoaSkill uses tree-sitter bindings via `go-tree-sitter` for Tier 1 source audit (§9.2) of Swift, Python, and Bash. Future expansion to Tier 2 languages (Rust, TypeScript, Ruby) would also use tree-sitter grammars.
+Incremental parsing framework supporting 100+ languages. The original draft planned tree-sitter based AST audit; the implemented audit uses deterministic detectors plus optional backends (Section 12). Tree-sitter remains a candidate for deeper static analysis.
 
 **go-git (go-git/go-git)**  
 https://github.com/go-git/go-git  
-Pure Go git implementation. Provides clone, fetch, checkout, and tag resolution without requiring libgit2 or system git as a C dependency. Used by csk for all git operations (§19.2), enabling truly zero-dependency static binaries.
+Pure Go git implementation. Relevant to the original Go implementation plan; the reference implementation shells out to system git with a restricted transport allowlist (Section 8.2).
 
 **Rekor (sigstore/rekor)**  
 https://github.com/sigstore/rekor  
-Transparency log for software supply chain. Records signed metadata about software artifacts in a tamper-evident, append-only log. A future CocoaSkill trust provider (§12.5) could publish and verify signing events against Rekor, providing public auditability of skill signing operations.
+Transparency log for software supply chain. Records signed metadata about software artifacts in a tamper-evident, append-only log. A future integration could anchor registry log heads (Section 13.8) in Rekor for public auditability.
 
 **Namecoin**  
 https://www.namecoin.org/  
-Decentralized naming system based on blockchain technology. `id/` namespace records can associate human-readable identities with cryptographic public keys without relying on any central authority. A candidate for a future trust provider (§12.5) for use cases requiring maximum decentralization and censorship resistance.
+Decentralized naming system based on blockchain technology. `id/` namespace records can associate human-readable identities with cryptographic public keys without relying on any central authority. A candidate for a future trust provider (Appendix A) for use cases requiring maximum decentralization and censorship resistance.
 
 **AAIF (AI Agent Interoperability Framework)**  
 https://aaif.io/  
-Linux Foundation-hosted vendor-neutral governance initiative for AI agent standards. Members include Anthropic, OpenAI, Google, Microsoft, and AWS. Relevant to CocoaSkill's multi-agent delivery model (§8): future AAIF standards for skill format interoperability could simplify or replace CocoaSkill's agent adapter layer.
+Linux Foundation-hosted vendor-neutral governance initiative for AI agent standards. Members include Anthropic, OpenAI, Google, Microsoft, and AWS. Relevant to the CocoaSkills multi-agent delivery model (Section 10): future AAIF standards for skill format interoperability could simplify or replace the agent adapter layer.
 
-### 20.4 Standards and Governance
+### Standards and Governance
 
-| Standard | URL | Relevance to CocoaSkill |
+| Standard | URL | Relevance to CocoaSkills |
 |----------|-----|------------------------|
-| SKILL.md Specification | https://agentskills.io/specification | Skill content format. CocoaSkill preserves full compatibility (§17.1). |
-| AGENTS.md | https://agents.md | Project-level agent instructions (OpenAI convention). CocoaSkill generates this file in managed mode (§8.3). |
+| SKILL.md Specification | https://agentskills.io/specification | Skill content format. CocoaSkills preserves compatibility (Section 17.2). |
+| AGENTS.md | https://agents.md | Project-level agent instructions (OpenAI convention). Not generated by the implemented protocol. |
 | AAIF | https://aaif.io | Vendor-neutral agent governance. Future interoperability target. |
-| OWASP AST10 | https://owasp.org/www-project-agentic-skills-top-10/ | Security risk taxonomy. Primary source for audit rules (§9). |
-| SSH Certificate Format | draft-miller-ssh-cert-06 | Certificate wire format used by CocoaSkill's signing infrastructure (§10). |
-| DKIM (RFC 6376) | https://tools.ietf.org/html/rfc6376 | Inspiration for DNS TXT-based key discovery format (§12.2). |
+| OWASP AST10 | https://owasp.org/www-project-agentic-skills-top-10/ | Security risk taxonomy. Primary source for audit detectors (Section 12). |
+| SSH Certificate Format | draft-miller-ssh-cert-06 | Certificate wire format of the original draft signing design (Appendix A). |
+| DKIM (RFC 6376) | https://tools.ietf.org/html/rfc6376 | Inspiration for the DNS TXT key discovery of the original draft (Appendix A). |
 
-### 20.5 Skill Registries
+### Skill Registries
 
 | Registry | URL | Skills | Security Audit | Notes |
 |----------|-----|--------|---------------|-------|
@@ -1400,10 +1141,10 @@ Linux Foundation-hosted vendor-neutral governance initiative for AI agent standa
 | ClawHub (OpenClaw) | https://clawhub.ai | 13.7K | None (post-incident scanning added) | npm-style publish. Subject of ClawHavoc malware incident (January 2026, 341 poisoned skills). |
 | SkillShield | https://skillshield.dev | 33.5K scanned | Mandatory scanning before listing | Security-first registry. All listed skills pass automated scanning. |
 | verified-skill.com | https://verified-skill.com | 111K | Three-tier: Scanned (automated rules), Verified (deterministic + LLM analysis), Certified (manual review) | Most rigorous public audit pipeline. 38 deterministic rules + LLM-based intent analysis. |
-| cursor.directory | https://cursor.directory | — | None | 63K community. Cursor rules + MCP configurations. Predates SKILL.md. |
+| cursor.directory | https://cursor.directory | none | None | 63K community. Cursor rules + MCP configurations. Predates SKILL.md. |
 | skill-forge (prefix.dev) | https://prefix.dev/skill-forge | ~100 | Conda package signing | Conda-packaged skills for pixi-skills. Inherits conda signing infrastructure. |
 
-CocoaSkill consumes skills from any git repository regardless of registry listing. These registries serve as discovery tools; CocoaSkill references repositories directly via git URLs in the Skillfile (§5.2).
+CocoaSkills consumes skills from any git repository regardless of registry listing. These registries serve as discovery tools; CocoaSkills references repositories directly through git URLs in the Skillfile (Section 6).
 
 <!-- relux-ecosystem:start -->
 
