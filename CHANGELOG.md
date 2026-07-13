@@ -16,6 +16,7 @@ Versioning for the complete specification set.
 - Cross-platform CI and shared Go/Python conformance gates.
 - A repository-pinned SSH signer allowlist verified by release CI for both the
   release tag and its target commit.
+- GitHub Actions dependencies pinned to verified full commit IDs.
 
 ### Changed
 

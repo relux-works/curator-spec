@@ -25,10 +25,10 @@ jobs:
       CURATOR_CONFORMANCE_ROOT: ${{ github.workspace }}/conformance/v1
     steps:
       - name: Checkout specification
-        uses: actions/checkout@v4
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Checkout Go manager
-        uses: actions/checkout@v4
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: relux-works/curator
           ref: ecb6c1af0f4bc4056bead4095933e0b83db7d2b1
@@ -36,24 +36,25 @@ jobs:
           submodules: true
 
       - name: Checkout Python manager
-        uses: actions/checkout@v4
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: ivanopcode/cocoaskills
           ref: 788676c1ede6e0da46d8d2604ee16814e917071d
           path: implementations/manager
 
       - name: Checkout registry service
-        uses: actions/checkout@v4
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: ivanopcode/cocoaskills-registry
           ref: 0151057bdbb1bea5ccaa6c018bf20a5cb1444514
           path: implementations/registry
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6.5.0
         with:
           go-version-file: implementations/go/go.mod
+          cache: false
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
 
