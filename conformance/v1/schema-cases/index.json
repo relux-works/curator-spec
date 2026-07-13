@@ -1,0 +1,242 @@
+[
+  {
+    "instance": "adapter-ledger-v1/valid.json",
+    "schema": "adapter-ledger-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "adapter-ledger-v1/invalid.json",
+    "schema": "adapter-ledger-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "audit-record-v1/valid.json",
+    "schema": "audit-record-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "audit-record-v1/invalid.json",
+    "schema": "audit-record-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "conformance-claim-v1/valid.json",
+    "schema": "conformance-claim-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "conformance-claim-v1/invalid.json",
+    "schema": "conformance-claim-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v1/valid.json",
+    "schema": "csk-skill-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v1/invalid.json",
+    "schema": "csk-skill-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v2/valid.json",
+    "schema": "csk-skill-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v2/invalid.json",
+    "schema": "csk-skill-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v3/valid.json",
+    "schema": "csk-skill-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v3/invalid.json",
+    "schema": "csk-skill-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v4/valid.json",
+    "schema": "csk-skill-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v4/invalid.json",
+    "schema": "csk-skill-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v5/valid.json",
+    "schema": "csk-skill-v5.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v5/invalid.json",
+    "schema": "csk-skill-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "error-response-v1/valid.json",
+    "schema": "error-response-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "error-response-v1/invalid.json",
+    "schema": "error-response-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "health-response-v1/valid.json",
+    "schema": "health-response-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "health-response-v1/invalid.json",
+    "schema": "health-response-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hybrid-skillfile-v1/valid.json",
+    "schema": "hybrid-skillfile-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "hybrid-skillfile-v1/invalid.json",
+    "schema": "hybrid-skillfile-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v1/valid.json",
+    "schema": "install-marker-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v1/invalid.json",
+    "schema": "install-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "log-response-v1/valid.json",
+    "schema": "log-response-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "log-response-v1/invalid.json",
+    "schema": "log-response-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v1/valid.json",
+    "schema": "manager-config-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v1/invalid.json",
+    "schema": "manager-config-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "records-response-v1/valid.json",
+    "schema": "records-response-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "records-response-v1/invalid.json",
+    "schema": "records-response-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "registry-bundle-v1/valid.json",
+    "schema": "registry-bundle-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "registry-bundle-v1/invalid.json",
+    "schema": "registry-bundle-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "registry-log-entry-v1/valid.json",
+    "schema": "registry-log-entry-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "registry-log-entry-v1/invalid.json",
+    "schema": "registry-log-entry-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "registry-meta-response-v1/valid.json",
+    "schema": "registry-meta-response-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "registry-meta-response-v1/invalid.json",
+    "schema": "registry-meta-response-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "registry-snapshot-v1/valid.json",
+    "schema": "registry-snapshot-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "registry-snapshot-v1/invalid.json",
+    "schema": "registry-snapshot-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "signature-envelope-v1/valid.json",
+    "schema": "signature-envelope-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "signature-envelope-v1/invalid.json",
+    "schema": "signature-envelope-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skillfile-dev-v1/valid.json",
+    "schema": "skillfile-dev-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "skillfile-dev-v1/invalid.json",
+    "schema": "skillfile-dev-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skillfile-v1/valid.json",
+    "schema": "skillfile-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "skillfile-v1/invalid.json",
+    "schema": "skillfile-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "submission-response-v1/valid.json",
+    "schema": "submission-response-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "submission-response-v1/invalid.json",
+    "schema": "submission-response-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v1/valid.json",
+    "schema": "system-config-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "system-config-v1/invalid.json",
+    "schema": "system-config-v1.schema.json",
+    "valid": false
+  }
+]

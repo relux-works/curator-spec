@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/v1/system-config-v1.schema.json",
+  "title": "Curator enforced system configuration schema 1",
+  "type": "object",
+  "required": ["schema_version"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "locked": {"type": "array", "items": {"enum": ["audit_registries", "disable_builtin_registries", "allowed_sources", "audit"]}, "uniqueItems": true},
+    "allowed_sources": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "disable_builtin_registries": {"type": "boolean"},
+    "audit": {"type": "object"},
+    "audit_registries": {"type": "array", "items": {"type": "object"}}
+  },
+  "additionalProperties": false
+}

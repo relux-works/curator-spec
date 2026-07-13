@@ -1,0 +1,30 @@
+[
+  {
+    "input": "scripts/tool",
+    "valid": true
+  },
+  {
+    "input": "références/文書.md",
+    "valid": true
+  },
+  {
+    "input": "../escape",
+    "valid": false
+  },
+  {
+    "input": "scripts\\tool",
+    "valid": false
+  },
+  {
+    "input": "CON",
+    "valid": false
+  },
+  {
+    "input": "dir/NUL.txt",
+    "valid": false
+  },
+  {
+    "input": "trailing. ",
+    "valid": false
+  }
+]
