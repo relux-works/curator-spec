@@ -128,7 +128,11 @@ def validate_manifest() -> None:
 
 
 def validate_review_evidence() -> None:
-    for schema_name in ("review-report.schema.json", "review-report-v2.schema.json"):
+    cases = {
+        "review-report.schema.json": (("v1-valid.json", True), ("v1-invalid.json", False)),
+        "review-report-v2.schema.json": (("valid.json", True), ("invalid.json", False)),
+    }
+    for schema_name, schema_cases in cases.items():
         schema_path = REVIEWS / schema_name
         schema = load_json(schema_path)
         try:
@@ -137,14 +141,19 @@ def validate_review_evidence() -> None:
             raise ValidationFailure(
                 f"{schema_path}: invalid Draft 2020-12 schema: {exc.message}"
             ) from exc
-    schema = load_json(REVIEWS / "review-report-v2.schema.json")
-    validator = Draft202012Validator(schema, format_checker=FormatChecker())
-    for name, expected in (("valid.json", True), ("invalid.json", False)):
-        path = REVIEWS / "examples" / name
-        errors = list(validator.iter_errors(load_json(path)))
-        if (not errors) != expected:
-            detail = "valid" if not errors else errors[0].message
-            raise ValidationFailure(f"review example {name}: expected valid={expected}, got {detail}")
+        validator = Draft202012Validator(schema, format_checker=FormatChecker())
+        for name, expected in schema_cases:
+            path = REVIEWS / "examples" / name
+            errors = list(validator.iter_errors(load_json(path)))
+            if (not errors) != expected:
+                detail = "valid" if not errors else errors[0].message
+                raise ValidationFailure(
+                    f"review example {name}: expected valid={expected}, got {detail}"
+                )
+    validator = Draft202012Validator(
+        load_json(REVIEWS / "review-report-v2.schema.json"),
+        format_checker=FormatChecker(),
+    )
     for directory in sorted(REVIEWS.iterdir()):
         if not directory.is_dir() or directory.name == "examples":
             continue

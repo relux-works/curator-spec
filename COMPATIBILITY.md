@@ -65,3 +65,9 @@ of exact artifact identity, and binds pagination to one snapshot. Clients that
 already bounded responses and treated cursors as opaque require no wire
 migration. Registry services must complete their state and index migration
 before claiming the `registry-service` class.
+
+Independent review evidence uses `reviews/review-report-v2.schema.json` for a
+stable 1.0.0 release. Schema v2 adds explicit non-maintainer and non-author
+attestations; producers migrate by adding both fields with truthful boolean
+values. The original schema v1 remains available for draft evidence, but a v1
+report is not accepted by the stable release gate.
