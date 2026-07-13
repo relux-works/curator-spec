@@ -76,15 +76,16 @@ make regenerate-check
 
 Implementations receive the absolute suite root through
 `CURATOR_CONFORMANCE_ROOT`. They MUST NOT substitute repository-local golden
-fixtures. The Go and Python adapters used by specification CI are under
-`conformance/adapters/`; they contain orchestration only and no expected
-protocol values.
+fixtures. Specification CI checks out pinned implementation revisions and
+invokes their conformance entrypoints directly; orchestration contains no
+expected protocol values.
 
 Specification CI checks out released implementation revisions and executes:
 
 ```text
-CURATOR_CONFORMANCE_ROOT=<spec>/conformance/v1 go test ./internal/interop -v
-CURATOR_CONFORMANCE_ROOT=<spec>/conformance/v1 python -m pytest -v tests/test_protocol_conformance.py
+CURATOR_CONFORMANCE_ROOT=<spec>/conformance/v1 go test -v ./internal/interop ./internal/closure ./internal/skillspec
+CURATOR_CONFORMANCE_ROOT=<spec>/conformance/v1 python -m pytest -v tests/test_protocol_conformance.py  # manager
+CURATOR_CONFORMANCE_ROOT=<spec>/conformance/v1 python -m pytest -v tests/test_protocol_conformance.py  # registry service
 ```
 
 The suite runs on Linux, macOS, and Windows. A skipped vector is a failure in

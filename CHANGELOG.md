@@ -14,6 +14,8 @@ Versioning for the complete specification set.
   regeneration.
 - Compatibility, security, governance, and release policies.
 - Cross-platform CI and shared Go/Python conformance gates.
+- A repository-pinned SSH signer allowlist verified by release CI for both the
+  release tag and its target commit.
 
 ### Changed
 
@@ -24,6 +26,18 @@ Versioning for the complete specification set.
 - Defined Curator Canonical JSON 1, complete snapshot validation, Merkle byte
   layout, bundle authentication, HTTP errors and limits, and key rotation.
 - Defined deterministic closure ordering and portable Windows path rules.
+- Added shared identifier, expanded path, source-identity, and signed-number
+  rejection vectors.
+- Clarified that project aliases are operator-facing Unicode labels while
+  canonical registry source identities remain whitespace-free lowercase-host
+  values of bounded length.
+- Made paginated record envelopes tolerant of individually malformed object
+  candidates so federation can ignore one bad record without dropping a page.
+- Aligned manager and system configuration schemas with both implementations:
+  strict unknown fields, portable matching aliases, registry key and URL
+  validation, explicit defaults, and configurable cache/snapshot time bounds.
+- Removed the undefined per-registry `required` flag; strict registry policy is
+  the protocol 1.0 fail-closed mechanism for unknown artifacts.
 
 ### Compatibility
 

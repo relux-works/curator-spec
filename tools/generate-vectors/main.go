@@ -125,6 +125,7 @@ func main() {
 
 	writeCanonicalVectors(vectors)
 	writeBehaviorVectors(vectors, snapshotHash)
+	writeManagerConfigVectors(vectors, pinned)
 	writeSchemaCases(suite, marker, ledger, audited, snapshot, entries[0], bundle, pinned)
 	writeManifest(suite)
 }
@@ -148,12 +149,40 @@ func writeCanonicalVectors(dir string) {
 	writeJSON(filepath.Join(dir, "canonical-invalid.json"), []any{
 		map[string]any{"name": "duplicate-key", "input_text": "{\"a\":1,\"a\":2}", "error": "duplicate_key"},
 		map[string]any{"name": "fraction", "input_text": "{\"n\":1.5}", "error": "non_integer_number"},
+		map[string]any{"name": "negative-zero", "input_text": "{\"n\":-0}", "error": "non_shortest_integer"},
 		map[string]any{"name": "unsafe-integer", "input_text": "{\"n\":9007199254740992}", "error": "unsafe_integer"},
 		map[string]any{"name": "lone-surrogate", "input_text": "{\"s\":\"\\ud800\"}", "error": "invalid_unicode"},
 	})
 }
 
 func writeBehaviorVectors(dir, snapshotHash string) {
+	writeJSON(filepath.Join(dir, "identifiers.json"), []any{
+		map[string]any{"input": "skill-youtrack", "valid": true},
+		map[string]any{"input": "9lives", "valid": true},
+		map[string]any{"input": "a.b_c-d", "valid": true},
+		map[string]any{"input": "", "valid": false},
+		map[string]any{"input": "-leading", "valid": false},
+		map[string]any{"input": ".hidden", "valid": false},
+		map[string]any{"input": "has space", "valid": false},
+		map[string]any{"input": "unicode-é", "valid": false},
+		map[string]any{"input": "trailing.", "valid": false},
+		map[string]any{"input": "CON", "valid": false},
+		map[string]any{"input": "nul.txt", "valid": false},
+		map[string]any{"input": "COM1.log", "valid": false},
+		map[string]any{"input": strings.Repeat("a", 129), "valid": false},
+	})
+	writeJSON(filepath.Join(dir, "locale-selectors.json"), []any{
+		map[string]any{"input": "en", "valid": true},
+		map[string]any{"input": "pt-BR", "valid": true},
+		map[string]any{"input": "zh-Hans-CN", "valid": true},
+		map[string]any{"input": "", "valid": false},
+		map[string]any{"input": "-en", "valid": false},
+		map[string]any{"input": "en-", "valid": false},
+		map[string]any{"input": "pt_BR", "valid": false},
+		map[string]any{"input": "../en", "valid": false},
+		map[string]any{"input": "русский", "valid": false},
+		map[string]any{"input": strings.Repeat("a", 65), "valid": false},
+	})
 	writeJSON(filepath.Join(dir, "source-identities.json"), []any{
 		map[string]any{"input": "git@git.example.com:skills/a.git", "identity": "git.example.com/skills/a"},
 		map[string]any{"input": "https://GIT.example.com/Skills/A.git", "identity": "git.example.com/Skills/A"},
@@ -162,14 +191,28 @@ func writeBehaviorVectors(dir, snapshotHash string) {
 		map[string]any{"input": "https://git.example.com:8443/skills/a", "error": "explicit_port"},
 		map[string]any{"input": "https://git.example.com/skills%2Fa", "error": "percent_escape"},
 		map[string]any{"input": "https://git.example.com/skills/a?q=1", "error": "query"},
+		map[string]any{"input": "git@git.example.com:skills/a b", "error": "whitespace"},
+		map[string]any{"input": "git@git.example.com:skills/a#fragment", "error": "fragment"},
+		map[string]any{"input": "git@g.example:" + strings.Repeat("a", 4096), "error": "identity_too_long"},
 	})
 	writeJSON(filepath.Join(dir, "portable-paths.json"), []any{
 		map[string]any{"input": "scripts/tool", "valid": true},
 		map[string]any{"input": "références/文書.md", "valid": true},
+		map[string]any{"input": "directory with space/file name.md", "valid": true},
+		map[string]any{"input": "", "valid": false},
+		map[string]any{"input": "/absolute", "valid": false},
 		map[string]any{"input": "../escape", "valid": false},
+		map[string]any{"input": ".", "valid": false},
+		map[string]any{"input": "a/..", "valid": false},
+		map[string]any{"input": "scripts/", "valid": false},
+		map[string]any{"input": "scripts//tool", "valid": false},
 		map[string]any{"input": "scripts\\tool", "valid": false},
+		map[string]any{"input": "stream:name", "valid": false},
+		map[string]any{"input": "control\u0085name", "valid": false},
 		map[string]any{"input": "CON", "valid": false},
 		map[string]any{"input": "dir/NUL.txt", "valid": false},
+		map[string]any{"input": "trailing.", "valid": false},
+		map[string]any{"input": "trailing ", "valid": false},
 		map[string]any{"input": "trailing. ", "valid": false},
 	})
 	writeJSON(filepath.Join(dir, "closures.json"), []any{
@@ -196,6 +239,79 @@ func writeBehaviorVectors(dir, snapshotHash string) {
 		"cache":         map[string]any{"ttl_seconds": 3600, "offline_grace_seconds": 604800, "body_limit_bytes": 16777216, "record_limit": 10000},
 		"pagination":    map[string]any{"default_limit": 100, "maximum_limit": 1000, "cursor_bound_to_query": true},
 		"submission":    map[string]any{"idempotency_key": "sha256_of_ccj1", "retention_seconds": 86400},
+	})
+}
+
+func writeManagerConfigVectors(dir, pinned string) {
+	minimal := map[string]any{
+		"schema_version": 1,
+		"skills_root":    "./skills",
+		"projects":       map[string]any{},
+	}
+	configured := map[string]any{
+		"schema_version":   1,
+		"skills_root":      "./skills",
+		"preferred_locale": nil,
+		"projects": map[string]any{
+			"app": map[string]any{
+				"path": "./app", "agents": []any{"codex_cli"},
+				"project_alias": nil, "checkout_alias": nil,
+			},
+		},
+		"audit_registries": []any{
+			map[string]any{
+				"name": "primary", "url": "HTTPS://REGISTRY.EXAMPLE:443/api/",
+				"public_keys": []any{pinned},
+			},
+		},
+		"audit": map[string]any{
+			"max_request_bytes": 2048, "snapshot_max_age_seconds": 86400,
+			"snapshot_clock_skew_seconds": 0, "cache_ttl_seconds": 0,
+			"offline_grace_seconds": 0,
+		},
+	}
+	base := func() map[string]any {
+		return map[string]any{"schema_version": 1, "skills_root": "./skills", "projects": map[string]any{}}
+	}
+	with := func(key string, value any) map[string]any {
+		result := base()
+		result[key] = value
+		return result
+	}
+	writeJSON(filepath.Join(dir, "manager-config.json"), []any{
+		map[string]any{
+			"name": "minimal-defaults", "input": minimal, "valid": true,
+			"expected": map[string]any{
+				"default_agents": []any{"codex_cli"}, "adapter_mode": "auto",
+				"registry_urls": []any{}, "snapshot_max_age_seconds": 604800,
+				"snapshot_clock_skew_seconds": 300, "cache_ttl_seconds": 3600,
+				"offline_grace_seconds": 604800, "max_request_bytes": 1048576,
+			},
+		},
+		map[string]any{
+			"name": "canonical-registry-and-zero-cache", "input": configured, "valid": true,
+			"expected": map[string]any{
+				"default_agents": []any{"codex_cli"}, "adapter_mode": "auto",
+				"project_alias": "app", "checkout_alias": "app",
+				"registry_urls":            []any{"https://registry.example/api"},
+				"snapshot_max_age_seconds": 86400, "snapshot_clock_skew_seconds": 0,
+				"cache_ttl_seconds": 0, "offline_grace_seconds": 0,
+				"max_request_bytes": 2048,
+			},
+		},
+		map[string]any{"name": "unknown-top-level", "input": with("typo", true), "valid": false},
+		map[string]any{"name": "invalid-project-key", "input": with("projects", map[string]any{"-app": map[string]any{"path": "./app"}}), "valid": false},
+		map[string]any{"name": "invalid-project-alias", "input": with("projects", map[string]any{"app": map[string]any{"path": "./app", "project_alias": "App Label"}}), "valid": false},
+		map[string]any{"name": "unknown-project-field", "input": with("projects", map[string]any{"app": map[string]any{"path": "./app", "typo": true}}), "valid": false},
+		map[string]any{"name": "duplicate-agents", "input": with("default_agents", []any{"codex_cli", "codex_cli"}), "valid": false},
+		map[string]any{"name": "unknown-registry-field", "input": with("audit_registries", []any{map[string]any{"name": "r", "url": "https://r.example", "required": true}}), "valid": false},
+		map[string]any{"name": "malformed-pinned-key", "input": with("audit_registries", []any{map[string]any{"name": "r", "url": "https://r.example", "public_keys": []any{"ed25519:bad"}}}), "valid": false},
+		map[string]any{"name": "insecure-registry", "input": with("audit_registries", []any{map[string]any{"name": "r", "url": "http://r.example"}}), "valid": false},
+		map[string]any{"name": "duplicate-canonical-registry", "input": with("audit_registries", []any{map[string]any{"name": "one", "url": "https://R.EXAMPLE:443/"}, map[string]any{"name": "two", "url": "https://r.example"}}), "valid": false},
+		map[string]any{"name": "empty-preferred-locale", "input": with("preferred_locale", ""), "valid": false},
+		map[string]any{"name": "negative-cache-ttl", "input": with("audit", map[string]any{"cache_ttl_seconds": -1}), "valid": false},
+		map[string]any{"name": "oversize-backend-request", "input": with("audit", map[string]any{"max_request_bytes": 10485761}), "valid": false},
+		map[string]any{"name": "unknown-source-policy-field", "input": with("audit", map[string]any{"source_policy": map[string]any{"classification": "public"}}), "valid": false},
 	})
 }
 
@@ -229,11 +345,11 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 		cases[name] = schemaCase{validSkill(version), invalid}
 	}
 	cases["skillfile-v1.schema.json"] = schemaCase{
-		map[string]any{"schema_version": 1, "skills": []any{map[string]any{"name": "golden-skill", "revision": fixedCommit}}},
+		map[string]any{"schema_version": 1, "project": map[string]any{"alias": "Golden iOS"}, "skills": []any{map[string]any{"name": "golden-skill", "revision": fixedCommit}}},
 		map[string]any{"schema_version": 1, "skills": []any{map[string]any{"name": "golden-skill", "tag": "v1", "branch": "main"}}},
 	}
 	cases["hybrid-skillfile-v1.schema.json"] = schemaCase{
-		map[string]any{"schema_version": 1, "skills": []any{map[string]any{"name": "golden-skill", "revision": fixedCommit, "targets": []any{"project-*"}}}},
+		map[string]any{"schema_version": 1, "project": map[string]any{"alias": "Golden iOS"}, "skills": []any{map[string]any{"name": "golden-skill", "revision": fixedCommit, "targets": []any{"project-*"}}}},
 		map[string]any{"schema_version": 1, "skills": []any{map[string]any{"name": "golden-skill", "revision": fixedCommit}}},
 	}
 	cases["skillfile-dev-v1.schema.json"] = schemaCase{
@@ -248,10 +364,15 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	cases["registry-log-entry-v1.schema.json"] = schemaCase{logEntry, map[string]any{"seq": 0}}
 	cases["registry-bundle-v1.schema.json"] = schemaCase{bundle, without(bundle, "snapshot")}
 	cases["manager-config-v1.schema.json"] = schemaCase{
-		map[string]any{"schema_version": 1, "skills_root": "/tmp/skills", "projects": map[string]any{}},
+		map[string]any{
+			"schema_version": 1, "skills_root": "/tmp/skills", "preferred_locale": nil,
+			"projects":         map[string]any{"app": map[string]any{"path": "/tmp/app", "project_alias": nil}},
+			"audit_registries": []any{map[string]any{"name": "primary", "url": "HTTPS://registry.example"}},
+			"audit":            map[string]any{"cache_ttl_seconds": 0, "offline_grace_seconds": 0},
+		},
 		map[string]any{"schema_version": 1, "projects": map[string]any{}},
 	}
-	cases["system-config-v1.schema.json"] = schemaCase{map[string]any{"schema_version": 1, "locked": []any{"audit"}, "audit": map[string]any{}}, map[string]any{"schema_version": 1, "locked": []any{"skills_root"}}}
+	cases["system-config-v1.schema.json"] = schemaCase{map[string]any{"schema_version": 1, "locked": []any{"audit"}, "audit": map[string]any{}, "preferred_locale": "en"}, map[string]any{"schema_version": 1, "locked": []any{"skills_root"}}}
 	cases["health-response-v1.schema.json"] = schemaCase{map[string]any{"status": "ok"}, map[string]any{"status": "degraded"}}
 	cases["registry-meta-response-v1.schema.json"] = schemaCase{
 		map[string]any{"name": "golden", "version": "1.0.0", "public_keys": []any{pinned}, "record_schema_versions": []any{1}, "policy": "test"},

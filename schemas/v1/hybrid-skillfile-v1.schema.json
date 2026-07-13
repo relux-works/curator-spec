@@ -8,11 +8,11 @@
     "schema_version": {"const": 1},
     "project": {
       "type": "object",
-      "properties": {"alias": {"$ref": "common.schema.json#/$defs/identifier"}},
+      "properties": {"alias": {"$ref": "common.schema.json#/$defs/projectAlias"}},
       "additionalProperties": false
     },
     "agents": {"$ref": "common.schema.json#/$defs/identifierSet"},
-    "locale": {"type": "string", "minLength": 1, "maxLength": 64},
+    "locale": {"$ref": "common.schema.json#/$defs/locale"},
     "skills": {
       "type": "array",
       "items": {

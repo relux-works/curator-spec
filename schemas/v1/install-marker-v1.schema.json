@@ -12,7 +12,12 @@
     "ref": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
     "commit": {"$ref": "common.schema.json#/$defs/commit"},
     "content_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
-    "locale": {"type": ["string", "null"], "minLength": 1, "maxLength": 64},
+    "locale": {
+      "oneOf": [
+        {"$ref": "common.schema.json#/$defs/locale"},
+        {"type": "null"}
+      ]
+    },
     "agents": {"$ref": "common.schema.json#/$defs/identifierSet"},
     "commands": {"$ref": "common.schema.json#/$defs/identifierSet"},
     "dependencies": {"$ref": "common.schema.json#/$defs/identifierSet"},

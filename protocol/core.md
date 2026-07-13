@@ -102,6 +102,12 @@ Localization is inactive when no locale is selected. When
 `locales[locale]` and `.skill_triggers/<locale>.md`. At least one consistent
 locale is REQUIRED when either localization surface exists.
 
+A locale selector is 1 through 64 ASCII letters, digits, or hyphens, starts and
+ends with a letter or digit, and is compared case-sensitively without
+normalization. Every `locales` member name MUST be a locale selector and its
+value MUST be an object. This deliberately uses a safe BCP 47-compatible
+surface without attempting language-tag canonicalization.
+
 For a selected consistent locale, a manager replaces only the `description`
 and `triggers` values in installed `SKILL.md`, preserving `name` and body. List
 items beginning with `- ` outside fenced code blocks form the trigger list.
@@ -183,6 +189,10 @@ skill. `source` is a portable relative path below the manager's configured
 source root. `git` is used when the source repository is absent. Branches are
 permitted only for direct project declarations and development substitutions.
 
+`project.alias`, when present, is a non-empty, case-sensitive Unicode label of
+at most 128 characters with no control characters. It is an operator-facing
+matching label, not a filesystem identifier, and therefore MAY contain spaces.
+
 Effective agents are selected in this order: manifest `agents`, registered
 project agents, manager defaults. Effective locale is manifest `locale`, then
 the manager preference.
@@ -204,7 +214,10 @@ no network identity. Protocol 1.0 network URLs:
 - have an ASCII host matching `[A-Za-z0-9][A-Za-z0-9.-]*`;
 - contain no explicit port, password, query, fragment, percent escape, or
   backslash;
-- contain a non-empty portable repository path.
+- contain a non-empty portable repository path with no whitespace, `%`, `?`,
+  or `#` character;
+- produce a canonical `host/path` identity of at most 4096 Unicode scalar
+  values.
 
 Canonicalization lowercases the host, removes user and transport, trims outer
 path slashes, and removes one case-sensitive trailing `.git`. Repository path

@@ -10,6 +10,11 @@
     "name": "fraction"
   },
   {
+    "error": "non_shortest_integer",
+    "input_text": "{\"n\":-0}",
+    "name": "negative-zero"
+  },
+  {
     "error": "unsafe_integer",
     "input_text": "{\"n\":9007199254740992}",
     "name": "unsafe-integer"

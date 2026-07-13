@@ -17,7 +17,24 @@ allowlist, audit policy, and pinned registries. The configuration file SHOULD be
 readable and writable only by its owner where the platform supports
 permissions.
 
-An OPTIONAL system configuration is merged before parsing:
+Managers MUST reject unknown configuration fields and apply schema defaults
+before use. `projects` member names, `project_alias`, and `checkout_alias` are
+portable identifiers; the latter two default to the member name when absent or
+null. They are derived machine matching keys, distinct from the operator-facing
+Unicode `Skillfile.json` `project.alias`. Agent lists are sets of portable
+identifiers. `preferred_locale: null` means no machine preference.
+
+An audit registry requires `name` and canonical `url`; `public_keys` defaults to
+an empty set and `enabled` defaults to true. A registry with no pinned key is
+not trusted and produces a warning. Registry record cache TTL defaults to 3600
+seconds, offline grace to 604800 seconds, snapshot maximum age to 604800
+seconds, and future clock skew to 300 seconds. Zero cache TTL disables fresh
+cache hits; zero offline grace disables stale fallback; zero clock skew permits
+no future offset. The backend request limit defaults to 1048576 bytes and MUST
+NOT exceed 10485760 bytes.
+
+An OPTIONAL system configuration conforms to `system-config-v1.schema.json`
+and is merged before parsing the effective user configuration:
 
 1. `locked` contains only `audit_registries`,
    `disable_builtin_registries`, `allowed_sources`, and `audit`;

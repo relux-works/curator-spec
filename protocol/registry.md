@@ -14,6 +14,7 @@ Before canonicalization an implementation MUST reject:
 
 - duplicate object keys or invalid UTF-8;
 - non-integer numbers;
+- negative zero;
 - integers outside `[-9007199254740991, 9007199254740991]`;
 - lone Unicode surrogates;
 - any value that violates the applicable registry schema.
@@ -69,6 +70,23 @@ Persisted snapshot state is keyed by canonical registry URL, not key id, and
 survives rotation. Adding a key MUST NOT reset rollback state. Removing every
 key disables trust in that registry and produces a warning.
 
+### 2.2 Canonical registry URLs
+
+A configured registry URL MUST be an absolute `https` URL, except that `http`
+is permitted for `localhost` or an IP loopback address. It has no credentials,
+query, fragment, percent escape, non-ASCII character, whitespace, control
+character, backslash, doubled path separator, or `.`/`..` path component. A DNS
+host consists of dot-separated labels of 1 through 63 ASCII letters, digits, or
+hyphens; a label starts and ends with a letter or digit, and the complete host
+is at most 253 characters. IP literals use their standard textual form.
+
+Canonicalization lowercases the scheme and DNS host, renders IP literals in
+their canonical compressed lowercase form, preserves path case, removes an
+explicit default port (`443` for HTTPS or `80` for HTTP), and removes trailing
+path separators. The empty path and `/` both canonicalize to no path.
+Non-default ports and a non-empty deployment prefix are preserved. Duplicate
+configured registries are detected after this canonicalization.
+
 ## 3. Audit records
 
 Records conform to `audit-record-v1.schema.json`. New writers include
@@ -103,10 +121,10 @@ Resolution is deny-wins:
 4. otherwise the artifact is unknown.
 
 Revoked always blocks. Deprecated warns. Unknown blocks only under strict
-registry policy. Unreachable registries warn; operators requiring fail-closed
-availability use strict policy and configure a required-registry set in the
-manager profile. An attestation records registry name, status, and key id but
-does not copy authority to the marker.
+registry policy. Unreachable registries warn and contribute no record; if that
+leaves an artifact unknown, strict policy therefore blocks it. Protocol 1.0 has
+no per-registry availability quorum. An attestation records registry name,
+status, and key id but does not copy authority to the marker.
 
 ## 5. Snapshots
 
@@ -205,6 +223,10 @@ says otherwise.
 also accepts `limit` (default 100, range 1 through 1000) and opaque `cursor`.
 Results contain the latest matching record per artifact, deterministic by
 `name`, `source_identity`, and `commit`, plus `next_cursor` string or `null`.
+The response schema validates the pagination envelope and requires each item
+to be an object. Clients validate each item independently against the audit
+record schema; a malformed item is ignored with a warning as required by
+federation, without discarding other records from the page.
 
 `/v1/log` accepts non-negative `since`, the same `limit`, and cursor. Entries
 are ascending by sequence. A cursor is bound to its original query and expires

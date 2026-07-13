@@ -33,6 +33,10 @@ jobs:
 
       - name: Validate release input
         run: |
+          git config gpg.format ssh
+          git config gpg.ssh.allowedSignersFile "$PWD/maintainers.allowed_signers"
+          git verify-tag "$GITHUB_REF_NAME"
+          git verify-commit "$GITHUB_SHA"
           python tools/validate.py
           go test ./tools/...
           go run ./tools/generate-vectors -root .
@@ -45,7 +49,7 @@ jobs:
           version="${GITHUB_REF_NAME#v}"
           directory="curator-protocol-${version}"
           mkdir "$directory"
-          cp -R README.md LICENSE CHANGELOG.md COMPATIBILITY.md SECURITY.md GOVERNANCE.md \
+          cp -R README.md LICENSE CHANGELOG.md COMPATIBILITY.md SECURITY.md GOVERNANCE.md maintainers.allowed_signers \
             protocol profiles cli conformance schemas decisions "$directory/"
           tar -czf "${directory}.tar.gz" "$directory"
           zip -qr "${directory}.zip" "$directory"

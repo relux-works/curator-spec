@@ -7,10 +7,16 @@
   "properties": {
     "schema_version": {"const": 1},
     "locked": {"type": "array", "items": {"enum": ["audit_registries", "disable_builtin_registries", "allowed_sources", "audit"]}, "uniqueItems": true},
-    "allowed_sources": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
-    "disable_builtin_registries": {"type": "boolean"},
-    "audit": {"type": "object"},
-    "audit_registries": {"type": "array", "items": {"type": "object"}}
+    "skills_root": {"$ref": "manager-config-v1.schema.json#/properties/skills_root"},
+    "default_agents": {"$ref": "manager-config-v1.schema.json#/properties/default_agents"},
+    "preferred_locale": {"$ref": "manager-config-v1.schema.json#/properties/preferred_locale"},
+    "adapter_mode": {"$ref": "manager-config-v1.schema.json#/properties/adapter_mode"},
+    "worktree_alias_pattern": {"$ref": "manager-config-v1.schema.json#/properties/worktree_alias_pattern"},
+    "projects": {"$ref": "manager-config-v1.schema.json#/properties/projects"},
+    "allowed_sources": {"$ref": "manager-config-v1.schema.json#/properties/allowed_sources"},
+    "disable_builtin_registries": {"$ref": "manager-config-v1.schema.json#/properties/disable_builtin_registries"},
+    "audit": {"$ref": "manager-config-v1.schema.json#/properties/audit"},
+    "audit_registries": {"$ref": "manager-config-v1.schema.json#/properties/audit_registries"}
   },
   "additionalProperties": false
 }

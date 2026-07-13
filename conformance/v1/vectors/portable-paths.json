@@ -8,11 +8,47 @@
     "valid": true
   },
   {
+    "input": "directory with space/file name.md",
+    "valid": true
+  },
+  {
+    "input": "",
+    "valid": false
+  },
+  {
+    "input": "/absolute",
+    "valid": false
+  },
+  {
     "input": "../escape",
     "valid": false
   },
   {
+    "input": ".",
+    "valid": false
+  },
+  {
+    "input": "a/..",
+    "valid": false
+  },
+  {
+    "input": "scripts/",
+    "valid": false
+  },
+  {
+    "input": "scripts//tool",
+    "valid": false
+  },
+  {
     "input": "scripts\\tool",
+    "valid": false
+  },
+  {
+    "input": "stream:name",
+    "valid": false
+  },
+  {
+    "input": "controlname",
     "valid": false
   },
   {
@@ -21,6 +57,14 @@
   },
   {
     "input": "dir/NUL.txt",
+    "valid": false
+  },
+  {
+    "input": "trailing.",
+    "valid": false
+  },
+  {
+    "input": "trailing ",
     "valid": false
   },
   {

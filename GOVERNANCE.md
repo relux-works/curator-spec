@@ -28,6 +28,10 @@ become the standard.
 5. Publish a GitHub release containing the normative schemas and conformance
    archive with SHA-256 checksums.
 
+Release CI verifies both the tag and its target commit against
+`maintainers.allowed_signers` before packaging. Changes to that trust file are
+governance changes and require the same review as release-policy changes.
+
 Release tags are immutable. A defective release is superseded by a new version
 and remains available for audit.
 

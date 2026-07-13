@@ -42,7 +42,11 @@ def load_json(path: Path) -> Any:
         return value
 
     try:
-        return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=object_pairs, parse_int=parse_int)
+        return json.loads(
+            path.read_text(encoding="utf-8"),
+            object_pairs_hook=object_pairs,
+            parse_int=parse_int,
+        )
     except (UnicodeError, json.JSONDecodeError) as exc:
         raise ValidationFailure(f"{path}: invalid JSON: {exc}") from exc
 
@@ -113,10 +117,13 @@ def validate_manifest() -> None:
         extra = sorted(set(listed) - set(actual))
         raise ValidationFailure(f"vector manifest inventory mismatch; missing={missing}, extra={extra}")
     for entry in entries:
-        payload = (SUITE / entry["path"]).read_bytes()
+        vector_path = SUITE / entry["path"]
+        payload = vector_path.read_bytes()
         digest = "sha256:" + hashlib.sha256(payload).hexdigest()
         if digest != entry["sha256"]:
             raise ValidationFailure(f"vector digest mismatch for {entry['path']}")
+        if vector_path.suffix == ".json":
+            load_json(vector_path)
 
 
 def require_sorted_unique(values: Any, label: str) -> None:
@@ -139,7 +146,13 @@ def validate_vector_semantics() -> None:
     if not valid_ccj or any(not item.get("canonical_utf8") for item in valid_ccj):
         raise ValidationFailure("canonical-valid vectors are empty")
     invalid_ccj = load_json(SUITE / "vectors" / "canonical-invalid.json")
-    expected_errors = {"duplicate_key", "non_integer_number", "unsafe_integer", "invalid_unicode"}
+    expected_errors = {
+        "duplicate_key",
+        "invalid_unicode",
+        "non_integer_number",
+        "non_shortest_integer",
+        "unsafe_integer",
+    }
     if {item["error"] for item in invalid_ccj} != expected_errors:
         raise ValidationFailure("canonical-invalid vectors do not cover all CCJ-1 rejection classes")
 
