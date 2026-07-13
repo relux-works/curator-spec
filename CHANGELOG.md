@@ -17,6 +17,8 @@ Versioning for the complete specification set.
   service guarantees without changing deployed response objects.
 - A machine-validated independent review report format, stable-release gate,
   and release checklist that forbid normative drift after review.
+- Manager lifecycle vectors for self-contained command launchers, idempotent
+  bootstrap, closure-scoped upgrades, and side-effect-free dry runs.
 
 ### Changed
 
@@ -43,6 +45,12 @@ Versioning for the complete specification set.
   handling of native Windows paths, and cached hook installation.
 - Added manager guidance for warning about prompt-visible runtime source paths
   and missing shell-neutral command resolution.
+- Required command launchers to carry their runtime dependency environment on
+  Unix and Windows while preserving inherited `PATH`, arguments, and exit
+  status.
+- Defined selected-closure upgrade behavior, cross-project fetch
+  deduplication, create-if-absent bootstrap, and dry-run purity across source,
+  cache, security-state, runtime, and project surfaces.
 
 ### Compatibility
 

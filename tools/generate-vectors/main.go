@@ -126,6 +126,7 @@ func main() {
 	writeCanonicalVectors(vectors)
 	writeBehaviorVectors(vectors, snapshotHash)
 	writeManagerConfigVectors(vectors, pinned)
+	writeManagerLifecycleVectors(vectors)
 	writeSchemaCases(suite, marker, ledger, audited, snapshot, entries[0], bundle, pinned)
 	writeManifest(suite)
 }
@@ -485,6 +486,37 @@ func writeManagerConfigVectors(dir, pinned string) {
 		map[string]any{"name": "negative-cache-ttl", "input": with("audit", map[string]any{"cache_ttl_seconds": -1}), "valid": false},
 		map[string]any{"name": "oversize-backend-request", "input": with("audit", map[string]any{"max_request_bytes": 10485761}), "valid": false},
 		map[string]any{"name": "unknown-source-policy-field", "input": with("audit", map[string]any{"source_policy": map[string]any{"classification": "public"}}), "valid": false},
+	})
+}
+
+func writeManagerLifecycleVectors(dir string) {
+	writeJSON(filepath.Join(dir, "manager-lifecycle.json"), map[string]any{
+		"launcher_cases": []any{
+			map[string]any{
+				"name": "skill-command-without-shell-activation", "platforms": []any{"unix", "windows"},
+				"required_path_roles":     []any{"command_directory", "implementation_runtime", "system_dependencies"},
+				"preserve_inherited_path": true, "forward_arguments": true, "preserve_exit_status": true,
+			},
+			map[string]any{
+				"name": "declared-system-command-without-profile", "platforms": []any{"unix", "windows"},
+				"required_path_roles":     []any{"command_directory", "implementation_runtime", "system_dependencies"},
+				"preserve_inherited_path": true, "forward_arguments": true, "preserve_exit_status": true,
+			},
+		},
+		"bootstrap_cases": []any{
+			map[string]any{"name": "missing-config-if-missing", "config": "missing", "if_missing": true, "force": false, "outcome": "created"},
+			map[string]any{"name": "existing-config-if-missing", "config": "existing-invalid", "if_missing": true, "force": false, "outcome": "unchanged-success"},
+			map[string]any{"name": "if-missing-with-force", "config": "either", "if_missing": true, "force": true, "outcome": "usage-error"},
+		},
+		"upgrade_cases": []any{
+			map[string]any{"name": "selected-project-closure", "scope": "project", "selection": "one", "fetch": []any{"direct", "transitive"}, "exclude": []any{"unrelated"}},
+			map[string]any{"name": "all-projects-deduplicate", "scope": "project", "selection": "all", "deduplicate": true},
+			map[string]any{"name": "global-closure", "scope": "global", "selection": "global", "fetch": []any{"direct", "transitive"}, "exclude": []any{"unrelated"}},
+		},
+		"dry_run_cases": []any{
+			map[string]any{"name": "project-upgrade", "scope": "project", "forbidden_persistent_effects": []any{"source-fetch", "source-clone", "snapshot-cache", "response-cache", "audit-state", "registry-state", "configuration", "runtime", "project-artifacts"}},
+			map[string]any{"name": "global-upgrade", "scope": "global", "forbidden_persistent_effects": []any{"source-fetch", "source-clone", "snapshot-cache", "response-cache", "audit-state", "registry-state", "configuration", "runtime", "global-artifacts"}},
+		},
 	})
 }
 

@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: relux-works/curator
-          ref: e423ce3f2838d48e9543e5c39e9e04428ee100d1
+          ref: 32f60fcdb31424dec2e3d9ad0a1c3f8e029e2424
           path: implementations/go
           submodules: true
 
@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: ivanopcode/cocoaskills
-          ref: 49fc1ad7c40876b458315d00b7acacc67c74fd5d
+          ref: edce8816dda44bb121d661b7c4dea942558ce408
           path: implementations/manager
 
       - name: Checkout registry service
@@ -71,6 +71,21 @@ jobs:
         run: >-
           python tools/run_pytest_no_skips.py -q
           implementations/manager/tests/test_protocol_conformance.py
+
+      - name: Python manager lifecycle behavior
+        run: >-
+          python -m pytest -q
+          implementations/manager/tests/test_cli.py::test_cli_bootstrap_if_missing_keeps_existing_config
+          implementations/manager/tests/test_cli.py::test_cli_bootstrap_if_missing_creates_absent_config
+          implementations/manager/tests/test_cli.py::test_cli_bootstrap_if_missing_and_force_are_mutually_exclusive
+          implementations/manager/tests/test_cli.py::test_cli_upgrade_dry_run_does_not_create_or_fetch_skills_root
+          implementations/manager/tests/test_cli.py::test_cli_upgrade_fetches_only_selected_project_skill_repositories
+          implementations/manager/tests/test_closure_install.py::test_upgrade_fetches_transitive_dependency_closure
+          implementations/manager/tests/test_global_install.py::test_global_upgrade_dry_run_does_not_create_or_fetch_skills_root
+          implementations/manager/tests/test_install.py::test_runtime_shim_resolves_project_skill_command_dependency_without_shell_hook
+          implementations/manager/tests/test_install.py::test_runtime_shim_captures_declared_system_dependency_path
+          implementations/manager/tests/test_shims.py::test_unix_wrapper_prepends_runtime_path_entries
+          implementations/manager/tests/test_shims.py::test_windows_wrapper_prepends_runtime_path_entries
 
       - name: Registry service shared suite
         run: >-

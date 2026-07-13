@@ -301,6 +301,10 @@
       "sha256": "sha256:e915c1f76729773cab6578105beba19f425154e1a9e200d0206b3f664eaed16c"
     },
     {
+      "path": "vectors/manager-lifecycle.json",
+      "sha256": "sha256:2ddbd2665a63f44dc0e03e060f4cd34bfde219a56b3192511fe1ef81047feedf"
+    },
+    {
       "path": "vectors/portable-paths.json",
       "sha256": "sha256:6be790547304efa8fc1bafb3122c6aa40f74f699f4e35d34379246ca90c3249b"
     },

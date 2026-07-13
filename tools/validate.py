@@ -342,6 +342,28 @@ def validate_vector_semantics() -> None:
         },
     )
 
+    manager = load_json(SUITE / "vectors" / "manager-lifecycle.json")
+    require_named_cases(
+        manager.get("launcher_cases"),
+        "manager launcher",
+        {"skill-command-without-shell-activation", "declared-system-command-without-profile"},
+    )
+    require_named_cases(
+        manager.get("bootstrap_cases"),
+        "manager bootstrap",
+        {"missing-config-if-missing", "existing-config-if-missing", "if-missing-with-force"},
+    )
+    require_named_cases(
+        manager.get("upgrade_cases"),
+        "manager upgrade",
+        {"selected-project-closure", "all-projects-deduplicate", "global-closure"},
+    )
+    require_named_cases(
+        manager.get("dry_run_cases"),
+        "manager dry run",
+        {"project-upgrade", "global-upgrade"},
+    )
+
 
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
 

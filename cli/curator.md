@@ -13,13 +13,13 @@ identifiers.
 
 | Command | Behavior |
 |---|---|
-| `curator bootstrap` | Create machine configuration interactively or from flags |
+| `curator bootstrap [--if-missing]` | Create machine configuration interactively or from flags; keep an existing file unchanged with `--if-missing` |
 | `curator init [path]` | Create `Skillfile.json` and ignore generated paths |
 | `curator add <name> --tag\|--branch\|--revision <ref>` | Add or replace a direct declaration and install |
 | `curator remove <name>` | Remove a declaration |
 | `curator install [target] [--all] [--dry-run] [--strict-tags] [--audit [advisory\|strict]]` | Apply the manager lifecycle |
 | `curator update` | Fetch configured source repositories |
-| `curator upgrade [target]` | Update then install |
+| `curator upgrade [target] [--all] [--dry-run]` | Fetch only the selected dependency closure, then install |
 | `curator status [target] [--all] [--check] [--json] [--attest]` | Report drift and optionally refresh attestations |
 | `curator list` | List configured projects and declarations |
 | `curator project add\|resolve` | Register projects and resolve ownership of a path |
@@ -36,6 +36,17 @@ identifiers.
 Exit code 0 is success. Curator distinguishes usage errors, partial multi-
 project failure, drift checks, and security-policy blocks with non-zero codes;
 scripts should use `status --json` when they need structured details.
+
+`bootstrap --if-missing` is intended for repository bootstrap commands. It
+returns success without parsing or rewriting an existing configuration and is
+mutually exclusive with `--force`.
+
+`upgrade` differs from `update`: upgrade fetches only direct and transitive
+sources required by the selected project or global manifest, while update
+fetches every repository below `skills_root`. `upgrade --all` deduplicates
+repositories shared by project closures. Any install or upgrade `--dry-run`
+uses temporary planning state and leaves source checkouts, caches,
+configuration, runtime state, and project artifacts unchanged.
 
 ## Developer shell
 

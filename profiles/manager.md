@@ -64,15 +64,26 @@ For each project, the manager performs these phases in order:
 11. run source-audit policy;
 12. resolve trusted audit registries and reject revocation or strict unknown;
 13. detect moved tags;
-14. stop before mutation for a dry run;
+14. stop before persistent mutation for a dry run;
 15. materialize runtime, context, markers, environment files, and adapters;
 16. remove stale managed skills and shims;
 17. record the consumer and collect unreferenced runtime/cache entries.
 
 A failure before phase 15 MUST leave the existing installation unchanged. A
-failure during materialization MUST roll the affected target back to its
-previous complete state. A manager MUST serialize concurrent installation of
-the same project. It MAY install independent projects concurrently.
+dry run MUST NOT fetch into or otherwise mutate an existing source checkout,
+create a persistent source checkout, write a persistent snapshot or response
+cache, update audit or registry state, rewrite configuration, or create runtime
+or project installation artifacts. It MAY use network reads and temporary
+workspaces that are removed before the operation returns. A failure during
+materialization MUST roll the affected target back to its previous complete
+state. A manager MUST serialize concurrent installation of the same project.
+It MAY install independent projects concurrently.
+
+An upgrade resolves and fetches only the selected scope's direct declarations
+and their transitive dependency closure. An operation over several projects
+MUST deduplicate fetches of the same checkout. A global-scope upgrade fetches
+only the global dependency closure. A separate update operation MAY fetch all
+managed source repositories.
 
 The managed `.gitignore` comment is implementation-specific. Conformance
 depends on the generated paths being ignored, not on comment spelling.
@@ -85,10 +96,20 @@ Context installs under `.agents/skills/<name>/`; command shims install under
 mirrored into agent adapters.
 
 Runtime roots are copied atomically. An existing commit-keyed entry MAY be
-reused only after verifying that every required path exists. Unix shims are
-relative symlinks to executable runtime files. Windows shims are `.cmd`
-wrappers that quote the runtime path and forward all arguments. Stale shims
-owned by the previous plan are removed.
+reused only after verifying that every required path exists. Command launchers
+MUST be self-contained: executing a portable direct command location MUST NOT
+depend on shell activation or a user profile. A launcher prepends the project
+or global command directory, directories containing resolved declared system
+dependencies, and any implementation runtime directories required by the
+command. It preserves the inherited `PATH`, forwards arguments without
+reinterpretation, and returns the child command's exit status.
+
+On Unix a launcher is either a relative symlink when no environment
+augmentation is required or an executable POSIX-shell wrapper. On Windows it
+is a `.cmd` wrapper that safely quotes the runtime path, disables delayed
+expansion while constructing its environment, forwards all arguments, and
+returns the child status. Stale launchers owned by the previous plan are
+removed.
 
 `.agents/env.sh` and `.agents/env.ps1` prepend `.agents/bin` to `PATH` and set
 the portable `CSK_PROJECT_ROOT` to the resolved project root. They MUST locate
@@ -236,7 +257,15 @@ Global activation is OPTIONAL and enabled by default by conforming CLI
 profiles. It is sourced once per global environment version and has lower PATH
 precedence than a project environment.
 
-## 9. Status and garbage collection
+## 9. Idempotent machine bootstrap
+
+A manager SHOULD expose a non-interactive operation that creates its machine
+configuration only when it is absent. When the configuration path already
+exists, this operation MUST succeed without parsing, rewriting, or changing
+the existing file. An explicit overwrite operation and create-if-absent mode
+MUST be mutually exclusive.
+
+## 10. Status and garbage collection
 
 Read-only status validates marker schema, recomputes content hashes, reports
 manifest and activation drift, and MAY re-resolve registry attestations. A

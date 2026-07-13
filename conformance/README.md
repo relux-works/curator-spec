@@ -65,6 +65,8 @@ The suite contains:
   rollback-state cases;
 - retry classification and execution bounds, unchanged idempotent POST bytes,
   total deadlines, redirect refusal, cursor cycles, and response limits;
+- shell-neutral runtime launchers, idempotent machine bootstrap, closure-scoped
+  upgrades, fetch deduplication, and persistent-side-effect-free dry runs;
 - transparency chain, Merkle, bundle, pagination, caching, and deny-wins cases;
 - conjunctive registry queries, exact artifact identity, snapshot-bound pages,
   scoped idempotency, concurrent writers, transaction rollback, crash recovery,
