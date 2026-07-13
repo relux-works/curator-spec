@@ -93,6 +93,11 @@ the specification gate. Implementation repositories MAY skip the external
 suite only when `CURATOR_CONFORMANCE_ROOT` is absent from a developer checkout;
 their required release CI always supplies it.
 
+`.github/workflows/implementations.yml` pins every implementation by full Git
+commit ID. A pin may advance only after that implementation has passed the
+same released suite in its own required CI. Branch names and mutable tags MUST
+NOT be used as implementation pins.
+
 ## 5. Claim format
 
 A machine-readable claim conforms to `schemas/v1/conformance-claim-v1.schema.json`.
