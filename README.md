@@ -58,7 +58,7 @@ an implementation is never the normative oracle.
   implementation and provides static binaries for Linux, macOS, and Windows.
 - [csk](https://github.com/ivanopcode/cocoaskills) is an independent Python
   implementation.
-- [CocoaSkills Registry](https://github.com/ivanopcode/cocoaskills-registry)
+- [Curator Skill Registry](https://github.com/relux-works/curator-skill-registry)
   is an implementation of the registry-service profile.
 
 The implementations are evidence that the protocol is independently
