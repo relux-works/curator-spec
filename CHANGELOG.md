@@ -51,6 +51,8 @@ Versioning for the complete specification set.
 - Defined selected-closure upgrade behavior, cross-project fetch
   deduplication, create-if-absent bootstrap, and dry-run purity across source,
   cache, security-state, runtime, and project surfaces.
+- Accepted GitHub-verified protected-main merge commits as release targets
+  while retaining maintainer-signed release tags and exact-target checks.
 
 ### Compatibility
 
