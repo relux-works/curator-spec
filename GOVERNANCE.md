@@ -28,9 +28,13 @@ become the standard.
 5. Publish a GitHub release containing the normative schemas and conformance
    archive with SHA-256 checksums.
 
-Release CI verifies both the tag and its target commit against
-`maintainers.allowed_signers` before packaging. Changes to that trust file are
-governance changes and require the same review as release-policy changes.
+Release CI verifies the tag against `maintainers.allowed_signers` before
+packaging. Its exact target must be contained in the protected default branch
+and must either carry a signature from the same allowlist or be a
+GitHub-verified merge commit created by that protected-branch workflow. The
+maintainer-signed tag explicitly authorizes the exact target in both cases.
+Changes to the trust file are governance changes and require the same review as
+release-policy changes.
 
 Release tags are immutable. A defective release is superseded by a new version
 and remains available for audit.
