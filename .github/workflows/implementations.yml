@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: relux-works/curator
-          ref: e423ce3f2838d48e9543e5c39e9e04428ee100d1
+          ref: b52c08427abfc02017c176f69298f9f47da6d299
           path: implementations/go
           submodules: true
 
