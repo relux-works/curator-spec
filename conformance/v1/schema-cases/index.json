@@ -10,6 +10,56 @@
     "valid": false
   },
   {
+    "instance": "agent-skill-v1/valid.json",
+    "schema": "agent-skill-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v1/invalid.json",
+    "schema": "agent-skill-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v2/valid.json",
+    "schema": "agent-skill-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v2/invalid.json",
+    "schema": "agent-skill-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v3/valid.json",
+    "schema": "agent-skill-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v3/invalid.json",
+    "schema": "agent-skill-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v4/valid.json",
+    "schema": "agent-skill-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v4/invalid.json",
+    "schema": "agent-skill-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v5/valid.json",
+    "schema": "agent-skill-v5.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v5/invalid.json",
+    "schema": "agent-skill-v5.schema.json",
+    "valid": false
+  },
+  {
     "instance": "audit-record-v1/valid.json",
     "schema": "audit-record-v1.schema.json",
     "valid": true

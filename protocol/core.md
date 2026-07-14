@@ -21,9 +21,12 @@ additional and REQUIRED.
 
 ### 1.1 Compatibility identifiers
 
-The filenames `Skillfile.json`, `Skillfile.dev.json`, `csk-skill.json`,
+The filenames `Skillfile.json`, `Skillfile.dev.json`, `agent-skill.json`,
 `.csk-install.json`, `.csk-managed.json`, and project root `.agents/` are
 portable protocol identifiers. A manager MUST read and write those exact names.
+The filename `csk-skill.json` is a reserved legacy alias for
+`agent-skill.json`: managers MUST continue to read it throughout protocol 1.x,
+but writers MUST emit only `agent-skill.json`.
 
 Machine-home directories, cache names, executable names, global environment
 variables, and managed comment text are implementation-specific. A manager
@@ -119,9 +122,23 @@ current installation.
 
 ## 4. Skill manifest
 
-`csk-skill.json` is OPTIONAL for a pure context skill and otherwise conforms to
-exactly one of `csk-skill-v1.schema.json` through
-`csk-skill-v5.schema.json`.
+`agent-skill.json` is OPTIONAL for a pure context skill and otherwise conforms
+to exactly one of `agent-skill-v1.schema.json` through
+`agent-skill-v5.schema.json`. The legacy filename `csk-skill.json` has exactly
+the same object shape; its unchanged `csk-skill-v1.schema.json` through
+`csk-skill-v5.schema.json` series remains the compatibility contract.
+
+Readers resolve manifests in this order:
+
+1. When only `agent-skill.json` exists, read it.
+2. When only `csk-skill.json` exists, read it as a legacy manifest.
+3. When both exist, parse and validate both independently. They MUST represent
+   equal JSON values: object member order and insignificant whitespace are
+   ignored, array order and JSON value types remain significant. If equal,
+   `agent-skill.json` is authoritative. If unequal, the reader MUST fail with
+   `conflicting_skill_manifests` and MUST NOT install either value.
+4. The existence of an invalid modern manifest is an error and MUST NOT fall
+   back to the other filename or to `agents/runtime.json`.
 
 | Schema | Added behavior |
 |---|---|
@@ -177,9 +194,9 @@ Each `dependencies.mcp_servers` entry requires a non-empty `hint`, MAY document
 `transport` as `stdio` or `http`, and uses `required_in` `any` (default) or
 `all`.
 
-If no modern manifest exists, `agents/runtime.json` MAY be read as the legacy
-object `{ "commands": { <name>: <portable-relative-path> } }`. Writers MUST
-NOT create this legacy form.
+If neither modern manifest filename exists, `agents/runtime.json` MAY be read
+as the legacy object `{ "commands": { <name>: <portable-relative-path> } }`.
+Writers MUST NOT create this legacy form.
 
 ## 5. Project manifests
 

@@ -36,6 +36,7 @@ state:
 ```text
 Skillfile.json
 Skillfile.dev.json
+agent-skill.json
 csk-skill.json
 .csk-install.json
 .csk-managed.json
@@ -55,9 +56,11 @@ earliest release in which removal is permitted. Stable features receive at
 least one minor release of overlap before removal. Security-critical behavior
 may be disabled sooner through a published advisory.
 
-The legacy `agents/runtime.json` manifest and legacy skill command dependency
-form remain readable in protocol 1.x. Writers MUST use `csk-skill.json` and
-`dependencies.skills`.
+The legacy `csk-skill.json` filename, `agents/runtime.json` manifest, and skill
+command dependency form remain readable in protocol 1.x. Writers MUST use
+`agent-skill.json` and `dependencies.skills`. When both modern filenames exist,
+readers accept them only when their decoded JSON values are equal and otherwise
+fail with `conflicting_skill_manifests`.
 
 Registry RC.2 preserves every endpoint and response envelope from RC.1. It
 defines multiple supplied filters as conjunctive, treats content hash as part

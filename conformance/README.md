@@ -54,6 +54,8 @@ The suite contains:
 
 - valid and invalid examples for every JSON Schema;
 - portable identifier, path, and source-identity tables;
+- canonical, legacy, dual-file, conflict, and runtime-fallback skill-manifest
+  resolution cases;
 - context-selection and raw-tree hash fixtures;
 - closure graphs including diamond, conflict, cycle, narrowing, and tie order;
 - normalized install marker and adapter ledger objects;

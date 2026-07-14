@@ -1,7 +1,7 @@
 {
   "entries": [
     {
-      "entry_hash": "524f391b21a7f3214bae20039eb3b9faef239bf822c1b92c1ac94b725c0ab375",
+      "entry_hash": "41f4782f79143df2d21d0776863852b736385543642549b38082c8c706f31b6a",
       "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
       "record": {
         "audit": {
@@ -10,13 +10,13 @@
           "sequence": 1
         },
         "commit": "0123456789abcdef0123456789abcdef01234567",
-        "content_sha256": "sha256:0f6ddc78179294a5e2a856b4a3588062fec06a389a4c0b749a584cf064455dbb",
+        "content_sha256": "sha256:f2c21f31f69bb5c9366028ac6e63a701c66803586c8ce12eac1186dcd350e5eb",
         "name": "golden-skill",
         "schema_version": 1,
         "sig": {
           "algorithm": "ed25519",
           "key_id": "56475aa75463474c",
-          "signature": "Il19qHRKyTLWrRL2xFEdXUvPXO67tHiF9yPD3fvPegp974L6uXWnwhHxXxKlFJxR9tIyqPb6KzDgDu7SEVT5Dw=="
+          "signature": "wDdWjdUbQZhVoDIaGTxkZaeyM5AP5+k06Im2FJISLfsk91+cFyNAjdtCTgIrCaD9uJBrClP0xrUrr9HQG4kEAQ=="
         },
         "source_identity": "git.example.com/skills/golden-skill",
         "status": "audited"

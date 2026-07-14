@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	protocolVersion = "1.0.0-rc.2"
+	protocolVersion = "1.0.0-rc.3"
 	fixedCommit     = "0123456789abcdef0123456789abcdef01234567"
 	fixedTime       = "2026-07-13T00:00:00Z"
 	genesis         = "0000000000000000000000000000000000000000000000000000000000000000"
@@ -125,10 +125,58 @@ func main() {
 
 	writeCanonicalVectors(vectors)
 	writeBehaviorVectors(vectors, snapshotHash)
+	writeSkillManifestResolutionVectors(vectors)
 	writeManagerConfigVectors(vectors, pinned)
 	writeManagerLifecycleVectors(vectors)
 	writeSchemaCases(suite, marker, ledger, audited, snapshot, entries[0], bundle, pinned)
 	writeManifest(suite)
+}
+
+func writeSkillManifestResolutionVectors(dir string) {
+	canonical := "{\"schema_version\":1,\"commands\":{}}\n"
+	legacyEquivalent := "{\n  \"commands\": {},\n  \"schema_version\": 1\n}\n"
+	writeJSON(filepath.Join(dir, "skill-manifest-resolution.json"), []any{
+		map[string]any{
+			"name": "canonical-only", "files": map[string]any{"agent-skill.json": canonical},
+			"expected_source": "agent-skill.json", "expected_commands": []any{},
+		},
+		map[string]any{
+			"name": "legacy-only", "files": map[string]any{"csk-skill.json": canonical},
+			"expected_source": "csk-skill.json", "expected_commands": []any{},
+		},
+		map[string]any{
+			"name":            "equal-dual-manifests",
+			"files":           map[string]any{"agent-skill.json": canonical, "csk-skill.json": legacyEquivalent},
+			"expected_source": "agent-skill.json", "expected_commands": []any{},
+		},
+		map[string]any{
+			"name": "conflicting-dual-manifests",
+			"files": map[string]any{
+				"agent-skill.json": canonical,
+				"csk-skill.json":   "{\"schema_version\":1,\"commands\":{\"legacy\":{\"type\":\"system\",\"command\":\"legacy\"}}}\n",
+			},
+			"error": "conflicting_skill_manifests",
+		},
+		map[string]any{
+			"name":  "invalid-canonical-does-not-fallback",
+			"files": map[string]any{"agent-skill.json": "{\n", "csk-skill.json": canonical},
+			"error": "manifest_invalid",
+		},
+		map[string]any{
+			"name":  "invalid-legacy-does-not-hide-behind-canonical",
+			"files": map[string]any{"agent-skill.json": canonical, "csk-skill.json": "{\n"},
+			"error": "manifest_invalid",
+		},
+		map[string]any{
+			"name":            "runtime-fallback-without-modern-manifest",
+			"files":           map[string]any{"agents/runtime.json": "{\"commands\":{\"legacy\":\"scripts/legacy\"}}\n"},
+			"expected_source": "agents/runtime.json", "expected_commands": []any{"legacy"},
+		},
+		map[string]any{
+			"name": "pure-context-without-manifest", "files": map[string]any{},
+			"expected_source": nil, "expected_commands": []any{},
+		},
+	})
 }
 
 func writeCanonicalVectors(dir string) {
@@ -542,12 +590,14 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	}
 	cases := map[string]schemaCase{}
 	for version := 1; version <= 5; version++ {
-		name := fmt.Sprintf("csk-skill-v%d.schema.json", version)
 		invalid := map[string]any{"schema_version": version, "install": "echo unsafe"}
 		if version == 1 {
 			invalid = map[string]any{"schema_version": 1, "runtime_roots": []any{"scripts"}}
 		}
-		cases[name] = schemaCase{validSkill(version), invalid}
+		for _, prefix := range []string{"agent-skill", "csk-skill"} {
+			name := fmt.Sprintf("%s-v%d.schema.json", prefix, version)
+			cases[name] = schemaCase{validSkill(version), invalid}
+		}
 	}
 	cases["skillfile-v1.schema.json"] = schemaCase{
 		map[string]any{"schema_version": 1, "project": map[string]any{"alias": "Golden iOS"}, "skills": []any{map[string]any{"name": "golden-skill", "revision": fixedCommit}}},
@@ -673,7 +723,7 @@ func selectedContextFiles(root string) []string {
 		RuntimeRoots []string       `json:"runtime_roots"`
 		Commands     map[string]any `json:"commands"`
 	}
-	payload, err := os.ReadFile(filepath.Join(root, "csk-skill.json"))
+	payload, err := os.ReadFile(filepath.Join(root, "agent-skill.json"))
 	must(err)
 	must(json.Unmarshal(payload, &manifest))
 	var files []string

@@ -3,6 +3,38 @@
 All notable protocol changes are recorded here. Versions follow Semantic
 Versioning for the complete specification set.
 
+## 1.0.0-rc.3 - 2026-07-14
+
+### Added
+
+- Canonical `agent-skill.json` schemas for skill runtime, capability, command,
+  skill, and MCP dependency declarations.
+- Shared manifest-resolution vectors covering canonical-only, legacy-only,
+  equal dual manifests, conflicting dual manifests, invalid-manifest
+  fail-closed behavior, and `agents/runtime.json` fallback.
+
+### Changed
+
+- Made `agent-skill.json` the implementation-neutral filename that conforming
+  writers emit.
+- Reserved `csk-skill.json` as a protocol 1.x read alias and preserved its
+  published schema bytes unchanged.
+- Required readers to reject unequal dual manifests with
+  `conflicting_skill_manifests` instead of choosing one silently.
+
+### Compatibility
+
+- Existing `csk-skill.json` packages remain readable without migration.
+- Packages may temporarily ship equal canonical and legacy manifests during a
+  staged rollout; `agent-skill.json` is authoritative in that case.
+- `agents/runtime.json` remains readable only when neither modern filename is
+  present.
+
+### Security
+
+- The rename adds no execution surface. Dual-file ambiguity and attempts to
+  hide an invalid manifest behind a fallback now fail closed.
+
 ## 1.0.0-rc.2 - 2026-07-13
 
 ### Added

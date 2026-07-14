@@ -1,6 +1,8 @@
 {
   "schema_version": 5,
-  "runtime_roots": ["scripts"],
+  "runtime_roots": [
+    "scripts"
+  ],
   "capabilities": {
     "network": ["api.example.com"],
     "filesystem": "repo",

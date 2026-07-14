@@ -99,8 +99,8 @@ def validate_schemas() -> None:
 def validate_manifest() -> None:
     manifest_path = SUITE / "manifest.json"
     manifest = load_json(manifest_path)
-    if manifest.get("protocol_version") != "1.0.0-rc.2":
-        raise ValidationFailure("vector manifest protocol_version is not 1.0.0-rc.2")
+    if manifest.get("protocol_version") != "1.0.0-rc.3":
+        raise ValidationFailure("vector manifest protocol_version is not 1.0.0-rc.3")
     entries = manifest.get("files")
     if not isinstance(entries, list):
         raise ValidationFailure("vector manifest files must be a list")
@@ -193,6 +193,32 @@ def validate_vector_semantics() -> None:
 
     ledger = load_json(SUITE / "expected" / "adapter-ledger.json")
     require_sorted_unique(ledger["entries"], "adapter ledger entries")
+
+    manifest_resolution = load_json(SUITE / "vectors" / "skill-manifest-resolution.json")
+    require_named_cases(
+        manifest_resolution,
+        "skill-manifest resolution",
+        {
+            "canonical-only",
+            "legacy-only",
+            "equal-dual-manifests",
+            "conflicting-dual-manifests",
+            "invalid-canonical-does-not-fallback",
+            "invalid-legacy-does-not-hide-behind-canonical",
+            "runtime-fallback-without-modern-manifest",
+            "pure-context-without-manifest",
+        },
+    )
+    errors = {item.get("error") for item in manifest_resolution if "error" in item}
+    if errors != {"conflicting_skill_manifests", "manifest_invalid"}:
+        raise ValidationFailure("skill-manifest resolution error classes are incomplete")
+    for item in manifest_resolution:
+        files = item.get("files")
+        if not isinstance(files, dict) or any(
+            not isinstance(name, str) or not isinstance(payload, str)
+            for name, payload in files.items()
+        ):
+            raise ValidationFailure("skill-manifest resolution files must map paths to text")
 
     valid_ccj = load_json(SUITE / "vectors" / "canonical-valid.json")
     if not valid_ccj or any(not item.get("canonical_utf8") for item in valid_ccj):

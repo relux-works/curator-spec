@@ -10,3 +10,7 @@ a standalone wire object.
 
 Schema examples and expected validation outcomes live under
 `../../conformance/v1/schema-cases/`.
+
+`agent-skill-v1.schema.json` through `agent-skill-v5.schema.json` are the
+canonical skill-manifest schemas. The corresponding `csk-skill-*` schemas are
+the unchanged legacy series retained for protocol 1.x readers.

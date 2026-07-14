@@ -7,7 +7,8 @@ approve changes; CI enforces the mechanically verifiable items.
 
 - [ ] All normative changes have compatibility and security impact notes.
 - [ ] Structured wire changes use a new schema version and include a migration
-  note. Deployed protocol filenames remain unchanged.
+  note. No deployed protocol identifier is removed or silently reinterpreted;
+  legacy aliases remain covered by compatibility tests.
 - [ ] `make validate` passes on Linux, macOS, and Windows.
 - [ ] `make regenerate-check` proves byte-identical generated vectors.
 - [ ] Go Curator, the independent Python manager, and Curator Skill Registry

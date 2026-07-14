@@ -1,8 +1,8 @@
 # Curator Protocol Specification
 
-**Version:** 1.0.0-rc.2
+**Version:** 1.0.0-rc.3
 
-**Date:** 2026-07-13
+**Date:** 2026-07-14
 
 **Status:** Draft release candidate
 
@@ -21,7 +21,7 @@ interface, or internal architecture. Compatibility identifiers inherited from
 the deployed protocol remain unchanged:
 
 - `Skillfile.json` and `Skillfile.dev.json`;
-- `csk-skill.json`;
+- `agent-skill.json` (canonical) and `csk-skill.json` (legacy read alias);
 - `.csk-install.json` and `.csk-managed.json`;
 - `.agents/` as the portable project installation root.
 
@@ -69,7 +69,7 @@ shared test vectors, not by copying behavior from either codebase.
 
 ## Release status
 
-`1.0.0-rc.2` remains a draft until it receives an independent security review
+`1.0.0-rc.3` remains a draft until it receives an independent security review
 of the registry protocol and an independent interoperability review of the
 shared suite. Review evidence is published under [`reviews/`](reviews/). See
 [COMPATIBILITY.md](COMPATIBILITY.md),
