@@ -74,3 +74,51 @@ stable 1.0.0 release. Schema v2 adds explicit non-maintainer and non-author
 attestations; producers migrate by adding both fields with truthful boolean
 values. The original schema v1 remains available for draft evidence, but a v1
 report is not accepted by the stable release gate.
+
+Protocol rc.4 introduced manifest schema 6, the closed local `go-v1` driver,
+build receipt v1, install marker v2, and claim v2. Their schema bytes, driver
+meaning, package-controlled surface, and marker relationships are frozen. An
+rc.5 reader continues to accept them and never treats local `go-v1` input as an
+external repository.
+
+Protocol rc.5 adds manifest schema 7, `skill-build.json` schema 1,
+`Skillfile.dev.json` schema 2, the closed `go-repository-v1` driver, build
+receipt v2, install marker v3, and claim v3. A schema-7 local `go-v1` command
+still uses receipt v1; an external command uses receipt v2; marker v3 records
+local, external, or mixed commands with those explicit receipt versions.
+Schemas 1 through 6, receipt v1, markers v1/v2, claim v1/v2, and the rc.4
+conformance bytes do not acquire repository fields or new semantics.
+
+Protocol rc.5 also names the execution policy under which both compiled drivers
+run. `go-v1` and `go-repository-v1` declare the portable `manager-worker-v1`
+policy of `protocol/core.md` section 4.2.1. Neither rc.4 nor rc.5 has been
+released or pinned, so this revision lands in place. It is byte neutral for
+manifest schemas 1 through 6 and for the `build-receipt-v1`,
+`install-marker-v2`, and `conformance-claim-v2` schema files, and it adds no
+package-controlled field to any manifest or descriptor.
+
+It is deliberately not byte neutral for `go-v1` cache identity. The generated
+`go-v1` receipt example and every `go-v1` logical cache key change, because the
+execution-policy identity is inside the canonical build input. A pre-revision
+candidate entry therefore misses instead of aliasing a portable entry, and a
+future hardened execution profile must use a new execution-policy identity and a
+new claim schema version rather than widening the closed `manager-worker-v1`
+constant. Marker v3 build records and claim v3 driver assertions state the
+policy explicitly; marker v2 binds it transitively through its recorded cache
+key and receipt hash.
+
+The per-platform native-control inventory and the capability-evidence record are
+versioned separately from the execution policy. `rc5-native-control-inventory-v1`
+is the exhaustive authority for which native controls a portable manager applies,
+and `capability-evidence-v1` is the closed record that reports them. Extending or
+re-scoping the inventory requires a new inventory version and a protocol
+revision, but not a new execution-policy identity, because neither the inventory
+nor the evidence record enters a build input, an artifact, a cache key, a
+receipt, a marker, or a claim. An unavailable inventory control never rejects a
+build; only a missing mandatory portable control does.
+
+Candidate downstream runs consume rc.5 through an explicitly supplied
+`CURATOR_CONFORMANCE_ROOT` and verify the manifest digest recorded in
+`release/1.0.0-rc.5.json`. That candidate identity does not advance a
+repository's committed released-suite pin and is not a published release,
+platform claim, signature, or attestation.
