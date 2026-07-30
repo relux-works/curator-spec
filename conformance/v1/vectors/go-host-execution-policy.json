@@ -1050,7 +1050,7 @@
     "fingerprinted-goroot-bin-go",
     "fingerprinted-goroot-pkg-tool-child"
   ],
-  "protocol_version": "1.0.0-rc.5",
+  "protocol_version": "1.0.0-rc.6",
   "reserved_hardened_execution_policy": "hardened-worker-v1",
   "schema_version": 1,
   "session_states": [

@@ -3,6 +3,47 @@
 All notable protocol changes are recorded here. Versions follow Semantic
 Versioning for the complete specification set.
 
+## 1.0.0-rc.6 - 2026-07-30
+
+### Added
+
+- Restored the 22 schema-6 compiled manager lifecycle cases for audit and
+  provider ordering, read-only dry runs, private staging, protected cache
+  publication, concurrent projects, deterministic transactions, recovery,
+  currentness, repair, and locked garbage collection.
+- Added fail-closed generator, validator, and release-gate coverage for every
+  restored lifecycle group and name and for the exact portable
+  `manager-worker-v1` build input, cache key, receipt, and artifact identity.
+- Added `release/1.0.0-rc.6.json` with the exact regenerated suite-manifest pin
+  and an explicit immutable reference to the published rc.5 metadata.
+
+### Changed
+
+- The shared-suite manifest and current candidate metadata now identify
+  `1.0.0-rc.6`.
+- The compiled lifecycle fixture now reuses the published rc.5 portable
+  `go-v1` identity instead of the pre-execution-policy rc.4 identity.
+- Release validation now rejects a missing or renamed schema-6 artifact, a
+  dropped lifecycle case, a stale compiled fixture, changed claim-v1/v2
+  history, stale or duplicate suite pins, and any byte change to the published
+  rc.5 metadata.
+
+### Compatibility
+
+- Manifest schemas 1 through 7, build receipts v1/v2, install markers v1/v2/v3,
+  and claims v1/v2/v3 retain their bytes and meaning. Claim v3 remains bound to
+  rc.5; rc.6 defines no new claim schema and emits no conformance claim.
+- `release/1.0.0-rc.5.json` remains byte-identical to the signed and published
+  rc.5 commit. Rc.6 uses a new metadata file and suite identity; it does not
+  rewrite historical release evidence or advance a downstream implementation
+  pin.
+
+### Security
+
+- All restored rejection and lifecycle evidence remains declarative. The
+  generator and validator execute no package-provided code, and all build
+  rejections continue to require `artifact_executed=false`.
+
 ## 1.0.0-rc.5 - 2026-07-28
 
 ### Added

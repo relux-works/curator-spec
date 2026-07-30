@@ -143,11 +143,12 @@ The executable corpus is under
 through `CURATOR_CONFORMANCE_ROOT` and must execute every applicable case
 without skip or xfail. The exact candidate protocol pin is
 `candidate_protocol_pin.manifest_sha256` in
-[`release/1.0.0-rc.5.json`](../release/1.0.0-rc.5.json); consumers must compare
+[`release/1.0.0-rc.6.json`](../release/1.0.0-rc.6.json); consumers must compare
 that value with the SHA-256 of `conformance/v1/manifest.json`.
 
-Schema-valid claim-v3 bytes are not platform evidence. Emit a driver/platform
-tuple only after immutable native evidence proves that exact tuple against the
-pinned suite. This candidate emits no claim. macOS and Windows external-driver
+Schema-valid claim-v3 bytes remain historical rc.5 claim bytes, not rc.6
+platform evidence. Rc.6 defines no new claim schema and emits no claim. A
+future driver/platform tuple requires a versioned claim schema plus immutable
+native evidence against the pinned suite. macOS and Windows external-driver
 qualification remains pending downstream native runs, and Linux is explicitly
 excluded until `TASK-260728-1skseh` passes.

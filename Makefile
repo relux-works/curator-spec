@@ -10,7 +10,7 @@ regenerate:
 
 regenerate-check:
 	go run ./tools/generate-vectors -root .
-	git diff --exit-code -- conformance/v1 release/1.0.0-rc.5.json
+	git diff --exit-code -- conformance/v1 release/1.0.0-rc.5.json release/1.0.0-rc.6.json
 
 release-check: validate regenerate-check
 	test -n "$(VERSION)"

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import json
 import hashlib
+import json
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -125,7 +126,7 @@ class StableReleaseGateTests(unittest.TestCase):
             release_gate.validate_reviews(VERSION, release_commit)
 
     def test_candidate_requires_exact_suite_manifest_pin(self) -> None:
-        version = "1.0.0-rc.5"
+        version = "1.0.0-rc.6"
         (self.root / "README.md").write_text(
             f"**Version:** {version}\n", encoding="utf-8"
         )
@@ -171,7 +172,7 @@ class StableReleaseGateTests(unittest.TestCase):
             release_gate.validate_version(version)
 
     def test_release_surfaces_name_only_the_neutral_descriptor(self) -> None:
-        version = "1.0.0-rc.5"
+        version = "1.0.0-rc.6"
         schemas = self.root / "schemas" / "v1"
         schemas.mkdir(parents=True)
         (schemas / release_gate.REPOSITORY_DESCRIPTOR_SCHEMA).write_text(
@@ -207,7 +208,7 @@ class StableReleaseGateTests(unittest.TestCase):
             release_gate.validate_repository_descriptor(version)
 
     def test_candidate_rejects_dishonest_execution_policy_metadata(self) -> None:
-        version = "1.0.0-rc.5"
+        version = "1.0.0-rc.6"
         (self.root / "README.md").write_text(
             f"**Version:** {version}\n", encoding="utf-8"
         )
@@ -269,6 +270,189 @@ class StableReleaseGateTests(unittest.TestCase):
                 msg=f"{label} was accepted",
             ):
                 release_gate.validate_version(version)
+
+
+class ProtocolRC6ReleaseGateTests(unittest.TestCase):
+    VERSION = "1.0.0-rc.6"
+
+    def setUp(self) -> None:
+        self.temporary = tempfile.TemporaryDirectory()
+        self.root = Path(self.temporary.name)
+        shutil.copytree(
+            SOURCE_ROOT,
+            self.root,
+            dirs_exist_ok=True,
+            ignore=shutil.ignore_patterns(".git", "__pycache__"),
+        )
+        self.root_patch = patch.object(release_gate, "ROOT", self.root)
+        self.root_patch.start()
+
+    def tearDown(self) -> None:
+        self.root_patch.stop()
+        self.temporary.cleanup()
+
+    @staticmethod
+    def _write_json(path: Path, value: object) -> None:
+        path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
+
+    def _refresh_manifest_entry(self, relative: str) -> None:
+        suite = self.root / "conformance" / "v1"
+        path = suite / relative
+        manifest_path = suite / "manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        for entry in manifest["files"]:
+            if entry["path"] == relative:
+                entry["sha256"] = (
+                    "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+                )
+                break
+        else:
+            self.fail(f"manifest does not list {relative}")
+        self._write_json(manifest_path, manifest)
+
+    def test_accepts_complete_rc6_artifact_set(self) -> None:
+        release_gate.validate_protocol_artifacts(self.VERSION)
+
+    def test_rejects_each_missing_required_artifact(self) -> None:
+        for relative in sorted(release_gate.RC6_REQUIRED_FILES):
+            with self.subTest(path=relative):
+                path = self.root / relative
+                payload = path.read_bytes()
+                path.unlink()
+                try:
+                    with self.assertRaises(release_gate.ReleaseFailure):
+                        release_gate.validate_protocol_artifacts(self.VERSION)
+                finally:
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_bytes(payload)
+
+    def test_rejects_renamed_v6_schema(self) -> None:
+        source = self.root / "schemas" / "v1" / "agent-skill-v6.schema.json"
+        source.rename(source.with_name("agent-skill-v6-renamed.schema.json"))
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "required artifacts are missing"
+        ):
+            release_gate.validate_protocol_artifacts(self.VERSION)
+
+    def test_rejects_missing_required_manifest_entry(self) -> None:
+        manifest_path = self.root / "conformance" / "v1" / "manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["files"] = [
+            entry
+            for entry in manifest["files"]
+            if entry["path"] != "vectors/manager-lifecycle.json"
+        ]
+        self._write_json(manifest_path, manifest)
+        with self.assertRaises(release_gate.ReleaseFailure):
+            release_gate.validate_protocol_artifacts(self.VERSION)
+
+    def test_rejects_removed_lifecycle_case_with_updated_manifest_hash(self) -> None:
+        relative = "vectors/manager-lifecycle.json"
+        path = self.root / "conformance" / "v1" / relative
+        vector = json.loads(path.read_text(encoding="utf-8"))
+        vector["recovery_cases"] = [
+            case
+            for case in vector["recovery_cases"]
+            if case["name"]
+            != "interrupted-global-journal-recovered-by-transaction-id"
+        ]
+        self._write_json(path, vector)
+        self._refresh_manifest_entry(relative)
+        with self.assertRaisesRegex(release_gate.ReleaseFailure, "lifecycle"):
+            release_gate.validate_protocol_artifacts(self.VERSION)
+
+    def test_rejects_stale_compiled_fixture_with_updated_manifest_hash(self) -> None:
+        relative = "vectors/manager-lifecycle.json"
+        path = self.root / "conformance" / "v1" / relative
+        vector = json.loads(path.read_text(encoding="utf-8"))
+        vector["compiled_build_fixture"]["execution_policy"] = "hardened-worker-v1"
+        self._write_json(path, vector)
+        self._refresh_manifest_entry(relative)
+        with self.assertRaisesRegex(release_gate.ReleaseFailure, "lifecycle"):
+            release_gate.validate_protocol_artifacts(self.VERSION)
+
+    def test_rejects_redefined_claim_v1_and_v2_history(self) -> None:
+        for schema_name, protocol_version in (
+            ("conformance-claim-v1.schema.json", self.VERSION),
+            ("conformance-claim-v2.schema.json", self.VERSION),
+        ):
+            with self.subTest(schema=schema_name):
+                path = self.root / "schemas" / "v1" / schema_name
+                payload = path.read_bytes()
+                schema = json.loads(payload)
+                schema["properties"]["protocol_version"]["const"] = protocol_version
+                self._write_json(path, schema)
+                try:
+                    with self.assertRaises(release_gate.ReleaseFailure):
+                        release_gate.validate_protocol_artifacts(self.VERSION)
+                finally:
+                    path.write_bytes(payload)
+
+    def test_rejects_claim_v3_transition_mismatch(self) -> None:
+        path = self.root / "schemas" / "v1" / "conformance-claim-v3.schema.json"
+        schema = json.loads(path.read_text(encoding="utf-8"))
+        schema["properties"]["protocol_version"]["const"] = self.VERSION
+        self._write_json(path, schema)
+        with self.assertRaises(release_gate.ReleaseFailure):
+            release_gate.validate_protocol_artifacts(self.VERSION)
+
+    def test_rejects_changed_published_rc5_release_metadata(self) -> None:
+        path = self.root / "release" / "1.0.0-rc.5.json"
+        metadata = json.loads(path.read_text(encoding="utf-8"))
+        metadata["created_at"] = "2026-07-30T00:00:00Z"
+        self._write_json(path, metadata)
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "published rc.5 release metadata changed"
+        ):
+            release_gate.validate_protocol_artifacts(self.VERSION)
+
+    def test_rejects_rc6_history_rewriting_rc5_identity(self) -> None:
+        path = self.root / "release" / f"{self.VERSION}.json"
+        metadata = json.loads(path.read_text(encoding="utf-8"))
+        metadata["historical_release"]["metadata_sha256"] = "sha256:" + "0" * 64
+        self._write_json(path, metadata)
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure,
+            "rewrites rc.5 evidence or fabricates an rc.6 claim",
+        ):
+            release_gate.validate_protocol_artifacts(self.VERSION)
+
+    def test_rc6_has_no_conformance_claim_schema(self) -> None:
+        path = self.root / "claim.json"
+        self._write_json(path, {})
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure,
+            "claim verification is not defined for 1.0.0-rc.6",
+        ):
+            release_gate.validate_conformance_claim(path, self.VERSION)
+
+    def test_rejects_stale_rc6_suite_pin(self) -> None:
+        path = self.root / "release" / f"{self.VERSION}.json"
+        metadata = json.loads(path.read_text(encoding="utf-8"))
+        metadata["candidate_protocol_pin"]["manifest_sha256"] = (
+            "sha256:" + "0" * 64
+        )
+        self._write_json(path, metadata)
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "does not pin the exact suite manifest"
+        ):
+            release_gate.validate_version(self.VERSION)
+
+    def test_rejects_duplicate_rc6_suite_pin(self) -> None:
+        path = self.root / "release" / f"{self.VERSION}.json"
+        metadata = json.loads(path.read_text(encoding="utf-8"))
+        expected = metadata["candidate_protocol_pin"]["manifest_sha256"]
+        payload = path.read_text(encoding="utf-8").replace(
+            f'"manifest_sha256": "{expected}"',
+            (
+                f'"manifest_sha256": "{expected}",\n'
+                f'    "manifest_sha256": "sha256:{"0" * 64}"'
+            ),
+            1,
+        )
+        path.write_text(payload, encoding="utf-8")
+        with self.assertRaisesRegex(release_gate.ReleaseFailure, "duplicate JSON key"):
+            release_gate.validate_version(self.VERSION)
 
 
 if __name__ == "__main__":

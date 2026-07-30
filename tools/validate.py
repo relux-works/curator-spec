@@ -22,6 +22,12 @@ SCHEMAS = ROOT / "schemas" / "v1"
 SUITE = ROOT / "conformance" / "v1"
 REVIEWS = ROOT / "reviews"
 SAFE_INTEGER = 9_007_199_254_740_991
+PROTOCOL_VERSION = "1.0.0-rc.6"
+RC5_PROTOCOL_VERSION = "1.0.0-rc.5"
+RC5_RELEASE_METADATA_SHA256 = (
+    "sha256:75ae17fc029b4f51ca40ce768d04fd72991ec3db2602b8fe59213bee6ac34583"
+)
+RC5_PUBLISHED_COMMIT = "f5d7673039226ab81de2f4f87e2155ae995c4df3"
 
 # The single execution-policy identity that protocol 1.0 defines for the
 # compiled-build drivers, the identity reserved for the separately tracked
@@ -630,8 +636,10 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
 def validate_manifest() -> None:
     manifest_path = SUITE / "manifest.json"
     manifest = load_json(manifest_path)
-    if manifest.get("protocol_version") != "1.0.0-rc.5":
-        raise ValidationFailure("vector manifest protocol_version is not 1.0.0-rc.5")
+    if manifest.get("protocol_version") != PROTOCOL_VERSION:
+        raise ValidationFailure(
+            f"vector manifest protocol_version is not {PROTOCOL_VERSION}"
+        )
     entries = manifest.get("files")
     if not isinstance(entries, list):
         raise ValidationFailure("vector manifest files must be a list")
@@ -657,27 +665,46 @@ def validate_manifest() -> None:
         if vector_path.suffix == ".json":
             load_json(vector_path)
 
-    release = load_json(ROOT / "release" / "1.0.0-rc.5.json")
+    historical_path = ROOT / "release" / "1.0.0-rc.5.json"
+    historical_digest = "sha256:" + hashlib.sha256(historical_path.read_bytes()).hexdigest()
+    if historical_digest != RC5_RELEASE_METADATA_SHA256:
+        raise ValidationFailure("published rc.5 release metadata changed")
+
+    release = load_json(ROOT / "release" / "1.0.0-rc.6.json")
     manifest_digest = "sha256:" + hashlib.sha256(manifest_path.read_bytes()).hexdigest()
-    if release.get("protocol_version") != "1.0.0-rc.5":
-        raise ValidationFailure("rc.5 release metadata identifies the wrong protocol version")
+    if release.get("protocol_version") != PROTOCOL_VERSION:
+        raise ValidationFailure("rc.6 release metadata identifies the wrong protocol version")
     pin = release.get("candidate_protocol_pin", {})
     if not isinstance(pin, dict) or pin.get("manifest_sha256") != manifest_digest:
-        raise ValidationFailure("rc.5 downstream candidate pin does not match the suite manifest")
+        raise ValidationFailure("rc.6 downstream candidate pin does not match the suite manifest")
     downstream = release.get("downstream_consumption", {})
     if (
         not isinstance(downstream, dict)
         or downstream.get("required_manifest_sha256") != manifest_digest
         or downstream.get("committed_release_pin_advanced") is not False
     ):
-        raise ValidationFailure("rc.5 downstream consumption metadata is incomplete")
+        raise ValidationFailure("rc.6 downstream consumption metadata is incomplete")
+    history = release.get("historical_release", {})
+    if (
+        not isinstance(history, dict)
+        or history.get("protocol_version") != RC5_PROTOCOL_VERSION
+        or history.get("metadata_path") != "release/1.0.0-rc.5.json"
+        or history.get("metadata_sha256") != RC5_RELEASE_METADATA_SHA256
+        or history.get("published_commit") != RC5_PUBLISHED_COMMIT
+        or history.get("immutable") is not True
+        or release.get("source_baseline_commit") != RC5_PUBLISHED_COMMIT
+        or release.get("legacy_release") != RC5_PROTOCOL_VERSION
+    ):
+        raise ValidationFailure("rc.6 metadata does not preserve published rc.5 evidence")
     claim = release.get("claim_v3", {})
     if (
         not isinstance(claim, dict)
+        or claim.get("claim_protocol_version") != RC5_PROTOCOL_VERSION
+        or claim.get("rc6_claim_schema") is not None
         or claim.get("claims_emitted") != []
         or claim.get("linux_excluded_until_task") != "TASK-260728-1skseh"
     ):
-        raise ValidationFailure("rc.5 release metadata fabricates or weakens platform qualification")
+        raise ValidationFailure("rc.6 release metadata fabricates or weakens platform qualification")
     execution = release.get("execution_policy", {})
     if (
         not isinstance(execution, dict)
@@ -691,7 +718,7 @@ def validate_manifest() -> None:
         != CAPABILITY_EVIDENCE_RECORD_VERSION
     ):
         raise ValidationFailure(
-            "rc.5 release metadata does not honestly record the portable execution policy"
+            "rc.6 release metadata does not honestly record the portable execution policy"
         )
 
 
@@ -1555,6 +1582,44 @@ TOOLCHAIN_CASES = {
     "selected-go-outside-goroot",
     "toolchain-tree-mutation-during-use",
 }
+MANAGER_COMPILED_DRY_RUN_CASES = {"compiled-cache-miss-is-read-only"}
+MANAGER_COMPILED_LIFECYCLE_CASES = {
+    "planning_cases": {"all-source-and-trust-gates-before-build"},
+    "build_order_cases": {"provider-first-and-lexical-command-order"},
+    "private_build_cases": {
+        "all-misses-stage-and-verify-before-home-lock",
+        "second-build-failure-preserves-persistent-state",
+    },
+    "cache_publication_cases": {
+        "publish-complete-immutable-entry-under-home-lock",
+        "concurrent-identical-winner",
+        "concurrent-determinism-mismatch",
+        "corrupt-live-entry",
+        "untrusted-cache-boundary",
+    },
+    "cross_project_cases": {
+        "two-project-success-preserves-both-consumers",
+        "successful-project-survives-other-project-rollback",
+    },
+    "transaction_cases": {
+        "deterministic-lock-order",
+        "deterministic-target-order-and-consumer-last",
+        "reverse-rollback-under-home-lock",
+    },
+    "recovery_cases": {
+        "interrupted-global-journal-recovered-by-transaction-id",
+        "install-recovery-runs-after-private-builds",
+    },
+    "status_cases": {
+        "compiled-installation-current",
+        "compiled-currentness-failure-matrix",
+    },
+    "repair_cases": {"repair-rebuilds-invalid-compiled-entry"},
+    "gc_cases": {
+        "locked-mark-and-sweep-compiled-cache",
+        "post-commit-gc-failure-is-maintenance-warning",
+    },
+}
 
 
 def frame_build_source(records: list[tuple[str, bytes]]) -> bytes:
@@ -1652,6 +1717,60 @@ def validate_build_driver_vectors() -> None:
 
     validate_build_driver_cache_identity(vector, build_input, cache_key)
     validate_build_driver_cases(vector, cache_key, receipt_hash)
+
+
+def validate_manager_lifecycle_vectors(manager: Any, build_drivers: Any) -> None:
+    """Require the complete schema-6 compiled lifecycle surface.
+
+    The lifecycle vector deliberately reuses the current portable go-v1
+    identity. Keeping this check separate from manifest hashing prevents a
+    self-consistent regeneration from silently certifying a dropped lifecycle
+    group or a stale pre-execution-policy identity.
+    """
+    if not isinstance(manager, dict) or manager.get("schema_version") != 1:
+        raise ValidationFailure("manager lifecycle vector is not schema 1")
+    require_named_cases(
+        manager.get("dry_run_cases"),
+        "manager compiled dry run",
+        MANAGER_COMPILED_DRY_RUN_CASES,
+    )
+    for field, required in MANAGER_COMPILED_LIFECYCLE_CASES.items():
+        require_named_cases(manager.get(field), f"manager lifecycle {field}", required)
+
+    if not isinstance(build_drivers, dict):
+        raise ValidationFailure("compiled lifecycle build-driver vector is missing")
+    fixture = manager.get("compiled_build_fixture")
+    identity = build_drivers.get("portable_identity")
+    if not isinstance(fixture, dict) or not isinstance(identity, dict):
+        raise ValidationFailure("compiled lifecycle/build-driver identity is missing")
+    if fixture.get("source_vector") != "build-drivers.json#/portable_identity":
+        raise ValidationFailure("compiled lifecycle fixture has a stale source vector")
+    if (
+        fixture.get("execution_policy") != PORTABLE_EXECUTION_POLICY
+        or identity.get("execution_policy") != PORTABLE_EXECUTION_POLICY
+    ):
+        raise ValidationFailure("compiled lifecycle does not name the portable execution policy")
+    build_input = identity.get("build_input")
+    if (
+        not isinstance(build_input, dict)
+        or not isinstance(build_input.get("policy"), dict)
+        or build_input["policy"].get("execution_policy") != PORTABLE_EXECUTION_POLICY
+    ):
+        raise ValidationFailure("compiled lifecycle portable input omits its execution policy")
+    for lifecycle_field, identity_field in {
+        "execution_policy": "execution_policy",
+        "build_input": "build_input",
+        "cache_key": "cache_key",
+        "stored_receipt": "stored_receipt",
+        "receipt_sha256": "receipt_sha256",
+        "artifact": "artifact",
+    }.items():
+        if fixture.get(lifecycle_field) != identity.get(identity_field):
+            raise ValidationFailure(
+                f"compiled lifecycle {lifecycle_field} differs from build-driver {identity_field}"
+            )
+    if fixture.get("logical_command") != build_input.get("command"):
+        raise ValidationFailure("compiled lifecycle logical command differs from its build input")
 
 
 def validate_build_driver_cache_identity(vector: Any, portable_input: Any, portable_key: str) -> None:
@@ -1986,7 +2105,11 @@ def validate_vector_semantics() -> None:
     require_named_cases(
         manager.get("dry_run_cases"),
         "manager dry run",
-        {"project-upgrade", "global-upgrade"},
+        {"project-upgrade", "global-upgrade", *MANAGER_COMPILED_DRY_RUN_CASES},
+    )
+    validate_manager_lifecycle_vectors(
+        manager,
+        load_json(SUITE / "vectors" / "build-drivers.json"),
     )
 
     acquisition = load_json(SUITE / "vectors" / "external-repository-acquisition.json")

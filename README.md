@@ -1,8 +1,8 @@
 # Curator Protocol Specification
 
-**Version:** 1.0.0-rc.5
+**Version:** 1.0.0-rc.6
 
-**Date:** 2026-07-28
+**Date:** 2026-07-30
 
 **Status:** Draft release candidate
 
@@ -70,13 +70,14 @@ shared test vectors, not by copying behavior from either codebase.
 
 ## Release status
 
-`1.0.0-rc.5` is a draft candidate. Its shared external-repository corpus is
+`1.0.0-rc.6` is a draft candidate. Its shared external-repository corpus is
 platform-neutral and emits no native conformance claim. Compiled builds run
 under the portable `manager-worker-v1` execution policy described in
 [`docs/portable-go-execution-policy.md`](docs/portable-go-execution-policy.md);
 the fail-closed hardened profile is tracked separately and is not claimed by
 this candidate. Exact candidate-suite identity and downstream consumption rules
-are recorded under [`release/1.0.0-rc.5.json`](release/1.0.0-rc.5.json). Review
+are recorded under [`release/1.0.0-rc.6.json`](release/1.0.0-rc.6.json). The
+published rc.5 metadata remains byte-frozen as historical evidence. Review
 evidence is published under [`reviews/`](reviews/). See
 [COMPATIBILITY.md](COMPATIBILITY.md),
 [SECURITY.md](SECURITY.md), and [GOVERNANCE.md](GOVERNANCE.md).

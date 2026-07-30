@@ -490,6 +490,58 @@ func TestRC4CompiledArtifactsRemainByteFrozen(t *testing.T) {
 	}
 }
 
+// TestPublishedRC5ReleaseMetadataRemainsByteFrozen prevents regeneration for a
+// later candidate from rewriting the already-published rc.5 release record.
+func TestPublishedRC5ReleaseMetadataRemainsByteFrozen(t *testing.T) {
+	root := repositoryRoot(t)
+	payload, err := os.ReadFile(filepath.Join(root, "release", "1.0.0-rc.5.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	sum := sha256.Sum256(payload)
+	got := "sha256:" + hex.EncodeToString(sum[:])
+	if got != rc5ReleaseMetadataSHA256 {
+		t.Fatalf("published rc.5 release metadata changed: digest %s, want %s", got, rc5ReleaseMetadataSHA256)
+	}
+}
+
+// TestRC6ReleaseMetadataPinsSuiteWithoutClaimFabrication proves that rc.6
+// identifies the regenerated suite, links the frozen rc.5 publication, and
+// does not pretend that the historical claim-v3 schema identifies rc.6.
+func TestRC6ReleaseMetadataPinsSuiteWithoutClaimFabrication(t *testing.T) {
+	root := repositoryRoot(t)
+	manifest, err := os.ReadFile(filepath.Join(root, "conformance", "v1", "manifest.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	sum := sha256.Sum256(manifest)
+	manifestIdentity := "sha256:" + hex.EncodeToString(sum[:])
+
+	metadata := readObject(t, filepath.Join(root, "release", "1.0.0-rc.6.json"))
+	if metadata["protocol_version"] != protocolVersion {
+		t.Fatalf("rc.6 release protocol_version = %v, want %s", metadata["protocol_version"], protocolVersion)
+	}
+	pin := metadata["candidate_protocol_pin"].(map[string]any)
+	downstream := metadata["downstream_consumption"].(map[string]any)
+	if pin["manifest_sha256"] != manifestIdentity || downstream["required_manifest_sha256"] != manifestIdentity {
+		t.Fatalf("rc.6 release does not pin manifest %s", manifestIdentity)
+	}
+	history := metadata["historical_release"].(map[string]any)
+	if history["protocol_version"] != conformanceClaimV3ProtocolVersion ||
+		history["metadata_sha256"] != rc5ReleaseMetadataSHA256 ||
+		history["published_commit"] != rc5PublishedCommit ||
+		history["immutable"] != true {
+		t.Fatalf("rc.6 historical rc.5 identity is invalid: %#v", history)
+	}
+	claim := metadata["claim_v3"].(map[string]any)
+	claims, ok := claim["claims_emitted"].([]any)
+	if claim["claim_protocol_version"] != conformanceClaimV3ProtocolVersion ||
+		claim["rc6_claim_schema"] != nil ||
+		!ok || len(claims) != 0 {
+		t.Fatalf("rc.6 release fabricates claim evidence: %#v", claim)
+	}
+}
+
 // TestGoV1ExecutionPolicyRevisionCannotAliasRC4 proves that the portable
 // execution policy is a real cache-identity revision: the generated go-v1
 // receipt no longer carries the rc.4 candidate bytes or cache key, its key is
@@ -1889,6 +1941,265 @@ func TestRegistryAndAuditSchemasRemainSourceEvidenceOnly(t *testing.T) {
 	audit := readObject(t, filepath.Join(root, "schemas", "v1", "audit-record-v1.schema.json"))
 	if got, want := audit["required"], []any{"name", "source_identity", "commit", "content_sha256", "status", "sig"}; !reflect.DeepEqual(got, want) {
 		t.Fatalf("audit record no longer attests the frozen source identity: required = %#v, want %#v", got, want)
+	}
+}
+
+func TestManagerLifecycleReusesPortableBuildDriverIdentity(t *testing.T) {
+	root := repositoryRoot(t)
+	lifecycle := readObject(t, filepath.Join(root, "conformance", "v1", "vectors", "manager-lifecycle.json"))
+	buildDrivers := readObject(t, filepath.Join(root, "conformance", "v1", "vectors", "build-drivers.json"))
+	fixture := lifecycle["compiled_build_fixture"].(map[string]any)
+	identity := buildDrivers["portable_identity"].(map[string]any)
+
+	if lifecycle["schema_version"] != json.Number("1") {
+		t.Fatalf("manager lifecycle schema version = %#v, want 1", lifecycle["schema_version"])
+	}
+	if fixture["source_vector"] != "build-drivers.json#/portable_identity" {
+		t.Fatalf("lifecycle fixture does not identify its source vector: %#v", fixture)
+	}
+	for lifecycleField, buildDriverField := range map[string]string{
+		"execution_policy": "execution_policy",
+		"build_input":      "build_input",
+		"cache_key":        "cache_key",
+		"stored_receipt":   "stored_receipt",
+		"receipt_sha256":   "receipt_sha256",
+		"artifact":         "artifact",
+	} {
+		if !reflect.DeepEqual(fixture[lifecycleField], identity[buildDriverField]) {
+			t.Fatalf("lifecycle %s does not reuse build-driver %s", lifecycleField, buildDriverField)
+		}
+	}
+	buildInput := fixture["build_input"].(map[string]any)
+	policy := buildInput["policy"].(map[string]any)
+	if fixture["execution_policy"] != portableExecutionPolicy ||
+		policy["execution_policy"] != portableExecutionPolicy {
+		t.Fatalf("lifecycle fixture is not bound to %q: %#v", portableExecutionPolicy, fixture)
+	}
+	if fixture["logical_command"] != buildInput["command"] {
+		t.Fatalf("lifecycle logical command is inconsistent with the reused input: %#v", fixture)
+	}
+}
+
+func TestManagerLifecyclePlanningOrderAndCompiledDryRun(t *testing.T) {
+	root := repositoryRoot(t)
+	vector := readObject(t, filepath.Join(root, "conformance", "v1", "vectors", "manager-lifecycle.json"))
+
+	planning := namedObjects(t, vector["planning_cases"])
+	assertNamedSet(t, planning, []string{"all-source-and-trust-gates-before-build"})
+	plan := planning["all-source-and-trust-gates-before-build"]
+	wantGates := []any{
+		"complete-snapshot-tree-validation",
+		"dual-manifest-parse-and-schema-validation",
+		"runtime-build-root-and-source-dir-validation",
+		"static-build-root-context-and-runtime-exclusion",
+		"curator-build-source-v1",
+		"provider-first-closure",
+		"command-shim-portable-and-platform-collision-planning",
+		"source-allowlist-and-snapshot-checks",
+		"source-audit-policy",
+		"trusted-registry-resolution",
+		"attestation-revocation-and-moved-tag-policy",
+	}
+	if got := plan["required_before_toolchain_or_cache"]; !reflect.DeepEqual(got, wantGates) {
+		t.Fatalf("compiled planning gate order = %#v, want %#v", got, wantGates)
+	}
+	then := plan["then"].([]any)
+	if !reflect.DeepEqual(then[len(then)-2:], []any{"go-list", "go-build"}) {
+		t.Fatalf("source-aware build commands do not follow all planning gates: %#v", then)
+	}
+	failure := plan["failure_at_any_gate"].(map[string]any)
+	if len(failure["go_commands"].([]any)) != 0 || failure["cache_lookup"] != false || len(failure["persistent_mutations"].([]any)) != 0 {
+		t.Fatalf("planning gate failure is not side-effect free: %#v", failure)
+	}
+
+	orders := namedObjects(t, vector["build_order_cases"])
+	assertNamedSet(t, orders, []string{"provider-first-and-lexical-command-order"})
+	order := orders["provider-first-and-lexical-command-order"]
+	if got, want := order["expected_provider_order"], []any{"data-provider", "ui-provider", "app"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("provider order = %#v, want %#v", got, want)
+	}
+	if got, want := order["expected_build_order"], []any{
+		"data-provider/alpha-tool", "data-provider/zeta-tool", "data-provider/é-tool",
+		"ui-provider/beta-tool", "app/golden-tool",
+	}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("build order = %#v, want %#v", got, want)
+	}
+
+	dryRuns := namedObjects(t, vector["dry_run_cases"])
+	compiled := dryRuns["compiled-cache-miss-is-read-only"]
+	if !reflect.DeepEqual(compiled["allowed_go_commands"], []any{"telemetry-off", "version", "env"}) ||
+		!reflect.DeepEqual(compiled["forbidden_go_commands"], []any{"list", "build"}) {
+		t.Fatalf("compiled dry-run Go command boundary = %#v", compiled)
+	}
+	for _, state := range []any{
+		"audit-state", "registry-state", "toolchain-probe-memo", "compiled-artifact-cache",
+		"project-lock", "cache-build-lock", "manager-home-lock", "journal", "runtime-tree",
+		"context-tree", "install-marker", "command-shim", "adapter-ledger", "adapter-mirror",
+		"consumer-ledger", "gc-metadata",
+	} {
+		if !containsValue(compiled["forbidden_persistent_effects"].([]any), state) {
+			t.Fatalf("compiled dry-run does not forbid mutation of %q", state)
+		}
+	}
+	if compiled["operation_private_state_after"] != "absent" || compiled["artifact_executed"] != false {
+		t.Fatalf("compiled dry-run cleanup/execution outcome = %#v", compiled)
+	}
+}
+
+func TestManagerLifecyclePrivateBuildPublicationAndCrossProjectIsolation(t *testing.T) {
+	root := repositoryRoot(t)
+	vector := readObject(t, filepath.Join(root, "conformance", "v1", "vectors", "manager-lifecycle.json"))
+
+	privateBuilds := namedObjects(t, vector["private_build_cases"])
+	assertNamedSet(t, privateBuilds, []string{
+		"all-misses-stage-and-verify-before-home-lock",
+		"second-build-failure-preserves-persistent-state",
+	})
+	staged := privateBuilds["all-misses-stage-and-verify-before-home-lock"]
+	if staged["manager_home_lock_during_build"] != false || len(staged["shared_mutations_before_all_verified"].([]any)) != 0 {
+		t.Fatalf("private builds enter shared mutation too early: %#v", staged)
+	}
+	failed := privateBuilds["second-build-failure-preserves-persistent-state"]
+	if failed["persistent_state_before"] != failed["persistent_state_after"] || failed["manager_home_lock_acquired"] != false {
+		t.Fatalf("second build failure changed persistent state: %#v", failed)
+	}
+	if !reflect.DeepEqual(failed["events"], []any{
+		"golden-tool-staged-and-verified", "second-tool-go-list-passed", "second-tool-go-build-failed", "operation-private-staging-removed",
+	}) {
+		t.Fatalf("second build failure trace is ambiguous: %#v", failed["events"])
+	}
+
+	publication := namedObjects(t, vector["cache_publication_cases"])
+	assertNamedSet(t, publication, []string{
+		"publish-complete-immutable-entry-under-home-lock", "concurrent-identical-winner",
+		"concurrent-determinism-mismatch", "corrupt-live-entry", "untrusted-cache-boundary",
+	})
+	if publication["publish-complete-immutable-entry-under-home-lock"]["publication"] != "atomic-complete-directory" ||
+		publication["publish-complete-immutable-entry-under-home-lock"]["merge_existing_entry"] != false {
+		t.Fatal("protected publication does not require atomic immutable entries")
+	}
+	if publication["concurrent-identical-winner"]["result"] != "reuse-winner" || publication["concurrent-identical-winner"]["staged_loser"] != "discard" {
+		t.Fatal("identical cache race winner is not explicit")
+	}
+	if publication["concurrent-determinism-mismatch"]["result"] != "determinism-or-corruption-error" || publication["concurrent-determinism-mismatch"]["install_targets_mutated"] != false {
+		t.Fatal("cache determinism mismatch outcome is not isolated")
+	}
+	if publication["corrupt-live-entry"]["result"] != "replace-from-verified-staging" || publication["corrupt-live-entry"]["adopt_or_repair_candidate"] != false {
+		t.Fatal("corrupt live cache handling is not explicit")
+	}
+	if publication["untrusted-cache-boundary"]["result"] != "rebuild-into-new-protected-state" || publication["untrusted-cache-boundary"]["candidate_reused"] != false {
+		t.Fatal("untrusted boundary handling is not explicit")
+	}
+
+	projects := namedObjects(t, vector["cross_project_cases"])
+	assertNamedSet(t, projects, []string{
+		"two-project-success-preserves-both-consumers",
+		"successful-project-survives-other-project-rollback",
+	})
+	if got, want := projects["two-project-success-preserves-both-consumers"]["consumer_ledger_after"], []any{"project-alpha", "project-beta"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("two-project consumer ledger = %#v, want %#v", got, want)
+	}
+	rollback := projects["successful-project-survives-other-project-rollback"]
+	if !reflect.DeepEqual(rollback["consumer_ledger_after_rollback"], []any{"project-alpha"}) || rollback["project_alpha_targets_unchanged"] != true {
+		t.Fatalf("failed project rollback did not preserve the successful project: %#v", rollback)
+	}
+}
+
+func TestManagerLifecycleTransactionsRecoveryStatusRepairAndGC(t *testing.T) {
+	root := repositoryRoot(t)
+	vector := readObject(t, filepath.Join(root, "conformance", "v1", "vectors", "manager-lifecycle.json"))
+
+	transactions := namedObjects(t, vector["transaction_cases"])
+	assertNamedSet(t, transactions, []string{
+		"deterministic-lock-order", "deterministic-target-order-and-consumer-last", "reverse-rollback-under-home-lock",
+	})
+	locks := transactions["deterministic-lock-order"]
+	if got, want := locks["expected_project_lock_order"], []any{"project-alpha", "project-z", "project-é"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("project lock order = %#v, want %#v", got, want)
+	}
+	if locks["cache_build_lock_released_before_home_lock"] != true || locks["then_manager_home_lock"] != true {
+		t.Fatalf("cache/home lock ordering is incomplete: %#v", locks)
+	}
+	targets := transactions["deterministic-target-order-and-consumer-last"]
+	commitOrder := targets["expected_commit_order"].([]any)
+	if commitOrder[len(commitOrder)-1] != "consumer-ledger/machine" || targets["consumer_ledger_committed_last"] != true {
+		t.Fatalf("consumer is not last in commit order: %#v", targets)
+	}
+	rollback := transactions["reverse-rollback-under-home-lock"]
+	wantRestore := reverseAny(rollback["commit_order"].([]any))
+	if !reflect.DeepEqual(rollback["expected_restore_order"], wantRestore) || rollback["manager_home_lock_held_through_rollback"] != true {
+		t.Fatalf("rollback is not reverse and locked: %#v", rollback)
+	}
+
+	recovery := namedObjects(t, vector["recovery_cases"])
+	assertNamedSet(t, recovery, []string{
+		"interrupted-global-journal-recovered-by-transaction-id", "install-recovery-runs-after-private-builds",
+	})
+	global := recovery["interrupted-global-journal-recovered-by-transaction-id"]
+	if global["journal_owner"] != "global" || global["scan_scope"] != "all-incomplete-journals" ||
+		!reflect.DeepEqual(global["successful_project_consumers_after"], []any{"project-alpha"}) {
+		t.Fatalf("global journal recovery is incomplete: %#v", global)
+	}
+	if recovery["install-recovery-runs-after-private-builds"]["recovery_before_build"] != false {
+		t.Fatal("install recovery is incorrectly modeled as a pre-build pass")
+	}
+
+	status := namedObjects(t, vector["status_cases"])
+	assertNamedSet(t, status, []string{"compiled-installation-current", "compiled-currentness-failure-matrix"})
+	if status["compiled-installation-current"]["result"] != "current" || status["compiled-installation-current"]["artifact_executed"] != false {
+		t.Fatal("compiled current status outcome is incomplete")
+	}
+	wantNonCurrent := []any{
+		"missing-raw-snapshot", "context-visible-build-root", "runtime-copied-build-root", "untrusted-cache-boundary",
+		"unsupported-driver", "unsupported-toolchain", "corrupt-receipt", "corrupt-artifact", "wrong-native-target",
+		"build-source-mismatch", "cache-key-mismatch", "receipt-hash-mismatch", "artifact-path-mismatch", "artifact-hash-mismatch",
+	}
+	nonCurrent := status["compiled-currentness-failure-matrix"]
+	if !reflect.DeepEqual(nonCurrent["independent_conditions"], wantNonCurrent) || len(nonCurrent["mutations"].([]any)) != 0 {
+		t.Fatalf("compiled non-current matrix = %#v", nonCurrent)
+	}
+
+	repair := namedObjects(t, vector["repair_cases"])
+	assertNamedSet(t, repair, []string{"repair-rebuilds-invalid-compiled-entry"})
+	rebuild := repair["repair-rebuilds-invalid-compiled-entry"]
+	if got, want := rebuild["independent_conditions"], []any{"missing", "corrupt", "wrong-target", "wrong-toolchain", "untrusted-boundary"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("repair matrix = %#v, want %#v", got, want)
+	}
+	for _, step := range []any{"complete-snapshot-validation", "source-audit", "registry-and-attestation-gates", "operation-private-build", "protected-publication", "journaled-commit"} {
+		if !containsValue(rebuild["required_pipeline"].([]any), step) {
+			t.Fatalf("repair pipeline misses %q", step)
+		}
+	}
+
+	gc := namedObjects(t, vector["gc_cases"])
+	assertNamedSet(t, gc, []string{"locked-mark-and-sweep-compiled-cache", "post-commit-gc-failure-is-maintenance-warning"})
+	sweep := gc["locked-mark-and-sweep-compiled-cache"]
+	if sweep["only_lock"] != "manager-home-mutation-lock" || sweep["protected_boundary_revalidated"] != true || sweep["receipt_content_alone_is_live_reference"] != false {
+		t.Fatalf("locked GC boundary/reference model = %#v", sweep)
+	}
+	if sweep["artifact_executed"] != false || sweep["entry_adopted"] != false {
+		t.Fatalf("GC executes or adopts cache content: %#v", sweep)
+	}
+	if gc["post-commit-gc-failure-is-maintenance-warning"]["successful_installation_rolled_back"] != false {
+		t.Fatal("post-commit GC warning incorrectly rolls back installation")
+	}
+}
+
+func TestManagerLifecycleGenerationIsDeterministic(t *testing.T) {
+	one := t.TempDir()
+	two := t.TempDir()
+	writeManagerLifecycleVectors(one)
+	writeManagerLifecycleVectors(two)
+	left, err := os.ReadFile(filepath.Join(one, "manager-lifecycle.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	right, err := os.ReadFile(filepath.Join(two, "manager-lifecycle.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(left, right) {
+		t.Fatal("manager lifecycle generation is not deterministic")
 	}
 }
 
