@@ -69,6 +69,10 @@
       "sha256": "sha256:680407f392cf9c44c013d1438c5569099a8be683d25d3b423b4d5c7c2d653f74"
     },
     {
+      "path": "expected/marker-v2.json",
+      "sha256": "sha256:22117126c8932769636bd5ca1f1623f26a3c55d4bb9da3266acf3dc3a3b7fc2c"
+    },
+    {
       "path": "expected/marker.json",
       "sha256": "sha256:80989f850887814ec09c724a7dd891ac7e2422d5fef7e31f330be3554aa9b28a"
     },
@@ -1730,11 +1734,11 @@
     },
     {
       "path": "vectors/conformance-claim-v3-qualification.json",
-      "sha256": "sha256:c4b9132ce8344d5b210aa7fbc2715a06586ea2efc2b88ae7f6464468e48de2ee"
+      "sha256": "sha256:290357ae9a13b3218b61525c07d22baee46da87bc7fd22a3fd0fc354d6cdc1a2"
     },
     {
       "path": "vectors/external-repository-acquisition.json",
-      "sha256": "sha256:d67524fe072702fa5e908fc0167918813430675cf25ad73abcd7e86c2dac32d8"
+      "sha256": "sha256:0a97520aad716060f5b51b77a39ebe7bea446ca3802838b35203ceab375c6c2e"
     },
     {
       "path": "vectors/external-repository-lifecycle.json",
@@ -1742,7 +1746,7 @@
     },
     {
       "path": "vectors/go-host-execution-policy.json",
-      "sha256": "sha256:c3d42f763afdcfa229430e7de5bb9f1e9f44607a7790aef6f4e0bf6d1bc644de"
+      "sha256": "sha256:4c7e40f3d58e3454931eae076ed1fc2c0437e412f4c0cf1cb30229d59191f46d"
     },
     {
       "path": "vectors/identifiers.json",
@@ -1758,7 +1762,7 @@
     },
     {
       "path": "vectors/manager-lifecycle.json",
-      "sha256": "sha256:2ddbd2665a63f44dc0e03e060f4cd34bfde219a56b3192511fe1ef81047feedf"
+      "sha256": "sha256:25f573a40652dfaf6bb52818b2209c2f8c1e6aec2a7515023e0ac531c2d91289"
     },
     {
       "path": "vectors/portable-paths.json",
@@ -1791,5 +1795,5 @@
   ],
   "generated_at": "2026-07-13T00:00:00Z",
   "generator": "tools/generate-vectors",
-  "protocol_version": "1.0.0-rc.5"
+  "protocol_version": "1.0.0-rc.6"
 }

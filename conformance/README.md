@@ -58,7 +58,11 @@ The suite contains:
   resolution cases;
 - context-selection and raw-tree hash fixtures;
 - closure graphs including diamond, conflict, cycle, narrowing, and tie order;
-- normalized install marker and adapter ledger objects;
+- normalized install marker and adapter ledger objects, published in both
+  marker roles: `expected/marker.json` is byte-frozen marker-v1 legacy-read
+  evidence, and `expected/marker-v2.json` is the marker-v2 writer golden for
+  the same shared golden skill, because a manager writes marker schema 2 for
+  every schema 1 through 6 installation mutation;
 - CCJ-1 exact bytes and rejection cases;
 - valid, forged, wrong-key-id, revoked, and malformed signed records;
 - snapshot rollback, freeze, future-skew, incomplete-field, and equivocation
@@ -146,9 +150,10 @@ the common implementation, class, suite, time, and pass fields. Claim v3 admits
 only the portable `manager-worker-v1` execution policy, so a hardened claim
 cannot be expressed in this schema version and requires a later one. Schema
 validity is not qualification: every emitted tuple requires immutable native
-evidence against the exact suite pin. The rc.5 specification candidate emits no manager claim;
-macOS and Windows qualification remains downstream, and Linux is excluded
-until `TASK-260728-1skseh` passes. Claims do not replace release CI evidence or
+evidence against the exact suite pin. Rc.6 defines no new claim schema and
+emits no claim; claim v3 remains historical rc.5 wire evidence. macOS and
+Windows qualification remains downstream, and Linux is excluded until
+`TASK-260728-1skseh` passes. Claims do not replace release CI evidence or
 artifact attestations.
 
 ## 6. Release gate

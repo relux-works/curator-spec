@@ -20,10 +20,10 @@ approve changes; CI enforces the mechanically verifiable items.
 - [ ] Implementation pins refer to commits whose own required CI is green.
 - [ ] `CHANGELOG.md`, `COMPATIBILITY.md`, `SECURITY.md`, and version metadata
   describe the candidate.
-- [ ] A claim-v3 driver/platform tuple is listed only with immutable native
-  passing evidence. Schema examples and platform-neutral corpus runs are not
-  native evidence; Linux remains excluded from rc.5 until
-  `TASK-260728-1skseh` passes.
+- [ ] A driver/platform tuple is listed only under a claim schema that admits
+  the candidate protocol version and with immutable native passing evidence.
+  Schema examples and platform-neutral corpus runs are not native evidence;
+  rc.6 defines no new claim schema and emits no claim.
 - [ ] Every emitted execution-policy identity is one the release actually
   implements. `release/<version>.json` records the portable policy, records that
   no hardened profile is claimed, and names the story that owns the deferred

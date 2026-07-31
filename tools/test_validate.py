@@ -3,6 +3,8 @@ from __future__ import annotations
 import copy
 import hashlib
 import importlib.util
+import json
+import shlex
 import tempfile
 import unittest
 from pathlib import Path
@@ -526,10 +528,10 @@ class WireSemanticValidationTests(unittest.TestCase):
             ):
                 validate.validate_go_host_execution_policy(mutated)
 
-    def test_rc5_release_metadata_pins_exact_suite_without_claims(self) -> None:
+    def test_rc6_release_metadata_pins_exact_suite_without_claims(self) -> None:
         validate.validate_manifest()
         release = validate.load_json(
-            validate.ROOT / "release" / "1.0.0-rc.5.json"
+            validate.ROOT / "release" / "1.0.0-rc.6.json"
         )
         self.assertEqual(
             release["candidate_protocol_pin"]["manifest_sha256"],
@@ -539,6 +541,16 @@ class WireSemanticValidationTests(unittest.TestCase):
             release["downstream_consumption"]["committed_release_pin_advanced"]
         )
         self.assertEqual(release["claim_v3"]["claims_emitted"], [])
+        self.assertEqual(
+            release["claim_v3"]["claim_protocol_version"],
+            validate.RC5_PROTOCOL_VERSION,
+        )
+        self.assertIsNone(release["claim_v3"]["rc6_claim_schema"])
+
+    def test_published_rc5_release_metadata_is_byte_frozen(self) -> None:
+        path = validate.ROOT / "release" / "1.0.0-rc.5.json"
+        digest = "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+        self.assertEqual(digest, validate.RC5_RELEASE_METADATA_SHA256)
 
 
 class RepositoryDescriptorIdentityTests(unittest.TestCase):
@@ -638,6 +650,79 @@ class RepositoryDescriptorIdentityTests(unittest.TestCase):
         self.assertFalse(record["additionalProperties"])
 
 
+class ManagerLifecycleValidationTests(unittest.TestCase):
+    def vectors(self) -> tuple[dict, dict]:
+        lifecycle = validate.load_json(
+            validate.SUITE / "vectors" / "manager-lifecycle.json"
+        )
+        build_drivers = validate.load_json(
+            validate.SUITE / "vectors" / "build-drivers.json"
+        )
+        return lifecycle, build_drivers
+
+    def test_candidate_requires_all_22_compiled_lifecycle_cases(self) -> None:
+        lifecycle, build_drivers = self.vectors()
+        self.assertEqual(
+            sum(
+                len(names)
+                for names in validate.MANAGER_COMPILED_LIFECYCLE_CASES.values()
+            ),
+            21,
+        )
+        self.assertIn(
+            "compiled-cache-miss-is-read-only",
+            validate.MANAGER_COMPILED_DRY_RUN_CASES,
+        )
+        validate.validate_manager_lifecycle_vectors(lifecycle, build_drivers)
+
+    def test_each_compiled_lifecycle_group_fails_closed(self) -> None:
+        for field, required in validate.MANAGER_COMPILED_LIFECYCLE_CASES.items():
+            for name in sorted(required):
+                with self.subTest(field=field, name=name):
+                    lifecycle, build_drivers = self.vectors()
+                    lifecycle[field] = [
+                        case for case in lifecycle[field] if case["name"] != name
+                    ]
+                    with self.assertRaises(validate.ValidationFailure):
+                        validate.validate_manager_lifecycle_vectors(
+                            lifecycle, build_drivers
+                        )
+
+    def test_compiled_dry_run_fails_closed(self) -> None:
+        lifecycle, build_drivers = self.vectors()
+        lifecycle["dry_run_cases"] = [
+            case
+            for case in lifecycle["dry_run_cases"]
+            if case["name"] != "compiled-cache-miss-is-read-only"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_manager_lifecycle_vectors(lifecycle, build_drivers)
+
+    def test_lifecycle_schema_and_portable_identity_fail_closed(self) -> None:
+        mutations = {
+            "schema version": lambda lifecycle: lifecycle.__setitem__(
+                "schema_version", 2
+            ),
+            "source vector": lambda lifecycle: lifecycle[
+                "compiled_build_fixture"
+            ].__setitem__("source_vector", "build-drivers.json#/cache_identity"),
+            "execution policy": lambda lifecycle: lifecycle[
+                "compiled_build_fixture"
+            ].__setitem__("execution_policy", "hardened-worker-v1"),
+            "cache key": lambda lifecycle: lifecycle[
+                "compiled_build_fixture"
+            ].__setitem__("cache_key", "sha256:" + "0" * 64),
+        }
+        for label, mutate in mutations.items():
+            with self.subTest(label=label):
+                lifecycle, build_drivers = self.vectors()
+                mutate(lifecycle)
+                with self.assertRaises(validate.ValidationFailure):
+                    validate.validate_manager_lifecycle_vectors(
+                        lifecycle, build_drivers
+                    )
+
+
 class BuildDriverGoldenSuiteTests(unittest.TestCase):
     PORTABLE_CACHE_KEY = (
         "sha256:529370122ae11e2e961d5265b1a020e046bcd43165b2eb96b05e73a51187ac9b"
@@ -652,7 +737,7 @@ class BuildDriverGoldenSuiteTests(unittest.TestCase):
     def vector(self) -> dict:
         return validate.load_json(validate.SUITE / "vectors" / "build-drivers.json")
 
-    def test_candidate_publishes_the_portable_rc5_build_driver_identity(self) -> None:
+    def test_rc6_carries_forward_the_portable_rc5_build_driver_identity(self) -> None:
         validate.validate_build_driver_vectors()
         identity = self.vector()["portable_identity"]
         self.assertEqual(identity["execution_policy"], validate.PORTABLE_EXECUTION_POLICY)
@@ -842,6 +927,165 @@ class BuildDriverGoldenSuiteTests(unittest.TestCase):
         for name in fixture["excluded_context_files"]:
             self.assertNotIn(name, fixture["expected_context_files"])
         self.assertIn("assets/build-tool/go.mod", fixture["excluded_context_files"])
+
+
+class SharedFixtureMarkerTests(unittest.TestCase):
+    """Both marker roles the shared golden skill has to publish.
+
+    `expected/marker.json` is frozen marker-v1 legacy-read evidence, and
+    `expected/marker-v2.json` is the writer golden a manager's own marker
+    output is compared against, because managers write marker schema 2 for
+    every schema 1 through 6 installation mutation.
+    """
+
+    def setUp(self) -> None:
+        self.temporary = tempfile.TemporaryDirectory()
+        self.expected = Path(self.temporary.name)
+        for name in ("marker.json", "marker-v2.json"):
+            (self.expected / name).write_bytes(
+                (validate.SUITE / "expected" / name).read_bytes()
+            )
+        self.addCleanup(self.temporary.cleanup)
+
+    def _rewrite(self, name: str, mutate) -> None:
+        path = self.expected / name
+        marker = json.loads(path.read_text(encoding="utf-8"))
+        mutate(marker)
+        path.write_text(json.dumps(marker, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    def test_published_markers_are_accepted(self) -> None:
+        validate.validate_shared_fixture_markers()
+        validate.validate_shared_fixture_markers(self.expected)
+
+    def test_writer_golden_is_byte_derived_from_the_legacy_marker(self) -> None:
+        legacy = validate.load_json(validate.SUITE / "expected" / "marker.json")
+        writer = validate.load_json(validate.SUITE / "expected" / "marker-v2.json")
+        derived = dict(legacy)
+        derived.update({"schema_version": 2, "build_roots": [], "builds": {}})
+        self.assertEqual(writer, derived)
+        self.assertEqual(writer["skill_schema_version"], 5)
+        self.assertNotIn("build_source", writer)
+
+    def test_missing_writer_golden_fails_closed(self) -> None:
+        (self.expected / "marker-v2.json").unlink()
+        with self.assertRaisesRegex(validate.ValidationFailure, "is missing"):
+            validate.validate_shared_fixture_markers(self.expected)
+
+    def test_legacy_marker_may_not_be_upgraded_in_place(self) -> None:
+        self._rewrite(
+            "marker.json",
+            lambda marker: marker.update(
+                {"schema_version": 2, "build_roots": [], "builds": {}}
+            ),
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "frozen marker-v1"):
+            validate.validate_shared_fixture_markers(self.expected)
+
+    def test_writer_golden_must_carry_marker_schema_2(self) -> None:
+        self._rewrite("marker-v2.json", lambda marker: marker.__setitem__("schema_version", 1))
+        with self.assertRaisesRegex(validate.ValidationFailure, "marker schema 2"):
+            validate.validate_shared_fixture_markers(self.expected)
+
+    def test_writer_golden_must_satisfy_its_own_schema(self) -> None:
+        self._rewrite(
+            "marker-v2.json", lambda marker: marker.__setitem__("skill_schema_version", 7)
+        )
+        with self.assertRaisesRegex(
+            validate.ValidationFailure, "install-marker-v2.schema.json"
+        ):
+            validate.validate_shared_fixture_markers(self.expected)
+
+    def test_writer_golden_may_not_invent_build_state(self) -> None:
+        for mutate in (
+            lambda marker: marker.__setitem__("build_roots", ["build"]),
+            lambda marker: marker.__setitem__(
+                "builds",
+                {
+                    "golden-tool": {
+                        "driver": "go-v1",
+                        "cache_key": "sha256:" + "3" * 64,
+                        "receipt_sha256": "sha256:" + "e" * 64,
+                        "artifact_sha256": "sha256:" + "d" * 64,
+                        "artifact_path": "bin/golden-tool",
+                    }
+                },
+            ),
+        ):
+            with self.subTest(mutation=mutate):
+                self.setUp()
+                self._rewrite("marker-v2.json", mutate)
+                with self.assertRaises(validate.ValidationFailure):
+                    validate.validate_shared_fixture_markers(self.expected)
+
+    def test_writer_golden_may_not_carry_build_source_without_builds(self) -> None:
+        self._rewrite(
+            "marker-v2.json",
+            lambda marker: marker.__setitem__(
+                "build_source",
+                {
+                    "algorithm": validate.FROZEN_BUILD_SOURCE_ALGORITHM,
+                    "content_sha256": "sha256:" + "a" * 64,
+                },
+            ),
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_shared_fixture_markers(self.expected)
+
+    def test_writer_golden_may_not_describe_another_installation(self) -> None:
+        for field, value in (
+            ("content_sha256", "sha256:" + "b" * 64),
+            ("runtime_roots", []),
+            ("name", "other-skill"),
+        ):
+            with self.subTest(field=field):
+                self.setUp()
+                self._rewrite("marker-v2.json", lambda marker: marker.__setitem__(field, value))
+                with self.assertRaisesRegex(
+                    validate.ValidationFailure, "differing only in"
+                ):
+                    validate.validate_shared_fixture_markers(self.expected)
+
+    def test_writer_golden_set_members_stay_sorted_and_unique(self) -> None:
+        self._rewrite(
+            "marker-v2.json",
+            lambda marker: marker.__setitem__("files", swapped(marker["files"], 0, 1)),
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "sorted unique array"):
+            validate.validate_shared_fixture_markers(self.expected)
+
+
+class WorkflowRegenerationScopeTests(unittest.TestCase):
+    GENERATED_FILE_INVENTORY = (
+        "conformance/v1",
+        "release/1.0.0-rc.5.json",
+        "release/1.0.0-rc.6.json",
+    )
+
+    def regeneration_diff_scope(self, path: Path) -> tuple[str, ...]:
+        prefix = "git diff --exit-code -- "
+        matches = [
+            tuple(shlex.split(raw_line.split(prefix, 1)[1]))
+            for raw_line in path.read_text(encoding="utf-8").splitlines()
+            if prefix in raw_line
+        ]
+        self.assertEqual(
+            len(matches),
+            1,
+            f"{path.relative_to(validate.ROOT)} must have one regeneration diff gate",
+        )
+        return matches[0]
+
+    def test_workflows_match_makefile_generated_file_inventory(self) -> None:
+        makefile_scope = self.regeneration_diff_scope(validate.ROOT / "Makefile")
+        self.assertEqual(makefile_scope, self.GENERATED_FILE_INVENTORY)
+        for workflow in ("ci.yml", "release.yml"):
+            with self.subTest(workflow=workflow):
+                self.assertEqual(
+                    self.regeneration_diff_scope(
+                        validate.ROOT / ".github" / "workflows" / workflow
+                    ),
+                    makefile_scope,
+                )
 
 
 if __name__ == "__main__":

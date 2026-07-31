@@ -78,8 +78,8 @@ report is not accepted by the stable release gate.
 Protocol rc.4 introduced manifest schema 6, the closed local `go-v1` driver,
 build receipt v1, install marker v2, and claim v2. Their schema bytes, driver
 meaning, package-controlled surface, and marker relationships are frozen. An
-rc.5 reader continues to accept them and never treats local `go-v1` input as an
-external repository.
+rc.5 or rc.6 reader continues to accept them and never treats local `go-v1`
+input as an external repository.
 
 Protocol rc.5 adds manifest schema 7, `skill-build.json` schema 1,
 `Skillfile.dev.json` schema 2, the closed `go-repository-v1` driver, build
@@ -91,11 +91,11 @@ conformance bytes do not acquire repository fields or new semantics.
 
 Protocol rc.5 also names the execution policy under which both compiled drivers
 run. `go-v1` and `go-repository-v1` declare the portable `manager-worker-v1`
-policy of `protocol/core.md` section 4.2.1. Neither rc.4 nor rc.5 has been
-released or pinned, so this revision lands in place. It is byte neutral for
-manifest schemas 1 through 6 and for the `build-receipt-v1`,
-`install-marker-v2`, and `conformance-claim-v2` schema files, and it adds no
-package-controlled field to any manifest or descriptor.
+policy of `protocol/core.md` section 4.2.1. The published rc.5 bytes freeze that
+identity. Rc.6 reuses it without widening the policy or changing manifest
+schemas 1 through 7, build receipts v1/v2, install markers v1/v2/v3, or claims
+v1/v2/v3, and it adds no package-controlled field to any manifest or
+descriptor.
 
 It is deliberately not byte neutral for `go-v1` cache identity. The generated
 `go-v1` receipt example and every `go-v1` logical cache key change, because the
@@ -117,8 +117,9 @@ nor the evidence record enters a build input, an artifact, a cache key, a
 receipt, a marker, or a claim. An unavailable inventory control never rejects a
 build; only a missing mandatory portable control does.
 
-Candidate downstream runs consume rc.5 through an explicitly supplied
+Candidate downstream runs consume rc.6 through an explicitly supplied
 `CURATOR_CONFORMANCE_ROOT` and verify the manifest digest recorded in
-`release/1.0.0-rc.5.json`. That candidate identity does not advance a
-repository's committed released-suite pin and is not a published release,
-platform claim, signature, or attestation.
+`release/1.0.0-rc.6.json`. The published
+`release/1.0.0-rc.5.json` remains byte-frozen historical evidence. The rc.6
+candidate identity does not advance a repository's committed released-suite
+pin and is not a platform claim, signature, or attestation.

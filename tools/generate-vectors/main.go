@@ -23,14 +23,17 @@ import (
 )
 
 const (
-	protocolVersion                   = "1.0.0-rc.5"
+	protocolVersion                   = "1.0.0-rc.6"
 	conformanceClaimV1ProtocolVersion = "1.0.0-rc.3"
 	conformanceClaimV2ProtocolVersion = "1.0.0-rc.4"
+	conformanceClaimV3ProtocolVersion = "1.0.0-rc.5"
 	conformanceClaimV2CreatedAt       = "2026-07-20T00:00:00Z"
-	rc5CreatedAt                      = "2026-07-28T00:00:00Z"
+	rc6CreatedAt                      = "2026-07-30T00:00:00Z"
 	fixedCommit                       = "0123456789abcdef0123456789abcdef01234567"
 	fixedTime                         = "2026-07-13T00:00:00Z"
 	genesis                           = "0000000000000000000000000000000000000000000000000000000000000000"
+	rc5ReleaseMetadataSHA256          = "sha256:75ae17fc029b4f51ca40ce768d04fd72991ec3db2602b8fe59213bee6ac34583"
+	rc5PublishedCommit                = "f5d7673039226ab81de2f4f87e2155ae995c4df3"
 
 	// portableExecutionPolicy is the only execution-policy identity that
 	// protocol 1.0 defines for go-v1 and go-repository-v1.
@@ -111,6 +114,7 @@ func main() {
 		"requirers":  []any{"<project>"},
 	}
 	writeJSON(filepath.Join(expected, "marker.json"), marker)
+	writeJSON(filepath.Join(expected, "marker-v2.json"), sharedFixtureMarkerV2(marker))
 	ledger := map[string]any{"schema_version": 1, "entries": []any{"golden-skill"}}
 	writeJSON(filepath.Join(expected, "adapter-ledger.json"), ledger)
 
@@ -172,7 +176,7 @@ func main() {
 	writeSchemaCases(suite, marker, ledger, audited, snapshot, entries[0], bundle, pinned)
 	writeExternalRepositoryExpected(expected, marker)
 	writeManifest(suite)
-	writeRC5ReleaseMetadata(*root, suite)
+	writeRC6ReleaseMetadata(*root, suite)
 }
 
 func writeSkillManifestResolutionVectors(dir string) {
@@ -581,7 +585,19 @@ func writeManagerConfigVectors(dir, pinned string) {
 }
 
 func writeManagerLifecycleVectors(dir string) {
+	identity := newBuildDriverIdentityFixture()
 	writeJSON(filepath.Join(dir, "manager-lifecycle.json"), map[string]any{
+		"schema_version": 1,
+		"compiled_build_fixture": map[string]any{
+			"source_vector":    "build-drivers.json#/portable_identity",
+			"execution_policy": portableExecutionPolicy,
+			"build_input":      identity.buildInput,
+			"cache_key":        identity.cacheKey,
+			"stored_receipt":   identity.receipt,
+			"receipt_sha256":   identity.receiptHash,
+			"artifact":         identity.receipt["artifact"],
+			"logical_command":  "golden-tool",
+		},
 		"launcher_cases": []any{
 			map[string]any{
 				"name": "skill-command-without-shell-activation", "platforms": []any{"unix", "windows"},
@@ -607,8 +623,329 @@ func writeManagerLifecycleVectors(dir string) {
 		"dry_run_cases": []any{
 			map[string]any{"name": "project-upgrade", "scope": "project", "forbidden_persistent_effects": []any{"source-fetch", "source-clone", "snapshot-cache", "response-cache", "audit-state", "registry-state", "configuration", "runtime", "project-artifacts"}},
 			map[string]any{"name": "global-upgrade", "scope": "global", "forbidden_persistent_effects": []any{"source-fetch", "source-clone", "snapshot-cache", "response-cache", "audit-state", "registry-state", "configuration", "runtime", "global-artifacts"}},
+			compiledDryRunCase(identity),
 		},
+		"planning_cases":          compiledPlanningCases(),
+		"build_order_cases":       compiledBuildOrderCases(),
+		"private_build_cases":     compiledPrivateBuildCases(identity),
+		"cache_publication_cases": compiledCachePublicationCases(identity),
+		"cross_project_cases":     compiledCrossProjectCases(identity),
+		"transaction_cases":       compiledTransactionCases(identity),
+		"recovery_cases":          compiledRecoveryCases(identity),
+		"status_cases":            compiledStatusCases(identity),
+		"repair_cases":            compiledRepairCases(identity),
+		"gc_cases":                compiledGCCases(identity),
 	})
+}
+
+type buildDriverIdentityFixture struct {
+	buildInput  map[string]any
+	cacheKey    string
+	receipt     map[string]any
+	receiptHash string
+}
+
+func newBuildDriverIdentityFixture() buildDriverIdentityFixture {
+	buildInput := validGoBuildInputV1()
+	cacheKey := sha256Identity(canonicalBytes(buildInput))
+	receipt := validBuildReceiptV1()
+	receipt["cache_key"] = cacheKey
+	receipt["input"] = cloneMap(buildInput)
+	return buildDriverIdentityFixture{
+		buildInput:  buildInput,
+		cacheKey:    cacheKey,
+		receipt:     receipt,
+		receiptHash: sha256Identity(canonicalBytes(receipt)),
+	}
+}
+
+func compiledPlanningCases() []any {
+	gates := []any{
+		"complete-snapshot-tree-validation",
+		"dual-manifest-parse-and-schema-validation",
+		"runtime-build-root-and-source-dir-validation",
+		"static-build-root-context-and-runtime-exclusion",
+		"curator-build-source-v1",
+		"provider-first-closure",
+		"command-shim-portable-and-platform-collision-planning",
+		"source-allowlist-and-snapshot-checks",
+		"source-audit-policy",
+		"trusted-registry-resolution",
+		"attestation-revocation-and-moved-tag-policy",
+	}
+	return []any{
+		map[string]any{
+			"name": "all-source-and-trust-gates-before-build", "result": "build-eligible",
+			"required_before_toolchain_or_cache": gates,
+			"then": []any{
+				"trusted-toolchain-resolution-and-fingerprint",
+				"logical-cache-key-derivation",
+				"protected-cache-read-only-inspection",
+				"go-list",
+				"go-build",
+			},
+			"failure_at_any_gate": map[string]any{
+				"go_commands": []any{}, "cache_lookup": false, "persistent_mutations": []any{},
+			},
+		},
+	}
+}
+
+func compiledBuildOrderCases() []any {
+	return []any{
+		map[string]any{
+			"name": "provider-first-and-lexical-command-order",
+			"closure_edges": []any{
+				map[string]any{"consumer": "app", "provider": "ui-provider"},
+				map[string]any{"consumer": "app", "provider": "data-provider"},
+			},
+			"active_build_commands": map[string]any{
+				"app":           []any{"golden-tool"},
+				"data-provider": []any{"zeta-tool", "alpha-tool", "é-tool"},
+				"ui-provider":   []any{"beta-tool"},
+			},
+			"expected_provider_order": []any{"data-provider", "ui-provider", "app"},
+			"expected_build_order": []any{
+				"data-provider/alpha-tool",
+				"data-provider/zeta-tool",
+				"data-provider/é-tool",
+				"ui-provider/beta-tool",
+				"app/golden-tool",
+			},
+			"ordering": "provider-first-kahn-then-unicode-scalar-command-name",
+		},
+	}
+}
+
+func compiledDryRunCase(identity buildDriverIdentityFixture) any {
+	return map[string]any{
+		"name": "compiled-cache-miss-is-read-only", "scope": "multi-project",
+		"logical_cache_key":       identity.cacheKey,
+		"allowed_go_commands":     []any{"telemetry-off", "version", "env"},
+		"forbidden_go_commands":   []any{"list", "build"},
+		"reported_build_outcomes": []any{"cache-hit", "would-preflight-and-build", "would-rebuild-untrusted-cache", "corrupt", "unsupported"},
+		"forbidden_persistent_effects": []any{
+			"source-checkout", "snapshot-cache", "response-cache", "toolchain-probe-memo",
+			"module-cache", "go-build-cache", "compiled-artifact-cache", "audit-state",
+			"registry-state", "revocation-state", "configuration", "project-lock",
+			"cache-build-lock", "manager-home-lock", "journal", "backup", "quarantine",
+			"permission-repair", "context-tree", "runtime-tree", "environment-file",
+			"install-marker", "command-shim", "adapter-ledger", "adapter-mirror",
+			"consumer-ledger", "gc-metadata",
+		},
+		"operation_private_state_after": "absent",
+		"artifact_executed":             false,
+	}
+}
+
+func compiledPrivateBuildCases(identity buildDriverIdentityFixture) []any {
+	return []any{
+		map[string]any{
+			"name": "all-misses-stage-and-verify-before-home-lock", "result": "ready-to-publish",
+			"builds": []any{
+				map[string]any{"command": "golden-tool", "cache_key": identity.cacheKey, "staging": "operation-private", "artifact_verified": true, "receipt_sha256": identity.receiptHash},
+				map[string]any{"command": "second-tool", "staging": "operation-private", "artifact_verified": true},
+			},
+			"manager_home_lock_during_build": false, "shared_mutations_before_all_verified": []any{},
+			"artifacts_executed": false,
+		},
+		map[string]any{
+			"name": "second-build-failure-preserves-persistent-state", "result": "build-failed",
+			"events": []any{
+				"golden-tool-staged-and-verified",
+				"second-tool-go-list-passed",
+				"second-tool-go-build-failed",
+				"operation-private-staging-removed",
+			},
+			"persistent_state_before":    "persistent-generation-7",
+			"persistent_state_after":     "persistent-generation-7",
+			"manager_home_lock_acquired": false,
+			"forbidden_effects": []any{
+				"recovery", "cache-publication", "quarantine", "permission-repair", "journal",
+				"target-swap", "consumer-update", "gc",
+			},
+		},
+	}
+}
+
+func compiledCachePublicationCases(identity buildDriverIdentityFixture) []any {
+	return []any{
+		map[string]any{
+			"name": "publish-complete-immutable-entry-under-home-lock", "result": "published",
+			"cache_key": identity.cacheKey, "receipt_sha256": identity.receiptHash,
+			"manager_home_lock": true, "publication": "atomic-complete-directory", "merge_existing_entry": false,
+		},
+		map[string]any{
+			"name": "concurrent-identical-winner", "result": "reuse-winner",
+			"cache_key": identity.cacheKey, "winner_validation": "exact-protected-entry",
+			"winner_bytes_equal_staged": true, "staged_loser": "discard", "winner_modified": false,
+		},
+		map[string]any{
+			"name": "concurrent-determinism-mismatch", "result": "determinism-or-corruption-error",
+			"cache_key": identity.cacheKey, "winner_validation": "exact-protected-entry",
+			"winner_bytes_equal_staged": false, "install_targets_mutated": false, "winner_modified": false,
+		},
+		map[string]any{
+			"name": "corrupt-live-entry", "result": "replace-from-verified-staging",
+			"cache_key": identity.cacheKey, "manager_home_lock": true,
+			"quarantine_allowed": true, "adopt_or_repair_candidate": false, "existing_valid_entries_modified": false,
+		},
+		map[string]any{
+			"name": "untrusted-cache-boundary", "result": "rebuild-into-new-protected-state",
+			"cache_key": identity.cacheKey, "embedded_hashes_match": true,
+			"chmod_then_adopt": false, "candidate_reused": false, "status_current": false,
+		},
+	}
+}
+
+func compiledCrossProjectCases(identity buildDriverIdentityFixture) []any {
+	return []any{
+		map[string]any{
+			"name": "two-project-success-preserves-both-consumers", "result": "success",
+			"private_builds_may_overlap": true, "shared_transactions_serialized": true,
+			"shared_cache_key":       identity.cacheKey,
+			"commit_order":           []any{"project-alpha", "project-beta"},
+			"consumer_ledger_before": []any{},
+			"consumer_ledger_after":  []any{"project-alpha", "project-beta"},
+		},
+		map[string]any{
+			"name": "successful-project-survives-other-project-rollback", "result": "project-beta-rolled-back",
+			"successful_project": "project-alpha", "failing_project": "project-beta",
+			"shared_cache_key":                           identity.cacheKey,
+			"consumer_ledger_before_failing_transaction": []any{"project-alpha"},
+			"consumer_ledger_after_rollback":             []any{"project-alpha"},
+			"project_alpha_targets_unchanged":            true,
+		},
+	}
+}
+
+func compiledTransactionCases(identity buildDriverIdentityFixture) []any {
+	commitOrder := []any{
+		"context-and-marker/project-alpha",
+		"context-and-marker/project-beta",
+		"runtime-shim-environment/project-alpha",
+		"adapter-and-mirror/project-alpha",
+		"stale-removal/project-alpha",
+		"consumer-ledger/machine",
+	}
+	return []any{
+		map[string]any{
+			"name": "deterministic-lock-order", "result": "locks-acquired",
+			"input_project_identities":       []any{"project-é", "project-z", "project-alpha"},
+			"expected_project_lock_order":    []any{"project-alpha", "project-z", "project-é"},
+			"then_optional_cache_build_lock": true, "maximum_cache_build_locks": 1,
+			"cache_build_lock_released_before_home_lock": true, "then_manager_home_lock": true,
+			"forbidden_while_holding_home_lock": []any{"project-lock", "cache-build-lock"},
+		},
+		map[string]any{
+			"name": "deterministic-target-order-and-consumer-last", "result": "committed",
+			"cache_key": identity.cacheKey,
+			"target_class_order": []any{
+				"context-and-marker", "runtime-shim-environment", "adapter-and-mirror", "stale-removal", "consumer-ledger",
+			},
+			"canonical_identifier_order":     "unsigned-utf8-bytewise-within-class",
+			"expected_commit_order":          commitOrder,
+			"consumer_ledger_committed_last": true, "backups_retained_until_consumer_durable": true,
+		},
+		map[string]any{
+			"name": "reverse-rollback-under-home-lock", "result": "rolled-back",
+			"commit_order":                                         commitOrder,
+			"expected_restore_order":                               reverseAny(commitOrder),
+			"manager_home_lock_held_through_rollback":              true,
+			"require_current_digest_equals_desired_before_restore": true,
+			"unknown_state_overwritten":                            false, "existing_valid_cache_entries_modified": false,
+		},
+	}
+}
+
+func compiledRecoveryCases(identity buildDriverIdentityFixture) []any {
+	return []any{
+		map[string]any{
+			"name": "interrupted-global-journal-recovered-by-transaction-id", "result": "restored",
+			"triggering_project": "project-beta", "journal_owner": "global",
+			"journal_transaction_id": "transaction-global-17", "cache_key": identity.cacheKey,
+			"journal_state": "partially-committed", "scan_scope": "all-incomplete-journals",
+			"expected_action":                          "verify-preimages-and-restore-reverse-commit-order",
+			"successful_project_consumers_before":      []any{"project-alpha"},
+			"successful_project_consumers_after":       []any{"project-alpha"},
+			"backups_retained_until_recovery_succeeds": true,
+		},
+		map[string]any{
+			"name": "install-recovery-runs-after-private-builds", "result": "publication-may-proceed",
+			"private_builds_verified": true, "recovery_before_build": false,
+			"manager_home_lock": true, "restart_if_plan_assumption_changed": true,
+		},
+	}
+}
+
+func compiledStatusCases(identity buildDriverIdentityFixture) []any {
+	nonCurrent := []any{
+		"missing-raw-snapshot", "context-visible-build-root", "runtime-copied-build-root",
+		"untrusted-cache-boundary", "unsupported-driver", "unsupported-toolchain",
+		"corrupt-receipt", "corrupt-artifact", "wrong-native-target", "build-source-mismatch",
+		"cache-key-mismatch", "receipt-hash-mismatch", "artifact-path-mismatch", "artifact-hash-mismatch",
+	}
+	return []any{
+		map[string]any{
+			"name": "compiled-installation-current", "result": "current",
+			"cache_key": identity.cacheKey, "receipt_sha256": identity.receiptHash,
+			"validated": []any{
+				"marker-schema", "effective-plan", "installed-content", "static-build-root-exclusion",
+				"raw-snapshot-build-source", "build-input", "logical-cache-key", "protected-boundary",
+				"canonical-receipt", "artifact-path-hash-and-size",
+			},
+			"artifact_executed": false, "mutations": []any{},
+		},
+		map[string]any{
+			"name": "compiled-currentness-failure-matrix", "result": "non-current",
+			"independent_conditions": nonCurrent,
+			"artifact_executed":      false, "quarantine": false, "repair": false, "adopt": false, "mutations": []any{},
+		},
+	}
+}
+
+func compiledRepairCases(identity buildDriverIdentityFixture) []any {
+	return []any{
+		map[string]any{
+			"name": "repair-rebuilds-invalid-compiled-entry", "result": "rebuilt-and-journaled",
+			"cache_key":              identity.cacheKey,
+			"independent_conditions": []any{"missing", "corrupt", "wrong-target", "wrong-toolchain", "untrusted-boundary"},
+			"required_pipeline": []any{
+				"complete-snapshot-validation", "static-context-exclusion", "build-source-identity",
+				"provider-first-closure", "source-audit", "registry-and-attestation-gates",
+				"fixed-toolchain-and-process-graph", "operation-private-build", "protected-publication", "journaled-commit",
+			},
+			"forbidden_shortcuts": []any{"adopt-candidate", "chmod-then-adopt", "recalculate-marker-only", "trust-self-consistent-receipt"},
+		},
+	}
+}
+
+func compiledGCCases(identity buildDriverIdentityFixture) []any {
+	return []any{
+		map[string]any{
+			"name": "locked-mark-and-sweep-compiled-cache", "result": "swept-unreferenced-old-entries",
+			"only_lock": "manager-home-mutation-lock", "protected_boundary_revalidated": true,
+			"logical_cache_key":                       identity.cacheKey,
+			"mark_roots":                              []any{"registered-consumer", "supported-valid-marker-v1", "supported-valid-marker-v2", "in-flight-journal"},
+			"compiled_cache_mark_roots":               []any{"supported-valid-marker-v2", "in-flight-journal"},
+			"receipt_content_alone_is_live_reference": false,
+			"sweep_requires":                          []any{"unreferenced", "machine-local", "older-than-grace-period"},
+			"uncertain_state_action":                  "retain-or-conservatively-quarantine-and-report",
+			"artifact_executed":                       false, "entry_adopted": false,
+		},
+		map[string]any{
+			"name": "post-commit-gc-failure-is-maintenance-warning", "result": "installation-success-with-warning",
+			"manager_home_lock": true, "successful_installation_rolled_back": false,
+		},
+	}
+}
+
+func reverseAny(values []any) []any {
+	reversed := make([]any, len(values))
+	for index := range values {
+		reversed[len(values)-1-index] = values[index]
+	}
+	return reversed
 }
 
 func writeExternalRepositoryFixtures(suite string) {
@@ -1318,20 +1655,27 @@ func writeExternalRepositoryExpected(expected string, markerV1 map[string]any) {
 	})
 }
 
-func writeRC5ReleaseMetadata(root, suite string) {
+func writeRC6ReleaseMetadata(root, suite string) {
 	manifest, err := os.ReadFile(filepath.Join(suite, "manifest.json"))
 	must(err)
 	digest := sha256.Sum256(manifest)
 	pin := "sha256:" + hex.EncodeToString(digest[:])
-	writeJSON(filepath.Join(root, "release", "1.0.0-rc.5.json"), map[string]any{
+	writeJSON(filepath.Join(root, "release", "1.0.0-rc.6.json"), map[string]any{
 		"protocol_version": protocolVersion,
-		"created_at":       rc5CreatedAt,
+		"created_at":       rc6CreatedAt,
 		"candidate_protocol_pin": map[string]any{
 			"suite_root":      "conformance/v1",
 			"manifest_sha256": pin,
 		},
-		"source_baseline_commit": "57c1f56846d221ecc55786bd3c2467ec32f11730",
-		"legacy_release":         "1.0.0-rc.4",
+		"source_baseline_commit": rc5PublishedCommit,
+		"legacy_release":         conformanceClaimV3ProtocolVersion,
+		"historical_release": map[string]any{
+			"protocol_version": conformanceClaimV3ProtocolVersion,
+			"metadata_path":    "release/1.0.0-rc.5.json",
+			"metadata_sha256":  rc5ReleaseMetadataSHA256,
+			"published_commit": rc5PublishedCommit,
+			"immutable":        true,
+		},
 		"execution_policy": map[string]any{
 			"portable":                           portableExecutionPolicy,
 			"hardened_profile_claimed":           false,
@@ -1346,6 +1690,8 @@ func writeRC5ReleaseMetadata(root, suite string) {
 			"committed_release_pin_advanced": false,
 		},
 		"claim_v3": map[string]any{
+			"claim_protocol_version":    conformanceClaimV3ProtocolVersion,
+			"rc6_claim_schema":          nil,
 			"claims_emitted":            []any{},
 			"linux_excluded_until_task": "TASK-260728-1skseh",
 			"macos_status":              "pending-downstream-native-evidence",
@@ -2144,7 +2490,7 @@ func installMarkerV3SchemaExamples(validMarker map[string]any) []schemaExample {
 
 func validConformanceClaimV3() map[string]any {
 	return map[string]any{
-		"schema_version": 3, "protocol_version": "1.0.0-rc.5",
+		"schema_version": 3, "protocol_version": conformanceClaimV3ProtocolVersion,
 		"implementation": "example-manager", "implementation_version": "1.0",
 		"classes": []any{"core", "manager"}, "suite_sha256": "sha256:" + strings.Repeat("0", 64),
 		"operating_systems": []any{"macos", "windows"},
@@ -2354,6 +2700,21 @@ func validBuildRecordV1(artifactPath string, digit string) map[string]any {
 		"receipt_sha256":  "sha256:" + strings.Repeat("e", 64),
 		"artifact_sha256": "sha256:" + strings.Repeat("d", 64), "artifact_path": artifactPath,
 	}
+}
+
+// sharedFixtureMarkerV2 is the marker a conforming writer records for the
+// shared schema-5 golden skill. Managers write marker schema 2 for every
+// schema 1 through 6 installation mutation, so this — not the frozen
+// marker-v1 legacy-read evidence in expected/marker.json — is the writer
+// golden downstream implementations compare their own output against. The
+// golden skill declares no build roots and activates no compiled command, so
+// build_roots and builds are empty and build_source stays absent.
+func sharedFixtureMarkerV2(markerV1 map[string]any) map[string]any {
+	marker := cloneMap(markerV1)
+	marker["schema_version"] = 2
+	marker["build_roots"] = []any{}
+	marker["builds"] = map[string]any{}
+	return marker
 }
 
 func validInstallMarkerV2(markerV1 map[string]any) map[string]any {
