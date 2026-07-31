@@ -31,7 +31,10 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: relux-works/curator
-          ref: 17804ceae42d3bb62abf6e8a9d9cbef6dd5370b8
+          # The first Curator commit whose interop gate reads the lifecycle
+          # vector by case name, so it accepts the rc.6 dry-run case
+          # `compiled-cache-miss-is-read-only` that 17804ce rejected on length.
+          ref: fee35c87886d6cb2737b3cad2fc077ab005e79f3
           path: implementations/go
           submodules: true
 
