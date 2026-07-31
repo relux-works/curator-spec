@@ -72,6 +72,8 @@ RC6_REQUIRED_FILES = {
     "schemas/v1/conformance-claim-v2.schema.json",
     "schemas/v1/conformance-claim-v3.schema.json",
     "conformance/v1/schema-cases/index.json",
+    "conformance/v1/expected/marker.json",
+    "conformance/v1/expected/marker-v2.json",
     "conformance/v1/vectors/build-drivers.json",
     "conformance/v1/vectors/manager-lifecycle.json",
     "release/1.0.0-rc.5.json",
@@ -79,9 +81,21 @@ RC6_REQUIRED_FILES = {
 }
 RC6_REQUIRED_MANIFEST_FILES = {
     "schema-cases/index.json",
+    "expected/marker.json",
+    "expected/marker-v2.json",
     "vectors/build-drivers.json",
     "vectors/manager-lifecycle.json",
 }
+# The published marker-v1 legacy-read evidence. Its bytes are release history,
+# so the writer golden a candidate publishes for the same golden skill is a
+# separate file rather than an edit to this one.
+FROZEN_MARKER_V1_SHA256 = (
+    "sha256:80989f850887814ec09c724a7dd891ac7e2422d5fef7e31f330be3554aa9b28a"
+)
+# Managers write marker schema 2 for schema 1 through 6 mutations, and the
+# schema-5 golden skill activates no compiled command, so the writer golden
+# restates the legacy marker with exactly these members changed.
+SHARED_FIXTURE_MARKER_V2_DELTA = frozenset({"schema_version", "build_roots", "builds"})
 RC6_REQUIRED_INDEXED_SCHEMAS = {
     "agent-skill-v6.schema.json",
     "csk-skill-v6.schema.json",
@@ -281,6 +295,50 @@ def validate_manager_lifecycle_release_surface() -> None:
         raise ReleaseFailure("compiled lifecycle fixture is not bound to its portable input")
 
 
+def validate_shared_fixture_marker_release_surface() -> None:
+    """Publish both marker roles for the shared golden skill.
+
+    The frozen marker-v1 file remains the legacy-read evidence a manager MAY
+    still regard as current, so it can never double as the writer golden: a
+    candidate that ships only that file lets a downstream consumer compare
+    schema-2 writer output against schema-1 bytes and go red for the whole
+    release. The writer golden is therefore a required, separately named
+    release artifact.
+    """
+    expected = ROOT / "conformance" / "v1" / "expected"
+    legacy_path = expected / "marker.json"
+    writer_path = expected / "marker-v2.json"
+    if not writer_path.is_file():
+        raise ReleaseFailure(
+            "the candidate publishes no marker-v2 writer golden for the shared fixture"
+        )
+    if sha256_identity(legacy_path) != FROZEN_MARKER_V1_SHA256:
+        raise ReleaseFailure("published marker-v1 legacy-read evidence changed")
+    legacy = load_json(legacy_path)
+    writer = load_json(writer_path)
+    if not isinstance(legacy, dict) or not isinstance(writer, dict):
+        raise ReleaseFailure("shared fixture markers must be objects")
+    if legacy.get("schema_version") != 1 or writer.get("schema_version") != 2:
+        raise ReleaseFailure("shared fixture markers do not carry their own schema identity")
+    skill_schema_version = writer.get("skill_schema_version")
+    if (
+        not isinstance(skill_schema_version, int)
+        or isinstance(skill_schema_version, bool)
+        or not 1 <= skill_schema_version <= 6
+    ):
+        raise ReleaseFailure("the marker-v2 writer golden leaves the schema 1 through 6 range")
+    if writer.get("build_roots") != [] or writer.get("builds") != {}:
+        raise ReleaseFailure("the marker-v2 writer golden records build state the fixture has none of")
+    if "build_source" in writer:
+        raise ReleaseFailure("build_source is releasable only alongside a non-empty builds object")
+    differing = {key for key in set(legacy) | set(writer) if legacy.get(key) != writer.get(key)}
+    if differing != SHARED_FIXTURE_MARKER_V2_DELTA:
+        raise ReleaseFailure(
+            "the marker-v2 writer golden describes a different installation than the "
+            f"legacy marker; it differs in {sorted(differing)}"
+        )
+
+
 def validate_protocol_artifacts(version: str) -> None:
     if version != PROTOCOL_VERSION:
         return
@@ -364,6 +422,7 @@ def validate_protocol_artifacts(version: str) -> None:
         )
 
     validate_manager_lifecycle_release_surface()
+    validate_shared_fixture_marker_release_surface()
     decision = (
         ROOT / "decisions" / "0004-compile-only-build-drivers.md"
     ).read_text(encoding="utf-8")

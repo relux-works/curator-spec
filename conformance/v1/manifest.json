@@ -69,6 +69,10 @@
       "sha256": "sha256:680407f392cf9c44c013d1438c5569099a8be683d25d3b423b4d5c7c2d653f74"
     },
     {
+      "path": "expected/marker-v2.json",
+      "sha256": "sha256:22117126c8932769636bd5ca1f1623f26a3c55d4bb9da3266acf3dc3a3b7fc2c"
+    },
+    {
       "path": "expected/marker.json",
       "sha256": "sha256:80989f850887814ec09c724a7dd891ac7e2422d5fef7e31f330be3554aa9b28a"
     },

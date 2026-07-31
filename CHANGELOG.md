@@ -16,6 +16,13 @@ Versioning for the complete specification set.
   `manager-worker-v1` build input, cache key, receipt, and artifact identity.
 - Added `release/1.0.0-rc.6.json` with the exact regenerated suite-manifest pin
   and an explicit immutable reference to the published rc.5 metadata.
+- Added `conformance/v1/expected/marker-v2.json`, the marker-v2 writer golden
+  for the shared schema-5 golden skill. Managers write marker schema 2 for
+  schema 1 through 6 mutations, so a writer is compared against this file;
+  `expected/marker.json` stays byte-frozen marker-v1 legacy-read evidence.
+  Generator, validator, and release-gate coverage require the writer golden,
+  reject a legacy marker edited in place, and reject a writer golden that
+  invents build state or describes a different installation.
 
 ### Changed
 

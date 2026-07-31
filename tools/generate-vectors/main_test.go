@@ -23,6 +23,10 @@ const (
 	conformanceClaimV1SchemaSHA256  = "c9f49460618ccc8b1d7d2dfaf760fc6ad3a53a870a6685a685ddc148d3c87b3f"
 	conformanceClaimV1ValidSHA256   = "799682489be118331135d91798db90b8d020cbb703207331824ab113f037693c"
 	conformanceClaimV1InvalidSHA256 = "de9568757a2bb89c87702e47f6d9c162df24f5ee964f1ef49b9e191ed94b7017"
+	// The published marker-v1 legacy-read evidence for the shared golden
+	// skill. Writers emit marker schema 2 for schema 1 through 6, so this file
+	// is never the writer golden and its bytes stay frozen.
+	frozenSharedMarkerV1SHA256 = "80989f850887814ec09c724a7dd891ac7e2422d5fef7e31f330be3554aa9b28a"
 	// rc4GoV1ReceiptExampleSHA256 is the accepted rc.4 candidate digest of the
 	// generated go-v1 receipt example, recorded so the authorized
 	// execution-policy revision can prove it no longer reproduces those bytes.
@@ -1861,6 +1865,67 @@ func TestInstallMarkerV1RemainsByteFrozen(t *testing.T) {
 		if got := sha256.Sum256(payload); hex.EncodeToString(got[:]) != digest {
 			t.Fatalf("marker v1 artifact changed: %s", filepath.ToSlash(path))
 		}
+	}
+}
+
+func TestSharedFixturePublishesBothLegacyAndWriterMarkers(t *testing.T) {
+	root := repositoryRoot(t)
+	expected := filepath.Join(root, "conformance", "v1", "expected")
+	legacyPath := filepath.Join(expected, "marker.json")
+	writerPath := filepath.Join(expected, "marker-v2.json")
+
+	payload, err := os.ReadFile(legacyPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if digest := sha256.Sum256(payload); hex.EncodeToString(digest[:]) != frozenSharedMarkerV1SHA256 {
+		t.Fatalf("frozen marker-v1 legacy-read evidence changed bytes")
+	}
+
+	legacy := readObject(t, legacyPath)
+	writer := readObject(t, writerPath)
+	if legacy["schema_version"] != json.Number("1") || writer["schema_version"] != json.Number("2") {
+		t.Fatalf("shared fixture markers do not carry their own schema identity")
+	}
+	if writer["skill_schema_version"] != json.Number("5") {
+		t.Fatalf("the writer golden describes a different golden skill: %v", writer["skill_schema_version"])
+	}
+	if roots, ok := writer["build_roots"].([]any); !ok || len(roots) != 0 {
+		t.Fatalf("the golden skill declares no build roots: %#v", writer["build_roots"])
+	}
+	if builds, ok := writer["builds"].(map[string]any); !ok || len(builds) != 0 {
+		t.Fatalf("the golden skill activates no compiled command: %#v", writer["builds"])
+	}
+	if _, ok := writer["build_source"]; ok {
+		t.Fatal("build_source is legal only alongside a non-empty builds object")
+	}
+
+	delta := map[string]bool{}
+	for key := range legacy {
+		if !reflect.DeepEqual(legacy[key], writer[key]) {
+			delta[key] = true
+		}
+	}
+	for key := range writer {
+		if !reflect.DeepEqual(legacy[key], writer[key]) {
+			delta[key] = true
+		}
+	}
+	want := map[string]bool{"schema_version": true, "build_roots": true, "builds": true}
+	if !reflect.DeepEqual(delta, want) {
+		t.Fatalf("the writer golden restates a different installation; it differs in %v", delta)
+	}
+
+	derived, err := json.Marshal(sharedFixtureMarkerV2(legacy))
+	if err != nil {
+		t.Fatal(err)
+	}
+	published, err := json.Marshal(writer)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(derived, published) {
+		t.Fatalf("the published writer golden is not what the generator derives: %s", derived)
 	}
 }
 

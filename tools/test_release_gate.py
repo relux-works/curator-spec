@@ -438,6 +438,97 @@ class ProtocolRC6ReleaseGateTests(unittest.TestCase):
         ):
             release_gate.validate_version(self.VERSION)
 
+    def _shared_marker(self, name: str) -> Path:
+        return self.root / "conformance" / "v1" / "expected" / name
+
+    def test_accepts_the_published_legacy_and_writer_marker_pair(self) -> None:
+        release_gate.validate_shared_fixture_marker_release_surface()
+
+    def test_rejects_a_candidate_without_a_marker_v2_writer_golden(self) -> None:
+        self._shared_marker("marker-v2.json").unlink()
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "no marker-v2 writer golden"
+        ):
+            release_gate.validate_shared_fixture_marker_release_surface()
+
+    def test_rejects_editing_the_legacy_marker_instead_of_adding_the_writer_golden(
+        self,
+    ) -> None:
+        path = self._shared_marker("marker.json")
+        marker = json.loads(path.read_text(encoding="utf-8"))
+        marker["schema_version"] = 2
+        marker["build_roots"] = []
+        marker["builds"] = {}
+        self._write_json(path, marker)
+        self._refresh_manifest_entry("expected/marker.json")
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "legacy-read evidence changed"
+        ):
+            release_gate.validate_shared_fixture_marker_release_surface()
+
+    def test_rejects_a_writer_golden_that_is_not_marker_schema_2(self) -> None:
+        path = self._shared_marker("marker-v2.json")
+        marker = json.loads(path.read_text(encoding="utf-8"))
+        marker["schema_version"] = 1
+        self._write_json(path, marker)
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "own schema identity"
+        ):
+            release_gate.validate_shared_fixture_marker_release_surface()
+
+    def test_rejects_a_writer_golden_outside_the_schema_1_through_6_range(self) -> None:
+        path = self._shared_marker("marker-v2.json")
+        marker = json.loads(path.read_text(encoding="utf-8"))
+        marker["skill_schema_version"] = 7
+        self._write_json(path, marker)
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "schema 1 through 6 range"
+        ):
+            release_gate.validate_shared_fixture_marker_release_surface()
+
+    def test_rejects_a_writer_golden_below_the_schema_1_through_6_range(self) -> None:
+        path = self._shared_marker("marker-v2.json")
+        marker = json.loads(path.read_text(encoding="utf-8"))
+        marker["skill_schema_version"] = 0
+        self._write_json(path, marker)
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "schema 1 through 6 range"
+        ):
+            release_gate.validate_shared_fixture_marker_release_surface()
+
+    def test_rejects_a_writer_golden_that_invents_build_state(self) -> None:
+        path = self._shared_marker("marker-v2.json")
+        marker = json.loads(path.read_text(encoding="utf-8"))
+        marker["build_roots"] = ["build"]
+        self._write_json(path, marker)
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "build state the fixture has none of"
+        ):
+            release_gate.validate_shared_fixture_marker_release_surface()
+
+    def test_rejects_a_writer_golden_carrying_build_source_without_builds(self) -> None:
+        path = self._shared_marker("marker-v2.json")
+        marker = json.loads(path.read_text(encoding="utf-8"))
+        marker["build_source"] = {
+            "algorithm": "curator-build-source-v1",
+            "content_sha256": "sha256:" + "a" * 64,
+        }
+        self._write_json(path, marker)
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "non-empty builds object"
+        ):
+            release_gate.validate_shared_fixture_marker_release_surface()
+
+    def test_rejects_a_writer_golden_describing_another_installation(self) -> None:
+        path = self._shared_marker("marker-v2.json")
+        marker = json.loads(path.read_text(encoding="utf-8"))
+        marker["content_sha256"] = "sha256:" + "b" * 64
+        self._write_json(path, marker)
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "different installation"
+        ):
+            release_gate.validate_shared_fixture_marker_release_surface()
+
     def test_rejects_duplicate_rc6_suite_pin(self) -> None:
         path = self.root / "release" / f"{self.VERSION}.json"
         metadata = json.loads(path.read_text(encoding="utf-8"))

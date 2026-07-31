@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import importlib.util
+import json
 import shlex
 import tempfile
 import unittest
@@ -926,6 +927,131 @@ class BuildDriverGoldenSuiteTests(unittest.TestCase):
         for name in fixture["excluded_context_files"]:
             self.assertNotIn(name, fixture["expected_context_files"])
         self.assertIn("assets/build-tool/go.mod", fixture["excluded_context_files"])
+
+
+class SharedFixtureMarkerTests(unittest.TestCase):
+    """Both marker roles the shared golden skill has to publish.
+
+    `expected/marker.json` is frozen marker-v1 legacy-read evidence, and
+    `expected/marker-v2.json` is the writer golden a manager's own marker
+    output is compared against, because managers write marker schema 2 for
+    every schema 1 through 6 installation mutation.
+    """
+
+    def setUp(self) -> None:
+        self.temporary = tempfile.TemporaryDirectory()
+        self.expected = Path(self.temporary.name)
+        for name in ("marker.json", "marker-v2.json"):
+            (self.expected / name).write_bytes(
+                (validate.SUITE / "expected" / name).read_bytes()
+            )
+        self.addCleanup(self.temporary.cleanup)
+
+    def _rewrite(self, name: str, mutate) -> None:
+        path = self.expected / name
+        marker = json.loads(path.read_text(encoding="utf-8"))
+        mutate(marker)
+        path.write_text(json.dumps(marker, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    def test_published_markers_are_accepted(self) -> None:
+        validate.validate_shared_fixture_markers()
+        validate.validate_shared_fixture_markers(self.expected)
+
+    def test_writer_golden_is_byte_derived_from_the_legacy_marker(self) -> None:
+        legacy = validate.load_json(validate.SUITE / "expected" / "marker.json")
+        writer = validate.load_json(validate.SUITE / "expected" / "marker-v2.json")
+        derived = dict(legacy)
+        derived.update({"schema_version": 2, "build_roots": [], "builds": {}})
+        self.assertEqual(writer, derived)
+        self.assertEqual(writer["skill_schema_version"], 5)
+        self.assertNotIn("build_source", writer)
+
+    def test_missing_writer_golden_fails_closed(self) -> None:
+        (self.expected / "marker-v2.json").unlink()
+        with self.assertRaisesRegex(validate.ValidationFailure, "is missing"):
+            validate.validate_shared_fixture_markers(self.expected)
+
+    def test_legacy_marker_may_not_be_upgraded_in_place(self) -> None:
+        self._rewrite(
+            "marker.json",
+            lambda marker: marker.update(
+                {"schema_version": 2, "build_roots": [], "builds": {}}
+            ),
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "frozen marker-v1"):
+            validate.validate_shared_fixture_markers(self.expected)
+
+    def test_writer_golden_must_carry_marker_schema_2(self) -> None:
+        self._rewrite("marker-v2.json", lambda marker: marker.__setitem__("schema_version", 1))
+        with self.assertRaisesRegex(validate.ValidationFailure, "marker schema 2"):
+            validate.validate_shared_fixture_markers(self.expected)
+
+    def test_writer_golden_must_satisfy_its_own_schema(self) -> None:
+        self._rewrite(
+            "marker-v2.json", lambda marker: marker.__setitem__("skill_schema_version", 7)
+        )
+        with self.assertRaisesRegex(
+            validate.ValidationFailure, "install-marker-v2.schema.json"
+        ):
+            validate.validate_shared_fixture_markers(self.expected)
+
+    def test_writer_golden_may_not_invent_build_state(self) -> None:
+        for mutate in (
+            lambda marker: marker.__setitem__("build_roots", ["build"]),
+            lambda marker: marker.__setitem__(
+                "builds",
+                {
+                    "golden-tool": {
+                        "driver": "go-v1",
+                        "cache_key": "sha256:" + "3" * 64,
+                        "receipt_sha256": "sha256:" + "e" * 64,
+                        "artifact_sha256": "sha256:" + "d" * 64,
+                        "artifact_path": "bin/golden-tool",
+                    }
+                },
+            ),
+        ):
+            with self.subTest(mutation=mutate):
+                self.setUp()
+                self._rewrite("marker-v2.json", mutate)
+                with self.assertRaises(validate.ValidationFailure):
+                    validate.validate_shared_fixture_markers(self.expected)
+
+    def test_writer_golden_may_not_carry_build_source_without_builds(self) -> None:
+        self._rewrite(
+            "marker-v2.json",
+            lambda marker: marker.__setitem__(
+                "build_source",
+                {
+                    "algorithm": validate.FROZEN_BUILD_SOURCE_ALGORITHM,
+                    "content_sha256": "sha256:" + "a" * 64,
+                },
+            ),
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_shared_fixture_markers(self.expected)
+
+    def test_writer_golden_may_not_describe_another_installation(self) -> None:
+        for field, value in (
+            ("content_sha256", "sha256:" + "b" * 64),
+            ("runtime_roots", []),
+            ("name", "other-skill"),
+        ):
+            with self.subTest(field=field):
+                self.setUp()
+                self._rewrite("marker-v2.json", lambda marker: marker.__setitem__(field, value))
+                with self.assertRaisesRegex(
+                    validate.ValidationFailure, "differing only in"
+                ):
+                    validate.validate_shared_fixture_markers(self.expected)
+
+    def test_writer_golden_set_members_stay_sorted_and_unique(self) -> None:
+        self._rewrite(
+            "marker-v2.json",
+            lambda marker: marker.__setitem__("files", swapped(marker["files"], 0, 1)),
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "sorted unique array"):
+            validate.validate_shared_fixture_markers(self.expected)
 
 
 class WorkflowRegenerationScopeTests(unittest.TestCase):

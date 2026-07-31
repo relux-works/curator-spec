@@ -59,6 +59,15 @@ RETIRED_DESCRIPTOR_STEM = "curator" + "-build"
 # Negative fixtures mutate its version suffix, so the whole namespace is kept.
 BUILD_SOURCE_ALGORITHM_NAMESPACE = RETIRED_DESCRIPTOR_STEM + "-source"
 FROZEN_BUILD_SOURCE_ALGORITHM = BUILD_SOURCE_ALGORITHM_NAMESPACE + "-v1"
+# expected/marker.json is the published marker-v1 legacy-read evidence a
+# manager MAY still regard as current for a schema 1 through 5 package. Its
+# bytes are frozen, so it is never the golden a writer compares against.
+# expected/marker-v2.json carries that writer golden for the same golden skill:
+# managers write marker schema 2 for schema 1 through 6 mutations, and the
+# schema-5 golden skill declares no build roots, so the two markers differ in
+# exactly these members.
+FROZEN_MARKER_V1_SHA256 = "80989f850887814ec09c724a7dd891ac7e2422d5fef7e31f330be3554aa9b28a"
+SHARED_FIXTURE_MARKER_V2_DELTA = frozenset({"schema_version", "build_roots", "builds"})
 # Directory names that hold scratch or version-control state rather than a
 # protocol surface.
 NON_SURFACE_DIRECTORIES = (".git", ".temp", ".venv", "__pycache__")
@@ -1901,14 +1910,68 @@ def validate_build_driver_cases(vector: Any, cache_key: str, receipt_hash: str) 
         raise ValidationFailure("the CRLF toolchain case does not carry CRLF stdout")
 
 
-def validate_vector_semantics() -> None:
-    marker = load_json(SUITE / "expected" / "marker.json")
-    for field in ("agents", "commands", "dependencies", "files", "runtime_roots", "requirers"):
-        require_sorted_unique(marker[field], f"marker.{field}")
-    require_sorted_unique(marker["activation"]["commands"], "marker.activation.commands")
-    if "locale" not in marker or marker["locale"] is not None:
-        raise ValidationFailure("golden marker must carry explicit locale: null")
+def validate_shared_fixture_markers(expected_root: Path | None = None) -> None:
+    """Check the frozen legacy-read marker and the marker-v2 writer golden.
 
+    A conforming manager reads marker schema 1 but writes marker schema 2 for
+    every schema 1 through 6 installation mutation, so the shared fixture
+    publishes both: `expected/marker.json` stays byte-frozen as the legacy-read
+    evidence, and `expected/marker-v2.json` is the writer golden downstream
+    implementations compare their own marker output against. The writer golden
+    is required, so a suite that lost it fails here instead of silently
+    dropping the writer assertion.
+    """
+    if expected_root is None:
+        expected_root = SUITE / "expected"
+    registry, paths = schema_registry()
+    legacy_path = expected_root / "marker.json"
+    writer_path = expected_root / "marker-v2.json"
+    if not writer_path.is_file():
+        raise ValidationFailure(
+            f"{display_path(writer_path)} is missing; managers write marker schema 2 "
+            "for every schema 1 through 6 installation mutation"
+        )
+    legacy_digest = hashlib.sha256(legacy_path.read_bytes()).hexdigest()
+    if legacy_digest != FROZEN_MARKER_V1_SHA256:
+        raise ValidationFailure(
+            f"{display_path(legacy_path)} is frozen marker-v1 legacy-read evidence and changed bytes"
+        )
+
+    legacy = load_json(legacy_path)
+    writer = load_json(writer_path)
+    for path, marker, version in ((legacy_path, legacy, 1), (writer_path, writer, 2)):
+        label = display_path(path)
+        if marker.get("schema_version") != version:
+            raise ValidationFailure(f"{label} does not carry marker schema {version}")
+        schema_name = f"install-marker-v{version}.schema.json"
+        errors = list(
+            Draft202012Validator(load_json(paths[schema_name]), registry=registry).iter_errors(marker)
+        )
+        if errors:
+            raise ValidationFailure(f"{label} violates {schema_name}: {errors[0].message}")
+        for field in ("agents", "commands", "dependencies", "files", "runtime_roots", "requirers"):
+            require_sorted_unique(marker[field], f"{label} {field}")
+        require_sorted_unique(marker["activation"]["commands"], f"{label} activation.commands")
+        if "locale" not in marker or marker["locale"] is not None:
+            raise ValidationFailure(f"{label} must carry explicit locale: null")
+
+    if writer.get("build_roots") != [] or writer.get("builds") != {}:
+        raise ValidationFailure(
+            "the golden skill activates no compiled command, so its writer marker "
+            "must record empty build_roots and builds"
+        )
+    if "build_source" in writer:
+        raise ValidationFailure("build_source is REQUIRED exactly when builds is non-empty")
+    differing = {key for key in set(legacy) | set(writer) if legacy.get(key) != writer.get(key)}
+    if differing != SHARED_FIXTURE_MARKER_V2_DELTA:
+        raise ValidationFailure(
+            f"{display_path(writer_path)} must restate the same golden installation as "
+            f"{display_path(legacy_path)}, differing only in "
+            f"{sorted(SHARED_FIXTURE_MARKER_V2_DELTA)}, not {sorted(differing)}"
+        )
+
+
+def validate_vector_semantics() -> None:
     ledger = load_json(SUITE / "expected" / "adapter-ledger.json")
     require_sorted_unique(ledger["entries"], "adapter ledger entries")
 
@@ -2518,6 +2581,7 @@ def main() -> int:
         validate_repository_descriptor_identity,
         validate_manifest,
         validate_review_evidence,
+        validate_shared_fixture_markers,
         validate_vector_semantics,
         validate_local_links,
     ]

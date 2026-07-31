@@ -114,6 +114,7 @@ func main() {
 		"requirers":  []any{"<project>"},
 	}
 	writeJSON(filepath.Join(expected, "marker.json"), marker)
+	writeJSON(filepath.Join(expected, "marker-v2.json"), sharedFixtureMarkerV2(marker))
 	ledger := map[string]any{"schema_version": 1, "entries": []any{"golden-skill"}}
 	writeJSON(filepath.Join(expected, "adapter-ledger.json"), ledger)
 
@@ -2699,6 +2700,21 @@ func validBuildRecordV1(artifactPath string, digit string) map[string]any {
 		"receipt_sha256":  "sha256:" + strings.Repeat("e", 64),
 		"artifact_sha256": "sha256:" + strings.Repeat("d", 64), "artifact_path": artifactPath,
 	}
+}
+
+// sharedFixtureMarkerV2 is the marker a conforming writer records for the
+// shared schema-5 golden skill. Managers write marker schema 2 for every
+// schema 1 through 6 installation mutation, so this — not the frozen
+// marker-v1 legacy-read evidence in expected/marker.json — is the writer
+// golden downstream implementations compare their own output against. The
+// golden skill declares no build roots and activates no compiled command, so
+// build_roots and builds are empty and build_source stays absent.
+func sharedFixtureMarkerV2(markerV1 map[string]any) map[string]any {
+	marker := cloneMap(markerV1)
+	marker["schema_version"] = 2
+	marker["build_roots"] = []any{}
+	marker["builds"] = map[string]any{}
+	return marker
 }
 
 func validInstallMarkerV2(markerV1 map[string]any) map[string]any {

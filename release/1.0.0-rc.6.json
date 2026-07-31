@@ -1,6 +1,6 @@
 {
   "candidate_protocol_pin": {
-    "manifest_sha256": "sha256:72c5d717027ca096b14bc32f5d60bb740676974e9429f3d09b730897e5fba89b",
+    "manifest_sha256": "sha256:12e58b82579645ba1ccafba49d3e2dd3216005ddf37ae63c68a9fafd46773071",
     "suite_root": "conformance/v1"
   },
   "claim_v3": {
@@ -15,7 +15,7 @@
   "downstream_consumption": {
     "committed_release_pin_advanced": false,
     "environment": "CURATOR_CONFORMANCE_ROOT",
-    "required_manifest_sha256": "sha256:72c5d717027ca096b14bc32f5d60bb740676974e9429f3d09b730897e5fba89b"
+    "required_manifest_sha256": "sha256:12e58b82579645ba1ccafba49d3e2dd3216005ddf37ae63c68a9fafd46773071"
   },
   "execution_policy": {
     "capability_evidence_record_version": "capability-evidence-v1",
