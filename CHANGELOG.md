@@ -45,6 +45,13 @@ Versioning for the complete specification set.
   rewrite historical release evidence or advance a downstream implementation
   pin.
 
+### Reconciliation
+
+- Reconciled the accepted schema-7 schemas, corpus, documentation, and gates
+  against the published rc.6 tree. The published tree already contains the
+  accepted bytes, so this integration records the no-loss reconciliation and
+  supersedes PR #14 without changing protocol semantics.
+
 ### Security
 
 - All restored rejection and lifecycle evidence remains declarative. The
