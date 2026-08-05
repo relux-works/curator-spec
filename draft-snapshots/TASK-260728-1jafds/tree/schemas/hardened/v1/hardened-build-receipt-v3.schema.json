@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/hardened/v1/hardened-build-receipt-v3.schema.json",
+  "title": "Curator hardened build receipt schema 3",
+  "type": "object",
+  "required": ["schema_version", "cache_key", "input", "tcb", "artifact"],
+  "properties": {
+    "schema_version": {"const": 3},
+    "cache_key": {"$ref": "../../v1/common.schema.json#/$defs/sha256"},
+    "input": {"$ref": "hardened-common.schema.json#/$defs/hardenedGoBuildInputV1"},
+    "tcb": {"$ref": "hardened-common.schema.json#/$defs/hardenedTcbRecordV1"},
+    "artifact": {"$ref": "../../v1/common.schema.json#/$defs/buildArtifactV1"}
+  },
+  "additionalProperties": false,
+  "allOf": [{"$ref": "hardened-common.schema.json#/$defs/hardenedTargetPlatformRelationV1"}]
+}

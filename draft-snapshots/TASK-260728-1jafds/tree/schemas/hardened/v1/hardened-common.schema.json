@@ -1,0 +1,554 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/hardened/v1/hardened-common.schema.json",
+  "title": "Curator hardened execution profile shared definitions",
+  "$defs": {
+    "hardenedExecutionPolicyV1": {"const": "hardened-worker-v1"},
+    "hardenedProfileIdentityV1": {"const": "hardened-profile-v1"},
+    "hardenedCapabilityInventoryVersionV1": {"const": "hardened-capability-inventory-v1"},
+    "hardenedPlatformV1": {"enum": ["linux", "macos", "windows"]},
+    "hardenedEnforcementBackendV1": {
+      "enum": ["linux-namespace-seccomp-v1", "macos-sandbox-v1", "windows-appcontainer-job-v1"]
+    },
+    "hardenedQualificationStatusV1": {"enum": ["qualified", "unqualified"]},
+    "hardenedCapabilityClassV1": {
+      "enum": [
+        "active-capability-probe",
+        "aggregate-resource-bounds",
+        "domain-atomic-termination",
+        "domain-membership-enforcement",
+        "exec-path-allowlist",
+        "filesystem-view-restriction",
+        "network-syscall-denial",
+        "preexisting-endpoint-revocation",
+        "read-only-source-view",
+        "read-only-toolchain-view",
+        "write-path-confinement"
+      ]
+    },
+    "hardenedGuaranteeV1": {
+      "enum": [
+        "exact-executable-allowlisting",
+        "fail-closed-capability-preflight",
+        "hard-aggregate-descendant-resource-bounds",
+        "private-build-root-only-writes",
+        "read-only-source-and-toolchain",
+        "total-network-denial"
+      ]
+    },
+    "hardenedDiagnosticV1": {
+      "enum": [
+        "hardened_capability_unavailable",
+        "hardened_domain_breach_detected",
+        "hardened_domain_establishment_failed",
+        "hardened_domain_protocol_invalid",
+        "hardened_evidence_invalid",
+        "hardened_package_influence_forbidden",
+        "hardened_profile_claim_forbidden",
+        "hardened_profile_unsupported",
+        "hardened_tcb_identity_invalid"
+      ]
+    },
+    "hardenedPhaseV1": {
+      "enum": [
+        "profile-selection",
+        "platform-qualification",
+        "capability-probe",
+        "toolchain-probe-and-snapshot-freeze",
+        "tcb-identity-verification",
+        "build-input-and-cache-lookup",
+        "domain-establishment",
+        "domain-entry",
+        "in-domain-guarantee-self-test",
+        "go-list",
+        "parent-graph-validation",
+        "build-permit",
+        "go-build",
+        "artifact-verification",
+        "domain-teardown",
+        "identity-reverification",
+        "publication"
+      ]
+    },
+    "hardenedGoos": {"enum": ["darwin", "linux", "windows"]},
+    "hardenedGoNativeTargetV1": {
+      "allOf": [
+        {"$ref": "../../v1/common.schema.json#/$defs/goNativeTargetV1"},
+        {
+          "type": "object",
+          "required": ["goos"],
+          "properties": {"goos": {"$ref": "#/$defs/hardenedGoos"}}
+        }
+      ]
+    },
+    "hardenedPlatformBackendRelationV1": {
+      "allOf": [
+        {
+          "if": {"type": "object", "required": ["platform"], "properties": {"platform": {"const": "linux"}}},
+          "then": {"properties": {"enforcement_backend": {"const": "linux-namespace-seccomp-v1"}}}
+        },
+        {
+          "if": {"type": "object", "required": ["platform"], "properties": {"platform": {"const": "macos"}}},
+          "then": {"properties": {"enforcement_backend": {"const": "macos-sandbox-v1"}}}
+        },
+        {
+          "if": {"type": "object", "required": ["platform"], "properties": {"platform": {"const": "windows"}}},
+          "then": {"properties": {"enforcement_backend": {"const": "windows-appcontainer-job-v1"}}}
+        }
+      ]
+    },
+    "hardenedOperatingSystemBackendRelationV1": {
+      "allOf": [
+        {
+          "if": {"type": "object", "required": ["operating_system"], "properties": {"operating_system": {"const": "linux"}}},
+          "then": {"properties": {"enforcement_backend": {"const": "linux-namespace-seccomp-v1"}}}
+        },
+        {
+          "if": {"type": "object", "required": ["operating_system"], "properties": {"operating_system": {"const": "macos"}}},
+          "then": {"properties": {"enforcement_backend": {"const": "macos-sandbox-v1"}}}
+        },
+        {
+          "if": {"type": "object", "required": ["operating_system"], "properties": {"operating_system": {"const": "windows"}}},
+          "then": {"properties": {"enforcement_backend": {"const": "windows-appcontainer-job-v1"}}}
+        }
+      ]
+    },
+    "hardenedTargetPlatformRelationV1": {
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "required": ["input"],
+            "properties": {
+              "input": {
+                "type": "object",
+                "required": ["target"],
+                "properties": {
+                  "target": {"type": "object", "required": ["goos"], "properties": {"goos": {"const": "darwin"}}}
+                }
+              }
+            }
+          },
+          "then": {"properties": {"tcb": {"properties": {"platform": {"const": "macos"}}}}}
+        },
+        {
+          "if": {
+            "type": "object",
+            "required": ["input"],
+            "properties": {
+              "input": {
+                "type": "object",
+                "required": ["target"],
+                "properties": {
+                  "target": {"type": "object", "required": ["goos"], "properties": {"goos": {"const": "linux"}}}
+                }
+              }
+            }
+          },
+          "then": {"properties": {"tcb": {"properties": {"platform": {"const": "linux"}}}}}
+        },
+        {
+          "if": {
+            "type": "object",
+            "required": ["input"],
+            "properties": {
+              "input": {
+                "type": "object",
+                "required": ["target"],
+                "properties": {
+                  "target": {"type": "object", "required": ["goos"], "properties": {"goos": {"const": "windows"}}}
+                }
+              }
+            }
+          },
+          "then": {"properties": {"tcb": {"properties": {"platform": {"const": "windows"}}}}}
+        }
+      ]
+    },
+    "hardenedHostKindV1": {"const": "operating-system"},
+    "hardenedHostIdentityValueV1": {"enum": ["darwin", "linux", "windows-nt"]},
+    "hardenedHostVersionV1": {
+      "type": "string",
+      "$comment": "The observed kernel release, bounded rather than free-form so one kernel cannot have arbitrarily many spellings. The tail is (?![\\s\\S]) for the reason hardenedBackendVersionV1 states.",
+      "pattern": "^(0|[1-9][0-9]{0,8})(\\.(0|[1-9][0-9]{0,8})){0,3}(-[0-9A-Za-z][0-9A-Za-z._+-]{0,63})?(?![\\s\\S])"
+    },
+    "hardenedHostBuildAlgorithmV1": {"const": "curator-hardened-host-build-v1"},
+    "hardenedHostBuildIdentifierV1": {
+      "type": "string",
+      "$comment": "The platform-independent floor. hardenedHostBuildIdentifierPlatformRelationV1 narrows it to the grammar each platform declares.",
+      "pattern": "^[0-9A-Za-z][0-9A-Za-z._-]{0,63}(?![\\s\\S])"
+    },
+    "hardenedHostBuildV1": {
+      "type": "object",
+      "$comment": "review-cycle-4 finding R4-1: a nullable descriptive string let two materially different kernels share one trusted-computing-base record. The kernel build identity is a closed record with a digest over the platform's declared build-identity sources.",
+      "required": ["algorithm", "identifier", "content_sha256"],
+      "properties": {
+        "algorithm": {"$ref": "#/$defs/hardenedHostBuildAlgorithmV1"},
+        "identifier": {"$ref": "#/$defs/hardenedHostBuildIdentifierV1"},
+        "content_sha256": {"$ref": "../../v1/common.schema.json#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "hardenedHostIdentityV1": {
+      "type": "object",
+      "required": ["kind", "identity", "version", "build"],
+      "properties": {
+        "kind": {"$ref": "#/$defs/hardenedHostKindV1"},
+        "identity": {"$ref": "#/$defs/hardenedHostIdentityValueV1"},
+        "version": {"$ref": "#/$defs/hardenedHostVersionV1"},
+        "build": {"$ref": "#/$defs/hardenedHostBuildV1"}
+      },
+      "additionalProperties": false
+    },
+    "hardenedHostPlatformRelationV1": {
+      "allOf": [
+        {
+          "if": {"type": "object", "required": ["platform"], "properties": {"platform": {"const": "linux"}}},
+          "then": {"properties": {"host": {"properties": {"identity": {"const": "linux"}}}}}
+        },
+        {
+          "if": {"type": "object", "required": ["platform"], "properties": {"platform": {"const": "macos"}}},
+          "then": {"properties": {"host": {"properties": {"identity": {"const": "darwin"}}}}}
+        },
+        {
+          "if": {"type": "object", "required": ["platform"], "properties": {"platform": {"const": "windows"}}},
+          "then": {"properties": {"host": {"properties": {"identity": {"const": "windows-nt"}}}}}
+        }
+      ]
+    },
+    "hardenedHostBuildIdentifierPlatformRelationV1": {
+      "$comment": "The immutable kernel build identifier each platform declares in protocol/hardened-execution.md section 6.3. A darwin build identifier on a linux trusted computing base is not an identity that platform can observe.",
+      "allOf": [
+        {
+          "if": {"type": "object", "required": ["platform"], "properties": {"platform": {"const": "linux"}}},
+          "then": {"properties": {"host": {"properties": {"build": {"properties": {"identifier": {"pattern": "^[0-9a-f]{32,128}(?![\\s\\S])"}}}}}}}
+        },
+        {
+          "if": {"type": "object", "required": ["platform"], "properties": {"platform": {"const": "macos"}}},
+          "then": {"properties": {"host": {"properties": {"build": {"properties": {"identifier": {"pattern": "^[0-9]{1,3}[A-Z][0-9]{1,6}[a-z]?(?![\\s\\S])"}}}}}}}
+        },
+        {
+          "if": {"type": "object", "required": ["platform"], "properties": {"platform": {"const": "windows"}}},
+          "then": {"properties": {"host": {"properties": {"build": {"properties": {"identifier": {"pattern": "^[0-9]{1,7}\\.[0-9]{1,7}(?![\\s\\S])"}}}}}}}
+        }
+      ]
+    },
+    "hardenedBackendVersionV1": {
+      "type": "string",
+      "$comment": "The tail is (?![\\s\\S]) rather than $ on purpose: in some regular-expression engines $ also matches before a trailing newline, which would admit \"sandbox-2.0\\n\" as a version. A negative lookahead for any character admits nothing after the last digit.",
+      "pattern": "^[a-z][a-z0-9]*-(0|[1-9][0-9]{0,8})(\\.(0|[1-9][0-9]{0,8})){0,3}(?![\\s\\S])"
+    },
+    "hardenedBackendVersionSeriesRelationV1": {
+      "allOf": [
+        {
+          "if": {"type": "object", "required": ["enforcement_backend"], "properties": {"enforcement_backend": {"const": "linux-namespace-seccomp-v1"}}},
+          "then": {"properties": {"backend": {"properties": {"version": {"pattern": "^cgroup2-"}}}}}
+        },
+        {
+          "if": {"type": "object", "required": ["enforcement_backend"], "properties": {"enforcement_backend": {"const": "macos-sandbox-v1"}}},
+          "then": {"properties": {"backend": {"properties": {"version": {"pattern": "^sandbox-"}}}}}
+        },
+        {
+          "if": {"type": "object", "required": ["enforcement_backend"], "properties": {"enforcement_backend": {"const": "windows-appcontainer-job-v1"}}},
+          "then": {"properties": {"backend": {"properties": {"version": {"pattern": "^appcontainer-"}}}}}
+        }
+      ]
+    },
+    "hardenedMinimumVersionSeriesRelationV1": {
+      "allOf": [
+        {
+          "if": {"type": "object", "required": ["enforcement_backend"], "properties": {"enforcement_backend": {"const": "linux-namespace-seccomp-v1"}}},
+          "then": {"properties": {"minimum_version": {"pattern": "^cgroup2-"}}}
+        },
+        {
+          "if": {"type": "object", "required": ["enforcement_backend"], "properties": {"enforcement_backend": {"const": "macos-sandbox-v1"}}},
+          "then": {"properties": {"minimum_version": {"pattern": "^sandbox-"}}}
+        },
+        {
+          "if": {"type": "object", "required": ["enforcement_backend"], "properties": {"enforcement_backend": {"const": "windows-appcontainer-job-v1"}}},
+          "then": {"properties": {"minimum_version": {"pattern": "^appcontainer-"}}}
+        }
+      ]
+    },
+    "hardenedConfigurationObservationV1": {
+      "type": "object",
+      "required": ["setting", "observed_value"],
+      "properties": {
+        "setting": {"$ref": "../../v1/common.schema.json#/$defs/nonEmptyString"},
+        "observed_value": {"$ref": "../../v1/common.schema.json#/$defs/nonEmptyString"}
+      },
+      "additionalProperties": false
+    },
+    "hardenedConfigurationRequirementV1": {
+      "type": "object",
+      "required": ["setting", "required_value"],
+      "properties": {
+        "setting": {"$ref": "../../v1/common.schema.json#/$defs/nonEmptyString"},
+        "required_value": {"$ref": "../../v1/common.schema.json#/$defs/nonEmptyString"}
+      },
+      "additionalProperties": false
+    },
+    "hardenedEnforcementBackendIdentityV1": {
+      "type": "object",
+      "required": ["version", "configuration"],
+      "properties": {
+        "version": {"$ref": "#/$defs/hardenedBackendVersionV1"},
+        "configuration": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/hardenedConfigurationObservationV1"},
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "hardenedTrustedComponentKindV1": {
+      "enum": [
+        "capability-probe",
+        "enforcement-adapter",
+        "helper-executable",
+        "identity-verifier",
+        "installed-package-tree",
+        "interpreter",
+        "sandbox-policy-file",
+        "script",
+        "shared-library"
+      ]
+    },
+    "hardenedComponentDigestAlgorithmV1": {
+      "enum": ["curator-hardened-component-file-v1", "curator-hardened-component-tree-v1"]
+    },
+    "hardenedComponentAlgorithmKindRelationV1": {
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": {"kind": {"const": "installed-package-tree"}}
+          },
+          "then": {"properties": {"algorithm": {"const": "curator-hardened-component-tree-v1"}}}
+        },
+        {
+          "if": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "helper-executable",
+                  "interpreter",
+                  "sandbox-policy-file",
+                  "script",
+                  "shared-library"
+                ]
+              }
+            }
+          },
+          "then": {"properties": {"algorithm": {"const": "curator-hardened-component-file-v1"}}}
+        }
+      ]
+    },
+    "hardenedTrustedComponentV1": {
+      "type": "object",
+      "required": ["kind", "name", "algorithm", "content_sha256"],
+      "properties": {
+        "kind": {"$ref": "#/$defs/hardenedTrustedComponentKindV1"},
+        "name": {"$ref": "../../v1/common.schema.json#/$defs/nonEmptyString"},
+        "algorithm": {"$ref": "#/$defs/hardenedComponentDigestAlgorithmV1"},
+        "content_sha256": {"$ref": "../../v1/common.schema.json#/$defs/sha256"}
+      },
+      "additionalProperties": false,
+      "allOf": [{"$ref": "#/$defs/hardenedComponentAlgorithmKindRelationV1"}]
+    },
+    "hardenedTcbDigestV1": {
+      "type": "object",
+      "required": ["algorithm", "content_sha256"],
+      "properties": {
+        "algorithm": {"const": "curator-hardened-tcb-v1"},
+        "content_sha256": {"$ref": "../../v1/common.schema.json#/$defs/sha256"}
+      },
+      "additionalProperties": false
+    },
+    "hardenedInputIdentityV1": {
+      "type": "object",
+      "required": ["profile", "tcb"],
+      "properties": {
+        "profile": {"$ref": "#/$defs/hardenedProfileIdentityV1"},
+        "tcb": {"$ref": "#/$defs/hardenedTcbDigestV1"}
+      },
+      "additionalProperties": false
+    },
+    "hardenedTcbRecordV1": {
+      "type": "object",
+      "required": [
+        "record_version",
+        "hardened_profile",
+        "execution_policy",
+        "platform",
+        "enforcement_backend",
+        "backend",
+        "host",
+        "parent_sha256",
+        "supervisor_sha256",
+        "worker_sha256",
+        "toolchain",
+        "trusted_components"
+      ],
+      "properties": {
+        "record_version": {"const": "hardened-tcb-v1"},
+        "hardened_profile": {"$ref": "#/$defs/hardenedProfileIdentityV1"},
+        "execution_policy": {"$ref": "#/$defs/hardenedExecutionPolicyV1"},
+        "platform": {"$ref": "#/$defs/hardenedPlatformV1"},
+        "enforcement_backend": {"$ref": "#/$defs/hardenedEnforcementBackendV1"},
+        "backend": {"$ref": "#/$defs/hardenedEnforcementBackendIdentityV1"},
+        "host": {"$ref": "#/$defs/hardenedHostIdentityV1"},
+        "parent_sha256": {"$ref": "../../v1/common.schema.json#/$defs/sha256"},
+        "supervisor_sha256": {"$ref": "../../v1/common.schema.json#/$defs/sha256"},
+        "worker_sha256": {"$ref": "../../v1/common.schema.json#/$defs/sha256"},
+        "toolchain": {"$ref": "../../v1/common.schema.json#/$defs/goToolchainIdentityV1"},
+        "trusted_components": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/hardenedTrustedComponentV1"},
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {"$ref": "#/$defs/hardenedPlatformBackendRelationV1"},
+        {"$ref": "#/$defs/hardenedHostPlatformRelationV1"},
+        {"$ref": "#/$defs/hardenedHostBuildIdentifierPlatformRelationV1"},
+        {"$ref": "#/$defs/hardenedBackendVersionSeriesRelationV1"}
+      ]
+    },
+    "hardenedGoBuildPolicyV1": {
+      "type": "object",
+      "required": ["module_mode", "network", "workspace", "cgo", "compiler_directives", "target_mode", "link_mode", "libgcc", "package_assembly", "host_objects", "telemetry", "execution_policy"],
+      "properties": {
+        "module_mode": {"const": "vendor"},
+        "network": {"const": "none"},
+        "workspace": {"const": false},
+        "cgo": {"const": false},
+        "compiler_directives": {"const": "reject-nonstandard-cgo-import-dynamic-v1"},
+        "target_mode": {"const": "native"},
+        "link_mode": {"const": "internal"},
+        "libgcc": {"const": "none"},
+        "package_assembly": {"const": false},
+        "host_objects": {"const": false},
+        "telemetry": {"const": "off-private"},
+        "execution_policy": {"$ref": "#/$defs/hardenedExecutionPolicyV1"}
+      },
+      "additionalProperties": false
+    },
+    "hardenedGoRepositoryBuildPolicyV1": {
+      "type": "object",
+      "required": ["module_mode", "network", "workspace", "cgo", "compiler_directives", "target_mode", "link_mode", "libgcc", "package_assembly", "host_objects", "telemetry", "execution_policy", "source_kind"],
+      "properties": {
+        "module_mode": {"const": "vendor"},
+        "network": {"const": "none"},
+        "workspace": {"const": false},
+        "cgo": {"const": false},
+        "compiler_directives": {"const": "reject-nonstandard-cgo-import-dynamic-v1"},
+        "target_mode": {"const": "native"},
+        "link_mode": {"const": "internal"},
+        "libgcc": {"const": "none"},
+        "package_assembly": {"const": false},
+        "host_objects": {"const": false},
+        "telemetry": {"const": "off-private"},
+        "execution_policy": {"$ref": "#/$defs/hardenedExecutionPolicyV1"},
+        "source_kind": {"const": "locked-external-git-v1"}
+      },
+      "additionalProperties": false
+    },
+    "hardenedGoBuildInputV1": {
+      "type": "object",
+      "required": ["schema_version", "driver", "hardened", "build_source", "build_root", "command", "source_dir", "target", "toolchain", "policy"],
+      "properties": {
+        "schema_version": {"const": 1},
+        "driver": {"const": "go-v1"},
+        "hardened": {"$ref": "#/$defs/hardenedInputIdentityV1"},
+        "build_source": {"$ref": "../../v1/common.schema.json#/$defs/buildSourceIdentity"},
+        "build_root": {"$ref": "../../v1/common.schema.json#/$defs/portablePath"},
+        "command": {"$ref": "../../v1/common.schema.json#/$defs/identifier"},
+        "source_dir": {"$ref": "../../v1/common.schema.json#/$defs/portablePath"},
+        "target": {"$ref": "#/$defs/hardenedGoNativeTargetV1"},
+        "toolchain": {"$ref": "../../v1/common.schema.json#/$defs/goToolchainIdentityV1"},
+        "policy": {"$ref": "#/$defs/hardenedGoBuildPolicyV1"}
+      },
+      "additionalProperties": false
+    },
+    "hardenedGoRepositoryBuildInputV1": {
+      "type": "object",
+      "required": ["schema_version", "driver", "hardened", "source", "command", "build_root", "source_dir", "target", "toolchain", "policy"],
+      "properties": {
+        "schema_version": {"const": 2},
+        "driver": {"const": "go-repository-v1"},
+        "hardened": {"$ref": "#/$defs/hardenedInputIdentityV1"},
+        "source": {
+          "type": "object",
+          "required": ["repository", "declared", "effective", "descriptor"],
+          "properties": {
+            "repository": {"$ref": "../../v1/common.schema.json#/$defs/identifier"},
+            "declared": {"$ref": "../../v1/common.schema.json#/$defs/declaredRepositorySourceV1"},
+            "effective": {"$ref": "../../v1/common.schema.json#/$defs/effectiveRepositorySourceV1"},
+            "descriptor": {"$ref": "../../v1/common.schema.json#/$defs/repositoryDescriptorSelectionV1"}
+          },
+          "additionalProperties": false
+        },
+        "command": {"$ref": "../../v1/common.schema.json#/$defs/identifier"},
+        "build_root": {"$ref": "../../v1/common.schema.json#/$defs/rootOrPortablePath"},
+        "source_dir": {"$ref": "../../v1/common.schema.json#/$defs/rootOrPortablePath"},
+        "target": {"$ref": "#/$defs/hardenedGoNativeTargetV1"},
+        "toolchain": {"$ref": "../../v1/common.schema.json#/$defs/goToolchainIdentityV1"},
+        "policy": {"$ref": "#/$defs/hardenedGoRepositoryBuildPolicyV1"}
+      },
+      "additionalProperties": false
+    },
+    "hardenedBuildRecordV3": {
+      "type": "object",
+      "required": ["driver", "receipt_schema_version", "execution_policy", "hardened_profile", "tcb", "cache_key", "receipt_sha256", "artifact_sha256", "artifact_path"],
+      "properties": {
+        "driver": {"const": "go-v1"},
+        "receipt_schema_version": {"const": 3},
+        "execution_policy": {"$ref": "#/$defs/hardenedExecutionPolicyV1"},
+        "hardened_profile": {"$ref": "#/$defs/hardenedProfileIdentityV1"},
+        "tcb": {"$ref": "#/$defs/hardenedTcbRecordV1"},
+        "cache_key": {"$ref": "../../v1/common.schema.json#/$defs/sha256"},
+        "receipt_sha256": {"$ref": "../../v1/common.schema.json#/$defs/sha256"},
+        "artifact_sha256": {"$ref": "../../v1/common.schema.json#/$defs/sha256"},
+        "artifact_path": {"$ref": "../../v1/common.schema.json#/$defs/portablePath"}
+      },
+      "additionalProperties": false
+    },
+    "hardenedBuildRecordV4": {
+      "type": "object",
+      "required": ["driver", "receipt_schema_version", "execution_policy", "hardened_profile", "tcb", "repository", "declared_identity", "declared_locked_commit", "effective_identity", "object_format", "commit", "substituted", "build_source", "descriptor_target", "cache_key", "receipt_sha256", "artifact_sha256", "artifact_path"],
+      "properties": {
+        "driver": {"const": "go-repository-v1"},
+        "receipt_schema_version": {"const": 4},
+        "execution_policy": {"$ref": "#/$defs/hardenedExecutionPolicyV1"},
+        "hardened_profile": {"$ref": "#/$defs/hardenedProfileIdentityV1"},
+        "tcb": {"$ref": "#/$defs/hardenedTcbRecordV1"},
+        "repository": {"$ref": "../../v1/common.schema.json#/$defs/identifier"},
+        "declared_identity": {"$ref": "../../v1/common.schema.json#/$defs/networkSourceIdentity"},
+        "declared_locked_commit": {"$ref": "../../v1/common.schema.json#/$defs/lockedCommit"},
+        "declared_tag": {"$ref": "../../v1/common.schema.json#/$defs/gitRefName"},
+        "effective_identity": {
+          "oneOf": [
+            {"$ref": "../../v1/common.schema.json#/$defs/networkSourceIdentity"},
+            {"$ref": "../../v1/common.schema.json#/$defs/localSourceIdentity"}
+          ]
+        },
+        "object_format": {"enum": ["sha1", "sha256"]},
+        "commit": {"$ref": "../../v1/common.schema.json#/$defs/commit"},
+        "substituted": {"type": "boolean"},
+        "substitution": {"$ref": "../../v1/common.schema.json#/$defs/buildRepositorySubstitution"},
+        "build_source": {"$ref": "../../v1/common.schema.json#/$defs/buildSourceIdentity"},
+        "descriptor_target": {"$ref": "../../v1/common.schema.json#/$defs/identifier"},
+        "cache_key": {"$ref": "../../v1/common.schema.json#/$defs/sha256"},
+        "receipt_sha256": {"$ref": "../../v1/common.schema.json#/$defs/sha256"},
+        "artifact_sha256": {"$ref": "../../v1/common.schema.json#/$defs/sha256"},
+        "artifact_path": {"$ref": "../../v1/common.schema.json#/$defs/portablePath"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "agents": [
+    "codex_cli"
+  ],
+  "build_roots": [
+    "build"
+  ],
+  "builds": {
+    "golden-tool": {
+      "artifact_path": "bin/golden-tool",
+      "artifact_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "driver": "go-v1",
+      "execution_policy": "hardened-worker-v1",
+      "hardened_profile": "hardened-profile-v1",
+      "receipt_schema_version": 3,
+      "receipt_sha256": "sha256:a8e47ea5412ba38b87648a1508010baf51c9178a01a93a9913d5b1b70bf85104"
+    }
+  },
+  "commands": [
+    "golden-tool"
+  ],
+  "commit": "0123456789abcdef0123456789abcdef01234567",
+  "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "dependencies": [],
+  "files": [
+    "SKILL.md"
+  ],
+  "installed_at": "2000-01-01T00:00:00Z",
+  "locale": null,
+  "name": "golden-skill",
+  "ref": "0123456789abcdef0123456789abcdef01234567",
+  "ref_kind": "revision",
+  "runtime_roots": [
+    "scripts"
+  ],
+  "schema_version": 4,
+  "skill_schema_version": 7,
+  "source": "golden-skill"
+}

@@ -1,0 +1,3676 @@
+{
+  "backend_version_comparison": {
+    "cases": [
+      {
+        "claim_qualifies": true,
+        "comparable": true,
+        "expected_error": "hardened_tcb_identity_invalid",
+        "minimum": "cgroup2-6.1",
+        "minimum_valid": true,
+        "name": "above-minimum",
+        "observed": "cgroup2-6.12",
+        "observed_valid": true,
+        "published": false,
+        "satisfied": true,
+        "statement": "an observed version above the declared minimum qualifies"
+      },
+      {
+        "claim_qualifies": true,
+        "comparable": true,
+        "expected_error": "hardened_tcb_identity_invalid",
+        "minimum": "cgroup2-6.1",
+        "minimum_valid": true,
+        "name": "equal-to-minimum",
+        "observed": "cgroup2-6.1",
+        "observed_valid": true,
+        "published": false,
+        "satisfied": true,
+        "statement": "an observed version exactly at the declared minimum qualifies"
+      },
+      {
+        "claim_qualifies": true,
+        "comparable": true,
+        "expected_error": "hardened_tcb_identity_invalid",
+        "minimum": "sandbox-2.0.0",
+        "minimum_valid": true,
+        "name": "equal-after-padding",
+        "observed": "sandbox-2",
+        "observed_valid": true,
+        "published": false,
+        "satisfied": true,
+        "statement": "a missing numeric component is zero, so these two values are equal"
+      },
+      {
+        "claim_qualifies": false,
+        "comparable": true,
+        "expected_error": "hardened_tcb_identity_invalid",
+        "minimum": "cgroup2-6.12",
+        "minimum_valid": true,
+        "name": "below-minimum",
+        "observed": "cgroup2-6.1",
+        "observed_valid": true,
+        "published": false,
+        "satisfied": false,
+        "statement": "an observed version below the declared minimum does not qualify"
+      },
+      {
+        "claim_qualifies": false,
+        "comparable": true,
+        "expected_error": "hardened_tcb_identity_invalid",
+        "minimum": "sandbox-2.0",
+        "minimum_valid": true,
+        "name": "below-minimum-major",
+        "observed": "sandbox-1.99",
+        "observed_valid": true,
+        "published": false,
+        "satisfied": false,
+        "statement": "a lower leading component loses regardless of the components after it"
+      },
+      {
+        "claim_qualifies": false,
+        "comparable": true,
+        "expected_error": "hardened_tcb_identity_invalid",
+        "minimum": "cgroup2-6.10",
+        "minimum_valid": true,
+        "name": "below-minimum-not-lexical",
+        "observed": "cgroup2-6.9",
+        "observed_valid": true,
+        "published": false,
+        "satisfied": false,
+        "statement": "components compare as integers, so 9 is below 10 even though it sorts after it as a string"
+      },
+      {
+        "claim_qualifies": false,
+        "comparable": true,
+        "expected_error": "hardened_tcb_identity_invalid",
+        "minimum": "cgroup2-999999",
+        "minimum_valid": true,
+        "name": "reviewer-probe-zero-against-huge",
+        "observed": "cgroup2-0",
+        "observed_valid": true,
+        "published": false,
+        "satisfied": false,
+        "statement": "the exact review-cycle-3 probe: a backend version of zero does not satisfy a minimum of 999999"
+      },
+      {
+        "claim_qualifies": false,
+        "comparable": false,
+        "expected_error": "hardened_tcb_identity_invalid",
+        "minimum": "sandbox-2.0",
+        "minimum_valid": true,
+        "name": "incomparable-series",
+        "observed": "cgroup2-6.12",
+        "observed_valid": true,
+        "published": false,
+        "satisfied": false,
+        "statement": "two backends' version lines have no ordering, so this is invalid rather than higher or lower"
+      },
+      {
+        "claim_qualifies": false,
+        "comparable": false,
+        "expected_error": "hardened_tcb_identity_invalid",
+        "minimum": "cgroup2-6.1",
+        "minimum_valid": true,
+        "name": "malformed-observed-leading-zero",
+        "observed": "cgroup2-06.1",
+        "observed_valid": false,
+        "published": false,
+        "satisfied": false,
+        "statement": "a component with a leading zero is outside the grammar"
+      },
+      {
+        "claim_qualifies": false,
+        "comparable": false,
+        "expected_error": "hardened_tcb_identity_invalid",
+        "minimum": "cgroup2-6.1",
+        "minimum_valid": true,
+        "name": "malformed-observed-no-series",
+        "observed": "6.1",
+        "observed_valid": false,
+        "published": false,
+        "satisfied": false,
+        "statement": "a bare number carries no series, so it identifies no backend"
+      },
+      {
+        "claim_qualifies": false,
+        "comparable": false,
+        "expected_error": "hardened_tcb_identity_invalid",
+        "minimum": "cgroup2-6.1",
+        "minimum_valid": true,
+        "name": "malformed-observed-empty-number",
+        "observed": "cgroup2-",
+        "observed_valid": false,
+        "published": false,
+        "satisfied": false,
+        "statement": "a series with no number is outside the grammar"
+      },
+      {
+        "claim_qualifies": false,
+        "comparable": false,
+        "expected_error": "hardened_tcb_identity_invalid",
+        "minimum": "cgroup2-1.2.3.4.5",
+        "minimum_valid": false,
+        "name": "malformed-minimum-too-many-components",
+        "observed": "cgroup2-6.1",
+        "observed_valid": true,
+        "published": false,
+        "satisfied": false,
+        "statement": "at most four numeric components are admitted"
+      },
+      {
+        "claim_qualifies": false,
+        "comparable": false,
+        "expected_error": "hardened_tcb_identity_invalid",
+        "minimum": "latest",
+        "minimum_valid": false,
+        "name": "malformed-minimum-not-a-version",
+        "observed": "cgroup2-6.1",
+        "observed_valid": true,
+        "published": false,
+        "satisfied": false,
+        "statement": "a minimum that is prose cannot be compared with anything"
+      }
+    ],
+    "cross_series_comparison": "invalid",
+    "grammar": "hardened-backend-version-v1",
+    "missing_component_value": 0,
+    "number": "0 or a nonzero digit followed by at most eight more digits",
+    "shape": "series \"-\" number ( \".\" number ){0,3}"
+  },
+  "cache_identity": {
+    "aliases": false,
+    "excluded_from_hashed_identity": [
+      "the per-operation hardened capability-evidence record"
+    ],
+    "hardened": {
+      "cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "execution_policy": "hardened-worker-v1",
+      "hardened_profile": "hardened-profile-v1",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:d13370c25a62fec39556fdc96693c0338991677c868b6f6c97b39883d662d0dc"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "rejected_by_schema": "build-receipt-v1.schema.json",
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "valid_under_schema": "hardened-build-receipt-v3.schema.json"
+    },
+    "hardened_rotated_tcb": {
+      "cache_key": "sha256:6902ad4686198da12e82123a24650c743f9a6a2eb7b7c8b2a2df4be9c4cc7300",
+      "execution_policy": "hardened-worker-v1",
+      "hardened_profile": "hardened-profile-v1",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:234d44db3babceb6eefcb4880350d29fdac5cca68a9cf51626ecfa08c9933cec"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "rejected_by_schema": "build-receipt-v1.schema.json",
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "valid_under_schema": "hardened-build-receipt-v3.schema.json"
+    },
+    "hashed_identity_inputs": [
+      "the curator-hardened-tcb-v1 digest of the concrete trusted computing base",
+      "the execution-policy identity inside the canonical build policy object",
+      "the hardened profile identity inside the closed hardened input member"
+    ],
+    "legacy_rc4_without_execution_policy": {
+      "cache_key": "sha256:3fcd714a40e8918eb67dbd35d435875dcce6c9047da811a1fa26626e5e57be48",
+      "execution_policy": null,
+      "hardened_profile": null,
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "rejected_by_schema": "hardened-build-receipt-v3.schema.json",
+      "reserved_cache_key": "sha256:3fcd714a40e8918eb67dbd35d435875dcce6c9047da811a1fa26626e5e57be48",
+      "tcb": null,
+      "valid_under_schema": null
+    },
+    "portable": {
+      "cache_key": "sha256:529370122ae11e2e961d5265b1a020e046bcd43165b2eb96b05e73a51187ac9b",
+      "execution_policy": "manager-worker-v1",
+      "hardened_profile": null,
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "manager-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "rejected_by_schema": "hardened-build-receipt-v3.schema.json",
+      "reserved_cache_key": "sha256:529370122ae11e2e961d5265b1a020e046bcd43165b2eb96b05e73a51187ac9b",
+      "tcb": null,
+      "valid_under_schema": "build-receipt-v1.schema.json"
+    },
+    "rc5_reserved_policy_slot_only": {
+      "cache_key": "sha256:13736230d33ce59de7f7323dcd4cffd510655ad8dabd5ee9e8b6cb182ec70037",
+      "execution_policy": "hardened-worker-v1",
+      "hardened_profile": null,
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "is_hardened_input": false,
+      "rejected_by_schema": "hardened-build-receipt-v3.schema.json",
+      "reserved_by": "conformance/v1/vectors/go-host-execution-policy.json#cache_identity.reserved_hardened",
+      "reserved_cache_key": "sha256:13736230d33ce59de7f7323dcd4cffd510655ad8dabd5ee9e8b6cb182ec70037",
+      "tcb": null,
+      "valid_under_schema": null
+    }
+  },
+  "claim_separation": {
+    "hardened_admits": [
+      "hardened-worker-v1"
+    ],
+    "hardened_claim_requires": [
+      "execution_policy",
+      "hardened_profile",
+      "tcb"
+    ],
+    "hardened_claims_emitted": [],
+    "hardened_qualified_operating_systems": [],
+    "hardened_schema_version": 4,
+    "portable_admits": [
+      "manager-worker-v1"
+    ],
+    "portable_schema_version": 3,
+    "portable_schema_widened": false
+  },
+  "component_digest_fixtures": {
+    "all_digests_distinct": true,
+    "domain_separation": "the exact ASCII algorithm identifier followed by 0x00",
+    "file_algorithm": "curator-hardened-component-file-v1",
+    "fixtures": [
+      {
+        "algorithm": "curator-hardened-component-tree-v1",
+        "entries": [
+          {
+            "kind": "D",
+            "path": "probes",
+            "path_byte_length": 6,
+            "payload": "",
+            "payload_byte_length": 0
+          },
+          {
+            "kind": "L",
+            "path": "probes/current.probe",
+            "path_byte_length": 20,
+            "payload": "network.probe",
+            "payload_byte_length": 13
+          },
+          {
+            "kind": "F",
+            "path": "probes/network.probe",
+            "path_byte_length": 20,
+            "payload": "#!probe network\ndeny-all\n",
+            "payload_byte_length": 25
+          },
+          {
+            "kind": "F",
+            "path": "probes/write.probe",
+            "path_byte_length": 18,
+            "payload": "#!probe write\nconfine build-root\n",
+            "payload_byte_length": 33
+          }
+        ],
+        "expected_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+        "file": null,
+        "name": "capability-probe-suite",
+        "statement": "the base capability-probe tree: a directory, two regular probe files, and a relative link to one of them"
+      },
+      {
+        "algorithm": "curator-hardened-component-tree-v1",
+        "entries": [
+          {
+            "kind": "D",
+            "path": "probes",
+            "path_byte_length": 6,
+            "payload": "",
+            "payload_byte_length": 0
+          },
+          {
+            "kind": "L",
+            "path": "probes/current.probe",
+            "path_byte_length": 20,
+            "payload": "network.probe",
+            "payload_byte_length": 13
+          },
+          {
+            "kind": "F",
+            "path": "probes/exec.probe",
+            "path_byte_length": 17,
+            "payload": "#!probe exec\nallowlist exact\n",
+            "payload_byte_length": 29
+          },
+          {
+            "kind": "F",
+            "path": "probes/network.probe",
+            "path_byte_length": 20,
+            "payload": "#!probe network\ndeny-all\n",
+            "payload_byte_length": 25
+          },
+          {
+            "kind": "F",
+            "path": "probes/write.probe",
+            "path_byte_length": 18,
+            "payload": "#!probe write\nconfine build-root\n",
+            "payload_byte_length": 33
+          }
+        ],
+        "expected_sha256": "sha256:953518bb9434e77e0ac7ef4a69841fb1b5e3c044bbaa4170cb0038ae15cb41b3",
+        "file": null,
+        "name": "capability-probe-suite-extra-member",
+        "statement": "the same tree with one more probe file, so tree membership alone moves the digest"
+      },
+      {
+        "algorithm": "curator-hardened-component-tree-v1",
+        "entries": [
+          {
+            "kind": "D",
+            "path": "probes",
+            "path_byte_length": 6,
+            "payload": "",
+            "payload_byte_length": 0
+          },
+          {
+            "kind": "L",
+            "path": "probes/current.probe",
+            "path_byte_length": 20,
+            "payload": "network.probe",
+            "payload_byte_length": 13
+          },
+          {
+            "kind": "D",
+            "path": "probes/network.probe",
+            "path_byte_length": 20,
+            "payload": "",
+            "payload_byte_length": 0
+          },
+          {
+            "kind": "F",
+            "path": "probes/network.probe/main",
+            "path_byte_length": 25,
+            "payload": "#!probe network\ndeny-all\n",
+            "payload_byte_length": 25
+          },
+          {
+            "kind": "F",
+            "path": "probes/write.probe",
+            "path_byte_length": 18,
+            "payload": "#!probe write\nconfine build-root\n",
+            "payload_byte_length": 33
+          }
+        ],
+        "expected_sha256": "sha256:d485f1ed8d3e6cf2bb7f1e711db36068b054a0fa30598e88cb9e291339511be3",
+        "file": null,
+        "name": "capability-probe-suite-retyped-entry",
+        "statement": "the same tree with a regular file replaced by a directory of the same name, so the entry kind alone moves the digest"
+      },
+      {
+        "algorithm": "curator-hardened-component-tree-v1",
+        "entries": [
+          {
+            "kind": "D",
+            "path": "probes",
+            "path_byte_length": 6,
+            "payload": "",
+            "payload_byte_length": 0
+          },
+          {
+            "kind": "F",
+            "path": "probes/current.probe",
+            "path_byte_length": 20,
+            "payload": "#!probe network\ndeny-all\n",
+            "payload_byte_length": 25
+          },
+          {
+            "kind": "F",
+            "path": "probes/network.probe",
+            "path_byte_length": 20,
+            "payload": "#!probe network\ndeny-all\n",
+            "payload_byte_length": 25
+          },
+          {
+            "kind": "F",
+            "path": "probes/write.probe",
+            "path_byte_length": 18,
+            "payload": "#!probe write\nconfine build-root\n",
+            "payload_byte_length": 33
+          }
+        ],
+        "expected_sha256": "sha256:29fe88749d9e5c6b288c2538c3c2357346a1692ab16d98d7758545877552c69b",
+        "file": null,
+        "name": "capability-probe-suite-link-substituted",
+        "statement": "the same tree with the symbolic link replaced by a regular file holding the referent's exact bytes, which MUST NOT reproduce the base digest"
+      },
+      {
+        "algorithm": "curator-hardened-component-file-v1",
+        "entries": null,
+        "expected_sha256": "sha256:242f7f080210efa0b0486e10c6773e8fef3a155ea80c9488038e3129a8070cfe",
+        "file": {
+          "content": "#!probe network\ndeny-all\n",
+          "content_byte_length": 25
+        },
+        "name": "capability-probe-single-file",
+        "statement": "one probe shipped as a single regular file, which the capability-probe kind also admits"
+      },
+      {
+        "algorithm": "curator-hardened-component-file-v1",
+        "entries": null,
+        "expected_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+        "file": {
+          "content": "#!adapter macos-sandbox-v1\ndeny default\n",
+          "content_byte_length": 40
+        },
+        "name": "enforcement-backend-adapter",
+        "statement": "the enforcement-backend adapter as a single regular file"
+      },
+      {
+        "algorithm": "curator-hardened-component-file-v1",
+        "entries": null,
+        "expected_sha256": "sha256:586cd2fced16f7d6cb51e52f753a40e4c026f6d08b79a0cda5bb03b27ed40b25",
+        "file": {
+          "content": "#!adapter macos-sandbox-v1\ndeny default\ndeny network*\n",
+          "content_byte_length": 54
+        },
+        "name": "enforcement-backend-adapter-updated",
+        "statement": "the same adapter after a byte changed, so component content alone moves the digest"
+      },
+      {
+        "algorithm": "curator-hardened-component-file-v1",
+        "entries": null,
+        "expected_sha256": "sha256:f1ecb55973ca1d2fdef5390218e43a3df493fae813f7e9cd27d3fb999d75b79f",
+        "file": {
+          "content": "#!interpreter launcher\n",
+          "content_byte_length": 23
+        },
+        "name": "supervisor-launcher-interpreter",
+        "statement": "an interpreter an implementation may additionally trust, which the interpreter kind admits only as a file"
+      },
+      {
+        "algorithm": "curator-hardened-component-file-v1",
+        "entries": null,
+        "expected_sha256": "sha256:a8bb342fcd6fe9e978b77ea1063009dac0c899b9824ba5f1f6bbcdfc79b09df5",
+        "file": {
+          "content": "",
+          "content_byte_length": 0
+        },
+        "name": "empty-file-component",
+        "statement": "an empty regular file, which hashes the domain prefix plus F and uint64be(0)"
+      },
+      {
+        "algorithm": "curator-hardened-component-tree-v1",
+        "entries": [],
+        "expected_sha256": "sha256:c046e05be6f10b3f73342d4223d427b98967df4cb28eeda35e15b067fb8bb000",
+        "file": null,
+        "name": "empty-tree-component",
+        "statement": "an empty directory tree, which hashes the domain prefix alone and MUST NOT collide with the empty file"
+      }
+    ],
+    "framing": "uint64be byte length before every variable-length field",
+    "not_hashed": [
+      "acl",
+      "extended-attribute",
+      "mode",
+      "owner",
+      "timestamp"
+    ],
+    "tree_algorithm": "curator-hardened-component-tree-v1",
+    "tree_entry_kinds": [
+      "D",
+      "F",
+      "L"
+    ],
+    "tree_order": "unsigned bytewise order over the UTF-8 relative path",
+    "version": "hardened-component-digest-fixtures-v1"
+  },
+  "cross_profile_reuse_cases": [
+    {
+      "adopts_bytes": false,
+      "entry": "manager-worker-v1",
+      "entry_tcb": null,
+      "name": "hardened-reader-sees-portable-entry",
+      "publishes": false,
+      "reader": "hardened-worker-v1",
+      "reader_tcb": "sha256:d13370c25a62fec39556fdc96693c0338991677c868b6f6c97b39883d662d0dc",
+      "result": "miss",
+      "upgrades": false
+    },
+    {
+      "adopts_bytes": false,
+      "entry": "hardened-worker-v1",
+      "entry_tcb": "sha256:d13370c25a62fec39556fdc96693c0338991677c868b6f6c97b39883d662d0dc",
+      "name": "portable-reader-sees-hardened-entry",
+      "publishes": false,
+      "reader": "manager-worker-v1",
+      "reader_tcb": null,
+      "result": "miss",
+      "upgrades": false
+    },
+    {
+      "adopts_bytes": false,
+      "entry": "",
+      "entry_tcb": null,
+      "name": "hardened-reader-sees-pre-revision-entry",
+      "publishes": false,
+      "reader": "hardened-worker-v1",
+      "reader_tcb": "sha256:d13370c25a62fec39556fdc96693c0338991677c868b6f6c97b39883d662d0dc",
+      "result": "miss",
+      "upgrades": false
+    },
+    {
+      "adopts_bytes": false,
+      "entry": "hardened-worker-v1",
+      "entry_tcb": null,
+      "name": "hardened-reader-sees-policy-slot-only-entry",
+      "publishes": false,
+      "reader": "hardened-worker-v1",
+      "reader_tcb": "sha256:d13370c25a62fec39556fdc96693c0338991677c868b6f6c97b39883d662d0dc",
+      "result": "miss",
+      "upgrades": false
+    },
+    {
+      "adopts_bytes": false,
+      "entry": "hardened-worker-v1",
+      "entry_tcb": "sha256:234d44db3babceb6eefcb4880350d29fdac5cca68a9cf51626ecfa08c9933cec",
+      "name": "hardened-reader-sees-entry-from-another-tcb",
+      "publishes": false,
+      "reader": "hardened-worker-v1",
+      "reader_tcb": "sha256:d13370c25a62fec39556fdc96693c0338991677c868b6f6c97b39883d662d0dc",
+      "result": "miss",
+      "upgrades": false
+    },
+    {
+      "adopts_bytes": true,
+      "entry": "hardened-worker-v1",
+      "entry_tcb": "sha256:d13370c25a62fec39556fdc96693c0338991677c868b6f6c97b39883d662d0dc",
+      "name": "hardened-reader-sees-its-own-entry",
+      "publishes": true,
+      "reader": "hardened-worker-v1",
+      "reader_tcb": "sha256:d13370c25a62fec39556fdc96693c0338991677c868b6f6c97b39883d662d0dc",
+      "result": "hit",
+      "upgrades": false
+    }
+  ],
+  "hardened_profile": "hardened-profile-v1",
+  "host_build_fixtures": {
+    "algorithm": "curator-hardened-host-build-v1",
+    "all_digests_distinct": true,
+    "declarations": {
+      "linux": {
+        "identifier_pattern": "^[0-9a-f]{32,128}(?![\\s\\S])",
+        "identifier_source": "kernel.build-id",
+        "sources": [
+          "kernel.build-id",
+          "kernel.osrelease",
+          "kernel.version-string"
+        ]
+      },
+      "macos": {
+        "identifier_pattern": "^[0-9]{1,3}[A-Z][0-9]{1,6}[a-z]?(?![\\s\\S])",
+        "identifier_source": "kern.osversion",
+        "sources": [
+          "kern.osversion",
+          "kern.osproductversion",
+          "kern.version"
+        ]
+      },
+      "windows": {
+        "identifier_pattern": "^[0-9]{1,7}\\.[0-9]{1,7}(?![\\s\\S])",
+        "identifier_source": "kernel.current-build-and-ubr",
+        "sources": [
+          "kernel.current-build-and-ubr",
+          "kernel.build-lab-ex",
+          "kernel.image-file-version"
+        ]
+      }
+    },
+    "domain_separation": "the exact ASCII algorithm identifier followed by 0x00",
+    "fixtures": [
+      {
+        "conforming_observed_host": true,
+        "expected_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+        "host_identity": "darwin",
+        "host_version": "25.0.0",
+        "identifier": "25A123",
+        "identifier_byte_length": 6,
+        "name": "macos-host-build",
+        "platform": "macos",
+        "source_count": 3,
+        "sources": [
+          {
+            "name": "kern.osversion",
+            "name_byte_length": 14,
+            "value": "25A123",
+            "value_byte_length": 6
+          },
+          {
+            "name": "kern.osproductversion",
+            "name_byte_length": 21,
+            "value": "26.0",
+            "value_byte_length": 4
+          },
+          {
+            "name": "kern.version",
+            "name_byte_length": 12,
+            "value": "Darwin Kernel Version 25.0.0: Mon Jan  6 21:00:00 PST 2026; root:xnu-12377.1.9~1/RELEASE_ARM64_T6000",
+            "value_byte_length": 100
+          }
+        ],
+        "statement": "the example macOS host: build identifier, product version, and the full kernel version string"
+      },
+      {
+        "conforming_observed_host": true,
+        "expected_sha256": "sha256:330919fd72a7b3f3b3e1940f06cb9a7b93386a2d247acc3632ffbe320c5802a1",
+        "host_identity": "darwin",
+        "host_version": "25.0.0",
+        "identifier": "25A123",
+        "identifier_byte_length": 6,
+        "name": "macos-host-build-recompiled-kernel",
+        "platform": "macos",
+        "source_count": 3,
+        "sources": [
+          {
+            "name": "kern.osversion",
+            "name_byte_length": 14,
+            "value": "25A123",
+            "value_byte_length": 6
+          },
+          {
+            "name": "kern.osproductversion",
+            "name_byte_length": 21,
+            "value": "26.0",
+            "value_byte_length": 4
+          },
+          {
+            "name": "kern.version",
+            "name_byte_length": 12,
+            "value": "Darwin Kernel Version 25.0.0: Tue Jan  7 09:30:00 PST 2026; root:xnu-12377.1.9~1/RELEASE_ARM64_T6000",
+            "value_byte_length": 100
+          }
+        ],
+        "statement": "the same platform, the same release, and the same build identifier, rebuilt: only the kernel version string differs, and the digest MUST NOT reproduce the base"
+      },
+      {
+        "conforming_observed_host": true,
+        "expected_sha256": "sha256:377fe91783d209a92383e8f9bc392da68e86185017b19ef48d7887cec07631ec",
+        "host_identity": "darwin",
+        "host_version": "25.1.0",
+        "identifier": "25A123",
+        "identifier_byte_length": 6,
+        "name": "macos-host-build-rotated-release",
+        "platform": "macos",
+        "source_count": 3,
+        "sources": [
+          {
+            "name": "kern.osversion",
+            "name_byte_length": 14,
+            "value": "25A123",
+            "value_byte_length": 6
+          },
+          {
+            "name": "kern.osproductversion",
+            "name_byte_length": 21,
+            "value": "26.0",
+            "value_byte_length": 4
+          },
+          {
+            "name": "kern.version",
+            "name_byte_length": 12,
+            "value": "Darwin Kernel Version 25.0.0: Mon Jan  6 21:00:00 PST 2026; root:xnu-12377.1.9~1/RELEASE_ARM64_T6000",
+            "value_byte_length": 100
+          }
+        ],
+        "statement": "the same declared sources under another observed kernel release, which isolates the release binding inside the digest"
+      },
+      {
+        "conforming_observed_host": true,
+        "expected_sha256": "sha256:3f5a22e455cf18e5222024b0c469ae8ac7a8313048b7082a0122b45c6242a6f0",
+        "host_identity": "darwin",
+        "host_version": "25.0.0",
+        "identifier": "25A124",
+        "identifier_byte_length": 6,
+        "name": "macos-host-build-rotated-identifier",
+        "platform": "macos",
+        "source_count": 3,
+        "sources": [
+          {
+            "name": "kern.osversion",
+            "name_byte_length": 14,
+            "value": "25A124",
+            "value_byte_length": 6
+          },
+          {
+            "name": "kern.osproductversion",
+            "name_byte_length": 21,
+            "value": "26.0",
+            "value_byte_length": 4
+          },
+          {
+            "name": "kern.version",
+            "name_byte_length": 12,
+            "value": "Darwin Kernel Version 25.0.0: Mon Jan  6 21:00:00 PST 2026; root:xnu-12377.1.9~1/RELEASE_ARM64_T6000",
+            "value_byte_length": 100
+          }
+        ],
+        "statement": "the next build of the same release: the identifier source moves, so both the identifier and the digest move with it"
+      },
+      {
+        "conforming_observed_host": false,
+        "expected_sha256": "sha256:7fd581f78d99ba6b9d97ffc8ca8511e150e387e078a3dd24c364e5aa1fd075f7",
+        "host_identity": "darwin",
+        "host_version": "25.0.0",
+        "identifier": "25A123",
+        "identifier_byte_length": 6,
+        "name": "macos-host-build-source-boundary-shift",
+        "platform": "macos",
+        "source_count": 3,
+        "sources": [
+          {
+            "name": "kern.osversion",
+            "name_byte_length": 14,
+            "value": "25A123",
+            "value_byte_length": 6
+          },
+          {
+            "name": "kern.osproductversion",
+            "name_byte_length": 21,
+            "value": "26.0D",
+            "value_byte_length": 5
+          },
+          {
+            "name": "kern.version",
+            "name_byte_length": 12,
+            "value": "arwin Kernel Version 25.0.0: Mon Jan  6 21:00:00 PST 2026; root:xnu-12377.1.9~1/RELEASE_ARM64_T6000",
+            "value_byte_length": 99
+          }
+        ],
+        "statement": "a probe, not a host: one byte moved from the front of kern.version to the end of kern.osproductversion, so the declared source values concatenate to exactly the base's bytes. An implementation that hashed the observed values as one blob would alias this probe with the base"
+      },
+      {
+        "conforming_observed_host": true,
+        "expected_sha256": "sha256:9ea0a283a4864185fc8e5c62fbfa619826d6d0809b6f9703f6847991ae1b0bae",
+        "host_identity": "linux",
+        "host_version": "6.12.0",
+        "identifier": "4f2a1c8e6b90d3574a1e2f8c0b7d69315ae4c2f8",
+        "identifier_byte_length": 40,
+        "name": "linux-host-build",
+        "platform": "linux",
+        "source_count": 3,
+        "sources": [
+          {
+            "name": "kernel.build-id",
+            "name_byte_length": 15,
+            "value": "4f2a1c8e6b90d3574a1e2f8c0b7d69315ae4c2f8",
+            "value_byte_length": 40
+          },
+          {
+            "name": "kernel.osrelease",
+            "name_byte_length": 16,
+            "value": "6.12.0",
+            "value_byte_length": 6
+          },
+          {
+            "name": "kernel.version-string",
+            "name_byte_length": 21,
+            "value": "Linux version 6.12.0 (build@builder) (gcc 14.2.0, GNU ld 2.43) #1 SMP PREEMPT_DYNAMIC Mon Jan  6 21:00:00 UTC 2026",
+            "value_byte_length": 114
+          }
+        ],
+        "statement": "the example Linux host: the running kernel image build id, the release, and the full version string"
+      },
+      {
+        "conforming_observed_host": true,
+        "expected_sha256": "sha256:112579457c72b9cdf36a2581adb8e0cb9509aa7e76e7907278ba6015e039f468",
+        "host_identity": "windows-nt",
+        "host_version": "10.0.26100",
+        "identifier": "26100.1",
+        "identifier_byte_length": 7,
+        "name": "windows-host-build",
+        "platform": "windows",
+        "source_count": 3,
+        "sources": [
+          {
+            "name": "kernel.current-build-and-ubr",
+            "name_byte_length": 28,
+            "value": "26100.1",
+            "value_byte_length": 7
+          },
+          {
+            "name": "kernel.build-lab-ex",
+            "name_byte_length": 19,
+            "value": "26100.1.amd64fre.ge_release.260106-2100",
+            "value_byte_length": 39
+          },
+          {
+            "name": "kernel.image-file-version",
+            "name_byte_length": 25,
+            "value": "10.0.26100.1",
+            "value_byte_length": 12
+          }
+        ],
+        "statement": "the example Windows host: the build and update revision, the build lab string, and the kernel image file version"
+      }
+    ],
+    "framing": "uint64be byte length before every variable-length field, and uint64be over the declared source count",
+    "hashed_order": [
+      "identity",
+      "version",
+      "identifier",
+      "source_count",
+      "source name and value pairs in declared order"
+    ],
+    "nullable_build_permitted": false,
+    "unreadable_source_permitted": false,
+    "version": "hardened-host-build-fixtures-v1"
+  },
+  "identity_binding": {
+    "cross_profile_reuse": false,
+    "cross_tcb_reuse": false,
+    "identities": [
+      {
+        "binds_cache_reuse": true,
+        "identity": "execution-policy",
+        "in_conformance_claim": true,
+        "in_hashed_build_input": true,
+        "in_install_marker": true,
+        "in_receipt_bytes": true,
+        "value": "hardened-worker-v1"
+      },
+      {
+        "binds_cache_reuse": true,
+        "identity": "hardened-profile",
+        "in_conformance_claim": true,
+        "in_hashed_build_input": true,
+        "in_install_marker": true,
+        "in_receipt_bytes": true,
+        "value": "hardened-profile-v1"
+      },
+      {
+        "binds_cache_reuse": true,
+        "identity": "trusted-computing-base",
+        "in_conformance_claim": true,
+        "in_hashed_build_input": true,
+        "in_install_marker": true,
+        "in_receipt_bytes": true,
+        "value": "hardened-tcb-v1"
+      },
+      {
+        "binds_cache_reuse": false,
+        "identity": "capability-evidence",
+        "in_conformance_claim": false,
+        "in_hashed_build_input": false,
+        "in_install_marker": false,
+        "in_receipt_bytes": false,
+        "value": "hardened-capability-evidence-v1"
+      }
+    ],
+    "in_place_upgrade": false,
+    "per_host_key_divergence_is_intended": true,
+    "result_only_records": [
+      "hardened-capability-evidence-v1"
+    ],
+    "reuse_rule": "a lookup recomputes the cache key from the profile identity and the current verified trusted-computing-base digest, so an entry produced under another profile revision or another trusted computing base cannot be a hit",
+    "tcb_digest_algorithm": "curator-hardened-tcb-v1",
+    "tcb_digest_framing": "SHA-256 initialized with ASCII curator-hardened-tcb-v1 followed by 0x00, then uint64be(length) and the canonical bytes of the closed hardened-tcb-v1 record",
+    "version": "hardened-identity-binding-v1"
+  },
+  "identity_binding_version": "hardened-identity-binding-v1",
+  "marker_separation": {
+    "hardened_record_in_portable_marker": false,
+    "hardened_record_requires": [
+      "execution_policy",
+      "hardened_profile",
+      "tcb"
+    ],
+    "hardened_schema_version": 4,
+    "portable_record_in_hardened_marker": false,
+    "portable_schema_versions": [
+      1,
+      2,
+      3
+    ],
+    "portable_schema_widened": false
+  },
+  "profile_version": "hardened-1.0.0-rc.1",
+  "receipt_separation": [
+    {
+      "driver": "go-v1",
+      "hardened_receipt_binds": [
+        "execution_policy",
+        "hardened_profile",
+        "tcb"
+      ],
+      "hardened_schema_version": 3,
+      "portable_schema_version": 1,
+      "portable_schema_widened": false
+    },
+    {
+      "driver": "go-repository-v1",
+      "hardened_receipt_binds": [
+        "execution_policy",
+        "hardened_profile",
+        "tcb"
+      ],
+      "hardened_schema_version": 4,
+      "portable_schema_version": 2,
+      "portable_schema_widened": false
+    }
+  ],
+  "schema_version": 1,
+  "tcb_completeness": {
+    "backend_version_grammar": "hardened-backend-version-v1",
+    "backend_version_series": {
+      "linux-namespace-seccomp-v1": "cgroup2",
+      "macos-sandbox-v1": "sandbox",
+      "windows-appcontainer-job-v1": "appcontainer"
+    },
+    "bound_fields": [
+      {
+        "enforced_by": "schema-constant",
+        "field": "record_version",
+        "identifies": "the closed record shape of this profile revision",
+        "rotated_by": []
+      },
+      {
+        "enforced_by": "schema-constant",
+        "field": "hardened_profile",
+        "identifies": "the complete guarantee, capability, ordering, and diagnostic contract",
+        "rotated_by": []
+      },
+      {
+        "enforced_by": "schema-constant",
+        "field": "execution_policy",
+        "identifies": "the execution-policy identity rc.5 reserved",
+        "rotated_by": []
+      },
+      {
+        "enforced_by": "schema-relation",
+        "field": "platform",
+        "identifies": "the hardened platform the operation ran on",
+        "rotated_by": [
+          "rotate-platform-and-backend"
+        ]
+      },
+      {
+        "enforced_by": "schema-relation",
+        "field": "enforcement_backend",
+        "identifies": "the concrete per-platform mechanism that supplied the capability classes",
+        "rotated_by": [
+          "rotate-platform-and-backend"
+        ]
+      },
+      {
+        "enforced_by": "schema-closed-record",
+        "field": "backend",
+        "identifies": "the observed enforcement-backend version and the configuration the qualification depends on",
+        "rotated_by": [
+          "rotate-backend-version",
+          "rotate-backend-configuration",
+          "rotate-platform-and-backend"
+        ]
+      },
+      {
+        "enforced_by": "schema-closed-record",
+        "field": "host",
+        "identifies": "the observed operating-system kernel, its release, and its curator-hardened-host-build-v1 kernel build identity",
+        "rotated_by": [
+          "rotate-host-version",
+          "rotate-host-build-identifier",
+          "rotate-host-build-source",
+          "rotate-platform-and-backend"
+        ]
+      },
+      {
+        "enforced_by": "schema-digest",
+        "field": "parent_sha256",
+        "identifies": "the installed manager parent bytes",
+        "rotated_by": [
+          "rotate-parent-identity"
+        ]
+      },
+      {
+        "enforced_by": "schema-digest",
+        "field": "supervisor_sha256",
+        "identifies": "the hardened supervisor bytes",
+        "rotated_by": [
+          "rotate-supervisor-identity"
+        ]
+      },
+      {
+        "enforced_by": "schema-digest",
+        "field": "worker_sha256",
+        "identifies": "the domain-root worker bytes",
+        "rotated_by": [
+          "rotate-worker-identity"
+        ]
+      },
+      {
+        "enforced_by": "schema-closed-record",
+        "field": "toolchain",
+        "identifies": "the fingerprinted go launcher and GOROOT tool executables",
+        "rotated_by": [
+          "rotate-toolchain-identity",
+          "rotate-platform-and-backend"
+        ]
+      },
+      {
+        "enforced_by": "schema-closed-record",
+        "field": "trusted_components",
+        "identifies": "every additional mutable trusted component, each as a closed cryptographic record",
+        "rotated_by": [
+          "rotate-trusted-component-kind",
+          "rotate-trusted-component-name",
+          "rotate-trusted-component-algorithm",
+          "rotate-trusted-component-content",
+          "rotate-component-tree-membership",
+          "rotate-component-entry-type",
+          "rotate-component-link-substitution",
+          "add-trusted-component"
+        ]
+      }
+    ],
+    "canonical_host_identity": {
+      "linux": "linux",
+      "macos": "darwin",
+      "windows": "windows-nt"
+    },
+    "closed": true,
+    "component_algorithm_by_kind": {
+      "capability-probe": [
+        "curator-hardened-component-file-v1",
+        "curator-hardened-component-tree-v1"
+      ],
+      "enforcement-adapter": [
+        "curator-hardened-component-file-v1",
+        "curator-hardened-component-tree-v1"
+      ],
+      "helper-executable": [
+        "curator-hardened-component-file-v1"
+      ],
+      "identity-verifier": [
+        "curator-hardened-component-file-v1",
+        "curator-hardened-component-tree-v1"
+      ],
+      "installed-package-tree": [
+        "curator-hardened-component-tree-v1"
+      ],
+      "interpreter": [
+        "curator-hardened-component-file-v1"
+      ],
+      "sandbox-policy-file": [
+        "curator-hardened-component-file-v1"
+      ],
+      "script": [
+        "curator-hardened-component-file-v1"
+      ],
+      "shared-library": [
+        "curator-hardened-component-file-v1"
+      ]
+    },
+    "component_digest_algorithms": [
+      "curator-hardened-component-file-v1",
+      "curator-hardened-component-tree-v1"
+    ],
+    "component_rotation_coverage": [
+      {
+        "aspect": "kind",
+        "rotated_by": [
+          "rotate-trusted-component-kind"
+        ],
+        "statement": "the same file reclassified as another kind of trusted component"
+      },
+      {
+        "aspect": "name",
+        "rotated_by": [
+          "rotate-trusted-component-name"
+        ],
+        "statement": "the same component under another name"
+      },
+      {
+        "aspect": "algorithm",
+        "rotated_by": [
+          "rotate-trusted-component-algorithm"
+        ],
+        "statement": "the same kind digested as a single file instead of a tree"
+      },
+      {
+        "aspect": "content",
+        "rotated_by": [
+          "rotate-trusted-component-content"
+        ],
+        "statement": "one byte of a file component"
+      },
+      {
+        "aspect": "tree-membership",
+        "rotated_by": [
+          "rotate-component-tree-membership"
+        ],
+        "statement": "one more entry in a tree component"
+      },
+      {
+        "aspect": "entry-type",
+        "rotated_by": [
+          "rotate-component-entry-type"
+        ],
+        "statement": "a tree entry that was a regular file becoming a directory"
+      },
+      {
+        "aspect": "link-substitution",
+        "rotated_by": [
+          "rotate-component-link-substitution"
+        ],
+        "statement": "a symbolic link replaced by a regular file holding the referent's bytes"
+      },
+      {
+        "aspect": "component-set",
+        "rotated_by": [
+          "add-trusted-component"
+        ],
+        "statement": "one additional trusted component the base did not name"
+      }
+    ],
+    "host_build_identity": {
+      "absent_source_fails_closed": true,
+      "algorithm": "curator-hardened-host-build-v1",
+      "declarations": {
+        "linux": {
+          "identifier_pattern": "^[0-9a-f]{32,128}(?![\\s\\S])",
+          "identifier_source": "kernel.build-id",
+          "sources": [
+            "kernel.build-id",
+            "kernel.osrelease",
+            "kernel.version-string"
+          ]
+        },
+        "macos": {
+          "identifier_pattern": "^[0-9]{1,3}[A-Z][0-9]{1,6}[a-z]?(?![\\s\\S])",
+          "identifier_source": "kern.osversion",
+          "sources": [
+            "kern.osversion",
+            "kern.osproductversion",
+            "kern.version"
+          ]
+        },
+        "windows": {
+          "identifier_pattern": "^[0-9]{1,7}\\.[0-9]{1,7}(?![\\s\\S])",
+          "identifier_source": "kernel.current-build-and-ubr",
+          "sources": [
+            "kernel.current-build-and-ubr",
+            "kernel.build-lab-ex",
+            "kernel.image-file-version"
+          ]
+        }
+      },
+      "expected_error": "hardened_tcb_identity_invalid",
+      "fixture_version": "hardened-host-build-fixtures-v1",
+      "host_build_rotation_coverage": [
+        {
+          "aspect": "identifier",
+          "rotated_by": [
+            "rotate-host-build-identifier"
+          ],
+          "statement": "the next build of the same kernel release, which moves the declared identifier source"
+        },
+        {
+          "aspect": "source-value",
+          "rotated_by": [
+            "rotate-host-build-source"
+          ],
+          "statement": "a rebuild of the same release under the same build identifier, which moves only a declared build-identity source"
+        },
+        {
+          "aspect": "release-binding",
+          "rotated_by": [
+            "rotate-host-version"
+          ],
+          "statement": "the same declared sources observed under another kernel release, which the digest also covers"
+        }
+      ],
+      "identifier_equals_source": true,
+      "nullable": false,
+      "rejected_before_phase": "domain-establishment",
+      "required": true
+    },
+    "host_kind": "operating-system",
+    "narrower_record_than_actually_trusted": {
+      "expected_error": "hardened_tcb_identity_invalid",
+      "permitted": false,
+      "statement": "an implementation that starts, loads, or consults a mutable component it does not name in trusted_components reports a trusted computing base narrower than the one it runs on"
+    },
+    "record_version": "hardened-tcb-v1",
+    "relations": [
+      {
+        "enforced_by": "schema",
+        "expected_error": "hardened_tcb_identity_invalid",
+        "name": "platform-to-backend",
+        "statement": "a platform admits exactly the one enforcement backend its declaration names"
+      },
+      {
+        "enforced_by": "schema",
+        "expected_error": "hardened_tcb_identity_invalid",
+        "name": "target-to-platform",
+        "statement": "a hardened receipt's native target goos admits exactly the one TCB platform it maps to"
+      },
+      {
+        "enforced_by": "schema",
+        "expected_error": "hardened_tcb_identity_invalid",
+        "name": "operating-system-to-backend",
+        "statement": "a claim's enforcement-backend entry admits exactly the one backend its operating system declares"
+      },
+      {
+        "enforced_by": "conformance-validator",
+        "expected_error": "hardened_profile_claim_forbidden",
+        "name": "claim-operating-system-covers-tcb-platform",
+        "statement": "a claim's trusted computing base names an operating system the claim itself declares, with the backend that claim declares for it"
+      },
+      {
+        "enforced_by": "conformance-validator",
+        "expected_error": "hardened_tcb_identity_invalid",
+        "name": "claim-required-configuration-observed-in-tcb",
+        "statement": "every configuration setting a claim requires is observed with that exact value in the claim's own trusted computing base"
+      },
+      {
+        "enforced_by": "schema",
+        "expected_error": "hardened_tcb_identity_invalid",
+        "name": "host-identity-to-platform",
+        "statement": "a platform admits exactly the one canonical kernel identity its declaration names, and host.kind is operating-system in this revision"
+      },
+      {
+        "enforced_by": "schema",
+        "expected_error": "hardened_tcb_identity_invalid",
+        "name": "host-build-identifier-to-platform",
+        "statement": "a platform admits exactly the immutable kernel build identifier grammar its declaration names, and the identifier is the exact value of that platform's declared identifier source"
+      },
+      {
+        "enforced_by": "conformance-validator",
+        "expected_error": "hardened_tcb_identity_invalid",
+        "name": "host-build-digest-reproduces-observed-host",
+        "statement": "host.build.content_sha256 is the curator-hardened-host-build-v1 digest of the very kernel identity, release, identifier, and declared build-identity sources the same record reports"
+      },
+      {
+        "enforced_by": "schema",
+        "expected_error": "hardened_tcb_identity_invalid",
+        "name": "backend-version-series-to-backend",
+        "statement": "an enforcement backend admits exactly the one hardened-backend-version-v1 series token its declaration names, in the TCB and in a claim minimum_version alike"
+      },
+      {
+        "enforced_by": "schema",
+        "expected_error": "hardened_tcb_identity_invalid",
+        "name": "component-algorithm-to-kind",
+        "statement": "a trusted component's digest algorithm is one its kind admits, so a kind that can only name one file cannot carry a tree digest"
+      },
+      {
+        "enforced_by": "conformance-validator",
+        "expected_error": "hardened_tcb_identity_invalid",
+        "name": "claim-backend-version-at-least-minimum",
+        "statement": "the observed tcb.backend.version is at or above the claim entry's minimum_version under the hardened-backend-version-v1 comparison"
+      },
+      {
+        "enforced_by": "conformance-validator",
+        "expected_error": "hardened_tcb_identity_invalid",
+        "name": "tcb-toolchain-equals-build-input-toolchain",
+        "statement": "the TCB toolchain identity is the one the hashed build input carries"
+      },
+      {
+        "enforced_by": "conformance-validator",
+        "expected_error": "hardened_tcb_identity_invalid",
+        "name": "input-digest-reproduces-tcb-record",
+        "statement": "input.hardened.tcb.content_sha256 is the curator-hardened-tcb-v1 digest of the receipt's own complete record"
+      },
+      {
+        "enforced_by": "conformance-validator",
+        "expected_error": "hardened_tcb_identity_invalid",
+        "name": "marker-key-reproducible-from-published-identities",
+        "statement": "a marker's cache_key follows from the execution policy, profile identity, and TCB record the marker itself publishes"
+      }
+    ],
+    "unconstrained_string_components_permitted": false
+  },
+  "tcb_rotation_cases": [
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:17874644eed3ea16ae4096eb2477b0a80629ddc443622e3d4c02efede5b65a32",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:6643efce26825998e043b27a60c79006c6366d9ca28c62f0605f0fd7367a36fb"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-parent-identity",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [],
+      "rotated_fields": [
+        "parent_sha256"
+      ],
+      "rotated_host_build_aspects": [],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:6643efce26825998e043b27a60c79006c6366d9ca28c62f0605f0fd7367a36fb"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:a5b66208edb106d71afb0f6d97f29355694ff6e4ebebf8f00903330cd3a0463e",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:405bf2c20454ebb0e69aad2396c18bc34737254b9447650514fb952120c49bd7"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-supervisor-identity",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [],
+      "rotated_fields": [
+        "supervisor_sha256"
+      ],
+      "rotated_host_build_aspects": [],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:405bf2c20454ebb0e69aad2396c18bc34737254b9447650514fb952120c49bd7"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:6902ad4686198da12e82123a24650c743f9a6a2eb7b7c8b2a2df4be9c4cc7300",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:234d44db3babceb6eefcb4880350d29fdac5cca68a9cf51626ecfa08c9933cec"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-worker-identity",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [],
+      "rotated_fields": [
+        "worker_sha256"
+      ],
+      "rotated_host_build_aspects": [],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "tcb_digest": "sha256:234d44db3babceb6eefcb4880350d29fdac5cca68a9cf51626ecfa08c9933cec"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:64fb30e7ef49fd20cd92351ddefa4266d354bdc89c599cb2f00d1860f1cd77fa",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:a293dce88404ef67eecf808dc61431d757f0a6db376aa1fe884ec8a09bcf7878"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-host-version",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [],
+      "rotated_fields": [
+        "host"
+      ],
+      "rotated_host_build_aspects": [
+        "release-binding"
+      ],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:377fe91783d209a92383e8f9bc392da68e86185017b19ef48d7887cec07631ec",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.1.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:a293dce88404ef67eecf808dc61431d757f0a6db376aa1fe884ec8a09bcf7878"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:af6b49b6c09be7c2bf12407de59086bf2e580ca16e7438bad253fcd6e75d6099",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:2d385f3ceeb7bf48b6a82fd665122862e19ea36d2bc0986e00d484426201196d"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-host-build-identifier",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [],
+      "rotated_fields": [
+        "host"
+      ],
+      "rotated_host_build_aspects": [
+        "identifier"
+      ],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:3f5a22e455cf18e5222024b0c469ae8ac7a8313048b7082a0122b45c6242a6f0",
+            "identifier": "25A124"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:2d385f3ceeb7bf48b6a82fd665122862e19ea36d2bc0986e00d484426201196d"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:79da05de13c18599bc4110ef8158539eaeb19219392edc0bc687c514ce7f296a",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:9d0d5b46db731f8747ceb2e0a9749cbc19a14a34174278dfdfdef1e9c55822f4"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-host-build-source",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [],
+      "rotated_fields": [
+        "host"
+      ],
+      "rotated_host_build_aspects": [
+        "source-value"
+      ],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:330919fd72a7b3f3b3e1940f06cb9a7b93386a2d247acc3632ffbe320c5802a1",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:9d0d5b46db731f8747ceb2e0a9749cbc19a14a34174278dfdfdef1e9c55822f4"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:421e060ba86cbe1e8c0758e24920224b8fffbe904421e99adc5cb8998a8a3286",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:ee0299508b4cbdd06d78ecd686b48643731a2918005359b119c89f4a1aec74fd"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-backend-version",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [],
+      "rotated_fields": [
+        "backend"
+      ],
+      "rotated_host_build_aspects": [],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.1"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:ee0299508b4cbdd06d78ecd686b48643731a2918005359b119c89f4a1aec74fd"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:e8fefcba7b5523bcbbce63554937844e2d6930d4a6ea93af8cb0e9034635c45a",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:514ff32a3be5ce99a07a0be39e2107494033ce3b60e3adc6f47a9308571e3314"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-backend-configuration",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [],
+      "rotated_fields": [
+        "backend"
+      ],
+      "rotated_host_build_aspects": [],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v2",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:514ff32a3be5ce99a07a0be39e2107494033ce3b60e3adc6f47a9308571e3314"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:ec479522d81812bc87824ccdd6faa158472eddc8b59f926c3c1644eb65e6a26c",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:043ea68b438e61a9a3e5595dce301fe19ce3695edf1699773642494bcb5f27e2"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-trusted-component-kind",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [
+        "kind"
+      ],
+      "rotated_fields": [
+        "trusted_components"
+      ],
+      "rotated_host_build_aspects": [],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "identity-verifier",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:043ea68b438e61a9a3e5595dce301fe19ce3695edf1699773642494bcb5f27e2"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:6ea3455223ba48edd9451e55912b87627700cff8b31b8d22d0049e3312cc4163",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:512655c3e69fa41a9215ab36f47af15342fe809a17ef56436e5f2ac3f6767771"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-trusted-component-name",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [
+        "name"
+      ],
+      "rotated_fields": [
+        "trusted_components"
+      ],
+      "rotated_host_build_aspects": [],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter-v2"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:512655c3e69fa41a9215ab36f47af15342fe809a17ef56436e5f2ac3f6767771"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:f8147c77dec57300126710bd92d9aedad94e9b4ad58aa150091e38281238e597",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:fa2c6acf801a5207d68b7093f4fe5fff7e7ec7ddb722e7c10249a4fbd436be2a"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-trusted-component-algorithm",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [
+        "algorithm"
+      ],
+      "rotated_fields": [
+        "trusted_components"
+      ],
+      "rotated_host_build_aspects": [],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:242f7f080210efa0b0486e10c6773e8fef3a155ea80c9488038e3129a8070cfe",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:fa2c6acf801a5207d68b7093f4fe5fff7e7ec7ddb722e7c10249a4fbd436be2a"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:2d5cce35bcd01b8455ca94b361e294e2448c5b9a87d4eaed474a74b3684fbe83",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:f17324226a357bd781453dcaca4b34ea0cca7ea82addc30e2fab3d1e301e46d3"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-trusted-component-content",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [
+        "content"
+      ],
+      "rotated_fields": [
+        "trusted_components"
+      ],
+      "rotated_host_build_aspects": [],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:586cd2fced16f7d6cb51e52f753a40e4c026f6d08b79a0cda5bb03b27ed40b25",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:f17324226a357bd781453dcaca4b34ea0cca7ea82addc30e2fab3d1e301e46d3"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:b7af66332c890f5eb3fdee2f4906eaf6677d40a494955e344f48231cc2cd0724",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:98c120c3e60152d5bf088f618b75cf4861b3310f1412656ac3d7e085d6f1d8ee"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-component-tree-membership",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [
+        "tree-membership"
+      ],
+      "rotated_fields": [
+        "trusted_components"
+      ],
+      "rotated_host_build_aspects": [],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:953518bb9434e77e0ac7ef4a69841fb1b5e3c044bbaa4170cb0038ae15cb41b3",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:98c120c3e60152d5bf088f618b75cf4861b3310f1412656ac3d7e085d6f1d8ee"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:3751557c1e558f1a0de73ea586a90825f908c0ed1d7620ae81922768206b9b1e",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:4bf4ef5cf2618f2abe0115a79375689b50b973526c7fd747b7669c4ab1603e64"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-component-entry-type",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [
+        "entry-type"
+      ],
+      "rotated_fields": [
+        "trusted_components"
+      ],
+      "rotated_host_build_aspects": [],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:d485f1ed8d3e6cf2bb7f1e711db36068b054a0fa30598e88cb9e291339511be3",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:4bf4ef5cf2618f2abe0115a79375689b50b973526c7fd747b7669c4ab1603e64"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:ba2d2809b8768f90e5cf263a97833a5b2a7f4e916e87768138af4ab1b749861b",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:841c7f6e86928ede881cd5e138edf84fd69b4abf8a1c59e3b8c58e5431f90fd9"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-component-link-substitution",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [
+        "link-substitution"
+      ],
+      "rotated_fields": [
+        "trusted_components"
+      ],
+      "rotated_host_build_aspects": [],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:29fe88749d9e5c6b288c2538c3c2357346a1692ab16d98d7758545877552c69b",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:841c7f6e86928ede881cd5e138edf84fd69b4abf8a1c59e3b8c58e5431f90fd9"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:0513ccc623530fac71d6fc6dfd7276b6fffa647f2485bb14ef2f103fe9e6a25d",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:7d70545204cbccfae7344b052273b0c715b6f2eaf6ddd3d4e7e9709598bf9500"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "add-trusted-component",
+      "package_visible_change_reason": null,
+      "package_visible_input_changed": false,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [
+        "component-set"
+      ],
+      "rotated_fields": [
+        "trusted_components"
+      ],
+      "rotated_host_build_aspects": [],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:f1ecb55973ca1d2fdef5390218e43a3df493fae813f7e9cd27d3fb999d75b79f",
+            "kind": "interpreter",
+            "name": "supervisor-launcher-interpreter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:7d70545204cbccfae7344b052273b0c715b6f2eaf6ddd3d4e7e9709598bf9500"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:167c77deb9f0380468e2ec7794068a0341b42ffeb758a20bf310c93bc4839480",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:858dc1064ff36c24f0926e2f0d830239a2c72fb6bc9570d84b52183b9622f796"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "darwin",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-toolchain-identity",
+      "package_visible_change_reason": "the fingerprinted toolchain is also a member of the portable build input, so rotating it necessarily moves a value a package can see",
+      "package_visible_input_changed": true,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [],
+      "rotated_fields": [
+        "toolchain"
+      ],
+      "rotated_host_build_aspects": [],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "scheme-v1",
+              "setting": "sandbox_profile_dialect"
+            }
+          ],
+          "version": "sandbox-2.0"
+        },
+        "enforcement_backend": "macos-sandbox-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:981758e3ae6ae023ba095b398aa8731f3fd982efacc022332930aa77c0f15f39",
+            "identifier": "25A123"
+          },
+          "identity": "darwin",
+          "kind": "operating-system",
+          "version": "25.0.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "macos",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 darwin/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:858dc1064ff36c24f0926e2f0d830239a2c72fb6bc9570d84b52183b9622f796"
+    },
+    {
+      "base_cache_key": "sha256:6fad10c243a7609761fb0b6f8be5b31f1ec992586cca41a6a91ce83d161c0371",
+      "cache_key": "sha256:9cb0e5cac675175817fc6b654b581a2ba00b5f1edd8953b812a15d2bec486674",
+      "cache_key_differs_from_base": true,
+      "claim_rejected_against_base": true,
+      "expected_error_if_reused": "hardened_tcb_identity_invalid",
+      "input": {
+        "build_root": "build",
+        "build_source": {
+          "algorithm": "curator-build-source-v1",
+          "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "command": "golden-tool",
+        "driver": "go-v1",
+        "hardened": {
+          "profile": "hardened-profile-v1",
+          "tcb": {
+            "algorithm": "curator-hardened-tcb-v1",
+            "content_sha256": "sha256:f8749a4dfa929100b4ca6e40968732d2f8d644ea74872276fbcc40bc7cdfa004"
+          }
+        },
+        "policy": {
+          "cgo": false,
+          "compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+          "execution_policy": "hardened-worker-v1",
+          "host_objects": false,
+          "libgcc": "none",
+          "link_mode": "internal",
+          "module_mode": "vendor",
+          "network": "none",
+          "package_assembly": false,
+          "target_mode": "native",
+          "telemetry": "off-private",
+          "workspace": false
+        },
+        "schema_version": 1,
+        "source_dir": "build/cmd/golden-tool",
+        "target": {
+          "goarch": "arm64",
+          "goos": "linux",
+          "tuning": {
+            "GOARM64": "v8.0"
+          }
+        },
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 linux/arm64"
+        }
+      },
+      "marker_rejected_against_base": true,
+      "name": "rotate-platform-and-backend",
+      "package_visible_change_reason": "a hardened receipt binds its TCB platform to the native target of its own build input, so another platform is another target",
+      "package_visible_input_changed": true,
+      "published_from_another_identity": false,
+      "receipt_rejected_against_base": true,
+      "rotated_component_aspects": [],
+      "rotated_fields": [
+        "platform",
+        "enforcement_backend",
+        "backend",
+        "host",
+        "toolchain"
+      ],
+      "rotated_host_build_aspects": [],
+      "tcb": {
+        "backend": {
+          "configuration": [
+            {
+              "observed_value": "2",
+              "setting": "cgroup.version"
+            },
+            {
+              "observed_value": "enabled",
+              "setting": "user_namespaces.unprivileged"
+            }
+          ],
+          "version": "cgroup2-6.12"
+        },
+        "enforcement_backend": "linux-namespace-seccomp-v1",
+        "execution_policy": "hardened-worker-v1",
+        "hardened_profile": "hardened-profile-v1",
+        "host": {
+          "build": {
+            "algorithm": "curator-hardened-host-build-v1",
+            "content_sha256": "sha256:9ea0a283a4864185fc8e5c62fbfa619826d6d0809b6f9703f6847991ae1b0bae",
+            "identifier": "4f2a1c8e6b90d3574a1e2f8c0b7d69315ae4c2f8"
+          },
+          "identity": "linux",
+          "kind": "operating-system",
+          "version": "6.12.0"
+        },
+        "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "platform": "linux",
+        "record_version": "hardened-tcb-v1",
+        "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "toolchain": {
+          "algorithm": "curator-go-toolchain-v1",
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "go_relpath": "bin/go",
+          "go_version": "go version go1.26.1 linux/arm64"
+        },
+        "trusted_components": [
+          {
+            "algorithm": "curator-hardened-component-tree-v1",
+            "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+            "kind": "capability-probe",
+            "name": "capability-probe-suite"
+          },
+          {
+            "algorithm": "curator-hardened-component-file-v1",
+            "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+            "kind": "enforcement-adapter",
+            "name": "enforcement-backend-adapter"
+          }
+        ],
+        "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      "tcb_digest": "sha256:f8749a4dfa929100b4ca6e40968732d2f8d644ea74872276fbcc40bc7cdfa004"
+    }
+  ]
+}

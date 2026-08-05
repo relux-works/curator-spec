@@ -1,0 +1,43 @@
+{
+  "candidate_protocol_pin": {
+    "manifest_sha256": "sha256:5519c9f9a1a0b57edda2f2daa6678020678eb12b2ed2a528a8ddb1d113c734cf",
+    "suite_root": "conformance/hardened/v1"
+  },
+  "claim_v4": {
+    "claims_emitted": [],
+    "linux_status": "unqualified-pending-native-evidence",
+    "macos_status": "unqualified-pending-native-evidence",
+    "windows_status": "unqualified-pending-native-evidence"
+  },
+  "created_at": "2026-07-28T00:00:00Z",
+  "downstream_consumption": {
+    "committed_release_pin_advanced": false,
+    "environment": "CURATOR_HARDENED_CONFORMANCE_ROOT",
+    "required_manifest_sha256": "sha256:5519c9f9a1a0b57edda2f2daa6678020678eb12b2ed2a528a8ddb1d113c734cf"
+  },
+  "execution_policy": {
+    "capability_evidence_record_version": "hardened-capability-evidence-v1",
+    "capability_inventory_version": "hardened-capability-inventory-v1",
+    "hardened": "hardened-worker-v1",
+    "hardened_profile": "hardened-profile-v1",
+    "identity_binding_version": "hardened-identity-binding-v1",
+    "portable": "manager-worker-v1",
+    "portable_profile_widened": false,
+    "rc5_reserved_policy_slot_cache_key": "sha256:13736230d33ce59de7f7323dcd4cffd510655ad8dabd5ee9e8b6cb182ec70037",
+    "rc5_reserved_policy_slot_is_hardened_input": false,
+    "tcb_digest_algorithm": "curator-hardened-tcb-v1",
+    "tcb_record_version": "hardened-tcb-v1"
+  },
+  "owner_story": "STORY-260728-327soo",
+  "portable_baseline": {
+    "manifest_sha256": "sha256:9ba9b8ecf6f06cafda1425aed3539dee8d12af43dabd36f803f4f420dbb1dacf",
+    "modified": false,
+    "protocol_version": "1.0.0-rc.5",
+    "suite_root": "conformance/v1"
+  },
+  "protocol_version": "hardened-1.0.0-rc.1",
+  "qualified_platforms": [],
+  "source_baseline_commit": "57c1f56846d221ecc55786bd3c2467ec32f11730",
+  "specifying_task": "TASK-260728-1jafds",
+  "verification_task": "TASK-260728-1itx7a"
+}

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/hardened/v1/hardened-install-marker-v4.schema.json",
+  "title": ".csk-install.json schema 4",
+  "type": "object",
+  "required": ["schema_version", "name", "source", "ref_kind", "ref", "commit", "content_sha256", "locale", "agents", "commands", "dependencies", "skill_schema_version", "runtime_roots", "build_roots", "installed_at", "files", "builds"],
+  "properties": {
+    "schema_version": {"const": 4},
+    "name": {"$ref": "../../v1/common.schema.json#/$defs/identifier"},
+    "source": {"$ref": "../../v1/common.schema.json#/$defs/portablePath"},
+    "ref_kind": {"enum": ["tag", "branch", "revision"]},
+    "ref": {"$ref": "../../v1/common.schema.json#/$defs/nonEmptyString"},
+    "commit": {"$ref": "../../v1/common.schema.json#/$defs/commit"},
+    "content_sha256": {"$ref": "../../v1/common.schema.json#/$defs/sha256"},
+    "build_source": {"$ref": "../../v1/common.schema.json#/$defs/buildSourceIdentity"},
+    "locale": {"oneOf": [{"$ref": "../../v1/common.schema.json#/$defs/locale"}, {"type": "null"}]},
+    "agents": {"$ref": "../../v1/common.schema.json#/$defs/identifierSet"},
+    "commands": {"$ref": "../../v1/common.schema.json#/$defs/identifierSet"},
+    "dependencies": {"$ref": "../../v1/common.schema.json#/$defs/identifierSet"},
+    "skill_schema_version": {"enum": [6, 7]},
+    "runtime_roots": {"$ref": "../../v1/common.schema.json#/$defs/pathSet"},
+    "build_roots": {"$ref": "../../v1/common.schema.json#/$defs/pathSet"},
+    "installed_at": {"$ref": "../../v1/common.schema.json#/$defs/timestamp"},
+    "files": {"$ref": "../../v1/common.schema.json#/$defs/pathSet"},
+    "builds": {
+      "type": "object",
+      "propertyNames": {"$ref": "../../v1/common.schema.json#/$defs/identifier"},
+      "additionalProperties": {
+        "oneOf": [
+          {"$ref": "hardened-common.schema.json#/$defs/hardenedBuildRecordV3"},
+          {"$ref": "hardened-common.schema.json#/$defs/hardenedBuildRecordV4"}
+        ]
+      }
+    },
+    "git": {"$ref": "../../v1/common.schema.json#/$defs/nonEmptyString"},
+    "requirements": {"$ref": "../../v1/common.schema.json#/$defs/identifierSet"},
+    "mcp_servers": {"type": "object", "propertyNames": {"$ref": "../../v1/common.schema.json#/$defs/identifier"}, "additionalProperties": {"$ref": "../../v1/common.schema.json#/$defs/identifierSet"}},
+    "attestation": {
+      "type": "object",
+      "required": ["registry", "status"],
+      "properties": {
+        "registry": {"$ref": "../../v1/common.schema.json#/$defs/nonEmptyString"},
+        "status": {"enum": ["audited", "deprecated"]},
+        "key_id": {"type": "string", "pattern": "^[0-9a-f]{16}$"}
+      },
+      "additionalProperties": false
+    },
+    "activation": {
+      "type": "object",
+      "required": ["context", "commands"],
+      "properties": {"context": {"type": "boolean"}, "commands": {"$ref": "../../v1/common.schema.json#/$defs/identifierSet"}},
+      "additionalProperties": false
+    },
+    "requirers": {"$ref": "../../v1/common.schema.json#/$defs/stringSet"},
+    "substituted": {"$ref": "../../v1/common.schema.json#/$defs/nonEmptyString"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/hardened/v1/hardened-capability-evidence-v1.schema.json",
+  "title": "Curator hardened capability evidence record 1",
+  "type": "object",
+  "required": ["record_version", "hardened_profile", "execution_policy", "platform", "enforcement_backend", "qualification_status", "outcome", "rejected_before", "diagnostic", "capabilities", "guarantees"],
+  "properties": {
+    "record_version": {"const": "hardened-capability-evidence-v1"},
+    "hardened_profile": {"$ref": "hardened-common.schema.json#/$defs/hardenedProfileIdentityV1"},
+    "execution_policy": {"$ref": "hardened-common.schema.json#/$defs/hardenedExecutionPolicyV1"},
+    "platform": {"$ref": "hardened-common.schema.json#/$defs/hardenedPlatformV1"},
+    "enforcement_backend": {"$ref": "hardened-common.schema.json#/$defs/hardenedEnforcementBackendV1"},
+    "qualification_status": {"$ref": "hardened-common.schema.json#/$defs/hardenedQualificationStatusV1"},
+    "outcome": {"enum": ["established", "rejected"]},
+    "rejected_before": {
+      "oneOf": [
+        {"$ref": "hardened-common.schema.json#/$defs/hardenedPhaseV1"},
+        {"type": "null"}
+      ]
+    },
+    "diagnostic": {
+      "oneOf": [
+        {"$ref": "hardened-common.schema.json#/$defs/hardenedDiagnosticV1"},
+        {"type": "null"}
+      ]
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 11,
+      "maxItems": 11,
+      "items": {
+        "type": "object",
+        "required": ["name", "availability", "status", "probed_at"],
+        "properties": {
+          "name": {"$ref": "hardened-common.schema.json#/$defs/hardenedCapabilityClassV1"},
+          "availability": {"enum": ["available", "unavailable", "unprobed"]},
+          "status": {"enum": ["applied", "not-applied"]},
+          "probed_at": {"const": "pre-domain-entry"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "guarantees": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "required": ["name", "established"],
+        "properties": {
+          "name": {"$ref": "hardened-common.schema.json#/$defs/hardenedGuaranteeV1"},
+          "established": {"type": "boolean"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {"$ref": "hardened-common.schema.json#/$defs/hardenedPlatformBackendRelationV1"},
+    {
+      "properties": {
+        "capabilities": {
+          "items": {
+            "allOf": [
+              {
+                "if": {"properties": {"availability": {"const": "available"}}, "required": ["availability"]},
+                "then": {"properties": {"status": {"const": "applied"}}}
+              },
+              {
+                "if": {"properties": {"availability": {"enum": ["unavailable", "unprobed"]}}, "required": ["availability"]},
+                "then": {"properties": {"status": {"const": "not-applied"}}}
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"outcome": {"const": "established"}}, "required": ["outcome"]},
+      "then": {
+        "properties": {
+          "rejected_before": {"type": "null"},
+          "diagnostic": {"type": "null"},
+          "qualification_status": {"const": "qualified"},
+          "capabilities": {"items": {"properties": {"availability": {"const": "available"}, "status": {"const": "applied"}}}},
+          "guarantees": {"items": {"properties": {"established": {"const": true}}}}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"outcome": {"const": "rejected"}}, "required": ["outcome"]},
+      "then": {
+        "properties": {
+          "rejected_before": {"$ref": "hardened-common.schema.json#/$defs/hardenedPhaseV1"},
+          "diagnostic": {"$ref": "hardened-common.schema.json#/$defs/hardenedDiagnosticV1"}
+        }
+      }
+    }
+  ]
+}

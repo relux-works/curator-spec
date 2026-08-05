@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/hardened/v1/hardened-conformance-claim-v4.schema.json",
+  "title": "Curator Protocol conformance claim schema 4",
+  "type": "object",
+  "required": ["schema_version", "protocol_version", "hardened_profile", "capability_inventory_version", "implementation", "implementation_version", "classes", "suite_sha256", "portable_suite_sha256", "operating_systems", "enforcement_backends", "tcb", "guarantees", "build_drivers", "created_at", "result"],
+  "properties": {
+    "schema_version": {"const": 4},
+    "protocol_version": {"const": "hardened-1.0.0-rc.1"},
+    "hardened_profile": {"$ref": "hardened-common.schema.json#/$defs/hardenedProfileIdentityV1"},
+    "capability_inventory_version": {"$ref": "hardened-common.schema.json#/$defs/hardenedCapabilityInventoryVersionV1"},
+    "implementation": {"$ref": "../../v1/common.schema.json#/$defs/nonEmptyString"},
+    "implementation_version": {"$ref": "../../v1/common.schema.json#/$defs/nonEmptyString"},
+    "classes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"enum": ["core", "manager"]},
+      "uniqueItems": true
+    },
+    "suite_sha256": {"$ref": "../../v1/common.schema.json#/$defs/sha256"},
+    "portable_suite_sha256": {"$ref": "../../v1/common.schema.json#/$defs/sha256"},
+    "operating_systems": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "hardened-common.schema.json#/$defs/hardenedPlatformV1"},
+      "uniqueItems": true
+    },
+    "enforcement_backends": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["operating_system", "enforcement_backend", "minimum_version", "required_configuration"],
+        "properties": {
+          "operating_system": {"$ref": "hardened-common.schema.json#/$defs/hardenedPlatformV1"},
+          "enforcement_backend": {"$ref": "hardened-common.schema.json#/$defs/hardenedEnforcementBackendV1"},
+          "minimum_version": {"$ref": "hardened-common.schema.json#/$defs/hardenedBackendVersionV1"},
+          "required_configuration": {
+            "type": "array",
+            "items": {"$ref": "hardened-common.schema.json#/$defs/hardenedConfigurationRequirementV1"},
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false,
+        "allOf": [
+          {"$ref": "hardened-common.schema.json#/$defs/hardenedOperatingSystemBackendRelationV1"},
+          {"$ref": "hardened-common.schema.json#/$defs/hardenedMinimumVersionSeriesRelationV1"}
+        ]
+      }
+    },
+    "tcb": {"$ref": "hardened-common.schema.json#/$defs/hardenedTcbRecordV1"},
+    "guarantees": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {"$ref": "hardened-common.schema.json#/$defs/hardenedGuaranteeV1"}
+    },
+    "build_drivers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["driver", "language", "execution_policy", "hardened_profile", "operating_systems"],
+            "properties": {
+              "driver": {"const": "go-v1"},
+              "language": {"const": "go"},
+              "execution_policy": {"$ref": "hardened-common.schema.json#/$defs/hardenedExecutionPolicyV1"},
+              "hardened_profile": {"$ref": "hardened-common.schema.json#/$defs/hardenedProfileIdentityV1"},
+              "operating_systems": {"type": "array", "minItems": 1, "items": {"$ref": "hardened-common.schema.json#/$defs/hardenedPlatformV1"}, "uniqueItems": true}
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": ["driver", "language", "execution_policy", "hardened_profile", "operating_systems"],
+            "properties": {
+              "driver": {"const": "go-repository-v1"},
+              "language": {"const": "go"},
+              "execution_policy": {"$ref": "hardened-common.schema.json#/$defs/hardenedExecutionPolicyV1"},
+              "hardened_profile": {"$ref": "hardened-common.schema.json#/$defs/hardenedProfileIdentityV1"},
+              "operating_systems": {"type": "array", "minItems": 1, "items": {"$ref": "hardened-common.schema.json#/$defs/hardenedPlatformV1"}, "uniqueItems": true}
+            },
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "created_at": {"$ref": "../../v1/common.schema.json#/$defs/timestamp"},
+    "result": {"const": "pass"}
+  },
+  "additionalProperties": false
+}

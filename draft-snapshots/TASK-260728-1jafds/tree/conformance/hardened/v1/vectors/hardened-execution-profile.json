@@ -1,0 +1,1180 @@
+{
+  "capability_evidence_record": {
+    "capability_entry_fields": [
+      "availability",
+      "name",
+      "probed_at",
+      "status"
+    ],
+    "consistency_rules": [
+      "a guarantee reported established requires every mapped capability class applied",
+      "a missing, duplicated, extra, or unknown capability or guarantee entry is an error",
+      "a portable capability-evidence-v1 record for a hardened operation is an error",
+      "an availability value not obtained by a probe in this operation is an error",
+      "an available capability must report applied",
+      "an execution_policy other than hardened-worker-v1 is an error",
+      "an unavailable or unprobed capability must not report applied",
+      "an unknown record_version is an error",
+      "outcome established requires every capability applied and every guarantee established",
+      "outcome rejected requires both rejected_before and diagnostic"
+    ],
+    "distinct_from_portable_record": "capability-evidence-v1",
+    "entry_cardinality": {
+      "capabilities": "exactly-one-per-capability-class",
+      "guarantees": "exactly-one-per-guarantee"
+    },
+    "examples": {
+      "established": {
+        "capabilities": [
+          {
+            "availability": "available",
+            "name": "active-capability-probe",
+            "probed_at": "pre-domain-entry",
+            "status": "applied"
+          },
+          {
+            "availability": "available",
+            "name": "aggregate-resource-bounds",
+            "probed_at": "pre-domain-entry",
+            "status": "applied"
+          },
+          {
+            "availability": "available",
+            "name": "domain-atomic-termination",
+            "probed_at": "pre-domain-entry",
+            "status": "applied"
+          },
+          {
+            "availability": "available",
+            "name": "domain-membership-enforcement",
+            "probed_at": "pre-domain-entry",
+            "status": "applied"
+          },
+          {
+            "availability": "available",
+            "name": "exec-path-allowlist",
+            "probed_at": "pre-domain-entry",
+            "status": "applied"
+          },
+          {
+            "availability": "available",
+            "name": "filesystem-view-restriction",
+            "probed_at": "pre-domain-entry",
+            "status": "applied"
+          },
+          {
+            "availability": "available",
+            "name": "network-syscall-denial",
+            "probed_at": "pre-domain-entry",
+            "status": "applied"
+          },
+          {
+            "availability": "available",
+            "name": "preexisting-endpoint-revocation",
+            "probed_at": "pre-domain-entry",
+            "status": "applied"
+          },
+          {
+            "availability": "available",
+            "name": "read-only-source-view",
+            "probed_at": "pre-domain-entry",
+            "status": "applied"
+          },
+          {
+            "availability": "available",
+            "name": "read-only-toolchain-view",
+            "probed_at": "pre-domain-entry",
+            "status": "applied"
+          },
+          {
+            "availability": "available",
+            "name": "write-path-confinement",
+            "probed_at": "pre-domain-entry",
+            "status": "applied"
+          }
+        ],
+        "diagnostic": null,
+        "enforcement_backend": "linux-namespace-seccomp-v1",
+        "execution_policy": "hardened-worker-v1",
+        "guarantees": [
+          {
+            "established": true,
+            "name": "exact-executable-allowlisting"
+          },
+          {
+            "established": true,
+            "name": "fail-closed-capability-preflight"
+          },
+          {
+            "established": true,
+            "name": "hard-aggregate-descendant-resource-bounds"
+          },
+          {
+            "established": true,
+            "name": "private-build-root-only-writes"
+          },
+          {
+            "established": true,
+            "name": "read-only-source-and-toolchain"
+          },
+          {
+            "established": true,
+            "name": "total-network-denial"
+          }
+        ],
+        "hardened_profile": "hardened-profile-v1",
+        "outcome": "established",
+        "platform": "linux",
+        "qualification_status": "qualified",
+        "record_version": "hardened-capability-evidence-v1",
+        "rejected_before": null
+      },
+      "rejected_unqualified": {
+        "capabilities": [
+          {
+            "availability": "unprobed",
+            "name": "active-capability-probe",
+            "probed_at": "pre-domain-entry",
+            "status": "not-applied"
+          },
+          {
+            "availability": "unprobed",
+            "name": "aggregate-resource-bounds",
+            "probed_at": "pre-domain-entry",
+            "status": "not-applied"
+          },
+          {
+            "availability": "unprobed",
+            "name": "domain-atomic-termination",
+            "probed_at": "pre-domain-entry",
+            "status": "not-applied"
+          },
+          {
+            "availability": "unprobed",
+            "name": "domain-membership-enforcement",
+            "probed_at": "pre-domain-entry",
+            "status": "not-applied"
+          },
+          {
+            "availability": "unprobed",
+            "name": "exec-path-allowlist",
+            "probed_at": "pre-domain-entry",
+            "status": "not-applied"
+          },
+          {
+            "availability": "unprobed",
+            "name": "filesystem-view-restriction",
+            "probed_at": "pre-domain-entry",
+            "status": "not-applied"
+          },
+          {
+            "availability": "unprobed",
+            "name": "network-syscall-denial",
+            "probed_at": "pre-domain-entry",
+            "status": "not-applied"
+          },
+          {
+            "availability": "unprobed",
+            "name": "preexisting-endpoint-revocation",
+            "probed_at": "pre-domain-entry",
+            "status": "not-applied"
+          },
+          {
+            "availability": "unprobed",
+            "name": "read-only-source-view",
+            "probed_at": "pre-domain-entry",
+            "status": "not-applied"
+          },
+          {
+            "availability": "unprobed",
+            "name": "read-only-toolchain-view",
+            "probed_at": "pre-domain-entry",
+            "status": "not-applied"
+          },
+          {
+            "availability": "unprobed",
+            "name": "write-path-confinement",
+            "probed_at": "pre-domain-entry",
+            "status": "not-applied"
+          }
+        ],
+        "diagnostic": "hardened_profile_unsupported",
+        "enforcement_backend": "linux-namespace-seccomp-v1",
+        "execution_policy": "hardened-worker-v1",
+        "guarantees": [
+          {
+            "established": false,
+            "name": "exact-executable-allowlisting"
+          },
+          {
+            "established": false,
+            "name": "fail-closed-capability-preflight"
+          },
+          {
+            "established": false,
+            "name": "hard-aggregate-descendant-resource-bounds"
+          },
+          {
+            "established": false,
+            "name": "private-build-root-only-writes"
+          },
+          {
+            "established": false,
+            "name": "read-only-source-and-toolchain"
+          },
+          {
+            "established": false,
+            "name": "total-network-denial"
+          }
+        ],
+        "hardened_profile": "hardened-profile-v1",
+        "outcome": "rejected",
+        "platform": "linux",
+        "qualification_status": "unqualified",
+        "record_version": "hardened-capability-evidence-v1",
+        "rejected_before": "platform-qualification"
+      }
+    },
+    "excluded_from": [
+      "cache-key",
+      "conformance-claim",
+      "install-marker",
+      "receipt"
+    ],
+    "exposed_in": [
+      "dry-run-plan",
+      "install",
+      "status"
+    ],
+    "guarantee_entry_fields": [
+      "established",
+      "name"
+    ],
+    "probe_timings": [
+      "pre-domain-entry"
+    ],
+    "record_fields": [
+      "capabilities",
+      "diagnostic",
+      "enforcement_backend",
+      "execution_policy",
+      "guarantees",
+      "hardened_profile",
+      "outcome",
+      "platform",
+      "qualification_status",
+      "record_version",
+      "rejected_before"
+    ],
+    "record_version": "hardened-capability-evidence-v1",
+    "result_only": true
+  },
+  "capability_inventory": {
+    "authority": "conformance/hardened/v1/vectors/hardened-execution-profile.json#capability_inventory",
+    "availability_states": [
+      "available",
+      "unavailable",
+      "unprobed"
+    ],
+    "classes": [
+      {
+        "name": "active-capability-probe",
+        "optional": false,
+        "requirement": "every class above is actively probed on this host in this operation before domain entry",
+        "serves": [
+          "fail-closed-capability-preflight"
+        ]
+      },
+      {
+        "name": "aggregate-resource-bounds",
+        "optional": false,
+        "requirement": "the host accounts for and enforces every bound of the resource guarantee over the domain in aggregate",
+        "serves": [
+          "hard-aggregate-descendant-resource-bounds"
+        ]
+      },
+      {
+        "name": "domain-atomic-termination",
+        "optional": false,
+        "requirement": "the whole domain is destroyed as one unit, with no survivor and no reparenting",
+        "serves": [
+          "hard-aggregate-descendant-resource-bounds"
+        ]
+      },
+      {
+        "name": "domain-membership-enforcement",
+        "optional": false,
+        "requirement": "every descendant of the domain-root worker is a domain member and cannot renounce membership",
+        "serves": [
+          "exact-executable-allowlisting",
+          "hard-aggregate-descendant-resource-bounds",
+          "private-build-root-only-writes",
+          "total-network-denial"
+        ]
+      },
+      {
+        "name": "exec-path-allowlist",
+        "optional": false,
+        "requirement": "execution is denied for every path outside the exact fingerprinted allowlist",
+        "serves": [
+          "exact-executable-allowlisting"
+        ]
+      },
+      {
+        "name": "filesystem-view-restriction",
+        "optional": false,
+        "requirement": "paths outside the declared views are unreachable from inside the domain",
+        "serves": [
+          "private-build-root-only-writes",
+          "read-only-source-and-toolchain"
+        ]
+      },
+      {
+        "name": "network-syscall-denial",
+        "optional": false,
+        "requirement": "the kernel denies every network operation on every address family for every domain member",
+        "serves": [
+          "total-network-denial"
+        ]
+      },
+      {
+        "name": "preexisting-endpoint-revocation",
+        "optional": false,
+        "requirement": "no inherited socket, handle, or connected endpoint is usable after domain entry",
+        "serves": [
+          "total-network-denial"
+        ]
+      },
+      {
+        "name": "read-only-source-view",
+        "optional": false,
+        "requirement": "the frozen source snapshot is presented through a kernel-enforced read-only view",
+        "serves": [
+          "read-only-source-and-toolchain"
+        ]
+      },
+      {
+        "name": "read-only-toolchain-view",
+        "optional": false,
+        "requirement": "the fingerprinted GOROOT is presented through a kernel-enforced read-only view",
+        "serves": [
+          "read-only-source-and-toolchain"
+        ]
+      },
+      {
+        "name": "write-path-confinement",
+        "optional": false,
+        "requirement": "every mutating filesystem operation outside the private build root is denied by the kernel",
+        "serves": [
+          "private-build-root-only-writes"
+        ]
+      }
+    ],
+    "exhaustive": true,
+    "not_a_probe": [
+      "a build-time constant",
+      "a cached result from an earlier operation",
+      "a configuration file",
+      "a host label",
+      "an operating-system version comparison alone"
+    ],
+    "probe_scope": "per-operation",
+    "probe_timing": "pre-domain-entry",
+    "status_states": [
+      "applied",
+      "not-applied"
+    ],
+    "version": "hardened-capability-inventory-v1"
+  },
+  "diagnostics": [
+    {
+      "code": "hardened_capability_unavailable",
+      "meaning": "A required capability class probe reported unavailable, inconclusive, or unprobed",
+      "phase": "execution",
+      "portable_code": false,
+      "severity": "error",
+      "state": "unsupported"
+    },
+    {
+      "code": "hardened_domain_breach_detected",
+      "meaning": "A guarantee was violated during the operation, or a domain member survived teardown",
+      "phase": "execution",
+      "portable_code": false,
+      "severity": "error",
+      "state": "corrupt"
+    },
+    {
+      "code": "hardened_domain_establishment_failed",
+      "meaning": "The build domain could not be created, a control could not be applied, or a guarantee self-test did not observe the expected denial",
+      "phase": "execution",
+      "portable_code": false,
+      "severity": "error",
+      "state": "blocked"
+    },
+    {
+      "code": "hardened_domain_protocol_invalid",
+      "meaning": "Domain session framing, nonce, ordering, size, message kind, or permit sequence is invalid",
+      "phase": "execution",
+      "portable_code": false,
+      "severity": "error",
+      "state": "blocked"
+    },
+    {
+      "code": "hardened_evidence_invalid",
+      "meaning": "The hardened capability-evidence record is inconsistent, incomplete, or contradicts the applied profile",
+      "phase": "execution",
+      "portable_code": false,
+      "severity": "error",
+      "state": "corrupt"
+    },
+    {
+      "code": "hardened_package_influence_forbidden",
+      "meaning": "Package data attempted to influence the hardened boundary, controls, views, limits, permits, evidence, or publication",
+      "phase": "execution",
+      "portable_code": false,
+      "severity": "error",
+      "state": "unsupported"
+    },
+    {
+      "code": "hardened_profile_claim_forbidden",
+      "meaning": "A hardened identity was claimed by an operation that did not establish the hardened domain, or hardened and portable identities were mixed",
+      "phase": "execution",
+      "portable_code": false,
+      "severity": "error",
+      "state": "unsupported"
+    },
+    {
+      "code": "hardened_profile_unsupported",
+      "meaning": "The host platform, version, or configuration is not a qualified hardened platform",
+      "phase": "execution",
+      "portable_code": false,
+      "severity": "error",
+      "state": "unsupported"
+    },
+    {
+      "code": "hardened_tcb_identity_invalid",
+      "meaning": "A supervisor, worker, launcher, or tool identity, substitution, or replacement check failed",
+      "phase": "execution",
+      "portable_code": false,
+      "severity": "error",
+      "state": "blocked"
+    }
+  ],
+  "domain_session_states": [
+    "domain-created",
+    "controls-applied",
+    "domain-entered",
+    "worker-identity-proved",
+    "nonce-acknowledged",
+    "self-test-passed",
+    "evidence-emitted",
+    "list-running",
+    "list-returned",
+    "graph-validated",
+    "permit-issued",
+    "build-running",
+    "build-returned",
+    "artifact-verified",
+    "identities-reverified",
+    "domain-torn-down"
+  ],
+  "drivers": [
+    "go-repository-v1",
+    "go-v1"
+  ],
+  "execution_policy": "hardened-worker-v1",
+  "failure_boundary": {
+    "domain_entry_failure": {
+      "before_domain_entry": false,
+      "before_package_exposure": true,
+      "compiler_started": false,
+      "expected_error": "hardened_domain_establishment_failed",
+      "fails_before": "domain-entry",
+      "published": false,
+      "rejects_build": true
+    },
+    "domain_establishment_failure": {
+      "before_domain_entry": true,
+      "before_package_exposure": true,
+      "compiler_started": false,
+      "expected_error": "hardened_domain_establishment_failed",
+      "fails_before": "domain-establishment",
+      "published": false,
+      "rejects_build": true
+    },
+    "guarantee_violated_after_entry": {
+      "before_domain_entry": false,
+      "before_package_exposure": false,
+      "compiler_started": true,
+      "expected_error": "hardened_domain_breach_detected",
+      "fails_before": "publication",
+      "published": false,
+      "rejects_build": true
+    },
+    "portable_fallback_after_rejection": {
+      "before_domain_entry": true,
+      "before_package_exposure": true,
+      "compiler_started": false,
+      "expected_error": "hardened_profile_claim_forbidden",
+      "fails_before": "profile-selection",
+      "published": false,
+      "rejects_build": true
+    },
+    "self_test_not_denied": {
+      "before_domain_entry": false,
+      "before_package_exposure": true,
+      "compiler_started": false,
+      "expected_error": "hardened_domain_establishment_failed",
+      "fails_before": "in-domain-guarantee-self-test",
+      "published": false,
+      "rejects_build": true
+    },
+    "tcb_identity_failure": {
+      "before_domain_entry": true,
+      "before_package_exposure": true,
+      "compiler_started": false,
+      "expected_error": "hardened_tcb_identity_invalid",
+      "fails_before": "tcb-identity-verification",
+      "published": false,
+      "rejects_build": true
+    },
+    "unavailable_capability_class": {
+      "before_domain_entry": true,
+      "before_package_exposure": true,
+      "compiler_started": false,
+      "expected_error": "hardened_capability_unavailable",
+      "fails_before": "capability-probe",
+      "published": false,
+      "rejects_build": true
+    },
+    "unprobed_capability_class": {
+      "before_domain_entry": true,
+      "before_package_exposure": true,
+      "compiler_started": false,
+      "expected_error": "hardened_capability_unavailable",
+      "fails_before": "capability-probe",
+      "published": false,
+      "rejects_build": true
+    },
+    "unqualified_platform": {
+      "before_domain_entry": true,
+      "before_package_exposure": true,
+      "compiler_started": false,
+      "expected_error": "hardened_profile_unsupported",
+      "fails_before": "platform-qualification",
+      "published": false,
+      "rejects_build": true
+    }
+  },
+  "guarantees": [
+    {
+      "claimable_under_portable": false,
+      "deferred_by_portable": true,
+      "established_in_this_revision": false,
+      "kernel_or_hypervisor": true,
+      "name": "exact-executable-allowlisting",
+      "not_sufficient": [
+        "an empty PATH",
+        "a manager promise to start nothing else",
+        "a noexec mount over only part of the reachable filesystem",
+        "identity verification of the programs the manager itself starts"
+      ],
+      "portable_mechanism_stops_at": "fixed-manager-selected-graph-with-identity-verification",
+      "required_capability_classes": [
+        "domain-membership-enforcement",
+        "exec-path-allowlist"
+      ],
+      "requirement": "the kernel denies execution of every path outside the exact fingerprinted allowlist, for every process in the build domain, including a file the domain just wrote"
+    },
+    {
+      "claimable_under_portable": false,
+      "deferred_by_portable": true,
+      "established_in_this_revision": false,
+      "kernel_or_hypervisor": true,
+      "name": "fail-closed-capability-preflight",
+      "not_sufficient": [
+        "a build-time constant",
+        "a cached result from an earlier operation",
+        "a configuration file",
+        "a host label",
+        "an operating-system version comparison alone",
+        "a probe of a subset of the classes",
+        "a probe performed after domain entry"
+      ],
+      "portable_mechanism_stops_at": "mandatory-control-preflight-only",
+      "required_capability_classes": [
+        "active-capability-probe"
+      ],
+      "requirement": "every capability class is actively probed on this host in this operation before domain entry, and any failed, inconclusive, or unprobed class rejects before domain entry with nothing published"
+    },
+    {
+      "claimable_under_portable": false,
+      "deferred_by_portable": true,
+      "established_in_this_revision": false,
+      "kernel_or_hypervisor": true,
+      "name": "hard-aggregate-descendant-resource-bounds",
+      "not_sufficient": [
+        "a bound over a process group or session a contained process can leave",
+        "a parent-side deadline a descendant can outlive by detaching",
+        "a parent-side deadline that kills only the direct child",
+        "a per-process resource limit",
+        "a periodic sweep for stray processes",
+        "an accounting-only control with no enforcement"
+      ],
+      "portable_mechanism_stops_at": "parent-enforced-deadline-output-and-artifact-bounds",
+      "required_capability_classes": [
+        "aggregate-resource-bounds",
+        "domain-atomic-termination",
+        "domain-membership-enforcement"
+      ],
+      "requirement": "wall-clock, CPU, memory, process and thread count, descriptor, private-build-root byte, and combined-output bounds hold over the whole domain in aggregate; the host or the supervisor accounts for each, no domain member can evade the accounting or prevent the enforcement, and exceeding any bound destroys the entire domain"
+    },
+    {
+      "claimable_under_portable": false,
+      "deferred_by_portable": true,
+      "established_in_this_revision": false,
+      "kernel_or_hypervisor": true,
+      "name": "private-build-root-only-writes",
+      "not_sufficient": [
+        "a manager promise to write only to private roots",
+        "a post-hoc scan for unexpected files",
+        "a private temporary directory the domain can escape by absolute path",
+        "a TMPDIR value"
+      ],
+      "portable_mechanism_stops_at": "manager-private-roots-and-verified-artifact",
+      "required_capability_classes": [
+        "domain-membership-enforcement",
+        "filesystem-view-restriction",
+        "write-path-confinement"
+      ],
+      "requirement": "the kernel denies every mutating filesystem operation by every process in the build domain outside the operation-private build root, and paths outside the declared views are unreachable"
+    },
+    {
+      "claimable_under_portable": false,
+      "deferred_by_portable": true,
+      "established_in_this_revision": false,
+      "kernel_or_hypervisor": true,
+      "name": "read-only-source-and-toolchain",
+      "not_sufficient": [
+        "a copy the manager promises not to write to",
+        "filesystem permissions or an access-control list the domain can change",
+        "re-verifying the snapshot digest after the fact"
+      ],
+      "portable_mechanism_stops_at": "frozen-snapshot-with-identity-reverification",
+      "required_capability_classes": [
+        "filesystem-view-restriction",
+        "read-only-source-view",
+        "read-only-toolchain-view"
+      ],
+      "requirement": "the frozen source snapshot and the fingerprinted GOROOT are presented through views the kernel refuses to mutate, regardless of the contained process's own credentials"
+    },
+    {
+      "claimable_under_portable": false,
+      "deferred_by_portable": true,
+      "established_in_this_revision": false,
+      "kernel_or_hypervisor": true,
+      "name": "total-network-denial",
+      "not_sufficient": [
+        "GOPROXY=off, GOVCS=*:off, GOFLAGS, or vendor-only module mode",
+        "a DNS blackhole or a userspace resolver stub",
+        "a firewall rule the domain can change",
+        "a post-hoc check that no connection was observed",
+        "an empty PATH or an unset proxy environment"
+      ],
+      "portable_mechanism_stops_at": "none",
+      "required_capability_classes": [
+        "domain-membership-enforcement",
+        "network-syscall-denial",
+        "preexisting-endpoint-revocation"
+      ],
+      "requirement": "the kernel denies every network operation on every address family for every process in the build domain, and no inherited or pre-connected endpoint survives domain entry"
+    }
+  ],
+  "hardened_profile": "hardened-profile-v1",
+  "identity_binding_version": "hardened-identity-binding-v1",
+  "identity_reverification": {
+    "actor": "manager-parent",
+    "comparison": "byte-identical-record-and-digest",
+    "domain_joined_before_reverification": true,
+    "observes_canonical_pinned_identities": true,
+    "on_change_diagnostic": "hardened_tcb_identity_invalid",
+    "partial_reverification_permitted": false,
+    "phase": "identity-reverification",
+    "published_on_change": false,
+    "recomputes_complete_tcb_record": true,
+    "restating_earlier_record_permitted": false,
+    "reverified_members": [
+      "backend",
+      "enforcement_backend",
+      "host",
+      "parent_sha256",
+      "platform",
+      "source-snapshot",
+      "supervisor_sha256",
+      "toolchain",
+      "trusted_components",
+      "worker_sha256"
+    ],
+    "runs_after_phase": "domain-teardown",
+    "runs_before_phase": "publication",
+    "skipped_on_exact_cache_hit": true
+  },
+  "in_domain_self_test": {
+    "actor": "domain-root-worker",
+    "actor_in_build_domain": true,
+    "channel": "pre-opened domain session channel",
+    "go_process_started": false,
+    "guarantees_probed": [
+      "exact-executable-allowlisting",
+      "fail-closed-capability-preflight",
+      "hard-aggregate-descendant-resource-bounds",
+      "private-build-root-only-writes",
+      "read-only-source-and-toolchain",
+      "total-network-denial"
+    ],
+    "on_failure_diagnostic": "hardened_domain_establishment_failed",
+    "on_failure_partial_mode_permitted": false,
+    "on_failure_published": false,
+    "on_failure_tears_domain_down": true,
+    "package_bytes_read_by_domain": false,
+    "phase": "in-domain-guarantee-self-test",
+    "runs_after_phase": "domain-entry",
+    "runs_before_phase": "go-list",
+    "source_view_opened_by_worker": false,
+    "unperformable_test_is_a_failure": true,
+    "verified_by": "hardened-supervisor"
+  },
+  "ordered_phases": [
+    {
+      "actor": "manager-parent",
+      "actor_in_build_domain": false,
+      "before_domain_entry": true,
+      "before_package_exposure": true,
+      "index": 1,
+      "name": "profile-selection",
+      "package_bytes_reach_go_process": false,
+      "rejection_diagnostic": "hardened_profile_claim_forbidden",
+      "skipped_on_exact_cache_hit": false
+    },
+    {
+      "actor": "manager-parent",
+      "actor_in_build_domain": false,
+      "before_domain_entry": true,
+      "before_package_exposure": true,
+      "index": 2,
+      "name": "platform-qualification",
+      "package_bytes_reach_go_process": false,
+      "rejection_diagnostic": "hardened_profile_unsupported",
+      "skipped_on_exact_cache_hit": false
+    },
+    {
+      "actor": "hardened-supervisor",
+      "actor_in_build_domain": false,
+      "before_domain_entry": true,
+      "before_package_exposure": true,
+      "index": 3,
+      "name": "capability-probe",
+      "package_bytes_reach_go_process": false,
+      "rejection_diagnostic": "hardened_capability_unavailable",
+      "skipped_on_exact_cache_hit": false
+    },
+    {
+      "actor": "manager-parent",
+      "actor_in_build_domain": false,
+      "before_domain_entry": true,
+      "before_package_exposure": true,
+      "index": 4,
+      "name": "toolchain-probe-and-snapshot-freeze",
+      "package_bytes_reach_go_process": false,
+      "rejection_diagnostic": null,
+      "skipped_on_exact_cache_hit": false
+    },
+    {
+      "actor": "manager-parent",
+      "actor_in_build_domain": false,
+      "before_domain_entry": true,
+      "before_package_exposure": true,
+      "index": 5,
+      "name": "tcb-identity-verification",
+      "package_bytes_reach_go_process": false,
+      "rejection_diagnostic": "hardened_tcb_identity_invalid",
+      "skipped_on_exact_cache_hit": false
+    },
+    {
+      "actor": "manager-parent",
+      "actor_in_build_domain": false,
+      "before_domain_entry": true,
+      "before_package_exposure": true,
+      "index": 6,
+      "name": "build-input-and-cache-lookup",
+      "package_bytes_reach_go_process": false,
+      "rejection_diagnostic": null,
+      "skipped_on_exact_cache_hit": false
+    },
+    {
+      "actor": "hardened-supervisor",
+      "actor_in_build_domain": false,
+      "before_domain_entry": true,
+      "before_package_exposure": true,
+      "index": 7,
+      "name": "domain-establishment",
+      "package_bytes_reach_go_process": false,
+      "rejection_diagnostic": "hardened_domain_establishment_failed",
+      "skipped_on_exact_cache_hit": true
+    },
+    {
+      "actor": "hardened-supervisor",
+      "actor_in_build_domain": false,
+      "before_domain_entry": false,
+      "before_package_exposure": true,
+      "index": 8,
+      "name": "domain-entry",
+      "package_bytes_reach_go_process": false,
+      "rejection_diagnostic": "hardened_domain_establishment_failed",
+      "skipped_on_exact_cache_hit": true
+    },
+    {
+      "actor": "domain-root-worker",
+      "actor_in_build_domain": true,
+      "before_domain_entry": false,
+      "before_package_exposure": true,
+      "index": 9,
+      "name": "in-domain-guarantee-self-test",
+      "package_bytes_reach_go_process": false,
+      "rejection_diagnostic": "hardened_domain_establishment_failed",
+      "skipped_on_exact_cache_hit": true
+    },
+    {
+      "actor": "domain-root-worker",
+      "actor_in_build_domain": true,
+      "before_domain_entry": false,
+      "before_package_exposure": false,
+      "index": 10,
+      "name": "go-list",
+      "package_bytes_reach_go_process": true,
+      "rejection_diagnostic": "hardened_domain_breach_detected",
+      "skipped_on_exact_cache_hit": true
+    },
+    {
+      "actor": "manager-parent",
+      "actor_in_build_domain": false,
+      "before_domain_entry": false,
+      "before_package_exposure": false,
+      "index": 11,
+      "name": "parent-graph-validation",
+      "package_bytes_reach_go_process": true,
+      "rejection_diagnostic": null,
+      "skipped_on_exact_cache_hit": true
+    },
+    {
+      "actor": "manager-parent",
+      "actor_in_build_domain": false,
+      "before_domain_entry": false,
+      "before_package_exposure": false,
+      "index": 12,
+      "name": "build-permit",
+      "package_bytes_reach_go_process": true,
+      "rejection_diagnostic": "hardened_domain_protocol_invalid",
+      "skipped_on_exact_cache_hit": true
+    },
+    {
+      "actor": "domain-root-worker",
+      "actor_in_build_domain": true,
+      "before_domain_entry": false,
+      "before_package_exposure": false,
+      "index": 13,
+      "name": "go-build",
+      "package_bytes_reach_go_process": true,
+      "rejection_diagnostic": "hardened_domain_breach_detected",
+      "skipped_on_exact_cache_hit": true
+    },
+    {
+      "actor": "manager-parent",
+      "actor_in_build_domain": false,
+      "before_domain_entry": false,
+      "before_package_exposure": false,
+      "index": 14,
+      "name": "artifact-verification",
+      "package_bytes_reach_go_process": true,
+      "rejection_diagnostic": null,
+      "skipped_on_exact_cache_hit": true
+    },
+    {
+      "actor": "hardened-supervisor",
+      "actor_in_build_domain": false,
+      "before_domain_entry": false,
+      "before_package_exposure": false,
+      "index": 15,
+      "name": "domain-teardown",
+      "package_bytes_reach_go_process": true,
+      "rejection_diagnostic": "hardened_domain_breach_detected",
+      "skipped_on_exact_cache_hit": true
+    },
+    {
+      "actor": "manager-parent",
+      "actor_in_build_domain": false,
+      "before_domain_entry": false,
+      "before_package_exposure": false,
+      "index": 16,
+      "name": "identity-reverification",
+      "package_bytes_reach_go_process": true,
+      "rejection_diagnostic": "hardened_tcb_identity_invalid",
+      "skipped_on_exact_cache_hit": true
+    },
+    {
+      "actor": "manager-parent",
+      "actor_in_build_domain": false,
+      "before_domain_entry": false,
+      "before_package_exposure": false,
+      "index": 17,
+      "name": "publication",
+      "package_bytes_reach_go_process": true,
+      "rejection_diagnostic": null,
+      "skipped_on_exact_cache_hit": false
+    }
+  ],
+  "ordering_invariants": [
+    {
+      "because": "a control cannot be applied before the host is known to provide it",
+      "earlier": "capability-probe",
+      "later": "domain-establishment",
+      "name": "capability-probe-before-domain-establishment"
+    },
+    {
+      "because": "the cache key carries the trusted-computing-base digest, so the trusted computing base must be verified first",
+      "earlier": "tcb-identity-verification",
+      "later": "build-input-and-cache-lookup",
+      "name": "tcb-verification-before-cache-lookup"
+    },
+    {
+      "because": "an exact verified hit compiles nothing, so it never creates a build domain",
+      "earlier": "build-input-and-cache-lookup",
+      "later": "domain-establishment",
+      "name": "cache-lookup-before-domain-establishment"
+    },
+    {
+      "because": "the domain-root worker is the first process inside the domain, so nothing can test from inside before it exists",
+      "earlier": "domain-entry",
+      "later": "in-domain-guarantee-self-test",
+      "name": "domain-entry-before-in-domain-self-test"
+    },
+    {
+      "because": "no package byte may reach a Go process until the kernel has been observed denying one representative operation per guarantee",
+      "earlier": "in-domain-guarantee-self-test",
+      "later": "go-list",
+      "name": "self-test-before-package-exposure"
+    },
+    {
+      "because": "the permit is issued only after the parent has rejected every forbidden dependency, directive, and native input",
+      "earlier": "parent-graph-validation",
+      "later": "build-permit",
+      "name": "graph-validation-before-build-permit"
+    },
+    {
+      "because": "the worker cannot proceed to a compiler on its own",
+      "earlier": "build-permit",
+      "later": "go-build",
+      "name": "build-permit-before-go-build"
+    },
+    {
+      "because": "the whole domain is destroyed and joined first, so re-verification observes trusted state no domain member can still change",
+      "earlier": "domain-teardown",
+      "later": "identity-reverification",
+      "name": "teardown-before-identity-reverification"
+    },
+    {
+      "because": "nothing is published under a trusted computing base that has not been proved byte-for-byte unchanged",
+      "earlier": "identity-reverification",
+      "later": "publication",
+      "name": "identity-reverification-before-publication"
+    },
+    {
+      "because": "nothing is published while a domain member is alive",
+      "earlier": "domain-teardown",
+      "later": "publication",
+      "name": "teardown-before-publication"
+    }
+  ],
+  "owner_story": "STORY-260728-327soo",
+  "package_influence_exclusions": [
+    "argument vector, environment value, working directory, build tag, or flag",
+    "artifact verifier, artifact path, cache key, receipt, marker, claim, or publication step",
+    "build domain, its membership, its lifetime, or its teardown",
+    "capability probe, capability class, guarantee, self-test, or evidence record",
+    "enforcement backend selection",
+    "go or GOROOT tool executable path",
+    "hardened profile selection, profile identity, or execution-policy identity",
+    "hook, plugin, generator, post-build action, or fallback",
+    "network policy, trust root, key, pin, allowlist, or certificate",
+    "resource bound or deadline",
+    "session channel, session nonce, session message, or build permit",
+    "source, toolchain, or write view, private root, permitted path, or executable allowlist",
+    "supervisor or worker executable, hidden mode, or identity"
+  ],
+  "partial_profile_permitted": false,
+  "phase_list_authority": {
+    "domain_entry_phase": "domain-entry",
+    "executable_form": "conformance/hardened/v1/vectors/hardened-execution-profile.json#ordered_phases",
+    "first_package_exposure_phase": "go-list",
+    "in_domain_actor": "domain-root-worker",
+    "independent_orderings_permitted": false,
+    "mirrors": [
+      "conformance/hardened/v1/vectors/hardened-execution-profile.json",
+      "profiles/manager-hardened.md",
+      "protocol/hardened-execution.md"
+    ],
+    "normative_document": "protocol/hardened-execution.md",
+    "normative_section": "7.2"
+  },
+  "platform_declarations": [
+    {
+      "blocking_capability_classes": [],
+      "blocking_reason": null,
+      "candidate_primitives": [
+        "a size-limited tmpfs or quota-backed subvolume for the aggregate write-byte bound",
+        "cgroup v2 cgroup.kill for atomic domain termination",
+        "cgroup v2 pids.max, memory.max, and CPU limits for aggregate bounds",
+        "empty network namespace for network denial",
+        "read-only bind mounts for the source and toolchain views",
+        "seccomp-BPF with no_new_privs for execution allowlisting and residual syscall denial",
+        "user, mount, PID, network, IPC, UTS, and cgroup namespaces for domain membership"
+      ],
+      "enforcement_backend": "linux-namespace-seccomp-v1",
+      "minimum_version": null,
+      "native_evidence": "absent",
+      "platform": "linux",
+      "qualification_status": "unqualified",
+      "qualification_tasks": [
+        "TASK-260728-3ihgfq",
+        "TASK-260728-ns5yk7"
+      ],
+      "required_configuration": []
+    },
+    {
+      "blocking_capability_classes": [
+        "aggregate-resource-bounds",
+        "domain-atomic-termination",
+        "domain-membership-enforcement"
+      ],
+      "blocking_reason": "the platform exposes no unescapable per-operation process domain, so a contained process can leave the process group or session, and no aggregate private storage, memory, or process-count accounting exists; this is the same no-private-aggregate-domain finding the portable inventory records",
+      "candidate_primitives": [
+        "(deny default) sandbox profile with explicit file-read* allowances",
+        "(deny network*) for network denial",
+        "(deny process-exec*) with exact-path allowances",
+        "RLIMIT_* for per-process bounds",
+        "file-write* restricted to the operation-private build root",
+        "process group and session teardown"
+      ],
+      "enforcement_backend": "macos-sandbox-v1",
+      "minimum_version": null,
+      "native_evidence": "absent",
+      "platform": "macos",
+      "qualification_status": "unqualified",
+      "qualification_tasks": [
+        "TASK-260728-3n67j6",
+        "TASK-260728-jis03f"
+      ],
+      "required_configuration": []
+    },
+    {
+      "blocking_capability_classes": [
+        "aggregate-resource-bounds",
+        "exec-path-allowlist"
+      ],
+      "blocking_reason": "child-process creation policy is all-or-none and exposes no supported per-path execution allowlist for a contained token, and no supported facility bounds the bytes a job writes below the private build root",
+      "candidate_primitives": [
+        "AppContainer or LPAC token with a per-operation package SID and no network capability SIDs",
+        "Job Object ActiveProcessLimit, JobMemoryLimit, and JobTime for aggregate process, memory, and CPU bounds",
+        "Job Object JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE for atomic termination",
+        "PROC_THREAD_ATTRIBUTE_JOB_LIST and an explicit handle inheritance list",
+        "access-control entries granting the package SID read-only snapshot and GOROOT access"
+      ],
+      "enforcement_backend": "windows-appcontainer-job-v1",
+      "minimum_version": null,
+      "native_evidence": "absent",
+      "platform": "windows",
+      "qualification_status": "unqualified",
+      "qualification_tasks": [
+        "TASK-260728-1v71sx",
+        "TASK-260728-2hcmtg"
+      ],
+      "required_configuration": []
+    }
+  ],
+  "portable_execution_policy": "manager-worker-v1",
+  "portable_fallback_permitted": false,
+  "portable_protocol_version": "1.0.0-rc.5",
+  "portable_suite_modified": false,
+  "portable_suite_root": "conformance/v1",
+  "process_graph": [
+    {
+      "in_build_domain": false,
+      "node": "manager-parent",
+      "package_selectable": false,
+      "performs_phases": [
+        "profile-selection",
+        "platform-qualification",
+        "toolchain-probe-and-snapshot-freeze",
+        "tcb-identity-verification",
+        "build-input-and-cache-lookup",
+        "parent-graph-validation",
+        "build-permit",
+        "artifact-verification",
+        "identity-reverification",
+        "publication"
+      ],
+      "role": "owns policy, identity, cache lookup, graph validation, build permit, artifact verification, and publication",
+      "selected_by": "manager",
+      "trusted": true
+    },
+    {
+      "in_build_domain": false,
+      "node": "hardened-supervisor",
+      "package_selectable": false,
+      "performs_phases": [
+        "capability-probe",
+        "domain-establishment",
+        "domain-entry",
+        "domain-teardown"
+      ],
+      "role": "probes capabilities, creates the build domain, applies every control, launches the domain-root worker into it, and destroys it",
+      "selected_by": "manager",
+      "trusted": true
+    },
+    {
+      "in_build_domain": true,
+      "node": "domain-root-worker",
+      "package_selectable": false,
+      "performs_phases": [
+        "in-domain-guarantee-self-test",
+        "go-list",
+        "go-build"
+      ],
+      "role": "first process inside the domain; self-tests the guarantees from inside before any package byte, then runs exactly one go list and one go build",
+      "selected_by": "manager",
+      "trusted": true
+    },
+    {
+      "in_build_domain": true,
+      "node": "go-launcher",
+      "package_selectable": false,
+      "performs_phases": [],
+      "role": "fingerprinted <GOROOT>/bin/go",
+      "selected_by": "manager",
+      "trusted": true
+    },
+    {
+      "in_build_domain": true,
+      "node": "goroot-tools",
+      "package_selectable": false,
+      "performs_phases": [],
+      "role": "fingerprinted regular executables below <GOROOT>/pkg/tool/<GOHOSTOS>_<GOHOSTARCH>/",
+      "selected_by": "manager",
+      "trusted": true
+    }
+  ],
+  "profile_version": "hardened-1.0.0-rc.1",
+  "schema_version": 1,
+  "specifying_task": "TASK-260728-1jafds",
+  "verification_task": "TASK-260728-1itx7a"
+}

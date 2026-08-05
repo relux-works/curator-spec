@@ -1,0 +1,107 @@
+# Curator Protocol Specification
+
+**Version:** 1.0.0-rc.5
+
+**Date:** 2026-07-28
+
+**Status:** Draft release candidate
+
+**Authors:** Ivan Oparin, Alexey Grigorev
+
+**License:** MIT
+
+Curator is an open protocol for declarative, reproducible, security-gated
+installation of AI agent skills. It defines portable skill and project
+manifests, deterministic dependency closure and installation artifacts, MCP
+requirements, and a cryptographically verifiable audit-registry protocol.
+
+The specification is implementation-neutral. A conforming manager may use any
+language, command name, machine-home directory, environment variables, user
+interface, or internal architecture. Compatibility identifiers inherited from
+the deployed protocol remain unchanged:
+
+- `Skillfile.json` and `Skillfile.dev.json`;
+- `agent-skill.json` (canonical) and `csk-skill.json` (legacy read alias);
+- `.csk-install.json` and `.csk-managed.json`;
+- `.agents/` as the portable project installation root.
+
+These names are wire identifiers, not ownership claims by a particular
+implementation.
+
+## Specification set
+
+The release consists of the following documents and artifacts:
+
+| Part | Role |
+|---|---|
+| [Protocol core](protocol/core.md) | Normative package, manifest, identity, closure, hashing, and marker rules |
+| [Registry protocol](protocol/registry.md) | Normative canonical JSON, signatures, records, snapshots, log, bundles, cache, and HTTP rules |
+| [Manager profile](profiles/manager.md) | Normative installation lifecycle, scopes, adapters, MCP, audit, and shell behavior |
+| [Registry service profile](profiles/registry-service.md) | Normative production guarantees for pagination, transactions, durability, recovery, keys, and operations |
+| [Curator CLI](cli/curator.md) | Informative command and CI guide for the Go implementation |
+| [Conformance](conformance/README.md) | Normative conformance classes, vectors, and execution contract |
+| [External repositories](docs/external-build-repositories.md) | Author and operator guide for schema 7 and `go-repository-v1` |
+| [Hardened execution profile](protocol/hardened-execution.md) | Normative, separately versioned fail-closed build profile (`hardened-1.0.0-rc.1`) |
+| [Hardened manager profile](profiles/manager-hardened.md) | Normative manager rules for the hardened profile |
+| [`schemas/v1`](schemas/v1) | Normative JSON Schemas for every versioned wire object |
+| [`schemas/hardened/v1`](schemas/hardened/v1) | Normative JSON Schemas for the hardened profile |
+| [`conformance/v1`](conformance/v1) | Normative positive and negative test vectors |
+| [`conformance/hardened/v1`](conformance/hardened/v1) | Normative hardened profile and adversarial vectors |
+| [Release checklist](RELEASE.md) | Candidate, independent review, signing, checksum, and attestation gates |
+
+The normative keywords **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL
+NOT**, **SHOULD**, **SHOULD NOT**, **RECOMMENDED**, **NOT RECOMMENDED**, **MAY**,
+and **OPTIONAL** are interpreted as described by RFC 2119 and RFC 8174 when,
+and only when, they appear in all capitals.
+
+JSON Schemas define structural validity. Normative prose defines semantic
+behavior not expressible in a schema. Conformance vectors define exact bytes
+and required outcomes. If these sources disagree, the release is defective;
+an implementation is never the normative oracle.
+
+## Implementations
+
+- [Curator](https://github.com/relux-works/curator) is the Go reference
+  implementation and provides static binaries for Linux, macOS, and Windows.
+- [csk](https://github.com/ivanopcode/cocoaskills) is an independent Python
+  implementation.
+- [Curator Skill Registry](https://github.com/relux-works/curator-skill-registry)
+  is an implementation of the registry-service profile.
+
+The implementations are evidence that the protocol is independently
+implementable. Conformance is established only by the released schemas and
+shared test vectors, not by copying behavior from either codebase.
+
+## Release status
+
+`1.0.0-rc.5` is a draft candidate. Its shared external-repository corpus is
+platform-neutral and emits no native conformance claim. Compiled builds run
+under the portable `manager-worker-v1` execution policy described in
+[`docs/portable-go-execution-policy.md`](docs/portable-go-execution-policy.md).
+Exact candidate-suite identity and downstream consumption rules are recorded
+under [`release/1.0.0-rc.5.json`](release/1.0.0-rc.5.json). Review evidence is
+published under [`reviews/`](reviews/). See
+[COMPATIBILITY.md](COMPATIBILITY.md),
+[SECURITY.md](SECURITY.md), and [GOVERNANCE.md](GOVERNANCE.md).
+
+`hardened-1.0.0-rc.1` is a separate, additive draft candidate for the
+fail-closed hardened execution profile, guided by
+[`docs/hardened-build-execution-profile.md`](docs/hardened-build-execution-profile.md)
+and pinned under
+[`release/hardened-1.0.0-rc.1.json`](release/hardened-1.0.0-rc.1.json). It
+changes no byte of the `1.0.0-rc.5` suite. No platform is qualified for it yet:
+every host rejects the hardened profile until native adversarial evidence exists,
+and an implementation that supports only the portable profile remains fully
+conforming.
+
+<!-- relux-ecosystem:start -->
+
+## About Relux Works
+
+This project is part of the open-source ecosystem of
+[Relux Works](https://relux.works), an AI-native software development studio.
+
+- Full catalog: [relux.works/en/open-source](https://relux.works/en/open-source/)
+- Contact: ivan@relux.works
+
+<!-- relux-ecosystem:end -->
