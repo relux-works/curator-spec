@@ -1,0 +1,59 @@
+{
+  "code": "build_toolchain_requirement_unsatisfiable",
+  "conflict": {
+    "lower_bound": "1.26.0",
+    "lower_sources": [
+      {
+        "location": "/targets/golden-tool/toolchain",
+        "surface": "descriptor"
+      }
+    ],
+    "upper_bound": "1.25.0",
+    "upper_inclusive": false,
+    "upper_sources": [
+      {
+        "location": "/commands/golden-tool/toolchain",
+        "surface": "manifest"
+      }
+    ]
+  },
+  "driver": "go-repository-v1",
+  "fragments": [
+    {
+      "requirement": {
+        "kind": "at_least",
+        "min": "1.23.0"
+      },
+      "source_ref": {
+        "location": "go",
+        "surface": "registry"
+      }
+    },
+    {
+      "requirement": {
+        "below": "1.25.0",
+        "kind": "range",
+        "min": "1.23.0"
+      },
+      "source_ref": {
+        "location": "/commands/golden-tool/toolchain",
+        "surface": "manifest"
+      }
+    },
+    {
+      "requirement": {
+        "equals": "1.26.0",
+        "kind": "exact"
+      },
+      "source_ref": {
+        "location": "/targets/golden-tool/toolchain",
+        "surface": "descriptor"
+      }
+    }
+  ],
+  "guidance_id": "toolchain.go.requirement_unsatisfiable.any.r1",
+  "prerelease": false,
+  "resolved_version": "1.23.4",
+  "stage": "B",
+  "toolchain_id": "go"
+}

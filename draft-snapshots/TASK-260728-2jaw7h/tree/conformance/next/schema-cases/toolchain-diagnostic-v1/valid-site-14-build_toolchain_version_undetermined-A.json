@@ -1,0 +1,13 @@
+{
+  "code": "build_toolchain_version_undetermined",
+  "driver": "go-v1",
+  "effective_requirement": {
+    "min": "1.23.0",
+    "min_inclusive": true
+  },
+  "guidance_id": "toolchain.go.version_undetermined.any.r1",
+  "probe": "version",
+  "reason": "unmatched",
+  "stage": "A",
+  "toolchain_id": "go"
+}

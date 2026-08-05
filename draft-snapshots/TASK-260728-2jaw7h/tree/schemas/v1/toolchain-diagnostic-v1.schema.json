@@ -1,0 +1,463 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/v1/toolchain-diagnostic-v1.schema.json",
+  "title": "Curator toolchain diagnostic schema 1",
+  "description": "Discriminated union keyed by firing site: a payload carries exactly the values established at the site where it fires.",
+  "oneOf": [
+    {"$ref": "#/$defs/requirementInvalid"},
+    {"$ref": "#/$defs/requirementUnsatisfiableValidation"},
+    {"$ref": "#/$defs/requirementUnsatisfiableStageB"},
+    {"$ref": "#/$defs/unavailable"},
+    {"$ref": "#/$defs/untrustedOrigin"},
+    {"$ref": "#/$defs/untrustedShape"},
+    {"$ref": "#/$defs/versionUndetermined"},
+    {"$ref": "#/$defs/prereleaseUnsupported"},
+    {"$ref": "#/$defs/platformUnsupportedHostPair"},
+    {"$ref": "#/$defs/platformUnsupportedNativeTarget"},
+    {"$ref": "#/$defs/incompatible"},
+    {"$ref": "#/$defs/untestedRelease"},
+    {"$ref": "#/$defs/metadataMismatch"},
+    {"$ref": "#/$defs/packageInfluenceForbidden"},
+    {"$ref": "#/$defs/changed"}
+  ],
+  "$defs": {
+    "driver": {"oneOf": [{"const": "go-v1"}, {"const": "go-repository-v1"}]},
+    "toolchainId": {"$ref": "common.schema.json#/$defs/toolchainRegistryIdV1"},
+    "guidanceId": {"$ref": "common.schema.json#/$defs/toolchainGuidanceIdV1"},
+    "effectiveRequirement": {"$ref": "common.schema.json#/$defs/toolchainEffectiveRequirementV1"},
+    "resolvedVersion": {"$ref": "common.schema.json#/$defs/canonicalToolchainVersion"},
+    "sourceRef": {"$ref": "common.schema.json#/$defs/toolchainSourceRefV1"},
+    "target": {"type": "string", "minLength": 3, "maxLength": 64, "pattern": "^[a-z0-9]+/[a-z0-9]+$"},
+    "families": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 2,
+        "items": {"type": "integer", "minimum": 0, "maximum": 999999}
+      },
+      "uniqueItems": true
+    },
+    "boundSource": {
+      "oneOf": [
+        {"const": "registry_baseline"},
+        {"$ref": "common.schema.json#/$defs/toolchainSourceRefV1"}
+      ]
+    },
+    "fragment": {
+      "type": "object",
+      "required": ["source_ref", "requirement"],
+      "properties": {
+        "source_ref": {"$ref": "common.schema.json#/$defs/toolchainSourceRefV1"},
+        "requirement": {"$ref": "common.schema.json#/$defs/toolchainVersionConstraintV1"}
+      },
+      "additionalProperties": false
+    },
+    "conflict": {
+      "type": "object",
+      "required": ["lower_bound", "lower_sources", "upper_bound", "upper_sources"],
+      "properties": {
+        "lower_bound": {"$ref": "common.schema.json#/$defs/canonicalToolchainVersion"},
+        "lower_sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/boundSource"}
+        },
+        "upper_bound": {"$ref": "common.schema.json#/$defs/canonicalToolchainVersion"},
+        "upper_sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/boundSource"}
+        },
+        "upper_inclusive": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "requirementInvalid": {
+      "type": "object",
+      "required": ["code", "stage", "driver", "toolchain_id", "guidance_id", "source_ref", "violation"],
+      "properties": {
+        "code": {"const": "build_toolchain_requirement_invalid"},
+        "stage": {"const": "validation"},
+        "driver": {"$ref": "#/$defs/driver"},
+        "toolchain_id": {"$ref": "#/$defs/toolchainId"},
+        "guidance_id": {"$ref": "#/$defs/guidanceId"},
+        "source_ref": {"$ref": "#/$defs/sourceRef"},
+        "violation": {
+          "enum": [
+            "id_not_primary",
+            "missing_field",
+            "not_an_object",
+            "range_bounds_not_ordered",
+            "unexpected_field",
+            "unknown_id",
+            "unknown_kind",
+            "version_literal_malformed",
+            "version_literal_prerelease"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "requirementUnsatisfiableValidation": {
+      "type": "object",
+      "required": ["code", "stage", "driver", "toolchain_id", "guidance_id", "fragments", "conflict"],
+      "properties": {
+        "code": {"const": "build_toolchain_requirement_unsatisfiable"},
+        "stage": {"const": "validation"},
+        "driver": {"$ref": "#/$defs/driver"},
+        "toolchain_id": {"$ref": "#/$defs/toolchainId"},
+        "guidance_id": {"$ref": "#/$defs/guidanceId"},
+        "fragments": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/fragment"}},
+        "conflict": {"$ref": "#/$defs/conflict"}
+      },
+      "additionalProperties": false
+    },
+    "requirementUnsatisfiableStageB": {
+      "type": "object",
+      "required": [
+        "code",
+        "stage",
+        "driver",
+        "toolchain_id",
+        "guidance_id",
+        "fragments",
+        "conflict",
+        "resolved_version",
+        "prerelease"
+      ],
+      "properties": {
+        "code": {"const": "build_toolchain_requirement_unsatisfiable"},
+        "stage": {"const": "B"},
+        "driver": {"$ref": "#/$defs/driver"},
+        "toolchain_id": {"$ref": "#/$defs/toolchainId"},
+        "guidance_id": {"$ref": "#/$defs/guidanceId"},
+        "fragments": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/fragment"}},
+        "conflict": {"$ref": "#/$defs/conflict"},
+        "resolved_version": {"$ref": "#/$defs/resolvedVersion"},
+        "prerelease": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "unavailable": {
+      "type": "object",
+      "required": ["code", "stage", "driver", "toolchain_id", "guidance_id", "effective_requirement"],
+      "properties": {
+        "code": {"const": "build_toolchain_unavailable"},
+        "stage": {"const": "A"},
+        "driver": {"$ref": "#/$defs/driver"},
+        "toolchain_id": {"$ref": "#/$defs/toolchainId"},
+        "guidance_id": {"$ref": "#/$defs/guidanceId"},
+        "effective_requirement": {"$ref": "#/$defs/effectiveRequirement"}
+      },
+      "additionalProperties": false
+    },
+    "untrustedOrigin": {
+      "type": "object",
+      "required": [
+        "code",
+        "stage",
+        "driver",
+        "toolchain_id",
+        "guidance_id",
+        "effective_requirement",
+        "substep",
+        "origin_class"
+      ],
+      "properties": {
+        "code": {"const": "build_toolchain_untrusted"},
+        "stage": {"const": "A"},
+        "driver": {"$ref": "#/$defs/driver"},
+        "toolchain_id": {"$ref": "#/$defs/toolchainId"},
+        "guidance_id": {"$ref": "#/$defs/guidanceId"},
+        "effective_requirement": {"$ref": "#/$defs/effectiveRequirement"},
+        "substep": {"const": "origin"},
+        "origin_class": {
+          "enum": [
+            "ambient_path",
+            "environment_variable",
+            "package_value",
+            "project_directory",
+            "runtime_root",
+            "unprotected_state",
+            "version_manager_shim"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "untrustedShape": {
+      "type": "object",
+      "required": [
+        "code",
+        "stage",
+        "driver",
+        "toolchain_id",
+        "guidance_id",
+        "effective_requirement",
+        "substep"
+      ],
+      "properties": {
+        "code": {"const": "build_toolchain_untrusted"},
+        "stage": {"const": "A"},
+        "driver": {"$ref": "#/$defs/driver"},
+        "toolchain_id": {"$ref": "#/$defs/toolchainId"},
+        "guidance_id": {"$ref": "#/$defs/guidanceId"},
+        "effective_requirement": {"$ref": "#/$defs/effectiveRequirement"},
+        "substep": {"const": "shape"}
+      },
+      "additionalProperties": false
+    },
+    "versionUndetermined": {
+      "type": "object",
+      "required": [
+        "code",
+        "stage",
+        "driver",
+        "toolchain_id",
+        "guidance_id",
+        "effective_requirement",
+        "probe",
+        "reason"
+      ],
+      "properties": {
+        "code": {"const": "build_toolchain_version_undetermined"},
+        "stage": {"const": "A"},
+        "driver": {"$ref": "#/$defs/driver"},
+        "toolchain_id": {"$ref": "#/$defs/toolchainId"},
+        "guidance_id": {"$ref": "#/$defs/guidanceId"},
+        "effective_requirement": {"$ref": "#/$defs/effectiveRequirement"},
+        "probe": {"$ref": "common.schema.json#/$defs/identifier"},
+        "reason": {"enum": ["ambiguous", "output_unbounded", "unmatched"]}
+      },
+      "additionalProperties": false
+    },
+    "prereleaseUnsupported": {
+      "type": "object",
+      "required": [
+        "code",
+        "stage",
+        "driver",
+        "toolchain_id",
+        "guidance_id",
+        "effective_requirement",
+        "resolved_version",
+        "prerelease"
+      ],
+      "properties": {
+        "code": {"const": "build_toolchain_prerelease_unsupported"},
+        "stage": {"const": "A"},
+        "driver": {"$ref": "#/$defs/driver"},
+        "toolchain_id": {"$ref": "#/$defs/toolchainId"},
+        "guidance_id": {"$ref": "#/$defs/guidanceId"},
+        "effective_requirement": {"$ref": "#/$defs/effectiveRequirement"},
+        "resolved_version": {"$ref": "#/$defs/resolvedVersion"},
+        "prerelease": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "platformUnsupportedHostPair": {
+      "type": "object",
+      "required": [
+        "code",
+        "stage",
+        "driver",
+        "toolchain_id",
+        "guidance_id",
+        "effective_requirement",
+        "check",
+        "host_platform",
+        "supported_platforms"
+      ],
+      "properties": {
+        "code": {"const": "build_toolchain_platform_unsupported"},
+        "stage": {"const": "A"},
+        "driver": {"$ref": "#/$defs/driver"},
+        "toolchain_id": {"$ref": "#/$defs/toolchainId"},
+        "guidance_id": {"$ref": "#/$defs/guidanceId"},
+        "effective_requirement": {"$ref": "#/$defs/effectiveRequirement"},
+        "check": {"const": "host_pair"},
+        "host_platform": {"$ref": "common.schema.json#/$defs/toolchainPlatformV1"},
+        "supported_platforms": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "common.schema.json#/$defs/toolchainPlatformV1"},
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "platformUnsupportedNativeTarget": {
+      "type": "object",
+      "required": [
+        "code",
+        "stage",
+        "driver",
+        "toolchain_id",
+        "guidance_id",
+        "effective_requirement",
+        "check",
+        "host_platform",
+        "reported_target",
+        "native_target",
+        "resolved_version",
+        "prerelease"
+      ],
+      "properties": {
+        "code": {"const": "build_toolchain_platform_unsupported"},
+        "stage": {"const": "A"},
+        "driver": {"$ref": "#/$defs/driver"},
+        "toolchain_id": {"$ref": "#/$defs/toolchainId"},
+        "guidance_id": {"$ref": "#/$defs/guidanceId"},
+        "effective_requirement": {"$ref": "#/$defs/effectiveRequirement"},
+        "check": {"const": "native_target"},
+        "host_platform": {"$ref": "common.schema.json#/$defs/toolchainPlatformV1"},
+        "reported_target": {"$ref": "#/$defs/target"},
+        "native_target": {"$ref": "#/$defs/target"},
+        "resolved_version": {"$ref": "#/$defs/resolvedVersion"},
+        "prerelease": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "incompatible": {
+      "type": "object",
+      "required": [
+        "code",
+        "stage",
+        "driver",
+        "toolchain_id",
+        "guidance_id",
+        "effective_requirement",
+        "resolved_version",
+        "prerelease"
+      ],
+      "properties": {
+        "code": {"const": "build_toolchain_incompatible"},
+        "stage": {"enum": ["A", "B"]},
+        "driver": {"$ref": "#/$defs/driver"},
+        "toolchain_id": {"$ref": "#/$defs/toolchainId"},
+        "guidance_id": {"$ref": "#/$defs/guidanceId"},
+        "effective_requirement": {"$ref": "#/$defs/effectiveRequirement"},
+        "resolved_version": {"$ref": "#/$defs/resolvedVersion"},
+        "prerelease": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "untestedRelease": {
+      "type": "object",
+      "required": [
+        "code",
+        "stage",
+        "driver",
+        "toolchain_id",
+        "guidance_id",
+        "effective_requirement",
+        "resolved_version",
+        "prerelease",
+        "admitted_families"
+      ],
+      "properties": {
+        "code": {"const": "build_toolchain_untested_release"},
+        "stage": {"const": "A"},
+        "driver": {"$ref": "#/$defs/driver"},
+        "toolchain_id": {"$ref": "#/$defs/toolchainId"},
+        "guidance_id": {"$ref": "#/$defs/guidanceId"},
+        "effective_requirement": {"$ref": "#/$defs/effectiveRequirement"},
+        "resolved_version": {"$ref": "#/$defs/resolvedVersion"},
+        "prerelease": {"const": false},
+        "admitted_families": {"$ref": "#/$defs/families"}
+      },
+      "additionalProperties": false
+    },
+    "metadataMismatch": {
+      "type": "object",
+      "required": [
+        "code",
+        "stage",
+        "driver",
+        "toolchain_id",
+        "guidance_id",
+        "effective_requirement",
+        "resolved_version",
+        "prerelease",
+        "source_ref",
+        "assertion"
+      ],
+      "properties": {
+        "code": {"const": "build_toolchain_metadata_mismatch"},
+        "stage": {"const": "B"},
+        "driver": {"$ref": "#/$defs/driver"},
+        "toolchain_id": {"$ref": "#/$defs/toolchainId"},
+        "guidance_id": {"$ref": "#/$defs/guidanceId"},
+        "effective_requirement": {"$ref": "#/$defs/effectiveRequirement"},
+        "resolved_version": {"$ref": "#/$defs/resolvedVersion"},
+        "prerelease": {"const": false},
+        "source_ref": {"$ref": "#/$defs/sourceRef"},
+        "assertion": {
+          "oneOf": [
+            {"const": "unclassifiable"},
+            {"$ref": "common.schema.json#/$defs/toolchainVersionConstraintV1"}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "packageInfluenceForbidden": {
+      "type": "object",
+      "required": [
+        "code",
+        "stage",
+        "driver",
+        "toolchain_id",
+        "guidance_id",
+        "effective_requirement",
+        "resolved_version",
+        "prerelease",
+        "source_ref",
+        "value_class"
+      ],
+      "properties": {
+        "code": {"const": "build_toolchain_package_influence_forbidden"},
+        "stage": {"const": "B"},
+        "driver": {"$ref": "#/$defs/driver"},
+        "toolchain_id": {"$ref": "#/$defs/toolchainId"},
+        "guidance_id": {"$ref": "#/$defs/guidanceId"},
+        "effective_requirement": {"$ref": "#/$defs/effectiveRequirement"},
+        "resolved_version": {"$ref": "#/$defs/resolvedVersion"},
+        "prerelease": {"const": false},
+        "source_ref": {"$ref": "#/$defs/sourceRef"},
+        "value_class": {"$ref": "common.schema.json#/$defs/identifier"}
+      },
+      "additionalProperties": false
+    },
+    "changed": {
+      "type": "object",
+      "required": [
+        "code",
+        "stage",
+        "driver",
+        "toolchain_id",
+        "guidance_id",
+        "effective_requirement",
+        "resolved_version",
+        "prerelease",
+        "identity_before",
+        "identity_after"
+      ],
+      "properties": {
+        "code": {"const": "build_toolchain_changed"},
+        "stage": {"enum": ["A", "publication"]},
+        "driver": {"$ref": "#/$defs/driver"},
+        "toolchain_id": {"$ref": "#/$defs/toolchainId"},
+        "guidance_id": {"$ref": "#/$defs/guidanceId"},
+        "effective_requirement": {"$ref": "#/$defs/effectiveRequirement"},
+        "resolved_version": {"$ref": "#/$defs/resolvedVersion"},
+        "prerelease": {"const": false},
+        "identity_before": {"$ref": "common.schema.json#/$defs/toolchainResolvedIdentityV1"},
+        "identity_after": {"$ref": "common.schema.json#/$defs/toolchainResolvedIdentityV1"}
+      },
+      "additionalProperties": false
+    }
+  }
+}

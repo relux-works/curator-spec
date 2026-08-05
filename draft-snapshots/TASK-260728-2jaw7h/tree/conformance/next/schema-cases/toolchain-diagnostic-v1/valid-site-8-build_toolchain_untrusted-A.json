@@ -1,0 +1,13 @@
+{
+  "code": "build_toolchain_untrusted",
+  "driver": "go-v1",
+  "effective_requirement": {
+    "min": "1.23.0",
+    "min_inclusive": true
+  },
+  "guidance_id": "toolchain.go.untrusted.any.r1",
+  "origin_class": "ambient_path",
+  "stage": "A",
+  "substep": "origin",
+  "toolchain_id": "go"
+}

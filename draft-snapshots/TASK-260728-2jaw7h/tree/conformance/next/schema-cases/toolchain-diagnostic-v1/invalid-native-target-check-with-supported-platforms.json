@@ -1,0 +1,46 @@
+{
+  "check": "native_target",
+  "code": "build_toolchain_platform_unsupported",
+  "driver": "go-v1",
+  "effective_requirement": {
+    "min": "1.23.0",
+    "min_inclusive": true
+  },
+  "guidance_id": "toolchain.go.platform_unsupported.any.r1",
+  "host_platform": {
+    "architecture": "arm64",
+    "operating_system": "macos"
+  },
+  "native_target": "darwin/arm64",
+  "prerelease": false,
+  "reported_target": "linux/amd64",
+  "resolved_version": "1.23.4",
+  "stage": "A",
+  "supported_platforms": [
+    {
+      "architecture": "amd64",
+      "operating_system": "linux"
+    },
+    {
+      "architecture": "arm64",
+      "operating_system": "linux"
+    },
+    {
+      "architecture": "amd64",
+      "operating_system": "macos"
+    },
+    {
+      "architecture": "arm64",
+      "operating_system": "macos"
+    },
+    {
+      "architecture": "amd64",
+      "operating_system": "windows"
+    },
+    {
+      "architecture": "arm64",
+      "operating_system": "windows"
+    }
+  ],
+  "toolchain_id": "go"
+}

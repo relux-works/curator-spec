@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "comment": "Authored, never generated. Each record is the accepted byte identity of one frozen release: the release document, the suite manifest it pins, and the schema-case index inside that suite. tools/generate-vectors, tools/validate.py and tools/release_gate.py all hold the checkout to these digests, so a regeneration that rewrites a released suite fails instead of producing a new, internally consistent, silently different release. Changing a digest here is an explicit act that a reviewer sees.",
+  "releases": [
+    {
+      "protocol_version": "1.0.0-rc.5",
+      "release_document": "release/1.0.0-rc.5.json",
+      "release_document_sha256": "sha256:b32ee9d35fc2fce0539d0b1c4b15f9c5239115c22fe54a72401f5da6d6646441",
+      "suite_root": "conformance/v1",
+      "suite_manifest": "conformance/v1/manifest.json",
+      "suite_manifest_sha256": "sha256:9ba9b8ecf6f06cafda1425aed3539dee8d12af43dabd36f803f4f420dbb1dacf",
+      "schema_cases_index": "conformance/v1/schema-cases/index.json",
+      "schema_cases_index_sha256": "sha256:2faa2baaadca30b3eebe3b9248260efcfac30e92cef4fa209bf37f3f23efd4f0"
+    }
+  ]
+}

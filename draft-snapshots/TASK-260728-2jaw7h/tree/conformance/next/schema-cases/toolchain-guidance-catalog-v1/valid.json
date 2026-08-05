@@ -1,0 +1,167 @@
+{
+  "catalog_version": 1,
+  "entries": [
+    {
+      "active": true,
+      "guidance_class": "configuration",
+      "guidance_id": "toolchain.go.changed.any.r1",
+      "platform": "any",
+      "primary_source": "https://relux-works.github.io/curator/operator/toolchains",
+      "reason": "changed",
+      "summary": "See the primary source for this reason.",
+      "toolchain_id": "go"
+    },
+    {
+      "active": true,
+      "guidance_class": "host",
+      "guidance_id": "toolchain.go.incompatible.any.r1",
+      "platform": "any",
+      "primary_source": "https://go.dev/doc/install",
+      "reason": "incompatible",
+      "summary": "See the primary source for this reason.",
+      "toolchain_id": "go"
+    },
+    {
+      "active": true,
+      "guidance_class": "host",
+      "guidance_id": "toolchain.go.metadata_mismatch.any.r1",
+      "platform": "any",
+      "primary_source": "https://go.dev/doc/toolchain",
+      "reason": "metadata_mismatch",
+      "summary": "See the primary source for this reason.",
+      "toolchain_id": "go"
+    },
+    {
+      "active": true,
+      "guidance_class": "authoring",
+      "guidance_id": "toolchain.go.package_influence_forbidden.any.r1",
+      "platform": "any",
+      "primary_source": "https://relux-works.github.io/curator-spec/protocol/core.html#toolchain-requirements",
+      "reason": "package_influence_forbidden",
+      "summary": "See the primary source for this reason.",
+      "toolchain_id": "go"
+    },
+    {
+      "active": true,
+      "guidance_class": "host",
+      "guidance_id": "toolchain.go.platform_unsupported.any.r1",
+      "platform": "any",
+      "primary_source": "https://go.dev/doc/install",
+      "reason": "platform_unsupported",
+      "summary": "See the primary source for this reason.",
+      "toolchain_id": "go"
+    },
+    {
+      "active": true,
+      "guidance_class": "host",
+      "guidance_id": "toolchain.go.prerelease_unsupported.any.r1",
+      "platform": "any",
+      "primary_source": "https://go.dev/doc/install",
+      "reason": "prerelease_unsupported",
+      "summary": "See the primary source for this reason.",
+      "toolchain_id": "go"
+    },
+    {
+      "active": true,
+      "guidance_class": "authoring",
+      "guidance_id": "toolchain.go.requirement_invalid.any.r1",
+      "platform": "any",
+      "primary_source": "https://relux-works.github.io/curator-spec/protocol/core.html#toolchain-requirements",
+      "reason": "requirement_invalid",
+      "summary": "See the primary source for this reason.",
+      "toolchain_id": "go"
+    },
+    {
+      "active": true,
+      "guidance_class": "authoring",
+      "guidance_id": "toolchain.go.requirement_unsatisfiable.any.r1",
+      "platform": "any",
+      "primary_source": "https://relux-works.github.io/curator-spec/protocol/core.html#toolchain-requirements",
+      "reason": "requirement_unsatisfiable",
+      "summary": "See the primary source for this reason.",
+      "toolchain_id": "go"
+    },
+    {
+      "active": true,
+      "guidance_class": "host",
+      "guidance_id": "toolchain.go.untested_release.any.r1",
+      "platform": "any",
+      "primary_source": "https://go.dev/doc/install",
+      "reason": "untested_release",
+      "summary": "See the primary source for this reason.",
+      "toolchain_id": "go"
+    },
+    {
+      "active": true,
+      "guidance_class": "configuration",
+      "guidance_id": "toolchain.go.untrusted.any.r1",
+      "platform": "any",
+      "primary_source": "https://relux-works.github.io/curator/operator/toolchains",
+      "reason": "untrusted",
+      "summary": "Point the operator toolchain configuration at a concrete toolchain root.",
+      "toolchain_id": "go"
+    },
+    {
+      "active": false,
+      "guidance_class": "configuration",
+      "guidance_id": "toolchain.go.untrusted.windows.r1",
+      "platform": "windows",
+      "primary_source": "https://relux-works.github.io/curator/operator/toolchains",
+      "reason": "untrusted",
+      "summary": "Point the operator toolchain configuration at a concrete toolchain root.",
+      "superseded_by": "toolchain.go.untrusted.windows.r2",
+      "toolchain_id": "go"
+    },
+    {
+      "active": true,
+      "guidance_class": "configuration",
+      "guidance_id": "toolchain.go.untrusted.windows.r2",
+      "platform": "windows",
+      "primary_source": "https://relux-works.github.io/curator/operator/toolchains",
+      "reason": "untrusted",
+      "summary": "Point the operator toolchain configuration at a concrete toolchain root, not a launcher on PATH.",
+      "toolchain_id": "go"
+    },
+    {
+      "active": true,
+      "guidance_class": "host",
+      "guidance_id": "toolchain.go.unavailable.linux.r1",
+      "platform": "linux",
+      "primary_source": "https://go.dev/doc/install",
+      "reason": "unavailable",
+      "summary": "Install a manager-trusted Go release and declare its root in operator configuration.",
+      "toolchain_id": "go"
+    },
+    {
+      "active": true,
+      "guidance_class": "host",
+      "guidance_id": "toolchain.go.unavailable.macos.r1",
+      "platform": "macos",
+      "primary_source": "https://go.dev/doc/install",
+      "reason": "unavailable",
+      "summary": "Install a manager-trusted Go release and declare its root in operator configuration.",
+      "toolchain_id": "go"
+    },
+    {
+      "active": true,
+      "guidance_class": "host",
+      "guidance_id": "toolchain.go.unavailable.windows.r1",
+      "platform": "windows",
+      "primary_source": "https://go.dev/doc/install",
+      "reason": "unavailable",
+      "summary": "Install a manager-trusted Go release and declare its root in operator configuration.",
+      "toolchain_id": "go"
+    },
+    {
+      "active": true,
+      "guidance_class": "host",
+      "guidance_id": "toolchain.go.version_undetermined.any.r1",
+      "platform": "any",
+      "primary_source": "https://go.dev/doc/install",
+      "reason": "version_undetermined",
+      "summary": "See the primary source for this reason.",
+      "toolchain_id": "go"
+    }
+  ],
+  "schema_version": 1
+}

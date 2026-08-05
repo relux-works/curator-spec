@@ -1,0 +1,18 @@
+{
+  "code": "build_toolchain_package_influence_forbidden",
+  "driver": "go-v1",
+  "effective_requirement": {
+    "min": "1.23.0",
+    "min_inclusive": true
+  },
+  "guidance_id": "toolchain.go.package_influence_forbidden.any.r1",
+  "prerelease": false,
+  "resolved_version": "1.23.4",
+  "source_ref": {
+    "location": "go.mod#toolchain",
+    "surface": "source_metadata"
+  },
+  "stage": "B",
+  "toolchain_id": "go",
+  "value_class": "custom-distribution-name"
+}

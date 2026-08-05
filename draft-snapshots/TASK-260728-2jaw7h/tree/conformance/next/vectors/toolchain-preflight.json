@@ -1,0 +1,2663 @@
+{
+  "cases": [
+    {
+      "case": "1",
+      "driver": "go-v1",
+      "expected": {
+        "compatibility_family": [
+          1,
+          23
+        ],
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "permitted",
+        "requirement_source": "registry_baseline"
+      },
+      "manifest_schema": 6,
+      "name": "schema-6-local-no-requirement"
+    },
+    {
+      "case": "2",
+      "descriptor_schema": 1,
+      "driver": "go-repository-v1",
+      "expected": {
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "permitted",
+        "requirement_source": "registry_baseline"
+      },
+      "manifest_schema": 7,
+      "name": "schema-7-external-no-requirement"
+    },
+    {
+      "case": "3",
+      "expected": {
+        "effective_requirement": {
+          "min": "1.23.4",
+          "min_inclusive": true
+        },
+        "outcome": "permitted"
+      },
+      "manifest_schema": 8,
+      "name": "at-least-satisfied-at-the-bound",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.4"
+        }
+      }
+    },
+    {
+      "case": "4",
+      "expected": {
+        "effective_requirement": {
+          "max": "1.25.0",
+          "max_inclusive": false,
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "permitted"
+      },
+      "manifest_schema": 8,
+      "name": "range-satisfied-strictly-inside",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "below": "1.25.0",
+          "kind": "range",
+          "min": "1.23.0"
+        }
+      }
+    },
+    {
+      "case": "5",
+      "expected": {
+        "effective_requirement": {
+          "max": "1.23.4",
+          "max_inclusive": true,
+          "min": "1.23.4",
+          "min_inclusive": true
+        },
+        "outcome": "permitted"
+      },
+      "manifest_schema": 8,
+      "name": "exact-satisfied",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "equals": "1.23.4",
+          "kind": "exact"
+        }
+      }
+    },
+    {
+      "case": "6",
+      "descriptor_requirement": {
+        "id": "go",
+        "version": {
+          "below": "1.25.0",
+          "kind": "range",
+          "min": "1.23.0"
+        }
+      },
+      "descriptor_schema": 2,
+      "driver": "go-repository-v1",
+      "expected": {
+        "effective_requirement": {
+          "max": "1.25.0",
+          "max_inclusive": false,
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "permitted",
+        "stage_a_effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        }
+      },
+      "manifest_schema": 8,
+      "name": "manifest-and-descriptor-intersect",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      }
+    },
+    {
+      "case": "7",
+      "expected": {
+        "compatibility_family": [
+          1,
+          23
+        ],
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "permitted"
+      },
+      "manifest_schema": 8,
+      "name": "compatibility-preserve",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      },
+      "resolved_version": "1.23.9"
+    },
+    {
+      "case": "8",
+      "expected": {
+        "assertion": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        },
+        "outcome": "permitted",
+        "value_class": "release-literal"
+      },
+      "manifest_schema": 6,
+      "name": "go-directive-release-below-resolved",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0"
+        }
+      }
+    },
+    {
+      "case": "9",
+      "expected": {
+        "assertion": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        },
+        "base_triple": [
+          1,
+          23,
+          0
+        ],
+        "note": "the canonical base triple and Go's own order agree whenever the comparand is a release",
+        "outcome": "permitted",
+        "value_class": "release-literal"
+      },
+      "manifest_schema": 6,
+      "name": "language-version-canonicalization",
+      "resolved_version": "1.23.0",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23"
+        }
+      }
+    },
+    {
+      "case": "10",
+      "expected": {
+        "base_triple": [
+          1,
+          23,
+          0
+        ],
+        "outcome": "permitted",
+        "value_class": "prerelease-literal"
+      },
+      "manifest_schema": 6,
+      "name": "go-directive-prerelease-at-or-below-resolved",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23rc1"
+        }
+      }
+    },
+    {
+      "case": "11",
+      "expected": {
+        "honored": false,
+        "outcome": "permitted",
+        "value_class": "release-name"
+      },
+      "manifest_schema": 6,
+      "name": "toolchain-release-name-at-or-below-resolved",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0",
+          "toolchain": "go1.23.4"
+        }
+      }
+    },
+    {
+      "case": "12",
+      "expected": {
+        "honored": false,
+        "outcome": "permitted",
+        "value_class": "default"
+      },
+      "manifest_schema": 6,
+      "name": "toolchain-default",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0",
+          "toolchain": "default"
+        }
+      }
+    },
+    {
+      "case": "13",
+      "expected": {
+        "base_triple": [
+          1,
+          23,
+          0
+        ],
+        "honored": false,
+        "outcome": "permitted",
+        "value_class": "prerelease-name"
+      },
+      "manifest_schema": 6,
+      "name": "toolchain-prerelease-name-at-or-below-resolved",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0",
+          "toolchain": "go1.23rc1"
+        }
+      }
+    },
+    {
+      "case": "14",
+      "expected": {
+        "assertion": null,
+        "outcome": "permitted",
+        "value_class": "absent"
+      },
+      "manifest_schema": 6,
+      "name": "no-toolchain-directive",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0"
+        }
+      }
+    },
+    {
+      "case": "15",
+      "entry_status": "reserved",
+      "expected": {
+        "honored": false,
+        "outcome": "permitted",
+        "value_class": "release-track"
+      },
+      "name": "rust-channel-stable",
+      "resolved_version": "1.82.0",
+      "source_metadata": {
+        "rust-toolchain.toml": {
+          "toolchain.channel": "stable"
+        }
+      },
+      "toolchain_id": "rust"
+    },
+    {
+      "case": "16",
+      "entry_status": "reserved",
+      "expected": {
+        "honored": false,
+        "outcome": "permitted",
+        "value_class": "version-literal"
+      },
+      "name": "rust-channel-version-literal-at-or-below-resolved",
+      "resolved_version": "1.82.0",
+      "source_metadata": {
+        "rust-toolchain.toml": {
+          "toolchain.channel": "1.82.0"
+        }
+      },
+      "toolchain_id": "rust"
+    },
+    {
+      "case": "17",
+      "commands": 2,
+      "expected": {
+        "note": "Stage A runs once per operation per distinct toolchain, memoized only in operation-private state",
+        "outcome": "permitted",
+        "probe_count": 1
+      },
+      "manifest_schema": 8,
+      "name": "one-probe-per-toolchain-per-operation",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      }
+    },
+    {
+      "cache": {
+        "candidate_toolchain_identity": "current",
+        "expect_hit": true
+      },
+      "case": "18",
+      "expected": {
+        "cache_hit": true,
+        "cache_lookup_reached": true,
+        "compiler_started": false,
+        "outcome": "permitted",
+        "stage_a_passed": true,
+        "stage_b_passed": true
+      },
+      "manifest_schema": 8,
+      "name": "cache-hit-only-after-both-stages",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      }
+    },
+    {
+      "cache": {
+        "candidate_toolchain_identity": "other",
+        "expect_hit": false
+      },
+      "case": "19",
+      "expected": {
+        "cache_hit": false,
+        "cache_lookup_reached": true,
+        "outcome": "permitted",
+        "rebuild_toolchain_identity": "current",
+        "rebuilt": true,
+        "stage_a_passed": true,
+        "stage_b_passed": true
+      },
+      "manifest_schema": 8,
+      "name": "cache-miss-by-toolchain-identity",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      }
+    },
+    {
+      "case": "20",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_requirement_invalid",
+        "compiler_started": false,
+        "effective_requirement_present": false,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "resolved_version_present": false,
+        "source_ref": {
+          "location": "/commands/build-tool/toolchain",
+          "surface": "manifest"
+        },
+        "stage": "validation",
+        "step": "validation",
+        "violation": "not_an_object"
+      },
+      "manifest_schema": 8,
+      "name": "malformed-requirement-object",
+      "requirement": {
+        "id": "go",
+        "version": "1.23.0"
+      }
+    },
+    {
+      "case": "21",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_requirement_invalid",
+        "compiler_started": false,
+        "effective_requirement_present": false,
+        "note": "the schema admits the closed identifier set; equality with the driver's registry primary is the manager's check",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "resolved_version_present": false,
+        "source_ref": {
+          "location": "/commands/build-tool/toolchain",
+          "surface": "manifest"
+        },
+        "stage": "validation",
+        "step": "validation",
+        "violation": "id_not_primary"
+      },
+      "manifest_schema": 8,
+      "name": "identifier-not-the-drivers-primary",
+      "requirement": {
+        "id": "rust",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      }
+    },
+    {
+      "case": "22",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_requirement_invalid",
+        "compiler_started": false,
+        "effective_requirement_present": false,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "resolved_version_present": false,
+        "source_ref": {
+          "location": "/commands/build-tool/toolchain",
+          "surface": "manifest"
+        },
+        "stage": "validation",
+        "step": "validation",
+        "violation": "version_literal_prerelease"
+      },
+      "manifest_schema": 8,
+      "name": "prerelease-literal-in-a-requirement",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0-rc1"
+        }
+      }
+    },
+    {
+      "case": "23",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_requirement_invalid",
+        "compiler_started": false,
+        "effective_requirement_present": false,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "resolved_version_present": false,
+        "source_ref": {
+          "location": "/commands/build-tool/toolchain",
+          "surface": "manifest"
+        },
+        "stage": "validation",
+        "step": "validation",
+        "violation": "range_bounds_not_ordered"
+      },
+      "manifest_schema": 8,
+      "name": "range-bounds-not-ordered",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "below": "1.23.0",
+          "kind": "range",
+          "min": "1.25.0"
+        }
+      }
+    },
+    {
+      "case": "24",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_requirement_invalid",
+        "compiler_started": false,
+        "effective_requirement_present": false,
+        "not_code": "build_toolchain_package_influence_forbidden",
+        "note": "one input, one code: a malformed literal on the wire surface is never package influence",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "resolved_version_present": false,
+        "source_ref": {
+          "location": "/commands/build-tool/toolchain",
+          "surface": "manifest"
+        },
+        "stage": "validation",
+        "step": "validation",
+        "value_echoed": false,
+        "violation": "version_literal_malformed"
+      },
+      "manifest_schema": 8,
+      "name": "version-literal-carrying-an-executable-path",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "/usr/local/go"
+        }
+      }
+    },
+    {
+      "case": "25",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_requirement_invalid",
+        "compiler_started": false,
+        "effective_requirement_present": false,
+        "not_code": "build_toolchain_package_influence_forbidden",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "resolved_version_present": false,
+        "source_ref": {
+          "location": "/commands/build-tool/toolchain",
+          "surface": "manifest"
+        },
+        "stage": "validation",
+        "step": "validation",
+        "value_echoed": false,
+        "violation": "version_literal_malformed"
+      },
+      "manifest_schema": 8,
+      "name": "version-literal-carrying-a-url",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "https://example.test/go.tgz"
+        }
+      }
+    },
+    {
+      "case": "26",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_requirement_invalid",
+        "compiler_started": false,
+        "effective_requirement_present": false,
+        "not_code": "build_toolchain_package_influence_forbidden",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "resolved_version_present": false,
+        "source_ref": {
+          "location": "/commands/build-tool/toolchain",
+          "surface": "manifest"
+        },
+        "stage": "validation",
+        "step": "validation",
+        "value_echoed": false,
+        "violation": "version_literal_malformed"
+      },
+      "manifest_schema": 8,
+      "name": "version-literal-carrying-a-track",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "nightly"
+        }
+      }
+    },
+    {
+      "case": "27",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "manifest_invalid",
+        "compiler_started": false,
+        "note": "a key outside the closed field set is the existing schema rejection and never a build_toolchain_* code",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "stage": "validation",
+        "step": "schema",
+        "toolchain_code_emitted": false
+      },
+      "manifest_schema": 8,
+      "name": "manifest-command-added-toolchain-path-field",
+      "schema_case": "agent-skill-v8/invalid-v8-command-toolchain-path",
+      "suite": "schema-cases"
+    },
+    {
+      "case": "28",
+      "descriptor_schema": 2,
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_descriptor_invalid",
+        "compiler_started": false,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "stage": "validation",
+        "step": "schema",
+        "toolchain_code_emitted": false
+      },
+      "name": "descriptor-target-added-toolchain-path-field",
+      "schema_case": "skill-build-v2/invalid-target-toolchain-path",
+      "suite": "schema-cases"
+    },
+    {
+      "case": "29",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_requirement_unsatisfiable",
+        "compiler_started": false,
+        "conflict": {
+          "lower_bound": "1.23.0",
+          "lower_sources": [
+            "registry_baseline"
+          ],
+          "upper_bound": "1.22.0",
+          "upper_inclusive": false,
+          "upper_sources": [
+            {
+              "location": "/commands/build-tool/toolchain",
+              "surface": "manifest"
+            }
+          ]
+        },
+        "effective_requirement_present": false,
+        "fragments": [
+          {
+            "requirement": {
+              "kind": "at_least",
+              "min": "1.23.0"
+            },
+            "source_ref": {
+              "location": "go",
+              "surface": "registry"
+            }
+          },
+          {
+            "requirement": {
+              "below": "1.22.0",
+              "kind": "range",
+              "min": "1.20.0"
+            },
+            "source_ref": {
+              "location": "/commands/build-tool/toolchain",
+              "surface": "manifest"
+            }
+          }
+        ],
+        "host_probed": false,
+        "note": "an empty intersection is decided without probing the host, so it fails identically on every machine",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "resolved_version_present": false,
+        "stage": "validation",
+        "step": "validation"
+      },
+      "manifest_schema": 8,
+      "name": "empty-intersection",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "below": "1.22.0",
+          "kind": "range",
+          "min": "1.20.0"
+        }
+      }
+    },
+    {
+      "case": "30",
+      "declaration": {
+        "channel": null,
+        "kind": "absent"
+      },
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_unavailable",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "note": "sub-step 3a is the only producer of this code and it produces no other",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "stage": "A",
+        "step": "3a"
+      },
+      "manifest_schema": 6,
+      "name": "declared-in-neither-channel"
+    },
+    {
+      "case": "31",
+      "declaration": {
+        "channel": "operator_config",
+        "kind": "path_lookup"
+      },
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_untrusted",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "filesystem_read": false,
+        "origin_class": "ambient_path",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "stage": "A",
+        "step": "3b",
+        "substep": "origin"
+      },
+      "manifest_schema": 6,
+      "name": "operator-config-entry-defers-to-path"
+    },
+    {
+      "case": "32",
+      "declaration": {
+        "channel": "operator_config",
+        "kind": "version_manager_shim"
+      },
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_untrusted",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "filesystem_read": false,
+        "origin_class": "version_manager_shim",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "stage": "A",
+        "step": "3b",
+        "substep": "origin"
+      },
+      "manifest_schema": 6,
+      "name": "operator-config-entry-names-a-version-manager-shim"
+    },
+    {
+      "case": "33",
+      "declaration": {
+        "channel": "operator_config",
+        "kind": "concrete_root",
+        "root_exists": false
+      },
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_untrusted",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "not_code": "build_toolchain_unavailable",
+        "note": "a declared-but-broken root is untrusted, including when the root directory does not exist at all",
+        "origin_class_present": false,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "stage": "A",
+        "step": "3c",
+        "substep": "shape"
+      },
+      "manifest_schema": 6,
+      "name": "declared-root-absent-on-disk"
+    },
+    {
+      "case": "34",
+      "declaration": {
+        "channel": "operator_config",
+        "kind": "concrete_root",
+        "primary_exists": false
+      },
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_untrusted",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "not_code": "build_toolchain_unavailable",
+        "origin_class_present": false,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "stage": "A",
+        "step": "3c",
+        "substep": "shape"
+      },
+      "manifest_schema": 6,
+      "name": "declared-primary-absent"
+    },
+    {
+      "case": "35",
+      "declaration": {
+        "channel": "operator_config",
+        "kind": "concrete_root",
+        "primary_inside_tree": false
+      },
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_untrusted",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "origin_class_present": false,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "stage": "A",
+        "step": "3c",
+        "substep": "shape"
+      },
+      "manifest_schema": 6,
+      "name": "primary-outside-the-fingerprinted-tree"
+    },
+    {
+      "case": "36",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_version_undetermined",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "probe": "version",
+        "reason": "unmatched",
+        "stage": "A",
+        "step": "4"
+      },
+      "manifest_schema": 6,
+      "name": "unparseable-probe-output",
+      "probe_output": "go version"
+    },
+    {
+      "case": "37",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_version_undetermined",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "note": "a devel or otherwise unprefixed field 2 is undetermined, never a default",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "probe": "version",
+        "reason": "unmatched",
+        "stage": "A",
+        "step": "4"
+      },
+      "manifest_schema": 6,
+      "name": "devel-go-version",
+      "probe_output": "go version devel go1.26-abcdef darwin/arm64"
+    },
+    {
+      "case": "38",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_prerelease_unsupported",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": true,
+        "resolved_version": "1.24.0",
+        "stage": "A",
+        "step": "5"
+      },
+      "manifest_schema": 6,
+      "name": "prerelease-host",
+      "prerelease": true,
+      "probe_output": "go version go1.24rc1 darwin/arm64",
+      "resolved_version": "1.24.0"
+    },
+    {
+      "case": "39",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "check": "host_pair",
+        "code": "build_toolchain_platform_unsupported",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "host_platform": {
+          "architecture": "riscv64",
+          "operating_system": "linux"
+        },
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "resolved_version_present": false,
+        "stage": "A",
+        "step": "2",
+        "supported_platforms": [
+          {
+            "architecture": "amd64",
+            "operating_system": "linux"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "linux"
+          },
+          {
+            "architecture": "amd64",
+            "operating_system": "macos"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "macos"
+          },
+          {
+            "architecture": "amd64",
+            "operating_system": "windows"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "windows"
+          }
+        ]
+      },
+      "host_platform": {
+        "architecture": "riscv64",
+        "operating_system": "linux"
+      },
+      "manifest_schema": 6,
+      "name": "unsupported-host-pair"
+    },
+    {
+      "case": "40",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "check": "native_target",
+        "code": "build_toolchain_platform_unsupported",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "host_platform": {
+          "architecture": "arm64",
+          "operating_system": "macos"
+        },
+        "native_target": "darwin/arm64",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "reported_target": "linux/amd64",
+        "resolved_version": "1.23.4",
+        "stage": "A",
+        "step": "6",
+        "supported_platforms_present": false
+      },
+      "manifest_schema": 6,
+      "name": "reported-target-differs-from-native-target",
+      "reported_target": "linux/amd64"
+    },
+    {
+      "case": "41",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_incompatible",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.4",
+          "min_inclusive": true
+        },
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "resolved_version": "1.23.0",
+        "stage": "A",
+        "step": "7"
+      },
+      "manifest_schema": 8,
+      "name": "resolved-below-min",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.4"
+        }
+      },
+      "resolved_version": "1.23.0"
+    },
+    {
+      "case": "42",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_incompatible",
+        "compiler_started": false,
+        "effective_requirement": {
+          "max": "1.23.4",
+          "max_inclusive": false,
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "resolved_version": "1.23.4",
+        "stage": "A",
+        "step": "7"
+      },
+      "manifest_schema": 8,
+      "name": "resolved-at-the-exclusive-upper-bound",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "below": "1.23.4",
+          "kind": "range",
+          "min": "1.23.0"
+        }
+      }
+    },
+    {
+      "case": "43",
+      "expected": {
+        "acquisition_performed": false,
+        "admitted_families": [
+          [
+            1,
+            23
+          ]
+        ],
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_untested_release",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "note": "at_least alone admits nothing: the compatibility set is a separate, manager-owned gate",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "resolved_version": "1.99.0",
+        "stage": "A",
+        "step": "8"
+      },
+      "manifest_schema": 8,
+      "name": "compatibility-reject",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      },
+      "resolved_version": "1.99.0"
+    },
+    {
+      "case": "44",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_incompatible",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "not_code": "build_toolchain_untested_release",
+        "note": "step 7 precedes step 8, although both gates would reject this host",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "resolved_version": "1.22.0",
+        "stage": "A",
+        "step": "7"
+      },
+      "manifest_schema": 6,
+      "name": "gate-precedence-incompatible-before-untested",
+      "resolved_version": "1.22.0"
+    },
+    {
+      "case": "45",
+      "expected": {
+        "assertion": {
+          "kind": "at_least",
+          "min": "1.24.0"
+        },
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_metadata_mismatch",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.23.4",
+        "source_ref": {
+          "location": "go.mod#go",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "5",
+        "value_class": "release-literal"
+      },
+      "manifest_schema": 6,
+      "name": "go-directive-release-above-resolved",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.24.0"
+        }
+      }
+    },
+    {
+      "case": "46",
+      "expected": {
+        "assertion": "unclassifiable",
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_metadata_mismatch",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.23.4",
+        "source_ref": {
+          "location": "go.mod#go",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "5",
+        "value_class": "unclassifiable"
+      },
+      "manifest_schema": 6,
+      "name": "go-directive-unclassifiable-literal",
+      "source_metadata": {
+        "go.mod": {
+          "go": "v1.23"
+        }
+      }
+    },
+    {
+      "case": "47",
+      "expected": {
+        "assertion": "unclassifiable",
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_metadata_mismatch",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "not_code": "build_toolchain_package_influence_forbidden",
+        "note": "the go directive has no forbidden class, so a path separator is class 4 and not package influence",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.23.4",
+        "source_ref": {
+          "location": "go.mod#go",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "5",
+        "value_class": "unclassifiable"
+      },
+      "manifest_schema": 6,
+      "name": "go-directive-classifier-boundary-path-separator",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23/4"
+        }
+      }
+    },
+    {
+      "case": "48",
+      "expected": {
+        "assertion": {
+          "kind": "at_least",
+          "min": "1.24.0"
+        },
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_metadata_mismatch",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.23.4",
+        "source_ref": {
+          "location": "go.mod#toolchain",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "5",
+        "value_class": "release-name"
+      },
+      "manifest_schema": 6,
+      "name": "toolchain-release-name-above-resolved",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0",
+          "toolchain": "go1.24.0"
+        }
+      }
+    },
+    {
+      "case": "49",
+      "expected": {
+        "assertion": {
+          "kind": "at_least",
+          "min": "1.24.0"
+        },
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_metadata_mismatch",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.23.4",
+        "source_ref": {
+          "location": "go.mod#toolchain",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "5",
+        "value_class": "prerelease-name"
+      },
+      "manifest_schema": 6,
+      "name": "toolchain-prerelease-name-above-resolved",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0",
+          "toolchain": "go1.24rc1"
+        }
+      }
+    },
+    {
+      "case": "50",
+      "expected": {
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_package_influence_forbidden",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "note": "the suffix names where a toolchain comes from, which is the boundary forbidden is reserved for",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.23.4",
+        "source_ref": {
+          "location": "go.mod#toolchain",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "4",
+        "value_class": "custom-distribution-name"
+      },
+      "manifest_schema": 6,
+      "name": "toolchain-custom-distribution-name",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0",
+          "toolchain": "go1.23.4-bigcorp"
+        }
+      }
+    },
+    {
+      "case": "51",
+      "expected": {
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_package_influence_forbidden",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.23.4",
+        "source_ref": {
+          "location": "go.mod#toolchain",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "4",
+        "value_class": "path-bearing-name"
+      },
+      "manifest_schema": 6,
+      "name": "toolchain-path-bearing-name",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0",
+          "toolchain": "go1.23/../evil"
+        }
+      }
+    },
+    {
+      "case": "52",
+      "expected": {
+        "assertion": "unclassifiable",
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_metadata_mismatch",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.23.4",
+        "source_ref": {
+          "location": "go.mod#toolchain",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "5",
+        "value_class": "unclassifiable"
+      },
+      "manifest_schema": 6,
+      "name": "toolchain-without-go-prefix",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0",
+          "toolchain": "1.23.4"
+        }
+      }
+    },
+    {
+      "case": "53",
+      "expected": {
+        "assertion": "unclassifiable",
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_metadata_mismatch",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "firing_site": "file_shape_gate",
+        "note": "a repeated single-occurrence directive is a file-shape defect and yields no value to classify",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.23.4",
+        "source_ref": {
+          "location": "go.mod#toolchain",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "3",
+        "value_class_present": false
+      },
+      "manifest_schema": 6,
+      "name": "repeated-toolchain-directive",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0",
+          "toolchain": [
+            "go1.23.4",
+            "go1.23.4"
+          ]
+        }
+      }
+    },
+    {
+      "case": "54",
+      "expected": {
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_package_influence_forbidden",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "note": "forbidden classes are matched first, although this value's version part would compare cleanly",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.23.4",
+        "source_ref": {
+          "location": "go.mod#toolchain",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "4",
+        "value_class": "custom-distribution-name"
+      },
+      "manifest_schema": 6,
+      "name": "value-class-precedence-forbidden-before-compared",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0",
+          "toolchain": "go1.99.0-bigcorp"
+        }
+      }
+    },
+    {
+      "case": "55",
+      "entry_status": "reserved",
+      "expected": {
+        "assertion": "unclassifiable",
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_metadata_mismatch",
+        "compiler_started": false,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.82.0",
+        "source_ref": {
+          "location": "rust-toolchain.toml#toolchain.channel",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "5",
+        "value_class": "prerelease-track"
+      },
+      "name": "rust-channel-nightly",
+      "resolved_version": "1.82.0",
+      "source_metadata": {
+        "rust-toolchain.toml": {
+          "toolchain.channel": "nightly"
+        }
+      },
+      "toolchain_id": "rust"
+    },
+    {
+      "case": "56",
+      "entry_status": "reserved",
+      "expected": {
+        "assertion": "unclassifiable",
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_metadata_mismatch",
+        "compiler_started": false,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.82.0",
+        "source_ref": {
+          "location": "rust-toolchain.toml#toolchain.channel",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "5",
+        "value_class": "prerelease-track"
+      },
+      "name": "rust-channel-dated-nightly",
+      "resolved_version": "1.82.0",
+      "source_metadata": {
+        "rust-toolchain.toml": {
+          "toolchain.channel": "nightly-2026-07-28"
+        }
+      },
+      "toolchain_id": "rust"
+    },
+    {
+      "case": "57",
+      "entry_status": "reserved",
+      "expected": {
+        "assertion": "unclassifiable",
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_metadata_mismatch",
+        "compiler_started": false,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.82.0",
+        "source_ref": {
+          "location": "rust-toolchain.toml#toolchain.channel",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "5",
+        "value_class": "prerelease-track"
+      },
+      "name": "rust-channel-beta",
+      "resolved_version": "1.82.0",
+      "source_metadata": {
+        "rust-toolchain.toml": {
+          "toolchain.channel": "beta"
+        }
+      },
+      "toolchain_id": "rust"
+    },
+    {
+      "case": "58",
+      "entry_status": "reserved",
+      "expected": {
+        "assertion": "unclassifiable",
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_metadata_mismatch",
+        "compiler_started": false,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.82.0",
+        "source_ref": {
+          "location": "rust-toolchain.toml#toolchain.channel",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "5",
+        "value_class": "unclassifiable"
+      },
+      "name": "rust-channel-unclassifiable",
+      "resolved_version": "1.82.0",
+      "source_metadata": {
+        "rust-toolchain.toml": {
+          "toolchain.channel": "bigcorp-2026"
+        }
+      },
+      "toolchain_id": "rust"
+    },
+    {
+      "case": "59",
+      "entry_status": "reserved",
+      "expected": {
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_package_influence_forbidden",
+        "compiler_started": false,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.82.0",
+        "source_ref": {
+          "location": "rust-toolchain.toml#toolchain.path",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "4",
+        "value_class": "toolchain.path"
+      },
+      "name": "rust-toolchain-path",
+      "resolved_version": "1.82.0",
+      "source_metadata": {
+        "rust-toolchain.toml": {
+          "toolchain.path": "/opt/nightly"
+        }
+      },
+      "toolchain_id": "rust"
+    },
+    {
+      "case": "60",
+      "entry_status": "reserved",
+      "expected": {
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_package_influence_forbidden",
+        "compiler_started": false,
+        "not_code": "build_toolchain_metadata_mismatch",
+        "note": "every forbidden-disposition field is evaluated before every compared one",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.82.0",
+        "source_ref": {
+          "location": "rust-toolchain.toml#toolchain.path",
+          "surface": "source_metadata"
+        },
+        "stage": "B",
+        "step": "4",
+        "value_class": "toolchain.path"
+      },
+      "name": "rust-disposition-precedence",
+      "resolved_version": "1.82.0",
+      "source_metadata": {
+        "rust-toolchain.toml": {
+          "toolchain.channel": "nightly",
+          "toolchain.path": "/opt/nightly"
+        }
+      },
+      "toolchain_id": "rust"
+    },
+    {
+      "case": "61",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_changed",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "identity_after_present": true,
+        "identity_before_present": true,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.23.4",
+        "stage": "A",
+        "step": "fingerprint"
+      },
+      "manifest_schema": 6,
+      "name": "toolchain-tree-changed-between-stage-a-and-fingerprinting",
+      "toolchain_mutation": "tree_changed_after_stage_a"
+    },
+    {
+      "case": "62",
+      "declaration": {
+        "channel": null,
+        "kind": "absent"
+      },
+      "descriptor_schema": 1,
+      "driver": "go-repository-v1",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_unavailable",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "note": "Stage A completes before external repository acquisition",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "stage": "A",
+        "step": "3a"
+      },
+      "manifest_schema": 7,
+      "name": "external-command-fails-stage-a-with-no-acquisition"
+    },
+    {
+      "cache": {
+        "candidate_toolchain_identity": "other",
+        "expect_hit": false
+      },
+      "case": "63",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "candidate_consulted": false,
+        "code": "build_toolchain_incompatible",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.4",
+          "min_inclusive": true
+        },
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "rebuilt": false,
+        "resolved_version": "1.23.0",
+        "stage": "A",
+        "step": "7"
+      },
+      "manifest_schema": 8,
+      "name": "fail-fast-before-cache-lookup",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.4"
+        }
+      },
+      "resolved_version": "1.23.0"
+    },
+    {
+      "case": "64",
+      "declaration": {
+        "channel": null,
+        "kind": "absent"
+      },
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_unavailable",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "not_report_state": "unsupported",
+        "note": "unsupported continues to mean an unknown driver and is never reused for a toolchain failure",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "report_state": "blocked",
+        "returns_failure": true,
+        "stage": "A",
+        "step": "3a"
+      },
+      "manifest_schema": 6,
+      "mode": "dry-run",
+      "name": "dry-run-reports-blocked"
+    },
+    {
+      "case": "91",
+      "expected": {
+        "changed": false,
+        "note": "adopting the requirement contract re-versions no fingerprint algorithm",
+        "outcome": "permitted"
+      },
+      "guard": "frozen_bytes",
+      "name": "go-toolchain-identity-algorithm-unchanged",
+      "subject": "curator-go-toolchain-v1"
+    },
+    {
+      "case": "92",
+      "expected": {
+        "changed": false,
+        "outcome": "permitted"
+      },
+      "guard": "frozen_bytes",
+      "name": "rc4-byte-frozen-digests-unchanged",
+      "subject": "rc4-byte-frozen-digests"
+    },
+    {
+      "after": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.4"
+        }
+      },
+      "before": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      },
+      "case": "93",
+      "expected": {
+        "cache_key_changed": false,
+        "note": "the effective requirement is a gate, not a build input",
+        "outcome": "permitted"
+      },
+      "guard": "cache_identity",
+      "mutate": "manifest_requirement",
+      "name": "requirement-change-alone-keeps-the-cache-key"
+    },
+    {
+      "after": {
+        "families": [
+          [
+            1,
+            23
+          ],
+          [
+            1,
+            24
+          ]
+        ],
+        "family_granularity": "major_minor"
+      },
+      "before": {
+        "families": [
+          [
+            1,
+            23
+          ]
+        ],
+        "family_granularity": "major_minor"
+      },
+      "case": "94",
+      "expected": {
+        "cache_key_changed": false,
+        "outcome": "permitted"
+      },
+      "guard": "cache_identity",
+      "mutate": "compatibility_set",
+      "name": "compatibility-set-change-alone-keeps-the-cache-key"
+    },
+    {
+      "case": "95",
+      "expected": {
+        "cache_key_changed": false,
+        "note": "the catalog is not a cache, receipt, marker, or claim input",
+        "outcome": "permitted"
+      },
+      "guard": "cache_identity",
+      "mutate": "guidance_catalog",
+      "name": "guidance-revision-change-alone-keeps-the-cache-key"
+    },
+    {
+      "case": "96",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "check": "host_pair",
+        "code": "build_toolchain_platform_unsupported",
+        "compiler_started": false,
+        "declaration_channel_consulted": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "host_platform": {
+          "architecture": "amd64",
+          "operating_system": "freebsd"
+        },
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "primary_relpath_resolved": false,
+        "probe_executed": false,
+        "resolved_version_present": false,
+        "stage": "A",
+        "step": "2",
+        "supported_platforms": [
+          {
+            "architecture": "amd64",
+            "operating_system": "linux"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "linux"
+          },
+          {
+            "architecture": "amd64",
+            "operating_system": "macos"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "macos"
+          },
+          {
+            "architecture": "amd64",
+            "operating_system": "windows"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "windows"
+          }
+        ]
+      },
+      "host_platform": {
+        "architecture": "amd64",
+        "operating_system": "freebsd"
+      },
+      "manifest_schema": 6,
+      "name": "unsupported-operating-system"
+    },
+    {
+      "case": "97",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "check": "host_pair",
+        "code": "build_toolchain_platform_unsupported",
+        "compiler_started": false,
+        "declaration_channel_consulted": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "host_platform": {
+          "architecture": "riscv64",
+          "operating_system": "linux"
+        },
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "primary_relpath_resolved": false,
+        "probe_executed": false,
+        "resolved_version_present": false,
+        "stage": "A",
+        "step": "2",
+        "supported_platforms": [
+          {
+            "architecture": "amd64",
+            "operating_system": "linux"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "linux"
+          },
+          {
+            "architecture": "amd64",
+            "operating_system": "macos"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "macos"
+          },
+          {
+            "architecture": "amd64",
+            "operating_system": "windows"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "windows"
+          }
+        ]
+      },
+      "host_platform": {
+        "architecture": "riscv64",
+        "operating_system": "linux"
+      },
+      "manifest_schema": 6,
+      "name": "unsupported-architecture-on-a-supported-operating-system"
+    },
+    {
+      "case": "98",
+      "declaration": {
+        "channel": null,
+        "kind": "absent"
+      },
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "check": "host_pair",
+        "code": "build_toolchain_platform_unsupported",
+        "compiler_started": false,
+        "declaration_channel_consulted": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "host_platform": {
+          "architecture": "amd64",
+          "operating_system": "freebsd"
+        },
+        "not_code": "build_toolchain_unavailable",
+        "note": "step 2 precedes sub-step 3a",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "primary_relpath_resolved": false,
+        "probe_executed": false,
+        "resolved_version_present": false,
+        "stage": "A",
+        "step": "2",
+        "supported_platforms": [
+          {
+            "architecture": "amd64",
+            "operating_system": "linux"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "linux"
+          },
+          {
+            "architecture": "amd64",
+            "operating_system": "macos"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "macos"
+          },
+          {
+            "architecture": "amd64",
+            "operating_system": "windows"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "windows"
+          }
+        ]
+      },
+      "host_platform": {
+        "architecture": "amd64",
+        "operating_system": "freebsd"
+      },
+      "manifest_schema": 6,
+      "name": "applicability-precedes-availability"
+    },
+    {
+      "case": "99",
+      "declaration": {
+        "channel": "operator_config",
+        "kind": "path_lookup"
+      },
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "check": "host_pair",
+        "code": "build_toolchain_platform_unsupported",
+        "compiler_started": false,
+        "declaration_channel_consulted": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "host_platform": {
+          "architecture": "amd64",
+          "operating_system": "freebsd"
+        },
+        "not_code": "build_toolchain_untrusted",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "primary_relpath_resolved": false,
+        "probe_executed": false,
+        "resolved_version_present": false,
+        "stage": "A",
+        "step": "2",
+        "supported_platforms": [
+          {
+            "architecture": "amd64",
+            "operating_system": "linux"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "linux"
+          },
+          {
+            "architecture": "amd64",
+            "operating_system": "macos"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "macos"
+          },
+          {
+            "architecture": "amd64",
+            "operating_system": "windows"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "windows"
+          }
+        ]
+      },
+      "host_platform": {
+        "architecture": "amd64",
+        "operating_system": "freebsd"
+      },
+      "manifest_schema": 6,
+      "name": "applicability-precedes-trust"
+    },
+    {
+      "case": "100",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "check": "host_pair",
+        "code": "build_toolchain_platform_unsupported",
+        "compiler_started": false,
+        "declaration_channel_consulted": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "host_platform": {
+          "architecture": "amd64",
+          "operating_system": "freebsd"
+        },
+        "outcome": "rejected",
+        "payload_members": [
+          "check",
+          "code",
+          "driver",
+          "effective_requirement",
+          "guidance_id",
+          "host_platform",
+          "stage",
+          "supported_platforms",
+          "toolchain_id"
+        ],
+        "persistent_mutation": false,
+        "prerelease_present": false,
+        "primary_relpath_resolved": false,
+        "probe_executed": false,
+        "reported_target_present": false,
+        "resolved_version_present": false,
+        "stage": "A",
+        "step": "2",
+        "supported_platforms": [
+          {
+            "architecture": "amd64",
+            "operating_system": "linux"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "linux"
+          },
+          {
+            "architecture": "amd64",
+            "operating_system": "macos"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "macos"
+          },
+          {
+            "architecture": "amd64",
+            "operating_system": "windows"
+          },
+          {
+            "architecture": "arm64",
+            "operating_system": "windows"
+          }
+        ]
+      },
+      "host_platform": {
+        "architecture": "amd64",
+        "operating_system": "freebsd"
+      },
+      "manifest_schema": 6,
+      "name": "host-pair-payload"
+    },
+    {
+      "case": "101",
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "check": "native_target",
+        "code": "build_toolchain_platform_unsupported",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "host_platform": {
+          "architecture": "arm64",
+          "operating_system": "macos"
+        },
+        "native_target": "darwin/arm64",
+        "outcome": "rejected",
+        "payload_members": [
+          "check",
+          "code",
+          "driver",
+          "effective_requirement",
+          "guidance_id",
+          "host_platform",
+          "native_target",
+          "prerelease",
+          "reported_target",
+          "resolved_version",
+          "stage",
+          "toolchain_id"
+        ],
+        "persistent_mutation": false,
+        "prerelease": false,
+        "reported_target": "linux/amd64",
+        "resolved_version": "1.23.4",
+        "stage": "A",
+        "step": "6",
+        "supported_platforms_present": false
+      },
+      "manifest_schema": 6,
+      "name": "native-target-payload",
+      "reported_target": "linux/amd64"
+    },
+    {
+      "case": "102",
+      "declaration": {
+        "channel": null,
+        "kind": "absent"
+      },
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_unavailable",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "not_code": "build_toolchain_untrusted",
+        "note": "PATH is not a channel, so 3a finds nothing and 3b has nothing to classify",
+        "origin_classification_performed": false,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "stage": "A",
+        "step": "3a"
+      },
+      "host_state": "toolchain_on_path",
+      "manifest_schema": 6,
+      "name": "installed-on-path-declared-nowhere"
+    },
+    {
+      "case": "103",
+      "declaration": {
+        "channel": null,
+        "kind": "absent"
+      },
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_unavailable",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "note": "the outcome does not depend on what is installed",
+        "origin_classification_performed": false,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "stage": "A",
+        "step": "3a"
+      },
+      "host_state": "toolchain_absent",
+      "manifest_schema": 6,
+      "name": "declared-nowhere-absent-from-the-host"
+    },
+    {
+      "case": "104",
+      "declarations": {
+        "go": {
+          "channel": "operator_config",
+          "kind": "concrete_root"
+        },
+        "rust": {
+          "channel": null,
+          "kind": "absent"
+        }
+      },
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_unavailable",
+        "compiler_started": false,
+        "note": "Stage A runs for every distinct toolchain in the plan in lexical order, and failure of any fails the operation",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "resolved_toolchains": [
+          "go"
+        ],
+        "stage": "A",
+        "step": "3a",
+        "toolchain_id": "rust"
+      },
+      "manifest_schema": 6,
+      "name": "code-is-reported-per-identifier",
+      "plan_toolchains": [
+        "go",
+        "rust"
+      ]
+    },
+    {
+      "case": "105",
+      "declaration": {
+        "channel": "operator_config",
+        "kind": "environment_reference",
+        "reference": "GOROOT"
+      },
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_untrusted",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "filesystem_read": false,
+        "origin_class": "environment_variable",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "stage": "A",
+        "step": "3b",
+        "substep": "origin"
+      },
+      "manifest_schema": 6,
+      "name": "origin-classification-reads-only-the-entry"
+    },
+    {
+      "case": "106",
+      "declaration": {
+        "channel": "operator_config",
+        "kind": "concrete_root",
+        "primary_on_disk": "shim_script"
+      },
+      "expected": {
+        "acquisition_performed": false,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_untrusted",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "origin_class_present": false,
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "stage": "A",
+        "step": "3c",
+        "substep": "shape"
+      },
+      "manifest_schema": 6,
+      "name": "shape-classification-reads-only-the-filesystem"
+    },
+    {
+      "case": "107",
+      "descriptor_readable_at_stage_a": false,
+      "descriptor_requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.24.0"
+        }
+      },
+      "descriptor_schema": 2,
+      "driver": "go-repository-v1",
+      "expected": {
+        "acquisition_performed": true,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_incompatible",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.24.0",
+          "min_inclusive": true
+        },
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.23.0",
+        "stage": "B",
+        "stage_a_effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "stage_a_passed": true,
+        "step": "2"
+      },
+      "manifest_schema": 8,
+      "name": "non-empty-late-intersection-excluding-the-resolved-host",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      },
+      "resolved_version": "1.23.0"
+    },
+    {
+      "case": "108",
+      "descriptor_readable_at_stage_a": false,
+      "descriptor_requirement": {
+        "id": "go",
+        "version": {
+          "equals": "1.26.0",
+          "kind": "exact"
+        }
+      },
+      "descriptor_schema": 2,
+      "driver": "go-repository-v1",
+      "expected": {
+        "acquisition_performed": true,
+        "byte_identical_under_reordered_sources": true,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_requirement_unsatisfiable",
+        "compiler_started": false,
+        "conflict": {
+          "lower_bound": "1.26.0",
+          "lower_sources": [
+            {
+              "location": "/targets/golden-tool/toolchain",
+              "surface": "descriptor"
+            }
+          ],
+          "upper_bound": "1.25.0",
+          "upper_inclusive": false,
+          "upper_sources": [
+            {
+              "location": "/commands/golden-tool/toolchain",
+              "surface": "manifest"
+            }
+          ]
+        },
+        "effective_requirement_present": false,
+        "fragments": [
+          {
+            "requirement": {
+              "kind": "at_least",
+              "min": "1.23.0"
+            },
+            "source_ref": {
+              "location": "go",
+              "surface": "registry"
+            }
+          },
+          {
+            "requirement": {
+              "below": "1.25.0",
+              "kind": "range",
+              "min": "1.23.0"
+            },
+            "source_ref": {
+              "location": "/commands/golden-tool/toolchain",
+              "surface": "manifest"
+            }
+          },
+          {
+            "requirement": {
+              "equals": "1.26.0",
+              "kind": "exact"
+            },
+            "source_ref": {
+              "location": "/targets/golden-tool/toolchain",
+              "surface": "descriptor"
+            }
+          }
+        ],
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.23.4",
+        "stage": "B",
+        "stage_a_passed": true,
+        "step": "1"
+      },
+      "manifest_schema": 8,
+      "name": "empty-late-intersection",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "below": "1.25.0",
+          "kind": "range",
+          "min": "1.23.0"
+        }
+      },
+      "resolved_version": "1.23.4"
+    },
+    {
+      "case": "109",
+      "descriptor_readable_at_stage_a": false,
+      "descriptor_requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      },
+      "descriptor_schema": 2,
+      "driver": "go-repository-v1",
+      "expected": {
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "permitted",
+        "stage_a_passed": true,
+        "stage_b_step_1_passed": true,
+        "stage_b_step_2_passed": true
+      },
+      "manifest_schema": 8,
+      "name": "late-narrowing-that-still-admits-the-host",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      },
+      "resolved_version": "1.23.4"
+    },
+    {
+      "case": "110",
+      "descriptor_readable_at_stage_a": false,
+      "descriptor_requirement": {
+        "id": "go",
+        "version": {
+          "equals": "1.26.0",
+          "kind": "exact"
+        }
+      },
+      "descriptor_schema": 2,
+      "driver": "go-repository-v1",
+      "expected": {
+        "acquisition_performed": true,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_requirement_unsatisfiable",
+        "compiler_started": false,
+        "effective_requirement_present": false,
+        "not_code": "build_toolchain_incompatible",
+        "note": "the host would also fail step 2, and step 1 fires first",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.23.4",
+        "stage": "B",
+        "step": "1"
+      },
+      "manifest_schema": 8,
+      "name": "stage-b-step-1-precedes-step-2",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "below": "1.23.4",
+          "kind": "range",
+          "min": "1.23.0"
+        }
+      },
+      "resolved_version": "1.23.4"
+    },
+    {
+      "case": "111",
+      "descriptor_readable_at_stage_a": false,
+      "descriptor_requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.24.0"
+        }
+      },
+      "descriptor_schema": 2,
+      "driver": "go-repository-v1",
+      "expected": {
+        "acquisition_performed": true,
+        "cache_lookup_reached": false,
+        "code": "build_toolchain_incompatible",
+        "compiler_started": false,
+        "effective_requirement": {
+          "min": "1.24.0",
+          "min_inclusive": true
+        },
+        "forbidden_metadata_present": true,
+        "not_code": "build_toolchain_package_influence_forbidden",
+        "note": "steps 1 and 2 precede the file-shape gate and every disposition",
+        "outcome": "rejected",
+        "persistent_mutation": false,
+        "prerelease": false,
+        "resolved_version": "1.23.0",
+        "stage": "B",
+        "step": "2"
+      },
+      "manifest_schema": 8,
+      "name": "requirement-gates-precede-metadata-work",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      },
+      "resolved_version": "1.23.0"
+    },
+    {
+      "case": "112",
+      "descriptor_readable_at_stage_a": false,
+      "descriptor_requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      },
+      "descriptor_schema": 2,
+      "driver": "go-repository-v1",
+      "expected": {
+        "note": "the set is manager-owned and the resolved version did not change between the stages",
+        "outcome": "permitted",
+        "stage_a_compatibility_verdict": "admitted",
+        "stage_b_compatibility_evaluated": false,
+        "untested_release_from_stage_b": false
+      },
+      "manifest_schema": 8,
+      "name": "compatibility-is-not-re-evaluated-at-stage-b",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      },
+      "resolved_version": "1.23.4"
+    },
+    {
+      "case": "113",
+      "descriptor_schema": null,
+      "driver": "go-v1",
+      "expected": {
+        "effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "outcome": "permitted",
+        "stage_a_effective_requirement": {
+          "min": "1.23.0",
+          "min_inclusive": true
+        },
+        "stage_b_step_2_can_newly_fail": false
+      },
+      "manifest_schema": 8,
+      "name": "local-commands-are-unaffected-by-late-narrowing",
+      "requirement": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      }
+    }
+  ],
+  "defaults": {
+    "compatibility": {
+      "families": [
+        [
+          1,
+          23
+        ]
+      ],
+      "family_granularity": "major_minor"
+    },
+    "declaration": {
+      "channel": "operator_config",
+      "kind": "concrete_root"
+    },
+    "driver": "go-v1",
+    "host_platform": {
+      "architecture": "arm64",
+      "operating_system": "macos"
+    },
+    "native_target": "darwin/arm64",
+    "prerelease": false,
+    "registry_baseline": {
+      "kind": "at_least",
+      "min": "1.23.0"
+    },
+    "reported_target": "darwin/arm64",
+    "resolved_version": "1.23.4",
+    "toolchain_id": "go"
+  }
+}

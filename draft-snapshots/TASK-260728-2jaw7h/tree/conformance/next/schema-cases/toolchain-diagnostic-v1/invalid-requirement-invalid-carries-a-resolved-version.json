@@ -1,0 +1,13 @@
+{
+  "code": "build_toolchain_requirement_invalid",
+  "driver": "go-v1",
+  "guidance_id": "toolchain.go.requirement_invalid.any.r1",
+  "resolved_version": "1.23.4",
+  "source_ref": {
+    "location": "/commands/build-tool/toolchain",
+    "surface": "manifest"
+  },
+  "stage": "validation",
+  "toolchain_id": "go",
+  "violation": "version_literal_malformed"
+}

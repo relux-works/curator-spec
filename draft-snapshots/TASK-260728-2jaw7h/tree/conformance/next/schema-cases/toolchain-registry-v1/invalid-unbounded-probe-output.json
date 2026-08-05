@@ -1,0 +1,357 @@
+{
+  "entries": [
+    {
+      "baseline": {
+        "kind": "at_least",
+        "min": "1.23.0"
+      },
+      "companions": [],
+      "compatibility": {
+        "families": [
+          [
+            1,
+            23
+          ]
+        ],
+        "family_granularity": "major_minor"
+      },
+      "drivers": [
+        "go-v1",
+        "go-repository-v1"
+      ],
+      "fingerprint_algorithm": "curator-go-toolchain-v1",
+      "metadata_sources": [
+        {
+          "fields": [
+            {
+              "classes": [
+                {
+                  "disposition": "ignored",
+                  "matches": "absence",
+                  "name": "absent",
+                  "outcome": "no_assertion"
+                },
+                {
+                  "disposition": "compared",
+                  "matches": "value",
+                  "name": "release-literal",
+                  "outcome": "compare_base_triple"
+                },
+                {
+                  "disposition": "compared",
+                  "matches": "value",
+                  "name": "prerelease-literal",
+                  "outcome": "compare_base_triple"
+                },
+                {
+                  "catch_all": true,
+                  "disposition": "compared",
+                  "matches": "value",
+                  "name": "unclassifiable",
+                  "outcome": "unclassifiable"
+                }
+              ],
+              "disposition": "classified",
+              "field_path": "go"
+            },
+            {
+              "classes": [
+                {
+                  "disposition": "ignored",
+                  "matches": "absence",
+                  "name": "absent",
+                  "outcome": "no_assertion"
+                },
+                {
+                  "disposition": "forbidden",
+                  "matches": "value",
+                  "name": "path-bearing-name",
+                  "outcome": "package_influence_forbidden"
+                },
+                {
+                  "disposition": "forbidden",
+                  "matches": "value",
+                  "name": "custom-distribution-name",
+                  "outcome": "package_influence_forbidden"
+                },
+                {
+                  "disposition": "compared",
+                  "matches": "value",
+                  "name": "default",
+                  "outcome": "permitted_not_honored"
+                },
+                {
+                  "disposition": "compared",
+                  "matches": "value",
+                  "name": "release-name",
+                  "outcome": "compare_base_triple"
+                },
+                {
+                  "disposition": "compared",
+                  "matches": "value",
+                  "name": "prerelease-name",
+                  "outcome": "compare_base_triple"
+                },
+                {
+                  "catch_all": true,
+                  "disposition": "compared",
+                  "matches": "value",
+                  "name": "unclassifiable",
+                  "outcome": "unclassifiable"
+                }
+              ],
+              "disposition": "classified",
+              "field_path": "toolchain"
+            }
+          ],
+          "path": "go.mod"
+        }
+      ],
+      "normalization": {
+        "absent_patch": "0",
+        "anchored": true,
+        "field_index": 2,
+        "field_separator": "space",
+        "pattern": "^go(\\d+)\\.(\\d+)(?:\\.(\\d+))?(.*)$",
+        "prerelease_group": 4,
+        "probe": "version",
+        "stream": "stdout"
+      },
+      "platforms": [
+        {
+          "architecture": "amd64",
+          "operating_system": "linux"
+        },
+        {
+          "architecture": "arm64",
+          "operating_system": "linux"
+        },
+        {
+          "architecture": "amd64",
+          "operating_system": "macos"
+        },
+        {
+          "architecture": "arm64",
+          "operating_system": "macos"
+        },
+        {
+          "architecture": "amd64",
+          "operating_system": "windows"
+        },
+        {
+          "architecture": "arm64",
+          "operating_system": "windows"
+        }
+      ],
+      "primary_relpath": {
+        "linux": "bin/go",
+        "macos": "bin/go",
+        "windows": "bin/go.exe"
+      },
+      "probe": {
+        "linux": [
+          {
+            "argv": [
+              "telemetry",
+              "off"
+            ],
+            "name": "telemetry"
+          },
+          {
+            "argv": [
+              "version"
+            ],
+            "name": "version"
+          },
+          {
+            "argv": [
+              "env",
+              "-json",
+              "GOROOT",
+              "GOHOSTOS",
+              "GOHOSTARCH",
+              "GOOS",
+              "GOARCH",
+              "GO386",
+              "GOAMD64",
+              "GOARM",
+              "GOARM64",
+              "GOMIPS",
+              "GOMIPS64",
+              "GOPPC64",
+              "GORISCV64",
+              "GOWASM",
+              "GOTELEMETRY",
+              "GOTELEMETRYDIR"
+            ],
+            "name": "env"
+          }
+        ],
+        "macos": [
+          {
+            "argv": [
+              "telemetry",
+              "off"
+            ],
+            "name": "telemetry"
+          },
+          {
+            "argv": [
+              "version"
+            ],
+            "name": "version"
+          },
+          {
+            "argv": [
+              "env",
+              "-json",
+              "GOROOT",
+              "GOHOSTOS",
+              "GOHOSTARCH",
+              "GOOS",
+              "GOARCH",
+              "GO386",
+              "GOAMD64",
+              "GOARM",
+              "GOARM64",
+              "GOMIPS",
+              "GOMIPS64",
+              "GOPPC64",
+              "GORISCV64",
+              "GOWASM",
+              "GOTELEMETRY",
+              "GOTELEMETRYDIR"
+            ],
+            "name": "env"
+          }
+        ],
+        "windows": [
+          {
+            "argv": [
+              "telemetry",
+              "off"
+            ],
+            "name": "telemetry"
+          },
+          {
+            "argv": [
+              "version"
+            ],
+            "name": "version"
+          },
+          {
+            "argv": [
+              "env",
+              "-json",
+              "GOROOT",
+              "GOHOSTOS",
+              "GOHOSTARCH",
+              "GOOS",
+              "GOARCH",
+              "GO386",
+              "GOAMD64",
+              "GOARM",
+              "GOARM64",
+              "GOMIPS",
+              "GOMIPS64",
+              "GOPPC64",
+              "GORISCV64",
+              "GOWASM",
+              "GOTELEMETRY",
+              "GOTELEMETRYDIR"
+            ],
+            "name": "env"
+          }
+        ]
+      },
+      "status": "complete",
+      "toolchain_id": "go"
+    },
+    {
+      "owner": "TASK-260728-168smo",
+      "status": "reserved",
+      "toolchain_id": "jdk"
+    },
+    {
+      "companions": [
+        "jdk"
+      ],
+      "owner": "TASK-260728-168smo",
+      "status": "reserved",
+      "toolchain_id": "kotlin"
+    },
+    {
+      "companions": [],
+      "expected_metadata_sources": [
+        {
+          "fields": [
+            {
+              "disposition": "forbidden",
+              "field_path": "toolchain.path"
+            },
+            {
+              "classes": [
+                {
+                  "disposition": "ignored",
+                  "matches": "absence",
+                  "name": "absent",
+                  "outcome": "no_assertion"
+                },
+                {
+                  "disposition": "compared",
+                  "matches": "value",
+                  "name": "release-track",
+                  "outcome": "permitted_not_honored"
+                },
+                {
+                  "disposition": "compared",
+                  "matches": "value",
+                  "name": "prerelease-track",
+                  "outcome": "unclassifiable"
+                },
+                {
+                  "disposition": "compared",
+                  "matches": "value",
+                  "name": "version-literal",
+                  "outcome": "compare_base_triple"
+                },
+                {
+                  "catch_all": true,
+                  "disposition": "compared",
+                  "matches": "value",
+                  "name": "unclassifiable",
+                  "outcome": "unclassifiable"
+                }
+              ],
+              "disposition": "classified",
+              "field_path": "toolchain.channel"
+            }
+          ],
+          "path": "rust-toolchain.toml"
+        },
+        {
+          "fields": [
+            {
+              "disposition": "compared",
+              "field_path": "package.rust-version"
+            },
+            {
+              "disposition": "compared",
+              "field_path": "workspace.package.rust-version"
+            }
+          ],
+          "path": "Cargo.toml"
+        }
+      ],
+      "owner": "TASK-260728-12pnm1",
+      "status": "reserved",
+      "toolchain_id": "rust"
+    },
+    {
+      "owner": "TASK-260728-1yhuqi",
+      "status": "reserved",
+      "toolchain_id": "swift"
+    }
+  ],
+  "schema_version": 1
+}

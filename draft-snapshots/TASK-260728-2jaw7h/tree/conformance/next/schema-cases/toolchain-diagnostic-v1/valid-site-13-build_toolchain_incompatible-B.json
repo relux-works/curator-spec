@@ -1,0 +1,13 @@
+{
+  "code": "build_toolchain_incompatible",
+  "driver": "go-repository-v1",
+  "effective_requirement": {
+    "min": "1.24.0",
+    "min_inclusive": true
+  },
+  "guidance_id": "toolchain.go.incompatible.any.r1",
+  "prerelease": false,
+  "resolved_version": "1.23.0",
+  "stage": "B",
+  "toolchain_id": "go"
+}

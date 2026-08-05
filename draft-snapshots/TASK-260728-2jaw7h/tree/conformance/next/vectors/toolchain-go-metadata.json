@@ -1,0 +1,1222 @@
+{
+  "alignment": {
+    "properties": [
+      {
+        "case": "126",
+        "expected": "hold",
+        "name": "p1-no-widening",
+        "note": "every value the suite classifies as a permitted comparison is one the Go command admits in that position under the conjunction of both layers",
+        "statement": "C(p) is a subset of Upstream(p)"
+      },
+      {
+        "case": "126a",
+        "excluded": [
+          "go1.99.0-custom",
+          "go1.99.0-bigcorp",
+          "go1.23.4-bigcorp",
+          "go1.23/../evil"
+        ],
+        "expected": "hold",
+        "name": "p2-no-narrowing-outside-the-security-partition",
+        "statement": "Upstream(p) minus F(p) is a subset of C(p)"
+      },
+      {
+        "case": "126b",
+        "code": "build_toolchain_package_influence_forbidden",
+        "expected": "hold",
+        "name": "the-security-partition-genuinely-subtracts",
+        "note": "this is what makes C = Upstream unsatisfiable and P1 and P2 separate properties",
+        "position": "toolchain",
+        "upstream_admitted": true,
+        "value": "go1.99.0-custom"
+      },
+      {
+        "case": "126c",
+        "code": "build_toolchain_package_influence_forbidden",
+        "expected": "hold",
+        "name": "the-security-partition-is-not-bounded-by-upstream-either",
+        "note": "F is neither a subset of nor disjoint from the upstream-admitted set; only C is pinned",
+        "position": "toolchain",
+        "upstream_admitted": false,
+        "value": "go1.23/../evil"
+      },
+      {
+        "case": "126d",
+        "expected": "hold",
+        "forbidden_values": [],
+        "name": "empty-forbidden-partition-for-the-go-directive",
+        "note": "P2 collapses to C = Upstream at this position, and case 47's path-separator value is covered by class 4",
+        "position": "go"
+      }
+    ],
+    "rows": [
+      {
+        "class": 2,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "1.23"
+      },
+      {
+        "class": 2,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "1.23.4"
+      },
+      {
+        "class": 2,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "1.21.0"
+      },
+      {
+        "class": 2,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "go",
+        "probe_measured": false,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "1.23.0"
+      },
+      {
+        "class": 2,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "go",
+        "probe_measured": false,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "1.24.0"
+      },
+      {
+        "class": 2,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "1.26.0"
+      },
+      {
+        "class": 2,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "1.99.0"
+      },
+      {
+        "class": 3,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "1.23rc1"
+      },
+      {
+        "class": 3,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "1.99rc1"
+      },
+      {
+        "class": 4,
+        "disposition": "compared",
+        "outcome": "unclassifiable",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": false,
+        "shape_layer": true,
+        "upstream_admitted": false,
+        "value": "1.23.4rc1"
+      },
+      {
+        "class": 4,
+        "disposition": "compared",
+        "outcome": "unclassifiable",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": false,
+        "shape_layer": true,
+        "upstream_admitted": false,
+        "value": "1.24.0alpha1"
+      },
+      {
+        "class": 4,
+        "disposition": "compared",
+        "outcome": "unclassifiable",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": false,
+        "shape_layer": true,
+        "upstream_admitted": false,
+        "value": "1.21.3beta2"
+      },
+      {
+        "class": 4,
+        "disposition": "compared",
+        "outcome": "unclassifiable",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": false,
+        "upstream_admitted": false,
+        "value": "1"
+      },
+      {
+        "class": 4,
+        "disposition": "compared",
+        "outcome": "unclassifiable",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": false,
+        "upstream_admitted": false,
+        "value": "0.1"
+      },
+      {
+        "class": 4,
+        "disposition": "compared",
+        "outcome": "unclassifiable",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": false,
+        "shape_layer": false,
+        "upstream_admitted": false,
+        "value": "1.023"
+      },
+      {
+        "class": 4,
+        "disposition": "compared",
+        "outcome": "unclassifiable",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": false,
+        "upstream_admitted": false,
+        "value": "1.23rc"
+      },
+      {
+        "class": 4,
+        "disposition": "compared",
+        "outcome": "unclassifiable",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": false,
+        "shape_layer": false,
+        "upstream_admitted": false,
+        "value": "v1.23"
+      },
+      {
+        "class": 4,
+        "disposition": "compared",
+        "outcome": "unclassifiable",
+        "position": "go",
+        "probe_measured": true,
+        "semantic_layer": false,
+        "shape_layer": false,
+        "upstream_admitted": false,
+        "value": "1.23/4"
+      },
+      {
+        "class": 4,
+        "disposition": "compared",
+        "outcome": "permitted_not_honored",
+        "position": "toolchain",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "default"
+      },
+      {
+        "class": 5,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "toolchain",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "go1"
+      },
+      {
+        "class": 5,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "toolchain",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "go1.99.0"
+      },
+      {
+        "class": 5,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "toolchain",
+        "probe_measured": false,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "go1.23.4"
+      },
+      {
+        "class": 5,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "toolchain",
+        "probe_measured": false,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "go1.24.0"
+      },
+      {
+        "class": 6,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "toolchain",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "go1.99rc1"
+      },
+      {
+        "class": 6,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "toolchain",
+        "probe_measured": false,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "go1.23rc1"
+      },
+      {
+        "class": 6,
+        "disposition": "compared",
+        "outcome": "compare_base_triple",
+        "position": "toolchain",
+        "probe_measured": false,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "go1.24rc1"
+      },
+      {
+        "class": 7,
+        "disposition": "compared",
+        "outcome": "unclassifiable",
+        "position": "toolchain",
+        "probe_measured": true,
+        "semantic_layer": false,
+        "shape_layer": true,
+        "upstream_admitted": false,
+        "value": "go1."
+      },
+      {
+        "class": 7,
+        "disposition": "compared",
+        "outcome": "unclassifiable",
+        "position": "toolchain",
+        "probe_measured": true,
+        "semantic_layer": false,
+        "shape_layer": true,
+        "upstream_admitted": false,
+        "value": "go1.99.0rc1x"
+      },
+      {
+        "class": 7,
+        "disposition": "compared",
+        "outcome": "unclassifiable",
+        "position": "toolchain",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": false,
+        "upstream_admitted": false,
+        "value": "go2.0.0"
+      },
+      {
+        "class": 7,
+        "disposition": "compared",
+        "outcome": "unclassifiable",
+        "position": "toolchain",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": false,
+        "upstream_admitted": false,
+        "value": "go1x"
+      },
+      {
+        "class": 7,
+        "disposition": "compared",
+        "outcome": "unclassifiable",
+        "position": "toolchain",
+        "probe_measured": true,
+        "semantic_layer": false,
+        "shape_layer": false,
+        "upstream_admitted": false,
+        "value": "godefault"
+      },
+      {
+        "class": 7,
+        "disposition": "compared",
+        "outcome": "unclassifiable",
+        "position": "toolchain",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": false,
+        "upstream_admitted": false,
+        "value": "1.23.4"
+      },
+      {
+        "class": 3,
+        "disposition": "forbidden",
+        "outcome": "package_influence_forbidden",
+        "position": "toolchain",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "go1.99.0-custom"
+      },
+      {
+        "class": 3,
+        "disposition": "forbidden",
+        "outcome": "package_influence_forbidden",
+        "position": "toolchain",
+        "probe_measured": true,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "go1.99.0-bigcorp"
+      },
+      {
+        "class": 3,
+        "disposition": "forbidden",
+        "outcome": "package_influence_forbidden",
+        "position": "toolchain",
+        "probe_measured": false,
+        "semantic_layer": true,
+        "shape_layer": true,
+        "upstream_admitted": true,
+        "value": "go1.23.4-bigcorp"
+      },
+      {
+        "class": 2,
+        "disposition": "forbidden",
+        "outcome": "package_influence_forbidden",
+        "position": "toolchain",
+        "probe_measured": true,
+        "semantic_layer": false,
+        "shape_layer": true,
+        "upstream_admitted": false,
+        "value": "go1.23/../evil"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "case": "114",
+      "expected": {
+        "assertion": "unclassifiable",
+        "code": "build_toolchain_metadata_mismatch",
+        "firing_site": "file_shape_gate",
+        "outcome": "rejected",
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "3"
+        },
+        "source_ref": {
+          "location": "go.mod#go",
+          "surface": "source_metadata"
+        },
+        "value_class_present": false
+      },
+      "name": "repeated-go-directive",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": [
+            "1.23.0",
+            "1.23.0"
+          ]
+        }
+      }
+    },
+    {
+      "case": "115",
+      "expected": {
+        "assertion": "unclassifiable",
+        "code": "build_toolchain_metadata_mismatch",
+        "firing_site": "file_shape_gate",
+        "matches_case": "53",
+        "outcome": "rejected",
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "3"
+        },
+        "source_ref": {
+          "location": "go.mod#toolchain",
+          "surface": "source_metadata"
+        },
+        "value_class_present": false
+      },
+      "name": "repeated-toolchain-directive",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0",
+          "toolchain": [
+            "go1.23.4",
+            "go1.23.4"
+          ]
+        }
+      }
+    },
+    {
+      "case": "116",
+      "expected": {
+        "assertion": "unclassifiable",
+        "code": "build_toolchain_metadata_mismatch",
+        "firing_site": "file_shape_gate",
+        "outcome": "rejected",
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "3"
+        },
+        "source_ref": {
+          "location": "go.mod",
+          "surface": "source_metadata"
+        },
+        "value_class_present": false
+      },
+      "name": "unparseable-go-mod",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": "module"
+      }
+    },
+    {
+      "case": "117",
+      "expected": {
+        "assertion": "unclassifiable",
+        "code": "build_toolchain_metadata_mismatch",
+        "firing_site": "file_shape_gate",
+        "not_code": "build_toolchain_package_influence_forbidden",
+        "note": "a field that cannot be extracted cannot be classified",
+        "outcome": "rejected",
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "3"
+        },
+        "source_ref": {
+          "location": "go.mod",
+          "surface": "source_metadata"
+        },
+        "value_class_present": false
+      },
+      "name": "shape-gate-precedes-disposition-evaluation",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": "module",
+        "rust-toolchain.toml": {
+          "toolchain.path": "/opt/nightly"
+        }
+      }
+    },
+    {
+      "case": "118",
+      "expected": {
+        "assertion": "unclassifiable",
+        "class": 4,
+        "code": "build_toolchain_metadata_mismatch",
+        "note": "the shape-narrower-than-semantic half of the boundary",
+        "outcome": "rejected",
+        "position": "go",
+        "semantic_layer": true,
+        "shape_layer": false,
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "5"
+        },
+        "value_class": "unclassifiable"
+      },
+      "name": "go-1-no-minor-component",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1"
+        }
+      },
+      "value": "1"
+    },
+    {
+      "case": "119",
+      "expected": {
+        "assertion": "unclassifiable",
+        "class": 4,
+        "code": "build_toolchain_metadata_mismatch",
+        "outcome": "rejected",
+        "position": "go",
+        "semantic_layer": true,
+        "shape_layer": false,
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "5"
+        },
+        "value_class": "unclassifiable"
+      },
+      "name": "go-zero-major",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": "0.1"
+        }
+      },
+      "value": "0.1"
+    },
+    {
+      "case": "120",
+      "expected": {
+        "assertion": "unclassifiable",
+        "class": 4,
+        "code": "build_toolchain_metadata_mismatch",
+        "outcome": "rejected",
+        "position": "go",
+        "semantic_layer": false,
+        "shape_layer": false,
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "5"
+        },
+        "value_class": "unclassifiable"
+      },
+      "name": "go-1-023-leading-zero",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.023"
+        }
+      },
+      "value": "1.023"
+    },
+    {
+      "case": "121",
+      "expected": {
+        "assertion": "unclassifiable",
+        "class": 4,
+        "code": "build_toolchain_metadata_mismatch",
+        "outcome": "rejected",
+        "position": "go",
+        "semantic_layer": true,
+        "shape_layer": false,
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "5"
+        },
+        "value_class": "unclassifiable"
+      },
+      "name": "go-1-23rc-prerelease-letters-with-no-number",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23rc"
+        }
+      },
+      "value": "1.23rc"
+    },
+    {
+      "case": "122",
+      "expected": {
+        "assertion": "unclassifiable",
+        "class": 4,
+        "code": "build_toolchain_metadata_mismatch",
+        "not_outcome": "permitted",
+        "note": "matches goModVersionShape and so parses, but is outside goSemanticVersion; never a class-3 comparison against the resolved version",
+        "outcome": "rejected",
+        "position": "go",
+        "semantic_layer": false,
+        "shape_layer": true,
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "5"
+        },
+        "value_class": "unclassifiable"
+      },
+      "name": "go-1-23-4rc1-patch-prerelease",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.4rc1"
+        }
+      },
+      "value": "1.23.4rc1"
+    },
+    {
+      "case": "122a",
+      "expected": {
+        "assertion": "unclassifiable",
+        "class": 4,
+        "code": "build_toolchain_metadata_mismatch",
+        "outcome": "rejected",
+        "position": "go",
+        "semantic_layer": false,
+        "shape_layer": true,
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "5"
+        },
+        "value_class": "unclassifiable"
+      },
+      "name": "go-1-24-0alpha1-patch-prerelease",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.24.0alpha1"
+        }
+      },
+      "value": "1.24.0alpha1"
+    },
+    {
+      "case": "122b",
+      "expected": {
+        "assertion": "unclassifiable",
+        "class": 4,
+        "code": "build_toolchain_metadata_mismatch",
+        "outcome": "rejected",
+        "position": "go",
+        "semantic_layer": false,
+        "shape_layer": true,
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "5"
+        },
+        "value_class": "unclassifiable"
+      },
+      "name": "go-1-21-3beta2-patch-prerelease",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.21.3beta2"
+        }
+      },
+      "value": "1.21.3beta2"
+    },
+    {
+      "case": "122c",
+      "expected": {
+        "different_firing_sites": [
+          {
+            "case": "115",
+            "firing_site": "file_shape_gate",
+            "input": "a repeated go or toolchain directive",
+            "site": {
+              "before_cache_lookup": true,
+              "before_compiler_child": true,
+              "stage": "B",
+              "step": "3"
+            }
+          },
+          {
+            "case": "122",
+            "firing_site": "value_classifier",
+            "input": "go 1.23.4rc1",
+            "site": {
+              "before_cache_lookup": true,
+              "before_compiler_child": true,
+              "stage": "B",
+              "step": "5"
+            }
+          }
+        ],
+        "note": "the patch-prerelease value's file parses and its field extracts, so it is a classifier case",
+        "same_assertion": "unclassifiable",
+        "same_code": "build_toolchain_metadata_mismatch"
+      },
+      "name": "layer-attribution",
+      "resolved_version": "1.23.4"
+    },
+    {
+      "case": "122d",
+      "expected": {
+        "base_triple": [
+          1,
+          23,
+          0
+        ],
+        "class": 3,
+        "note": "a prerelease after a minor with no patch is inside both layers, so case 122 narrows only the patch-prerelease region",
+        "outcome": "permitted",
+        "position": "go",
+        "semantic_layer": true,
+        "shape_layer": true,
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "5"
+        },
+        "value_class": "prerelease-literal"
+      },
+      "name": "go-1-23rc1-stays-permitted",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23rc1"
+        }
+      },
+      "value": "1.23rc1"
+    },
+    {
+      "case": "122e",
+      "expected": {
+        "assertion": {
+          "kind": "at_least",
+          "min": "1.99.0"
+        },
+        "class": 2,
+        "code": "build_toolchain_metadata_mismatch",
+        "not_assertion": "unclassifiable",
+        "note": "a representable value above the host fails on the comparison and never on the grammar",
+        "outcome": "rejected",
+        "position": "go",
+        "semantic_layer": true,
+        "shape_layer": true,
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "5"
+        },
+        "value_class": "release-literal"
+      },
+      "name": "future-release-is-a-comparison-not-a-grammar-failure",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.99.0"
+        }
+      },
+      "value": "1.99.0"
+    },
+    {
+      "case": "122f",
+      "expected": {
+        "assertion": {
+          "kind": "at_least",
+          "min": "1.99.0"
+        },
+        "class": 3,
+        "code": "build_toolchain_metadata_mismatch",
+        "not_assertion": "unclassifiable",
+        "outcome": "rejected",
+        "position": "go",
+        "semantic_layer": true,
+        "shape_layer": true,
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "5"
+        },
+        "value_class": "prerelease-literal"
+      },
+      "name": "future-prerelease-same-route",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.99rc1"
+        }
+      },
+      "value": "1.99rc1"
+    },
+    {
+      "case": "122g",
+      "expected": {
+        "base_triple": [
+          1,
+          26,
+          0
+        ],
+        "class": 2,
+        "note": "case 122e turns on the comparison, not on the value being newer than any particular runner",
+        "outcome": "permitted",
+        "position": "go",
+        "value_class": "release-literal"
+      },
+      "name": "a-future-release-below-the-host-is-permitted",
+      "resolved_version": "1.26.1",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.26.0"
+        }
+      },
+      "value": "1.26.0"
+    },
+    {
+      "case": "123",
+      "expected": {
+        "base_triple": [
+          1,
+          0,
+          0
+        ],
+        "class": 5,
+        "honored": false,
+        "not_class": 7,
+        "note": "upstream reads go1 as 1.0.0",
+        "outcome": "permitted",
+        "position": "toolchain",
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "5"
+        },
+        "value_class": "release-name"
+      },
+      "name": "toolchain-go1",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0",
+          "toolchain": "go1"
+        }
+      },
+      "value": "go1"
+    },
+    {
+      "case": "124",
+      "expected": {
+        "assertion": "unclassifiable",
+        "class": 7,
+        "code": "build_toolchain_metadata_mismatch",
+        "outcome": "rejected",
+        "position": "toolchain",
+        "semantic_layer": false,
+        "shape_layer": true,
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "5"
+        },
+        "value_class": "unclassifiable"
+      },
+      "name": "toolchain-go1-trailing-dot",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0",
+          "toolchain": "go1."
+        }
+      },
+      "value": "go1."
+    },
+    {
+      "case": "124a",
+      "expected": {
+        "assertion": "unclassifiable",
+        "class": 7,
+        "code": "build_toolchain_metadata_mismatch",
+        "outcome": "rejected",
+        "position": "toolchain",
+        "semantic_layer": false,
+        "shape_layer": true,
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "5"
+        },
+        "value_class": "unclassifiable"
+      },
+      "name": "toolchain-go1-99-0rc1x",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0",
+          "toolchain": "go1.99.0rc1x"
+        }
+      },
+      "value": "go1.99.0rc1x"
+    },
+    {
+      "case": "125",
+      "expected": {
+        "assertion": "unclassifiable",
+        "class": 7,
+        "code": "build_toolchain_metadata_mismatch",
+        "outcome": "rejected",
+        "position": "toolchain",
+        "semantic_layer": true,
+        "shape_layer": false,
+        "site": {
+          "before_cache_lookup": true,
+          "before_compiler_child": true,
+          "stage": "B",
+          "step": "5"
+        },
+        "value_class": "unclassifiable"
+      },
+      "name": "toolchain-go2-0-0",
+      "resolved_version": "1.23.4",
+      "source_metadata": {
+        "go.mod": {
+          "go": "1.23.0",
+          "toolchain": "go2.0.0"
+        }
+      },
+      "value": "go2.0.0"
+    }
+  ],
+  "go_directive_classes": [
+    {
+      "class": 1,
+      "disposition": "ignored",
+      "match": "the directive is not present",
+      "name": "absent",
+      "outcome": "no_assertion"
+    },
+    {
+      "class": 2,
+      "disposition": "compared",
+      "match": "goModVersionShape AND goSemanticVersion, with no prerelease group",
+      "name": "release-literal",
+      "outcome": "compare_base_triple"
+    },
+    {
+      "class": 3,
+      "disposition": "compared",
+      "match": "goModVersionShape AND goSemanticVersion, with a prerelease group",
+      "name": "prerelease-literal",
+      "outcome": "compare_base_triple"
+    },
+    {
+      "class": 4,
+      "disposition": "compared",
+      "match": "anything else",
+      "name": "unclassifiable",
+      "outcome": "unclassifiable"
+    }
+  ],
+  "grammars": {
+    "admitted": {
+      "go": "goModVersionShape AND goSemanticVersion",
+      "toolchain": "goToolchainNameShape AND (default OR version part in goSemanticVersion)"
+    },
+    "goModVersionShape": {
+      "layer": "shape",
+      "pattern": "^([1-9][0-9]*)\\.(0|[1-9][0-9]*)(\\.(0|[1-9][0-9]*))?([a-z]+[0-9]+)?$",
+      "position": "go",
+      "upstream": "golang.org/x/mod/modfile GoVersionRE"
+    },
+    "goSemanticVersion": {
+      "layer": "semantic",
+      "pattern": "^(0|[1-9][0-9]*)(\\.(0|[1-9][0-9]*)(\\.(0|[1-9][0-9]*)|[a-z]+((0|[1-9][0-9]*))?)?)?$",
+      "position": "both",
+      "upstream": "internal/gover.Parse, with cmd/go/internal/gover.FromToolchain for a name"
+    },
+    "goToolchainNameShape": {
+      "layer": "shape",
+      "pattern": "^default$|^go1($|\\.)",
+      "position": "toolchain",
+      "upstream": "golang.org/x/mod/modfile ToolchainRE"
+    }
+  },
+  "probe": {
+    "cases": [
+      {
+        "authority": "a fixture table that disagrees with a probe run is a defect in the fixture, not in the probe",
+        "case": "127",
+        "name": "boundary-probe",
+        "requirement": "measure the shape and semantic layers independently per value and fail on any disagreement with the classifier tables or any violation of P1 or P2",
+        "toolchains": "at least one real Go toolchain of each family in the manager's compatibility set"
+      },
+      {
+        "case": "127a",
+        "disqualifier": "a step-2 verdict that is a bare exit status",
+        "name": "semantic-measurement-is-isolated-from-the-host-version",
+        "requirement": "carry at least one value inside both layers and above the runner's own release, measure it representable, and record the real command outcome as too-new rather than as a rejection"
+      },
+      {
+        "case": "127b",
+        "name": "isolated-and-command-measurements-agree",
+        "requirement": "for every value the shape layer accepts and whose command outcome is recognised, compare the isolated verdict against the classified command outcome and fail on any disagreement"
+      },
+      {
+        "case": "127c",
+        "disqualifier": "a fall-through branch that names a verdict",
+        "name": "the-command-classifier-is-closed",
+        "requirement": "every command outcome falls inside the recognised set, and an outcome outside it fails the probe instead of being mapped to a verdict"
+      },
+      {
+        "case": "127d",
+        "controls": [
+          "open-classifier",
+          "unrelated-command-failure",
+          "tidy-exit",
+          "patch-prerelease-compared",
+          "c-equals-upstream"
+        ],
+        "name": "regression-controls",
+        "note": "a control that passes means the property it guards is no longer being tested",
+        "requirement": "the five superseded classifications, command forms and recognition families are runnable from the probe binary and each fails for its named reason, covering both laundering directions"
+      },
+      {
+        "case": "127e",
+        "disqualifier": "recognising a lead plus an unconstrained tail, or a substring anywhere in the output",
+        "name": "recognition-is-exact-and-its-closure-is-measured",
+        "requirement": "every recognised form is one whole diagnostic line predicted before the command ran, and a closure section classifies outcomes outside the recognised set and requires each to yield no verdict, in both laundering directions, reported separately"
+      }
+    ],
+    "check": "tools/toolchain-boundary-probe",
+    "recognised_outcomes": {
+      "anything_else": "unknown, which fails the probe",
+      "go": [
+        {
+          "form": "exit 0",
+          "state": "accepted"
+        },
+        {
+          "form": "go: go.mod requires go >= V (running go L; GOTOOLCHAIN=local)",
+          "state": "too-new"
+        },
+        {
+          "form": "go.mod:3: invalid go version 'V': must match format 1.23.0",
+          "state": "rejected"
+        },
+        {
+          "form": "panic: go: internal error: missing go root module",
+          "state": "rejected"
+        }
+      ],
+      "toolchain": [
+        {
+          "form": "exit 0",
+          "state": "accepted"
+        },
+        {
+          "form": "go: cannot find \"V\" in PATH",
+          "state": "accepted"
+        },
+        {
+          "form": "go: invalid toolchain \"V\" in go.mod",
+          "state": "rejected"
+        },
+        {
+          "form": "go: invalid GOTOOLCHAIN \"V\"",
+          "state": "rejected"
+        }
+      ]
+    },
+    "required": true
+  },
+  "toolchain_directive_classes": [
+    {
+      "class": 1,
+      "disposition": "ignored",
+      "match": "the directive is not present",
+      "name": "absent",
+      "outcome": "no_assertion"
+    },
+    {
+      "class": 2,
+      "disposition": "forbidden",
+      "match": "the value contains / or \\",
+      "name": "path-bearing-name",
+      "outcome": "package_influence_forbidden"
+    },
+    {
+      "class": 3,
+      "disposition": "forbidden",
+      "match": "goToolchainNameShape and a non-empty suffix after -, space or tab",
+      "name": "custom-distribution-name",
+      "outcome": "package_influence_forbidden"
+    },
+    {
+      "class": 4,
+      "disposition": "compared",
+      "match": "the value is exactly default",
+      "name": "default",
+      "outcome": "permitted_not_honored"
+    },
+    {
+      "class": 5,
+      "disposition": "compared",
+      "match": "goToolchainNameShape and a version part in goSemanticVersion with no prerelease group",
+      "name": "release-name",
+      "outcome": "compare_base_triple"
+    },
+    {
+      "class": 6,
+      "disposition": "compared",
+      "match": "goToolchainNameShape and a version part in goSemanticVersion with a prerelease group",
+      "name": "prerelease-name",
+      "outcome": "compare_base_triple"
+    },
+    {
+      "class": 7,
+      "disposition": "compared",
+      "match": "anything else",
+      "name": "unclassifiable",
+      "outcome": "unclassifiable"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "code": "build_toolchain_prerelease_unsupported",
+  "driver": "go-v1",
+  "effective_requirement": {
+    "min": "1.23.0",
+    "min_inclusive": true
+  },
+  "guidance_id": "toolchain.go.prerelease_unsupported.any.r1",
+  "prerelease": false,
+  "resolved_version": "1.24.0",
+  "stage": "A",
+  "toolchain_id": "go"
+}

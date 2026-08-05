@@ -1,0 +1,377 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/v1/toolchain-registry-v1.schema.json",
+  "title": "Curator toolchain registry schema 1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "entries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/completeEntry"
+          },
+          {
+            "$ref": "#/$defs/reservedEntry"
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "reservedEntry": {
+      "type": "object",
+      "required": [
+        "toolchain_id",
+        "status",
+        "owner"
+      ],
+      "properties": {
+        "toolchain_id": {
+          "$ref": "common.schema.json#/$defs/toolchainRegistryIdV1"
+        },
+        "status": {
+          "const": "reserved"
+        },
+        "owner": {
+          "type": "string",
+          "pattern": "^TASK-[0-9]{6}-[0-9a-z]{6}$"
+        },
+        "companions": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/toolchainRegistryIdV1"
+          },
+          "uniqueItems": true
+        },
+        "expected_metadata_sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/metadataSource"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "completeEntry": {
+      "type": "object",
+      "required": [
+        "toolchain_id",
+        "status",
+        "drivers",
+        "companions",
+        "platforms",
+        "primary_relpath",
+        "probe",
+        "normalization",
+        "fingerprint_algorithm",
+        "baseline",
+        "compatibility",
+        "metadata_sources"
+      ],
+      "properties": {
+        "toolchain_id": {
+          "$ref": "common.schema.json#/$defs/toolchainRegistryIdV1"
+        },
+        "status": {
+          "const": "complete"
+        },
+        "drivers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              {
+                "const": "go-v1"
+              },
+              {
+                "const": "go-repository-v1"
+              }
+            ]
+          },
+          "uniqueItems": true
+        },
+        "companions": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/toolchainRegistryIdV1"
+          },
+          "uniqueItems": true
+        },
+        "platforms": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "common.schema.json#/$defs/toolchainPlatformV1"
+          },
+          "uniqueItems": true
+        },
+        "primary_relpath": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/toolchainOperatingSystem"
+          },
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/portablePath"
+          }
+        },
+        "probe": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/toolchainOperatingSystem"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/$defs/probeVector"
+            }
+          }
+        },
+        "normalization": {
+          "$ref": "#/$defs/normalization"
+        },
+        "fingerprint_algorithm": {
+          "type": "string",
+          "pattern": "^curator-(go|jdk|kotlin|rust|swift)-toolchain-v1$"
+        },
+        "baseline": {
+          "$ref": "common.schema.json#/$defs/toolchainVersionConstraintV1"
+        },
+        "compatibility": {
+          "$ref": "#/$defs/compatibility"
+        },
+        "metadata_sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/metadataSource"
+          },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "probeVector": {
+      "type": "object",
+      "required": [
+        "name",
+        "argv"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "argv": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/nonEmptyString"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "normalization": {
+      "type": "object",
+      "required": [
+        "probe",
+        "stream",
+        "field_separator",
+        "field_index",
+        "anchored",
+        "pattern",
+        "absent_patch",
+        "prerelease_group",
+        "max_output_bytes"
+      ],
+      "properties": {
+        "probe": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "stream": {
+          "enum": [
+            "stdout",
+            "stderr"
+          ]
+        },
+        "field_separator": {
+          "const": "space"
+        },
+        "field_index": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "anchored": {
+          "const": true
+        },
+        "pattern": {
+          "$ref": "common.schema.json#/$defs/nonEmptyString"
+        },
+        "absent_patch": {
+          "const": "0"
+        },
+        "prerelease_group": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "max_output_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1048576
+        }
+      },
+      "additionalProperties": false
+    },
+    "compatibility": {
+      "type": "object",
+      "required": [
+        "family_granularity",
+        "families"
+      ],
+      "properties": {
+        "family_granularity": {
+          "enum": [
+            "major",
+            "major_minor"
+          ]
+        },
+        "families": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 2,
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999
+            }
+          },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "metadataSource": {
+      "type": "object",
+      "required": [
+        "path",
+        "fields"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "common.schema.json#/$defs/portablePath"
+        },
+        "fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/metadataField"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "metadataField": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "field_path",
+            "disposition"
+          ],
+          "properties": {
+            "field_path": {
+              "$ref": "common.schema.json#/$defs/nonEmptyString"
+            },
+            "disposition": {
+              "enum": [
+                "compared",
+                "forbidden",
+                "ignored"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "field_path",
+            "disposition",
+            "classes"
+          ],
+          "properties": {
+            "field_path": {
+              "$ref": "common.schema.json#/$defs/nonEmptyString"
+            },
+            "disposition": {
+              "const": "classified"
+            },
+            "classes": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "$ref": "#/$defs/valueClass"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "valueClass": {
+      "type": "object",
+      "required": [
+        "name",
+        "matches",
+        "disposition",
+        "outcome"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "matches": {
+          "enum": [
+            "absence",
+            "value"
+          ]
+        },
+        "disposition": {
+          "enum": [
+            "compared",
+            "forbidden",
+            "ignored"
+          ]
+        },
+        "outcome": {
+          "enum": [
+            "compare_base_triple",
+            "no_assertion",
+            "package_influence_forbidden",
+            "permitted_not_honored",
+            "unclassifiable"
+          ]
+        },
+        "catch_all": {
+          "const": true
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
