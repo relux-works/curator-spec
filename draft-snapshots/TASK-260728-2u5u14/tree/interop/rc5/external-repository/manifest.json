@@ -1,0 +1,99 @@
+{
+  "corpus_version": "rc5-external-repository-interop-v1",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "sha256:5da6fc77435683c77d233eb2caaab801c14084f0f82496602b28eedd63316e68",
+      "size": 1131
+    },
+    {
+      "path": "bundles/adversarial-local-stores.json",
+      "sha256": "sha256:feb4627856b1232344a875a32512b4bdf85e91dd4ef041768ff00200b047e39a",
+      "size": 6456
+    },
+    {
+      "path": "bundles/canonical-sha1-tag-missing.json",
+      "sha256": "sha256:2075c45fc2371db17a3d801c667b432c2c6dba2fe637b6cce08df11312e915c4",
+      "size": 7041
+    },
+    {
+      "path": "bundles/canonical-sha1-tag-moved.json",
+      "sha256": "sha256:a3ae5ac77ae4053d575ef68c53a26de2c68fc2eeb123067fe97a381e86b930db",
+      "size": 7871
+    },
+    {
+      "path": "bundles/canonical-sha1-tagged.json",
+      "sha256": "sha256:364c61e30a3c0f860cf881b6ce3314fe67a14effa15485a9bd426760fc07abec",
+      "size": 7473
+    },
+    {
+      "path": "bundles/canonical-sha256-untagged.json",
+      "sha256": "sha256:6ac93cd724ce4b139e827214dad0f85c5fe0d55ef4e9b27dc75784fa6ed6a5d5",
+      "size": 7754
+    },
+    {
+      "path": "case-manifest.json",
+      "sha256": "sha256:9081591594d8371468730a6a49e85d2407848618a7dc845608c9fdc7094c112d",
+      "size": 23968
+    },
+    {
+      "path": "expected/build-receipt-v1.ccj.json",
+      "sha256": "sha256:f36882fafc3dfdee0fbec0425be201747060d9c1500da4d4d4330570ed0f1666",
+      "size": 1123
+    },
+    {
+      "path": "expected/build-receipt-v2.ccj.json",
+      "sha256": "sha256:0f8f910a2b6ba9b35531bb232cb2890e11eb55a64ba01bcdd2d93d5ea421d0e0",
+      "size": 1682
+    },
+    {
+      "path": "expected/build-receipt-v2.json",
+      "sha256": "sha256:1a519db0c46f68e50d72d76d94cb77d403798e005099fcc04091ed1b98b961bd",
+      "size": 2280
+    },
+    {
+      "path": "expected/install-marker-v3-mixed-exact.json",
+      "sha256": "sha256:d2910c6cbde224787fc288043f192478003725aff780d039d69c11c5b1e8f556",
+      "size": 2708
+    },
+    {
+      "path": "expected/install-marker-v3-mixed.json",
+      "sha256": "sha256:20a1ef924f54f8c6dab582a78c22be0778b2f08c17f1cedaeb8016efd624ddd0",
+      "size": 2708
+    },
+    {
+      "path": "expected/mixed-build-plan.json",
+      "sha256": "sha256:680407f392cf9c44c013d1438c5569099a8be683d25d3b423b4d5c7c2d653f74",
+      "size": 579
+    },
+    {
+      "path": "expected/receipt-marker-hashes.json",
+      "sha256": "sha256:122565b7132decbd33efa10dd70638b7aa61711356d00f41a756dde13b1258c1",
+      "size": 651
+    },
+    {
+      "path": "source-inventory.json",
+      "sha256": "sha256:199aec65a301834538c4791efb3b77264e9995c03dead130ef57d6da02757e32",
+      "size": 3992
+    },
+    {
+      "path": "vectors/expected-snapshots.json",
+      "sha256": "sha256:9612ded86e7d9a578330665906cb245bb897133ca66d68bb59deea7a6b6fb9bf",
+      "size": 1484
+    },
+    {
+      "path": "vectors/source-identities.json",
+      "sha256": "sha256:37305811ecf334808f8220867166a20f0146f38a10637a1a32d0dc7d75749f49",
+      "size": 1814
+    },
+    {
+      "path": "vectors/transport-and-process-boundaries.json",
+      "sha256": "sha256:b4e56acd87a8a3b92e78b6bd19152d83d5ad8371d4127c1d5d26793c4307a83d",
+      "size": 2197
+    }
+  ],
+  "generated_at": "2026-08-05T00:00:00Z",
+  "generator": "tools/generate-external-repository-corpus",
+  "protocol_version": "1.0.0-rc.5",
+  "schema_version": 1
+}

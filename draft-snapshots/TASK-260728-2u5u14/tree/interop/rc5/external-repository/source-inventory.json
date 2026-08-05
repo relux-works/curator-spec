@@ -1,0 +1,106 @@
+{
+  "corpus_version": "rc5-external-repository-interop-v1",
+  "files": [
+    {
+      "path": "decisions/0005-external-build-repositories.md",
+      "sha256": "sha256:c327d2deefbb6887aad83d51f3fdd7952cbf19b911778e32b612515717d6f97b",
+      "size": 15856
+    },
+    {
+      "path": "profiles/manager.md",
+      "sha256": "sha256:0aec59d141aa549b5d788ac7fe2afc4631e9d7f7aba4cdc5c5426294283cba6f",
+      "size": 81896
+    },
+    {
+      "path": "protocol/core.md",
+      "sha256": "sha256:78a77e926fb3f74213f096eaf2e7e8c8ea715712497015c179eed4f742d3dbbb",
+      "size": 71605
+    },
+    {
+      "path": "schemas/v1/agent-skill-v7.schema.json",
+      "sha256": "sha256:97815cebbe4100a833c0c02926cae30d380bfbae0f5b2144f47e5e21ac4d50be",
+      "size": 1082
+    },
+    {
+      "path": "schemas/v1/build-receipt-v2.schema.json",
+      "sha256": "sha256:0fc2fd7a7c1eabf39cf7848da2adb13519898266b017e517a76059e25b4d4213",
+      "size": 594
+    },
+    {
+      "path": "schemas/v1/install-marker-v3.schema.json",
+      "sha256": "sha256:6d80a6c7476682a03b98cd95583be119121ac7c6b03fe5f46ed565fea3100c55",
+      "size": 3009
+    },
+    {
+      "path": "schemas/v1/skill-build-v1.schema.json",
+      "sha256": "sha256:5710e4cb7cb105892fac9ef8eaa40cf965b33e9a8a75eedab62c9c96d9bc4ac6",
+      "size": 587
+    },
+    {
+      "path": "conformance/v1/schema-cases/agent-skill-v7/invalid-command-argv.json",
+      "sha256": "sha256:40051f0c9de4294523eddeb557b05c6d8727ddf7fc8691c8fd993d3758f9b671",
+      "size": 657
+    },
+    {
+      "path": "conformance/v1/schema-cases/build-receipt-v2/valid-local-substitution.json",
+      "sha256": "sha256:4f30daaba7169431b38709b9906a1dcb8145533e2795ebb43fd2399827345412",
+      "size": 2364
+    },
+    {
+      "path": "conformance/v1/fixtures/external-repository/lfs-pointers.json",
+      "sha256": "sha256:6bc87ae5d697e08e5533eabbc83e231015edddee51470e413de678e72c264217",
+      "size": 6417
+    },
+    {
+      "path": "conformance/v1/fixtures/external-repository/local-config-and-refs.json",
+      "sha256": "sha256:e2a3f66c4ff46605215b18121a54ccfca011ff03a53e692e0692a8c27bec83b7",
+      "size": 5478
+    },
+    {
+      "path": "conformance/v1/fixtures/external-repository/pack-index.json",
+      "sha256": "sha256:09768bac46eb9966e76baf7fbe613ed87a88dd665962f4d3c18f20dc6a98791c",
+      "size": 18377
+    },
+    {
+      "path": "conformance/v1/fixtures/external-repository/raw-objects.json",
+      "sha256": "sha256:febea2ca5d58c0fe900163a3b9d55d04d906046e61800e23ae73fdc2dc0d8643",
+      "size": 5249
+    },
+    {
+      "path": "conformance/v1/expected/build-driver/receipt.ccj.json",
+      "sha256": "sha256:919fbbad8e6ce95532219fd952c2309d0d7026f85209650508fd6834af4020cd",
+      "size": 1120
+    },
+    {
+      "path": "conformance/v1/expected/external-repository/build-receipt-v2.json",
+      "sha256": "sha256:1a519db0c46f68e50d72d76d94cb77d403798e005099fcc04091ed1b98b961bd",
+      "size": 2280
+    },
+    {
+      "path": "conformance/v1/expected/external-repository/install-marker-v3-mixed.json",
+      "sha256": "sha256:20a1ef924f54f8c6dab582a78c22be0778b2f08c17f1cedaeb8016efd624ddd0",
+      "size": 2708
+    },
+    {
+      "path": "conformance/v1/expected/external-repository/mixed-build-plan.json",
+      "sha256": "sha256:680407f392cf9c44c013d1438c5569099a8be683d25d3b423b4d5c7c2d653f74",
+      "size": 579
+    },
+    {
+      "path": "conformance/v1/vectors/conformance-claim-v3-qualification.json",
+      "sha256": "sha256:c4b9132ce8344d5b210aa7fbc2715a06586ea2efc2b88ae7f6464468e48de2ee",
+      "size": 934
+    },
+    {
+      "path": "conformance/v1/vectors/external-repository-acquisition.json",
+      "sha256": "sha256:d67524fe072702fa5e908fc0167918813430675cf25ad73abcd7e86c2dac32d8",
+      "size": 6144
+    },
+    {
+      "path": "conformance/v1/vectors/external-repository-lifecycle.json",
+      "sha256": "sha256:175d709f183775b22ed3db27bc923ca78d6394d93a13096b5d6890c509aab072",
+      "size": 10441
+    }
+  ],
+  "protocol_version": "1.0.0-rc.5"
+}

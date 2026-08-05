@@ -1,0 +1,57 @@
+{
+  "local_case": {
+    "ccj1_preimage_base64": "eyJhbGdvcml0aG0iOiJjdXJhdG9yLW9wZXJhdG9yLWxvY2FsLWdpdC12MSIsInByb2plY3QiOiJnaXQuZXhhbXBsZS50ZXN0L3Byb2plY3RzL2ludGVyb3AiLCJzZWxlY3RvciI6InJlcG9zaXRvcmllcy9nb2xkZW4tdG9vbHMifQ==",
+    "expected_identity": {
+      "kind": "operator-local-git",
+      "value": "sha256:c0672fec60fd19be083125cc7de874352d000cab2c6f8414fb209e5fbae870cc"
+    },
+    "normalized_selector": "repositories/golden-tools",
+    "project": "git.example.test/projects/interop",
+    "selector_input": "./fixtures/../repositories/golden-tools"
+  },
+  "network_cases": [
+    {
+      "expected_identity": {
+        "kind": "network-git",
+        "value": "git.example.test/Org/Golden-Tools"
+      },
+      "id": "https",
+      "input": "https://Git.Example.Test/Org/Golden-Tools.git"
+    },
+    {
+      "expected_identity": {
+        "kind": "network-git",
+        "value": "git.example.test/Org/Golden-Tools"
+      },
+      "id": "ssh-uri",
+      "input": "ssh://builder@Git.Example.Test/Org/Golden-Tools.git"
+    },
+    {
+      "expected_identity": {
+        "kind": "network-git",
+        "value": "git.example.test/Org/Golden-Tools"
+      },
+      "id": "scp",
+      "input": "builder@Git.Example.Test:Org/Golden-Tools.git"
+    },
+    {
+      "expected_identity": {
+        "kind": "network-git",
+        "value": "example.test/工具/repo"
+      },
+      "id": "unicode-https",
+      "input": "https://example.test/工具/repo.git"
+    },
+    {
+      "expected_error": "build_repository_identity_invalid",
+      "id": "https-userinfo-rejected",
+      "input": "https://user@example.test/repo.git"
+    },
+    {
+      "expected_error": "build_repository_identity_invalid",
+      "id": "dot-component-rejected",
+      "input": "ssh://example.test/org/../repo.git"
+    }
+  ],
+  "schema_version": 1
+}

@@ -1,0 +1,230 @@
+{
+  "base_bundle": "canonical-sha1-tagged.json",
+  "cases": [
+    {
+      "entries": [
+        {
+          "content_base64": "L291dHNpZGUvb2JqZWN0cwo=",
+          "kind": "regular",
+          "mode": "100644",
+          "path": ".git/objects/info/alternates"
+        }
+      ],
+      "expected": {
+        "audit_started": false,
+        "code": "build_repository_local_format_unsupported",
+        "compiler_started": false,
+        "outcome": "rejected"
+      },
+      "id": "alternate-object-store"
+    },
+    {
+      "entries": [
+        {
+          "content_base64": "YmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYgo=",
+          "kind": "regular",
+          "mode": "100644",
+          "path": ".git/refs/replace/0123456789abcdef0123456789abcdef01234567"
+        }
+      ],
+      "expected": {
+        "audit_started": false,
+        "code": "build_repository_local_format_unsupported",
+        "compiler_started": false,
+        "outcome": "rejected"
+      },
+      "id": "replace-ref"
+    },
+    {
+      "entries": [
+        {
+          "content_base64": "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nwo=",
+          "kind": "regular",
+          "mode": "100644",
+          "path": ".git/info/grafts"
+        }
+      ],
+      "expected": {
+        "audit_started": false,
+        "code": "build_repository_local_format_unsupported",
+        "compiler_started": false,
+        "outcome": "rejected"
+      },
+      "id": "graft"
+    },
+    {
+      "entries": [
+        {
+          "content_base64": "",
+          "kind": "regular",
+          "mode": "100644",
+          "path": ".git/objects/pack/pack-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.promisor"
+        }
+      ],
+      "expected": {
+        "audit_started": false,
+        "code": "build_repository_local_format_unsupported",
+        "compiler_started": false,
+        "outcome": "rejected"
+      },
+      "id": "promisor-pack"
+    },
+    {
+      "entries": [
+        {
+          "content_base64": "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nwo=",
+          "kind": "regular",
+          "mode": "100644",
+          "path": ".git/HEAD"
+        },
+        {
+          "content_base64": "W2NvcmVdCglyZXBvc2l0b3J5Zm9ybWF0dmVyc2lvbiA9IDAKCWJhcmUgPSBmYWxzZQpbcmVtb3RlICJvcmlnaW4iXQpwcm9taXNvciA9IHRydWUKcGFydGlhbENsb25lRmlsdGVyID0gYmxvYjpub25lCg==",
+          "kind": "regular",
+          "mode": "100644",
+          "path": ".git/config"
+        }
+      ],
+      "expected": {
+        "audit_started": false,
+        "code": "build_repository_local_format_unsupported",
+        "compiler_started": false,
+        "outcome": "rejected"
+      },
+      "id": "partial-clone"
+    },
+    {
+      "entries": [
+        {
+          "content_base64": "Z2l0ZGlyOiAuLi9vdXRzaWRlLmdpdAo=",
+          "kind": "regular",
+          "mode": "100644",
+          "path": ".git"
+        }
+      ],
+      "expected": {
+        "audit_started": false,
+        "code": "build_repository_local_gitfile_unsupported",
+        "compiler_started": false,
+        "outcome": "rejected"
+      },
+      "id": "gitfile"
+    },
+    {
+      "entries": [
+        {
+          "content_base64": "Li4vLi4K",
+          "kind": "regular",
+          "mode": "100644",
+          "path": ".git/commondir"
+        }
+      ],
+      "expected": {
+        "audit_started": false,
+        "code": "build_repository_local_linked_worktree_unsupported",
+        "compiler_started": false,
+        "outcome": "rejected"
+      },
+      "id": "linked-worktree"
+    },
+    {
+      "entries": [
+        {
+          "content_base64": "W2NvcmVdCgliYXJlID0gdHJ1ZQo=",
+          "kind": "regular",
+          "mode": "100644",
+          "path": "config"
+        }
+      ],
+      "expected": {
+        "audit_started": false,
+        "code": "build_repository_local_bare_unsupported",
+        "compiler_started": false,
+        "outcome": "rejected"
+      },
+      "id": "bare-repository"
+    },
+    {
+      "entries": [
+        {
+          "content_base64": "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nwo=",
+          "kind": "regular",
+          "mode": "100644",
+          "path": ".git/HEAD"
+        },
+        {
+          "content_base64": "W2NvcmVdCnJlcG9zaXRvcnlmb3JtYXR2ZXJzaW9uID0gMQpiYXJlID0gZmFsc2UKW2V4dGVuc2lvbnNdCnJlZlN0b3JhZ2UgPSByZWZ0YWJsZQo=",
+          "kind": "regular",
+          "mode": "100644",
+          "path": ".git/config"
+        }
+      ],
+      "expected": {
+        "audit_started": false,
+        "code": "build_repository_local_format_unsupported",
+        "compiler_started": false,
+        "outcome": "rejected"
+      },
+      "id": "reftable"
+    },
+    {
+      "entries": [
+        {
+          "kind": "symbolic-link",
+          "path": ".git/objects/aa/unsafe",
+          "target": "../../../../outside"
+        }
+      ],
+      "expected": {
+        "audit_started": false,
+        "code": "build_repository_local_layout_unsafe",
+        "compiler_started": false,
+        "outcome": "rejected"
+      },
+      "id": "object-link"
+    },
+    {
+      "entries": [
+        {
+          "content_base64": "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nwo=",
+          "kind": "regular",
+          "mode": "100644",
+          "path": ".git/HEAD"
+        },
+        {
+          "content_base64": "W2NvcmVdCglyZXBvc2l0b3J5Zm9ybWF0dmVyc2lvbiA9IDAKCWJhcmUgPSBmYWxzZQpbZmlsdGVyICJsZnMiXQpjbGVhbiA9IGdpdC1sZnMgY2xlYW4gLS0gJWYKc211ZGdlID0gZ2l0LWxmcyBzbXVkZ2UgLS0gJWYK",
+          "kind": "regular",
+          "mode": "100644",
+          "path": ".git/config"
+        }
+      ],
+      "expected": {
+        "child_started": false,
+        "outcome": "admitted-inert"
+      },
+      "id": "filter-config-inert"
+    },
+    {
+      "entries": [
+        {
+          "content_base64": "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nwo=",
+          "kind": "regular",
+          "mode": "100644",
+          "path": ".git/HEAD"
+        },
+        {
+          "content_base64": "W2NvcmVdCglyZXBvc2l0b3J5Zm9ybWF0dmVyc2lvbiA9IDAKCWJhcmUgPSBmYWxzZQpbY3JlZGVudGlhbF0KaGVscGVyID0gIXBhY2thZ2UtY29tbWFuZAo=",
+          "kind": "regular",
+          "mode": "100644",
+          "path": ".git/config"
+        }
+      ],
+      "expected": {
+        "child_started": false,
+        "outcome": "admitted-inert"
+      },
+      "id": "credential-helper-inert"
+    }
+  ],
+  "mutation_semantics": "replace or add exactly the listed administration entries; do not infer missing bytes",
+  "schema_version": 1
+}
