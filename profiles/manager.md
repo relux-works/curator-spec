@@ -292,18 +292,31 @@ no incomplete result, `Error`, or `DepsErrors`, and select no tests.
 
 Only a result with both `Standard == true` and `Goroot == true` is a trusted
 toolchain package. Its directory and every listed source, module, and embedded
-input MUST remain below the fingerprinted `GOROOT`. Every other result, its
-package directory, module file, active Go file, and every active embedded input
-MUST be a regular file below the command's build root. Escaped, missing,
-linked, special, or out-of-root input is rejected.
+input MUST remain below the fingerprinted `GOROOT`, with the single vendored
+exception that `GOROOT/src/vendor` packages reporting `ImportPath` prefix
+`vendor/` and `Root == ""` are accepted as trusted when `Standard == true &&
+Goroot == true` and the directory is below `GOROOT` (Go 1.25 toolchain quirk).
+Every other result, its package directory, module file, active Go file, and
+every active embedded input MUST be a regular file below the command's build
+root. Escaped, missing, linked, special, or out-of-root input is rejected.
 
 Every result MUST have empty `SysoFiles`. Every non-standard result MUST also
 have empty `CgoFiles`, `CFiles`, `CXXFiles`, `MFiles`, `HFiles`, `FFiles`,
-`SFiles`, `SwigFiles`, and `SwigCXXFiles`. Thus cgo, package-controlled C, C++,
-Objective-C, Fortran, assembly, SWIG, and host objects are rejected throughout
-the active dependency graph. Each active non-standard `GoFiles` file is scanned
-as exact bytes and rejected if it contains `//go:cgo_import_dynamic`. Any
-violation fails before `go build`.
+`SwigFiles`, and `SwigCXXFiles`, with the narrow vendored assembly exception
+that pure Go `SFiles` are allowed only for vendored non-standard packages that
+have no `CgoFiles`/`CFiles`/`CXXFiles`/`MFiles`/`HFiles`/`FFiles`/`SwigFiles`/
+`SwigCXXFiles`/host objects, where every `SFiles` entry is a regular file
+below the build root and the package is already hashed via
+`curator-build-source-v1` (e.g. `coder/websocket` masks). Thus cgo, package-
+controlled C, C++, Objective-C, Fortran, host objects, and SWIG remain rejected
+throughout the active dependency graph, while audited pure Go assembly in
+vendored deps is permitted. Each active non-standard `GoFiles` file is scanned
+as exact bytes and rejected if it contains `//go:cgo_import_dynamic`, except
+for the audited allowlist `golang.org/x/sys` and `golang.org/x/sys/*`
+(`zsyscall` trampolines). `//go:generate` in `GoFiles` is inert — managers
+MUST NOT run generators and `go build -mod=vendor` does not execute them; its
+presence in vendored `GoFiles` (vendor already materialized) does not fail
+preflight. Any other violation fails before `go build`.
 
 The fixed build forces the native gc compiler, disabled PGO and cgo, and
 internal linking with no libgcc. If internal linking cannot produce the output,
