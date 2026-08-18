@@ -1,6 +1,6 @@
 # Decision 0007: portable and verified assurance modes
 
-Status: accepted for 1.0.0-rc.7
+Status: accepted for 1.0.0-rc.7 and carried by 1.0.0-rc.8
 
 ## Context
 
@@ -69,7 +69,7 @@ only with a typed execution receipt matching the permit, provider, capability
 receipt, operation, build input, and artifact. Any mismatch fails closed.
 
 Claim schema 4 expresses portable and verified assurance as disjoint branches.
-Portable evidence cannot populate the verified branch. Rc.7 publishes the
+Portable evidence cannot populate the verified branch. Rc.8 publishes the
 schema and vectors but emits no claim, because no native provider qualification
 is released by this task.
 

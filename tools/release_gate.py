@@ -39,7 +39,8 @@ RETIRED_DESCRIPTOR_STEM = "curator" + "-build"
 # The schema-6 build-source digest algorithm namespace shares the retired stem
 # but is a different, byte-frozen identifier.
 BUILD_SOURCE_ALGORITHM_NAMESPACE = RETIRED_DESCRIPTOR_STEM + "-source"
-PROTOCOL_VERSION = "1.0.0-rc.7"
+PROTOCOL_VERSION = "1.0.0-rc.8"
+RC7_PROTOCOL_VERSION = "1.0.0-rc.7"
 RC6_PROTOCOL_VERSION = "1.0.0-rc.6"
 RC5_PROTOCOL_VERSION = "1.0.0-rc.5"
 RC5_RELEASE_METADATA_SHA256 = (
@@ -50,6 +51,10 @@ RC6_RELEASE_METADATA_SHA256 = (
     "sha256:c4ad58e76687bd563679773a60c6ce35c238d4117b7cbceb05d4f88b5300ed3f"
 )
 RC6_SOURCE_COMMIT = "dce6643c55434464c56f0fe20064db754cd58c61"
+RC7_RELEASE_METADATA_SHA256 = (
+    "sha256:e5872ee4dd207bf6b190d8c8be15a9366d9c1e3638047ea983620b97c9f84d5d"
+)
+RC7_SOURCE_COMMIT = "99f70947d6f2447366d6c996127b73eca37a9159"
 CLAIM_PROTOCOL_VERSIONS = {
     1: "1.0.0-rc.3",
     2: "1.0.0-rc.4",
@@ -69,7 +74,7 @@ CLAIM_HISTORY_FROZEN_SHA256 = {
     "conformance/v1/schema-cases/conformance-claim-v2/invalid.json": "79d244335cb2ddfb9c831aa38c31c6ca37c89f0704ad61a19032882b1bec8604",
     "conformance/v1/schema-cases/conformance-claim-v2/valid.json": "f7e7cc86f33ea03ee9bb4d149e1dba29cf34f5ceaf5504df8a9e91c659a1835f",
 }
-RC7_REQUIRED_FILES = {
+RC8_REQUIRED_FILES = {
     "decisions/0004-compile-only-build-drivers.md",
     "schemas/v1/agent-skill-v6.schema.json",
     "schemas/v1/csk-skill-v6.schema.json",
@@ -86,6 +91,7 @@ RC7_REQUIRED_FILES = {
     "release/1.0.0-rc.5.json",
     "release/1.0.0-rc.6.json",
     "release/1.0.0-rc.7.json",
+    "release/1.0.0-rc.8.json",
     "decisions/0007-portable-and-verified-assurance.md",
     "protocol/assurance.md",
     "docs/assurance-modes.md",
@@ -98,7 +104,7 @@ RC7_REQUIRED_FILES = {
     "schemas/v1/conformance-claim-v4.schema.json",
     "conformance/v1/vectors/assurance-modes.json",
 }
-RC7_REQUIRED_MANIFEST_FILES = {
+RC8_REQUIRED_MANIFEST_FILES = {
     "schema-cases/index.json",
     "expected/marker.json",
     "expected/marker-v2.json",
@@ -116,7 +122,7 @@ FROZEN_MARKER_V1_SHA256 = (
 # schema-5 golden skill activates no compiled command, so the writer golden
 # restates the legacy marker with exactly these members changed.
 SHARED_FIXTURE_MARKER_V2_DELTA = frozenset({"schema_version", "build_roots", "builds"})
-RC7_REQUIRED_INDEXED_SCHEMAS = {
+RC8_REQUIRED_INDEXED_SCHEMAS = {
     "agent-skill-v6.schema.json",
     "csk-skill-v6.schema.json",
     "build-receipt-v1.schema.json",
@@ -292,7 +298,7 @@ def validate_manifest_inventory() -> None:
     )
     if paths != actual:
         raise ReleaseFailure("conformance manifest inventory is incomplete or stale")
-    missing_required = sorted(RC7_REQUIRED_MANIFEST_FILES - set(paths))
+    missing_required = sorted(RC8_REQUIRED_MANIFEST_FILES - set(paths))
     if missing_required:
         raise ReleaseFailure(
             f"{PROTOCOL_VERSION} manifest omits required files: {missing_required}"
@@ -406,7 +412,7 @@ def validate_protocol_artifacts(version: str) -> None:
     if version != PROTOCOL_VERSION:
         return
 
-    missing = sorted(path for path in RC7_REQUIRED_FILES if not (ROOT / path).is_file())
+    missing = sorted(path for path in RC8_REQUIRED_FILES if not (ROOT / path).is_file())
     if missing:
         raise ReleaseFailure(
             f"{PROTOCOL_VERSION} required artifacts are missing: {missing}"
@@ -462,7 +468,7 @@ def validate_protocol_artifacts(version: str) -> None:
         for item in index
         if isinstance(item, dict) and isinstance(item.get("schema"), str)
     }
-    missing_schemas = sorted(RC7_REQUIRED_INDEXED_SCHEMAS - indexed)
+    missing_schemas = sorted(RC8_REQUIRED_INDEXED_SCHEMAS - indexed)
     if missing_schemas:
         raise ReleaseFailure(
             f"{PROTOCOL_VERSION} schema-case index is incomplete: {missing_schemas}"
@@ -471,21 +477,24 @@ def validate_protocol_artifacts(version: str) -> None:
     if sha256_identity(ROOT / "release" / "1.0.0-rc.6.json") != RC6_RELEASE_METADATA_SHA256:
         raise ReleaseFailure("historical rc.6 release metadata changed")
 
+    if sha256_identity(ROOT / "release" / "1.0.0-rc.7.json") != RC7_RELEASE_METADATA_SHA256:
+        raise ReleaseFailure("historical rc.7 release metadata changed")
+
     validate_assurance_release_surface()
 
-    release = load_json(ROOT / "release" / "1.0.0-rc.7.json")
+    release = load_json(ROOT / "release" / "1.0.0-rc.8.json")
     history = release.get("historical_release", {})
     claim = release.get("claim_v4", {})
     assurance = release.get("assurance", {})
     if (
         release.get("protocol_version") != PROTOCOL_VERSION
-        or release.get("source_baseline_commit") != RC6_SOURCE_COMMIT
-        or release.get("legacy_release") != RC6_PROTOCOL_VERSION
+        or release.get("source_baseline_commit") != RC7_SOURCE_COMMIT
+        or release.get("legacy_release") != RC7_PROTOCOL_VERSION
         or not isinstance(history, dict)
-        or history.get("protocol_version") != RC6_PROTOCOL_VERSION
-        or history.get("metadata_path") != "release/1.0.0-rc.6.json"
-        or history.get("metadata_sha256") != RC6_RELEASE_METADATA_SHA256
-        or history.get("source_commit") != RC6_SOURCE_COMMIT
+        or history.get("protocol_version") != RC7_PROTOCOL_VERSION
+        or history.get("metadata_path") != "release/1.0.0-rc.7.json"
+        or history.get("metadata_sha256") != RC7_RELEASE_METADATA_SHA256
+        or history.get("source_commit") != RC7_SOURCE_COMMIT
         or history.get("immutable") is not True
         or not isinstance(claim, dict)
         or claim.get("claim_protocol_version") != PROTOCOL_VERSION
@@ -499,7 +508,7 @@ def validate_protocol_artifacts(version: str) -> None:
         or assurance.get("skill_vendored_provider_allowed") is not False
     ):
         raise ReleaseFailure(
-            "rc.7 metadata rewrites rc.6 evidence or fabricates a verified claim"
+            "rc.8 metadata rewrites rc.7 evidence or fabricates a verified claim"
         )
 
     validate_manager_lifecycle_release_surface()

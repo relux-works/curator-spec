@@ -93,7 +93,7 @@ The suite contains:
   mechanism each one is not, worker identity and protocol negatives, closed
   package-influence surfaces, and the distinct portable, reserved-hardened, and
   pre-revision cache identities;
-- the rc.7 assurance contract: closed portable and verified policies, the
+- the rc.8 assurance contract: closed portable and verified policies, the
   platform-neutral provider descriptor, exact capability negotiation, typed
   permits, receipts, and checkpoints, cache non-aliasing, fail-closed
   no-downgrade selection, a fully hash-linked positive flow, stable relational
@@ -163,9 +163,9 @@ Windows qualification remains downstream, and Linux is excluded until
 `TASK-260728-1skseh` passes. Claims do not replace release CI evidence or
 artifact attestations.
 
-Claim schema 4 is introduced by rc.7 and has disjoint portable and verified
+Claim schema 4 was introduced by rc.7 and is carried by rc.8 with disjoint portable and verified
 assurance branches. Its verified branch requires provider, capability-receipt,
-and execution-receipt identities; portable evidence cannot satisfy it. Rc.7
+and execution-receipt identities; portable evidence cannot satisfy it. Rc.8
 emits no claim and qualifies no provider/platform tuple. Platform-neutral suite
 success is not native provider evidence.
 

@@ -204,7 +204,7 @@ planned command prevents publication for the whole operation. Successful
 publication is one manager-home transaction with the consumer ledger last;
 rollback restores committed targets in reverse order.
 
-For rc.7, omitted assurance selection means `portable`. An implementation that
+For rc.8, omitted assurance selection means `portable`. An implementation that
 offers `verified` exposes it only as explicit operator configuration or a CLI
 option; package data cannot select it. Before execution it resolves a separately
 installed `host-execution-provider-v1`, verifies its configured binary identity,
