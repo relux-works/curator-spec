@@ -3,6 +3,33 @@
 All notable protocol changes are recorded here. Versions follow Semantic
 Versioning for the complete specification set.
 
+## 1.0.0-rc.7 - 2026-08-19
+
+### Added
+
+- Added the closed `portable` and `verified` assurance model. Portable is the
+  default CLI-only `portable-cli-policy-v1`; verified is the explicit,
+  provider-backed `verified-provider-policy-v1` and never falls back.
+- Added the platform-neutral `host-execution-provider-v1` contract shared by
+  macOS, Linux, and Windows, plus typed provider descriptors, capability
+  receipts, execution permits, execution receipts, checkpoints, and claim v4.
+- Added generated valid and invalid schema cases, cache non-aliasing and
+  fail-closed vectors, validator tests, and rc.7 release gates.
+- Added Decision 0007, normative assurance protocol text, operator guidance,
+  and migration/security notes.
+
+### Compatibility and security
+
+- Rc.6 and earlier release metadata and wire schemas remain byte-frozen. No
+  historical receipt, marker, cache entry, checkpoint, or claim is upgraded.
+- Portable evidence cannot satisfy verified requirements. Mode, policy,
+  provider contract, provider binary, capability receipt, permit, execution
+  receipt, cache identity, checkpoint, and claim identities are disjoint.
+- Providers are separately installed trusted host components. Skill-vendored
+  provider binaries and every other vendored compiled artifact remain
+  prohibited. Rc.7 ships no provider implementation and emits no verified
+  platform claim.
+
 ## 1.0.0-rc.6 - 2026-07-30
 
 ### Added

@@ -1,0 +1,108 @@
+{
+  "cache_identities": [
+    {
+      "expected_key": "sha256:e7c9dc8be989c2437d00d9185426239d11872b822bee33fcbcc19291c10bf331",
+      "input": {
+        "build_input_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+        "cache_identity": "portable-cache-identity-v1",
+        "execution_policy": "manager-worker-v1",
+        "policy_id": "portable-cli-policy-v1"
+      },
+      "mode": "portable"
+    },
+    {
+      "expected_key": "sha256:c5be45d17d8bbe16a963dd269084d53fb91581c5f180368998c540cee725fd0f",
+      "input": {
+        "build_input_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+        "cache_identity": "verified-cache-identity-v1",
+        "capability_receipt_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+        "execution_policy": "verified-provider-execution-v1",
+        "policy_id": "verified-provider-policy-v1",
+        "provider_binary_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "provider_contract": "host-execution-provider-v1",
+        "provider_id": "example.host-provider"
+      },
+      "mode": "verified"
+    }
+  ],
+  "contract_version": "assurance-modes-v1",
+  "fail_closed_cases": [
+    {
+      "error": "verified_provider_missing",
+      "execution_started": false,
+      "fallback_mode": null,
+      "name": "verified-provider-missing"
+    },
+    {
+      "error": "verified_provider_unavailable",
+      "execution_started": false,
+      "fallback_mode": null,
+      "name": "verified-provider-unhealthy"
+    },
+    {
+      "error": "verified_provider_unavailable",
+      "execution_started": false,
+      "fallback_mode": null,
+      "name": "verified-provider-incompatible"
+    },
+    {
+      "error": "verified_capabilities_unsatisfied",
+      "execution_started": false,
+      "fallback_mode": null,
+      "name": "verified-capability-missing"
+    },
+    {
+      "error": "assurance_evidence_mismatch",
+      "execution_started": false,
+      "fallback_mode": null,
+      "name": "portable-evidence-for-verified"
+    },
+    {
+      "execution_started": false,
+      "expected": "cache_miss",
+      "fallback_mode": null,
+      "name": "provider-change-cache-miss"
+    },
+    {
+      "error": "verified_checkpoint_invalid",
+      "execution_started": false,
+      "fallback_mode": null,
+      "name": "checkpoint-used-as-cache"
+    },
+    {
+      "error": "compiled_artifact_forbidden",
+      "execution_started": false,
+      "fallback_mode": null,
+      "name": "skill-vendored-provider"
+    }
+  ],
+  "platforms": [
+    "linux",
+    "macos",
+    "windows"
+  ],
+  "policies": [
+    {
+      "default": true,
+      "execution_policy": "manager-worker-v1",
+      "mode": "portable",
+      "policy_id": "portable-cli-policy-v1",
+      "provider_contract": null
+    },
+    {
+      "default": false,
+      "execution_policy": "verified-provider-execution-v1",
+      "mode": "verified",
+      "policy_id": "verified-provider-policy-v1",
+      "provider_contract": "host-execution-provider-v1"
+    }
+  ],
+  "record_identities": [
+    "provider-capability-receipt-v1",
+    "verified-execution-permit-v1",
+    "verified-execution-receipt-v1",
+    "verified-execution-checkpoint-v1",
+    "assurance-conformance-claim-v1"
+  ],
+  "release_claims": []
+}

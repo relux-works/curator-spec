@@ -272,8 +272,8 @@ class StableReleaseGateTests(unittest.TestCase):
                 release_gate.validate_version(version)
 
 
-class ProtocolRC6ReleaseGateTests(unittest.TestCase):
-    VERSION = "1.0.0-rc.6"
+class ProtocolRC7ReleaseGateTests(unittest.TestCase):
+    VERSION = "1.0.0-rc.7"
 
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -310,11 +310,11 @@ class ProtocolRC6ReleaseGateTests(unittest.TestCase):
             self.fail(f"manifest does not list {relative}")
         self._write_json(manifest_path, manifest)
 
-    def test_accepts_complete_rc6_artifact_set(self) -> None:
+    def test_accepts_complete_rc7_artifact_set(self) -> None:
         release_gate.validate_protocol_artifacts(self.VERSION)
 
     def test_rejects_each_missing_required_artifact(self) -> None:
-        for relative in sorted(release_gate.RC6_REQUIRED_FILES):
+        for relative in sorted(release_gate.RC7_REQUIRED_FILES):
             with self.subTest(path=relative):
                 path = self.root / relative
                 payload = path.read_bytes()
@@ -388,7 +388,7 @@ class ProtocolRC6ReleaseGateTests(unittest.TestCase):
                 finally:
                     path.write_bytes(payload)
 
-    def test_rejects_claim_v3_transition_mismatch(self) -> None:
+    def test_rejects_claim_v3_history_mismatch(self) -> None:
         path = self.root / "schemas" / "v1" / "conformance-claim-v3.schema.json"
         schema = json.loads(path.read_text(encoding="utf-8"))
         schema["properties"]["protocol_version"]["const"] = self.VERSION
@@ -406,14 +406,14 @@ class ProtocolRC6ReleaseGateTests(unittest.TestCase):
         ):
             release_gate.validate_protocol_artifacts(self.VERSION)
 
-    def test_rejects_rc6_history_rewriting_rc5_identity(self) -> None:
+    def test_rejects_rc7_history_rewriting_rc6_identity(self) -> None:
         path = self.root / "release" / f"{self.VERSION}.json"
         metadata = json.loads(path.read_text(encoding="utf-8"))
         metadata["historical_release"]["metadata_sha256"] = "sha256:" + "0" * 64
         self._write_json(path, metadata)
         with self.assertRaisesRegex(
             release_gate.ReleaseFailure,
-            "rewrites rc.5 evidence or fabricates an rc.6 claim",
+            "rewrites rc.6 evidence or fabricates a verified claim",
         ):
             release_gate.validate_protocol_artifacts(self.VERSION)
 
@@ -424,9 +424,9 @@ class ProtocolRC6ReleaseGateTests(unittest.TestCase):
             release_gate.ReleaseFailure,
             "claim verification is not defined for 1.0.0-rc.6",
         ):
-            release_gate.validate_conformance_claim(path, self.VERSION)
+            release_gate.validate_conformance_claim(path, "1.0.0-rc.6")
 
-    def test_rejects_stale_rc6_suite_pin(self) -> None:
+    def test_rejects_stale_rc7_suite_pin(self) -> None:
         path = self.root / "release" / f"{self.VERSION}.json"
         metadata = json.loads(path.read_text(encoding="utf-8"))
         metadata["candidate_protocol_pin"]["manifest_sha256"] = (
@@ -437,6 +437,24 @@ class ProtocolRC6ReleaseGateTests(unittest.TestCase):
             release_gate.ReleaseFailure, "does not pin the exact suite manifest"
         ):
             release_gate.validate_version(self.VERSION)
+
+    def test_rejects_rc7_silent_downgrade_or_claim_fabrication(self) -> None:
+        path = self.root / "release" / f"{self.VERSION}.json"
+        base = json.loads(path.read_text(encoding="utf-8"))
+        for field, value in (
+            ("silent_downgrade_permitted", True),
+            ("verified_implementations", ["unqualified"]),
+            ("verified_platform_claims", ["linux"]),
+            ("skill_vendored_provider_allowed", True),
+        ):
+            with self.subTest(field=field):
+                metadata = json.loads(json.dumps(base))
+                metadata["assurance"][field] = value
+                self._write_json(path, metadata)
+                with self.assertRaisesRegex(
+                    release_gate.ReleaseFailure, "assurance policy"
+                ):
+                    release_gate.validate_version(self.VERSION)
 
     def _shared_marker(self, name: str) -> Path:
         return self.root / "conformance" / "v1" / "expected" / name
@@ -529,7 +547,7 @@ class ProtocolRC6ReleaseGateTests(unittest.TestCase):
         ):
             release_gate.validate_shared_fixture_marker_release_surface()
 
-    def test_rejects_duplicate_rc6_suite_pin(self) -> None:
+    def test_rejects_duplicate_rc7_suite_pin(self) -> None:
         path = self.root / "release" / f"{self.VERSION}.json"
         metadata = json.loads(path.read_text(encoding="utf-8"))
         expected = metadata["candidate_protocol_pin"]["manifest_sha256"]

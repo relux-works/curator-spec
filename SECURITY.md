@@ -141,6 +141,28 @@ per operation over the exhaustive `rc5-native-control-inventory-v1` inventory. I
 is result-only reporting and never enters cache, receipt, marker, or claim
 identity, so it cannot become a capability claim a reader would rely on.
 
+### Verified provider boundary
+
+Rc.7 adds explicit verified assurance without changing the portable boundary.
+Verified mode trusts a separately installed, signature-policy-checked host
+provider and binds its contract, provider id, exact binary SHA-256, fresh
+capability receipt, permit, execution receipt, and build input into disjoint
+typed identities. Portable observations, receipts, cache hits, journals, and
+claims cannot satisfy those fields.
+
+The common `host-execution-provider-v1` contract names outcomes rather than
+Linux, macOS, or Windows mechanisms. Native enforcement and qualification stay
+with provider implementations. This release ships none and claims none. A
+missing, unhealthy, incompatible, stale, partial, or identity-mismatched
+provider fails before compilation with no portable retry.
+
+Provider code is outside package trust. Skills MUST NOT vendor provider
+executables, native libraries, helpers, or other compiled artifacts. Provider
+installation and updates use a separate trusted host-administration channel.
+Compromise of a trusted provider, its signing authority, the manager/provider
+authentication channel, the operating-system kernel, or the manager principal
+is inside the verified trusted computing base.
+
 ### Compiler-input trust boundary
 
 Compile-only does not mean trusted source or an invulnerable compiler. Malicious

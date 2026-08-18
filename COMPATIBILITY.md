@@ -123,3 +123,23 @@ Candidate downstream runs consume rc.6 through an explicitly supplied
 `release/1.0.0-rc.5.json` remains byte-frozen historical evidence. The rc.6
 candidate identity does not advance a repository's committed released-suite
 pin and is not a platform claim, signature, or attestation.
+
+## Rc.7 assurance modes
+
+Rc.7 adds new objects without changing any rc.6 or earlier wire object. The
+default remains portable `manager-worker-v1`, now named by the enclosing
+`portable-cli-policy-v1` assurance policy. Existing installations, cache
+entries, receipts, markers, and claims keep their bytes and meaning.
+
+Verified mode is an explicit new branch: `verified-provider-policy-v1`,
+`verified-provider-execution-v1`, and `host-execution-provider-v1`. Its
+provider binary digest and capability receipt enter the verified cache input.
+Consequently portable, pre-policy, different-provider, changed-provider, and
+changed-capability inputs miss rather than alias. Checkpoints use a separate
+typed namespace and are never cache or claim evidence.
+
+Migration requires no action for portable users. An operator may install a
+qualified provider separately and opt into verified mode. If provider preflight
+fails, the operation fails before execution; it is never retried as portable.
+Returning to portable mode is a new explicit operation that produces portable
+identities. No old object is relabeled or upgraded in place.

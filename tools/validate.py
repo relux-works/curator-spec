@@ -22,12 +22,17 @@ SCHEMAS = ROOT / "schemas" / "v1"
 SUITE = ROOT / "conformance" / "v1"
 REVIEWS = ROOT / "reviews"
 SAFE_INTEGER = 9_007_199_254_740_991
-PROTOCOL_VERSION = "1.0.0-rc.6"
+PROTOCOL_VERSION = "1.0.0-rc.7"
+RC6_PROTOCOL_VERSION = "1.0.0-rc.6"
 RC5_PROTOCOL_VERSION = "1.0.0-rc.5"
 RC5_RELEASE_METADATA_SHA256 = (
     "sha256:75ae17fc029b4f51ca40ce768d04fd72991ec3db2602b8fe59213bee6ac34583"
 )
 RC5_PUBLISHED_COMMIT = "f5d7673039226ab81de2f4f87e2155ae995c4df3"
+RC6_RELEASE_METADATA_SHA256 = (
+    "sha256:c4ad58e76687bd563679773a60c6ce35c238d4117b7cbceb05d4f88b5300ed3f"
+)
+RC6_SOURCE_COMMIT = "dce6643c55434464c56f0fe20064db754cd58c61"
 
 # The single execution-policy identity that protocol 1.0 defines for the
 # compiled-build drivers, the identity reserved for the separately tracked
@@ -679,55 +684,61 @@ def validate_manifest() -> None:
     if historical_digest != RC5_RELEASE_METADATA_SHA256:
         raise ValidationFailure("published rc.5 release metadata changed")
 
-    release = load_json(ROOT / "release" / "1.0.0-rc.6.json")
+    rc6_path = ROOT / "release" / "1.0.0-rc.6.json"
+    rc6_digest = "sha256:" + hashlib.sha256(rc6_path.read_bytes()).hexdigest()
+    if rc6_digest != RC6_RELEASE_METADATA_SHA256:
+        raise ValidationFailure("historical rc.6 release metadata changed")
+
+    release = load_json(ROOT / "release" / "1.0.0-rc.7.json")
     manifest_digest = "sha256:" + hashlib.sha256(manifest_path.read_bytes()).hexdigest()
     if release.get("protocol_version") != PROTOCOL_VERSION:
-        raise ValidationFailure("rc.6 release metadata identifies the wrong protocol version")
+        raise ValidationFailure("rc.7 release metadata identifies the wrong protocol version")
     pin = release.get("candidate_protocol_pin", {})
     if not isinstance(pin, dict) or pin.get("manifest_sha256") != manifest_digest:
-        raise ValidationFailure("rc.6 downstream candidate pin does not match the suite manifest")
+        raise ValidationFailure("rc.7 downstream candidate pin does not match the suite manifest")
     downstream = release.get("downstream_consumption", {})
     if (
         not isinstance(downstream, dict)
         or downstream.get("required_manifest_sha256") != manifest_digest
         or downstream.get("committed_release_pin_advanced") is not False
     ):
-        raise ValidationFailure("rc.6 downstream consumption metadata is incomplete")
+        raise ValidationFailure("rc.7 downstream consumption metadata is incomplete")
     history = release.get("historical_release", {})
     if (
         not isinstance(history, dict)
-        or history.get("protocol_version") != RC5_PROTOCOL_VERSION
-        or history.get("metadata_path") != "release/1.0.0-rc.5.json"
-        or history.get("metadata_sha256") != RC5_RELEASE_METADATA_SHA256
-        or history.get("published_commit") != RC5_PUBLISHED_COMMIT
+        or history.get("protocol_version") != RC6_PROTOCOL_VERSION
+        or history.get("metadata_path") != "release/1.0.0-rc.6.json"
+        or history.get("metadata_sha256") != RC6_RELEASE_METADATA_SHA256
+        or history.get("source_commit") != RC6_SOURCE_COMMIT
         or history.get("immutable") is not True
-        or release.get("source_baseline_commit") != RC5_PUBLISHED_COMMIT
-        or release.get("legacy_release") != RC5_PROTOCOL_VERSION
+        or release.get("source_baseline_commit") != RC6_SOURCE_COMMIT
+        or release.get("legacy_release") != RC6_PROTOCOL_VERSION
     ):
-        raise ValidationFailure("rc.6 metadata does not preserve published rc.5 evidence")
-    claim = release.get("claim_v3", {})
+        raise ValidationFailure("rc.7 metadata does not preserve historical rc.6 evidence")
+    claim = release.get("claim_v4", {})
     if (
         not isinstance(claim, dict)
-        or claim.get("claim_protocol_version") != RC5_PROTOCOL_VERSION
-        or claim.get("rc6_claim_schema") is not None
+        or claim.get("claim_protocol_version") != PROTOCOL_VERSION
+        or claim.get("schema") != "schemas/v1/conformance-claim-v4.schema.json"
         or claim.get("claims_emitted") != []
-        or claim.get("linux_excluded_until_task") != "TASK-260728-1skseh"
     ):
-        raise ValidationFailure("rc.6 release metadata fabricates or weakens platform qualification")
-    execution = release.get("execution_policy", {})
+        raise ValidationFailure("rc.7 release metadata fabricates a platform claim")
+    execution = release.get("assurance", {})
     if (
         not isinstance(execution, dict)
-        or execution.get("portable") != PORTABLE_EXECUTION_POLICY
-        or execution.get("hardened_profile_claimed") is not False
-        or execution.get("hardened_profile_owner") != HARDENED_EXECUTION_OWNER
-        or execution.get("legacy_rc4_go_v1_cache_key") != LEGACY_RC4_GO_V1_CACHE_KEY
-        or execution.get("native_control_inventory_version")
-        != NATIVE_CONTROL_INVENTORY_VERSION
-        or execution.get("capability_evidence_record_version")
-        != CAPABILITY_EVIDENCE_RECORD_VERSION
+        or execution.get("default_mode") != "portable"
+        or execution.get("portable_policy") != "portable-cli-policy-v1"
+        or execution.get("portable_execution_policy") != PORTABLE_EXECUTION_POLICY
+        or execution.get("verified_policy") != "verified-provider-policy-v1"
+        or execution.get("verified_execution_policy") != "verified-provider-execution-v1"
+        or execution.get("verified_provider_contract") != "host-execution-provider-v1"
+        or execution.get("verified_implementations") != []
+        or execution.get("verified_platform_claims") != []
+        or execution.get("silent_downgrade_permitted") is not False
+        or execution.get("skill_vendored_provider_allowed") is not False
     ):
         raise ValidationFailure(
-            "rc.6 release metadata does not honestly record the portable execution policy"
+            "rc.7 release metadata does not honestly record assurance availability"
         )
 
 
@@ -2575,6 +2586,48 @@ def validate_local_links() -> None:
                 raise ValidationFailure(f"{path}: broken local link: {target}")
 
 
+def validate_assurance_vectors() -> None:
+    vector = load_json(SUITE / "vectors" / "assurance-modes.json")
+    if vector.get("contract_version") != "assurance-modes-v1":
+        raise ValidationFailure("assurance vector has the wrong contract identity")
+    if vector.get("platforms") != ["linux", "macos", "windows"]:
+        raise ValidationFailure("provider contract is not platform-neutral")
+    policies = vector.get("policies")
+    if not isinstance(policies, list) or len(policies) != 2:
+        raise ValidationFailure("assurance policy set is not closed")
+    by_mode = {item.get("mode"): item for item in policies if isinstance(item, dict)}
+    if (
+        by_mode.get("portable", {}).get("default") is not True
+        or by_mode.get("portable", {}).get("provider_contract") is not None
+        or by_mode.get("verified", {}).get("default") is not False
+        or by_mode.get("verified", {}).get("provider_contract")
+        != "host-execution-provider-v1"
+    ):
+        raise ValidationFailure("assurance defaults or provider binding are invalid")
+    identities = vector.get("cache_identities")
+    if not isinstance(identities, list) or len(identities) != 2:
+        raise ValidationFailure("assurance cache identities are incomplete")
+    keys: set[str] = set()
+    for item in identities:
+        expected = "sha256:" + hashlib.sha256(ccj1_bytes(item.get("input"))).hexdigest()
+        if item.get("expected_key") != expected:
+            raise ValidationFailure("assurance cache identity digest is stale")
+        keys.add(expected)
+    if len(keys) != 2:
+        raise ValidationFailure("portable and verified cache identities alias")
+    failures = vector.get("fail_closed_cases")
+    if not isinstance(failures, list) or len(failures) < 8:
+        raise ValidationFailure("assurance negative coverage is incomplete")
+    for case in failures:
+        if case.get("execution_started") is not False or case.get("fallback_mode") is not None:
+            raise ValidationFailure(f"assurance case is not fail-closed: {case.get('name')}")
+    record_ids = vector.get("record_identities")
+    if not isinstance(record_ids, list) or len(record_ids) != len(set(record_ids)):
+        raise ValidationFailure("assurance record identities alias")
+    if vector.get("release_claims") != []:
+        raise ValidationFailure("rc.7 fabricates a verified provider claim")
+
+
 def main() -> int:
     checks = [
         validate_schemas,
@@ -2583,6 +2636,7 @@ def main() -> int:
         validate_review_evidence,
         validate_shared_fixture_markers,
         validate_vector_semantics,
+        validate_assurance_vectors,
         validate_local_links,
     ]
     try:

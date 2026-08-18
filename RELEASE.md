@@ -23,7 +23,7 @@ approve changes; CI enforces the mechanically verifiable items.
 - [ ] A driver/platform tuple is listed only under a claim schema that admits
   the candidate protocol version and with immutable native passing evidence.
   Schema examples and platform-neutral corpus runs are not native evidence;
-  rc.6 defines no new claim schema and emits no claim.
+  rc.7 defines claim schema 4 but emits no claim.
 - [ ] Every emitted execution-policy identity is one the release actually
   implements. `release/<version>.json` records the portable policy, records that
   no hardened profile is claimed, and names the story that owns the deferred
@@ -32,6 +32,12 @@ approve changes; CI enforces the mechanically verifiable items.
 - [ ] An execution-policy revision proves non-aliasing: the affected logical
   cache keys change, the superseded key is retained only as negative evidence,
   and no prior candidate entry, receipt, marker, or claim is upgraded in place.
+- [ ] Assurance-mode releases prove that portable is the default, verified is
+  explicit and fail-closed, provider/capability/permit/receipt/cache/checkpoint/
+  claim identities do not alias, and no verified platform is claimed without
+  immutable native provider evidence.
+- [ ] Host providers are installed separately from skills, and the complete
+  release corpus preserves the prohibition on vendored compiled artifacts.
 
 ## Stable 1.0.0
 

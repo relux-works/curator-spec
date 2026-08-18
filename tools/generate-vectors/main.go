@@ -23,17 +23,19 @@ import (
 )
 
 const (
-	protocolVersion                   = "1.0.0-rc.6"
+	protocolVersion                   = "1.0.0-rc.7"
 	conformanceClaimV1ProtocolVersion = "1.0.0-rc.3"
 	conformanceClaimV2ProtocolVersion = "1.0.0-rc.4"
 	conformanceClaimV3ProtocolVersion = "1.0.0-rc.5"
 	conformanceClaimV2CreatedAt       = "2026-07-20T00:00:00Z"
-	rc6CreatedAt                      = "2026-07-30T00:00:00Z"
+	rc7CreatedAt                      = "2026-08-19T00:00:00Z"
 	fixedCommit                       = "0123456789abcdef0123456789abcdef01234567"
 	fixedTime                         = "2026-07-13T00:00:00Z"
 	genesis                           = "0000000000000000000000000000000000000000000000000000000000000000"
 	rc5ReleaseMetadataSHA256          = "sha256:75ae17fc029b4f51ca40ce768d04fd72991ec3db2602b8fe59213bee6ac34583"
 	rc5PublishedCommit                = "f5d7673039226ab81de2f4f87e2155ae995c4df3"
+	rc6ReleaseMetadataSHA256          = "sha256:c4ad58e76687bd563679773a60c6ce35c238d4117b7cbceb05d4f88b5300ed3f"
+	rc6SourceCommit                   = "dce6643c55434464c56f0fe20064db754cd58c61"
 
 	// portableExecutionPolicy is the only execution-policy identity that
 	// protocol 1.0 defines for go-v1 and go-repository-v1.
@@ -51,6 +53,10 @@ const (
 	// capabilityEvidenceRecordVersion names the closed per-operation reporting
 	// record. It never enters a cache key, receipt, marker, or claim.
 	capabilityEvidenceRecordVersion = "capability-evidence-v1"
+	portableAssurancePolicy         = "portable-cli-policy-v1"
+	verifiedAssurancePolicy         = "verified-provider-policy-v1"
+	verifiedExecutionPolicy         = "verified-provider-execution-v1"
+	verifiedProviderContract        = "host-execution-provider-v1"
 	// unavailableNativeControlReason is the only reason an rc.5 inventory
 	// control is unavailable: the platform primitive exists but is not scoped
 	// to a private worker domain.
@@ -173,10 +179,11 @@ func main() {
 	writeBuildDriverVectors(vectors, filepath.Join(suite, "fixtures", "go-build-skill"), filepath.Join(expected, "build-driver"), marker)
 	writeExternalRepositoryFixtures(suite)
 	writeExternalRepositoryVectors(vectors)
+	writeAssuranceVectors(vectors)
 	writeSchemaCases(suite, marker, ledger, audited, snapshot, entries[0], bundle, pinned)
 	writeExternalRepositoryExpected(expected, marker)
 	writeManifest(suite)
-	writeRC6ReleaseMetadata(*root, suite)
+	writeRC7ReleaseMetadata(*root, suite)
 }
 
 func writeSkillManifestResolutionVectors(dir string) {
@@ -1655,47 +1662,148 @@ func writeExternalRepositoryExpected(expected string, markerV1 map[string]any) {
 	})
 }
 
-func writeRC6ReleaseMetadata(root, suite string) {
+func verifiedCapabilities() []any {
+	ids := []string{
+		"total-network-denial-v1",
+		"read-only-source-and-toolchain-v1",
+		"exact-executable-allowlisting-v1",
+		"private-build-root-only-writes-v1",
+		"hard-aggregate-descendant-resource-bounds-v1",
+		"fail-closed-capability-preflight-v1",
+	}
+	result := make([]any, 0, len(ids))
+	for _, id := range ids {
+		result = append(result, map[string]any{"capability_id": id, "status": "established"})
+	}
+	return result
+}
+
+func validVerifiedProvider() map[string]any {
+	return map[string]any{
+		"schema_version": 1, "provider_contract": verifiedProviderContract,
+		"provider_id": "example.host-provider", "provider_version": "1.0.0",
+		"provider_binary_sha256": "sha256:" + strings.Repeat("1", 64),
+		"operating_system":       "macos",
+	}
+}
+
+func validCapabilityReceipt() map[string]any {
+	return map[string]any{
+		"schema_version": 1, "receipt_type": "provider-capability-receipt-v1",
+		"provider": validVerifiedProvider(), "health": "healthy",
+		"capabilities": verifiedCapabilities(), "nonce": "operation-nonce-1",
+		"observed_at": fixedTime, "expires_at": "2026-07-13T00:05:00Z",
+	}
+}
+
+func validVerifiedPermit() map[string]any {
+	return map[string]any{
+		"schema_version": 1, "permit_type": "verified-execution-permit-v1",
+		"policy_id": verifiedAssurancePolicy, "execution_policy": verifiedExecutionPolicy,
+		"operation_id": "sha256:" + strings.Repeat("2", 64), "provider": validVerifiedProvider(),
+		"capability_receipt_sha256": "sha256:" + strings.Repeat("3", 64),
+		"build_input_sha256":        "sha256:" + strings.Repeat("4", 64),
+		"nonce":                     "operation-nonce-1", "expires_at": "2026-07-13T00:05:00Z",
+	}
+}
+
+func validVerifiedExecutionReceipt() map[string]any {
+	return map[string]any{
+		"schema_version": 1, "receipt_type": "verified-execution-receipt-v1",
+		"policy_id": verifiedAssurancePolicy, "execution_policy": verifiedExecutionPolicy,
+		"operation_id": "sha256:" + strings.Repeat("2", 64), "provider": validVerifiedProvider(),
+		"capability_receipt_sha256": "sha256:" + strings.Repeat("3", 64),
+		"permit_sha256":             "sha256:" + strings.Repeat("5", 64),
+		"build_input_sha256":        "sha256:" + strings.Repeat("4", 64),
+		"artifact_sha256":           "sha256:" + strings.Repeat("6", 64),
+		"result":                    "succeeded", "started_at": fixedTime, "completed_at": "2026-07-13T00:01:00Z",
+	}
+}
+
+func writeAssuranceVectors(dir string) {
+	portableIdentity := map[string]any{
+		"cache_identity": "portable-cache-identity-v1", "policy_id": portableAssurancePolicy,
+		"execution_policy": portableExecutionPolicy, "build_input_sha256": "sha256:" + strings.Repeat("4", 64),
+	}
+	verifiedIdentity := map[string]any{
+		"cache_identity": "verified-cache-identity-v1", "policy_id": verifiedAssurancePolicy,
+		"execution_policy": verifiedExecutionPolicy, "provider_contract": verifiedProviderContract,
+		"provider_id": "example.host-provider", "provider_binary_sha256": "sha256:" + strings.Repeat("1", 64),
+		"capability_receipt_sha256": "sha256:" + strings.Repeat("3", 64),
+		"build_input_sha256":        "sha256:" + strings.Repeat("4", 64),
+	}
+	writeJSON(filepath.Join(dir, "assurance-modes.json"), map[string]any{
+		"contract_version": "assurance-modes-v1",
+		"policies": []any{
+			map[string]any{"mode": "portable", "default": true, "policy_id": portableAssurancePolicy, "execution_policy": portableExecutionPolicy, "provider_contract": nil},
+			map[string]any{"mode": "verified", "default": false, "policy_id": verifiedAssurancePolicy, "execution_policy": verifiedExecutionPolicy, "provider_contract": verifiedProviderContract},
+		},
+		"platforms": []any{"linux", "macos", "windows"},
+		"cache_identities": []any{
+			map[string]any{"mode": "portable", "input": portableIdentity, "expected_key": sha256Identity(canonicalBytes(portableIdentity))},
+			map[string]any{"mode": "verified", "input": verifiedIdentity, "expected_key": sha256Identity(canonicalBytes(verifiedIdentity))},
+		},
+		"fail_closed_cases": []any{
+			map[string]any{"name": "verified-provider-missing", "error": "verified_provider_missing", "execution_started": false, "fallback_mode": nil},
+			map[string]any{"name": "verified-provider-unhealthy", "error": "verified_provider_unavailable", "execution_started": false, "fallback_mode": nil},
+			map[string]any{"name": "verified-provider-incompatible", "error": "verified_provider_unavailable", "execution_started": false, "fallback_mode": nil},
+			map[string]any{"name": "verified-capability-missing", "error": "verified_capabilities_unsatisfied", "execution_started": false, "fallback_mode": nil},
+			map[string]any{"name": "portable-evidence-for-verified", "error": "assurance_evidence_mismatch", "execution_started": false, "fallback_mode": nil},
+			map[string]any{"name": "provider-change-cache-miss", "expected": "cache_miss", "execution_started": false, "fallback_mode": nil},
+			map[string]any{"name": "checkpoint-used-as-cache", "error": "verified_checkpoint_invalid", "execution_started": false, "fallback_mode": nil},
+			map[string]any{"name": "skill-vendored-provider", "error": "compiled_artifact_forbidden", "execution_started": false, "fallback_mode": nil},
+		},
+		"record_identities": []any{
+			"provider-capability-receipt-v1", "verified-execution-permit-v1",
+			"verified-execution-receipt-v1", "verified-execution-checkpoint-v1",
+			"assurance-conformance-claim-v1",
+		},
+		"release_claims": []any{},
+	})
+}
+
+func writeRC7ReleaseMetadata(root, suite string) {
 	manifest, err := os.ReadFile(filepath.Join(suite, "manifest.json"))
 	must(err)
 	digest := sha256.Sum256(manifest)
 	pin := "sha256:" + hex.EncodeToString(digest[:])
-	writeJSON(filepath.Join(root, "release", "1.0.0-rc.6.json"), map[string]any{
+	writeJSON(filepath.Join(root, "release", "1.0.0-rc.7.json"), map[string]any{
 		"protocol_version": protocolVersion,
-		"created_at":       rc6CreatedAt,
+		"created_at":       rc7CreatedAt,
 		"candidate_protocol_pin": map[string]any{
 			"suite_root":      "conformance/v1",
 			"manifest_sha256": pin,
 		},
-		"source_baseline_commit": rc5PublishedCommit,
-		"legacy_release":         conformanceClaimV3ProtocolVersion,
+		"source_baseline_commit": rc6SourceCommit,
+		"legacy_release":         "1.0.0-rc.6",
 		"historical_release": map[string]any{
-			"protocol_version": conformanceClaimV3ProtocolVersion,
-			"metadata_path":    "release/1.0.0-rc.5.json",
-			"metadata_sha256":  rc5ReleaseMetadataSHA256,
-			"published_commit": rc5PublishedCommit,
+			"protocol_version": "1.0.0-rc.6",
+			"metadata_path":    "release/1.0.0-rc.6.json",
+			"metadata_sha256":  rc6ReleaseMetadataSHA256,
+			"source_commit":    rc6SourceCommit,
 			"immutable":        true,
 		},
-		"execution_policy": map[string]any{
-			"portable":                           portableExecutionPolicy,
-			"hardened_profile_claimed":           false,
-			"hardened_profile_owner":             hardenedExecutionOwner,
-			"legacy_rc4_go_v1_cache_key":         legacyRC4GoV1CacheKey,
-			"native_control_inventory_version":   nativeControlInventoryVersion,
-			"capability_evidence_record_version": capabilityEvidenceRecordVersion,
+		"assurance": map[string]any{
+			"default_mode":                    "portable",
+			"portable_policy":                 portableAssurancePolicy,
+			"portable_execution_policy":       portableExecutionPolicy,
+			"verified_policy":                 verifiedAssurancePolicy,
+			"verified_execution_policy":       verifiedExecutionPolicy,
+			"verified_provider_contract":      verifiedProviderContract,
+			"verified_implementations":        []any{},
+			"verified_platform_claims":        []any{},
+			"silent_downgrade_permitted":      false,
+			"skill_vendored_provider_allowed": false,
 		},
 		"downstream_consumption": map[string]any{
 			"environment":                    "CURATOR_CONFORMANCE_ROOT",
 			"required_manifest_sha256":       pin,
 			"committed_release_pin_advanced": false,
 		},
-		"claim_v3": map[string]any{
-			"claim_protocol_version":    conformanceClaimV3ProtocolVersion,
-			"rc6_claim_schema":          nil,
-			"claims_emitted":            []any{},
-			"linux_excluded_until_task": "TASK-260728-1skseh",
-			"macos_status":              "pending-downstream-native-evidence",
-			"windows_status":            "pending-downstream-native-evidence",
+		"claim_v4": map[string]any{
+			"claim_protocol_version": protocolVersion,
+			"schema":                 "schemas/v1/conformance-claim-v4.schema.json",
+			"claims_emitted":         []any{},
 		},
 	})
 }
@@ -1959,6 +2067,61 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	claimV3 := validConformanceClaimV3()
 	cases["conformance-claim-v3.schema.json"] = schemaCase{claimV3, without(claimV3, "build_drivers")}
 	additionalCases["conformance-claim-v3.schema.json"] = conformanceClaimV3SchemaExamples()
+	portablePolicy := map[string]any{
+		"schema_version": 1, "policy_id": portableAssurancePolicy, "mode": "portable",
+		"execution_policy": portableExecutionPolicy, "provider_contract": nil,
+		"required_capabilities": []any{},
+	}
+	verifiedPolicy := map[string]any{
+		"schema_version": 1, "policy_id": verifiedAssurancePolicy, "mode": "verified",
+		"execution_policy": verifiedExecutionPolicy, "provider_contract": verifiedProviderContract,
+		"required_capabilities": []any{
+			"total-network-denial-v1", "read-only-source-and-toolchain-v1",
+			"exact-executable-allowlisting-v1", "private-build-root-only-writes-v1",
+			"hard-aggregate-descendant-resource-bounds-v1", "fail-closed-capability-preflight-v1",
+		},
+	}
+	mixedPolicy := cloneMap(verifiedPolicy)
+	mixedPolicy["execution_policy"] = portableExecutionPolicy
+	cases["assurance-policy-v1.schema.json"] = schemaCase{portablePolicy, mixedPolicy}
+	additionalCases["assurance-policy-v1.schema.json"] = []schemaExample{{name: "valid-verified", valid: true, instance: verifiedPolicy}}
+	provider := validVerifiedProvider()
+	cases["verified-provider-v1.schema.json"] = schemaCase{provider, without(provider, "provider_binary_sha256")}
+	capabilityReceipt := validCapabilityReceipt()
+	partialCapabilities := cloneMap(capabilityReceipt)
+	partialCapabilities["capabilities"] = verifiedCapabilities()[:5]
+	cases["provider-capability-receipt-v1.schema.json"] = schemaCase{capabilityReceipt, partialCapabilities}
+	permit := validVerifiedPermit()
+	mixedPermit := cloneMap(permit)
+	mixedPermit["execution_policy"] = portableExecutionPolicy
+	cases["execution-permit-v1.schema.json"] = schemaCase{permit, mixedPermit}
+	executionReceipt := validVerifiedExecutionReceipt()
+	portableReceipt := cloneMap(executionReceipt)
+	portableReceipt["policy_id"] = portableAssurancePolicy
+	cases["execution-receipt-v1.schema.json"] = schemaCase{executionReceipt, portableReceipt}
+	checkpoint := map[string]any{
+		"schema_version": 1, "checkpoint_type": "verified-execution-checkpoint-v1",
+		"operation_id": "sha256:" + strings.Repeat("2", 64), "provider": provider,
+		"capability_receipt_sha256": "sha256:" + strings.Repeat("3", 64),
+		"permit_sha256":             "sha256:" + strings.Repeat("5", 64), "phase": "permit-issued",
+		"previous_checkpoint_sha256": nil, "created_at": fixedTime,
+	}
+	cacheCheckpoint := cloneMap(checkpoint)
+	cacheCheckpoint["checkpoint_type"] = "verified-cache-identity-v1"
+	cases["execution-checkpoint-v1.schema.json"] = schemaCase{checkpoint, cacheCheckpoint}
+	claimV4 := map[string]any{
+		"schema_version": 4, "protocol_version": protocolVersion, "claim_type": "assurance-conformance-claim-v1",
+		"implementation": "example", "implementation_version": "1.0", "classes": []any{"manager"},
+		"suite_sha256":      "sha256:" + strings.Repeat("0", 64),
+		"assurance":         map[string]any{"mode": "portable", "policy_id": portableAssurancePolicy, "execution_policy": portableExecutionPolicy},
+		"operating_systems": []any{"macos"}, "created_at": fixedTime, "result": "pass",
+	}
+	invalidClaimV4 := cloneMap(claimV4)
+	invalidClaimV4["assurance"] = map[string]any{
+		"mode": "verified", "policy_id": verifiedAssurancePolicy, "execution_policy": verifiedExecutionPolicy,
+		"provider_contract": verifiedProviderContract, "provider_id": "example.host-provider",
+	}
+	cases["conformance-claim-v4.schema.json"] = schemaCase{claimV4, invalidClaimV4}
 
 	root := filepath.Join(suite, "schema-cases")
 	var index []any

@@ -4,6 +4,14 @@ This document is normative for implementations claiming the **manager**
 conformance class. It defines behavior around the portable objects in the
 protocol core. It does not prescribe an executable name or machine-home path.
 
+For rc.7, assurance selection and verified-provider behavior are also governed
+by [`protocol/assurance.md`](../protocol/assurance.md). Portable remains the
+default behavior defined below. A manager MAY omit verified support, but if it
+accepts verified selection it MUST implement the complete provider contract,
+identity separation, typed records, and fail-closed no-downgrade rules. It MUST
+NOT claim verified support merely because portable controls or host primitives
+are present.
+
 ## 1. Machine state and configuration
 
 Each manager selects its own `<manager-home>`, user-config environment

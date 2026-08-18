@@ -625,6 +625,18 @@
       "sha256": "sha256:90176154672a411dbdb2c68ff22afe719a6b7773c3ac74f29d3fedd17cd055b6"
     },
     {
+      "path": "schema-cases/assurance-policy-v1/invalid.json",
+      "sha256": "sha256:cfe17fd9729789522dc95ae6c7630be0917e0b6cd6698505fc4f2a42142eb9e8"
+    },
+    {
+      "path": "schema-cases/assurance-policy-v1/valid-verified.json",
+      "sha256": "sha256:fdd6f7d669f7c5c4d9b1e27d8091762d2387f82c160c0edb95dda61f6c76f453"
+    },
+    {
+      "path": "schema-cases/assurance-policy-v1/valid.json",
+      "sha256": "sha256:6e2cb64858907eba4354b441d8c5deba04e51d4cab80efecf3cc15c8188b544d"
+    },
+    {
       "path": "schema-cases/audit-record-v1/invalid.json",
       "sha256": "sha256:598a16fbc17da9db31a8b0b8bb4337c8206ed4e8a493b1b7c460cd55ce4303c2"
     },
@@ -895,6 +907,14 @@
     {
       "path": "schema-cases/conformance-claim-v3/valid.json",
       "sha256": "sha256:adfb0d31528dbf701a0a376dbde574f4c405670b77711044c7b53e6b38b6cb3e"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v4/invalid.json",
+      "sha256": "sha256:acb47e04bb31e3b11f6dc538e6691f785fb1c4e670b4768f016f4d3a60dd7f7c"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v4/valid.json",
+      "sha256": "sha256:fa6ab5ca02e030a2bdb37c0db387a1bdaafe679e00517e7b717d844ec536df4c"
     },
     {
       "path": "schema-cases/csk-skill-v1/invalid-v7-build-repositories.json",
@@ -1313,6 +1333,30 @@
       "sha256": "sha256:44ba750cc760632df55bb2e8460a6e5f59df956c73bf4a21935f5d2b85258852"
     },
     {
+      "path": "schema-cases/execution-checkpoint-v1/invalid.json",
+      "sha256": "sha256:ed8e030ae591fa6bd8a1727533e4e421a640b49659b9a2552fedb4d3f3baefee"
+    },
+    {
+      "path": "schema-cases/execution-checkpoint-v1/valid.json",
+      "sha256": "sha256:894295b344b748609761da262046c3ef23e8882a912b209de4249cd72fdce6c7"
+    },
+    {
+      "path": "schema-cases/execution-permit-v1/invalid.json",
+      "sha256": "sha256:11216bbdbc2e895a7cba2a95b85206129447f339aed5bbf4a76b6f6be292f0c0"
+    },
+    {
+      "path": "schema-cases/execution-permit-v1/valid.json",
+      "sha256": "sha256:61f6cc77a4c96625bf411beb6f6890fd6dd079ff4b1335b357ef82eb3ad9bca8"
+    },
+    {
+      "path": "schema-cases/execution-receipt-v1/invalid.json",
+      "sha256": "sha256:5a3a0e81d3582db2e87379f0d5fb225678cad59225af261366e06f7641b0367b"
+    },
+    {
+      "path": "schema-cases/execution-receipt-v1/valid.json",
+      "sha256": "sha256:735527f4670f362ddf6d16f3c021b1df51c7f77ee6f1df551772a637ebf5dc9b"
+    },
+    {
       "path": "schema-cases/health-response-v1/invalid.json",
       "sha256": "sha256:98e9daa0a3c22c94714cc4229a3151e77e282912c23ff197b17e2e622e8f58b5"
     },
@@ -1330,7 +1374,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:2faa2baaadca30b3eebe3b9248260efcfac30e92cef4fa209bf37f3f23efd4f0"
+      "sha256": "sha256:694e49f1bdc1f00322203a6e6645519fd7df55df67c5157f8a629da774e8ddac"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -1519,6 +1563,14 @@
     {
       "path": "schema-cases/manager-config-v1/valid.json",
       "sha256": "sha256:1490a267b8b5764b31270549c0f2466add662434d561c890c1bb5bbfb1619292"
+    },
+    {
+      "path": "schema-cases/provider-capability-receipt-v1/invalid.json",
+      "sha256": "sha256:9837750f445c5bd41b2a8887077cda6ab6b660532ca3358806d4bb94b275fb92"
+    },
+    {
+      "path": "schema-cases/provider-capability-receipt-v1/valid.json",
+      "sha256": "sha256:6d1bfa39948158a9851aa1e6bdda55ec8cc38c5480681eb346521a40fea721fa"
     },
     {
       "path": "schema-cases/records-response-v1/invalid.json",
@@ -1717,6 +1769,18 @@
       "sha256": "sha256:7449d84c9c3a3473e08211b59fea16f139205223e054a6ac428a3089fdb95ed4"
     },
     {
+      "path": "schema-cases/verified-provider-v1/invalid.json",
+      "sha256": "sha256:23b886c5d0929639c3cf8c180563994f8761bbcd0dcccbcb77190ffa8fca41ee"
+    },
+    {
+      "path": "schema-cases/verified-provider-v1/valid.json",
+      "sha256": "sha256:fd1e3170d6e4d86949820fcc1f62964644d2bac32ddaa700c9b13b0687538fb5"
+    },
+    {
+      "path": "vectors/assurance-modes.json",
+      "sha256": "sha256:ddaafb1c422487d4f95c6e45434aa2e26216fd17279bffd308f9b870d1242213"
+    },
+    {
       "path": "vectors/build-drivers.json",
       "sha256": "sha256:f412c107091cf82f980523afe5361212a3b89a3425f5d885373191f8acb12aea"
     },
@@ -1734,11 +1798,11 @@
     },
     {
       "path": "vectors/conformance-claim-v3-qualification.json",
-      "sha256": "sha256:290357ae9a13b3218b61525c07d22baee46da87bc7fd22a3fd0fc354d6cdc1a2"
+      "sha256": "sha256:e5532b1934a2e3a7021af105a261b9ac438e3b16209d3d599d3999ad4308f3bf"
     },
     {
       "path": "vectors/external-repository-acquisition.json",
-      "sha256": "sha256:0a97520aad716060f5b51b77a39ebe7bea446ca3802838b35203ceab375c6c2e"
+      "sha256": "sha256:290eaf281fd1159e1a9bac4e50470cdb882ea837dd27a06bc6305796cf62d10f"
     },
     {
       "path": "vectors/external-repository-lifecycle.json",
@@ -1746,7 +1810,7 @@
     },
     {
       "path": "vectors/go-host-execution-policy.json",
-      "sha256": "sha256:4c7e40f3d58e3454931eae076ed1fc2c0437e412f4c0cf1cb30229d59191f46d"
+      "sha256": "sha256:3def77636b81040282933365f082e6a4410c6294a5690522e4f3c6461b62a1c0"
     },
     {
       "path": "vectors/identifiers.json",
@@ -1795,5 +1859,5 @@
   ],
   "generated_at": "2026-07-13T00:00:00Z",
   "generator": "tools/generate-vectors",
-  "protocol_version": "1.0.0-rc.6"
+  "protocol_version": "1.0.0-rc.7"
 }
