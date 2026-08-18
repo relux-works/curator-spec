@@ -1133,6 +1133,7 @@ class WorkflowRegenerationScopeTests(unittest.TestCase):
         "release/1.0.0-rc.5.json",
         "release/1.0.0-rc.6.json",
         "release/1.0.0-rc.7.json",
+        "release/1.0.0-rc.8.json",
     )
 
     def regeneration_diff_scope(self, path: Path) -> tuple[str, ...]:
@@ -1160,6 +1161,23 @@ class WorkflowRegenerationScopeTests(unittest.TestCase):
                     ),
                     makefile_scope,
                 )
+
+    def test_release_workflow_disables_python_bytecode_before_clean_gate(self) -> None:
+        workflow = (
+            validate.ROOT / ".github" / "workflows" / "release.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            '\nenv:\n  PYTHONDONTWRITEBYTECODE: "1"\n\njobs:\n',
+            workflow,
+        )
+        self.assertLess(
+            workflow.index("PYTHONDONTWRITEBYTECODE"),
+            workflow.index("python tools/validate.py"),
+        )
+        self.assertLess(
+            workflow.index("python tools/validate.py"),
+            workflow.index('python tools/release_gate.py --version "$version"'),
+        )
 
 
 if __name__ == "__main__":

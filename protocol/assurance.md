@@ -1,6 +1,6 @@
 # Assurance protocol
 
-This document is normative for protocol 1.0.0-rc.7. It extends, and does not
+This document is normative for protocol 1.0.0-rc.8. It extends, and does not
 reinterpret, the portable execution contract in [`core.md`](core.md).
 
 ## 1. Closed selection
@@ -156,5 +156,5 @@ installation.
 
 Claim schema 4 has disjoint portable and verified branches. A verified claim
 requires immutable native evidence for the exact provider binary and platform.
-Schema validity or platform-neutral vector success is not native evidence. Rc.7
+Schema validity or platform-neutral vector success is not native evidence. Rc.8
 emits no provider, platform, or verified conformance claim.

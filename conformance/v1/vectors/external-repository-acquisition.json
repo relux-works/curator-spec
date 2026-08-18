@@ -209,5 +209,5 @@
     "stdin-refspec",
     "tag-auto-follow"
   ],
-  "protocol_version": "1.0.0-rc.7"
+  "protocol_version": "1.0.0-rc.8"
 }

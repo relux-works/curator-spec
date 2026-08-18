@@ -6,7 +6,7 @@
   "required": ["schema_version", "protocol_version", "claim_type", "implementation", "implementation_version", "classes", "suite_sha256", "assurance", "operating_systems", "created_at", "result"],
   "properties": {
     "schema_version": {"const": 4},
-    "protocol_version": {"const": "1.0.0-rc.7"},
+    "protocol_version": {"const": "1.0.0-rc.8"},
     "claim_type": {"const": "assurance-conformance-claim-v1"},
     "implementation": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
     "implementation_version": {"$ref": "common.schema.json#/$defs/nonEmptyString"},

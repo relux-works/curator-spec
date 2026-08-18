@@ -4,7 +4,7 @@ These Draft 2020-12 schemas are normative structural contracts. Semantic rules
 that require filesystem, graph, cryptographic, ordering, or time context are in
 the protocol documents and conformance vectors.
 
-Rc.7 adds `assurance-policy-v1`, `verified-provider-v1`,
+Rc.8 carries `assurance-policy-v1`, `verified-provider-v1`,
 `provider-capability-receipt-v1`, `execution-permit-v1`,
 `execution-receipt-v1`, `execution-checkpoint-v1`, and conformance claim v4.
 These are new closed objects; no prior schema is widened or reinterpreted.

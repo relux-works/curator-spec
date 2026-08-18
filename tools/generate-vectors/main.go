@@ -23,12 +23,12 @@ import (
 )
 
 const (
-	protocolVersion                   = "1.0.0-rc.7"
+	protocolVersion                   = "1.0.0-rc.8"
 	conformanceClaimV1ProtocolVersion = "1.0.0-rc.3"
 	conformanceClaimV2ProtocolVersion = "1.0.0-rc.4"
 	conformanceClaimV3ProtocolVersion = "1.0.0-rc.5"
 	conformanceClaimV2CreatedAt       = "2026-07-20T00:00:00Z"
-	rc7CreatedAt                      = "2026-08-19T00:00:00Z"
+	rc8CreatedAt                      = "2026-08-19T00:00:00Z"
 	fixedCommit                       = "0123456789abcdef0123456789abcdef01234567"
 	fixedTime                         = "2026-07-13T00:00:00Z"
 	genesis                           = "0000000000000000000000000000000000000000000000000000000000000000"
@@ -36,6 +36,8 @@ const (
 	rc5PublishedCommit                = "f5d7673039226ab81de2f4f87e2155ae995c4df3"
 	rc6ReleaseMetadataSHA256          = "sha256:c4ad58e76687bd563679773a60c6ce35c238d4117b7cbceb05d4f88b5300ed3f"
 	rc6SourceCommit                   = "dce6643c55434464c56f0fe20064db754cd58c61"
+	rc7ReleaseMetadataSHA256          = "sha256:e5872ee4dd207bf6b190d8c8be15a9366d9c1e3638047ea983620b97c9f84d5d"
+	rc7SourceCommit                   = "99f70947d6f2447366d6c996127b73eca37a9159"
 
 	// portableExecutionPolicy is the only execution-policy identity that
 	// protocol 1.0 defines for go-v1 and go-repository-v1.
@@ -183,7 +185,7 @@ func main() {
 	writeSchemaCases(suite, marker, ledger, audited, snapshot, entries[0], bundle, pinned)
 	writeExternalRepositoryExpected(expected, marker)
 	writeManifest(suite)
-	writeRC7ReleaseMetadata(*root, suite)
+	writeRC8ReleaseMetadata(*root, suite)
 }
 
 func writeSkillManifestResolutionVectors(dir string) {
@@ -1828,25 +1830,25 @@ func writeAssuranceVectors(dir string) {
 	})
 }
 
-func writeRC7ReleaseMetadata(root, suite string) {
+func writeRC8ReleaseMetadata(root, suite string) {
 	manifest, err := os.ReadFile(filepath.Join(suite, "manifest.json"))
 	must(err)
 	digest := sha256.Sum256(manifest)
 	pin := "sha256:" + hex.EncodeToString(digest[:])
-	writeJSON(filepath.Join(root, "release", "1.0.0-rc.7.json"), map[string]any{
+	writeJSON(filepath.Join(root, "release", "1.0.0-rc.8.json"), map[string]any{
 		"protocol_version": protocolVersion,
-		"created_at":       rc7CreatedAt,
+		"created_at":       rc8CreatedAt,
 		"candidate_protocol_pin": map[string]any{
 			"suite_root":      "conformance/v1",
 			"manifest_sha256": pin,
 		},
-		"source_baseline_commit": rc6SourceCommit,
-		"legacy_release":         "1.0.0-rc.6",
+		"source_baseline_commit": rc7SourceCommit,
+		"legacy_release":         "1.0.0-rc.7",
 		"historical_release": map[string]any{
-			"protocol_version": "1.0.0-rc.6",
-			"metadata_path":    "release/1.0.0-rc.6.json",
-			"metadata_sha256":  rc6ReleaseMetadataSHA256,
-			"source_commit":    rc6SourceCommit,
+			"protocol_version": "1.0.0-rc.7",
+			"metadata_path":    "release/1.0.0-rc.7.json",
+			"metadata_sha256":  rc7ReleaseMetadataSHA256,
+			"source_commit":    rc7SourceCommit,
 			"immutable":        true,
 		},
 		"assurance": map[string]any{

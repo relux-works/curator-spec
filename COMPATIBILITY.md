@@ -143,3 +143,12 @@ qualified provider separately and opt into verified mode. If provider preflight
 fails, the operation fails before execution; it is never retried as portable.
 Returning to portable mode is a new explicit operation that produces portable
 identities. No old object is relabeled or upgraded in place.
+
+## Rc.8 publication recovery
+
+Rc.8 supersedes the failed immutable rc.7 publication without changing the
+assurance contract or adding an implementation claim. The rc.7 tag and
+`release/1.0.0-rc.7.json` remain immutable historical evidence. Current
+candidate version fields, claim-v4 protocol pins, suite manifest identity, and
+release metadata advance to rc.8; verified implementation and platform claim
+sets remain empty.
