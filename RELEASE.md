@@ -23,7 +23,7 @@ approve changes; CI enforces the mechanically verifiable items.
 - [ ] A driver/platform tuple is listed only under a claim schema that admits
   the candidate protocol version and with immutable native passing evidence.
   Schema examples and platform-neutral corpus runs are not native evidence;
-  rc.7 defines claim schema 4 but emits no claim.
+  rc.8 defines claim schema 4 but emits no claim.
 - [ ] Every emitted execution-policy identity is one the release actually
   implements. `release/<version>.json` records the portable policy, records that
   no hardened profile is claimed, and names the story that owns the deferred

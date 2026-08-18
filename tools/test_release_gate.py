@@ -272,8 +272,8 @@ class StableReleaseGateTests(unittest.TestCase):
                 release_gate.validate_version(version)
 
 
-class ProtocolRC7ReleaseGateTests(unittest.TestCase):
-    VERSION = "1.0.0-rc.7"
+class ProtocolRC8ReleaseGateTests(unittest.TestCase):
+    VERSION = "1.0.0-rc.8"
 
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -310,7 +310,7 @@ class ProtocolRC7ReleaseGateTests(unittest.TestCase):
             self.fail(f"manifest does not list {relative}")
         self._write_json(manifest_path, manifest)
 
-    def test_accepts_complete_rc7_artifact_set(self) -> None:
+    def test_accepts_complete_rc8_artifact_set(self) -> None:
         release_gate.validate_protocol_artifacts(self.VERSION)
 
     def test_release_gate_rejects_every_assurance_relational_mutation(self) -> None:
@@ -331,7 +331,7 @@ class ProtocolRC7ReleaseGateTests(unittest.TestCase):
                 self._write_json(path, vector)
 
     def test_rejects_each_missing_required_artifact(self) -> None:
-        for relative in sorted(release_gate.RC7_REQUIRED_FILES):
+        for relative in sorted(release_gate.RC8_REQUIRED_FILES):
             with self.subTest(path=relative):
                 path = self.root / relative
                 payload = path.read_bytes()
@@ -423,14 +423,24 @@ class ProtocolRC7ReleaseGateTests(unittest.TestCase):
         ):
             release_gate.validate_protocol_artifacts(self.VERSION)
 
-    def test_rejects_rc7_history_rewriting_rc6_identity(self) -> None:
+    def test_rejects_changed_historical_rc7_release_metadata(self) -> None:
+        path = self.root / "release" / "1.0.0-rc.7.json"
+        metadata = json.loads(path.read_text(encoding="utf-8"))
+        metadata["created_at"] = "2026-08-20T00:00:00Z"
+        self._write_json(path, metadata)
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "historical rc.7 release metadata changed"
+        ):
+            release_gate.validate_protocol_artifacts(self.VERSION)
+
+    def test_rejects_rc8_history_rewriting_rc7_identity(self) -> None:
         path = self.root / "release" / f"{self.VERSION}.json"
         metadata = json.loads(path.read_text(encoding="utf-8"))
         metadata["historical_release"]["metadata_sha256"] = "sha256:" + "0" * 64
         self._write_json(path, metadata)
         with self.assertRaisesRegex(
             release_gate.ReleaseFailure,
-            "rewrites rc.6 evidence or fabricates a verified claim",
+            "rewrites rc.7 evidence or fabricates a verified claim",
         ):
             release_gate.validate_protocol_artifacts(self.VERSION)
 
@@ -443,7 +453,7 @@ class ProtocolRC7ReleaseGateTests(unittest.TestCase):
         ):
             release_gate.validate_conformance_claim(path, "1.0.0-rc.6")
 
-    def test_rejects_stale_rc7_suite_pin(self) -> None:
+    def test_rejects_stale_rc8_suite_pin(self) -> None:
         path = self.root / "release" / f"{self.VERSION}.json"
         metadata = json.loads(path.read_text(encoding="utf-8"))
         metadata["candidate_protocol_pin"]["manifest_sha256"] = (
@@ -455,7 +465,7 @@ class ProtocolRC7ReleaseGateTests(unittest.TestCase):
         ):
             release_gate.validate_version(self.VERSION)
 
-    def test_rejects_rc7_silent_downgrade_or_claim_fabrication(self) -> None:
+    def test_rejects_rc8_silent_downgrade_or_claim_fabrication(self) -> None:
         path = self.root / "release" / f"{self.VERSION}.json"
         base = json.loads(path.read_text(encoding="utf-8"))
         for field, value in (
@@ -564,7 +574,7 @@ class ProtocolRC7ReleaseGateTests(unittest.TestCase):
         ):
             release_gate.validate_shared_fixture_marker_release_surface()
 
-    def test_rejects_duplicate_rc7_suite_pin(self) -> None:
+    def test_rejects_duplicate_rc8_suite_pin(self) -> None:
         path = self.root / "release" / f"{self.VERSION}.json"
         metadata = json.loads(path.read_text(encoding="utf-8"))
         expected = metadata["candidate_protocol_pin"]["manifest_sha256"]

@@ -3,6 +3,26 @@
 All notable protocol changes are recorded here. Versions follow Semantic
 Versioning for the complete specification set.
 
+## 1.0.0-rc.8 - 2026-08-19
+
+### Changed
+
+- Superseded the failed immutable rc.7 publication with rc.8 while preserving
+  the rc.7 tag and release metadata bytes as historical evidence.
+- Disabled Python bytecode generation for the entire release workflow before
+  validation starts, preventing validation imports from dirtying the tagged
+  checkout before the clean-tree release gate.
+- Advanced the normative version, claim-v4 protocol pins, conformance suite
+  identity, generated release metadata, and regeneration inventory to rc.8.
+
+### Compatibility and security
+
+- The portable-default and explicit fail-closed verified assurance contract is
+  unchanged. Rc.8 ships no provider implementation and emits no verified
+  implementation or platform claim.
+- No rc.7 or earlier release metadata is rewritten. The rc.8 metadata pins the
+  exact rc.7 metadata digest and signed merged source commit.
+
 ## 1.0.0-rc.7 - 2026-08-19
 
 ### Added

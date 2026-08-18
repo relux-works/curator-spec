@@ -1,4 +1,4 @@
-"""Executable relational validation for the rc.7 assurance evidence chain."""
+"""Executable relational validation for the rc.8 assurance evidence chain."""
 
 from __future__ import annotations
 

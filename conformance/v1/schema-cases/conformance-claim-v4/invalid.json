@@ -16,7 +16,7 @@
   "operating_systems": [
     "macos"
   ],
-  "protocol_version": "1.0.0-rc.7",
+  "protocol_version": "1.0.0-rc.8",
   "result": "pass",
   "schema_version": 4,
   "suite_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000"

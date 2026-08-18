@@ -143,7 +143,9 @@ identity, so it cannot become a capability claim a reader would rely on.
 
 ### Verified provider boundary
 
-Rc.7 adds explicit verified assurance without changing the portable boundary.
+Rc.8 carries the explicit verified assurance contract introduced by rc.7
+without changing the portable boundary. The rc.8 publication recovery changes
+release automation and version pins, not the provider trust model.
 Verified mode trusts a separately installed, signature-policy-checked host
 provider and binds its contract, provider id, exact binary SHA-256, fresh
 capability receipt, permit, execution receipt, and build input into disjoint
