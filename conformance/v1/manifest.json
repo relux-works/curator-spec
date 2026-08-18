@@ -1333,8 +1333,28 @@
       "sha256": "sha256:44ba750cc760632df55bb2e8460a6e5f59df956c73bf4a21935f5d2b85258852"
     },
     {
+      "path": "schema-cases/execution-checkpoint-v1/invalid-execution-started-null-predecessor.json",
+      "sha256": "sha256:3f287c22aa6f5c087681d3d222c95863264c339969506f3913f0b2a3224e274f"
+    },
+    {
+      "path": "schema-cases/execution-checkpoint-v1/invalid-execution-succeeded-null-predecessor.json",
+      "sha256": "sha256:76cf83d89424a5a7fb29fe080b3aadc676478fb06bbc9524998805d067650f5a"
+    },
+    {
+      "path": "schema-cases/execution-checkpoint-v1/invalid-permit-issued-predecessor.json",
+      "sha256": "sha256:0ea752f9d07e5f0fb02a4b91ad420690406ca36255a90867e19a76ad3e9b2a6f"
+    },
+    {
       "path": "schema-cases/execution-checkpoint-v1/invalid.json",
       "sha256": "sha256:ed8e030ae591fa6bd8a1727533e4e421a640b49659b9a2552fedb4d3f3baefee"
+    },
+    {
+      "path": "schema-cases/execution-checkpoint-v1/valid-execution-started.json",
+      "sha256": "sha256:e66045191d4390192badda482f6e9c6d6da88b50d4ffafec96273dfadfb3d115"
+    },
+    {
+      "path": "schema-cases/execution-checkpoint-v1/valid-execution-succeeded.json",
+      "sha256": "sha256:74236ea7b78742e4dab86e66d13d706012d90289c95c06e56b532a4f5aff8e1c"
     },
     {
       "path": "schema-cases/execution-checkpoint-v1/valid.json",
@@ -1342,19 +1362,23 @@
     },
     {
       "path": "schema-cases/execution-permit-v1/invalid.json",
-      "sha256": "sha256:11216bbdbc2e895a7cba2a95b85206129447f339aed5bbf4a76b6f6be292f0c0"
+      "sha256": "sha256:0c8e4e8e7d81be3e5705a6a945d37e886f9b2b11f95ac79a34956456bac90234"
     },
     {
       "path": "schema-cases/execution-permit-v1/valid.json",
-      "sha256": "sha256:61f6cc77a4c96625bf411beb6f6890fd6dd079ff4b1335b357ef82eb3ad9bca8"
+      "sha256": "sha256:72513f7230d0fd1741702e7decbbd2bb3265eab0c109f334f2f3a42685fafda5"
+    },
+    {
+      "path": "schema-cases/execution-receipt-v1/invalid-started-after-completed.json",
+      "sha256": "sha256:6a8481dc3b3ef7c44e6faebeef0fb4c2077be5f8d41ecbb7ec56173d4c588375"
     },
     {
       "path": "schema-cases/execution-receipt-v1/invalid.json",
-      "sha256": "sha256:5a3a0e81d3582db2e87379f0d5fb225678cad59225af261366e06f7641b0367b"
+      "sha256": "sha256:b52c6cdbb4462a697f98f2fa7b3a1a416141f9aaff73fe98cad61f665bfc5e97"
     },
     {
       "path": "schema-cases/execution-receipt-v1/valid.json",
-      "sha256": "sha256:735527f4670f362ddf6d16f3c021b1df51c7f77ee6f1df551772a637ebf5dc9b"
+      "sha256": "sha256:0c4b6b059bcf1e998b7f7a78e37a3a92a69f2f57553437d0461470123b81e7c2"
     },
     {
       "path": "schema-cases/health-response-v1/invalid.json",
@@ -1374,7 +1398,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:694e49f1bdc1f00322203a6e6645519fd7df55df67c5157f8a629da774e8ddac"
+      "sha256": "sha256:7aff010c514969506bfbb67d3266f437fd14d43b8c6a73f0550a8e542ff3ca21"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -1563,6 +1587,10 @@
     {
       "path": "schema-cases/manager-config-v1/valid.json",
       "sha256": "sha256:1490a267b8b5764b31270549c0f2466add662434d561c890c1bb5bbfb1619292"
+    },
+    {
+      "path": "schema-cases/provider-capability-receipt-v1/invalid-observed-not-before-expires.json",
+      "sha256": "sha256:946cbb14c0be40adb8c1a9ef7892988a3bdf163bc0071f63045ec1abf147cead"
     },
     {
       "path": "schema-cases/provider-capability-receipt-v1/invalid.json",
@@ -1778,7 +1806,7 @@
     },
     {
       "path": "vectors/assurance-modes.json",
-      "sha256": "sha256:ddaafb1c422487d4f95c6e45434aa2e26216fd17279bffd308f9b870d1242213"
+      "sha256": "sha256:aa42c6e11bad7b65e5299cf1fc6ecb683b210847033bc02d1d3d5f45a8b223c6"
     },
     {
       "path": "vectors/build-drivers.json",

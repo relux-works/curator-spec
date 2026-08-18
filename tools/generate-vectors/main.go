@@ -1697,23 +1697,25 @@ func validCapabilityReceipt() map[string]any {
 }
 
 func validVerifiedPermit() map[string]any {
+	capabilityReceipt := validCapabilityReceipt()
 	return map[string]any{
 		"schema_version": 1, "permit_type": "verified-execution-permit-v1",
 		"policy_id": verifiedAssurancePolicy, "execution_policy": verifiedExecutionPolicy,
 		"operation_id": "sha256:" + strings.Repeat("2", 64), "provider": validVerifiedProvider(),
-		"capability_receipt_sha256": "sha256:" + strings.Repeat("3", 64),
+		"capability_receipt_sha256": sha256Identity(canonicalBytes(capabilityReceipt)),
 		"build_input_sha256":        "sha256:" + strings.Repeat("4", 64),
 		"nonce":                     "operation-nonce-1", "expires_at": "2026-07-13T00:05:00Z",
 	}
 }
 
 func validVerifiedExecutionReceipt() map[string]any {
+	permit := validVerifiedPermit()
 	return map[string]any{
 		"schema_version": 1, "receipt_type": "verified-execution-receipt-v1",
 		"policy_id": verifiedAssurancePolicy, "execution_policy": verifiedExecutionPolicy,
 		"operation_id": "sha256:" + strings.Repeat("2", 64), "provider": validVerifiedProvider(),
-		"capability_receipt_sha256": "sha256:" + strings.Repeat("3", 64),
-		"permit_sha256":             "sha256:" + strings.Repeat("5", 64),
+		"capability_receipt_sha256": permit["capability_receipt_sha256"],
+		"permit_sha256":             sha256Identity(canonicalBytes(permit)),
 		"build_input_sha256":        "sha256:" + strings.Repeat("4", 64),
 		"artifact_sha256":           "sha256:" + strings.Repeat("6", 64),
 		"result":                    "succeeded", "started_at": fixedTime, "completed_at": "2026-07-13T00:01:00Z",
@@ -1721,6 +1723,35 @@ func validVerifiedExecutionReceipt() map[string]any {
 }
 
 func writeAssuranceVectors(dir string) {
+	provider := validVerifiedProvider()
+	capabilityReceipt := validCapabilityReceipt()
+	capabilityReceiptSHA256 := sha256Identity(canonicalBytes(capabilityReceipt))
+	permit := validVerifiedPermit()
+	permit["expires_at"] = "2026-07-13T00:04:00Z"
+	permitSHA256 := sha256Identity(canonicalBytes(permit))
+	executionReceipt := validVerifiedExecutionReceipt()
+	executionReceipt["capability_receipt_sha256"] = capabilityReceiptSHA256
+	executionReceipt["permit_sha256"] = permitSHA256
+	executionReceipt["started_at"] = "2026-07-13T00:02:00Z"
+	executionReceipt["completed_at"] = "2026-07-13T00:03:00Z"
+	checkpoint1 := map[string]any{
+		"schema_version": 1, "checkpoint_type": "verified-execution-checkpoint-v1",
+		"operation_id": permit["operation_id"], "provider": provider,
+		"capability_receipt_sha256": capabilityReceiptSHA256, "permit_sha256": permitSHA256,
+		"phase": "permit-issued", "previous_checkpoint_sha256": nil, "created_at": "2026-07-13T00:01:00Z",
+	}
+	checkpoint2 := map[string]any{
+		"schema_version": 1, "checkpoint_type": "verified-execution-checkpoint-v1",
+		"operation_id": permit["operation_id"], "provider": provider,
+		"capability_receipt_sha256": capabilityReceiptSHA256, "permit_sha256": permitSHA256,
+		"phase": "execution-started", "previous_checkpoint_sha256": sha256Identity(canonicalBytes(checkpoint1)), "created_at": "2026-07-13T00:02:00Z",
+	}
+	checkpoint3 := map[string]any{
+		"schema_version": 1, "checkpoint_type": "verified-execution-checkpoint-v1",
+		"operation_id": permit["operation_id"], "provider": provider,
+		"capability_receipt_sha256": capabilityReceiptSHA256, "permit_sha256": permitSHA256,
+		"phase": "execution-succeeded", "previous_checkpoint_sha256": sha256Identity(canonicalBytes(checkpoint2)), "created_at": "2026-07-13T00:03:00Z",
+	}
 	portableIdentity := map[string]any{
 		"cache_identity": "portable-cache-identity-v1", "policy_id": portableAssurancePolicy,
 		"execution_policy": portableExecutionPolicy, "build_input_sha256": "sha256:" + strings.Repeat("4", 64),
@@ -1729,8 +1760,26 @@ func writeAssuranceVectors(dir string) {
 		"cache_identity": "verified-cache-identity-v1", "policy_id": verifiedAssurancePolicy,
 		"execution_policy": verifiedExecutionPolicy, "provider_contract": verifiedProviderContract,
 		"provider_id": "example.host-provider", "provider_binary_sha256": "sha256:" + strings.Repeat("1", 64),
-		"capability_receipt_sha256": "sha256:" + strings.Repeat("3", 64),
+		"capability_receipt_sha256": capabilityReceiptSHA256,
 		"build_input_sha256":        "sha256:" + strings.Repeat("4", 64),
+	}
+	verifiedCache := map[string]any{
+		"input": verifiedIdentity, "expected_key": sha256Identity(canonicalBytes(verifiedIdentity)),
+	}
+	validFlow := map[string]any{
+		"selected_mode": "verified", "fallback_mode": nil,
+		"policy_id": verifiedAssurancePolicy, "execution_policy": verifiedExecutionPolicy,
+		"validation_time": "2026-07-13T00:01:30Z", "provider": provider,
+		"operation_id": permit["operation_id"], "build_input_sha256": permit["build_input_sha256"],
+		"artifact_sha256":    executionReceipt["artifact_sha256"],
+		"capability_receipt": capabilityReceipt, "cache": verifiedCache, "permit": permit,
+		"execution_receipt": executionReceipt, "checkpoints": []any{checkpoint1, checkpoint2, checkpoint3},
+	}
+	rejection := func(name string, path []any, value any, expectedError string) any {
+		return map[string]any{
+			"name": name, "mutation": map[string]any{"path": path, "value": value},
+			"expected": map[string]any{"error": expectedError, "failure_stage": "pre-execution", "execution_started": false, "fallback_mode": nil},
+		}
 	}
 	writeJSON(filepath.Join(dir, "assurance-modes.json"), map[string]any{
 		"contract_version": "assurance-modes-v1",
@@ -1742,6 +1791,23 @@ func writeAssuranceVectors(dir string) {
 		"cache_identities": []any{
 			map[string]any{"mode": "portable", "input": portableIdentity, "expected_key": sha256Identity(canonicalBytes(portableIdentity))},
 			map[string]any{"mode": "verified", "input": verifiedIdentity, "expected_key": sha256Identity(canonicalBytes(verifiedIdentity))},
+		},
+		"valid_flow": validFlow,
+		"relational_rejection_cases": []any{
+			rejection("provider-id-mismatch", []any{"execution_receipt", "provider", "provider_id"}, "other.host-provider", "verified_provider_identity_invalid"),
+			rejection("provider-contract-mismatch", []any{"permit", "provider", "provider_contract"}, "host-execution-provider-v2", "verified_provider_unavailable"),
+			rejection("provider-binary-mismatch", []any{"execution_receipt", "provider", "provider_binary_sha256"}, "sha256:"+strings.Repeat("9", 64), "verified_provider_identity_invalid"),
+			rejection("capability-set-mismatch", []any{"capability_receipt", "capabilities", 5, "status"}, "unavailable", "verified_capabilities_unsatisfied"),
+			rejection("capability-receipt-mismatch", []any{"permit", "capability_receipt_sha256"}, "sha256:"+strings.Repeat("9", 64), "verified_capabilities_unsatisfied"),
+			rejection("nonce-mismatch", []any{"permit", "nonce"}, "operation-nonce-2", "verified_permit_invalid"),
+			rejection("operation-mismatch", []any{"execution_receipt", "operation_id"}, "sha256:"+strings.Repeat("9", 64), "verified_execution_receipt_invalid"),
+			rejection("permit-mismatch", []any{"execution_receipt", "permit_sha256"}, "sha256:"+strings.Repeat("9", 64), "verified_execution_receipt_invalid"),
+			rejection("build-input-mismatch", []any{"execution_receipt", "build_input_sha256"}, "sha256:"+strings.Repeat("9", 64), "verified_execution_receipt_invalid"),
+			rejection("artifact-mismatch", []any{"execution_receipt", "artifact_sha256"}, "sha256:"+strings.Repeat("9", 64), "verified_execution_receipt_invalid"),
+			rejection("capability-receipt-stale", []any{"validation_time"}, "2026-07-13T00:05:00Z", "verified_capabilities_unsatisfied"),
+			rejection("permit-expired", []any{"permit", "expires_at"}, "2026-07-13T00:01:00Z", "verified_permit_invalid"),
+			rejection("checkpoint-chain-mismatch", []any{"checkpoints", 2, "previous_checkpoint_sha256"}, "sha256:"+strings.Repeat("9", 64), "verified_checkpoint_invalid"),
+			rejection("portable-fallback-attempt", []any{"fallback_mode"}, "portable", "assurance_evidence_mismatch"),
 		},
 		"fail_closed_cases": []any{
 			map[string]any{"name": "verified-provider-missing", "error": "verified_provider_missing", "execution_started": false, "fallback_mode": nil},
@@ -2091,6 +2157,11 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	partialCapabilities := cloneMap(capabilityReceipt)
 	partialCapabilities["capabilities"] = verifiedCapabilities()[:5]
 	cases["provider-capability-receipt-v1.schema.json"] = schemaCase{capabilityReceipt, partialCapabilities}
+	invalidCapabilityInterval := cloneMap(capabilityReceipt)
+	invalidCapabilityInterval["observed_at"] = invalidCapabilityInterval["expires_at"]
+	additionalCases["provider-capability-receipt-v1.schema.json"] = []schemaExample{
+		{name: "invalid-observed-not-before-expires", valid: false, instance: invalidCapabilityInterval},
+	}
 	permit := validVerifiedPermit()
 	mixedPermit := cloneMap(permit)
 	mixedPermit["execution_policy"] = portableExecutionPolicy
@@ -2099,6 +2170,11 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	portableReceipt := cloneMap(executionReceipt)
 	portableReceipt["policy_id"] = portableAssurancePolicy
 	cases["execution-receipt-v1.schema.json"] = schemaCase{executionReceipt, portableReceipt}
+	invalidExecutionInterval := cloneMap(executionReceipt)
+	invalidExecutionInterval["started_at"] = "2026-07-13T00:02:00Z"
+	additionalCases["execution-receipt-v1.schema.json"] = []schemaExample{
+		{name: "invalid-started-after-completed", valid: false, instance: invalidExecutionInterval},
+	}
 	checkpoint := map[string]any{
 		"schema_version": 1, "checkpoint_type": "verified-execution-checkpoint-v1",
 		"operation_id": "sha256:" + strings.Repeat("2", 64), "provider": provider,
@@ -2109,6 +2185,25 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	cacheCheckpoint := cloneMap(checkpoint)
 	cacheCheckpoint["checkpoint_type"] = "verified-cache-identity-v1"
 	cases["execution-checkpoint-v1.schema.json"] = schemaCase{checkpoint, cacheCheckpoint}
+	permitWithPredecessor := cloneMap(checkpoint)
+	permitWithPredecessor["previous_checkpoint_sha256"] = "sha256:" + strings.Repeat("7", 64)
+	startedCheckpoint := cloneMap(checkpoint)
+	startedCheckpoint["phase"] = "execution-started"
+	startedCheckpoint["previous_checkpoint_sha256"] = "sha256:" + strings.Repeat("7", 64)
+	startedWithoutPredecessor := cloneMap(startedCheckpoint)
+	startedWithoutPredecessor["previous_checkpoint_sha256"] = nil
+	succeededCheckpoint := cloneMap(checkpoint)
+	succeededCheckpoint["phase"] = "execution-succeeded"
+	succeededCheckpoint["previous_checkpoint_sha256"] = "sha256:" + strings.Repeat("8", 64)
+	succeededWithoutPredecessor := cloneMap(succeededCheckpoint)
+	succeededWithoutPredecessor["previous_checkpoint_sha256"] = nil
+	additionalCases["execution-checkpoint-v1.schema.json"] = []schemaExample{
+		{name: "valid-execution-started", valid: true, instance: startedCheckpoint},
+		{name: "valid-execution-succeeded", valid: true, instance: succeededCheckpoint},
+		{name: "invalid-permit-issued-predecessor", valid: false, instance: permitWithPredecessor},
+		{name: "invalid-execution-started-null-predecessor", valid: false, instance: startedWithoutPredecessor},
+		{name: "invalid-execution-succeeded-null-predecessor", valid: false, instance: succeededWithoutPredecessor},
+	}
 	claimV4 := map[string]any{
 		"schema_version": 4, "protocol_version": protocolVersion, "claim_type": "assurance-conformance-claim-v1",
 		"implementation": "example", "implementation_version": "1.0", "classes": []any{"manager"},

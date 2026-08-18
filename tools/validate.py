@@ -12,6 +12,7 @@ import urllib.parse
 from pathlib import Path
 from typing import Any
 
+import assurance
 from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import SchemaError
 from referencing import Registry, Resource
@@ -632,6 +633,23 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
             error = validate_effective_source(declared, effective)
             if error is not None:
                 return error
+    elif schema_name == "provider-capability-receipt-v1.schema.json":
+        observed_at = assurance.parse_timestamp(instance.get("observed_at"))
+        expires_at = assurance.parse_timestamp(instance.get("expires_at"))
+        if observed_at is None or expires_at is None or observed_at >= expires_at:
+            return "capability receipt observed_at must precede expires_at"
+    elif schema_name == "execution-receipt-v1.schema.json":
+        started_at = assurance.parse_timestamp(instance.get("started_at"))
+        completed_at = assurance.parse_timestamp(instance.get("completed_at"))
+        if started_at is None or completed_at is None or started_at > completed_at:
+            return "execution receipt started_at must be at or before completed_at"
+    elif schema_name == "execution-checkpoint-v1.schema.json":
+        phase = instance.get("phase")
+        previous = instance.get("previous_checkpoint_sha256")
+        if phase == "permit-issued" and previous is not None:
+            return "permit-issued checkpoint must have a null predecessor"
+        if phase in {"execution-started", "execution-succeeded"} and previous is None:
+            return f"{phase} checkpoint must have a digest predecessor"
     elif schema_name == "conformance-claim-v3.schema.json":
         systems = set(instance.get("operating_systems", []))
         if "linux" in systems:
@@ -2586,8 +2604,27 @@ def validate_local_links() -> None:
                 raise ValidationFailure(f"{path}: broken local link: {target}")
 
 
-def validate_assurance_vectors() -> None:
-    vector = load_json(SUITE / "vectors" / "assurance-modes.json")
+ASSURANCE_RELATIONAL_REJECTIONS = {
+    "provider-id-mismatch",
+    "provider-contract-mismatch",
+    "provider-binary-mismatch",
+    "capability-set-mismatch",
+    "capability-receipt-mismatch",
+    "nonce-mismatch",
+    "operation-mismatch",
+    "permit-mismatch",
+    "build-input-mismatch",
+    "artifact-mismatch",
+    "capability-receipt-stale",
+    "permit-expired",
+    "checkpoint-chain-mismatch",
+    "portable-fallback-attempt",
+}
+
+
+def validate_assurance_vectors(vector: Any = None) -> None:
+    if vector is None:
+        vector = load_json(SUITE / "vectors" / "assurance-modes.json")
     if vector.get("contract_version") != "assurance-modes-v1":
         raise ValidationFailure("assurance vector has the wrong contract identity")
     if vector.get("platforms") != ["linux", "macos", "windows"]:
@@ -2626,6 +2663,33 @@ def validate_assurance_vectors() -> None:
         raise ValidationFailure("assurance record identities alias")
     if vector.get("release_claims") != []:
         raise ValidationFailure("rc.7 fabricates a verified provider claim")
+    flow = vector.get("valid_flow")
+    baseline_error = assurance.validate_flow(flow)
+    if baseline_error is not None:
+        raise ValidationFailure(f"valid assurance flow rejected as {baseline_error}")
+    relational_cases = named_cases(
+        vector.get("relational_rejection_cases"), "assurance relational rejection"
+    )
+    if set(relational_cases) != ASSURANCE_RELATIONAL_REJECTIONS:
+        raise ValidationFailure("assurance relational rejection coverage is not exact")
+    for name, case in relational_cases.items():
+        expected = case.get("expected")
+        if not isinstance(expected, dict) or (
+            expected.get("failure_stage") != "pre-execution"
+            or expected.get("execution_started") is not False
+            or expected.get("fallback_mode") is not None
+            or not isinstance(expected.get("error"), str)
+        ):
+            raise ValidationFailure(f"assurance relational rejection is not fail-closed: {name}")
+        try:
+            candidate = assurance.apply_mutation(flow, case.get("mutation"))
+        except (KeyError, IndexError, TypeError, ValueError) as exc:
+            raise ValidationFailure(f"invalid assurance mutation {name}: {exc}") from exc
+        actual = assurance.validate_flow(candidate)
+        if actual != expected["error"]:
+            raise ValidationFailure(
+                f"assurance relational rejection {name}: got {actual!r}, want {expected['error']!r}"
+            )
 
 
 def main() -> int:

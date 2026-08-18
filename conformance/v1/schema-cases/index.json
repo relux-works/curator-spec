@@ -1415,6 +1415,31 @@
     "valid": false
   },
   {
+    "instance": "execution-checkpoint-v1/valid-execution-started.json",
+    "schema": "execution-checkpoint-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "execution-checkpoint-v1/valid-execution-succeeded.json",
+    "schema": "execution-checkpoint-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "execution-checkpoint-v1/invalid-permit-issued-predecessor.json",
+    "schema": "execution-checkpoint-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "execution-checkpoint-v1/invalid-execution-started-null-predecessor.json",
+    "schema": "execution-checkpoint-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "execution-checkpoint-v1/invalid-execution-succeeded-null-predecessor.json",
+    "schema": "execution-checkpoint-v1.schema.json",
+    "valid": false
+  },
+  {
     "instance": "execution-permit-v1/valid.json",
     "schema": "execution-permit-v1.schema.json",
     "valid": true
@@ -1431,6 +1456,11 @@
   },
   {
     "instance": "execution-receipt-v1/invalid.json",
+    "schema": "execution-receipt-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "execution-receipt-v1/invalid-started-after-completed.json",
     "schema": "execution-receipt-v1.schema.json",
     "valid": false
   },
@@ -1696,6 +1726,11 @@
   },
   {
     "instance": "provider-capability-receipt-v1/invalid.json",
+    "schema": "provider-capability-receipt-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "provider-capability-receipt-v1/invalid-observed-not-before-expires.json",
     "schema": "provider-capability-receipt-v1.schema.json",
     "valid": false
   },

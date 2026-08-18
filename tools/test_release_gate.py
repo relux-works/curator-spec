@@ -313,6 +313,23 @@ class ProtocolRC7ReleaseGateTests(unittest.TestCase):
     def test_accepts_complete_rc7_artifact_set(self) -> None:
         release_gate.validate_protocol_artifacts(self.VERSION)
 
+    def test_release_gate_rejects_every_assurance_relational_mutation(self) -> None:
+        path = self.root / "conformance" / "v1" / "vectors" / "assurance-modes.json"
+        vector = json.loads(path.read_text(encoding="utf-8"))
+        release_gate.validate_assurance_release_surface()
+        for case in vector["relational_rejection_cases"]:
+            with self.subTest(case=case["name"]):
+                mutated = json.loads(json.dumps(vector))
+                mutated["valid_flow"] = release_gate.assurance.apply_mutation(
+                    vector["valid_flow"], case["mutation"]
+                )
+                self._write_json(path, mutated)
+                with self.assertRaisesRegex(
+                    release_gate.ReleaseFailure, case["expected"]["error"]
+                ):
+                    release_gate.validate_assurance_release_surface()
+                self._write_json(path, vector)
+
     def test_rejects_each_missing_required_artifact(self) -> None:
         for relative in sorted(release_gate.RC7_REQUIRED_FILES):
             with self.subTest(path=relative):

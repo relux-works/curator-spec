@@ -11,6 +11,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+import assurance
 from jsonschema import Draft202012Validator, FormatChecker
 from referencing import Registry, Resource
 
@@ -172,6 +173,42 @@ RC6_MANAGER_LIFECYCLE_CASES = {
 
 class ReleaseFailure(RuntimeError):
     pass
+
+
+def validate_assurance_release_surface() -> None:
+    vector = load_json(ROOT / "conformance" / "v1" / "vectors" / "assurance-modes.json")
+    flow = vector.get("valid_flow")
+    baseline_error = assurance.validate_flow(flow)
+    if baseline_error is not None:
+        raise ReleaseFailure(f"valid assurance flow rejected as {baseline_error}")
+    cases = vector.get("relational_rejection_cases")
+    if not isinstance(cases, list) or len(cases) != 14:
+        raise ReleaseFailure("assurance relational release coverage is incomplete")
+    names: set[str] = set()
+    for case in cases:
+        if not isinstance(case, dict) or not isinstance(case.get("name"), str):
+            raise ReleaseFailure("assurance relational rejection has no stable name")
+        name = case["name"]
+        if name in names:
+            raise ReleaseFailure(f"duplicate assurance relational rejection {name}")
+        names.add(name)
+        expected = case.get("expected")
+        if not isinstance(expected, dict) or (
+            expected.get("failure_stage") != "pre-execution"
+            or expected.get("execution_started") is not False
+            or expected.get("fallback_mode") is not None
+            or not isinstance(expected.get("error"), str)
+        ):
+            raise ReleaseFailure(f"assurance relational rejection is not fail-closed: {name}")
+        try:
+            candidate = assurance.apply_mutation(flow, case.get("mutation"))
+        except (KeyError, IndexError, TypeError, ValueError) as exc:
+            raise ReleaseFailure(f"invalid assurance mutation {name}: {exc}") from exc
+        actual = assurance.validate_flow(candidate)
+        if actual != expected["error"]:
+            raise ReleaseFailure(
+                f"assurance relational rejection {name}: got {actual!r}, want {expected['error']!r}"
+            )
 
 
 def load_json(path: Path) -> Any:
@@ -433,6 +470,8 @@ def validate_protocol_artifacts(version: str) -> None:
 
     if sha256_identity(ROOT / "release" / "1.0.0-rc.6.json") != RC6_RELEASE_METADATA_SHA256:
         raise ReleaseFailure("historical rc.6 release metadata changed")
+
+    validate_assurance_release_surface()
 
     release = load_json(ROOT / "release" / "1.0.0-rc.7.json")
     history = release.get("historical_release", {})

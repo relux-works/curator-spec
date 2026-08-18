@@ -13,8 +13,10 @@ Versioning for the complete specification set.
 - Added the platform-neutral `host-execution-provider-v1` contract shared by
   macOS, Linux, and Windows, plus typed provider descriptors, capability
   receipts, execution permits, execution receipts, checkpoints, and claim v4.
-- Added generated valid and invalid schema cases, cache non-aliasing and
-  fail-closed vectors, validator tests, and rc.7 release gates.
+- Added generated valid and invalid schema cases, timestamp and phase-specific
+  checkpoint semantics, a fully hash-linked provider evidence flow, stable
+  relational rejection mutations, cache non-aliasing, validator mutation
+  tests, and rc.7 release gates.
 - Added Decision 0007, normative assurance protocol text, operator guidance,
   and migration/security notes.
 

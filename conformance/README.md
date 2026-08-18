@@ -96,8 +96,10 @@ The suite contains:
 - the rc.7 assurance contract: closed portable and verified policies, the
   platform-neutral provider descriptor, exact capability negotiation, typed
   permits, receipts, and checkpoints, cache non-aliasing, fail-closed
-  no-downgrade selection, provider packaging denial, and zero released verified
-  claims;
+  no-downgrade selection, a fully hash-linked positive flow, stable relational
+  mutations for every provider/capability/nonce/operation/permit/input/artifact/
+  freshness/checkpoint binding, provider packaging denial, and zero released
+  verified claims;
 - transparency chain, Merkle, bundle, pagination, caching, and deny-wins cases;
 - conjunctive registry queries, exact artifact identity, snapshot-bound pages,
   scoped idempotency, concurrent writers, transaction rollback, crash recovery,

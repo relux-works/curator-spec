@@ -36,6 +36,10 @@ approve changes; CI enforces the mechanically verifiable items.
   explicit and fail-closed, provider/capability/permit/receipt/cache/checkpoint/
   claim identities do not alias, and no verified platform is claimed without
   immutable native provider evidence.
+- [ ] The assurance relational vector's valid chain passes, every stable named
+  mutation is rejected before execution without fallback, capability and
+  execution intervals are ordered, and all checkpoint predecessors obey their
+  phase and chain rules.
 - [ ] Host providers are installed separately from skills, and the complete
   release corpus preserves the prohibition on vendored compiled artifacts.
 

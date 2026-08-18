@@ -93,6 +93,13 @@ It MUST NOT publish from an `execution-started` checkpoint. An
 `execution-succeeded` checkpoint still requires the matching execution receipt
 and local artifact verification.
 
+The checkpoint phase/predecessor relation is closed: `permit-issued` is the
+first phase and MUST have a `null` predecessor; `execution-started` and
+`execution-succeeded` MUST have a digest predecessor. In a complete chain,
+those digests MUST be the CCJ-1 SHA-256 of the immediately preceding phase,
+in exactly that order. A phase repetition, omission, reordering, foreign
+predecessor, or cross-operation predecessor is `verified_checkpoint_invalid`.
+
 Portable journals and verified checkpoints cannot be converted into one
 another. Deleting a checkpoint can require a fresh execution; it never changes
 cache validity or assurance claims.
@@ -112,6 +119,32 @@ observed while validating a returned receipt. No failure falls back to portable.
 | receipt does not match permit, provider, input, capability receipt, or artifact | `verified_execution_receipt_invalid` |
 | portable object offered for verified requirement | `assurance_evidence_mismatch` |
 | checkpoint aliases cache state or crosses mode/provider identity | `verified_checkpoint_invalid` |
+
+### 5.1 Relational conformance rejections
+
+The generated `assurance-modes-v1` vector contains one hash-linked valid flow
+and the following closed, stable mutation names. A conformance runner MUST
+apply each mutation to that flow, obtain the stated protocol error, record
+`execution_started=false`, and record no fallback mode. Validation of these
+candidate evidence bundles occurs before dispatch; none authorizes a worker or
+portable retry.
+
+| Mutation name | Required error |
+| --- | --- |
+| `provider-id-mismatch` | `verified_provider_identity_invalid` |
+| `provider-contract-mismatch` | `verified_provider_unavailable` |
+| `provider-binary-mismatch` | `verified_provider_identity_invalid` |
+| `capability-set-mismatch` | `verified_capabilities_unsatisfied` |
+| `capability-receipt-mismatch` | `verified_capabilities_unsatisfied` |
+| `nonce-mismatch` | `verified_permit_invalid` |
+| `operation-mismatch` | `verified_execution_receipt_invalid` |
+| `permit-mismatch` | `verified_execution_receipt_invalid` |
+| `build-input-mismatch` | `verified_execution_receipt_invalid` |
+| `artifact-mismatch` | `verified_execution_receipt_invalid` |
+| `capability-receipt-stale` | `verified_capabilities_unsatisfied` |
+| `permit-expired` | `verified_permit_invalid` |
+| `checkpoint-chain-mismatch` | `verified_checkpoint_invalid` |
+| `portable-fallback-attempt` | `assurance_evidence_mismatch` |
 
 ## 6. Packaging and claims
 
