@@ -1,8 +1,8 @@
 # Curator Protocol Specification
 
-**Version:** 1.0.0-rc.6
+**Version:** 1.0.0-rc.7
 
-**Date:** 2026-07-30
+**Date:** 2026-08-19
 
 **Status:** Draft release candidate
 
@@ -36,11 +36,13 @@ The release consists of the following documents and artifacts:
 |---|---|
 | [Protocol core](protocol/core.md) | Normative package, manifest, identity, closure, hashing, and marker rules |
 | [Registry protocol](protocol/registry.md) | Normative canonical JSON, signatures, records, snapshots, log, bundles, cache, and HTTP rules |
+| [Assurance protocol](protocol/assurance.md) | Normative portable/verified selection, provider, evidence, identity, and fail-closed rules |
 | [Manager profile](profiles/manager.md) | Normative installation lifecycle, scopes, adapters, MCP, audit, and shell behavior |
 | [Registry service profile](profiles/registry-service.md) | Normative production guarantees for pagination, transactions, durability, recovery, keys, and operations |
 | [Curator CLI](cli/curator.md) | Informative command and CI guide for the Go implementation |
 | [Conformance](conformance/README.md) | Normative conformance classes, vectors, and execution contract |
 | [External repositories](docs/external-build-repositories.md) | Author and operator guide for schema 7 and `go-repository-v1` |
+| [Assurance modes](docs/assurance-modes.md) | Operator guidance for portable and separately installed verified providers |
 | [`schemas/v1`](schemas/v1) | Normative JSON Schemas for every versioned wire object |
 | [`conformance/v1`](conformance/v1) | Normative positive and negative test vectors |
 | [Release checklist](RELEASE.md) | Candidate, independent review, signing, checksum, and attestation gates |
@@ -70,15 +72,16 @@ shared test vectors, not by copying behavior from either codebase.
 
 ## Release status
 
-`1.0.0-rc.6` is a draft candidate. Its shared external-repository corpus is
-platform-neutral and emits no native conformance claim. Compiled builds run
-under the portable `manager-worker-v1` execution policy described in
-[`docs/portable-go-execution-policy.md`](docs/portable-go-execution-policy.md);
-the fail-closed hardened profile is tracked separately and is not claimed by
-this candidate. Exact candidate-suite identity and downstream consumption rules
-are recorded under [`release/1.0.0-rc.6.json`](release/1.0.0-rc.6.json). The
-published rc.5 metadata remains byte-frozen as historical evidence. Review
-evidence is published under [`reviews/`](reviews/). See
+`1.0.0-rc.7` is a draft candidate. Portable remains the default CLI-only mode.
+Verified mode is explicit, requires the platform-neutral
+`host-execution-provider-v1` contract, and fails before execution rather than
+silently downgrading. Provider binaries are separately installed trusted host
+components and are never skill-vendored artifacts. This candidate specifies
+the common contract for macOS, Linux, and Windows but ships no provider and
+emits no verified platform claim. Exact candidate-suite identity is recorded in
+[`release/1.0.0-rc.7.json`](release/1.0.0-rc.7.json); rc.6 and earlier release
+metadata remain byte-frozen historical evidence. Review evidence is published
+under [`reviews/`](reviews/). See
 [COMPATIBILITY.md](COMPATIBILITY.md),
 [SECURITY.md](SECURITY.md), and [GOVERNANCE.md](GOVERNANCE.md).
 

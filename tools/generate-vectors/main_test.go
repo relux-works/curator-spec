@@ -509,10 +509,20 @@ func TestPublishedRC5ReleaseMetadataRemainsByteFrozen(t *testing.T) {
 	}
 }
 
-// TestRC6ReleaseMetadataPinsSuiteWithoutClaimFabrication proves that rc.6
-// identifies the regenerated suite, links the frozen rc.5 publication, and
-// does not pretend that the historical claim-v3 schema identifies rc.6.
-func TestRC6ReleaseMetadataPinsSuiteWithoutClaimFabrication(t *testing.T) {
+func TestRC6ReleaseMetadataRemainsByteFrozen(t *testing.T) {
+	root := repositoryRoot(t)
+	payload, err := os.ReadFile(filepath.Join(root, "release", "1.0.0-rc.6.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	sum := sha256.Sum256(payload)
+	got := "sha256:" + hex.EncodeToString(sum[:])
+	if got != rc6ReleaseMetadataSHA256 {
+		t.Fatalf("historical rc.6 release metadata changed: digest %s, want %s", got, rc6ReleaseMetadataSHA256)
+	}
+}
+
+func TestRC7ReleaseMetadataPinsSuiteWithoutClaimFabrication(t *testing.T) {
 	root := repositoryRoot(t)
 	manifest, err := os.ReadFile(filepath.Join(root, "conformance", "v1", "manifest.json"))
 	if err != nil {
@@ -520,29 +530,70 @@ func TestRC6ReleaseMetadataPinsSuiteWithoutClaimFabrication(t *testing.T) {
 	}
 	sum := sha256.Sum256(manifest)
 	manifestIdentity := "sha256:" + hex.EncodeToString(sum[:])
-
-	metadata := readObject(t, filepath.Join(root, "release", "1.0.0-rc.6.json"))
+	metadata := readObject(t, filepath.Join(root, "release", "1.0.0-rc.7.json"))
 	if metadata["protocol_version"] != protocolVersion {
-		t.Fatalf("rc.6 release protocol_version = %v, want %s", metadata["protocol_version"], protocolVersion)
+		t.Fatalf("rc.7 release protocol_version = %v, want %s", metadata["protocol_version"], protocolVersion)
 	}
 	pin := metadata["candidate_protocol_pin"].(map[string]any)
 	downstream := metadata["downstream_consumption"].(map[string]any)
 	if pin["manifest_sha256"] != manifestIdentity || downstream["required_manifest_sha256"] != manifestIdentity {
-		t.Fatalf("rc.6 release does not pin manifest %s", manifestIdentity)
+		t.Fatalf("rc.7 release does not pin manifest %s", manifestIdentity)
 	}
 	history := metadata["historical_release"].(map[string]any)
-	if history["protocol_version"] != conformanceClaimV3ProtocolVersion ||
-		history["metadata_sha256"] != rc5ReleaseMetadataSHA256 ||
-		history["published_commit"] != rc5PublishedCommit ||
+	if history["protocol_version"] != "1.0.0-rc.6" ||
+		history["metadata_sha256"] != rc6ReleaseMetadataSHA256 ||
 		history["immutable"] != true {
-		t.Fatalf("rc.6 historical rc.5 identity is invalid: %#v", history)
+		t.Fatalf("rc.7 historical rc.6 identity is invalid: %#v", history)
 	}
-	claim := metadata["claim_v3"].(map[string]any)
+	claim := metadata["claim_v4"].(map[string]any)
 	claims, ok := claim["claims_emitted"].([]any)
-	if claim["claim_protocol_version"] != conformanceClaimV3ProtocolVersion ||
-		claim["rc6_claim_schema"] != nil ||
+	if claim["claim_protocol_version"] != protocolVersion ||
 		!ok || len(claims) != 0 {
-		t.Fatalf("rc.6 release fabricates claim evidence: %#v", claim)
+		t.Fatalf("rc.7 release fabricates claim evidence: %#v", claim)
+	}
+}
+
+func TestAssuranceModesAreClosedFailClosedAndNonAliasing(t *testing.T) {
+	root := repositoryRoot(t)
+	vector := readObject(t, filepath.Join(root, "conformance", "v1", "vectors", "assurance-modes.json"))
+	platforms := vector["platforms"].([]any)
+	if !reflect.DeepEqual(platforms, []any{"linux", "macos", "windows"}) {
+		t.Fatalf("provider contract platforms = %#v", platforms)
+	}
+	policies := vector["policies"].([]any)
+	if len(policies) != 2 {
+		t.Fatalf("assurance policies = %d, want 2", len(policies))
+	}
+	portable := policies[0].(map[string]any)
+	verified := policies[1].(map[string]any)
+	if portable["mode"] != "portable" || portable["default"] != true || portable["provider_contract"] != nil {
+		t.Fatalf("portable policy is not the CLI-only default: %#v", portable)
+	}
+	if verified["mode"] != "verified" || verified["default"] != false || verified["provider_contract"] != verifiedProviderContract {
+		t.Fatalf("verified policy is not explicit and provider-backed: %#v", verified)
+	}
+	identities := vector["cache_identities"].([]any)
+	keys := map[string]bool{}
+	for _, raw := range identities {
+		entry := raw.(map[string]any)
+		input := entry["input"]
+		want := sha256Identity(canonicalBytes(input))
+		if entry["expected_key"] != want {
+			t.Fatalf("stale assurance cache key: got %v, want %s", entry["expected_key"], want)
+		}
+		keys[want] = true
+	}
+	if len(keys) != 2 {
+		t.Fatal("portable and verified cache identities alias")
+	}
+	for _, raw := range vector["fail_closed_cases"].([]any) {
+		entry := raw.(map[string]any)
+		if entry["execution_started"] != false || entry["fallback_mode"] != nil {
+			t.Fatalf("case is not fail-closed: %#v", entry)
+		}
+	}
+	if claims := vector["release_claims"].([]any); len(claims) != 0 {
+		t.Fatalf("rc.7 fabricates verified claims: %#v", claims)
 	}
 }
 

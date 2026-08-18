@@ -11,6 +11,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+import assurance
 from jsonschema import Draft202012Validator, FormatChecker
 from referencing import Registry, Resource
 
@@ -38,16 +39,22 @@ RETIRED_DESCRIPTOR_STEM = "curator" + "-build"
 # The schema-6 build-source digest algorithm namespace shares the retired stem
 # but is a different, byte-frozen identifier.
 BUILD_SOURCE_ALGORITHM_NAMESPACE = RETIRED_DESCRIPTOR_STEM + "-source"
-PROTOCOL_VERSION = "1.0.0-rc.6"
+PROTOCOL_VERSION = "1.0.0-rc.7"
+RC6_PROTOCOL_VERSION = "1.0.0-rc.6"
 RC5_PROTOCOL_VERSION = "1.0.0-rc.5"
 RC5_RELEASE_METADATA_SHA256 = (
     "sha256:75ae17fc029b4f51ca40ce768d04fd72991ec3db2602b8fe59213bee6ac34583"
 )
 RC5_PUBLISHED_COMMIT = "f5d7673039226ab81de2f4f87e2155ae995c4df3"
+RC6_RELEASE_METADATA_SHA256 = (
+    "sha256:c4ad58e76687bd563679773a60c6ce35c238d4117b7cbceb05d4f88b5300ed3f"
+)
+RC6_SOURCE_COMMIT = "dce6643c55434464c56f0fe20064db754cd58c61"
 CLAIM_PROTOCOL_VERSIONS = {
     1: "1.0.0-rc.3",
     2: "1.0.0-rc.4",
     3: RC5_PROTOCOL_VERSION,
+    4: PROTOCOL_VERSION,
 }
 CLAIM_HISTORY_FROZEN_SHA256 = {
     "schemas/v1/conformance-claim-v1.schema.json": "c9f49460618ccc8b1d7d2dfaf760fc6ad3a53a870a6685a685ddc148d3c87b3f",
@@ -62,7 +69,7 @@ CLAIM_HISTORY_FROZEN_SHA256 = {
     "conformance/v1/schema-cases/conformance-claim-v2/invalid.json": "79d244335cb2ddfb9c831aa38c31c6ca37c89f0704ad61a19032882b1bec8604",
     "conformance/v1/schema-cases/conformance-claim-v2/valid.json": "f7e7cc86f33ea03ee9bb4d149e1dba29cf34f5ceaf5504df8a9e91c659a1835f",
 }
-RC6_REQUIRED_FILES = {
+RC7_REQUIRED_FILES = {
     "decisions/0004-compile-only-build-drivers.md",
     "schemas/v1/agent-skill-v6.schema.json",
     "schemas/v1/csk-skill-v6.schema.json",
@@ -78,13 +85,26 @@ RC6_REQUIRED_FILES = {
     "conformance/v1/vectors/manager-lifecycle.json",
     "release/1.0.0-rc.5.json",
     "release/1.0.0-rc.6.json",
+    "release/1.0.0-rc.7.json",
+    "decisions/0007-portable-and-verified-assurance.md",
+    "protocol/assurance.md",
+    "docs/assurance-modes.md",
+    "schemas/v1/assurance-policy-v1.schema.json",
+    "schemas/v1/verified-provider-v1.schema.json",
+    "schemas/v1/provider-capability-receipt-v1.schema.json",
+    "schemas/v1/execution-permit-v1.schema.json",
+    "schemas/v1/execution-receipt-v1.schema.json",
+    "schemas/v1/execution-checkpoint-v1.schema.json",
+    "schemas/v1/conformance-claim-v4.schema.json",
+    "conformance/v1/vectors/assurance-modes.json",
 }
-RC6_REQUIRED_MANIFEST_FILES = {
+RC7_REQUIRED_MANIFEST_FILES = {
     "schema-cases/index.json",
     "expected/marker.json",
     "expected/marker-v2.json",
     "vectors/build-drivers.json",
     "vectors/manager-lifecycle.json",
+    "vectors/assurance-modes.json",
 }
 # The published marker-v1 legacy-read evidence. Its bytes are release history,
 # so the writer golden a candidate publishes for the same golden skill is a
@@ -96,13 +116,20 @@ FROZEN_MARKER_V1_SHA256 = (
 # schema-5 golden skill activates no compiled command, so the writer golden
 # restates the legacy marker with exactly these members changed.
 SHARED_FIXTURE_MARKER_V2_DELTA = frozenset({"schema_version", "build_roots", "builds"})
-RC6_REQUIRED_INDEXED_SCHEMAS = {
+RC7_REQUIRED_INDEXED_SCHEMAS = {
     "agent-skill-v6.schema.json",
     "csk-skill-v6.schema.json",
     "build-receipt-v1.schema.json",
     "install-marker-v2.schema.json",
     "conformance-claim-v2.schema.json",
     "conformance-claim-v3.schema.json",
+    "assurance-policy-v1.schema.json",
+    "verified-provider-v1.schema.json",
+    "provider-capability-receipt-v1.schema.json",
+    "execution-permit-v1.schema.json",
+    "execution-receipt-v1.schema.json",
+    "execution-checkpoint-v1.schema.json",
+    "conformance-claim-v4.schema.json",
 }
 RC6_MANAGER_DRY_RUN_CASES = {"compiled-cache-miss-is-read-only"}
 RC6_MANAGER_LIFECYCLE_CASES = {
@@ -146,6 +173,42 @@ RC6_MANAGER_LIFECYCLE_CASES = {
 
 class ReleaseFailure(RuntimeError):
     pass
+
+
+def validate_assurance_release_surface() -> None:
+    vector = load_json(ROOT / "conformance" / "v1" / "vectors" / "assurance-modes.json")
+    flow = vector.get("valid_flow")
+    baseline_error = assurance.validate_flow(flow)
+    if baseline_error is not None:
+        raise ReleaseFailure(f"valid assurance flow rejected as {baseline_error}")
+    cases = vector.get("relational_rejection_cases")
+    if not isinstance(cases, list) or len(cases) != 14:
+        raise ReleaseFailure("assurance relational release coverage is incomplete")
+    names: set[str] = set()
+    for case in cases:
+        if not isinstance(case, dict) or not isinstance(case.get("name"), str):
+            raise ReleaseFailure("assurance relational rejection has no stable name")
+        name = case["name"]
+        if name in names:
+            raise ReleaseFailure(f"duplicate assurance relational rejection {name}")
+        names.add(name)
+        expected = case.get("expected")
+        if not isinstance(expected, dict) or (
+            expected.get("failure_stage") != "pre-execution"
+            or expected.get("execution_started") is not False
+            or expected.get("fallback_mode") is not None
+            or not isinstance(expected.get("error"), str)
+        ):
+            raise ReleaseFailure(f"assurance relational rejection is not fail-closed: {name}")
+        try:
+            candidate = assurance.apply_mutation(flow, case.get("mutation"))
+        except (KeyError, IndexError, TypeError, ValueError) as exc:
+            raise ReleaseFailure(f"invalid assurance mutation {name}: {exc}") from exc
+        actual = assurance.validate_flow(candidate)
+        if actual != expected["error"]:
+            raise ReleaseFailure(
+                f"assurance relational rejection {name}: got {actual!r}, want {expected['error']!r}"
+            )
 
 
 def load_json(path: Path) -> Any:
@@ -229,7 +292,7 @@ def validate_manifest_inventory() -> None:
     )
     if paths != actual:
         raise ReleaseFailure("conformance manifest inventory is incomplete or stale")
-    missing_required = sorted(RC6_REQUIRED_MANIFEST_FILES - set(paths))
+    missing_required = sorted(RC7_REQUIRED_MANIFEST_FILES - set(paths))
     if missing_required:
         raise ReleaseFailure(
             f"{PROTOCOL_VERSION} manifest omits required files: {missing_required}"
@@ -343,7 +406,7 @@ def validate_protocol_artifacts(version: str) -> None:
     if version != PROTOCOL_VERSION:
         return
 
-    missing = sorted(path for path in RC6_REQUIRED_FILES if not (ROOT / path).is_file())
+    missing = sorted(path for path in RC7_REQUIRED_FILES if not (ROOT / path).is_file())
     if missing:
         raise ReleaseFailure(
             f"{PROTOCOL_VERSION} required artifacts are missing: {missing}"
@@ -357,6 +420,12 @@ def validate_protocol_artifacts(version: str) -> None:
         "conformance-claim-v1.schema.json": (1, CLAIM_PROTOCOL_VERSIONS[1]),
         "conformance-claim-v2.schema.json": (2, CLAIM_PROTOCOL_VERSIONS[2]),
         "conformance-claim-v3.schema.json": (3, CLAIM_PROTOCOL_VERSIONS[3]),
+        "conformance-claim-v4.schema.json": (4, CLAIM_PROTOCOL_VERSIONS[4]),
+        "verified-provider-v1.schema.json": (1, None),
+        "provider-capability-receipt-v1.schema.json": (1, None),
+        "execution-permit-v1.schema.json": (1, None),
+        "execution-receipt-v1.schema.json": (1, None),
+        "execution-checkpoint-v1.schema.json": (1, None),
     }
     schemas = ROOT / "schemas" / "v1"
     for name, (schema_version, protocol_version) in schema_expectations.items():
@@ -393,32 +462,44 @@ def validate_protocol_artifacts(version: str) -> None:
         for item in index
         if isinstance(item, dict) and isinstance(item.get("schema"), str)
     }
-    missing_schemas = sorted(RC6_REQUIRED_INDEXED_SCHEMAS - indexed)
+    missing_schemas = sorted(RC7_REQUIRED_INDEXED_SCHEMAS - indexed)
     if missing_schemas:
         raise ReleaseFailure(
             f"{PROTOCOL_VERSION} schema-case index is incomplete: {missing_schemas}"
         )
 
-    release = load_json(ROOT / "release" / "1.0.0-rc.6.json")
+    if sha256_identity(ROOT / "release" / "1.0.0-rc.6.json") != RC6_RELEASE_METADATA_SHA256:
+        raise ReleaseFailure("historical rc.6 release metadata changed")
+
+    validate_assurance_release_surface()
+
+    release = load_json(ROOT / "release" / "1.0.0-rc.7.json")
     history = release.get("historical_release", {})
-    claim = release.get("claim_v3", {})
+    claim = release.get("claim_v4", {})
+    assurance = release.get("assurance", {})
     if (
         release.get("protocol_version") != PROTOCOL_VERSION
-        or release.get("source_baseline_commit") != RC5_PUBLISHED_COMMIT
-        or release.get("legacy_release") != RC5_PROTOCOL_VERSION
+        or release.get("source_baseline_commit") != RC6_SOURCE_COMMIT
+        or release.get("legacy_release") != RC6_PROTOCOL_VERSION
         or not isinstance(history, dict)
-        or history.get("protocol_version") != RC5_PROTOCOL_VERSION
-        or history.get("metadata_path") != "release/1.0.0-rc.5.json"
-        or history.get("metadata_sha256") != RC5_RELEASE_METADATA_SHA256
-        or history.get("published_commit") != RC5_PUBLISHED_COMMIT
+        or history.get("protocol_version") != RC6_PROTOCOL_VERSION
+        or history.get("metadata_path") != "release/1.0.0-rc.6.json"
+        or history.get("metadata_sha256") != RC6_RELEASE_METADATA_SHA256
+        or history.get("source_commit") != RC6_SOURCE_COMMIT
         or history.get("immutable") is not True
         or not isinstance(claim, dict)
-        or claim.get("claim_protocol_version") != RC5_PROTOCOL_VERSION
-        or claim.get("rc6_claim_schema") is not None
+        or claim.get("claim_protocol_version") != PROTOCOL_VERSION
+        or claim.get("schema") != "schemas/v1/conformance-claim-v4.schema.json"
         or claim.get("claims_emitted") != []
+        or not isinstance(assurance, dict)
+        or assurance.get("default_mode") != "portable"
+        or assurance.get("verified_implementations") != []
+        or assurance.get("verified_platform_claims") != []
+        or assurance.get("silent_downgrade_permitted") is not False
+        or assurance.get("skill_vendored_provider_allowed") is not False
     ):
         raise ReleaseFailure(
-            "rc.6 metadata rewrites rc.5 evidence or fabricates an rc.6 claim"
+            "rc.7 metadata rewrites rc.6 evidence or fabricates a verified claim"
         )
 
     validate_manager_lifecycle_release_surface()
@@ -435,6 +516,20 @@ def validate_protocol_artifacts(version: str) -> None:
         if required_text not in decision:
             raise ReleaseFailure(
                 f"decision 0004 is stale: missing {required_text!r}"
+            )
+    assurance_decision = (
+        ROOT / "decisions" / "0007-portable-and-verified-assurance.md"
+    ).read_text(encoding="utf-8")
+    for required_text in (
+        "portable-cli-policy-v1",
+        "verified-provider-policy-v1",
+        "host-execution-provider-v1",
+        "no fallback or downgrade",
+        "macOS, Linux, and Windows",
+    ):
+        if required_text not in assurance_decision:
+            raise ReleaseFailure(
+                f"decision 0007 is stale: missing {required_text!r}"
             )
 
 
@@ -527,20 +622,37 @@ def validate_version(version: str) -> None:
             or downstream.get("required_manifest_sha256") != expected
         ):
             raise ReleaseFailure(f"{metadata_path.relative_to(ROOT)} does not pin the exact suite manifest")
-        execution = metadata.get("execution_policy", {})
-        if (
-            not isinstance(execution, dict)
-            or execution.get("portable") != PORTABLE_EXECUTION_POLICY
-            or execution.get("hardened_profile_claimed") is not False
-            or not execution.get("hardened_profile_owner")
-            or execution.get("native_control_inventory_version")
-            != NATIVE_CONTROL_INVENTORY_VERSION
-            or execution.get("capability_evidence_record_version")
-            != CAPABILITY_EVIDENCE_RECORD_VERSION
-        ):
-            raise ReleaseFailure(
-                f"{metadata_path.relative_to(ROOT)} does not honestly record its execution policy"
-            )
+        if version == PROTOCOL_VERSION:
+            assurance = metadata.get("assurance", {})
+            if (
+                not isinstance(assurance, dict)
+                or assurance.get("default_mode") != "portable"
+                or assurance.get("portable_execution_policy") != PORTABLE_EXECUTION_POLICY
+                or assurance.get("verified_provider_contract")
+                != "host-execution-provider-v1"
+                or assurance.get("verified_implementations") != []
+                or assurance.get("verified_platform_claims") != []
+                or assurance.get("silent_downgrade_permitted") is not False
+                or assurance.get("skill_vendored_provider_allowed") is not False
+            ):
+                raise ReleaseFailure(
+                    f"{metadata_path.relative_to(ROOT)} does not honestly record its assurance policy"
+                )
+        else:
+            execution = metadata.get("execution_policy", {})
+            if (
+                not isinstance(execution, dict)
+                or execution.get("portable") != PORTABLE_EXECUTION_POLICY
+                or execution.get("hardened_profile_claimed") is not False
+                or not execution.get("hardened_profile_owner")
+                or execution.get("native_control_inventory_version")
+                != NATIVE_CONTROL_INVENTORY_VERSION
+                or execution.get("capability_evidence_record_version")
+                != CAPABILITY_EVIDENCE_RECORD_VERSION
+            ):
+                raise ReleaseFailure(
+                    f"{metadata_path.relative_to(ROOT)} does not honestly record its execution policy"
+                )
 
 
 def names_retired_descriptor(text: str) -> bool:

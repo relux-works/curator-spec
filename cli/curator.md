@@ -203,3 +203,12 @@ phase and the `build_execution_*` codes of the manager profile. A failure in any
 planned command prevents publication for the whole operation. Successful
 publication is one manager-home transaction with the consumer ledger last;
 rollback restores committed targets in reverse order.
+
+For rc.7, omitted assurance selection means `portable`. An implementation that
+offers `verified` exposes it only as explicit operator configuration or a CLI
+option; package data cannot select it. Before execution it resolves a separately
+installed `host-execution-provider-v1`, verifies its configured binary identity,
+and validates a fresh complete capability receipt. Any failure is terminal for
+that operation and MUST NOT trigger a portable retry. The CLI should display the
+selected mode, provider id and binary digest, or the fail-closed diagnostic.
+Provider installation is not a skill-install command.

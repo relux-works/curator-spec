@@ -553,6 +553,79 @@ class WireSemanticValidationTests(unittest.TestCase):
         self.assertEqual(digest, validate.RC5_RELEASE_METADATA_SHA256)
 
 
+class AssuranceRelationalValidationTests(unittest.TestCase):
+    def vector(self) -> dict:
+        return validate.load_json(
+            validate.SUITE / "vectors" / "assurance-modes.json"
+        )
+
+    def test_timestamp_and_checkpoint_wire_semantics(self) -> None:
+        capability = self.vector()["valid_flow"]["capability_receipt"]
+        invalid_capability = copy.deepcopy(capability)
+        invalid_capability["observed_at"] = invalid_capability["expires_at"]
+        self.assertIn(
+            "must precede",
+            validate.validate_wire_semantics(
+                "provider-capability-receipt-v1.schema.json", invalid_capability
+            ),
+        )
+
+        receipt = self.vector()["valid_flow"]["execution_receipt"]
+        invalid_receipt = copy.deepcopy(receipt)
+        invalid_receipt["started_at"] = "2026-07-13T00:04:00Z"
+        self.assertIn(
+            "at or before",
+            validate.validate_wire_semantics(
+                "execution-receipt-v1.schema.json", invalid_receipt
+            ),
+        )
+
+        checkpoints = self.vector()["valid_flow"]["checkpoints"]
+        first = copy.deepcopy(checkpoints[0])
+        first["previous_checkpoint_sha256"] = "sha256:" + "9" * 64
+        self.assertIn(
+            "null predecessor",
+            validate.validate_wire_semantics(
+                "execution-checkpoint-v1.schema.json", first
+            ),
+        )
+        for checkpoint in checkpoints[1:]:
+            invalid = copy.deepcopy(checkpoint)
+            invalid["previous_checkpoint_sha256"] = None
+            self.assertIn(
+                "digest predecessor",
+                validate.validate_wire_semantics(
+                    "execution-checkpoint-v1.schema.json", invalid
+                ),
+            )
+
+    def test_validate_gate_rejects_every_generated_relational_mutation(self) -> None:
+        vector = self.vector()
+        validate.validate_assurance_vectors(vector)
+        for case in vector["relational_rejection_cases"]:
+            with self.subTest(case=case["name"]):
+                mutated = copy.deepcopy(vector)
+                mutated["valid_flow"] = validate.assurance.apply_mutation(
+                    vector["valid_flow"], case["mutation"]
+                )
+                with self.assertRaisesRegex(
+                    validate.ValidationFailure, case["expected"]["error"]
+                ):
+                    validate.validate_assurance_vectors(mutated)
+
+    def test_generated_relational_cases_have_stable_unique_rejections(self) -> None:
+        cases = self.vector()["relational_rejection_cases"]
+        self.assertEqual(
+            {case["name"] for case in cases},
+            validate.ASSURANCE_RELATIONAL_REJECTIONS,
+        )
+        self.assertEqual(len(cases), len({case["name"] for case in cases}))
+        for case in cases:
+            self.assertEqual(case["expected"]["failure_stage"], "pre-execution")
+            self.assertFalse(case["expected"]["execution_started"])
+            self.assertIsNone(case["expected"]["fallback_mode"])
+
+
 class RepositoryDescriptorIdentityTests(unittest.TestCase):
     def test_candidate_names_only_the_neutral_descriptor(self) -> None:
         validate.validate_repository_descriptor_identity()
@@ -1059,6 +1132,7 @@ class WorkflowRegenerationScopeTests(unittest.TestCase):
         "conformance/v1",
         "release/1.0.0-rc.5.json",
         "release/1.0.0-rc.6.json",
+        "release/1.0.0-rc.7.json",
     )
 
     def regeneration_diff_scope(self, path: Path) -> tuple[str, ...]:
