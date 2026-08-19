@@ -3,6 +3,17 @@
 This checklist is normative release procedure. `GOVERNANCE.md` defines who may
 approve changes; CI enforces the mechanically verifiable items.
 
+## Release target provenance
+
+- [ ] Repository merge settings enable squash merging and disable both rebase
+  merging and merge commits. The required Formatting check runs
+  `tools/verify_release_merge_policy.py` so policy drift blocks integration.
+- [ ] Release pull requests are squash-merged through GitHub after required
+  review and checks. Do not use rebase-and-merge for a release target: GitHub
+  recreates each rebased commit without commit signature verification.
+- [ ] The resulting squash commit reports a valid GitHub signature and passes
+  `tools/verify_release_commit.py` before an annotated signed tag is created.
+
 ## Candidate
 
 - [ ] All normative changes have compatibility and security impact notes.
