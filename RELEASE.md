@@ -6,13 +6,16 @@ approve changes; CI enforces the mechanically verifiable items.
 ## Release target provenance
 
 - [ ] Repository merge settings enable squash merging and disable both rebase
-  merging and merge commits. The required Formatting check runs
-  `tools/verify_release_merge_policy.py` so policy drift blocks integration.
+  merging and merge commits. A maintainer runs
+  `tools/verify_release_merge_policy.py` before integrating a release pull
+  request so policy drift blocks integration without requiring a broad
+  maintainer token in Actions.
 - [ ] Release pull requests are squash-merged through GitHub after required
   review and checks. Do not use rebase-and-merge for a release target: GitHub
   recreates each rebased commit without commit signature verification.
 - [ ] The resulting squash commit reports a valid GitHub signature and passes
-  `tools/verify_release_commit.py` before an annotated signed tag is created.
+  the main-branch Release target provenance job, which runs
+  `tools/verify_release_commit.py`, before an annotated signed tag is created.
 
 ## Candidate
 
