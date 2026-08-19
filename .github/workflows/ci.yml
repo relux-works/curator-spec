@@ -81,3 +81,23 @@ jobs:
             --accept 200,206,429
             '**/*.md'
           fail: true
+
+  release-provenance:
+    name: Release target provenance
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - name: Reject unsigned main-branch release targets
+        env:
+          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          git config gpg.format ssh
+          git config gpg.ssh.allowedSignersFile "$PWD/maintainers.allowed_signers"
+          git fetch --no-tags origin "$GITHUB_DEFAULT_BRANCH:refs/remotes/origin/$GITHUB_DEFAULT_BRANCH"
+          python -B tools/verify_release_commit.py --commit "$GITHUB_SHA"
