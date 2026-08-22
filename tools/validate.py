@@ -45,6 +45,8 @@ RC7_SOURCE_COMMIT = "99f70947d6f2447366d6c996127b73eca37a9159"
 # fail-closed profile, and the board story that owns it.
 PORTABLE_EXECUTION_POLICY = "manager-worker-v1"
 RESERVED_HARDENED_EXECUTION_POLICY = "hardened-worker-v1"
+SCRIPT_EXECUTION_POLICY = "script-worker-v1"
+SCRIPT_EXECUTION_FIELDS = ("execution_policy", "interpreter")
 HARDENED_EXECUTION_OWNER = "STORY-260728-327soo"
 # The exhaustive rc.5 per-platform native-control inventory and the closed
 # per-operation capability-evidence record that reports it.
@@ -241,6 +243,40 @@ def validate_schemas() -> None:
                 raise ValidationFailure(
                     f"{schema_name}: accepts schema-7-only build_repositories"
                 )
+
+    for prefix in ("agent-skill", "csk-skill"):
+        for version in range(1, 8):
+            schema_name = f"{prefix}-v{version}.schema.json"
+            schema = load_json(paths[schema_name])
+            for field in SCRIPT_EXECUTION_FIELDS:
+                legacy_with_v8_enforcement = {
+                    "schema_version": version,
+                    "commands": {
+                        "enforced-tool": {
+                            "type": "script",
+                            "unix_path": "scripts/enforced",
+                            field: SCRIPT_EXECUTION_POLICY
+                            if field == "execution_policy"
+                            else "python3-v1",
+                        }
+                    },
+                }
+                if version >= 3:
+                    legacy_with_v8_enforcement["capabilities"] = {}
+                schema_errors = list(
+                    Draft202012Validator(schema, registry=registry).iter_errors(
+                        legacy_with_v8_enforcement
+                    )
+                )
+                semantic_error = (
+                    validate_wire_semantics(schema_name, legacy_with_v8_enforcement)
+                    if not schema_errors
+                    else None
+                )
+                if not schema_errors and semantic_error is None:
+                    raise ValidationFailure(
+                        f"{schema_name}: accepts schema-8-only command {field}"
+                    )
 
 
 def retired_descriptor_offsets(text: str) -> list[int]:
@@ -521,6 +557,21 @@ def validate_effective_source(
 def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
     if not isinstance(instance, dict):
         return None
+    pre_script_worker_manifest = re.fullmatch(
+        r"(?:agent-skill|csk-skill)-v([1-7])\.schema\.json", schema_name
+    )
+    if pre_script_worker_manifest is not None:
+        for field in SCRIPT_EXECUTION_FIELDS:
+            if field in instance:
+                return f"{field} is legal only in manifest schema 8"
+        commands = instance.get("commands", {})
+        if isinstance(commands, dict):
+            for command in commands.values():
+                if not isinstance(command, dict):
+                    continue
+                for field in SCRIPT_EXECUTION_FIELDS:
+                    if field in command:
+                        return f"command {field} is legal only in manifest schema 8"
     legacy_manifest = re.fullmatch(r"(?:agent-skill|csk-skill)-v([1-6])\.schema\.json", schema_name)
     if legacy_manifest is not None:
         for field in ("build_repositories", "repository", "target"):
@@ -538,7 +589,12 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
                         return f"command {field} is legal only in manifest schema 7"
                 if command.get("driver") == "go-repository-v1":
                     return "go-repository-v1 is legal only in manifest schema 7"
-    if schema_name in {"agent-skill-v7.schema.json", "csk-skill-v7.schema.json"}:
+    if schema_name in {
+        "agent-skill-v7.schema.json",
+        "csk-skill-v7.schema.json",
+        "agent-skill-v8.schema.json",
+        "csk-skill-v8.schema.json",
+    }:
         repositories = instance.get("build_repositories", {})
         commands = instance.get("commands", {})
         if not isinstance(repositories, dict) or not isinstance(commands, dict):
@@ -611,7 +667,7 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
                     error = validate_effective_source(declared, effective)
                     if error is not None:
                         return error
-    elif schema_name == "install-marker-v3.schema.json":
+    elif schema_name in {"install-marker-v3.schema.json", "install-marker-v4.schema.json"}:
         builds = instance.get("builds", {})
         if not isinstance(builds, dict):
             return None
