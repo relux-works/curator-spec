@@ -48,6 +48,10 @@ const (
 	// hardenedExecutionOwner names the board story that owns the deferred
 	// fail-closed guarantees.
 	hardenedExecutionOwner = "STORY-260728-327soo"
+	// scriptExecutionPolicy is the only script execution-policy identity that
+	// manifest schema 8 admits. It is a separate identity from the compiled
+	// portable policy and never aliases it.
+	scriptExecutionPolicy = "script-worker-v1"
 	// nativeControlInventoryVersion names the exhaustive rc.5 per-platform
 	// native-control inventory. Adding, removing, or re-scoping an entry
 	// requires a new inventory version.
@@ -2046,11 +2050,17 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 				"type": "build", "driver": "go-repository-v1", "repository": "golden-tools", "target": "golden-tool",
 			}
 		}
+		if version >= 8 {
+			obj["commands"].(map[string]any)["enforced-tool"] = map[string]any{
+				"type": "script", "unix_path": "scripts/enforced", "win_path": "scripts/enforced.cmd",
+				"execution_policy": scriptExecutionPolicy, "interpreter": "python3-v1",
+			}
+		}
 		return obj
 	}
 	cases := map[string]schemaCase{}
 	additionalCases := map[string][]schemaExample{}
-	for version := 1; version <= 7; version++ {
+	for version := 1; version <= 8; version++ {
 		invalid := map[string]any{"schema_version": version, "install": "echo unsafe"}
 		if version == 1 {
 			invalid = map[string]any{"schema_version": 1, "runtime_roots": []any{"scripts"}}
@@ -2060,12 +2070,16 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 		for _, prefix := range []string{"agent-skill", "csk-skill"} {
 			name := fmt.Sprintf("%s-v%d.schema.json", prefix, version)
 			cases[name] = schemaCase{validSkill(version), invalid}
-			if version == 6 {
+			switch {
+			case version == 6:
 				additionalCases[name] = append(v6SchemaExamples(), legacyV7SchemaExamples(validSkill(version))...)
-			} else if version == 7 {
-				additionalCases[name] = v7SchemaExamples()
-			} else {
-				additionalCases[name] = legacyV7SchemaExamples(validSkill(version))
+				additionalCases[name] = append(additionalCases[name], legacyV8SchemaExamples(validSkill(version))...)
+			case version == 7:
+				additionalCases[name] = append(repositorySchemaExamples(version), legacyV8SchemaExamples(validSkill(version))...)
+			case version == 8:
+				additionalCases[name] = append(repositorySchemaExamples(version), scriptWorkerSchemaExamples()...)
+			default:
+				additionalCases[name] = append(legacyV7SchemaExamples(validSkill(version)), legacyV8SchemaExamples(validSkill(version))...)
 			}
 		}
 	}
@@ -2099,7 +2113,10 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	additionalCases["install-marker-v2.schema.json"] = installMarkerV2SchemaExamples(markerV2)
 	markerV3 := validInstallMarkerV3(marker)
 	cases["install-marker-v3.schema.json"] = schemaCase{markerV3, without(markerV3, "builds")}
-	additionalCases["install-marker-v3.schema.json"] = installMarkerV3SchemaExamples(markerV3)
+	additionalCases["install-marker-v3.schema.json"] = installMarkerBuildRecordSchemaExamples(markerV3)
+	markerV4 := validInstallMarkerV4(marker)
+	cases["install-marker-v4.schema.json"] = schemaCase{markerV4, without(markerV4, "builds")}
+	additionalCases["install-marker-v4.schema.json"] = installMarkerBuildRecordSchemaExamples(markerV4)
 	cases["adapter-ledger-v1.schema.json"] = schemaCase{ledger, map[string]any{"schema_version": 1, "entries": []any{"CON"}}}
 	cases["audit-record-v1.schema.json"] = schemaCase{audited, without(audited, "sig")}
 	cases["signature-envelope-v1.schema.json"] = schemaCase{audited["sig"], map[string]any{"algorithm": "rsa", "key_id": "bad", "signature": "bad"}}
@@ -2276,9 +2293,115 @@ func legacyV7SchemaExamples(valid map[string]any) []schemaExample {
 	}
 }
 
-func validV7SkillManifest() map[string]any {
+// legacyV8SchemaExamples proves that every manifest schema below 8 rejects the
+// schema-8 script execution surface. Schema 1 accepts unknown top-level fields,
+// so its rejection comes from the wire-semantics layer rather than the schema.
+func legacyV8SchemaExamples(valid map[string]any) []schemaExample {
+	withTopLevel := func(field string, value any) map[string]any {
+		manifest := deepCloneMap(valid)
+		manifest[field] = value
+		return manifest
+	}
+	withCommand := func(field string, value any) map[string]any {
+		manifest := deepCloneMap(valid)
+		commands, ok := manifest["commands"].(map[string]any)
+		if !ok {
+			commands = map[string]any{}
+			manifest["commands"] = commands
+		}
+		command := map[string]any{"type": "script", "unix_path": "scripts/reserved"}
+		command[field] = value
+		commands["reserved-v8"] = command
+		return manifest
+	}
+	return []schemaExample{
+		{name: "invalid-v8-top-level-execution-policy", instance: withTopLevel("execution_policy", scriptExecutionPolicy)},
+		{name: "invalid-v8-top-level-interpreter", instance: withTopLevel("interpreter", "python3-v1")},
+		{name: "invalid-v8-command-execution-policy", instance: withCommand("execution_policy", scriptExecutionPolicy)},
+		{name: "invalid-v8-command-interpreter", instance: withCommand("interpreter", "python3-v1")},
+	}
+}
+
+func validScriptWorkerSkillManifest() map[string]any {
 	return map[string]any{
-		"schema_version": 7,
+		"schema_version": 8,
+		"capabilities": map[string]any{
+			"network": "none", "filesystem": "repo", "exec": "none",
+			"secrets": "none", "env_read": []any{},
+		},
+		"runtime_roots": []any{"scripts"},
+		"commands": map[string]any{
+			"enforced-tool": map[string]any{
+				"type": "script", "unix_path": "scripts/enforced", "win_path": "scripts/enforced.cmd",
+				"execution_policy": scriptExecutionPolicy, "interpreter": "python3-v1",
+			},
+		},
+	}
+}
+
+// scriptWorkerSchemaExamples covers the schema-8 opt-in surface: enforcement is
+// per command, spelled exactly once, and carries a manager-resolved interpreter
+// identity. Absence of the field is the only spelling of declared-only.
+func scriptWorkerSchemaExamples() []schemaExample {
+	withEnforcedField := func(field string, value any) map[string]any {
+		manifest := validScriptWorkerSkillManifest()
+		manifest["commands"].(map[string]any)["enforced-tool"].(map[string]any)[field] = value
+		return manifest
+	}
+	withCommand := func(name string, command map[string]any) map[string]any {
+		manifest := validScriptWorkerSkillManifest()
+		manifest["commands"].(map[string]any)[name] = command
+		return manifest
+	}
+
+	mixed := withCommand("declared-tool", map[string]any{"type": "script", "unix_path": "scripts/declared"})
+	nodeInterpreter := withEnforcedField("interpreter", "node-v1")
+	windowsOnly := validScriptWorkerSkillManifest()
+	delete(windowsOnly["commands"].(map[string]any)["enforced-tool"].(map[string]any), "unix_path")
+	unixOnly := validScriptWorkerSkillManifest()
+	delete(unixOnly["commands"].(map[string]any)["enforced-tool"].(map[string]any), "win_path")
+
+	missingInterpreter := validScriptWorkerSkillManifest()
+	delete(missingInterpreter["commands"].(map[string]any)["enforced-tool"].(map[string]any), "interpreter")
+	interpreterWithoutPolicy := validScriptWorkerSkillManifest()
+	delete(interpreterWithoutPolicy["commands"].(map[string]any)["enforced-tool"].(map[string]any), "execution_policy")
+	pathless := validScriptWorkerSkillManifest()
+	enforcedPathless := pathless["commands"].(map[string]any)["enforced-tool"].(map[string]any)
+	delete(enforcedPathless, "unix_path")
+	delete(enforcedPathless, "win_path")
+
+	return []schemaExample{
+		{name: "valid-script-worker-enforced", valid: true, instance: validScriptWorkerSkillManifest()},
+		{name: "valid-script-worker-mixed-enforcement", valid: true, instance: mixed},
+		{name: "valid-script-worker-node-interpreter", valid: true, instance: nodeInterpreter},
+		{name: "valid-script-worker-windows-only", valid: true, instance: windowsOnly},
+		{name: "valid-script-worker-unix-only", valid: true, instance: unixOnly},
+		{name: "invalid-script-worker-missing-interpreter", instance: missingInterpreter},
+		{name: "invalid-script-worker-interpreter-without-policy", instance: interpreterWithoutPolicy},
+		{name: "invalid-script-worker-missing-path", instance: pathless},
+		{name: "invalid-script-worker-unknown-interpreter", instance: withEnforcedField("interpreter", "bash-v1")},
+		{name: "invalid-script-worker-successor-policy", instance: withEnforcedField("execution_policy", "script-worker-v2")},
+		{name: "invalid-script-worker-hardened-policy", instance: withEnforcedField("execution_policy", reservedHardenedExecutionPolicy)},
+		{name: "invalid-script-worker-compiled-policy", instance: withEnforcedField("execution_policy", portableExecutionPolicy)},
+		{name: "invalid-script-worker-null-policy", instance: withEnforcedField("execution_policy", nil)},
+		{name: "invalid-script-worker-opt-out-policy", instance: withEnforcedField("execution_policy", "none")},
+		{name: "invalid-script-worker-on-system-command", instance: withCommand("system-tool", map[string]any{
+			"type": "system", "command": "tool", "execution_policy": scriptExecutionPolicy, "interpreter": "python3-v1",
+		})},
+		{name: "invalid-script-worker-on-build-command", instance: withCommand("build-tool", map[string]any{
+			"type": "build", "driver": "go-v1", "source_dir": "build/cmd/tool",
+			"execution_policy": scriptExecutionPolicy, "interpreter": "python3-v1",
+		})},
+		{name: "invalid-script-worker-top-level-execution-policy", instance: withNestedField(
+			validScriptWorkerSkillManifest(), []string{}, "execution_policy", scriptExecutionPolicy)},
+		{name: "invalid-script-worker-top-level-interpreter", instance: withNestedField(
+			validScriptWorkerSkillManifest(), []string{}, "interpreter", "python3-v1")},
+	}
+}
+
+func validRepositorySkillManifest(version int) map[string]any {
+	return map[string]any{
+		"schema_version": version,
 		"capabilities":   map[string]any{},
 		"build_roots":    []any{"build"},
 		"build_repositories": map[string]any{
@@ -2297,29 +2420,29 @@ func validV7SkillManifest() map[string]any {
 	}
 }
 
-func v7SchemaExamples() []schemaExample {
+func repositorySchemaExamples(version int) []schemaExample {
 	withCommandField := func(field string, value any) map[string]any {
-		manifest := validV7SkillManifest()
+		manifest := validRepositorySkillManifest(version)
 		manifest["commands"].(map[string]any)["golden-tool"].(map[string]any)[field] = value
 		return manifest
 	}
 	withRepositoryField := func(field string, value any) map[string]any {
-		manifest := validV7SkillManifest()
+		manifest := validRepositorySkillManifest(version)
 		manifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)[field] = value
 		return manifest
 	}
-	sha256Manifest := validV7SkillManifest()
+	sha256Manifest := validRepositorySkillManifest(version)
 	sha256Manifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)["locked_commit"] =
 		map[string]any{"object_format": "sha256", "hex": strings.Repeat("a", 64)}
-	untaggedManifest := validV7SkillManifest()
+	untaggedManifest := validRepositorySkillManifest(version)
 	delete(untaggedManifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any), "tag")
-	sshManifest := validV7SkillManifest()
+	sshManifest := validRepositorySkillManifest(version)
 	sshManifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)["git"] = "ssh://git@github.com/example/golden-tools.git"
-	scpManifest := validV7SkillManifest()
+	scpManifest := validRepositorySkillManifest(version)
 	scpManifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)["git"] = "git@github.com:example/golden-tools.git"
-	unicodeHTTPSManifest := validV7SkillManifest()
+	unicodeHTTPSManifest := validRepositorySkillManifest(version)
 	unicodeHTTPSManifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)["git"] = "https://example.com/组织/工具.git"
-	tag255Manifest := validV7SkillManifest()
+	tag255Manifest := validRepositorySkillManifest(version)
 	tag255Manifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)["tag"] = strings.Repeat("界", 85)
 
 	examples := []schemaExample{
@@ -2329,11 +2452,11 @@ func v7SchemaExamples() []schemaExample {
 		{name: "valid-scp-source", valid: true, instance: scpManifest},
 		{name: "valid-unicode-https-source", valid: true, instance: unicodeHTTPSManifest},
 		{name: "valid-tag-255-bytes", valid: true, instance: tag255Manifest},
-		{name: "invalid-unselected-repository", instance: withNestedField(validV7SkillManifest(), []string{}, "build_repositories", map[string]any{
+		{name: "invalid-unselected-repository", instance: withNestedField(validRepositorySkillManifest(version), []string{}, "build_repositories", map[string]any{
 			"golden-tools": map[string]any{"git": "https://github.com/example/golden-tools.git", "locked_commit": map[string]any{"object_format": "sha1", "hex": fixedCommit}},
 			"unused":       map[string]any{"git": "ssh://git@example.com/unused.git", "locked_commit": map[string]any{"object_format": "sha1", "hex": fixedCommit}},
 		})},
-		{name: "invalid-missing-repository", instance: withNestedField(validV7SkillManifest(), []string{"commands", "golden-tool"}, "repository", "missing")},
+		{name: "invalid-missing-repository", instance: withNestedField(validRepositorySkillManifest(version), []string{"commands", "golden-tool"}, "repository", "missing")},
 		{name: "invalid-sha1-width", instance: withRepositoryField("locked_commit", map[string]any{"object_format": "sha1", "hex": strings.Repeat("a", 64)})},
 		{name: "invalid-sha256-width", instance: withRepositoryField("locked_commit", map[string]any{"object_format": "sha256", "hex": fixedCommit})},
 		{name: "invalid-https-userinfo", instance: withRepositoryField("git", "https://user@example.com/repo.git")},
@@ -2619,7 +2742,7 @@ func validBuildRecordV2ForMarkerV3(substituted bool) map[string]any {
 	return record
 }
 
-func markerV3WithExternalRecord(marker map[string]any, record map[string]any) map[string]any {
+func markerWithExternalRecord(marker map[string]any, record map[string]any) map[string]any {
 	result := cloneMap(marker)
 	result["commands"] = []any{"golden-tool"}
 	result["build_roots"] = []any{}
@@ -2659,9 +2782,16 @@ func validInstallMarkerV3(markerV1 map[string]any) map[string]any {
 	return marker
 }
 
-func installMarkerV3SchemaExamples(validMarker map[string]any) []schemaExample {
-	externalOnly := markerV3WithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(true))
-	externalOnlyUnsubstituted := markerV3WithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(false))
+func validInstallMarkerV4(markerV1 map[string]any) map[string]any {
+	marker := validInstallMarkerV3(markerV1)
+	marker["schema_version"] = 4
+	marker["skill_schema_version"] = 8
+	return marker
+}
+
+func installMarkerBuildRecordSchemaExamples(validMarker map[string]any) []schemaExample {
+	externalOnly := markerWithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(true))
+	externalOnlyUnsubstituted := markerWithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(false))
 	localOnly := cloneMap(validMarker)
 	localOnly["commands"] = []any{"local-helper"}
 	localOnly["builds"] = map[string]any{"local-helper": validBuildRecordV1ForMarkerV3()}
@@ -2670,19 +2800,19 @@ func installMarkerV3SchemaExamples(validMarker map[string]any) []schemaExample {
 	emptyBuilds["build_roots"] = []any{}
 	emptyBuilds["builds"] = map[string]any{}
 	delete(emptyBuilds, "build_source")
-	networkTag := markerV3WithExternalRecord(
+	networkTag := markerWithExternalRecord(
 		validMarker,
 		validNetworkBuildRecordV2ForMarkerV3("sha1", "tag", "v1.4.0"),
 	)
-	networkBranch := markerV3WithExternalRecord(
+	networkBranch := markerWithExternalRecord(
 		validMarker,
 		validNetworkBuildRecordV2ForMarkerV3("sha1", "branch", "release/v2"),
 	)
-	networkSHA1Revision := markerV3WithExternalRecord(
+	networkSHA1Revision := markerWithExternalRecord(
 		validMarker,
 		validNetworkBuildRecordV2ForMarkerV3("sha1", "revision", fixedCommit),
 	)
-	networkSHA256Revision := markerV3WithExternalRecord(
+	networkSHA256Revision := markerWithExternalRecord(
 		validMarker,
 		validNetworkBuildRecordV2ForMarkerV3("sha256", "revision", strings.Repeat("a", 64)),
 	)
@@ -2690,24 +2820,24 @@ func installMarkerV3SchemaExamples(validMarker map[string]any) []schemaExample {
 	sha256External["declared_locked_commit"] = map[string]any{"object_format": "sha256", "hex": strings.Repeat("a", 64)}
 	sha256External["object_format"] = "sha256"
 	sha256External["commit"] = strings.Repeat("a", 64)
-	sha256Marker := markerV3WithExternalRecord(validMarker, sha256External)
+	sha256Marker := markerWithExternalRecord(validMarker, sha256External)
 	untaggedExternal := validBuildRecordV2ForMarkerV3(false)
 	delete(untaggedExternal, "declared_tag")
-	untaggedMarker := markerV3WithExternalRecord(validMarker, untaggedExternal)
-	localIdentityMismatch := markerV3WithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(true))
+	untaggedMarker := markerWithExternalRecord(validMarker, untaggedExternal)
+	localIdentityMismatch := markerWithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(true))
 	localIdentityMismatch["builds"].(map[string]any)["golden-tool"].(map[string]any)["effective_identity"] =
 		map[string]any{"kind": "network-git", "value": "git.example.com/forks/golden-tools"}
-	networkIdentityMismatch := markerV3WithExternalRecord(
+	networkIdentityMismatch := markerWithExternalRecord(
 		validMarker,
 		validNetworkBuildRecordV2ForMarkerV3("sha1", "branch", "release/v2"),
 	)
 	networkIdentityMismatch["builds"].(map[string]any)["golden-tool"].(map[string]any)["effective_identity"] =
 		map[string]any{"kind": "operator-local-git", "value": "sha256:" + strings.Repeat("e", 64)}
-	sha1Revision64 := markerV3WithExternalRecord(
+	sha1Revision64 := markerWithExternalRecord(
 		validMarker,
 		validNetworkBuildRecordV2ForMarkerV3("sha1", "revision", strings.Repeat("a", 64)),
 	)
-	sha256Revision40 := markerV3WithExternalRecord(
+	sha256Revision40 := markerWithExternalRecord(
 		validMarker,
 		validNetworkBuildRecordV2ForMarkerV3("sha256", "revision", fixedCommit),
 	)
