@@ -207,10 +207,15 @@ the shim name and one active name has exactly one owner.
 A script command is declared-only unless it selects the enforced execution
 policy named `script-worker-v1`. Protocol 1.0 defines exactly one script
 execution policy, and every conforming manager MUST implement it on macOS,
-Linux, and Windows. Selection is an OPTIONAL per-command field on a script
-command of manifest schema 8 or later. Schema 7 and earlier script commands
-keep their exact meaning above, and an absent field means declared-only on
-every schema.
+Linux, and Windows. Selection is the OPTIONAL `execution_policy` field on a
+script command of manifest schema 8 or later, whose only admitted value is
+`script-worker-v1`. Schema 7 and earlier script commands keep their exact
+meaning above, and an absent field means declared-only on every schema.
+
+`execution_policy` and `interpreter` are co-required. A script command that
+declares one without the other is an invalid manifest and MUST be rejected by
+manifest validation; a manager MUST NOT resolve the missing field to a default
+and MUST NOT install such a command declared-only.
 
 Selecting the policy is not a package-visible choice of policy. The value space
 is closed and holds exactly one identity, so a package chooses only whether the
@@ -253,9 +258,10 @@ command. The worker applies the complete containment profile before the
 interpreter starts and admits no second command, second interpreter, additional
 program, shell, or control change afterwards.
 
-An enforced script command names a closed interpreter identifier. Protocol 1.0
-admits exactly `python3-v1` and `node-v1`. The manager, and only the manager,
-resolves that identifier to an executable, once per invocation:
+An enforced script command names a closed interpreter identifier in the
+`interpreter` field. Protocol 1.0 admits exactly `python3-v1` and `node-v1`.
+The manager, and only the manager, resolves that identifier to an executable,
+once per invocation:
 
 - resolution is package-independent and completes before the manager enters any
   package-controlled directory. A manager MUST NOT resolve an interpreter from
@@ -423,7 +429,7 @@ Its authority is the `native_control_inventory` section of
 | Control | macOS | Linux | Windows |
 |---|---|---|---|
 | `descendant-domain-termination` | available: process group and session teardown | available: process group and session teardown | available: Job Object kill-on-close |
-| `active-process-count-limit` | unavailable: `no-private-aggregate-domain` | available: `RLIMIT_NPROC` | available: Job Object active-process limit |
+| `active-process-count-limit` | unavailable: `no-private-aggregate-domain` | host-conditional: delegated cgroup v2 `pids.max` | available: Job Object active-process limit |
 | `aggregate-memory-limit` | unavailable: `no-private-aggregate-domain` | host-conditional: delegated cgroup v2 `memory.max` | available: Job Object process and job memory limit |
 | `per-file-size-limit` | available: `RLIMIT_FSIZE` | available: `RLIMIT_FSIZE` | unavailable: `no-private-aggregate-domain` |
 | `inherited-handle-restriction` | available: close-on-exec plus explicit descriptor release | available: close-on-exec plus explicit descriptor release | available: explicit handle inheritance list |
@@ -437,10 +443,23 @@ facts do not depend on what the child is, but they are copied, not referenced:
 each inventory is versioned on its own, and a revision motivated by the build
 policy MUST NOT re-scope script conformance, or the reverse.
 
-`network-isolation-domain` is not, and MUST NOT be spelled as,
-`total-network-denial`. Applying the control on a host that provides it does
-not license claiming any policy-level guarantee: the mechanism is
-host-conditional, so the guarantee stays deferred.
+A per-user resource limit is not a private aggregate domain. `RLIMIT_NPROC` and
+`RLIMIT_AS` bound every process of the invoking user, not the descendants of
+one invocation, so an unrelated process of that user consumes the budget and
+the enforced command's descendants are not privately bounded. A manager MUST
+NOT back `active-process-count-limit` or `aggregate-memory-limit` with either
+limit on any platform, which is why both controls are `unavailable` on macOS
+and `host-conditional` on a delegated cgroup v2 controller on Linux.
+`RLIMIT_FSIZE` backs `per-file-size-limit` because that control bounds one file
+write, not an aggregate over a domain.
+
+`network-isolation-domain` is an inventory control, not a guarantee. It is not,
+and MUST NOT be spelled as, `script-total-network-denial`, the guarantee this
+policy defers, nor as `total-network-denial`, which names section 4.2.1's
+build-policy guarantee and may not appear on a script surface at all. Applying
+the control on a host that provides it does not license claiming any
+policy-level guarantee: the mechanism is host-conditional, so the guarantee
+stays deferred.
 
 Availability has exactly three values in this inventory. `available` and
 `unavailable` keep their section 4.2.1 meaning: a fixed normative per-platform
@@ -536,7 +555,7 @@ does not find, and the absence of any deferred guarantee MUST NOT reject an
 enforced invocation, MUST NOT produce a diagnostic, and MUST NOT prevent the
 command from running; the invocation MUST NOT record any of them as applied.
 
-The complete diagnostic set of this policy is:
+The policy-level diagnostic set of this policy is:
 
 | Diagnostic | Condition |
 |---|---|
