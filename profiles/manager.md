@@ -738,13 +738,6 @@ five rows carry the same macOS and Windows verdicts because the underlying host
 facts do not depend on what the child is, but the two inventories are versioned
 separately and a revision of one MUST NOT re-scope the other.
 
-A per-user resource limit is not a private aggregate domain. `RLIMIT_NPROC` and
-`RLIMIT_AS` bound every process of the invoking user rather than the
-descendants of one invocation, so a manager MUST NOT back
-`active-process-count-limit` or `aggregate-memory-limit` with either limit on
-any platform. `RLIMIT_FSIZE` backs `per-file-size-limit` because that control
-bounds one file write rather than an aggregate over a domain.
-
 `availability` is `available`, `host-conditional`, or `unavailable`. An
 `available` control MUST be applied and reported `applied`. An `unavailable`
 control MUST be neither applied nor reported applied. A `host-conditional`
