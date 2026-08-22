@@ -557,16 +557,20 @@ section 3 unchanged, and their capability declaration remains an audit surface
 that bounds nothing at run time. Build commands are outside this policy
 entirely; their install-time execution boundary is section 2.2.1 and their
 launcher is unchanged. The manager implements exactly the portable
-`script-worker-v1` execution policy of Protocol Core and applies it identically
-on macOS, Linux, and Windows.
+`script-worker-v1` execution policy of Protocol Core section 4.1.1 and applies
+it identically on macOS, Linux, and Windows.
 
 The fixed process graph of an enforced invocation is:
 
 ```text
 manager parent
   -> identity-verified manager-owned script worker
-       -> operator-trusted interpreter executable
+       -> identity-verified interpreter for the declared identifier
+            -> manager-resolved executables named by the `exec` capability
 ```
+
+The fourth node exists only when `exec` names executables; under `exec: "none"`
+the graph is exactly three nodes.
 
 The worker is one hidden-mode re-execution of the installed manager executable,
 the same implementation boundary section 2.2.1 uses for builds, and not a
@@ -630,7 +634,7 @@ only controls whose absence rejects an invocation:
   resolved declared `exec` names, with the inherited `PATH` discarded;
 - offline environment configuration plus proxy and resolver scrubbing when
   `network` is `"none"`;
-- a manager-selected working directory, an invocation-private temporary root,
+- a manager-selected working directory, an operation-private temporary root,
   and private per-command configuration and cache roots;
 - explicit manager-controlled standard-stream binding and release of unrelated
   descriptors and handles before the interpreter starts;
@@ -640,6 +644,38 @@ only controls whose absence rejects an invocation:
 - exactly one closed `script-capability-evidence-v1` record per invocation; and
 - termination and joining of the complete worker domain before the invocation
   returns.
+
+Protocol Core section 4.1.1 leaves the reserved environment-name set to this
+profile. A name in that set is manager-owned: an `env_read` entry naming one
+MUST NOT pass the inherited value through, and the manager-set value stands.
+The set is closed, and a manager MUST reject an interpreter identifier it has
+no reserved set for rather than launch with an unfiltered environment.
+
+Reserved on every platform and for every interpreter identifier: `PATH`,
+`HOME`, `TMPDIR`, `TEMP`, `TMP`, `XDG_CONFIG_HOME`, `XDG_CACHE_HOME`,
+`XDG_DATA_HOME`, `XDG_STATE_HOME`, `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`,
+`FTP_PROXY`, `NO_PROXY`, every lowercase spelling of those five proxy names,
+`RES_OPTIONS`, `HOSTALIASES`, `LD_PRELOAD`, `LD_LIBRARY_PATH`, `LD_AUDIT`,
+`IFS`, and `CSK_PROJECT_ROOT`.
+
+Reserved additionally on macOS: every `DYLD_`-prefixed name, including
+`DYLD_INSERT_LIBRARIES`, `DYLD_LIBRARY_PATH`, and `DYLD_FRAMEWORK_PATH`.
+
+Reserved additionally on Windows: `USERPROFILE`, `APPDATA`, `LOCALAPPDATA`,
+`PATHEXT`, `COMSPEC`, and `WINDIR`.
+
+Reserved additionally for `python3-v1`: every `PYTHON`-prefixed name, including
+`PYTHONPATH`, `PYTHONHOME`, `PYTHONSTARTUP`, `PYTHONEXECUTABLE`,
+`PYTHONUSERBASE`, `PYTHONNOUSERSITE`, and `PYTHONSAFEPATH`.
+
+Reserved additionally for `node-v1`: every `NODE_`- and `NPM_CONFIG_`-prefixed
+name, including `NODE_PATH`, `NODE_OPTIONS`, and `NODE_EXTRA_CA_CERTS`.
+
+Each reserved name selects a program, a library or module search path, an
+interpreter startup file or option, a temporary or configuration root, or proxy
+or resolver configuration, which is exactly the class Protocol Core section
+4.1.1 places under manager ownership. A manager MUST report an `env_read` entry
+it withholds on this basis rather than drop it silently.
 
 A manager that cannot apply all of them MUST reject the invocation with
 `script_execution_control_unavailable` before starting the worker or the
@@ -707,9 +743,10 @@ enforced invocation, containing exactly `record_version`, `execution_policy`,
 `record_version`, an availability value that was not probed for this
 invocation, a status inconsistent with the availability rules above, and a
 control name outside this inventory are all
-`script_execution_capability_evidence_invalid`. A deferred script guarantee
-named as an entry, and a record `execution_policy` other than
-`script-worker-v1`, are `script_execution_deferred_claim_forbidden`. The
+`script_execution_capability_evidence_invalid`. A guarantee deferred by this
+policy or by section 2.2.1 named as an entry, and a record `execution_policy`
+other than `script-worker-v1`, are
+`script_execution_hardened_claim_forbidden`. The
 manager MUST NOT emit a `capability-evidence-v1` record for an enforced script
 invocation, and MUST NOT emit a `script-capability-evidence-v1` record for a
 build operation.
@@ -731,16 +768,15 @@ conformance claim. Retention is machine-local and operator-configurable, and a
 manager SHOULD retain at most the most recent record per command by default.
 
 Every rule this policy enforces is a manager mechanism. The policy does not
-provide, and a conforming manager MUST NOT claim, these deferred script
-guarantees: `script-unconditional-network-denial`;
+provide, and a conforming manager MUST NOT claim, the seven guarantees deferred
+by Protocol Core section 4.1.1: `script-total-network-denial`;
 `script-network-host-allowlisting`; `script-exact-executable-allowlisting`;
-`script-verified-interpreter-tree`; `script-unconditional-exec-denial`;
-`script-unconditional-write-confinement`;
+`script-private-runtime-area-only-writes`; `script-read-only-runtime-tree`;
 `script-hard-aggregate-descendant-resource-bounds`; and
-`script-fail-closed-capability-preflight`. None of the eight names may appear in
+`script-fail-closed-capability-preflight`. None of the seven names may appear in
 the mandatory-control set, the native-control inventory, or a capability
-evidence record, and none of them aliases a build guarantee of section 2.2.1 or
-a control of either inventory. Applying a `host-conditional` control on a host
+evidence record, and none of them aliases a guarantee deferred by section 2.2.1
+or a control of either inventory. Applying a `host-conditional` control on a host
 that provides it narrows what that invocation can do; it does not license
 claiming the corresponding policy-level guarantee, which stays deferred
 precisely because the mechanism varies between hosts.
@@ -758,7 +794,7 @@ There is exactly one failure boundary. A mandatory portable control that cannot
 be applied rejects with `script_execution_control_unavailable` before the
 worker starts and runs nothing. An unavailable inventory control, a
 `host-conditional` control the probe did not find, and the absence of any
-deferred script guarantee never reject an enforced invocation, never produce a
+deferred guarantee never reject an enforced invocation, never produce a
 diagnostic, and never prevent the command from running; a conforming manager
 MUST NOT record any of them as applied.
 
@@ -777,16 +813,26 @@ an undeclared variable is absent and an undeclared executable is not on `PATH`.
 A manager SHOULD report that difference when an enforced command is first
 installed or updated, rather than leaving it to the first invocation.
 
-Enforced-invocation results use these stable `phase: execution` diagnostics:
+Enforced-invocation results use these stable `phase: execution` diagnostics. The
+first four are the policy-level set of Protocol Core section 4.1.1. The last
+three are worker-session codes of this profile: they mirror the equivalent
+`build_execution_*` codes of section 2.2.1 and name the session failure modes an
+identity-verified worker has and a policy-level description does not enumerate.
 
 | Code | State | Severity | Meaning |
 |---|---|---|---|
+| `script_execution_control_unavailable` | `unsupported` | `error` | A mandatory portable control cannot be applied on this host, at shim install or update and again before worker launch |
+| `script_execution_capability_evidence_invalid` | `corrupt` | `error` | Script capability evidence contradicts the probe, is incomplete, or names a control outside the script inventory |
+| `script_execution_hardened_claim_forbidden` | `unsupported` | `error` | An evidence record names a guarantee deferred by this policy or by section 2.2.1, or a foreign execution policy |
+| `script_execution_policy_unsupported` | `unsupported` | `error` | A manager that does not implement `script-worker-v1` reads a command that selects it |
 | `script_execution_worker_identity_invalid` | `blocked` | `error` | Worker or interpreter executable identity, substitution, or replacement check fails |
 | `script_execution_worker_protocol_invalid` | `blocked` | `error` | Session framing, nonce, ordering, size, or message kind is invalid |
-| `script_execution_control_unavailable` | `unsupported` | `error` | A mandatory portable control cannot be applied on this host |
-| `script_execution_capability_evidence_invalid` | `corrupt` | `error` | Script capability evidence contradicts the probe, is incomplete, or names a control outside the script inventory |
-| `script_execution_deferred_claim_forbidden` | `unsupported` | `error` | A deferred script guarantee is claimed under the portable script execution policy |
 | `script_execution_package_influence_forbidden` | `unsupported` | `error` | Package data attempts to influence the worker, interpreter resolution, controls, limits, environment, roots, or evidence |
+
+A manager that does not implement this policy MUST reject such a command with
+`script_execution_policy_unsupported`. It MUST NOT install the command
+declared-only, downgrade it, or ignore the field, because the resulting shim
+would run package code the manifest says is contained.
 
 ## 4. Install scopes
 
@@ -888,12 +934,12 @@ reviewer can separate enforced commands from declared-only ones and a registry
 can gate on the distinction. Two warning classes are REQUIRED, are always `warn`
 in every mode, and never block:
 
-- `script_command_declared_only` — a script command that does not declare
+- `script-command-declared-only` — a script command that does not declare
   `execution_policy: "script-worker-v1"`. Its capability declaration is
   documentation and bounds nothing at run time. Every script command of manifest
   schema 7 and earlier carries this class.
-- `script_command_network_unfiltered` — an enforced script command whose
-  `network` capability is a host-glob list. The declared globs are recorded and
+- `script-command-unfiltered-declared-network` — an enforced script command
+  whose `network` capability is a host-glob list. The declared globs are recorded and
   reported; no portable filtering is applied and none is claimed. The command is
   admitted so that the `exec`, `filesystem`, and environment controls it can
   have are still applied.

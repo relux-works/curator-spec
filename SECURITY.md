@@ -334,21 +334,23 @@ prevents a script whose manifest declares `network: "none"` from fetching and
 running new code, and the reader of an audit record cannot tell. Manifest
 schema 8 closes that gap for the commands that opt in. A script command that
 declares `execution_policy: "script-worker-v1"` runs under the portable script
-execution policy of `protocol/core.md`, which turns the section 4.3 capability
-declaration of that document into a manager-mechanism containment profile
-applied before the interpreter starts.
+execution policy of `protocol/core.md` section 4.1.1, which turns the section
+4.3 capability declaration of that document into a manager-mechanism
+containment profile applied before the interpreter starts.
 
 Opt-in is explicit and per command. Schema 7 and earlier script commands, and
 schema 8 script commands that omit the field, keep their existing behavior
 exactly: declared-only, launcher `exec`, no enforcement and no enforcement
-claim. Audit labels every one of them with a declared-only warning class rather
-than silently changing what they do. The single admissible value of the field
+claim. Audit labels every one of them `script-command-declared-only` rather than
+silently changing what they do. The single admissible value of the field
 can only narrow what a command may do, so a package can opt in to containment
 and can never opt out of a manager-owned control, select a control, or widen a
 profile.
 
 The process graph is `manager parent -> identity-verified manager-owned script
-worker -> operator-trusted interpreter`. The worker is the decision-0006
+worker -> identity-verified interpreter -> manager-resolved executables named by
+the `exec` capability`, and exactly the first three nodes under
+`exec: "none"`. The worker is the decision-0006
 boundary reused: a hidden re-execution of the installed manager, selected by no
 package input and by no shell. The interpreter is named by a closed identifier
 in the manifest and resolved by the manager to an operator-trusted executable;
@@ -362,7 +364,7 @@ The trusted computing base of this boundary is the installed manager parent and
 worker bytes; the worker framing, authentication, and session state machine;
 the capability probe and control adapters; the operating-system primitives those
 adapters use; the resolved interpreter executable; interpreter resolution,
-environment construction, and `PATH` construction; the invocation-private roots;
+environment construction, and `PATH` construction; the operation-private roots;
 and the capability-evidence and audit-record canonicalization code.
 
 The interpreter's standard library, `site-packages`, `node_modules`, and every
@@ -392,20 +394,21 @@ provide and MUST NOT claim:
 
 | Portable mechanism | Deferred guarantee it is not |
 |---|---|
-| offline environment configuration plus proxy and resolver scrubbing when `network` is `"none"` | `script-unconditional-network-denial` |
+| offline environment configuration plus proxy and resolver scrubbing when the derived network capability is `none` | `script-total-network-denial` |
 | declared `network` host globs recorded and reported, with no portable filtering applied | `script-network-host-allowlisting` |
-| fixed manager-selected three-node graph with per-invocation identity verification of the worker and the resolved interpreter file | `script-exact-executable-allowlisting` |
-| interpreter executable identity verified per invocation, with its library and installed package trees declared trusted | `script-verified-interpreter-tree` |
-| manager-built `PATH` containing exactly the resolved interpreter and the resolved declared `exec` names, with the inherited `PATH` discarded | `script-unconditional-exec-denial` |
-| manager-selected working directory, invocation-private temporary root, and private per-command configuration and cache roots | `script-unconditional-write-confinement` |
+| manager-built `PATH` over the resolved interpreter and the resolved declared `exec` names, with the inherited `PATH` discarded | `script-exact-executable-allowlisting` |
+| operation-private temporary, configuration, and cache roots plus a manager-selected working directory | `script-private-runtime-area-only-writes` |
+| per-invocation identity verification of the worker and of the resolved interpreter file, with the interpreter's library and installed package trees declared trusted | `script-read-only-runtime-tree` |
 | explicit standard-stream binding, descriptor and handle release, worker-domain teardown, and every inventory control the probe found available | `script-hard-aggregate-descendant-resource-bounds` |
 | mandatory-control preflight at install or update and again before every enforced invocation | `script-fail-closed-capability-preflight` |
 
-Those eight guarantees belong to a future verified script execution policy —
-the decision-0007 provider path, not this portable one — and MUST NOT be
-claimed by an enforced invocation. Their absence never rejects an invocation;
-falsely recording them does. None of the eight names aliases a build guarantee,
-a build inventory control, or a script inventory control.
+Those seven guarantees are reserved for a separately named script execution
+policy backed by a verified provider, not for this portable one, and MUST NOT
+be claimed by an enforced invocation. Their absence never rejects an
+invocation; falsely recording them does. None of the seven names aliases a
+guarantee deferred by the build policy, a build inventory control, or a script
+inventory control, and the build policy's six deferred guarantees may not
+appear on a script surface either.
 
 Per-host network filtering is deferred, not partial. Everything available
 unprivileged on the supported platforms — proxy variables, `NO_PROXY`, resolver
@@ -414,8 +417,8 @@ libraries and is ignored by a raw socket or an IP literal, and no supported host
 offers host-granular filtering as a kernel control. Declared host globs are
 therefore reporting-only: they configure nothing, they never appear as an
 inventory entry or an applied control, and an enforced command that declares
-them is admitted under its own audit warning class rather than rejected, so it
-still receives the `exec`, `filesystem`, and environment controls it can have.
+them is admitted under the `script-command-unfiltered-declared-network` audit
+warning class rather than rejected, so it still receives the `exec`, `filesystem`, and environment controls it can have.
 
 Platform reach is deliberately uneven and stated rather than smoothed over.
 The mandatory portable set is environment-, process-, and path-level and applies
