@@ -347,16 +347,23 @@ can only narrow what a command may do, so a package can opt in to containment
 and can never opt out of a manager-owned control, select a control, or widen a
 profile.
 
-The process graph is `manager parent -> identity-verified manager-owned script
-worker -> identity-verified interpreter -> manager-resolved executables named by
-the `exec` capability`, and exactly the first three nodes under
-`exec: "none"`. The worker is the decision-0006
-boundary reused: a hidden re-execution of the installed manager, selected by no
-package input and by no shell. The interpreter is named by a closed identifier
-in the manifest and resolved by the manager to an operator-trusted executable;
-the package supplies neither its path nor its bytes. The shebang line and the
-Windows file association are inert and MUST NOT select the executed program,
-because both are package-controlled content and neither exists portably.
+The process graph is fixed:
+
+```text
+manager parent
+  -> identity-verified manager-owned script worker
+       -> identity-verified interpreter for the declared identifier
+            -> manager-resolved executables named by the `exec` capability
+```
+
+Under `exec: "none"` the graph is exactly the first three nodes. The worker is
+the decision-0006 boundary reused: a hidden re-execution of the installed
+manager, selected by no package input and by no shell. The interpreter is named
+by a closed identifier in the manifest and resolved by the manager to an
+operator-trusted executable; the package supplies neither its path nor its
+bytes. The shebang line and the Windows file association are inert and MUST NOT
+select the executed program, because both are package-controlled content and
+neither exists portably.
 
 ### Script trusted computing base
 
@@ -418,7 +425,8 @@ offers host-granular filtering as a kernel control. Declared host globs are
 therefore reporting-only: they configure nothing, they never appear as an
 inventory entry or an applied control, and an enforced command that declares
 them is admitted under the `script-command-unfiltered-declared-network` audit
-warning class rather than rejected, so it still receives the `exec`, `filesystem`, and environment controls it can have.
+warning class rather than rejected, so it still receives the `exec`,
+`filesystem`, and environment controls it can have.
 
 Platform reach is deliberately uneven and stated rather than smoothed over.
 The mandatory portable set is environment-, process-, and path-level and applies

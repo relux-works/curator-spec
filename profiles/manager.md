@@ -508,12 +508,12 @@ dependencies, and any implementation runtime directories required by the
 command. It preserves the inherited `PATH`, forwards arguments without
 reinterpretation, and returns the child command's exit status.
 
-The launcher rules of this section govern declared-only commands. A script
-command that declares `execution_policy: "script-worker-v1"` is launched
-through the enforced worker of section 3.1 instead: none of the launcher forms
-below apply to it, its inherited `PATH` is discarded rather than preserved, and
-no shell, `.cmd`, or symlink shim stands between the manager and the
-interpreter.
+The launcher rules of this section govern every command other than an enforced
+script command. A script command that declares
+`execution_policy: "script-worker-v1"` is launched through the enforced worker
+of section 3.1 instead: none of the launcher forms below apply to it, its
+inherited `PATH` is discarded rather than preserved, and no shell, `.cmd`, or
+symlink shim stands between the manager and the interpreter.
 
 Build roots MUST NOT be copied into the commit-keyed runtime store. A build
 command launcher targets the immutable compiled-artifact cache entry selected
@@ -632,10 +632,10 @@ only controls whose absence rejects an invocation:
   exactly the host variables named by `env_read`;
 - a manager-built `PATH` containing exactly the resolved interpreter and the
   resolved declared `exec` names, with the inherited `PATH` discarded;
-- offline environment configuration plus proxy and resolver scrubbing when
-  `network` is `"none"`;
-- a manager-selected working directory, an operation-private temporary root,
-  and private per-command configuration and cache roots;
+- offline environment configuration plus proxy and resolver scrubbing when the
+  derived `network` capability is `none`;
+- a manager-selected working directory and operation-private temporary,
+  configuration, and cache roots;
 - explicit manager-controlled standard-stream binding and release of unrelated
   descriptors and handles before the interpreter starts;
 - application of exactly the native controls the inventory below marks
@@ -645,28 +645,35 @@ only controls whose absence rejects an invocation:
 - termination and joining of the complete worker domain before the invocation
   returns.
 
-Protocol Core section 4.1.1 leaves the reserved environment-name set to this
-profile. A name in that set is manager-owned: an `env_read` entry naming one
-MUST NOT pass the inherited value through, and the manager-set value stands.
-The set is closed, and a manager MUST reject an interpreter identifier it has
-no reserved set for rather than launch with an unfiltered environment.
+Protocol Core section 4.1.1 states the criterion for manager ownership of an
+environment name and leaves the reserved set to this profile. A name in that
+set is manager-owned: an `env_read` entry naming one MUST NOT pass the
+inherited value through, and the manager-set value stands. The enumeration
+below is the reserved minimum: every conforming manager MUST reserve every name
+it lists, and a manager MUST reject an interpreter identifier it has no
+reserved set for rather than launch with an unfiltered environment.
 
 Reserved on every platform and for every interpreter identifier: `PATH`,
 `HOME`, `TMPDIR`, `TEMP`, `TMP`, `XDG_CONFIG_HOME`, `XDG_CACHE_HOME`,
 `XDG_DATA_HOME`, `XDG_STATE_HOME`, `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`,
 `FTP_PROXY`, `NO_PROXY`, every lowercase spelling of those five proxy names,
-`RES_OPTIONS`, `HOSTALIASES`, `LD_PRELOAD`, `LD_LIBRARY_PATH`, `LD_AUDIT`,
-`IFS`, and `CSK_PROJECT_ROOT`.
+`RES_OPTIONS`, `HOSTALIASES`, `LOCALDOMAIN`, every `LD_`-prefixed name,
+including `LD_PRELOAD`, `LD_LIBRARY_PATH`, and `LD_AUDIT`, `IFS`, and
+`CSK_PROJECT_ROOT`.
 
 Reserved additionally on macOS: every `DYLD_`-prefixed name, including
 `DYLD_INSERT_LIBRARIES`, `DYLD_LIBRARY_PATH`, and `DYLD_FRAMEWORK_PATH`.
 
 Reserved additionally on Windows: `USERPROFILE`, `APPDATA`, `LOCALAPPDATA`,
-`PATHEXT`, `COMSPEC`, and `WINDIR`.
+`PATHEXT`, `COMSPEC`, `WINDIR`, and `SYSTEMROOT`. Windows environment-variable
+names are matched case-insensitively, so `SystemRoot` and `windir` are the same
+reserved names as `SYSTEMROOT` and `WINDIR`; on macOS and Linux the match is
+exact, which is why the lowercase proxy spellings are listed separately above.
 
 Reserved additionally for `python3-v1`: every `PYTHON`-prefixed name, including
 `PYTHONPATH`, `PYTHONHOME`, `PYTHONSTARTUP`, `PYTHONEXECUTABLE`,
-`PYTHONUSERBASE`, `PYTHONNOUSERSITE`, and `PYTHONSAFEPATH`.
+`PYTHONUSERBASE`, `PYTHONNOUSERSITE`, and `PYTHONSAFEPATH`, and
+`__PYVENV_LAUNCHER__`.
 
 Reserved additionally for `node-v1`: every `NODE_`- and `NPM_CONFIG_`-prefixed
 name, including `NODE_PATH`, `NODE_OPTIONS`, and `NODE_EXTRA_CA_CERTS`.
@@ -674,8 +681,19 @@ name, including `NODE_PATH`, `NODE_OPTIONS`, and `NODE_EXTRA_CA_CERTS`.
 Each reserved name selects a program, a library or module search path, an
 interpreter startup file or option, a temporary or configuration root, or proxy
 or resolver configuration, which is exactly the class Protocol Core section
-4.1.1 places under manager ownership. A manager MUST report an `env_read` entry
-it withholds on this basis rather than drop it silently.
+4.1.1 places under manager ownership. The loader, interpreter, and package
+manager families are reserved by prefix rather than by name so that a variable
+added by a future release of an admitted interpreter is covered without a
+revision of this profile.
+
+The criterion of section 4.1.1 continues to govern the names this enumeration
+does not reach. A name that meets it is manager-owned even when it is not
+listed here: a manager MUST reserve that name, and MUST NOT treat an `env_read`
+entry as licensed to pass an inherited value through merely because the name is
+unlisted. Such an omission is a defect of this profile, corrected by revising
+the enumeration rather than left to per-manager judgement, and it is visible
+because a manager MUST report every `env_read` entry it withholds, on this
+basis or any other, rather than drop it silently.
 
 A manager that cannot apply all of them MUST reject the invocation with
 `script_execution_control_unavailable` before starting the worker or the
@@ -707,7 +725,7 @@ report a control outside the inventory:
 | Control | macOS | Linux | Windows |
 |---|---|---|---|
 | `descendant-domain-termination` | available: process group and session teardown | available: process group and session teardown | available: Job Object kill-on-close |
-| `active-process-count-limit` | unavailable: `no-private-aggregate-domain` | available: `RLIMIT_NPROC` | available: Job Object active-process limit |
+| `active-process-count-limit` | unavailable: `no-private-aggregate-domain` | host-conditional: delegated cgroup v2 `pids.max` | available: Job Object active-process limit |
 | `aggregate-memory-limit` | unavailable: `no-private-aggregate-domain` | host-conditional: delegated cgroup v2 `memory.max` | available: Job Object process and job memory limit |
 | `per-file-size-limit` | available: `RLIMIT_FSIZE` | available: `RLIMIT_FSIZE` | unavailable: `no-private-aggregate-domain` |
 | `inherited-handle-restriction` | available: close-on-exec plus explicit descriptor release | available: close-on-exec plus explicit descriptor release | available: explicit handle inheritance list |
@@ -716,9 +734,16 @@ report a control outside the inventory:
 | `network-isolation-domain` | unavailable: `no-unprivileged-network-domain` | host-conditional: network namespace without interfaces | unavailable: `no-unprivileged-network-domain` |
 
 This inventory is independent of `rc5-native-control-inventory-v1`. Its first
-five rows carry the same host verdicts because the underlying host facts do not
-depend on what the child is, but the two inventories are versioned separately
-and a revision of one MUST NOT re-scope the other.
+five rows carry the same macOS and Windows verdicts because the underlying host
+facts do not depend on what the child is, but the two inventories are versioned
+separately and a revision of one MUST NOT re-scope the other.
+
+A per-user resource limit is not a private aggregate domain. `RLIMIT_NPROC` and
+`RLIMIT_AS` bound every process of the invoking user rather than the
+descendants of one invocation, so a manager MUST NOT back
+`active-process-count-limit` or `aggregate-memory-limit` with either limit on
+any platform. `RLIMIT_FSIZE` backs `per-file-size-limit` because that control
+bounds one file write rather than an aggregate over a domain.
 
 `availability` is `available`, `host-conditional`, or `unavailable`. An
 `available` control MUST be applied and reported `applied`. An `unavailable`
@@ -939,10 +964,10 @@ in every mode, and never block:
   documentation and bounds nothing at run time. Every script command of manifest
   schema 7 and earlier carries this class.
 - `script-command-unfiltered-declared-network` — an enforced script command
-  whose `network` capability is a host-glob list. The declared globs are recorded and
-  reported; no portable filtering is applied and none is claimed. The command is
-  admitted so that the `exec`, `filesystem`, and environment controls it can
-  have are still applied.
+  whose `network` capability is a host-glob list. The declared globs are
+  recorded and reported; no portable filtering is applied and none is claimed.
+  The command is admitted so that the `exec`, `filesystem`, and environment
+  controls it can have are still applied.
 
 Neither class is a finding about source content, neither is subject to
 `fail_on`, and neither may be reported as an applied control.
