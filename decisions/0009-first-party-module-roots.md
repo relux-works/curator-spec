@@ -2,7 +2,11 @@
 
 ## Status
 
-Accepted 2026-08-22.
+Accepted 2026-08-22. Amended 2026-08-22 after review of the original text:
+the description of the first consumer was factually wrong, and point 5's
+security claim overstated what its predicate delivers. The Decision section
+is unchanged. Context, Rejected alternatives, Compatibility impact, Security
+impact, Consequences, and a seventh open question carry the corrections.
 
 ## Context
 
@@ -15,15 +19,36 @@ file, active Go file, and every active embedded input — to be a regular file
 below the command's build root.
 
 A repository whose tool module depends on sibling first-party modules cannot
-take that shape. The concrete case is `skill-project-management`:
-`tools/board-cli` and `tools/board-tui` each require `pkg/board`,
-`pkg/remoteconfig`, and `pkg/providerlimits` at `v0.0.0` through
-directory-form `replace` directives, and `pkg/providerlimits` itself requires
-`pkg/remoteconfig`. One repository, several modules released in lockstep, no
-independent versioning: this is the ordinary layout for a Go tool repository.
-Because `go-v1` cannot package it, the skill installs through a
-`type: "system"` manifest instead — a strictly smaller audit surface than
-the compiled build it should be getting.
+take that shape. The concrete case is `skill-project-management`. On its
+`main` branch `tools/board-cli` requires `pkg/board`, `pkg/remoteconfig`, and
+`pkg/providerlimits` at `v0.0.0` through directory-form `replace` directives;
+`tools/board-tui` requires and replaces `pkg/remoteconfig` alone; and
+`pkg/providerlimits` itself requires and replaces `pkg/remoteconfig`. One
+repository, several modules released in lockstep, no independent versioning:
+this is the ordinary layout for a Go tool repository.
+
+The manifest was never the obstacle. `agent-skill.json` on that branch is
+`schema_version 6` with build roots `tools/board-cli` and `tools/board-tui`
+and three commands, every one of them `"type": "build"` with driver `go-v1`;
+no `"type": "system"` command has ever appeared in that file. What `main`
+cannot do is build, for two independent reasons. Its replaced modules are
+rejected outright as inconsistent vendor metadata, and it has no vendor tree
+to resolve against: `.gitignore` excludes `tools/*/vendor/`, on the recorded
+ground that Go auto-enables `-mod=vendor` whenever `vendor/modules.txt`
+exists, so a stale vendor tree fails every build instead of falling back.
+
+The revision consumers actually install, `ca5c4fd3`, is a different shape,
+and it is the one this decision has to reckon with. There the repository
+carries no `replace` directive at all. `tools/board-cli/go.mod` requires
+`pkg/board v0.0.0` and `pkg/remoteconfig v0.0.0` as ordinary requirements,
+`vendor/modules.txt` lists both as ordinary explicit modules with no `=>`
+line, and their sources sit under
+`vendor/github.com/relux-works/skill-project-management/pkg/`. This is not a
+packaging-time rewrite: the committed tree at that revision is already in
+that shape, and the installed snapshot is a faithful copy of it. It builds
+under `go-v1` today, and it does so by presenting the package's own
+first-party code to the manager as indistinguishable from vendored
+third-party code. What that costs is taken up under Rejected alternatives.
 
 The mechanics matter here, because they are not what the surface suggests.
 `go mod vendor` copies a locally replaced module into `vendor/`, and under
@@ -111,9 +136,11 @@ states a claim that the manager checks against the tree and the build graph.
    were justified by widely audited third-party dependencies that a package
    cannot reasonably fork; first-party code in the package's own repository
    can simply not use the constructs. Accordingly the exceptions are scoped
-   to results whose module carries no replacement, so that `go mod vendor`
-   cannot launder package-controlled assembly or dynamic-import directives
-   into the build under a third-party allowance.
+   to results whose module carries no replacement. That scoping stops the
+   newly admitted shape from laundering package-controlled assembly or
+   dynamic-import directives into the build under a third-party allowance.
+   It does not, and by construction cannot, reach a package that presents no
+   replacement at all; open question 7 records what is left open.
 
 6. **External dependencies unchanged.** Every non-standard result whose
    module carries no replacement remains vendor-only and versioned, resolved
@@ -146,11 +173,38 @@ states a claim that the manager checks against the tree and the build graph.
   deciding, which is the same split decisions 0006 and 0008 apply elsewhere.
 - **Require repository consolidation.** Tell such repositories to collapse
   into one module. Rejected: this is a packaging shape requirement, and it
-  costs third-party adoption for no security gain. It is exactly why the
-  first consumer ships as a `type: "system"` manifest today, trading a
-  closed, audited, vendor-only compiled build for an unmanaged installation
-  path. Demanding that a repository restructure itself to satisfy a packaging
-  tool pushes users away from the audited path, not toward it.
+  costs third-party adoption for no security gain. The first consumer is the
+  evidence. Rather than restructure, it dropped its `replace` directives and
+  vendored its own modules — the shape rejected immediately below — and its
+  `main` branch has since drifted into a state `go-v1` cannot build at all.
+  Demanding that a repository restructure itself to satisfy a packaging tool
+  pushes users onto workarounds, not onto the audited path.
+- **Drop the `replace` directives and pre-vendor the first-party modules as
+  ordinary `v0.0.0` requirements.** No protocol change at all: the package
+  ships a `go.mod` requiring its sibling modules by path at `v0.0.0` with no
+  replacement, plus a `vendor/` tree holding their sources, so every result
+  presents `Module.Replace == nil` and passes today's rules unchanged. This
+  works, and the first consumer ships exactly it at `ca5c4fd3`. It is named
+  here because it is the status quo this decision displaces, not a
+  hypothetical. Rejected on three counts:
+  - The packaged tree diverges from the source repository with nothing
+    gating the drift. The shipped `go.mod` is not the one developers build
+    against, `go mod tidy` in the source tree does not reproduce it, and no
+    manager check ties the vendored copy back to the directory it came from
+    — none exists, and none can, because the replacement that would name
+    that directory has been removed.
+  - First-party code enters under decision 0005's vendored exceptions, which
+    were written for widely audited third-party dependencies a package
+    cannot reasonably fork. Assembly and the `golang.org/x/sys`
+    `cgo_import_dynamic` allowlist become available to code the package
+    itself writes, and nothing in the fixed `go list` stream lets the
+    manager tell the two apart.
+  - It is fragile for reasons unrelated to the protocol: a committed vendor
+    tree auto-enables `-mod=vendor` for every local build, which is why the
+    first consumer's `main` branch now excludes it — and, in doing so, made
+    itself unbuildable under `go-v1`.
+  The declared-and-validated form costs one schema field and buys a manager
+  that knows which directories are first-party.
 - **Go workspaces (`go.work`).** Rejected: workspaces are forbidden by
   section 4.2 and disabled by `GOWORK=off`. A workspace file is another piece
   of package-controlled build configuration with nothing to validate it
@@ -172,7 +226,11 @@ states a claim that the manager checks against the tree and the build graph.
   field, which is the correct fail-closed outcome.
 - Scoping the decision 0005 exceptions to results without a replacement is
   not a regression for any accepted package: replaced modules are rejected
-  outright today, so nothing shipped can depend on the wider reading.
+  outright today, so nothing shipped can depend on the wider reading of a
+  *replaced* module. Packages that vendor first-party code with no
+  replacement — the first consumer among them — keep the exceptions and are
+  unaffected. That continuity is the substance of open question 7, not a
+  compatibility break.
 - No change to the compiled-artifact cache key, build-receipt identity,
   install markers, or the fixed argument vectors.
 - Consumers keep their existing vendor trees and drift gates unchanged;
@@ -194,9 +252,18 @@ vendor tree below the build root. The process graph, toolchain fingerprinting,
 `manager-worker-v1` execution, offline environment, and the ban on executing
 the artifact are all unchanged.
 
-Point 5 narrows the current trust boundary rather than widening it: pure Go
-assembly and the `golang.org/x/sys` `cgo_import_dynamic` allowlist become
-unavailable to first-party code routed through `go mod vendor`.
+Point 5 narrows the current trust boundary rather than widening it, within
+the shape it governs: pure Go assembly and the `golang.org/x/sys`
+`cgo_import_dynamic` allowlist become unavailable to first-party code routed
+through `go mod vendor` *from a declared module root*. The narrowing is
+bounded by the predicate it uses. A package that vendors its own modules
+without a `replace` directive presents `Module.Replace == nil`, declares no
+`modules`, never triggers the bijection, and keeps the exceptions, so
+first-party code can still reach the third-party allowance by the route it
+uses today. This decision neither opens nor closes that route: it is the
+pre-existing state, it is what the first consumer ships at `ca5c4fd3`, and
+open question 7 puts it in front of the normative change rather than leaving
+it implied.
 
 One residual is recorded honestly. The manager does not reconcile the vendor
 copy of a replaced module against its declared directory, and neither does
@@ -222,9 +289,10 @@ manager should reconcile them is open question 1.
   replacements, and Windows path collisions among declared directories.
 - Implementations: Curator (Go) and cocoaskills (Python) implement the same
   wire contract from the shared vectors, proven by cross-implementation CI.
-- First consumer: `skill-project-management` switches from `type: "system"`
-  to a `go-v1` build with declared module roots and no repository
-  restructuring.
+- First consumer: `skill-project-management` restores the `replace`
+  directives and vendor trees its `main` branch currently lacks and declares
+  its module roots, replacing the unreplaced pre-vendored shape it ships at
+  `ca5c4fd3`. No repository restructuring is required either way.
 
 ## Open questions deferred to the normative change
 
@@ -245,3 +313,12 @@ manager should reconcile them is open question 1.
 6. Whether declared directories need a Windows path-collision rule of their
    own beyond the snapshot-wide rule in section 8.1, given that they are also
    compared against build and runtime roots.
+7. Whether the manager can, or should, distinguish first-party code vendored
+   without a `replace` directive from genuinely third-party vendored code,
+   so that decision 0005's exceptions do not apply to the former. Point 5's
+   scoping reaches only modules that carry a replacement, and nothing in the
+   fixed `go list` stream separates the two cases once the replacement is
+   gone — so closing this needs a mechanism, not a predicate. It is a design
+   question rather than an editorial one, and it is deliberately left open
+   here rather than answered by a decision whose subject is the declared
+   form.
