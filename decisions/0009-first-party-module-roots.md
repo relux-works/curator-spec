@@ -4,9 +4,11 @@
 
 Accepted 2026-08-22. Amended 2026-08-22 after review of the original text:
 the description of the first consumer was factually wrong, and point 5's
-security claim overstated what its predicate delivers. The Decision section
-is unchanged. Context, Rejected alternatives, Compatibility impact, Security
-impact, Consequences, and a seventh open question carry the corrections.
+security claim overstated what its predicate delivers. The Decision section's
+rules are unchanged; point 5 gains the bound that its scoping does not reach
+packages presenting no replacement. Context, Rejected alternatives,
+Compatibility impact, Security impact, Consequences, and a seventh open
+question carry the corrections.
 
 ## Context
 
@@ -38,8 +40,8 @@ ground that Go auto-enables `-mod=vendor` whenever `vendor/modules.txt`
 exists, so a stale vendor tree fails every build instead of falling back.
 
 The revision consumers actually install, `ca5c4fd3`, is a different shape,
-and it is the one this decision has to reckon with. There the repository
-carries no `replace` directive at all. `tools/board-cli/go.mod` requires
+and it is the one this decision has to reckon with. There neither build root
+carries a `replace` directive. `tools/board-cli/go.mod` requires
 `pkg/board v0.0.0` and `pkg/remoteconfig v0.0.0` as ordinary requirements,
 `vendor/modules.txt` lists both as ordinary explicit modules with no `=>`
 line, and their sources sit under
@@ -289,10 +291,11 @@ manager should reconcile them is open question 1.
   replacements, and Windows path collisions among declared directories.
 - Implementations: Curator (Go) and cocoaskills (Python) implement the same
   wire contract from the shared vectors, proven by cross-implementation CI.
-- First consumer: `skill-project-management` restores the `replace`
-  directives and vendor trees its `main` branch currently lacks and declares
-  its module roots, replacing the unreplaced pre-vendored shape it ships at
-  `ca5c4fd3`. No repository restructuring is required either way.
+- First consumer: `skill-project-management` restores the vendor trees its
+  `main` branch currently lacks, keeps the `replace` directives it already
+  has, and declares its module roots, replacing the unreplaced pre-vendored
+  shape it ships at `ca5c4fd3`. No repository restructuring is required
+  either way.
 
 ## Open questions deferred to the normative change
 
