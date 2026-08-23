@@ -193,6 +193,20 @@
       "receipt_versions": [
         2
       ]
+    },
+    {
+      "drivers": [
+        "go-repository-v1",
+        "go-v1"
+      ],
+      "expected_marker": "expected/install-marker-v4.json",
+      "manifest_schema": 8,
+      "marker_version": 4,
+      "name": "schema8-script-worker",
+      "receipt_versions": [
+        2,
+        1
+      ]
     }
   ],
   "path_shim_cases": [

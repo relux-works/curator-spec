@@ -283,6 +283,168 @@ func TestDescriptorRenameIsACacheIdentityRevision(t *testing.T) {
 	}
 }
 
+func TestSchemaV8WireSurfacesAreClosedAndVersioned(t *testing.T) {
+	root := repositoryRoot(t)
+	for _, filename := range []string{
+		"agent-skill-v8.schema.json",
+		"csk-skill-v8.schema.json",
+		"install-marker-v4.schema.json",
+	} {
+		schema := readObject(t, filepath.Join(root, "schemas", "v1", filename))
+		if schema["additionalProperties"] != false {
+			t.Fatalf("%s must reject unknown top-level fields", filename)
+		}
+	}
+	canonical := readObject(t, filepath.Join(root, "schemas", "v1", "agent-skill-v8.schema.json"))
+	legacy := readObject(t, filepath.Join(root, "schemas", "v1", "csk-skill-v8.schema.json"))
+	delete(canonical, "$id")
+	delete(canonical, "title")
+	delete(legacy, "$id")
+	delete(legacy, "title")
+	if !reflect.DeepEqual(canonical, legacy) {
+		t.Fatal("agent-skill and csk-skill schema 8 differ beyond identity metadata")
+	}
+
+	common := readObject(t, filepath.Join(root, "schemas", "v1", "common.schema.json"))
+	defs := common["$defs"].(map[string]any)
+
+	// Schema 7 bytes stay frozen: the schema-7 union still reaches the
+	// schema-7 script command, which has no execution surface at all.
+	scriptCommand := defs["scriptCommand"].(map[string]any)
+	for _, field := range []string{"execution_policy", "interpreter"} {
+		if _, ok := scriptCommand["properties"].(map[string]any)[field]; ok {
+			t.Fatalf("frozen scriptCommand acquired %s", field)
+		}
+	}
+	commandV7 := defs["commandV7"].(map[string]any)["oneOf"].([]any)
+	if commandV7[0].(map[string]any)["$ref"] != "#/$defs/scriptCommand" {
+		t.Fatalf("commandV7 no longer selects the frozen script command: %#v", commandV7)
+	}
+
+	// The policy identity is one closed constant, never an enum, so a package
+	// cannot spell a second policy or a negative opt-out.
+	policy := defs["scriptExecutionPolicyV1"].(map[string]any)
+	if len(policy) != 1 || policy["const"] != "script-worker-v1" {
+		t.Fatalf("script execution policy is not a single closed constant: %#v", policy)
+	}
+	interpreters := defs["scriptInterpreterV1"].(map[string]any)["enum"].([]any)
+	if !reflect.DeepEqual(interpreters, []any{"node-v1", "python3-v1"}) {
+		t.Fatalf("script interpreter identifiers are not the reviewed closed set: %#v", interpreters)
+	}
+
+	scriptCommandV8 := defs["scriptCommandV8"].(map[string]any)
+	if scriptCommandV8["additionalProperties"] != false {
+		t.Fatal("scriptCommandV8 must reject unknown fields")
+	}
+	properties := scriptCommandV8["properties"].(map[string]any)
+	if len(properties) != 5 {
+		t.Fatalf("scriptCommandV8 is not the closed schema-8 surface: %#v", properties)
+	}
+	if properties["execution_policy"].(map[string]any)["$ref"] != "#/$defs/scriptExecutionPolicyV1" {
+		t.Fatalf("execution_policy is not bound to the closed identity: %#v", properties["execution_policy"])
+	}
+	if properties["interpreter"].(map[string]any)["$ref"] != "#/$defs/scriptInterpreterV1" {
+		t.Fatalf("interpreter is not bound to the closed identifier set: %#v", properties["interpreter"])
+	}
+	// Enforcement and interpreter identity are declared together or not at all.
+	dependent := scriptCommandV8["dependentRequired"].(map[string]any)
+	if !reflect.DeepEqual(dependent["execution_policy"], []any{"interpreter"}) ||
+		!reflect.DeepEqual(dependent["interpreter"], []any{"execution_policy"}) {
+		t.Fatalf("schema 8 does not bind execution_policy and interpreter to each other: %#v", dependent)
+	}
+
+	// Only script commands carry the opt-in; the build unions are untouched.
+	commandV8 := defs["commandV8"].(map[string]any)["oneOf"].([]any)
+	var refs []string
+	for _, branch := range commandV8 {
+		refs = append(refs, branch.(map[string]any)["$ref"].(string))
+	}
+	want := []string{
+		"#/$defs/scriptCommandV8", "#/$defs/systemCommand",
+		"#/$defs/buildCommandV6", "#/$defs/repositoryBuildCommandV1",
+	}
+	if !reflect.DeepEqual(refs, want) {
+		t.Fatalf("commandV8 union = %#v, want %#v", refs, want)
+	}
+
+	marker := readObject(t, filepath.Join(root, "schemas", "v1", "install-marker-v4.schema.json"))
+	markerProperties := marker["properties"].(map[string]any)
+	if !reflect.DeepEqual(markerProperties["schema_version"], map[string]any{"const": json.Number("4")}) {
+		t.Fatalf("install marker v4 schema_version = %#v", markerProperties["schema_version"])
+	}
+	if !reflect.DeepEqual(markerProperties["skill_schema_version"], map[string]any{"const": json.Number("8")}) {
+		t.Fatalf("install marker v4 skill_schema_version = %#v", markerProperties["skill_schema_version"])
+	}
+}
+
+func TestGeneratedSchemaV8CasesCoverTheScriptWorkerOptIn(t *testing.T) {
+	root := repositoryRoot(t)
+	var index []map[string]any
+	readJSON(t, filepath.Join(root, "conformance", "v1", "schema-cases", "index.json"), &index)
+	required := []string{
+		"valid.json",
+		"valid-script-worker-enforced.json",
+		"valid-script-worker-mixed-enforcement.json",
+		"valid-script-worker-node-interpreter.json",
+		"valid-script-worker-unix-only.json",
+		"valid-script-worker-windows-only.json",
+		"invalid-script-worker-missing-interpreter.json",
+		"invalid-script-worker-interpreter-without-policy.json",
+		"invalid-script-worker-missing-path.json",
+		"invalid-script-worker-unknown-interpreter.json",
+		"invalid-script-worker-successor-policy.json",
+		"invalid-script-worker-hardened-policy.json",
+		"invalid-script-worker-compiled-policy.json",
+		"invalid-script-worker-null-policy.json",
+		"invalid-script-worker-opt-out-policy.json",
+		"invalid-script-worker-on-system-command.json",
+		"invalid-script-worker-on-build-command.json",
+		"invalid-script-worker-top-level-execution-policy.json",
+		"invalid-script-worker-top-level-interpreter.json",
+		// Schema 8 keeps every schema-7 external-repository branch.
+		"valid-sha256-lock.json", "valid-untagged-lock.json", "valid-ssh-source.json",
+		"invalid-unselected-repository.json", "invalid-missing-repository.json",
+		"invalid-generic-driver.json",
+	}
+	got := indexedSchemaCases(index, "agent-skill-v8.schema.json")
+	for _, name := range required {
+		valid, ok := got[name]
+		if !ok {
+			t.Fatalf("agent-skill-v8.schema.json missing generated case %s", name)
+		}
+		if strings.HasPrefix(name, "invalid-") && valid {
+			t.Fatalf("agent-skill-v8.schema.json case %s must be invalid", name)
+		}
+		if strings.HasPrefix(name, "valid") && !valid {
+			t.Fatalf("agent-skill-v8.schema.json case %s must be valid", name)
+		}
+	}
+	if legacy := indexedSchemaCases(index, "csk-skill-v8.schema.json"); !reflect.DeepEqual(legacy, got) {
+		t.Fatal("canonical and legacy manifest schema-8 cases differ")
+	}
+	if markerCases := indexedSchemaCases(index, "install-marker-v4.schema.json"); len(markerCases) == 0 {
+		t.Fatal("install-marker-v4 has no generated cases")
+	} else if !reflect.DeepEqual(markerCases, indexedSchemaCases(index, "install-marker-v3.schema.json")) {
+		t.Fatal("marker v4 does not carry the marker v3 build-record branches")
+	}
+
+	enforced := readObject(t, filepath.Join(
+		root, "conformance", "v1", "schema-cases", "agent-skill-v8", "valid-script-worker-enforced.json"))
+	command := enforced["commands"].(map[string]any)["enforced-tool"].(map[string]any)
+	if command["execution_policy"] != "script-worker-v1" || command["interpreter"] != "python3-v1" {
+		t.Fatalf("generated enforced command is not the schema-8 opt-in: %#v", command)
+	}
+	// Absence is the only spelling of declared-only.
+	mixed := readObject(t, filepath.Join(
+		root, "conformance", "v1", "schema-cases", "agent-skill-v8", "valid-script-worker-mixed-enforcement.json"))
+	declared := mixed["commands"].(map[string]any)["declared-tool"].(map[string]any)
+	for _, field := range []string{"execution_policy", "interpreter"} {
+		if _, ok := declared[field]; ok {
+			t.Fatalf("declared-only command carries %s: %#v", field, declared)
+		}
+	}
+}
+
 func TestGeneratedSchemaV7CasesCoverEveryWireBranch(t *testing.T) {
 	root := repositoryRoot(t)
 	var index []map[string]any
@@ -1335,6 +1497,124 @@ func TestExecutionPolicyIsBoundIntoReceiptMarkerAndClaim(t *testing.T) {
 	}
 }
 
+func TestScriptWorkerConformanceContract(t *testing.T) {
+	root := repositoryRoot(t)
+	vector := readObject(t, filepath.Join(root, "conformance", "v1", "vectors", "script-host-execution-policy.json"))
+	if vector["execution_policy"] != scriptExecutionPolicy {
+		t.Fatalf("script execution policy = %v, want %s", vector["execution_policy"], scriptExecutionPolicy)
+	}
+
+	optIn := namedObjects(t, vector["opt_in_cases"])
+	for _, name := range []string{"schema8-explicit-opt-in", "schema8-absent-policy", "legacy-schema7-script", "interpreter-without-policy", "policy-without-interpreter", "unknown-policy"} {
+		if _, ok := optIn[name]; !ok {
+			t.Fatalf("opt-in vectors missing %s", name)
+		}
+	}
+	if optIn["schema8-explicit-opt-in"]["mode"] != "enforced" || optIn["schema8-explicit-opt-in"]["accepted"] != true {
+		t.Fatalf("explicit schema-8 opt-in is not enforced: %#v", optIn["schema8-explicit-opt-in"])
+	}
+	for _, name := range []string{"schema8-absent-policy", "legacy-schema7-script"} {
+		if optIn[name]["mode"] != "declared-only" || optIn[name]["accepted"] != true {
+			t.Fatalf("%s is not accepted as declared-only: %#v", name, optIn[name])
+		}
+	}
+	for _, name := range []string{"interpreter-without-policy", "policy-without-interpreter", "unknown-policy"} {
+		if optIn[name]["accepted"] != false {
+			t.Fatalf("invalid opt-in %s is accepted: %#v", name, optIn[name])
+		}
+	}
+
+	derivation := namedObjects(t, vector["capability_derivation_cases"])
+	absent := derivation["all-fields-absent-deny-by-default"]["derived"].(map[string]any)
+	if absent["network"] != "offline-environment" || !reflect.DeepEqual(absent["exec"], []any{"resolved-interpreter"}) ||
+		!reflect.DeepEqual(absent["secrets"], []any{}) || !reflect.DeepEqual(absent["env_read"], []any{}) {
+		t.Fatalf("absent capability fields do not derive deny-by-default: %#v", absent)
+	}
+	hosts := derivation["declared-network-hosts-are-reporting-only"]
+	if hosts["accepted"] != true || hosts["warning"] != "script-command-unfiltered-declared-network" ||
+		hosts["derived"].(map[string]any)["network_filter"] != nil {
+		t.Fatalf("declared network hosts are represented as filtering: %#v", hosts)
+	}
+
+	inventory := vector["native_control_inventory"].(map[string]any)
+	if inventory["version"] != scriptNativeControlInventoryVersion || inventory["exhaustive"] != true ||
+		!reflect.DeepEqual(inventory["platforms"], []any{"linux", "macos", "windows"}) ||
+		!reflect.DeepEqual(inventory["availability_states"], []any{"available", "host-conditional", "unavailable"}) {
+		t.Fatalf("script inventory header is not closed: %#v", inventory)
+	}
+	native := namedObjects(t, inventory["controls"])
+	if len(native) != 8 {
+		t.Fatalf("script inventory has %d controls, want 8", len(native))
+	}
+	pids := native["active-process-count-limit"]["platforms"].(map[string]any)["linux"].(map[string]any)
+	if pids["availability"] != "host-conditional" || pids["mechanism"] != "delegated-cgroup-v2-pids.max" {
+		t.Fatalf("Linux process limit is not delegated cgroup v2 pids.max: %#v", pids)
+	}
+	if strings.Contains(fmt.Sprint(pids), "RLIMIT_NPROC") || strings.Contains(fmt.Sprint(pids), "rlimit-nproc") {
+		t.Fatalf("Linux process limit incorrectly uses RLIMIT_NPROC: %#v", pids)
+	}
+
+	preflight := namedObjects(t, vector["preflight_cases"])
+	for _, name := range []string{"mandatory-control-unavailable-at-install", "mandatory-control-unavailable-at-invocation"} {
+		item := preflight[name]
+		if item["expected_error"] != "script_execution_control_unavailable" || item["worker_started"] != false || item["invocation_succeeds"] != false {
+			t.Fatalf("mandatory preflight %s does not reject before worker launch: %#v", name, item)
+		}
+	}
+	linuxUnavailable := preflight["linux-pids-max-probe-unavailable-evidence-unavailable-invocation-succeeds"]
+	if linuxUnavailable["probe_result"] != "unavailable" || linuxUnavailable["evidence_status"] != "unavailable" ||
+		linuxUnavailable["invocation_succeeds"] != true || linuxUnavailable["expected_error"] != nil {
+		t.Fatalf("Linux unavailable pids.max probe does not permit invocation: %#v", linuxUnavailable)
+	}
+
+	record := vector["capability_evidence_record"].(map[string]any)
+	if record["record_version"] != scriptCapabilityEvidenceRecordVersion || record["inventory_version"] != scriptNativeControlInventoryVersion ||
+		record["entry_cardinality"] != "exactly-one-per-inventory-control" || record["record_cardinality"] != "exactly-one-per-invocation" || record["result_only"] != true {
+		t.Fatalf("script evidence record is not closed: %#v", record)
+	}
+	linuxExample := record["examples"].(map[string]any)["linux"].(map[string]any)
+	entries := namedObjects(t, linuxExample["controls"])
+	if entries["active-process-count-limit"]["availability"] != "host-conditional" || entries["active-process-count-limit"]["status"] != "unavailable" {
+		t.Fatalf("Linux evidence does not report unavailable conditional pids.max: %#v", entries["active-process-count-limit"])
+	}
+
+	evidence := namedObjects(t, vector["capability_evidence_cases"])
+	for _, name := range []string{"available-control-reported-unavailable", "unavailable-control-reported-applied", "missing-control-entry", "duplicate-control-entry", "extra-control-entry", "unknown-record-version", "host-conditional-status-contradicts-probe", "cached-probe-result", "second-record-for-invocation", "foreign-build-record-version"} {
+		item := evidence[name]
+		if item["record_valid"] != false || item["invocation_succeeds"] != false || item["expected_error"] != "script_execution_capability_evidence_invalid" {
+			t.Fatalf("evidence closure negative %s is not rejected: %#v", name, item)
+		}
+	}
+	for _, name := range []string{"foreign-build-execution-policy", "deferred-script-guarantee-entry", "deferred-build-guarantee-entry"} {
+		if evidence[name]["expected_error"] != "script_execution_hardened_claim_forbidden" {
+			t.Fatalf("foreign/hardened evidence %s has wrong diagnostic: %#v", name, evidence[name])
+		}
+	}
+
+	audit := namedObjects(t, vector["audit_label_cases"])
+	for _, name := range []string{"schema7-script", "schema8-declared-only-script"} {
+		if !reflect.DeepEqual(audit[name]["labels"], []any{"script-command-declared-only"}) {
+			t.Fatalf("legacy declared-only audit label missing for %s: %#v", name, audit[name])
+		}
+	}
+	if !reflect.DeepEqual(audit["schema8-enforced-script"]["labels"], []any{}) {
+		t.Fatalf("enforced script is mislabeled declared-only: %#v", audit["schema8-enforced-script"])
+	}
+}
+
+func TestSchema8MarkerV4Golden(t *testing.T) {
+	root := repositoryRoot(t)
+	marker := readObject(t, filepath.Join(root, "conformance", "v1", "expected", "install-marker-v4.json"))
+	if marker["schema_version"] != json.Number("4") || marker["skill_schema_version"] != json.Number("8") {
+		t.Fatalf("marker-v4 golden has wrong version binding: %#v", marker)
+	}
+	for command, raw := range marker["builds"].(map[string]any) {
+		if raw.(map[string]any)["execution_policy"] != portableExecutionPolicy {
+			t.Fatalf("marker-v4 build %s lost compiled execution policy: %#v", command, raw)
+		}
+	}
+}
+
 func TestExternalRepositoryBehaviorCoverageAndOrdering(t *testing.T) {
 	root := repositoryRoot(t)
 	vectors := filepath.Join(root, "conformance", "v1", "vectors")
@@ -1373,7 +1653,7 @@ func TestExternalRepositoryBehaviorCoverageAndOrdering(t *testing.T) {
 	for field, required := range map[string][]string{
 		"cache_cases":            {"verified-cache-hit", "cache-miss", "corrupt-receipt", "corrupt-artifact", "untrusted-protected-boundary", "offline-syntax-only", "offline-install"},
 		"source_covering_cases":  {"external-source-dry-run", "external-audit-only"},
-		"mixed_build_cases":      {"schema6-local-only", "schema7-local-only", "schema7-external-only", "schema7-mixed", "schema7-substituted-external"},
+		"mixed_build_cases":      {"schema6-local-only", "schema7-local-only", "schema7-external-only", "schema7-mixed", "schema7-substituted-external", "schema8-script-worker"},
 		"transaction_cases":      {"failure-before-publication", "failure-after-private-stage", "marker-consumer-last", "recovery-uncertain-journal"},
 		"status_repair_gc_cases": {"status-current", "status-missing-snapshot", "status-unreadable-protected-state", "repair-reacquires-exact-source", "gc-retains-roots"},
 		"path_shim_cases":        {"external-command-shim", "package-path-entry-rejected", "shim-collision-rolls-back"},
@@ -1542,6 +1822,12 @@ func TestLegacyManifestSchemaCaseNamesAndValiditySurviveRegeneration(t *testing.
 		"invalid-v7-command-repository.json":   false,
 		"invalid-v7-command-target.json":       false,
 		"invalid-v7-command-driver.json":       false,
+		// Schema 8 adds the script execution-policy opt-in; every earlier
+		// schema keeps rejecting it, field by field.
+		"invalid-v8-top-level-execution-policy.json": false,
+		"invalid-v8-top-level-interpreter.json":      false,
+		"invalid-v8-command-execution-policy.json":   false,
+		"invalid-v8-command-interpreter.json":        false,
 	}
 	for _, manifest := range []string{"agent-skill", "csk-skill"} {
 		for version := 1; version <= 5; version++ {
@@ -1657,6 +1943,8 @@ func TestGeneratedManifestV6CasesCoverBuildRejections(t *testing.T) {
 		"invalid-v7-top-level-target", "invalid-v7-top-level-driver",
 		"invalid-v7-command-repository", "invalid-v7-command-target",
 		"invalid-v7-command-driver",
+		"invalid-v8-top-level-execution-policy", "invalid-v8-top-level-interpreter",
+		"invalid-v8-command-execution-policy", "invalid-v8-command-interpreter",
 	} {
 		want[name+".json"] = false
 	}

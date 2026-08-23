@@ -76,6 +76,68 @@ class WireSemanticValidationTests(unittest.TestCase):
                     )
                     self.assertIn("only in manifest schema 7", error)
 
+    def test_pre_schema8_manifests_reject_script_execution_surface(self) -> None:
+        reserved_instances = [
+            {"execution_policy": "script-worker-v1"},
+            {"interpreter": "python3-v1"},
+            {"commands": {"tool": {"execution_policy": "script-worker-v1"}}},
+            {"commands": {"tool": {"interpreter": "python3-v1"}}},
+        ]
+        for prefix in ("agent-skill", "csk-skill"):
+            for version in range(1, 8):
+                for reserved in reserved_instances:
+                    instance = {"schema_version": version, **copy.deepcopy(reserved)}
+                    error = validate.validate_wire_semantics(
+                        f"{prefix}-v{version}.schema.json", instance
+                    )
+                    self.assertIn("only in manifest schema 8", error)
+
+    def test_schema8_admits_enforced_scripts_and_keeps_schema7_rules(self) -> None:
+        enforced = {
+            "schema_version": 8,
+            "capabilities": {},
+            "commands": {
+                "enforced-tool": {
+                    "type": "script",
+                    "unix_path": "scripts/enforced",
+                    "execution_policy": "script-worker-v1",
+                    "interpreter": "python3-v1",
+                },
+                "declared-tool": {"type": "script", "unix_path": "scripts/declared"},
+            },
+        }
+        for prefix in ("agent-skill", "csk-skill"):
+            self.assertIsNone(
+                validate.validate_wire_semantics(
+                    f"{prefix}-v8.schema.json", enforced
+                )
+            )
+        with_repository = copy.deepcopy(enforced)
+        with_repository["build_repositories"] = {"repo": {}}
+        with_repository["commands"]["golden-tool"] = {
+            "type": "build",
+            "driver": "go-repository-v1",
+            "repository": "repo",
+            "target": "golden-tool",
+        }
+        self.assertIsNone(
+            validate.validate_wire_semantics(
+                "agent-skill-v8.schema.json", with_repository
+            )
+        )
+        unused = copy.deepcopy(with_repository)
+        unused["build_repositories"]["unused"] = {}
+        self.assertIn(
+            "must be selected",
+            validate.validate_wire_semantics("agent-skill-v8.schema.json", unused),
+        )
+        missing = copy.deepcopy(with_repository)
+        missing["commands"]["golden-tool"]["repository"] = "missing"
+        self.assertIn(
+            "undeclared",
+            validate.validate_wire_semantics("agent-skill-v8.schema.json", missing),
+        )
+
     def test_external_repository_transport_and_ref_grammar(self) -> None:
         valid_sources = [
             "https://example.com/组织/工具.git",
@@ -193,6 +255,42 @@ class WireSemanticValidationTests(unittest.TestCase):
                 "build-receipt-v2.schema.json", receipt
             ),
         )
+
+    def test_marker_v4_records_schema8_installations_under_v3_rules(self) -> None:
+        marker = {
+            "builds": {
+                "local": {"driver": "go-v1"},
+                "external": {"driver": "go-repository-v1"},
+            },
+            "build_source": {},
+        }
+        self.assertIsNone(
+            validate.validate_wire_semantics(
+                "install-marker-v4.schema.json", marker
+            )
+        )
+        del marker["build_source"]
+        self.assertIn(
+            "exactly when",
+            validate.validate_wire_semantics(
+                "install-marker-v4.schema.json", marker
+            ),
+        )
+        v3 = validate.load_json(
+            validate.ROOT / "schemas" / "v1" / "install-marker-v3.schema.json"
+        )
+        v4 = validate.load_json(
+            validate.ROOT / "schemas" / "v1" / "install-marker-v4.schema.json"
+        )
+        self.assertEqual(v3["properties"]["skill_schema_version"], {"const": 7})
+        self.assertEqual(v4["properties"]["skill_schema_version"], {"const": 8})
+        self.assertEqual(v4["properties"]["schema_version"], {"const": 4})
+        for schema in (v3, v4):
+            schema.pop("$id")
+            schema.pop("title")
+            schema["properties"].pop("schema_version")
+            schema["properties"].pop("skill_schema_version")
+        self.assertEqual(v3, v4)
 
     def test_marker_and_claim_conditionals(self) -> None:
         marker = {
@@ -332,6 +430,46 @@ class WireSemanticValidationTests(unittest.TestCase):
             keys["legacy_rc4_without_execution_policy"],
             validate.LEGACY_RC4_GO_V1_CACHE_KEY,
         )
+
+    def test_script_execution_vector_rejects_contract_drift(self) -> None:
+        vector = validate.load_json(
+            validate.SUITE / "vectors" / "script-host-execution-policy.json"
+        )
+        validate.validate_script_host_execution_policy(vector)
+
+        def case(items: list, name: str) -> dict:
+            return next(item for item in items if item["name"] == name)
+
+        mutations = {
+            "Linux pids limit becomes per-user RLIMIT": lambda item: case(
+                item["native_control_inventory"]["controls"],
+                "active-process-count-limit",
+            )["platforms"]["linux"].update(
+                {"availability": "available", "mechanism": "RLIMIT_NPROC"}
+            ),
+            "unavailable Linux probe rejects": lambda item: case(
+                item["preflight_cases"],
+                "linux-pids-max-probe-unavailable-evidence-unavailable-invocation-succeeds",
+            ).__setitem__("invocation_succeeds", False),
+            "absent exec inherits PATH": lambda item: case(
+                item["capability_derivation_cases"],
+                "all-fields-absent-deny-by-default",
+            )["derived"].__setitem__("exec", ["inherited-path"]),
+            "legacy script loses declared-only label": lambda item: case(
+                item["audit_label_cases"], "schema7-script"
+            ).__setitem__("labels", []),
+            "missing evidence entry becomes valid": lambda item: case(
+                item["capability_evidence_cases"], "missing-control-entry"
+            ).update(
+                {"record_valid": True, "invocation_succeeds": True, "expected_error": None}
+            ),
+        }
+        for label, mutate in mutations.items():
+            with self.subTest(label=label):
+                changed = copy.deepcopy(vector)
+                mutate(changed)
+                with self.assertRaises(validate.ValidationFailure):
+                    validate.validate_script_host_execution_policy(changed)
 
     def test_portable_execution_vector_rejects_dishonest_evidence(self) -> None:
         vector = validate.load_json(
