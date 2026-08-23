@@ -1099,6 +1099,12 @@ through 10. Schemas 1 through 6, `go-v1`, build receipt schema 1, marker
 schemas 1 and 2, and their cache, toolchain, transaction, status, repair, and
 GC behavior retain their rc.4 meaning.
 
+Schema 8 admits the same `go-repository-v1` commands, and a schema-8
+installation records marker v4 rather than marker v3 (`protocol/core.md`
+section 10). Marker v4 carries marker-v3 meaning unchanged, so every marker-v3
+obligation of this profile — shim selection, read-only status validation, and
+GC rooting — applies to a valid marker v4 without change.
+
 An rc.5 manager MUST implement the lifecycle below as a closed state machine:
 
 ```text
