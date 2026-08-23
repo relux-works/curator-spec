@@ -188,7 +188,11 @@ schemas 2 through 8 reject unknown fields. Schema 1 through 5 MUST reject
 `build_roots`, a command with `type: "build"`, and every build-only field.
 Schema 1 through 6 MUST reject `build_repositories`, `repository`, `target`,
 and `go-repository-v1`. Schema 1 through 7 MUST reject `modules` at the top
-level and on every command. Their script, system, runtime-root, capability,
+level and on every command. Schema 1 through 7 MUST also reject
+`execution_policy` and `interpreter` at the top level and on every command:
+schemas 2 through 7 reject them as unknown fields, and schema 1, which keeps
+its deployed extension behavior, is rejected by the semantic checks of this
+document instead. Their script, system, runtime-root, capability,
 dependency, context, hash, `go-v1`, receipt-v1, and marker-v1/v2 behavior is
 unchanged.
 
@@ -1689,11 +1693,13 @@ garbage-collection paths remain implementation-specific.
 ## 10. Install markers
 
 Every installed closure node has `.csk-install.json`. Managers supporting
-schema 7 MUST read marker schemas 1, 2, and 3. They MUST write marker schema 2
-for schema 1 through 6 installation mutations and marker schema 3 for schema 7
-installation mutations. They MAY continue to regard a valid marker-v1
-installation as current for a schema 1 through 5 package. Marker v1 and v2
-retain their existing shapes and meanings.
+schema 7 MUST read marker schemas 1, 2, and 3, and managers supporting schema 8
+MUST read marker schemas 1, 2, 3, and 4. They MUST write marker schema 2 for
+schema 1 through 6 installation mutations, marker schema 3 for schema 7
+installation mutations, and marker schema 4 for schema 8 installation
+mutations. They MAY continue to regard a valid marker-v1 installation as
+current for a schema 1 through 5 package. Marker v1 and v2 retain their
+existing shapes and meanings.
 
 Marker v2 permits `skill_schema_version` through 6 and requires sorted
 `build_roots` and a `builds` object, including empty values for installations
@@ -1730,6 +1736,17 @@ consuming skill's raw snapshot as external compiled-source identity. An
 unsubstituted external entry MAY record declared tag only from a receipt whose
 producing operation completed exact-tag acquisition and equality with the
 immutable lock; the marker field is not independent proof.
+
+Marker v4 permits `skill_schema_version` 8 and otherwise carries marker-v3
+meaning unchanged. It has the same object shape, the same requirement that
+every build entry explicitly record its receipt schema version and its
+`execution_policy`, the same local `go-v1` and external `go-repository-v1`
+entry semantics, and the same top-level `build_source` and `build_roots`
+rules. An enforced `script-worker-v1` script command produces no build entry
+and adds no marker member: schema 8 changes which manifests a marker may
+describe, not what a marker records. Markers v1, v2, and v3 keep their frozen
+shapes and their existing manifest-version bands, so a schema-8 installation
+is recorded by marker v4 alone.
 
 `locale` is always present and is a string or `null`. Required set-like arrays
 are always arrays, including when empty.
