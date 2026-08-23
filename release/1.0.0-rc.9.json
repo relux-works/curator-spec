@@ -12,28 +12,28 @@
     "verified_provider_contract": "host-execution-provider-v1"
   },
   "candidate_protocol_pin": {
-    "manifest_sha256": "sha256:d14e3a16bb4a01ff282791f08e3aefa269210234f41072beae6fe59b642595a1",
+    "manifest_sha256": "sha256:782d6868f6d9725f7bf38d3fb1944f307f2d5d9c060b8816b0f55a5c2e97f11f",
     "suite_root": "conformance/v1"
   },
-  "claim_v4": {
-    "claim_protocol_version": "1.0.0-rc.8",
+  "claim_v5": {
+    "claim_protocol_version": "1.0.0-rc.9",
     "claims_emitted": [],
-    "schema": "schemas/v1/conformance-claim-v4.schema.json"
+    "schema": "schemas/v1/conformance-claim-v5.schema.json"
   },
-  "created_at": "2026-08-19T00:00:00Z",
+  "created_at": "2026-08-23T00:00:00Z",
   "downstream_consumption": {
     "committed_release_pin_advanced": false,
     "environment": "CURATOR_CONFORMANCE_ROOT",
-    "required_manifest_sha256": "sha256:d14e3a16bb4a01ff282791f08e3aefa269210234f41072beae6fe59b642595a1"
+    "required_manifest_sha256": "sha256:782d6868f6d9725f7bf38d3fb1944f307f2d5d9c060b8816b0f55a5c2e97f11f"
   },
   "historical_release": {
     "immutable": true,
-    "metadata_path": "release/1.0.0-rc.7.json",
-    "metadata_sha256": "sha256:e5872ee4dd207bf6b190d8c8be15a9366d9c1e3638047ea983620b97c9f84d5d",
-    "protocol_version": "1.0.0-rc.7",
-    "source_commit": "99f70947d6f2447366d6c996127b73eca37a9159"
+    "metadata_path": "release/1.0.0-rc.8.json",
+    "metadata_sha256": "sha256:293f101d10665061aa049efa72141f9e3c5d608bbde300e882f6e3e095e31ede",
+    "protocol_version": "1.0.0-rc.8",
+    "source_commit": "f8c405aa3ad0a39d260c2ed93684e55c5a346359"
   },
-  "legacy_release": "1.0.0-rc.7",
-  "protocol_version": "1.0.0-rc.8",
-  "source_baseline_commit": "99f70947d6f2447366d6c996127b73eca37a9159"
+  "legacy_release": "1.0.0-rc.8",
+  "protocol_version": "1.0.0-rc.9",
+  "source_baseline_commit": "f8c405aa3ad0a39d260c2ed93684e55c5a346359"
 }

@@ -1293,6 +1293,7 @@ class WorkflowRegenerationScopeTests(unittest.TestCase):
         "release/1.0.0-rc.6.json",
         "release/1.0.0-rc.7.json",
         "release/1.0.0-rc.8.json",
+        "release/1.0.0-rc.9.json",
     )
 
     def regeneration_diff_scope(self, path: Path) -> tuple[str, ...]:

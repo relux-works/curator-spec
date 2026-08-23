@@ -4,7 +4,7 @@ This document is normative. It defines the portable objects and deterministic
 algorithms shared by conforming Curator Protocol managers. Tool-specific state
 and user interfaces are defined outside the core.
 
-Protocol rc.8 carries the closed assurance selection and platform-neutral verified
+Protocol rc.9 carries the closed assurance selection and platform-neutral verified
 provider contract in [`assurance.md`](assurance.md). That document adds new
 identities and does not widen any portable object defined here.
 

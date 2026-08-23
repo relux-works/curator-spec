@@ -388,6 +388,6 @@
     "go-list-vendor-consistency",
     "directive-form-and-bijection-before-go-build"
   ],
-  "protocol_version": "1.0.0-rc.8",
+  "protocol_version": "1.0.0-rc.9",
   "schema_version": 1
 }

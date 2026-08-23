@@ -1,6 +1,6 @@
 # Decision 0007: portable and verified assurance modes
 
-Status: accepted for 1.0.0-rc.7 and carried by 1.0.0-rc.8
+Status: accepted for 1.0.0-rc.7 and carried by 1.0.0-rc.8 and 1.0.0-rc.9
 
 ## Context
 

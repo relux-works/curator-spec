@@ -821,7 +821,20 @@ func TestRC7ReleaseMetadataRemainsByteFrozen(t *testing.T) {
 	}
 }
 
-func TestRC8ReleaseMetadataPinsSuiteWithoutClaimFabrication(t *testing.T) {
+func TestRC8ReleaseMetadataRemainsByteFrozen(t *testing.T) {
+	root := repositoryRoot(t)
+	payload, err := os.ReadFile(filepath.Join(root, "release", "1.0.0-rc.8.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	sum := sha256.Sum256(payload)
+	got := "sha256:" + hex.EncodeToString(sum[:])
+	if got != rc8ReleaseMetadataSHA256 {
+		t.Fatalf("historical rc.8 release metadata changed: digest %s, want %s", got, rc8ReleaseMetadataSHA256)
+	}
+}
+
+func TestRC9ReleaseMetadataPinsSuiteWithoutClaimFabrication(t *testing.T) {
 	root := repositoryRoot(t)
 	manifest, err := os.ReadFile(filepath.Join(root, "conformance", "v1", "manifest.json"))
 	if err != nil {
@@ -829,27 +842,28 @@ func TestRC8ReleaseMetadataPinsSuiteWithoutClaimFabrication(t *testing.T) {
 	}
 	sum := sha256.Sum256(manifest)
 	manifestIdentity := "sha256:" + hex.EncodeToString(sum[:])
-	metadata := readObject(t, filepath.Join(root, "release", "1.0.0-rc.8.json"))
+	metadata := readObject(t, filepath.Join(root, "release", "1.0.0-rc.9.json"))
 	if metadata["protocol_version"] != protocolVersion {
-		t.Fatalf("rc.8 release protocol_version = %v, want %s", metadata["protocol_version"], protocolVersion)
+		t.Fatalf("rc.9 release protocol_version = %v, want %s", metadata["protocol_version"], protocolVersion)
 	}
 	pin := metadata["candidate_protocol_pin"].(map[string]any)
 	downstream := metadata["downstream_consumption"].(map[string]any)
 	if pin["manifest_sha256"] != manifestIdentity || downstream["required_manifest_sha256"] != manifestIdentity {
-		t.Fatalf("rc.8 release does not pin manifest %s", manifestIdentity)
+		t.Fatalf("rc.9 release does not pin manifest %s", manifestIdentity)
 	}
 	history := metadata["historical_release"].(map[string]any)
-	if history["protocol_version"] != "1.0.0-rc.7" ||
-		history["metadata_sha256"] != rc7ReleaseMetadataSHA256 ||
-		history["source_commit"] != rc7SourceCommit ||
+	if history["protocol_version"] != "1.0.0-rc.8" ||
+		history["metadata_sha256"] != rc8ReleaseMetadataSHA256 ||
+		history["source_commit"] != rc8SourceCommit ||
 		history["immutable"] != true {
-		t.Fatalf("rc.8 historical rc.7 identity is invalid: %#v", history)
+		t.Fatalf("rc.9 historical rc.8 identity is invalid: %#v", history)
 	}
-	claim := metadata["claim_v4"].(map[string]any)
+	claim := metadata["claim_v5"].(map[string]any)
 	claims, ok := claim["claims_emitted"].([]any)
 	if claim["claim_protocol_version"] != protocolVersion ||
+		claim["schema"] != "schemas/v1/conformance-claim-v5.schema.json" ||
 		!ok || len(claims) != 0 {
-		t.Fatalf("rc.8 release fabricates claim evidence: %#v", claim)
+		t.Fatalf("rc.9 release fabricates claim evidence: %#v", claim)
 	}
 }
 
@@ -893,7 +907,7 @@ func TestAssuranceModesAreClosedFailClosedAndNonAliasing(t *testing.T) {
 		}
 	}
 	if claims := vector["release_claims"].([]any); len(claims) != 0 {
-		t.Fatalf("rc.8 fabricates verified claims: %#v", claims)
+		t.Fatalf("rc.9 fabricates verified claims: %#v", claims)
 	}
 }
 

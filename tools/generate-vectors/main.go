@@ -23,12 +23,13 @@ import (
 )
 
 const (
-	protocolVersion                   = "1.0.0-rc.8"
+	protocolVersion                   = "1.0.0-rc.9"
 	conformanceClaimV1ProtocolVersion = "1.0.0-rc.3"
 	conformanceClaimV2ProtocolVersion = "1.0.0-rc.4"
 	conformanceClaimV3ProtocolVersion = "1.0.0-rc.5"
+	conformanceClaimV4ProtocolVersion = "1.0.0-rc.8"
 	conformanceClaimV2CreatedAt       = "2026-07-20T00:00:00Z"
-	rc8CreatedAt                      = "2026-08-19T00:00:00Z"
+	rc9CreatedAt                      = "2026-08-23T00:00:00Z"
 	fixedCommit                       = "0123456789abcdef0123456789abcdef01234567"
 	fixedTime                         = "2026-07-13T00:00:00Z"
 	genesis                           = "0000000000000000000000000000000000000000000000000000000000000000"
@@ -38,6 +39,8 @@ const (
 	rc6SourceCommit                   = "dce6643c55434464c56f0fe20064db754cd58c61"
 	rc7ReleaseMetadataSHA256          = "sha256:e5872ee4dd207bf6b190d8c8be15a9366d9c1e3638047ea983620b97c9f84d5d"
 	rc7SourceCommit                   = "99f70947d6f2447366d6c996127b73eca37a9159"
+	rc8ReleaseMetadataSHA256          = "sha256:293f101d10665061aa049efa72141f9e3c5d608bbde300e882f6e3e095e31ede"
+	rc8SourceCommit                   = "f8c405aa3ad0a39d260c2ed93684e55c5a346359"
 
 	// portableExecutionPolicy is the only execution-policy identity that
 	// protocol 1.0 defines for go-v1 and go-repository-v1.
@@ -193,7 +196,7 @@ func main() {
 	writeSchemaCases(suite, marker, ledger, audited, snapshot, entries[0], bundle, pinned)
 	writeExternalRepositoryExpected(expected, marker)
 	writeManifest(suite)
-	writeRC8ReleaseMetadata(*root, suite)
+	writeRC9ReleaseMetadata(*root, suite)
 }
 
 // writeModuleRootVectors emits the filesystem and build-graph cases that JSON
@@ -2097,25 +2100,25 @@ func writeAssuranceVectors(dir string) {
 	})
 }
 
-func writeRC8ReleaseMetadata(root, suite string) {
+func writeRC9ReleaseMetadata(root, suite string) {
 	manifest, err := os.ReadFile(filepath.Join(suite, "manifest.json"))
 	must(err)
 	digest := sha256.Sum256(manifest)
 	pin := "sha256:" + hex.EncodeToString(digest[:])
-	writeJSON(filepath.Join(root, "release", "1.0.0-rc.8.json"), map[string]any{
+	writeJSON(filepath.Join(root, "release", "1.0.0-rc.9.json"), map[string]any{
 		"protocol_version": protocolVersion,
-		"created_at":       rc8CreatedAt,
+		"created_at":       rc9CreatedAt,
 		"candidate_protocol_pin": map[string]any{
 			"suite_root":      "conformance/v1",
 			"manifest_sha256": pin,
 		},
-		"source_baseline_commit": rc7SourceCommit,
-		"legacy_release":         "1.0.0-rc.7",
+		"source_baseline_commit": rc8SourceCommit,
+		"legacy_release":         "1.0.0-rc.8",
 		"historical_release": map[string]any{
-			"protocol_version": "1.0.0-rc.7",
-			"metadata_path":    "release/1.0.0-rc.7.json",
-			"metadata_sha256":  rc7ReleaseMetadataSHA256,
-			"source_commit":    rc7SourceCommit,
+			"protocol_version": "1.0.0-rc.8",
+			"metadata_path":    "release/1.0.0-rc.8.json",
+			"metadata_sha256":  rc8ReleaseMetadataSHA256,
+			"source_commit":    rc8SourceCommit,
 			"immutable":        true,
 		},
 		"assurance": map[string]any{
@@ -2135,9 +2138,9 @@ func writeRC8ReleaseMetadata(root, suite string) {
 			"required_manifest_sha256":       pin,
 			"committed_release_pin_advanced": false,
 		},
-		"claim_v4": map[string]any{
+		"claim_v5": map[string]any{
 			"claim_protocol_version": protocolVersion,
-			"schema":                 "schemas/v1/conformance-claim-v4.schema.json",
+			"schema":                 "schemas/v1/conformance-claim-v5.schema.json",
 			"claims_emitted":         []any{},
 		},
 	})
@@ -2491,7 +2494,7 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 		{name: "invalid-execution-succeeded-null-predecessor", valid: false, instance: succeededWithoutPredecessor},
 	}
 	claimV4 := map[string]any{
-		"schema_version": 4, "protocol_version": protocolVersion, "claim_type": "assurance-conformance-claim-v1",
+		"schema_version": 4, "protocol_version": conformanceClaimV4ProtocolVersion, "claim_type": "assurance-conformance-claim-v1",
 		"implementation": "example", "implementation_version": "1.0", "classes": []any{"manager"},
 		"suite_sha256":      "sha256:" + strings.Repeat("0", 64),
 		"assurance":         map[string]any{"mode": "portable", "policy_id": portableAssurancePolicy, "execution_policy": portableExecutionPolicy},
@@ -2503,6 +2506,13 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 		"provider_contract": verifiedProviderContract, "provider_id": "example.host-provider",
 	}
 	cases["conformance-claim-v4.schema.json"] = schemaCase{claimV4, invalidClaimV4}
+	claimV5 := cloneMap(claimV4)
+	claimV5["schema_version"] = 5
+	claimV5["protocol_version"] = protocolVersion
+	invalidClaimV5 := cloneMap(invalidClaimV4)
+	invalidClaimV5["schema_version"] = 5
+	invalidClaimV5["protocol_version"] = protocolVersion
+	cases["conformance-claim-v5.schema.json"] = schemaCase{claimV5, invalidClaimV5}
 
 	root := filepath.Join(suite, "schema-cases")
 	var index []any

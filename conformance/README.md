@@ -102,7 +102,7 @@ The suite contains:
   inventory (including host-conditional Linux cgroup v2 controls), the closed
   `script-capability-evidence-v1` record and its negative cases, and audit labels
   that distinguish enforced commands from legacy declared-only commands;
-- the rc.8 assurance contract: closed portable and verified policies, the
+- the rc.9 assurance contract: closed portable and verified policies, the
   platform-neutral provider descriptor, exact capability negotiation, typed
   permits, receipts, and checkpoints, cache non-aliasing, fail-closed
   no-downgrade selection, a fully hash-linked positive flow, stable relational
@@ -172,11 +172,13 @@ Windows qualification remains downstream, and Linux is excluded until
 `TASK-260728-1skseh` passes. Claims do not replace release CI evidence or
 artifact attestations.
 
-Claim schema 4 was introduced by rc.7 and is carried by rc.8 with disjoint portable and verified
-assurance branches. Its verified branch requires provider, capability-receipt,
-and execution-receipt identities; portable evidence cannot satisfy it. Rc.8
-emits no claim and qualifies no provider/platform tuple. Platform-neutral suite
-success is not native provider evidence.
+Claim schema 4 was introduced by rc.7 and remains byte-frozen for rc.8 with
+disjoint portable and verified assurance branches. Claim schema 5 carries the
+same closed assurance shape under the rc.9 protocol identity. Its verified
+branch requires provider, capability-receipt, and execution-receipt identities;
+portable evidence cannot satisfy it. Rc.9 emits no claim and qualifies no
+provider/platform tuple. Platform-neutral suite success is not native provider
+evidence.
 
 ## 6. Release gate
 

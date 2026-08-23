@@ -1355,6 +1355,16 @@
     "valid": false
   },
   {
+    "instance": "conformance-claim-v5/valid.json",
+    "schema": "conformance-claim-v5.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "conformance-claim-v5/invalid.json",
+    "schema": "conformance-claim-v5.schema.json",
+    "valid": false
+  },
+  {
     "instance": "csk-skill-v1/valid.json",
     "schema": "csk-skill-v1.schema.json",
     "valid": true

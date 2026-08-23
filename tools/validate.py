@@ -23,7 +23,8 @@ SCHEMAS = ROOT / "schemas" / "v1"
 SUITE = ROOT / "conformance" / "v1"
 REVIEWS = ROOT / "reviews"
 SAFE_INTEGER = 9_007_199_254_740_991
-PROTOCOL_VERSION = "1.0.0-rc.8"
+PROTOCOL_VERSION = "1.0.0-rc.9"
+RC8_PROTOCOL_VERSION = "1.0.0-rc.8"
 RC7_PROTOCOL_VERSION = "1.0.0-rc.7"
 RC6_PROTOCOL_VERSION = "1.0.0-rc.6"
 RC5_PROTOCOL_VERSION = "1.0.0-rc.5"
@@ -39,6 +40,10 @@ RC7_RELEASE_METADATA_SHA256 = (
     "sha256:e5872ee4dd207bf6b190d8c8be15a9366d9c1e3638047ea983620b97c9f84d5d"
 )
 RC7_SOURCE_COMMIT = "99f70947d6f2447366d6c996127b73eca37a9159"
+RC8_RELEASE_METADATA_SHA256 = (
+    "sha256:293f101d10665061aa049efa72141f9e3c5d608bbde300e882f6e3e095e31ede"
+)
+RC8_SOURCE_COMMIT = "f8c405aa3ad0a39d260c2ed93684e55c5a346359"
 
 # The single execution-policy identity that protocol 1.0 defines for the
 # compiled-build drivers, the identity reserved for the separately tracked
@@ -776,40 +781,45 @@ def validate_manifest() -> None:
     if rc7_digest != RC7_RELEASE_METADATA_SHA256:
         raise ValidationFailure("historical rc.7 release metadata changed")
 
-    release = load_json(ROOT / "release" / "1.0.0-rc.8.json")
+    rc8_path = ROOT / "release" / "1.0.0-rc.8.json"
+    rc8_digest = "sha256:" + hashlib.sha256(rc8_path.read_bytes()).hexdigest()
+    if rc8_digest != RC8_RELEASE_METADATA_SHA256:
+        raise ValidationFailure("historical rc.8 release metadata changed")
+
+    release = load_json(ROOT / "release" / "1.0.0-rc.9.json")
     manifest_digest = "sha256:" + hashlib.sha256(manifest_path.read_bytes()).hexdigest()
     if release.get("protocol_version") != PROTOCOL_VERSION:
-        raise ValidationFailure("rc.8 release metadata identifies the wrong protocol version")
+        raise ValidationFailure("rc.9 release metadata identifies the wrong protocol version")
     pin = release.get("candidate_protocol_pin", {})
     if not isinstance(pin, dict) or pin.get("manifest_sha256") != manifest_digest:
-        raise ValidationFailure("rc.8 downstream candidate pin does not match the suite manifest")
+        raise ValidationFailure("rc.9 downstream candidate pin does not match the suite manifest")
     downstream = release.get("downstream_consumption", {})
     if (
         not isinstance(downstream, dict)
         or downstream.get("required_manifest_sha256") != manifest_digest
         or downstream.get("committed_release_pin_advanced") is not False
     ):
-        raise ValidationFailure("rc.8 downstream consumption metadata is incomplete")
+        raise ValidationFailure("rc.9 downstream consumption metadata is incomplete")
     history = release.get("historical_release", {})
     if (
         not isinstance(history, dict)
-        or history.get("protocol_version") != RC7_PROTOCOL_VERSION
-        or history.get("metadata_path") != "release/1.0.0-rc.7.json"
-        or history.get("metadata_sha256") != RC7_RELEASE_METADATA_SHA256
-        or history.get("source_commit") != RC7_SOURCE_COMMIT
+        or history.get("protocol_version") != RC8_PROTOCOL_VERSION
+        or history.get("metadata_path") != "release/1.0.0-rc.8.json"
+        or history.get("metadata_sha256") != RC8_RELEASE_METADATA_SHA256
+        or history.get("source_commit") != RC8_SOURCE_COMMIT
         or history.get("immutable") is not True
-        or release.get("source_baseline_commit") != RC7_SOURCE_COMMIT
-        or release.get("legacy_release") != RC7_PROTOCOL_VERSION
+        or release.get("source_baseline_commit") != RC8_SOURCE_COMMIT
+        or release.get("legacy_release") != RC8_PROTOCOL_VERSION
     ):
-        raise ValidationFailure("rc.8 metadata does not preserve historical rc.7 evidence")
-    claim = release.get("claim_v4", {})
+        raise ValidationFailure("rc.9 metadata does not preserve historical rc.8 evidence")
+    claim = release.get("claim_v5", {})
     if (
         not isinstance(claim, dict)
         or claim.get("claim_protocol_version") != PROTOCOL_VERSION
-        or claim.get("schema") != "schemas/v1/conformance-claim-v4.schema.json"
+        or claim.get("schema") != "schemas/v1/conformance-claim-v5.schema.json"
         or claim.get("claims_emitted") != []
     ):
-        raise ValidationFailure("rc.8 release metadata fabricates a platform claim")
+        raise ValidationFailure("rc.9 release metadata fabricates a platform claim")
     execution = release.get("assurance", {})
     if (
         not isinstance(execution, dict)
@@ -825,7 +835,7 @@ def validate_manifest() -> None:
         or execution.get("skill_vendored_provider_allowed") is not False
     ):
         raise ValidationFailure(
-            "rc.8 release metadata does not honestly record assurance availability"
+            "rc.9 release metadata does not honestly record assurance availability"
         )
 
 
@@ -2934,7 +2944,7 @@ def validate_assurance_vectors(vector: Any = None) -> None:
     if not isinstance(record_ids, list) or len(record_ids) != len(set(record_ids)):
         raise ValidationFailure("assurance record identities alias")
     if vector.get("release_claims") != []:
-        raise ValidationFailure("rc.8 fabricates a verified provider claim")
+        raise ValidationFailure("rc.9 fabricates a verified provider claim")
     flow = vector.get("valid_flow")
     baseline_error = assurance.validate_flow(flow)
     if baseline_error is not None:

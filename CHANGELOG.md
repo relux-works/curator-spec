@@ -3,6 +3,22 @@
 All notable protocol changes are recorded here. Versions follow Semantic
 Versioning for the complete specification set.
 
+## 1.0.0-rc.9 - 2026-08-23
+
+### Added
+
+- Added manifest schema 8 as the single shared schema bump for the
+  `script-worker-v1` execution policy and first-party module roots.
+- Added install marker schema 4, script-worker capability and evidence vectors,
+  module-root filesystem/build-graph vectors, and legacy-schema rejection cases.
+
+### Changed
+
+- Advanced the normative version through claim schema 5, conformance suite
+  identity, generated release metadata, and regeneration inventory to rc.9.
+- Moved the live candidate-suite pin to `release/1.0.0-rc.9.json`; rc.8 and
+  earlier release metadata remain byte-frozen historical evidence.
+
 ## 1.0.0-rc.8 - 2026-08-19
 
 ### Changed
