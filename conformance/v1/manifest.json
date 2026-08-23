@@ -801,6 +801,54 @@
       "sha256": "sha256:04b75b014b6d3b0d3d5da55c5683ca1085cb46cb6dc471ba2d801fab7963354d"
     },
     {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-absolute.json",
+      "sha256": "sha256:33618a1ddeca646e82ac27520dea6671f8fe01ce2c72c3bbb0f836ba8d0bdc98"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-backslash.json",
+      "sha256": "sha256:d2567a3e2853fccdf805bfd104cdbd52396917ff0123bb9aceecd23ba2141a08"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-dot.json",
+      "sha256": "sha256:fd3430cd4e99a1027035b7066d7054284c5db6adb6d55a6bdf208cc749dab919"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-duplicate.json",
+      "sha256": "sha256:6762126c2e02f416057920f00b54345839cf6381185372bff4c381d98b2ced8c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-null.json",
+      "sha256": "sha256:32b0489a3c0fb84172b43870ee6c674a97f6b2681e339ff67abc135bbe9faa8b"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-on-repository-command.json",
+      "sha256": "sha256:648fab60b6eaa2d8414eb74f7e84a9b495c3374753ba9c776d9323854e72825c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-on-script-command.json",
+      "sha256": "sha256:b64a95ec915b7244efdfdca847f7f7a444fbe764445c8394ba2aa07d80b09ceb"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-on-system-command.json",
+      "sha256": "sha256:90c4e544639c709b28cedbbbffd5db69029344a9a827df781e8a714a5c1704fb"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-parent.json",
+      "sha256": "sha256:3cbc875edb80d851d98b40dc8476de6d06afdd0f62706bb4275ea997a1333d2c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-string.json",
+      "sha256": "sha256:02da8ed9e09fa34e145e9ba18eb9bb103ab308e8672435be0242ef75049bdc5c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-top-level.json",
+      "sha256": "sha256:419182b45601fbc6a349a50b3d54854f537c0383792c976bb92e9e48d823de92"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-windows-device.json",
+      "sha256": "sha256:dcd6a53ced88241e4ae2f1ccfb9437b5cd568a8bb149a88bc8d184e49ff4a5ed"
+    },
+    {
       "path": "schema-cases/agent-skill-v8/invalid-raw-revision-tag.json",
       "sha256": "sha256:153a8ddd30e3a6db004ff64afbc900baedaf581cb6be9bb9d5e274a2b40264ef"
     },
@@ -897,6 +945,18 @@
       "sha256": "sha256:ad45a7699a05e67c693f02477ed9999b10afe008222e0d9117646b1bd62bd87f"
     },
     {
+      "path": "schema-cases/agent-skill-v8/valid-module-roots-absent.json",
+      "sha256": "sha256:893e2c91ef28b86b26ae6517ff01b95474b5d2187bb22198eb6b1eb82aac4644"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-module-roots-declared.json",
+      "sha256": "sha256:45476a18fbb28503ac125044b25ad75a228c79fa376a83239e8b8d377ff3ee90"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-module-roots-empty.json",
+      "sha256": "sha256:c3fdf1da855d1b828fce96f066c45b60209bc29c7d6cf5ce2a86be0716e1a154"
+    },
+    {
       "path": "schema-cases/agent-skill-v8/valid-scp-source.json",
       "sha256": "sha256:ade27aeed55c4ee0f2d59e4e348fa017c7284b6ccae136a00607d5105263233f"
     },
@@ -942,7 +1002,7 @@
     },
     {
       "path": "schema-cases/agent-skill-v8/valid.json",
-      "sha256": "sha256:81b352748cb8bbb890780e3016f9f3503005e302a52c053cd6421c5bf704072a"
+      "sha256": "sha256:a5e806176064dd5ebcfa2d5a1fb19363f73907b035d75149004711ffd5c40a11"
     },
     {
       "path": "schema-cases/assurance-policy-v1/invalid.json",
@@ -1817,6 +1877,54 @@
       "sha256": "sha256:04b75b014b6d3b0d3d5da55c5683ca1085cb46cb6dc471ba2d801fab7963354d"
     },
     {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-absolute.json",
+      "sha256": "sha256:33618a1ddeca646e82ac27520dea6671f8fe01ce2c72c3bbb0f836ba8d0bdc98"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-backslash.json",
+      "sha256": "sha256:d2567a3e2853fccdf805bfd104cdbd52396917ff0123bb9aceecd23ba2141a08"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-dot.json",
+      "sha256": "sha256:fd3430cd4e99a1027035b7066d7054284c5db6adb6d55a6bdf208cc749dab919"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-duplicate.json",
+      "sha256": "sha256:6762126c2e02f416057920f00b54345839cf6381185372bff4c381d98b2ced8c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-null.json",
+      "sha256": "sha256:32b0489a3c0fb84172b43870ee6c674a97f6b2681e339ff67abc135bbe9faa8b"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-on-repository-command.json",
+      "sha256": "sha256:648fab60b6eaa2d8414eb74f7e84a9b495c3374753ba9c776d9323854e72825c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-on-script-command.json",
+      "sha256": "sha256:b64a95ec915b7244efdfdca847f7f7a444fbe764445c8394ba2aa07d80b09ceb"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-on-system-command.json",
+      "sha256": "sha256:90c4e544639c709b28cedbbbffd5db69029344a9a827df781e8a714a5c1704fb"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-parent.json",
+      "sha256": "sha256:3cbc875edb80d851d98b40dc8476de6d06afdd0f62706bb4275ea997a1333d2c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-string.json",
+      "sha256": "sha256:02da8ed9e09fa34e145e9ba18eb9bb103ab308e8672435be0242ef75049bdc5c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-top-level.json",
+      "sha256": "sha256:419182b45601fbc6a349a50b3d54854f537c0383792c976bb92e9e48d823de92"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-windows-device.json",
+      "sha256": "sha256:dcd6a53ced88241e4ae2f1ccfb9437b5cd568a8bb149a88bc8d184e49ff4a5ed"
+    },
+    {
       "path": "schema-cases/csk-skill-v8/invalid-raw-revision-tag.json",
       "sha256": "sha256:153a8ddd30e3a6db004ff64afbc900baedaf581cb6be9bb9d5e274a2b40264ef"
     },
@@ -1913,6 +2021,18 @@
       "sha256": "sha256:ad45a7699a05e67c693f02477ed9999b10afe008222e0d9117646b1bd62bd87f"
     },
     {
+      "path": "schema-cases/csk-skill-v8/valid-module-roots-absent.json",
+      "sha256": "sha256:893e2c91ef28b86b26ae6517ff01b95474b5d2187bb22198eb6b1eb82aac4644"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-module-roots-declared.json",
+      "sha256": "sha256:45476a18fbb28503ac125044b25ad75a228c79fa376a83239e8b8d377ff3ee90"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-module-roots-empty.json",
+      "sha256": "sha256:c3fdf1da855d1b828fce96f066c45b60209bc29c7d6cf5ce2a86be0716e1a154"
+    },
+    {
       "path": "schema-cases/csk-skill-v8/valid-scp-source.json",
       "sha256": "sha256:ade27aeed55c4ee0f2d59e4e348fa017c7284b6ccae136a00607d5105263233f"
     },
@@ -1958,7 +2078,7 @@
     },
     {
       "path": "schema-cases/csk-skill-v8/valid.json",
-      "sha256": "sha256:81b352748cb8bbb890780e3016f9f3503005e302a52c053cd6421c5bf704072a"
+      "sha256": "sha256:a5e806176064dd5ebcfa2d5a1fb19363f73907b035d75149004711ffd5c40a11"
     },
     {
       "path": "schema-cases/error-response-v1/invalid.json",
@@ -2034,7 +2154,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:aaeca6e5ef6e96f9f8411183a7790429c3e0c15ef8b9aac1ffbc5d2b2533aec2"
+      "sha256": "sha256:04e782914a46bbe83112a94c0f05766ec893cca50f5894c8b00e2938f601204a"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -2599,6 +2719,10 @@
     {
       "path": "vectors/manager-lifecycle.json",
       "sha256": "sha256:25f573a40652dfaf6bb52818b2209c2f8c1e6aec2a7515023e0ac531c2d91289"
+    },
+    {
+      "path": "vectors/module-roots.json",
+      "sha256": "sha256:b13dcd6177bef7fcb4c96b4dc29a8435883d22624855ddfbfd2de6e760596dac"
     },
     {
       "path": "vectors/portable-paths.json",

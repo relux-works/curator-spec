@@ -84,6 +84,9 @@ The suite contains:
   CCJ-1-derived receipt-v1/v2 and marker-v3 hashes, receipt-v1/v2 and
   marker-v2/v3 mixed planning, rollback, status/repair/GC, shim/PATH, offline,
   and signing boundaries;
+- schema-8 first-party module-root declaration, containment, effective-replace
+  form and bijection cases, including snapshot escapes, nested/build/runtime
+  overlap, and Windows path collisions;
 - the portable `manager-worker-v1` execution contract: the fixed worker process
   graph and session order, the exact mandatory portable controls, the exhaustive
   versioned `rc5-native-control-inventory-v1` per-platform inventory, the closed

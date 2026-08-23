@@ -308,8 +308,8 @@ func TestSchemaV8WireSurfacesAreClosedAndVersioned(t *testing.T) {
 	common := readObject(t, filepath.Join(root, "schemas", "v1", "common.schema.json"))
 	defs := common["$defs"].(map[string]any)
 
-	// Schema 7 bytes stay frozen: the schema-7 union still reaches the
-	// schema-7 script command, which has no execution surface at all.
+	// Schema 7 bytes stay frozen: its script and local-build branches have no
+	// schema-8 execution or module-root surface.
 	scriptCommand := defs["scriptCommand"].(map[string]any)
 	for _, field := range []string{"execution_policy", "interpreter"} {
 		if _, ok := scriptCommand["properties"].(map[string]any)[field]; ok {
@@ -319,6 +319,10 @@ func TestSchemaV8WireSurfacesAreClosedAndVersioned(t *testing.T) {
 	commandV7 := defs["commandV7"].(map[string]any)["oneOf"].([]any)
 	if commandV7[0].(map[string]any)["$ref"] != "#/$defs/scriptCommand" {
 		t.Fatalf("commandV7 no longer selects the frozen script command: %#v", commandV7)
+	}
+	buildCommandV6 := defs["buildCommandV6"].(map[string]any)
+	if _, ok := buildCommandV6["properties"].(map[string]any)["modules"]; ok {
+		t.Fatal("frozen buildCommandV6 acquired modules")
 	}
 
 	// The policy identity is one closed constant, never an enum, so a package
@@ -353,7 +357,20 @@ func TestSchemaV8WireSurfacesAreClosedAndVersioned(t *testing.T) {
 		t.Fatalf("schema 8 does not bind execution_policy and interpreter to each other: %#v", dependent)
 	}
 
-	// Only script commands carry the opt-in; the build unions are untouched.
+	buildCommandV8 := defs["buildCommandV8"].(map[string]any)
+	if buildCommandV8["additionalProperties"] != false {
+		t.Fatal("buildCommandV8 must reject unknown fields")
+	}
+	buildProperties := buildCommandV8["properties"].(map[string]any)
+	if len(buildProperties) != 4 || buildProperties["modules"].(map[string]any)["$ref"] != "#/$defs/pathSet" {
+		t.Fatalf("buildCommandV8 is not the closed schema-8 module-root surface: %#v", buildProperties)
+	}
+	if !reflect.DeepEqual(buildCommandV8["required"], buildCommandV6["required"]) {
+		t.Fatalf("modules must remain optional: v8 required = %#v", buildCommandV8["required"])
+	}
+
+	// Schema 8 composes the script and local-build additions without widening
+	// the system or external-repository branches.
 	commandV8 := defs["commandV8"].(map[string]any)["oneOf"].([]any)
 	var refs []string
 	for _, branch := range commandV8 {
@@ -361,7 +378,7 @@ func TestSchemaV8WireSurfacesAreClosedAndVersioned(t *testing.T) {
 	}
 	want := []string{
 		"#/$defs/scriptCommandV8", "#/$defs/systemCommand",
-		"#/$defs/buildCommandV6", "#/$defs/repositoryBuildCommandV1",
+		"#/$defs/buildCommandV8", "#/$defs/repositoryBuildCommandV1",
 	}
 	if !reflect.DeepEqual(refs, want) {
 		t.Fatalf("commandV8 union = %#v, want %#v", refs, want)
@@ -442,6 +459,113 @@ func TestGeneratedSchemaV8CasesCoverTheScriptWorkerOptIn(t *testing.T) {
 		if _, ok := declared[field]; ok {
 			t.Fatalf("declared-only command carries %s: %#v", field, declared)
 		}
+	}
+}
+
+func TestGeneratedSchemaV8CasesCoverModuleRootStructure(t *testing.T) {
+	root := repositoryRoot(t)
+	var index []map[string]any
+	readJSON(t, filepath.Join(root, "conformance", "v1", "schema-cases", "index.json"), &index)
+	required := []string{
+		"valid-module-roots-declared.json",
+		"valid-module-roots-empty.json",
+		"valid-module-roots-absent.json",
+		"invalid-module-roots-duplicate.json",
+		"invalid-module-roots-dot.json",
+		"invalid-module-roots-parent.json",
+		"invalid-module-roots-absolute.json",
+		"invalid-module-roots-backslash.json",
+		"invalid-module-roots-windows-device.json",
+		"invalid-module-roots-string.json",
+		"invalid-module-roots-null.json",
+		"invalid-module-roots-on-script-command.json",
+		"invalid-module-roots-on-system-command.json",
+		"invalid-module-roots-on-repository-command.json",
+		"invalid-module-roots-top-level.json",
+	}
+	got := indexedSchemaCases(index, "agent-skill-v8.schema.json")
+	for _, name := range required {
+		valid, ok := got[name]
+		if !ok {
+			t.Fatalf("agent-skill-v8.schema.json missing generated case %s", name)
+		}
+		if strings.HasPrefix(name, "invalid-") && valid {
+			t.Fatalf("agent-skill-v8.schema.json case %s must be invalid", name)
+		}
+		if strings.HasPrefix(name, "valid-") && !valid {
+			t.Fatalf("agent-skill-v8.schema.json case %s must be valid", name)
+		}
+	}
+	if legacy := indexedSchemaCases(index, "csk-skill-v8.schema.json"); !reflect.DeepEqual(legacy, got) {
+		t.Fatal("canonical and legacy manifest schema-8 cases differ")
+	}
+
+	declared := readObject(t, filepath.Join(
+		root, "conformance", "v1", "schema-cases", "agent-skill-v8", "valid-module-roots-declared.json"))
+	modules := declared["commands"].(map[string]any)["tool"].(map[string]any)["modules"]
+	if !reflect.DeepEqual(modules, []any{"pkg/board", "pkg/remoteconfig"}) {
+		t.Fatalf("generated module-root declaration = %#v", modules)
+	}
+}
+
+func TestGeneratedModuleRootConformanceVectors(t *testing.T) {
+	root := repositoryRoot(t)
+	vector := readObject(t, filepath.Join(
+		root, "conformance", "v1", "vectors", "module-roots.json"))
+	if vector["schema_version"] != json.Number("1") || vector["protocol_version"] != protocolVersion {
+		t.Fatalf("module-root vector identity = %#v", vector)
+	}
+	if got, want := vector["evaluation_order"], []any{
+		"declaration-and-containment-before-go-list",
+		"go-list-vendor-consistency",
+		"directive-form-and-bijection-before-go-build",
+	}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("module-root evaluation order = %#v, want %#v", got, want)
+	}
+
+	want := map[string]struct {
+		error       any
+		failsBefore any
+	}{
+		"valid-declared-module-roots":                  {nil, nil},
+		"replacement-target-escapes-snapshot":          {"build_module_root_directive_undeclared", "go-build"},
+		"module-to-module-redirect":                    {"build_module_root_directive_form_unsupported", "go-build"},
+		"undeclared-directory-replacement":             {"build_module_root_directive_undeclared", "go-build"},
+		"declared-module-without-replacement":          {"build_module_root_declaration_unused", "go-build"},
+		"nested-declared-module-roots":                 {"build_module_root_containment_invalid", "go-list"},
+		"module-root-contained-by-build-root":          {"build_module_root_containment_invalid", "go-list"},
+		"module-root-contained-by-runtime-root":        {"build_module_root_containment_invalid", "go-list"},
+		"versioned-left-directory-replacement":         {"build_module_root_directive_form_unsupported", "go-build"},
+		"windows-case-colliding-declared-module-roots": {"build_module_root_containment_invalid", "go-list"},
+	}
+	cases := namedObjects(t, vector["cases"])
+	if len(cases) != len(want) {
+		t.Fatalf("module-root cases = %d, want %d: %#v", len(cases), len(want), cases)
+	}
+	for name, expected := range want {
+		item, ok := cases[name]
+		if !ok {
+			t.Fatalf("module-root vectors missing %q", name)
+		}
+		if item["expected_error"] != expected.error || item["fails_before"] != expected.failsBefore {
+			t.Fatalf("module-root case %s outcome = %#v", name, item)
+		}
+		accepted := expected.error == nil
+		if item["build_permitted"] != accepted || item["persistent_state_changed"] != false {
+			t.Fatalf("module-root case %s has an unsafe boundary: %#v", name, item)
+		}
+		if !accepted && item["go_build_started"] != false {
+			t.Fatalf("module-root rejection %s starts go build: %#v", name, item)
+		}
+	}
+
+	positive := cases["valid-declared-module-roots"]
+	declaration := positive["declaration"].(map[string]any)
+	if got, want := declaration["modules"], []any{"pkg/board", "pkg/remoteconfig"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("positive module-root declaration = %#v, want %#v", got, want)
+	}
+	if got := positive["vendor_module_annotations"].([]any); len(got) != 4 {
+		t.Fatalf("positive module-root annotations = %#v, want directive and selection pairs", got)
 	}
 }
 

@@ -186,6 +186,7 @@ func main() {
 	writeManagerConfigVectors(vectors, pinned)
 	writeManagerLifecycleVectors(vectors)
 	writeBuildDriverVectors(vectors, filepath.Join(suite, "fixtures", "go-build-skill"), filepath.Join(expected, "build-driver"), marker)
+	writeModuleRootVectors(vectors)
 	writeExternalRepositoryFixtures(suite)
 	writeExternalRepositoryVectors(vectors)
 	writeAssuranceVectors(vectors)
@@ -193,6 +194,132 @@ func main() {
 	writeExternalRepositoryExpected(expected, marker)
 	writeManifest(suite)
 	writeRC8ReleaseMetadata(*root, suite)
+}
+
+// writeModuleRootVectors emits the filesystem and build-graph cases that JSON
+// Schema cannot express for schema-8 first-party module roots.
+func writeModuleRootVectors(dir string) {
+	caseFor := func(
+		name, platform string,
+		modules, buildRoots, runtimeRoots, directories, goModFiles, annotations []string,
+		expectedError, failsBefore any,
+	) map[string]any {
+		buildPermitted := expectedError == nil
+		goListStarted := failsBefore != "go-list"
+		var goListSucceeds any
+		if goListStarted {
+			goListSucceeds = true
+		}
+		return map[string]any{
+			"name":                  name,
+			"platform_path_mapping": platform,
+			"declaration": map[string]any{
+				"build_root": "tools/cli", "modules": stringsToAny(modules),
+				"build_roots": stringsToAny(buildRoots), "runtime_roots": stringsToAny(runtimeRoots),
+			},
+			"snapshot": map[string]any{
+				"directories": stringsToAny(directories), "go_mod_files": stringsToAny(goModFiles),
+				"link_paths": []any{},
+			},
+			"vendor_module_annotations": stringsToAny(annotations),
+			"go_list_started":           goListStarted,
+			"go_list_succeeds":          goListSucceeds,
+			"build_permitted":           buildPermitted,
+			"go_build_started":          buildPermitted,
+			"expected_error":            expectedError,
+			"fails_before":              failsBefore,
+			"persistent_state_changed":  false,
+		}
+	}
+
+	writeJSON(filepath.Join(dir, "module-roots.json"), map[string]any{
+		"schema_version":   1,
+		"protocol_version": protocolVersion,
+		"evaluation_order": []any{
+			"declaration-and-containment-before-go-list",
+			"go-list-vendor-consistency",
+			"directive-form-and-bijection-before-go-build",
+		},
+		"cases": []any{
+			caseFor(
+				"valid-declared-module-roots", "linux",
+				[]string{"pkg/board", "pkg/remoteconfig"}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"pkg/board", "pkg/remoteconfig", "scripts", "tools/cli", "tools/cli/vendor"},
+				[]string{"pkg/board/go.mod", "pkg/remoteconfig/go.mod", "tools/cli/go.mod"},
+				[]string{
+					"# example.com/board => ../../pkg/board",
+					"# example.com/board v0.0.0 => ../../pkg/board",
+					"# example.com/remoteconfig => ../../pkg/remoteconfig",
+					"# example.com/remoteconfig v0.0.0 => ../../pkg/remoteconfig",
+				}, nil, nil,
+			),
+			caseFor(
+				"replacement-target-escapes-snapshot", "linux",
+				[]string{}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"scripts", "tools/cli", "tools/cli/vendor"}, []string{"tools/cli/go.mod"},
+				[]string{"# example.com/escape => ../../../outside"},
+				"build_module_root_directive_undeclared", "go-build",
+			),
+			caseFor(
+				"module-to-module-redirect", "linux",
+				[]string{}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"scripts", "tools/cli", "tools/cli/vendor"}, []string{"tools/cli/go.mod"},
+				[]string{"# example.com/board => example.com/fork v1.2.3"},
+				"build_module_root_directive_form_unsupported", "go-build",
+			),
+			caseFor(
+				"undeclared-directory-replacement", "linux",
+				[]string{}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"pkg/extra", "scripts", "tools/cli", "tools/cli/vendor"},
+				[]string{"pkg/extra/go.mod", "tools/cli/go.mod"},
+				[]string{"# example.com/extra => ../../pkg/extra"},
+				"build_module_root_directive_undeclared", "go-build",
+			),
+			caseFor(
+				"declared-module-without-replacement", "linux",
+				[]string{"pkg/board"}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"pkg/board", "scripts", "tools/cli", "tools/cli/vendor"},
+				[]string{"pkg/board/go.mod", "tools/cli/go.mod"}, []string{},
+				"build_module_root_declaration_unused", "go-build",
+			),
+			caseFor(
+				"nested-declared-module-roots", "linux",
+				[]string{"pkg/board", "pkg/board/codec"}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"pkg/board", "pkg/board/codec", "scripts", "tools/cli", "tools/cli/vendor"},
+				[]string{"pkg/board/go.mod", "pkg/board/codec/go.mod", "tools/cli/go.mod"}, []string{},
+				"build_module_root_containment_invalid", "go-list",
+			),
+			caseFor(
+				"module-root-contained-by-build-root", "linux",
+				[]string{"tools/cli/pkg/lib"}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"scripts", "tools/cli", "tools/cli/pkg/lib", "tools/cli/vendor"},
+				[]string{"tools/cli/go.mod", "tools/cli/pkg/lib/go.mod"}, []string{},
+				"build_module_root_containment_invalid", "go-list",
+			),
+			caseFor(
+				"module-root-contained-by-runtime-root", "linux",
+				[]string{"pkg/board"}, []string{"tools/cli"}, []string{"pkg"},
+				[]string{"pkg", "pkg/board", "tools/cli", "tools/cli/vendor"},
+				[]string{"pkg/board/go.mod", "tools/cli/go.mod"}, []string{},
+				"build_module_root_containment_invalid", "go-list",
+			),
+			caseFor(
+				"versioned-left-directory-replacement", "linux",
+				[]string{"pkg/board"}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"pkg/board", "scripts", "tools/cli", "tools/cli/vendor"},
+				[]string{"pkg/board/go.mod", "tools/cli/go.mod"},
+				[]string{"# example.com/board v1.2.3 => ../../pkg/board"},
+				"build_module_root_directive_form_unsupported", "go-build",
+			),
+			caseFor(
+				"windows-case-colliding-declared-module-roots", "windows",
+				[]string{"pkg/Board", "pkg/board"}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"pkg/Board", "pkg/board", "scripts", "tools/cli", "tools/cli/vendor"},
+				[]string{"pkg/Board/go.mod", "pkg/board/go.mod", "tools/cli/go.mod"}, []string{},
+				"build_module_root_containment_invalid", "go-list",
+			),
+		},
+	})
 }
 
 func writeSkillManifestResolutionVectors(dir string) {
@@ -2187,6 +2314,9 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 			}
 		}
 		if version >= 8 {
+			obj["commands"].(map[string]any)["build-tool"].(map[string]any)["modules"] = []any{
+				"pkg/board", "pkg/remoteconfig",
+			}
 			obj["commands"].(map[string]any)["enforced-tool"] = map[string]any{
 				"type": "script", "unix_path": "scripts/enforced", "win_path": "scripts/enforced.cmd",
 				"execution_policy": scriptExecutionPolicy, "interpreter": "python3-v1",
@@ -2214,6 +2344,7 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 				additionalCases[name] = append(repositorySchemaExamples(version), legacyV8SchemaExamples(validSkill(version))...)
 			case version == 8:
 				additionalCases[name] = append(repositorySchemaExamples(version), scriptWorkerSchemaExamples()...)
+				additionalCases[name] = append(additionalCases[name], moduleRootSchemaExamples()...)
 			default:
 				additionalCases[name] = append(legacyV7SchemaExamples(validSkill(version)), legacyV8SchemaExamples(validSkill(version))...)
 			}
@@ -2455,6 +2586,65 @@ func legacyV8SchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-v8-top-level-interpreter", instance: withTopLevel("interpreter", "python3-v1")},
 		{name: "invalid-v8-command-execution-policy", instance: withCommand("execution_policy", scriptExecutionPolicy)},
 		{name: "invalid-v8-command-interpreter", instance: withCommand("interpreter", "python3-v1")},
+	}
+}
+
+func validModuleRootSkillManifest() map[string]any {
+	return map[string]any{
+		"schema_version": 8,
+		"capabilities":   map[string]any{},
+		"build_roots":    []any{"tools/cli"},
+		"commands": map[string]any{
+			"tool": map[string]any{
+				"type": "build", "driver": "go-v1", "source_dir": "tools/cli/cmd/tool",
+				"modules": []any{"pkg/board", "pkg/remoteconfig"},
+			},
+		},
+	}
+}
+
+// moduleRootSchemaExamples covers the structural portion of the schema-8
+// module-root declaration. Filesystem, graph, and platform-path comparisons
+// remain semantic conformance rules rather than JSON Schema rules.
+func moduleRootSchemaExamples() []schemaExample {
+	withModules := func(value any) map[string]any {
+		manifest := validModuleRootSkillManifest()
+		manifest["commands"].(map[string]any)["tool"].(map[string]any)["modules"] = value
+		return manifest
+	}
+	withCommand := func(name string, command map[string]any) map[string]any {
+		manifest := validModuleRootSkillManifest()
+		manifest["commands"].(map[string]any)[name] = command
+		return manifest
+	}
+	empty := withModules([]any{})
+	absent := validModuleRootSkillManifest()
+	delete(absent["commands"].(map[string]any)["tool"].(map[string]any), "modules")
+
+	return []schemaExample{
+		{name: "valid-module-roots-declared", valid: true, instance: validModuleRootSkillManifest()},
+		{name: "valid-module-roots-empty", valid: true, instance: empty},
+		{name: "valid-module-roots-absent", valid: true, instance: absent},
+		{name: "invalid-module-roots-duplicate", instance: withModules([]any{"pkg/lib", "pkg/lib"})},
+		{name: "invalid-module-roots-dot", instance: withModules([]any{"."})},
+		{name: "invalid-module-roots-parent", instance: withModules([]any{"../pkg/lib"})},
+		{name: "invalid-module-roots-absolute", instance: withModules([]any{"/pkg/lib"})},
+		{name: "invalid-module-roots-backslash", instance: withModules([]any{"pkg\\lib"})},
+		{name: "invalid-module-roots-windows-device", instance: withModules([]any{"pkg/CON"})},
+		{name: "invalid-module-roots-string", instance: withModules("pkg/lib")},
+		{name: "invalid-module-roots-null", instance: withModules(nil)},
+		{name: "invalid-module-roots-on-script-command", instance: withCommand("script", map[string]any{
+			"type": "script", "unix_path": "scripts/tool", "modules": []any{"pkg/lib"},
+		})},
+		{name: "invalid-module-roots-on-system-command", instance: withCommand("system", map[string]any{
+			"type": "system", "command": "tool", "modules": []any{"pkg/lib"},
+		})},
+		{name: "invalid-module-roots-on-repository-command", instance: withCommand("repository", map[string]any{
+			"type": "build", "driver": "go-repository-v1", "repository": "golden-tools", "target": "tool",
+			"modules": []any{"pkg/lib"},
+		})},
+		{name: "invalid-module-roots-top-level", instance: withNestedField(
+			validModuleRootSkillManifest(), []string{}, "modules", []any{"pkg/lib"})},
 	}
 }
 

@@ -915,6 +915,81 @@
     "valid": false
   },
   {
+    "instance": "agent-skill-v8/valid-module-roots-declared.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/valid-module-roots-empty.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/valid-module-roots-absent.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-duplicate.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-dot.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-parent.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-absolute.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-backslash.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-windows-device.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-string.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-null.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-on-script-command.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-on-system-command.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-on-repository-command.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-top-level.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
     "instance": "assurance-policy-v1/valid.json",
     "schema": "assurance-policy-v1.schema.json",
     "valid": true
@@ -2181,6 +2256,81 @@
   },
   {
     "instance": "csk-skill-v8/invalid-script-worker-top-level-interpreter.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/valid-module-roots-declared.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/valid-module-roots-empty.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/valid-module-roots-absent.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-duplicate.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-dot.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-parent.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-absolute.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-backslash.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-windows-device.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-string.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-null.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-on-script-command.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-on-system-command.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-on-repository-command.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-top-level.json",
     "schema": "csk-skill-v8.schema.json",
     "valid": false
   },

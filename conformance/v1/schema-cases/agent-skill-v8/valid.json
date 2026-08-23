@@ -16,6 +16,10 @@
   "commands": {
     "build-tool": {
       "driver": "go-v1",
+      "modules": [
+        "pkg/board",
+        "pkg/remoteconfig"
+      ],
       "source_dir": "build/cmd/tool",
       "type": "build"
     },
