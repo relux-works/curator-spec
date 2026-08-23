@@ -1952,6 +1952,8 @@ def validate_build_driver_vectors() -> None:
     if vector.get("driver") != "go-v1" or vector.get("schema_version") != 1:
         raise ValidationFailure("build-driver vector does not identify go-v1 schema 1")
 
+    validate_fixed_environment_cases(vector)
+
     # The physical fixture is the build-source oracle.
     fixture = vector["fixture"]
     if fixture.get("root") != "fixtures/go-build-skill":
@@ -2022,6 +2024,43 @@ def validate_build_driver_vectors() -> None:
 
     validate_build_driver_cache_identity(vector, build_input, cache_key)
     validate_build_driver_cases(vector, cache_key, receipt_hash)
+
+
+def validate_fixed_environment_cases(vector: Any) -> None:
+    """Require one exact closed-environment realization per candidate host."""
+    if not isinstance(vector, dict):
+        raise ValidationFailure("build-driver vector is not an object")
+    cases = named_cases(vector.get("fixed_environment_cases"), "fixed environment")
+    expected_targets = {
+        "darwin-arm64": ("darwin", "arm64", "GOARM64", "v8.0"),
+        "linux-amd64": ("linux", "amd64", "GOAMD64", "v1"),
+        "windows-amd64": ("windows", "amd64", "GOAMD64", "v1"),
+    }
+    if set(cases) != set(expected_targets):
+        raise ValidationFailure("fixed environment host coverage changed")
+    for name, (goos, goarch, tuning, tuning_value) in expected_targets.items():
+        case = cases[name]
+        environment = case.get("environment")
+        if (
+            case.get("goos") != goos
+            or case.get("goarch") != goarch
+            or not isinstance(environment, dict)
+            or environment.get("GOOS") != goos
+            or environment.get("GOARCH") != goarch
+            or environment.get(tuning) != tuning_value
+        ):
+            raise ValidationFailure(f"fixed environment case {name} has the wrong native target")
+    if vector.get("fixed_environment") != cases["darwin-arm64"].get("environment"):
+        raise ValidationFailure("legacy fixed environment is not the Darwin/arm64 realization")
+    windows = cases["windows-amd64"]
+    environment = windows["environment"]
+    if any(
+        key not in environment
+        for key in ("APPDATA", "LOCALAPPDATA", "USERPROFILE", "TEMP", "TMP")
+    ):
+        raise ValidationFailure("Windows fixed environment omits private process variables")
+    if windows.get("optional_variables") != ["SYSTEMROOT", "WINDIR"]:
+        raise ValidationFailure("Windows fixed environment does not name its optional indispensable variables")
 
 
 def validate_manager_lifecycle_vectors(manager: Any, build_drivers: Any) -> None:

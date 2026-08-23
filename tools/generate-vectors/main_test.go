@@ -3004,6 +3004,36 @@ func TestBuildDriverPositiveProcessCacheAndDryRunCoverage(t *testing.T) {
 			t.Fatalf("fixed environment inherits forbidden variable %s", forbidden)
 		}
 	}
+
+	environmentCases := namedObjects(t, vector["fixed_environment_cases"])
+	assertNamedSet(t, environmentCases, []string{"darwin-arm64", "linux-amd64", "windows-amd64"})
+	if !reflect.DeepEqual(environmentCases["darwin-arm64"]["environment"], environment) {
+		t.Fatal("legacy fixed environment is not the Darwin/arm64 host case")
+	}
+	for name, target := range map[string][2]string{
+		"darwin-arm64":  {"darwin", "arm64"},
+		"linux-amd64":   {"linux", "amd64"},
+		"windows-amd64": {"windows", "amd64"},
+	} {
+		item := environmentCases[name]
+		if item["goos"] != target[0] || item["goarch"] != target[1] {
+			t.Fatalf("fixed environment case %s target = %v/%v", name, item["goos"], item["goarch"])
+		}
+		values := item["environment"].(map[string]any)
+		if values["GOOS"] != target[0] || values["GOARCH"] != target[1] {
+			t.Fatalf("fixed environment case %s variables = %v/%v", name, values["GOOS"], values["GOARCH"])
+		}
+	}
+	windows := environmentCases["windows-amd64"]
+	windowsEnvironment := windows["environment"].(map[string]any)
+	for _, key := range []string{"APPDATA", "LOCALAPPDATA", "USERPROFILE", "TEMP", "TMP", "GOAMD64"} {
+		if _, ok := windowsEnvironment[key]; !ok {
+			t.Fatalf("Windows fixed environment omits %s", key)
+		}
+	}
+	if got := windows["optional_variables"]; !reflect.DeepEqual(got, []any{"SYSTEMROOT", "WINDIR"}) {
+		t.Fatalf("Windows optional indispensable variables = %#v", got)
+	}
 	for _, name := range []string{"protected-cache-hit", "compiler-free-dry-run-miss"} {
 		commands := positive[name]["source_aware_go_commands"].([]any)
 		if len(commands) != 0 {

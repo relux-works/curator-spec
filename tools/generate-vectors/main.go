@@ -3669,8 +3669,9 @@ func writeBuildDriverVectors(dir, fixture, expected string, markerV1 map[string]
 				"build_source_preimage": "expected/build-driver/build-source.preimage.bin", "build_source_sha256": "expected/build-driver/build-source-sha256.txt",
 			},
 		},
-		"fixed_environment": fixedGoEnvironment(),
-		"argv":              argv,
+		"fixed_environment":       fixedGoEnvironment("darwin", "arm64"),
+		"fixed_environment_cases": fixedGoEnvironmentCases(),
+		"argv":                    argv,
 		"portable_identity": map[string]any{
 			"execution_policy":        portableExecutionPolicy,
 			"build_input":             buildInput,
@@ -4090,15 +4091,41 @@ func toolchainRecordsJSON(records []toolchainRecord) []any {
 	return result
 }
 
-func fixedGoEnvironment() map[string]any {
-	return map[string]any{
+func fixedGoEnvironment(goos, goarch string) map[string]any {
+	environment := map[string]any{
 		"GO111MODULE": "on", "GOENV": "off", "GOFLAGS": "", "GOPATH": "<operation-private>/gopath",
 		"GOMODCACHE": "<operation-private>/gomodcache", "GOCACHE": "<operation-private>/gocache", "GOTMPDIR": "<operation-private>/gotmp",
 		"GOPROXY": "off", "GOSUMDB": "off", "GOPRIVATE": "", "GONOPROXY": "none", "GONOSUMDB": "none", "GOVCS": "*:off",
 		"GOWORK": "off", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "GO_EXTLINK_ENABLED": "0", "GOEXPERIMENT": "",
-		"GOROOT": "<resolved-trusted-goroot>", "GOOS": "darwin", "GOARCH": "arm64", "GOARM64": "v8.0",
+		"GOROOT": "<resolved-trusted-goroot>", "GOOS": goos, "GOARCH": goarch,
 		"HOME": "<operation-private>/home", "XDG_CONFIG_HOME": "<operation-private>/config", "PATH": "<operation-private>/empty-path",
 		"TMPDIR": "<operation-private>/tmp", "LC_ALL": "C", "LANG": "C",
+	}
+	switch goarch {
+	case "amd64":
+		environment["GOAMD64"] = "v1"
+	case "arm64":
+		environment["GOARM64"] = "v8.0"
+	}
+	if goos == "windows" {
+		for key, value := range map[string]any{
+			"APPDATA":      "<operation-private>/appdata",
+			"LOCALAPPDATA": "<operation-private>/localappdata",
+			"USERPROFILE":  "<operation-private>/userprofile",
+			"TEMP":         "<operation-private>/tmp",
+			"TMP":          "<operation-private>/tmp",
+		} {
+			environment[key] = value
+		}
+	}
+	return environment
+}
+
+func fixedGoEnvironmentCases() []any {
+	return []any{
+		map[string]any{"name": "darwin-arm64", "goos": "darwin", "goarch": "arm64", "environment": fixedGoEnvironment("darwin", "arm64"), "optional_variables": []any{}},
+		map[string]any{"name": "linux-amd64", "goos": "linux", "goarch": "amd64", "environment": fixedGoEnvironment("linux", "amd64"), "optional_variables": []any{}},
+		map[string]any{"name": "windows-amd64", "goos": "windows", "goarch": "amd64", "environment": fixedGoEnvironment("windows", "amd64"), "optional_variables": []any{"SYSTEMROOT", "WINDIR"}},
 	}
 }
 

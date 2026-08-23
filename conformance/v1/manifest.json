@@ -2682,7 +2682,7 @@
     },
     {
       "path": "vectors/build-drivers.json",
-      "sha256": "sha256:f412c107091cf82f980523afe5361212a3b89a3425f5d885373191f8acb12aea"
+      "sha256": "sha256:f9c77e499e986ddf42bfc121bf63ee7589bbd23c8c817a6a6499870dc1d4b5bc"
     },
     {
       "path": "vectors/canonical-invalid.json",

@@ -998,6 +998,17 @@ class BuildDriverGoldenSuiteTests(unittest.TestCase):
             self.PORTABLE_RECEIPT_SHA256 + "\n",
         )
 
+    def test_fixed_environment_guard_rejects_incomplete_windows_private_state(self) -> None:
+        vector = self.vector()
+        windows = next(
+            item
+            for item in vector["fixed_environment_cases"]
+            if item["name"] == "windows-amd64"
+        )
+        del windows["environment"]["APPDATA"]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_fixed_environment_cases(vector)
+
     def test_execution_policy_negatives_are_schema_invalid_and_not_aliases(self) -> None:
         identity = self.vector()["cache_identity"]
         self.assertFalse(identity["aliases"])
