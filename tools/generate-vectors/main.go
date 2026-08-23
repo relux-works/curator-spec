@@ -58,11 +58,13 @@ const (
 	nativeControlInventoryVersion = "rc5-native-control-inventory-v1"
 	// capabilityEvidenceRecordVersion names the closed per-operation reporting
 	// record. It never enters a cache key, receipt, marker, or claim.
-	capabilityEvidenceRecordVersion = "capability-evidence-v1"
-	portableAssurancePolicy         = "portable-cli-policy-v1"
-	verifiedAssurancePolicy         = "verified-provider-policy-v1"
-	verifiedExecutionPolicy         = "verified-provider-execution-v1"
-	verifiedProviderContract        = "host-execution-provider-v1"
+	capabilityEvidenceRecordVersion       = "capability-evidence-v1"
+	scriptNativeControlInventoryVersion   = "script-worker-v1-native-control-inventory-v1"
+	scriptCapabilityEvidenceRecordVersion = "script-capability-evidence-v1"
+	portableAssurancePolicy               = "portable-cli-policy-v1"
+	verifiedAssurancePolicy               = "verified-provider-policy-v1"
+	verifiedExecutionPolicy               = "verified-provider-execution-v1"
+	verifiedProviderContract              = "host-execution-provider-v1"
 	// unavailableNativeControlReason is the only reason an rc.5 inventory
 	// control is unavailable: the platform primitive exists but is not scoped
 	// to a private worker domain.
@@ -127,6 +129,7 @@ func main() {
 	}
 	writeJSON(filepath.Join(expected, "marker.json"), marker)
 	writeJSON(filepath.Join(expected, "marker-v2.json"), sharedFixtureMarkerV2(marker))
+	writeJSON(filepath.Join(expected, "install-marker-v4.json"), validInstallMarkerV4(marker))
 	ledger := map[string]any{"schema_version": 1, "entries": []any{"golden-skill"}}
 	writeJSON(filepath.Join(expected, "adapter-ledger.json"), ledger)
 
@@ -1190,6 +1193,7 @@ func writeExternalRepositoryVectors(dir string) {
 			map[string]any{"name": "schema7-external-only", "manifest_schema": 7, "drivers": []any{"go-repository-v1"}, "receipt_versions": []any{2}, "marker_version": 3},
 			map[string]any{"name": "schema7-mixed", "manifest_schema": 7, "drivers": []any{"go-repository-v1", "go-v1"}, "receipt_versions": []any{2, 1}, "marker_version": 3, "expected_marker": "expected/external-repository/install-marker-v3-mixed.json"},
 			map[string]any{"name": "schema7-substituted-external", "manifest_schema": 7, "drivers": []any{"go-repository-v1"}, "receipt_versions": []any{2}, "marker_version": 3, "declared_and_effective_sources": true},
+			map[string]any{"name": "schema8-script-worker", "manifest_schema": 8, "drivers": []any{"go-repository-v1", "go-v1"}, "receipt_versions": []any{2, 1}, "marker_version": 4, "expected_marker": "expected/install-marker-v4.json"},
 		},
 		"transaction_cases": []any{
 			map[string]any{"name": "failure-before-publication", "failure_at": "build", "live_state_unchanged": true, "journal_retained_if_uncertain": true},
@@ -1222,6 +1226,7 @@ func writeExternalRepositoryVectors(dir string) {
 	})
 
 	writeGoHostExecutionPolicyVectors(dir)
+	writeScriptHostExecutionPolicyVectors(dir)
 
 	writeJSON(filepath.Join(dir, "conformance-claim-v3-qualification.json"), map[string]any{
 		"schema_version":       1,
@@ -1499,6 +1504,137 @@ func writeGoHostExecutionPolicyVectors(dir string) {
 				"schema_valid":     false,
 			},
 			"aliases": false,
+		},
+	})
+}
+
+// writeScriptHostExecutionPolicyVectors emits the executable contract for the
+// schema-8 script-worker-v1 opt-in. The script policy deliberately owns a
+// separate inventory and evidence record from manager-worker-v1.
+func writeScriptHostExecutionPolicyVectors(dir string) {
+	available := func(mechanism string) map[string]any {
+		return map[string]any{"availability": "available", "mechanism": mechanism, "unavailable_reason": nil}
+	}
+	unavailable := func(reason string) map[string]any {
+		return map[string]any{"availability": "unavailable", "mechanism": nil, "unavailable_reason": reason}
+	}
+	conditional := func(mechanism string) map[string]any {
+		return map[string]any{"availability": "host-conditional", "mechanism": mechanism, "unavailable_reason": nil}
+	}
+	control := func(name string, macos, linux, windows map[string]any) map[string]any {
+		return map[string]any{
+			"name":      name,
+			"platforms": map[string]any{"linux": linux, "macos": macos, "windows": windows},
+		}
+	}
+	controls := []any{
+		control("descendant-domain-termination", available("process-group-and-session-teardown"), available("process-group-and-session-teardown"), available("job-object-kill-on-close")),
+		control("active-process-count-limit", unavailable("no-private-aggregate-domain"), conditional("delegated-cgroup-v2-pids.max"), available("job-object-active-process-limit")),
+		control("aggregate-memory-limit", unavailable("no-private-aggregate-domain"), conditional("delegated-cgroup-v2-memory.max"), available("job-object-process-and-job-memory-limit")),
+		control("per-file-size-limit", available("rlimit-fsize"), available("rlimit-fsize"), unavailable("no-private-aggregate-domain")),
+		control("inherited-handle-restriction", available("close-on-exec-and-explicit-descriptor-release"), available("close-on-exec-and-explicit-descriptor-release"), available("explicit-handle-inheritance-list")),
+		control("descendant-exec-denial", unavailable("no-unprivileged-per-process-exec-policy"), conditional("landlock-execute-right"), unavailable("child-process-policy-requires-appcontainer")),
+		control("filesystem-write-confinement", unavailable("no-unprivileged-filesystem-domain"), conditional("landlock-write-rights"), unavailable("no-unprivileged-filesystem-domain")),
+		control("network-isolation-domain", unavailable("no-unprivileged-network-domain"), conditional("network-namespace-without-interfaces"), unavailable("no-unprivileged-network-domain")),
+	}
+
+	examples := map[string]any{}
+	for _, platform := range []string{"linux", "macos", "windows"} {
+		entries := make([]any, 0, len(controls))
+		for _, raw := range controls {
+			item := raw.(map[string]any)
+			state := item["platforms"].(map[string]any)[platform].(map[string]any)
+			status := "unavailable"
+			if state["availability"] == "available" {
+				status = "applied"
+			}
+			entries = append(entries, map[string]any{
+				"name": item["name"], "availability": state["availability"],
+				"status": status, "probed_at": "pre-worker-launch",
+			})
+		}
+		examples[platform] = map[string]any{
+			"record_version":   scriptCapabilityEvidenceRecordVersion,
+			"execution_policy": scriptExecutionPolicy,
+			"platform":         platform,
+			"controls":         entries,
+		}
+	}
+
+	writeJSON(filepath.Join(dir, "script-host-execution-policy.json"), map[string]any{
+		"schema_version":   1,
+		"protocol_version": protocolVersion,
+		"execution_policy": scriptExecutionPolicy,
+		"interpreters":     []any{"node-v1", "python3-v1"},
+		"opt_in_cases": []any{
+			map[string]any{"name": "schema8-explicit-opt-in", "manifest_schema": 8, "execution_policy": scriptExecutionPolicy, "interpreter": "python3-v1", "mode": "enforced", "accepted": true},
+			map[string]any{"name": "schema8-absent-policy", "manifest_schema": 8, "execution_policy": nil, "interpreter": nil, "mode": "declared-only", "accepted": true},
+			map[string]any{"name": "legacy-schema7-script", "manifest_schema": 7, "execution_policy": nil, "interpreter": nil, "mode": "declared-only", "accepted": true},
+			map[string]any{"name": "interpreter-without-policy", "manifest_schema": 8, "execution_policy": nil, "interpreter": "python3-v1", "mode": nil, "accepted": false},
+			map[string]any{"name": "policy-without-interpreter", "manifest_schema": 8, "execution_policy": scriptExecutionPolicy, "interpreter": nil, "mode": nil, "accepted": false},
+			map[string]any{"name": "unknown-policy", "manifest_schema": 8, "execution_policy": "script-worker-v2", "interpreter": "python3-v1", "mode": nil, "accepted": false},
+		},
+		"capability_derivation_cases": []any{
+			map[string]any{"name": "all-fields-absent-deny-by-default", "declared": map[string]any{}, "derived": map[string]any{"network": "offline-environment", "exec": []any{"resolved-interpreter"}, "filesystem": []any{"private-cache-root", "private-config-root", "private-temp-root", "manager-selected-working-directory"}, "secrets": []any{}, "env_read": []any{}, "prompt_scope": nil}},
+			map[string]any{"name": "declared-network-hosts-are-reporting-only", "declared": map[string]any{"network": []any{"api.example.com"}}, "derived": map[string]any{"network_filter": nil}, "warning": "script-command-unfiltered-declared-network", "accepted": true},
+			map[string]any{"name": "declared-exec-is-manager-resolved", "declared": map[string]any{"exec": []any{"git"}}, "derived": map[string]any{"path": []any{"resolved-interpreter", "manager-resolved:git"}, "inherited_path": false}},
+			map[string]any{"name": "declared-secrets-remain-identifiers", "declared": map[string]any{"secrets": []any{"release-token"}}, "derived": map[string]any{"secret_values": []any{}}},
+		},
+		"mandatory_controls": []any{
+			"fixed-process-graph", "worker-identity-verification", "interpreter-resolution-and-identity-verification",
+			"manager-built-environment", "manager-built-path", "offline-network-configuration",
+			"operation-private-runtime-area", "explicit-standard-stream-binding",
+			"inventory-controls-applied", "closed-script-capability-evidence-record", "worker-domain-teardown",
+		},
+		"native_control_inventory": map[string]any{
+			"version":             scriptNativeControlInventoryVersion,
+			"authority":           "conformance/v1/vectors/script-host-execution-policy.json#native_control_inventory",
+			"exhaustive":          true,
+			"platforms":           []any{"linux", "macos", "windows"},
+			"availability_states": []any{"available", "host-conditional", "unavailable"},
+			"unavailable_reasons": []any{"child-process-policy-requires-appcontainer", "no-private-aggregate-domain", "no-unprivileged-filesystem-domain", "no-unprivileged-network-domain", "no-unprivileged-per-process-exec-policy"},
+			"probe_timing":        "pre-worker-launch", "probe_scope": "per-invocation", "controls": controls,
+		},
+		"preflight_cases": []any{
+			map[string]any{"name": "mandatory-control-unavailable-at-install", "operation": "install", "mandatory_control_available": false, "worker_started": false, "invocation_succeeds": false, "expected_error": "script_execution_control_unavailable"},
+			map[string]any{"name": "mandatory-control-unavailable-at-invocation", "operation": "invoke", "mandatory_control_available": false, "worker_started": false, "invocation_succeeds": false, "expected_error": "script_execution_control_unavailable"},
+			map[string]any{"name": "linux-pids-max-probe-available-evidence-applied-invocation-succeeds", "operation": "invoke", "platform": "linux", "control": "active-process-count-limit", "inventory_availability": "host-conditional", "mechanism": "delegated-cgroup-v2-pids.max", "probe_result": "available", "evidence_status": "applied", "worker_started": true, "invocation_succeeds": true, "expected_error": nil},
+			map[string]any{"name": "linux-pids-max-probe-unavailable-evidence-unavailable-invocation-succeeds", "operation": "invoke", "platform": "linux", "control": "active-process-count-limit", "inventory_availability": "host-conditional", "mechanism": "delegated-cgroup-v2-pids.max", "probe_result": "unavailable", "evidence_status": "unavailable", "worker_started": true, "invocation_succeeds": true, "expected_error": nil},
+			map[string]any{"name": "fixed-unavailable-control-does-not-reject", "operation": "invoke", "platform": "macos", "control": "active-process-count-limit", "inventory_availability": "unavailable", "probe_result": "unavailable", "evidence_status": "unavailable", "worker_started": true, "invocation_succeeds": true, "expected_error": nil},
+		},
+		"capability_evidence_record": map[string]any{
+			"record_version":       scriptCapabilityEvidenceRecordVersion,
+			"inventory_version":    scriptNativeControlInventoryVersion,
+			"record_fields":        []any{"controls", "execution_policy", "platform", "record_version"},
+			"control_entry_fields": []any{"availability", "name", "probed_at", "status"},
+			"entry_cardinality":    "exactly-one-per-inventory-control",
+			"record_cardinality":   "exactly-one-per-invocation",
+			"probe_timings":        []any{"pre-worker-launch"},
+			"result_only":          true,
+			"excluded_from":        []any{"cache-key", "command-stderr", "command-stdout", "conformance-claim", "install-marker", "receipt"},
+			"examples":             examples,
+		},
+		"capability_evidence_cases": []any{
+			map[string]any{"name": "valid-linux-host-conditional-unavailable", "mutation": nil, "record_valid": true, "invocation_succeeds": true, "expected_error": nil},
+			map[string]any{"name": "available-control-reported-unavailable", "mutation": "available-status-unavailable", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "unavailable-control-reported-applied", "mutation": "unavailable-status-applied", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "missing-control-entry", "mutation": "remove-control", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "duplicate-control-entry", "mutation": "duplicate-control", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "extra-control-entry", "mutation": "add-unknown-control", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "unknown-record-version", "mutation": "record-version-v2", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "host-conditional-status-contradicts-probe", "mutation": "probe-unavailable-status-applied", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "cached-probe-result", "mutation": "probed-at-install", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "second-record-for-invocation", "mutation": "record-count-two", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "foreign-build-record-version", "mutation": "capability-evidence-v1", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "foreign-build-execution-policy", "mutation": "manager-worker-v1", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_hardened_claim_forbidden"},
+			map[string]any{"name": "deferred-script-guarantee-entry", "mutation": "script-total-network-denial", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_hardened_claim_forbidden"},
+			map[string]any{"name": "deferred-build-guarantee-entry", "mutation": "total-network-denial", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_hardened_claim_forbidden"},
+		},
+		"audit_label_cases": []any{
+			map[string]any{"name": "schema7-script", "manifest_schema": 7, "execution_policy": nil, "labels": []any{"script-command-declared-only"}},
+			map[string]any{"name": "schema8-declared-only-script", "manifest_schema": 8, "execution_policy": nil, "labels": []any{"script-command-declared-only"}},
+			map[string]any{"name": "schema8-enforced-script", "manifest_schema": 8, "execution_policy": scriptExecutionPolicy, "labels": []any{}},
+			map[string]any{"name": "schema8-enforced-unfiltered-network", "manifest_schema": 8, "execution_policy": scriptExecutionPolicy, "labels": []any{"script-command-unfiltered-declared-network"}},
 		},
 	})
 }

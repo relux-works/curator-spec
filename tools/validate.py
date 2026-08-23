@@ -52,6 +52,8 @@ HARDENED_EXECUTION_OWNER = "STORY-260728-327soo"
 # per-operation capability-evidence record that reports it.
 NATIVE_CONTROL_INVENTORY_VERSION = "rc5-native-control-inventory-v1"
 CAPABILITY_EVIDENCE_RECORD_VERSION = "capability-evidence-v1"
+SCRIPT_NATIVE_CONTROL_INVENTORY_VERSION = "script-worker-v1-native-control-inventory-v1"
+SCRIPT_CAPABILITY_EVIDENCE_RECORD_VERSION = "script-capability-evidence-v1"
 UNAVAILABLE_NATIVE_CONTROL_REASON = "no-private-aggregate-domain"
 # Exact rc.4 candidate go-v1 cache key computed before the execution-policy
 # revision existed. A pre-revision input must miss, never alias.
@@ -1150,6 +1152,194 @@ IDENTITY_CASES_BEFORE_COMPILER = {
     "oversize-protocol-message",
     "unknown-protocol-message-kind",
 }
+
+
+def validate_script_host_execution_policy(vector: Any = None) -> None:
+    """Check script-worker-v1 opt-in, derivation, preflight, and evidence closure."""
+    if vector is None:
+        vector = load_json(SUITE / "vectors" / "script-host-execution-policy.json")
+    if vector.get("execution_policy") != SCRIPT_EXECUTION_POLICY:
+        raise ValidationFailure("script vector has the wrong execution-policy identity")
+
+    opt_in = named_cases(vector.get("opt_in_cases"), "script opt-in")
+    required_opt_in = {
+        "schema8-explicit-opt-in", "schema8-absent-policy", "legacy-schema7-script",
+        "interpreter-without-policy", "policy-without-interpreter", "unknown-policy",
+    }
+    if set(opt_in) != required_opt_in:
+        raise ValidationFailure("script opt-in case inventory is not exact")
+    if opt_in["schema8-explicit-opt-in"].get("mode") != "enforced":
+        raise ValidationFailure("explicit schema-8 opt-in is not enforced")
+    for name in ("schema8-absent-policy", "legacy-schema7-script"):
+        if opt_in[name].get("mode") != "declared-only" or opt_in[name].get("accepted") is not True:
+            raise ValidationFailure(f"{name} does not preserve declared-only behavior")
+    for name in ("interpreter-without-policy", "policy-without-interpreter", "unknown-policy"):
+        if opt_in[name].get("accepted") is not False:
+            raise ValidationFailure(f"invalid script opt-in {name} is accepted")
+
+    derivation = named_cases(vector.get("capability_derivation_cases"), "script derivation")
+    absent = derivation.get("all-fields-absent-deny-by-default", {}).get("derived", {})
+    if (
+        absent.get("network") != "offline-environment"
+        or absent.get("exec") != ["resolved-interpreter"]
+        or absent.get("secrets") != []
+        or absent.get("env_read") != []
+        or absent.get("filesystem") != [
+            "private-cache-root", "private-config-root", "private-temp-root",
+            "manager-selected-working-directory",
+        ]
+    ):
+        raise ValidationFailure("absent script capabilities do not derive deny-by-default")
+    hosts = derivation.get("declared-network-hosts-are-reporting-only", {})
+    if (
+        hosts.get("accepted") is not True
+        or hosts.get("warning") != "script-command-unfiltered-declared-network"
+        or hosts.get("derived", {}).get("network_filter") is not None
+    ):
+        raise ValidationFailure("declared script network hosts are represented as filtering")
+
+    mandatory = vector.get("mandatory_controls")
+    if set(mandatory or []) != {
+        "fixed-process-graph", "worker-identity-verification",
+        "interpreter-resolution-and-identity-verification", "manager-built-environment",
+        "manager-built-path", "offline-network-configuration", "operation-private-runtime-area",
+        "explicit-standard-stream-binding", "inventory-controls-applied",
+        "closed-script-capability-evidence-record", "worker-domain-teardown",
+    } or len(mandatory or []) != 11:
+        raise ValidationFailure("mandatory script control inventory is not exact")
+
+    inventory = vector.get("native_control_inventory")
+    if not isinstance(inventory, dict) or (
+        inventory.get("version") != SCRIPT_NATIVE_CONTROL_INVENTORY_VERSION
+        or inventory.get("exhaustive") is not True
+        or inventory.get("platforms") != ["linux", "macos", "windows"]
+        or inventory.get("availability_states") != ["available", "host-conditional", "unavailable"]
+        or inventory.get("probe_timing") != "pre-worker-launch"
+        or inventory.get("probe_scope") != "per-invocation"
+    ):
+        raise ValidationFailure("script native-control inventory header is not exact")
+    native = named_cases(inventory.get("controls"), "script native controls")
+    required_native = {
+        "descendant-domain-termination", "active-process-count-limit", "aggregate-memory-limit",
+        "per-file-size-limit", "inherited-handle-restriction", "descendant-exec-denial",
+        "filesystem-write-confinement", "network-isolation-domain",
+    }
+    if set(native) != required_native:
+        raise ValidationFailure("script native-control inventory is not exact")
+    for name, control in native.items():
+        platforms = control.get("platforms")
+        if not isinstance(platforms, dict) or set(platforms) != {"linux", "macos", "windows"}:
+            raise ValidationFailure(f"script native control {name} lacks exact platform cells")
+    linux_pids = native["active-process-count-limit"]["platforms"]["linux"]
+    if linux_pids != {
+        "availability": "host-conditional",
+        "mechanism": "delegated-cgroup-v2-pids.max",
+        "unavailable_reason": None,
+    }:
+        raise ValidationFailure("Linux active-process limit is not delegated cgroup v2 pids.max")
+
+    preflight = named_cases(vector.get("preflight_cases"), "script preflight")
+    for name in ("mandatory-control-unavailable-at-install", "mandatory-control-unavailable-at-invocation"):
+        case = preflight.get(name, {})
+        if (
+            case.get("expected_error") != "script_execution_control_unavailable"
+            or case.get("worker_started") is not False
+            or case.get("invocation_succeeds") is not False
+        ):
+            raise ValidationFailure(f"mandatory script preflight {name} does not reject before launch")
+    linux_unavailable = preflight.get(
+        "linux-pids-max-probe-unavailable-evidence-unavailable-invocation-succeeds", {}
+    )
+    if (
+        linux_unavailable.get("control") != "active-process-count-limit"
+        or linux_unavailable.get("inventory_availability") != "host-conditional"
+        or linux_unavailable.get("probe_result") != "unavailable"
+        or linux_unavailable.get("evidence_status") != "unavailable"
+        or linux_unavailable.get("invocation_succeeds") is not True
+        or linux_unavailable.get("expected_error") is not None
+    ):
+        raise ValidationFailure("unavailable Linux pids.max probe does not permit invocation")
+    linux_available = preflight.get(
+        "linux-pids-max-probe-available-evidence-applied-invocation-succeeds", {}
+    )
+    if (
+        linux_available.get("probe_result") != "available"
+        or linux_available.get("evidence_status") != "applied"
+        or linux_available.get("invocation_succeeds") is not True
+        or linux_available.get("expected_error") is not None
+    ):
+        raise ValidationFailure("available Linux pids.max probe is not applied")
+
+    record = vector.get("capability_evidence_record")
+    if not isinstance(record, dict) or (
+        record.get("record_version") != SCRIPT_CAPABILITY_EVIDENCE_RECORD_VERSION
+        or record.get("inventory_version") != SCRIPT_NATIVE_CONTROL_INVENTORY_VERSION
+        or set(record.get("record_fields") or []) != {"controls", "execution_policy", "platform", "record_version"}
+        or set(record.get("control_entry_fields") or []) != {"availability", "name", "probed_at", "status"}
+        or record.get("entry_cardinality") != "exactly-one-per-inventory-control"
+        or record.get("record_cardinality") != "exactly-one-per-invocation"
+        or record.get("probe_timings") != ["pre-worker-launch"]
+        or record.get("result_only") is not True
+        or record.get("excluded_from") != [
+            "cache-key", "command-stderr", "command-stdout", "conformance-claim",
+            "install-marker", "receipt",
+        ]
+    ):
+        raise ValidationFailure("script capability-evidence record is not closed")
+    examples = record.get("examples")
+    if not isinstance(examples, dict) or set(examples) != {"linux", "macos", "windows"}:
+        raise ValidationFailure("script evidence lacks exact platform examples")
+    for platform, example in examples.items():
+        if (
+            example.get("record_version") != SCRIPT_CAPABILITY_EVIDENCE_RECORD_VERSION
+            or example.get("execution_policy") != SCRIPT_EXECUTION_POLICY
+            or example.get("platform") != platform
+        ):
+            raise ValidationFailure(f"{platform} script evidence header is invalid")
+        entries = named_cases(example.get("controls"), f"{platform} script evidence")
+        if set(entries) != required_native:
+            raise ValidationFailure(f"{platform} script evidence does not close the inventory")
+        for name, entry in entries.items():
+            if set(entry) != {"availability", "name", "probed_at", "status"}:
+                raise ValidationFailure(f"{platform} script evidence entry {name} is open")
+            if entry.get("probed_at") != "pre-worker-launch":
+                raise ValidationFailure(f"{platform} script evidence entry {name} was probed late")
+            availability = native[name]["platforms"][platform]["availability"]
+            expected_status = "applied" if availability == "available" else "unavailable"
+            if entry.get("availability") != availability or entry.get("status") != expected_status:
+                raise ValidationFailure(f"{platform} script evidence contradicts {name}")
+    linux_evidence = named_cases(examples["linux"]["controls"], "Linux script evidence")
+    if linux_evidence["active-process-count-limit"].get("status") != "unavailable":
+        raise ValidationFailure("Linux conditional pids.max example is not honestly unavailable")
+
+    evidence = named_cases(vector.get("capability_evidence_cases"), "script evidence cases")
+    invalid_evidence = {
+        "available-control-reported-unavailable", "unavailable-control-reported-applied",
+        "missing-control-entry", "duplicate-control-entry", "extra-control-entry",
+        "unknown-record-version", "host-conditional-status-contradicts-probe",
+        "cached-probe-result", "second-record-for-invocation", "foreign-build-record-version",
+    }
+    for name in invalid_evidence:
+        case = evidence.get(name, {})
+        if (
+            case.get("record_valid") is not False
+            or case.get("invocation_succeeds") is not False
+            or case.get("expected_error") != "script_execution_capability_evidence_invalid"
+        ):
+            raise ValidationFailure(f"script evidence closure negative {name} is not rejected")
+    for name in (
+        "foreign-build-execution-policy", "deferred-script-guarantee-entry",
+        "deferred-build-guarantee-entry",
+    ):
+        if evidence.get(name, {}).get("expected_error") != "script_execution_hardened_claim_forbidden":
+            raise ValidationFailure(f"script evidence foreign/hardened negative {name} has wrong error")
+
+    audit = named_cases(vector.get("audit_label_cases"), "script audit labels")
+    for name in ("schema7-script", "schema8-declared-only-script"):
+        if audit.get(name, {}).get("labels") != ["script-command-declared-only"]:
+            raise ValidationFailure(f"legacy declared-only audit label is missing for {name}")
+    if audit.get("schema8-enforced-script", {}).get("labels") != []:
+        raise ValidationFailure("enforced script is labeled declared-only")
 
 
 def validate_go_host_execution_policy(vector: Any = None) -> None:
@@ -2518,6 +2708,7 @@ def validate_vector_semantics() -> None:
             "schema7-external-only",
             "schema7-mixed",
             "schema7-substituted-external",
+            "schema8-script-worker",
         },
         "transaction_cases": {
             "failure-before-publication",
@@ -2633,7 +2824,21 @@ def validate_vector_semantics() -> None:
     ):
         raise ValidationFailure("syntax-only check is not disjoint from source-covering claims")
 
+    schema8 = named_cases(lifecycle["mixed_build_cases"], "external repository mixed builds")[
+        "schema8-script-worker"
+    ]
+    marker_v4 = load_json(SUITE / "expected" / "install-marker-v4.json")
+    if (
+        schema8.get("manifest_schema") != 8
+        or schema8.get("marker_version") != 4
+        or schema8.get("expected_marker") != "expected/install-marker-v4.json"
+        or marker_v4.get("schema_version") != 4
+        or marker_v4.get("skill_schema_version") != 8
+    ):
+        raise ValidationFailure("schema-8 lifecycle does not bind to the marker-v4 golden")
+
     validate_go_host_execution_policy()
+    validate_script_host_execution_policy()
     validate_local_go_receipt_oracles()
     validate_build_driver_vectors()
 

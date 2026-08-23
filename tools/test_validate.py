@@ -431,6 +431,46 @@ class WireSemanticValidationTests(unittest.TestCase):
             validate.LEGACY_RC4_GO_V1_CACHE_KEY,
         )
 
+    def test_script_execution_vector_rejects_contract_drift(self) -> None:
+        vector = validate.load_json(
+            validate.SUITE / "vectors" / "script-host-execution-policy.json"
+        )
+        validate.validate_script_host_execution_policy(vector)
+
+        def case(items: list, name: str) -> dict:
+            return next(item for item in items if item["name"] == name)
+
+        mutations = {
+            "Linux pids limit becomes per-user RLIMIT": lambda item: case(
+                item["native_control_inventory"]["controls"],
+                "active-process-count-limit",
+            )["platforms"]["linux"].update(
+                {"availability": "available", "mechanism": "RLIMIT_NPROC"}
+            ),
+            "unavailable Linux probe rejects": lambda item: case(
+                item["preflight_cases"],
+                "linux-pids-max-probe-unavailable-evidence-unavailable-invocation-succeeds",
+            ).__setitem__("invocation_succeeds", False),
+            "absent exec inherits PATH": lambda item: case(
+                item["capability_derivation_cases"],
+                "all-fields-absent-deny-by-default",
+            )["derived"].__setitem__("exec", ["inherited-path"]),
+            "legacy script loses declared-only label": lambda item: case(
+                item["audit_label_cases"], "schema7-script"
+            ).__setitem__("labels", []),
+            "missing evidence entry becomes valid": lambda item: case(
+                item["capability_evidence_cases"], "missing-control-entry"
+            ).update(
+                {"record_valid": True, "invocation_succeeds": True, "expected_error": None}
+            ),
+        }
+        for label, mutate in mutations.items():
+            with self.subTest(label=label):
+                changed = copy.deepcopy(vector)
+                mutate(changed)
+                with self.assertRaises(validate.ValidationFailure):
+                    validate.validate_script_host_execution_policy(changed)
+
     def test_portable_execution_vector_rejects_dishonest_evidence(self) -> None:
         vector = validate.load_json(
             validate.SUITE / "vectors" / "go-host-execution-policy.json"

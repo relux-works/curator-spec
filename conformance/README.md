@@ -93,6 +93,12 @@ The suite contains:
   mechanism each one is not, worker identity and protocol negatives, closed
   package-influence surfaces, and the distinct portable, reserved-hardened, and
   pre-revision cache identities;
+- the `script-worker-v1` opt-in contract: schema-8 and legacy declared-only
+  selection, deny-by-default capability derivation, mandatory-control preflight,
+  the exhaustive three-platform `script-worker-v1-native-control-inventory-v1`
+  inventory (including host-conditional Linux cgroup v2 controls), the closed
+  `script-capability-evidence-v1` record and its negative cases, and audit labels
+  that distinguish enforced commands from legacy declared-only commands;
 - the rc.8 assurance contract: closed portable and verified policies, the
   platform-neutral provider descriptor, exact capability negotiation, typed
   permits, receipts, and checkpoints, cache non-aliasing, fail-closed

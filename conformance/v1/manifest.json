@@ -69,6 +69,10 @@
       "sha256": "sha256:680407f392cf9c44c013d1438c5569099a8be683d25d3b423b4d5c7c2d653f74"
     },
     {
+      "path": "expected/install-marker-v4.json",
+      "sha256": "sha256:905101ee9ac58862eac2131f32a6aae4dfe56df23aae4763e47b4917c8914094"
+    },
+    {
       "path": "expected/marker-v2.json",
       "sha256": "sha256:22117126c8932769636bd5ca1f1623f26a3c55d4bb9da3266acf3dc3a3b7fc2c"
     },
@@ -2574,7 +2578,7 @@
     },
     {
       "path": "vectors/external-repository-lifecycle.json",
-      "sha256": "sha256:175d709f183775b22ed3db27bc923ca78d6394d93a13096b5d6890c509aab072"
+      "sha256": "sha256:5a8b99c688018f12c1cf8d0089a64e1e63f3b416c75e847694b4f0fdd6587aa3"
     },
     {
       "path": "vectors/go-host-execution-policy.json",
@@ -2615,6 +2619,10 @@
     {
       "path": "vectors/registry-service.json",
       "sha256": "sha256:7e8cb23ccb18e786ea06c20e617553d17d4e6b0a1001142fcc89360fb69ca2f5"
+    },
+    {
+      "path": "vectors/script-host-execution-policy.json",
+      "sha256": "sha256:1edb78a84c194450f72afbd3a5b8baa0be5adb99c4271c8243517b3bfb0f454e"
     },
     {
       "path": "vectors/skill-manifest-resolution.json",

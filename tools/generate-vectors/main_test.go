@@ -1497,6 +1497,124 @@ func TestExecutionPolicyIsBoundIntoReceiptMarkerAndClaim(t *testing.T) {
 	}
 }
 
+func TestScriptWorkerConformanceContract(t *testing.T) {
+	root := repositoryRoot(t)
+	vector := readObject(t, filepath.Join(root, "conformance", "v1", "vectors", "script-host-execution-policy.json"))
+	if vector["execution_policy"] != scriptExecutionPolicy {
+		t.Fatalf("script execution policy = %v, want %s", vector["execution_policy"], scriptExecutionPolicy)
+	}
+
+	optIn := namedObjects(t, vector["opt_in_cases"])
+	for _, name := range []string{"schema8-explicit-opt-in", "schema8-absent-policy", "legacy-schema7-script", "interpreter-without-policy", "policy-without-interpreter", "unknown-policy"} {
+		if _, ok := optIn[name]; !ok {
+			t.Fatalf("opt-in vectors missing %s", name)
+		}
+	}
+	if optIn["schema8-explicit-opt-in"]["mode"] != "enforced" || optIn["schema8-explicit-opt-in"]["accepted"] != true {
+		t.Fatalf("explicit schema-8 opt-in is not enforced: %#v", optIn["schema8-explicit-opt-in"])
+	}
+	for _, name := range []string{"schema8-absent-policy", "legacy-schema7-script"} {
+		if optIn[name]["mode"] != "declared-only" || optIn[name]["accepted"] != true {
+			t.Fatalf("%s is not accepted as declared-only: %#v", name, optIn[name])
+		}
+	}
+	for _, name := range []string{"interpreter-without-policy", "policy-without-interpreter", "unknown-policy"} {
+		if optIn[name]["accepted"] != false {
+			t.Fatalf("invalid opt-in %s is accepted: %#v", name, optIn[name])
+		}
+	}
+
+	derivation := namedObjects(t, vector["capability_derivation_cases"])
+	absent := derivation["all-fields-absent-deny-by-default"]["derived"].(map[string]any)
+	if absent["network"] != "offline-environment" || !reflect.DeepEqual(absent["exec"], []any{"resolved-interpreter"}) ||
+		!reflect.DeepEqual(absent["secrets"], []any{}) || !reflect.DeepEqual(absent["env_read"], []any{}) {
+		t.Fatalf("absent capability fields do not derive deny-by-default: %#v", absent)
+	}
+	hosts := derivation["declared-network-hosts-are-reporting-only"]
+	if hosts["accepted"] != true || hosts["warning"] != "script-command-unfiltered-declared-network" ||
+		hosts["derived"].(map[string]any)["network_filter"] != nil {
+		t.Fatalf("declared network hosts are represented as filtering: %#v", hosts)
+	}
+
+	inventory := vector["native_control_inventory"].(map[string]any)
+	if inventory["version"] != scriptNativeControlInventoryVersion || inventory["exhaustive"] != true ||
+		!reflect.DeepEqual(inventory["platforms"], []any{"linux", "macos", "windows"}) ||
+		!reflect.DeepEqual(inventory["availability_states"], []any{"available", "host-conditional", "unavailable"}) {
+		t.Fatalf("script inventory header is not closed: %#v", inventory)
+	}
+	native := namedObjects(t, inventory["controls"])
+	if len(native) != 8 {
+		t.Fatalf("script inventory has %d controls, want 8", len(native))
+	}
+	pids := native["active-process-count-limit"]["platforms"].(map[string]any)["linux"].(map[string]any)
+	if pids["availability"] != "host-conditional" || pids["mechanism"] != "delegated-cgroup-v2-pids.max" {
+		t.Fatalf("Linux process limit is not delegated cgroup v2 pids.max: %#v", pids)
+	}
+	if strings.Contains(fmt.Sprint(pids), "RLIMIT_NPROC") || strings.Contains(fmt.Sprint(pids), "rlimit-nproc") {
+		t.Fatalf("Linux process limit incorrectly uses RLIMIT_NPROC: %#v", pids)
+	}
+
+	preflight := namedObjects(t, vector["preflight_cases"])
+	for _, name := range []string{"mandatory-control-unavailable-at-install", "mandatory-control-unavailable-at-invocation"} {
+		item := preflight[name]
+		if item["expected_error"] != "script_execution_control_unavailable" || item["worker_started"] != false || item["invocation_succeeds"] != false {
+			t.Fatalf("mandatory preflight %s does not reject before worker launch: %#v", name, item)
+		}
+	}
+	linuxUnavailable := preflight["linux-pids-max-probe-unavailable-evidence-unavailable-invocation-succeeds"]
+	if linuxUnavailable["probe_result"] != "unavailable" || linuxUnavailable["evidence_status"] != "unavailable" ||
+		linuxUnavailable["invocation_succeeds"] != true || linuxUnavailable["expected_error"] != nil {
+		t.Fatalf("Linux unavailable pids.max probe does not permit invocation: %#v", linuxUnavailable)
+	}
+
+	record := vector["capability_evidence_record"].(map[string]any)
+	if record["record_version"] != scriptCapabilityEvidenceRecordVersion || record["inventory_version"] != scriptNativeControlInventoryVersion ||
+		record["entry_cardinality"] != "exactly-one-per-inventory-control" || record["record_cardinality"] != "exactly-one-per-invocation" || record["result_only"] != true {
+		t.Fatalf("script evidence record is not closed: %#v", record)
+	}
+	linuxExample := record["examples"].(map[string]any)["linux"].(map[string]any)
+	entries := namedObjects(t, linuxExample["controls"])
+	if entries["active-process-count-limit"]["availability"] != "host-conditional" || entries["active-process-count-limit"]["status"] != "unavailable" {
+		t.Fatalf("Linux evidence does not report unavailable conditional pids.max: %#v", entries["active-process-count-limit"])
+	}
+
+	evidence := namedObjects(t, vector["capability_evidence_cases"])
+	for _, name := range []string{"available-control-reported-unavailable", "unavailable-control-reported-applied", "missing-control-entry", "duplicate-control-entry", "extra-control-entry", "unknown-record-version", "host-conditional-status-contradicts-probe", "cached-probe-result", "second-record-for-invocation", "foreign-build-record-version"} {
+		item := evidence[name]
+		if item["record_valid"] != false || item["invocation_succeeds"] != false || item["expected_error"] != "script_execution_capability_evidence_invalid" {
+			t.Fatalf("evidence closure negative %s is not rejected: %#v", name, item)
+		}
+	}
+	for _, name := range []string{"foreign-build-execution-policy", "deferred-script-guarantee-entry", "deferred-build-guarantee-entry"} {
+		if evidence[name]["expected_error"] != "script_execution_hardened_claim_forbidden" {
+			t.Fatalf("foreign/hardened evidence %s has wrong diagnostic: %#v", name, evidence[name])
+		}
+	}
+
+	audit := namedObjects(t, vector["audit_label_cases"])
+	for _, name := range []string{"schema7-script", "schema8-declared-only-script"} {
+		if !reflect.DeepEqual(audit[name]["labels"], []any{"script-command-declared-only"}) {
+			t.Fatalf("legacy declared-only audit label missing for %s: %#v", name, audit[name])
+		}
+	}
+	if !reflect.DeepEqual(audit["schema8-enforced-script"]["labels"], []any{}) {
+		t.Fatalf("enforced script is mislabeled declared-only: %#v", audit["schema8-enforced-script"])
+	}
+}
+
+func TestSchema8MarkerV4Golden(t *testing.T) {
+	root := repositoryRoot(t)
+	marker := readObject(t, filepath.Join(root, "conformance", "v1", "expected", "install-marker-v4.json"))
+	if marker["schema_version"] != json.Number("4") || marker["skill_schema_version"] != json.Number("8") {
+		t.Fatalf("marker-v4 golden has wrong version binding: %#v", marker)
+	}
+	for command, raw := range marker["builds"].(map[string]any) {
+		if raw.(map[string]any)["execution_policy"] != portableExecutionPolicy {
+			t.Fatalf("marker-v4 build %s lost compiled execution policy: %#v", command, raw)
+		}
+	}
+}
+
 func TestExternalRepositoryBehaviorCoverageAndOrdering(t *testing.T) {
 	root := repositoryRoot(t)
 	vectors := filepath.Join(root, "conformance", "v1", "vectors")
@@ -1535,7 +1653,7 @@ func TestExternalRepositoryBehaviorCoverageAndOrdering(t *testing.T) {
 	for field, required := range map[string][]string{
 		"cache_cases":            {"verified-cache-hit", "cache-miss", "corrupt-receipt", "corrupt-artifact", "untrusted-protected-boundary", "offline-syntax-only", "offline-install"},
 		"source_covering_cases":  {"external-source-dry-run", "external-audit-only"},
-		"mixed_build_cases":      {"schema6-local-only", "schema7-local-only", "schema7-external-only", "schema7-mixed", "schema7-substituted-external"},
+		"mixed_build_cases":      {"schema6-local-only", "schema7-local-only", "schema7-external-only", "schema7-mixed", "schema7-substituted-external", "schema8-script-worker"},
 		"transaction_cases":      {"failure-before-publication", "failure-after-private-stage", "marker-consumer-last", "recovery-uncertain-journal"},
 		"status_repair_gc_cases": {"status-current", "status-missing-snapshot", "status-unreadable-protected-state", "repair-reacquires-exact-source", "gc-retains-roots"},
 		"path_shim_cases":        {"external-command-shim", "package-path-entry-rejected", "shim-collision-rolls-back"},
