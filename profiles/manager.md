@@ -99,6 +99,11 @@ duplicate encoded paths, and platform path collisions. A build root MUST be a
 real link-free directory below the snapshot, MUST NOT be `.`, MUST be disjoint
 from every runtime root, and MUST contain the nearest ancestor `go.mod` of each
 of its commands' `source_dir` values. Every declared build root MUST be used.
+Every module directory declared by a schema-8 build command satisfies the same
+directory, link, and `.` rules, MUST contain `go.mod` directly, and MUST be
+disjoint from every other declared module directory, every build root, and
+every runtime root under both exact and platform-path comparison, as required
+by Protocol Core section 4.2.3.
 Generated artifacts remain only in manager-owned staging and immutable cache
 state and MUST NOT become agent-facing context.
 
@@ -321,10 +326,58 @@ throughout the active dependency graph, while audited pure Go assembly in
 vendored deps is permitted. Each active non-standard `GoFiles` file is scanned
 as exact bytes and rejected if it contains `//go:cgo_import_dynamic`, except
 for the audited allowlist `golang.org/x/sys` and `golang.org/x/sys/*`
-(`zsyscall` trampolines). `//go:generate` in `GoFiles` is inert — managers
-MUST NOT run generators and `go build -mod=vendor` does not execute them; its
-presence in vendored `GoFiles` (vendor already materialized) does not fail
-preflight. Any other violation fails before `go build`.
+(`zsyscall` trampolines). Both exceptions are scoped to results whose module
+carries no replacement. A result whose module carries a replacement, and every
+active input below the declared module directory that replacement names, is
+held to the unexceptioned rules: `SFiles` MUST be empty and
+`//go:cgo_import_dynamic` MUST NOT appear. The exceptions cover widely audited
+third-party dependencies a package cannot reasonably fork, and first-party code
+in the package's own repository can simply not use those constructs.
+`//go:generate` in `GoFiles` is inert — managers MUST NOT run generators and
+`go build -mod=vendor` does not execute them; its presence in vendored
+`GoFiles` (vendor already materialized) does not fail preflight. Any other
+violation fails before `go build`.
+
+A schema-8 build command that declares `modules` is validated in a fixed order,
+and every step of it completes before `go build`.
+
+1. Before the fixed `go list`, the manager validates the declaration against
+   the frozen snapshot alone: portable relative path, not `.`, unique, a real
+   link-free directory strictly inside the snapshot, `go.mod` directly inside
+   it, and pairwise disjoint from every other declared module directory, every
+   declared build root, and every runtime root under both exact and
+   platform-path comparison. `Module.Replace.Dir` and `Module.Replace.GoMod`
+   are never evidence that a path exists.
+2. The fixed `go list -mod=vendor` runs unchanged. Go reconciles `go.mod`
+   against `vendor/modules.txt` itself and fails the command with its own
+   inconsistent-vendoring error before any manager check of this section
+   applies.
+3. After `go list` returns, the manager reads the effective replace set from
+   `<build root>/vendor/modules.txt` exactly as Protocol Core section 4.2.3
+   defines it, reconciles selection annotations with their unversioned-left
+   directive annotations, rejects every versioned replacement side and every
+   module-to-module redirect, resolves each directory-form target against the
+   build root, and checks the one-to-one correspondence with the declared list
+   in both directions.
+4. Only then does the scan surface above run with the declared directories
+   included and the vendored exceptions withheld from replaced modules.
+
+The manager MUST NOT parse `go.mod`, MUST NOT read `Module.Replace` as the
+source of the effective replace set, and MUST NOT reconcile a vendor copy
+against the declared directory it was made from. The vendor copy is
+authoritative for the build; both copies are already bound by
+`curator-build-source-v1`, so a divergence changes the build identity and is
+not separately diagnosed.
+
+Module-root results use these stable `phase: preflight` diagnostics:
+
+| Code | State | Severity | Meaning |
+|---|---|---|---|
+| `build_module_root_declaration_invalid` | `unsupported` | `error` | A declared module directory is `.`, is not a portable relative path, is duplicated, is not a real link-free directory in the snapshot, or has no `go.mod` directly inside it |
+| `build_module_root_containment_invalid` | `unsupported` | `error` | A declared module directory equals, contains, or is contained by another declared module directory, a declared build root, or a runtime root, under exact or platform-path comparison |
+| `build_module_root_directive_form_unsupported` | `unsupported` | `error` | An effective replacement carries a version on either side, is a module-to-module redirect, or has an unreadable or unreconciled annotation shape |
+| `build_module_root_directive_undeclared` | `unsupported` | `error` | An effective replacement names a directory the command does not declare |
+| `build_module_root_declaration_unused` | `unsupported` | `error` | A declared module directory is named by no effective replacement |
 
 The fixed build forces the native gc compiler, disabled PGO and cgo, and
 internal linking with no libgcc. If internal linking cannot produce the output,

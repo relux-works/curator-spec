@@ -47,6 +47,7 @@ PORTABLE_EXECUTION_POLICY = "manager-worker-v1"
 RESERVED_HARDENED_EXECUTION_POLICY = "hardened-worker-v1"
 SCRIPT_EXECUTION_POLICY = "script-worker-v1"
 SCRIPT_EXECUTION_FIELDS = ("execution_policy", "interpreter")
+MODULE_ROOT_FIELDS = ("modules",)
 HARDENED_EXECUTION_OWNER = "STORY-260728-327soo"
 # The exhaustive rc.5 per-platform native-control inventory and the closed
 # per-operation capability-evidence record that reports it.
@@ -557,11 +558,11 @@ def validate_effective_source(
 def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
     if not isinstance(instance, dict):
         return None
-    pre_script_worker_manifest = re.fullmatch(
+    pre_schema8_manifest = re.fullmatch(
         r"(?:agent-skill|csk-skill)-v([1-7])\.schema\.json", schema_name
     )
-    if pre_script_worker_manifest is not None:
-        for field in SCRIPT_EXECUTION_FIELDS:
+    if pre_schema8_manifest is not None:
+        for field in SCRIPT_EXECUTION_FIELDS + MODULE_ROOT_FIELDS:
             if field in instance:
                 return f"{field} is legal only in manifest schema 8"
         commands = instance.get("commands", {})
@@ -569,7 +570,7 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
             for command in commands.values():
                 if not isinstance(command, dict):
                     continue
-                for field in SCRIPT_EXECUTION_FIELDS:
+                for field in SCRIPT_EXECUTION_FIELDS + MODULE_ROOT_FIELDS:
                     if field in command:
                         return f"command {field} is legal only in manifest schema 8"
     legacy_manifest = re.fullmatch(r"(?:agent-skill|csk-skill)-v([1-6])\.schema\.json", schema_name)

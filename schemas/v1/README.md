@@ -24,7 +24,8 @@ Manifest schema selection is exact: the integer `schema_version` selects the
 same-numbered schema. Schemas 1 through 6 do not acquire schema-7
 `build_repositories` or `go-repository-v1` meaning. Schema 7 adds those fields
 without changing the earlier schemas or their generated fixtures. Schemas 1
-through 7 do not acquire schema-8 `execution_policy` or `interpreter` meaning.
+through 7 do not acquire schema-8 `execution_policy`, `interpreter`, or
+`modules` meaning.
 
 ## Manifest schema 8: the `script-worker-v1` opt-in
 
@@ -99,6 +100,47 @@ difference, so every marker-v3 build-record rule — explicit receipt schema
 version, explicit `execution_policy`, `build_source` present exactly when a
 local `go-v1` build is active — applies unchanged. Markers v1, v2, and v3 keep
 their frozen shapes and their existing manifest-version bands.
+
+## Manifest schema 8: declared first-party module roots
+
+Schema 8 also admits the declared module roots of decision 0009. A local
+`go-v1` build command is `$defs.buildCommandV8`: the schema-6
+`$defs.buildCommandV6` plus exactly one OPTIONAL field, `modules`, bound to
+`$defs.pathSet` — a unique array of `$defs.portablePath`. `$defs.commandV8`
+selects `buildCommandV8` in place of `buildCommandV6`. `buildCommandV6` itself
+is untouched, so `$defs.commandV6` and `$defs.commandV7` keep their frozen
+bytes and neither schema 6 nor schema 7 acquires the field.
+
+`$defs.portablePath` already rejects `.`, `..`, absolute paths, backslashes,
+colons, control characters, trailing spaces and dots, and the reserved Windows
+device names, and `$defs.pathSet` already rejects duplicates, so the structural
+half of Protocol Core section 4.2.3's containment rule is enforced here.
+
+An absent `modules` list is the default and the only spelling of a
+single-module build root; an empty array is admitted and means the same thing.
+The field is per command, so a reader determines a command's declared module
+set from the command object alone.
+
+### Rejection paths
+
+- `modules` on a script, system, or `go-repository-v1` command: rejected by
+  that command's closed surface. Module roots are a local `go-v1` concern only.
+- `modules` at the top level, or on any command, in manifest schemas 1 through
+  7: rejected. Schemas 2 through 7 reject it as an unknown field; schema 1
+  keeps its deployed top-level extension behavior, so its rejection comes from
+  `tools/validate.py`, exactly as the schema-7 repository fields and the
+  schema-8 script execution fields are handled.
+- A non-portable, absolute, `.`, `..`-bearing, or duplicated entry: rejected by
+  `pathSet` and `portablePath`.
+- `modules` as a string, object, or null rather than an array: rejected by
+  `pathSet`.
+
+Everything else that section 4.2.3 requires — the bijection against the
+effective replace set, the rejection of module-to-module redirects and
+versioned replacement targets, disjointness from build and runtime roots,
+`go.mod` presence, link-freeness, and platform-path collisions — needs
+filesystem and build-graph context that Draft 2020-12 cannot express. Those are
+conformance-vector rules, not structural ones.
 
 ### Schema-version numbering
 

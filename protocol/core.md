@@ -155,9 +155,9 @@ current installation.
 
 `agent-skill.json` is OPTIONAL for a pure context skill and otherwise conforms
 to exactly one of `agent-skill-v1.schema.json` through
-`agent-skill-v7.schema.json`. The legacy filename `csk-skill.json` has exactly
+`agent-skill-v8.schema.json`. The legacy filename `csk-skill.json` has exactly
 the same object shape and schema-version semantics through
-`csk-skill-v7.schema.json`.
+`csk-skill-v8.schema.json`.
 
 Readers resolve manifests in this order:
 
@@ -180,13 +180,15 @@ Readers resolve manifests in this order:
 | 5 | MCP server requirements |
 | 6 | declarative compiled commands and context-excluded `build_roots` |
 | 7 | first-class external build repositories and `go-repository-v1` |
+| 8 | opt-in `script-worker-v1` script execution policy and declared first-party module roots |
 
 Version gates are downward: a field introduced by a later version MUST be
 rejected in an earlier one. Schema 1 preserves its deployed extension behavior;
-schemas 2 through 7 reject unknown fields. Schema 1 through 5 MUST reject
+schemas 2 through 8 reject unknown fields. Schema 1 through 5 MUST reject
 `build_roots`, a command with `type: "build"`, and every build-only field.
 Schema 1 through 6 MUST reject `build_repositories`, `repository`, `target`,
-and `go-repository-v1`. Their script, system, runtime-root, capability,
+and `go-repository-v1`. Schema 1 through 7 MUST reject `modules` at the top
+level and on every command. Their script, system, runtime-root, capability,
 dependency, context, hash, `go-v1`, receipt-v1, and marker-v1/v2 behavior is
 unchanged.
 
@@ -218,8 +220,11 @@ A build command has exactly this package-controlled surface:
 {"type":"build","driver":"go-v1","source_dir":"build/cmd/tool"}
 ```
 
-The object MUST contain exactly `type`, `driver`, and `source_dir`; the driver
-MUST be the closed identifier `go-v1`. `source_dir` MUST be a real, link-free
+In manifest schemas 6 and 7 the object MUST contain exactly `type`, `driver`,
+and `source_dir`. Manifest schema 8 adds exactly one OPTIONAL field, `modules`,
+defined in section 4.2.3; an absent or empty list carries the schema-6 meaning
+of this paragraph unchanged. The driver MUST be the closed identifier `go-v1`
+in every schema. `source_dir` MUST be a real, link-free
 directory below exactly one declared build root and MAY equal that root, but
 MUST NOT be `.`. The containing build root is the command's `build_root`; it
 MUST contain `go.mod` directly, and that file MUST be the nearest ancestor
@@ -239,7 +244,11 @@ order.
 `go-v1` builds exactly one native executable from exactly one package named
 `main`. The toolchain MUST be Go 1.23 or newer, operator-trusted rather than
 package-selected, and from a release family tested by the manager against the
-`go-v1` conformance vectors. The module is the declared build root, dependency
+`go-v1` conformance vectors. The main module is the declared build root, and
+section 4.2.3 changes neither that nor any rule of this section: it admits
+first-party modules of the same package as a declared, manager-validated
+surface, and every one of them still reaches the compiler only through the
+vendor tree below the build root. Dependency
 resolution is vendor-only and networkless, and workspaces, toolchain switching,
 cross-compilation, PGO, cgo, package-controlled assembly, host objects,
 generators, tests, plugins, overlays, external linking, and libgcc fallback are
@@ -301,7 +310,9 @@ have empty `CgoFiles`, `CFiles`, `CXXFiles`, `MFiles`, `HFiles`, `FFiles`,
 `SFiles`, `SwigFiles`, and `SwigCXXFiles`. Every active non-standard `GoFiles`
 file MUST be a regular file below the build root and MUST NOT contain the exact
 ASCII bytes
-`//go:cgo_import_dynamic`. Any failure occurs before `go build`.
+`//go:cgo_import_dynamic`. Section 4.2.3 extends the emptiness rules of this
+paragraph and that exact-bytes scan to the active inputs of every declared
+module directory. Any failure occurs before `go build`.
 
 Below the worker, the manager and the worker MUST start no program other than
 the fingerprinted `go` executable, which in turn runs fingerprinted regular
@@ -547,6 +558,124 @@ vendor-only dependency checks, compiler directive and native-input rejection,
 internal-link policy, staging rules, resource controls, and
 no-artifact-execution rule. It MUST NOT reinterpret or widen any of those rules. Its external acquisition, audit subject, receipt
 schema, and marker state are distinct as defined in sections 6, 9, and 10.
+
+#### 4.2.3 Schema-8 first-party module roots
+
+Manifest schema 8 adds exactly one OPTIONAL field to the local `go-v1` build
+command, `modules`: a unique list of portable relative directory paths naming
+first-party Go modules of the same package that the command's build root
+replaces. An absent or empty list is the default and keeps the exact schema-6
+and schema-7 meaning of a single-module build root. Schemas 1 through 7 MUST
+reject the field.
+
+The field is declared per command. Commands sharing a build root read one
+`go.mod` and are therefore forced by the bijection below into equal lists, so
+the per-command spelling is ergonomic and carries no meaning a per-build-root
+spelling would not.
+
+The package states a claim and the manager checks it. The manager MUST NOT
+read any replacement as an instruction, MUST NOT discover modules, targets, or
+directories, and MUST NOT let package data select which directories it trusts.
+Section 4.2's rule that a package selects no build input is unchanged: a
+declared module directory is admitted only because the manager validated it
+against the snapshot, never because a `go.mod` named it.
+
+**Effective replace set.** For an active build command whose build root is `R`,
+the effective replace set is every replacement directive materialized in
+`R/vendor/modules.txt`, and that file is the only surface a manager reads to
+determine it. It is a regular file below the build root and already an input to
+`curator-build-source-v1` (section 8.1); the fixed `go list -mod=vendor`
+invocation of section 4.2 reconciles it against `R/go.mod` and fails before
+`go build` when the two disagree, so no replacement in `R/go.mod` can be absent
+from it and none can hide from validation by going unused. The manager MUST NOT
+parse `R/go.mod`, and MUST NOT treat `Module.Replace` in the `go list` stream
+as the source of the set: those paths are derived lexically from `go.mod` text,
+Go does not stat them, and under `-mod=vendor` the stream reports them
+unchanged when the directory they name does not exist.
+
+Within `R/vendor/modules.txt` only a line whose first two bytes are exactly
+`# ` and which contains the exact ASCII bytes ` => ` is a replacement
+annotation. The manager splits the line at its first such occurrence and
+whitespace-tokenizes both sides after removing the `# ` prefix. Each side MUST
+contain one or two tokens. The first token on each side is a module path or,
+on the right, a directory path; a second token is a version.
+
+Go writes a replacement annotation with one left-hand token for every
+unversioned-left directive, including an unused directive. When that directive
+selects a required module, Go also writes a selection annotation with the same
+left module path and right replacement but with the selected version as the
+second left-hand token. The one-token annotation is the effective directive;
+the matching two-token annotation is only selection metadata and MUST NOT add
+a second directive. A two-token-left annotation with no exactly matching
+one-token-left annotation is a versioned-left directive and MUST be rejected.
+This reconciliation is what enforces the rule that no version may appear on
+the directive's left side without parsing `R/go.mod`.
+
+**Admitted directive form.** Only directory form is admitted. Each effective
+directive MUST have exactly one token on each side. A two-token right side is a
+module-to-module redirect and MUST be rejected: it is a versioned dependency
+decision, and versioned resolution stays vendor-only. The single right-hand
+token MUST be a relative path that resolves, against `R`, to a declared module
+directory of that command. Any other annotation shape MUST be rejected.
+
+**Bijection.** For each active build command, its declared module directories
+and its effective replacement directives MUST stand in one-to-one
+correspondence. Every directive MUST resolve to a distinct declaration and
+every declaration MUST be named by exactly one directive. A replacement naming
+no declared directory MUST be rejected as undeclared; a declared directory
+named by no replacement MUST be rejected as unused. This is the entire use a
+manager makes of the replace records: they are checked against the declaration,
+never obeyed. A command with an absent or empty `modules` list therefore MUST
+have an empty effective replace set, which is the schema-6 and schema-7 rule
+unchanged.
+
+**Containment.** Each declared module directory MUST be a portable relative
+path other than `.`, MUST name a real, link-free directory strictly inside the
+immutable raw skill snapshot, and MUST contain `go.mod` directly. Declared
+directories MUST be unique and pairwise disjoint, and MUST NOT equal, contain,
+or be contained by any declared build root or any runtime root. Link-freeness
+and platform path collisions already follow from snapshot validation in section
+8.1; both are restated here because they are load-bearing. Beyond the
+snapshot-wide rule, the disjointness comparisons of this paragraph MUST also
+hold under the platform path mapping of section 2, so that two declared
+directories, or a declared directory and a build or runtime root, that differ
+only by case or by another platform folding are rejected even when only one of
+them exists in the snapshot. The manager MUST validate every declared directory
+against the snapshot itself and MUST NOT accept `Module.Replace.Dir` or
+`Module.Replace.GoMod` as evidence that any path exists.
+
+**Scan surface.** Declared module directories join the directive, cgo, and
+assembly scan surface of section 4.2. The `SysoFiles` rule, the
+cgo/C/C++/Objective-C/Fortran/SWIG and `SFiles` emptiness rules, and the
+exact-bytes `//go:cgo_import_dynamic` scan apply to their active inputs exactly
+as to the main module, both in the declared directory and in the vendor copy.
+Any allowance a profile grants to audited third-party vendored code MUST NOT
+extend to a module carrying a replacement.
+
+**Vendor copy.** Under `-mod=vendor` the compiled bytes come from
+`R/vendor`, not from the declared directory, and the two copies may differ
+within one snapshot. The manager MUST NOT reconcile them and MUST NOT treat a
+divergence as an error: the vendor copy is authoritative for the build, both
+copies are regular files inside the validated snapshot, and both are already
+bound by `curator-build-source-v1`. A declared module directory MAY itself
+contain a `vendor/` tree; that tree takes no part in resolution under
+`-mod=vendor` at `R`, and the manager MUST NOT read it as a dependency source.
+
+**External dependencies and identity.** Module roots add no network, no proxy,
+no module cache, and no workspace. Every result whose module carries no
+replacement remains vendor-only and versioned, resolved strictly below
+`R/vendor`, and `GOPROXY=off`, `GOWORK=off`, `GOFLAGS=` (empty), and
+`CGO_ENABLED=0` are unaffected. Section 8.1 is unchanged: it already binds the
+fully validated snapshot as a whole, so a declared module directory is already
+an input to build-source identity and an edit below one already changes the
+cache key. No algorithm, domain separator, framing, receipt identity, install
+marker, or artifact-relative path changes.
+
+**Failure boundary.** Declaration and containment validation MUST complete
+before the fixed `go list`. Form and bijection validation MUST complete after
+`go list` returns and before `go build`. Every failure of this section rejects
+the operation before `go build`, leaving the installation, consumers, and
+caches unchanged.
 
 ### 4.3 Capabilities
 
@@ -926,6 +1055,11 @@ not inputs. Implementations MUST NOT substitute the marker-excluding content
 hash with an empty exclusion list: `curator-build-source-v1` is domain-separated
 and length-framed. The validated snapshot instance MUST remain byte-for-byte
 unchanged until the last build child exits.
+
+This section is unchanged by section 4.2.3. A declared first-party module
+directory is inside the snapshot, so its files and the vendor copies made from
+them are already covered here; there is no separate module-root identity and no
+additional input.
 
 ### 8.2 Go toolchain identity
 

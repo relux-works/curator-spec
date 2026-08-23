@@ -92,6 +92,20 @@ class WireSemanticValidationTests(unittest.TestCase):
                     )
                     self.assertIn("only in manifest schema 8", error)
 
+    def test_pre_schema8_manifests_reject_module_roots_surface(self) -> None:
+        reserved_instances = [
+            {"modules": ["pkg/lib"]},
+            {"commands": {"tool": {"modules": ["pkg/lib"]}}},
+        ]
+        for prefix in ("agent-skill", "csk-skill"):
+            for version in range(1, 8):
+                for reserved in reserved_instances:
+                    instance = {"schema_version": version, **copy.deepcopy(reserved)}
+                    error = validate.validate_wire_semantics(
+                        f"{prefix}-v{version}.schema.json", instance
+                    )
+                    self.assertIn("only in manifest schema 8", error)
+
     def test_schema8_admits_enforced_scripts_and_keeps_schema7_rules(self) -> None:
         enforced = {
             "schema_version": 8,
@@ -104,7 +118,14 @@ class WireSemanticValidationTests(unittest.TestCase):
                     "interpreter": "python3-v1",
                 },
                 "declared-tool": {"type": "script", "unix_path": "scripts/declared"},
+                "build-tool": {
+                    "type": "build",
+                    "driver": "go-v1",
+                    "source_dir": "build/cmd/tool",
+                    "modules": ["pkg/board", "pkg/remoteconfig"],
+                },
             },
+            "build_roots": ["build"],
         }
         for prefix in ("agent-skill", "csk-skill"):
             self.assertIsNone(
