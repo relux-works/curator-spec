@@ -45,7 +45,10 @@ An OPTIONAL system configuration conforms to `system-config-v1.schema.json`
 and is merged before parsing the effective user configuration:
 
 1. `locked` contains only `audit_registries`,
-   `disable_builtin_registries`, `allowed_sources`, and `audit`;
+   `disable_builtin_registries`, `allowed_sources`, and `audit`. Operator
+   credential selections — the `build_ssh` scopes among them — are never
+   lockable: section 12.2 makes credential material operator-owned, and a
+   system file MUST NOT select or constrain it;
 2. a locked key MUST be set by the system file and overrides a user value with
    a warning naming the system file;
 3. an unlocked system key is a default and a user value wins;
