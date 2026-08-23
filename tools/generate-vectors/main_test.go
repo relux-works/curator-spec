@@ -508,6 +508,67 @@ func TestGeneratedSchemaV8CasesCoverModuleRootStructure(t *testing.T) {
 	}
 }
 
+func TestGeneratedModuleRootConformanceVectors(t *testing.T) {
+	root := repositoryRoot(t)
+	vector := readObject(t, filepath.Join(
+		root, "conformance", "v1", "vectors", "module-roots.json"))
+	if vector["schema_version"] != json.Number("1") || vector["protocol_version"] != protocolVersion {
+		t.Fatalf("module-root vector identity = %#v", vector)
+	}
+	if got, want := vector["evaluation_order"], []any{
+		"declaration-and-containment-before-go-list",
+		"go-list-vendor-consistency",
+		"directive-form-and-bijection-before-go-build",
+	}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("module-root evaluation order = %#v, want %#v", got, want)
+	}
+
+	want := map[string]struct {
+		error       any
+		failsBefore any
+	}{
+		"valid-declared-module-roots":                  {nil, nil},
+		"replacement-target-escapes-snapshot":          {"build_module_root_directive_undeclared", "go-build"},
+		"module-to-module-redirect":                    {"build_module_root_directive_form_unsupported", "go-build"},
+		"undeclared-directory-replacement":             {"build_module_root_directive_undeclared", "go-build"},
+		"declared-module-without-replacement":          {"build_module_root_declaration_unused", "go-build"},
+		"nested-declared-module-roots":                 {"build_module_root_containment_invalid", "go-list"},
+		"module-root-contained-by-build-root":          {"build_module_root_containment_invalid", "go-list"},
+		"module-root-contained-by-runtime-root":        {"build_module_root_containment_invalid", "go-list"},
+		"versioned-left-directory-replacement":         {"build_module_root_directive_form_unsupported", "go-build"},
+		"windows-case-colliding-declared-module-roots": {"build_module_root_containment_invalid", "go-list"},
+	}
+	cases := namedObjects(t, vector["cases"])
+	if len(cases) != len(want) {
+		t.Fatalf("module-root cases = %d, want %d: %#v", len(cases), len(want), cases)
+	}
+	for name, expected := range want {
+		item, ok := cases[name]
+		if !ok {
+			t.Fatalf("module-root vectors missing %q", name)
+		}
+		if item["expected_error"] != expected.error || item["fails_before"] != expected.failsBefore {
+			t.Fatalf("module-root case %s outcome = %#v", name, item)
+		}
+		accepted := expected.error == nil
+		if item["build_permitted"] != accepted || item["persistent_state_changed"] != false {
+			t.Fatalf("module-root case %s has an unsafe boundary: %#v", name, item)
+		}
+		if !accepted && item["go_build_started"] != false {
+			t.Fatalf("module-root rejection %s starts go build: %#v", name, item)
+		}
+	}
+
+	positive := cases["valid-declared-module-roots"]
+	declaration := positive["declaration"].(map[string]any)
+	if got, want := declaration["modules"], []any{"pkg/board", "pkg/remoteconfig"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("positive module-root declaration = %#v, want %#v", got, want)
+	}
+	if got := positive["vendor_module_annotations"].([]any); len(got) != 4 {
+		t.Fatalf("positive module-root annotations = %#v, want directive and selection pairs", got)
+	}
+}
+
 func TestGeneratedSchemaV7CasesCoverEveryWireBranch(t *testing.T) {
 	root := repositoryRoot(t)
 	var index []map[string]any

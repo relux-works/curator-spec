@@ -2717,6 +2717,10 @@
       "sha256": "sha256:25f573a40652dfaf6bb52818b2209c2f8c1e6aec2a7515023e0ac531c2d91289"
     },
     {
+      "path": "vectors/module-roots.json",
+      "sha256": "sha256:b13dcd6177bef7fcb4c96b4dc29a8435883d22624855ddfbfd2de6e760596dac"
+    },
+    {
       "path": "vectors/portable-paths.json",
       "sha256": "sha256:6be790547304efa8fc1bafb3122c6aa40f74f699f4e35d34379246ca90c3249b"
     },
