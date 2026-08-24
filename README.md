@@ -70,6 +70,14 @@ The implementations are evidence that the protocol is independently
 implementable. Conformance is established only by the released schemas and
 shared test vectors, not by copying behavior from either codebase.
 
+A pinned implementation must demonstrably *consume* what this repository
+publishes, not merely pass against it: a family's presence in the conformance
+root was never evidence that anything read it.
+[`.github/ci/implementation-coverage.tsv`](.github/ci/implementation-coverage.tsv)
+names the cases each pin must be observed passing for the schema-8 families,
+and `tools/implementation_coverage.py` enforces that ledger against each run's
+own result stream and against this suite's published manifest.
+
 ## Release status
 
 `1.0.0-rc.9` is a draft candidate. Portable remains the default CLI-only mode.
