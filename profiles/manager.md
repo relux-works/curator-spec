@@ -797,7 +797,16 @@ cannot resolve from `GIT_EXEC_PATH`.
 
 HTTPS verifies TLS, follows no redirect, and receives credentials or a proxy
 only through manager policy and broker state. For HTTPS,
-`GIT_ASKPASS=<manager-broker>` is set. For SSH the environment adds only:
+`GIT_ASKPASS=<manager-broker>` is set.
+
+A manager MAY resolve the secret the broker answers with from an
+operator-owned credential store — the operator's platform secret store, or the
+credential helper their own Git configuration selects — provided the operator
+named the store for that repository through manager configuration, the
+resolution happens outside the fetch process graph, and the answer is pinned to
+one host. A helper, store, or account selected by repository data, a manifest,
+a descriptor, or a substitution remains denied, and a resolved secret MUST NOT
+outlive the fetch that needed it. For SSH the environment adds only:
 
 ```text
 GIT_SSH=<absolute-manager-binary-wrapper>

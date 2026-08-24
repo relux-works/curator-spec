@@ -1276,6 +1276,16 @@ selected by a manifest, descriptor, repository, substitution, compiler
 environment, receipt trust field, or marker. Source credentials MUST NOT enter
 the compiler environment.
 
+The two transports disclose an operator credential differently, and a manager
+MUST account for it. SSH proves possession of a key without disclosing it,
+while HTTPS transmits the secret to the host that answers. An operator
+selection that is not bound to a canonical identity — a single credential
+offered to whatever host a declaration happens to name — therefore hands that
+secret to every host in the closure over HTTPS, including one a hostile
+declaration introduces. A manager offering such an unbound selection MUST let
+the operator bind it to a host and MUST document the exposure; a selection
+bound to a canonical-identity scope already satisfies this.
+
 `go-repository-v1` revision 1 performs no manager post-signing, timestamping,
 or notarization. Signing identities and notarization credentials are operator
 or release-pipeline secrets and MUST NOT appear in a manifest, descriptor,
