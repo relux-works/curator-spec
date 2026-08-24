@@ -28,10 +28,14 @@ are also untrusted parser and hash input until admitted through the protected
 cache boundary below.
 
 The protocol provides integrity, provenance, revocation, rollback detection,
-and deterministic installation. Capability declarations and source auditing
-are review and policy surfaces; they are not runtime sandboxes. A successful
-audit or registry attestation does not make skill-provided code safe to execute
-without the consuming agent's own isolation and authorization controls.
+and deterministic installation. Source auditing is a review and policy surface.
+Capability declarations are a review and policy surface too, except on a script
+command that declares `execution_policy: "script-worker-v1"`, where the same
+declaration is additionally the input to the manager-mechanism containment
+profile of `Enforced script execution boundary` below. Neither form is a kernel
+sandbox. A successful audit or registry attestation does not make skill-provided
+code safe to execute without the consuming agent's own isolation and
+authorization controls.
 
 ## Compile-only build boundary
 
@@ -321,6 +325,169 @@ generators, annotation processors, build tasks, recipes, response files,
 linkers, and produced-program execution. A manager MUST NOT enable a future
 language by widening `go-v1` or `go-repository-v1`, accepting an unknown
 driver, or adding a generic fallback.
+
+## Enforced script execution boundary
+
+Script commands have no compile-only boundary. A declared-only script command's
+file content is audited, but its execution is a bare launcher `exec`: nothing
+prevents a script whose manifest declares `network: "none"` from fetching and
+running new code, and the reader of an audit record cannot tell. Manifest
+schema 8 closes that gap for the commands that opt in. A script command that
+declares `execution_policy: "script-worker-v1"` runs under the portable script
+execution policy of `protocol/core.md` section 4.1.1, which turns the section
+4.3 capability declaration of that document into a manager-mechanism
+containment profile applied before the interpreter starts.
+
+Opt-in is explicit and per command. Schema 7 and earlier script commands, and
+schema 8 script commands that omit the field, keep their existing behavior
+exactly: declared-only, launcher `exec`, no enforcement and no enforcement
+claim. Audit labels every one of them `script-command-declared-only` rather than
+silently changing what they do. The single admissible value of the field
+can only narrow what a command may do, so a package can opt in to containment
+and can never opt out of a manager-owned control, select a control, or widen a
+profile.
+
+The process graph is fixed:
+
+```text
+manager parent
+  -> identity-verified manager-owned script worker
+       -> identity-verified interpreter for the declared identifier
+            -> manager-resolved executables named by the `exec` capability
+```
+
+Under `exec: "none"` the graph is exactly the first three nodes. The worker is
+the decision-0006 boundary reused: a hidden re-execution of the installed
+manager, selected by no package input and by no shell. The interpreter is named
+by a closed identifier in the manifest and resolved by the manager to an
+operator-trusted executable; the package supplies neither its path nor its
+bytes. The shebang line and the Windows file association are inert and MUST NOT
+select the executed program, because both are package-controlled content and
+neither exists portably.
+
+### Script trusted computing base
+
+The trusted computing base of this boundary is the installed manager parent and
+worker bytes; the worker framing, authentication, and session state machine;
+the capability probe and control adapters; the operating-system primitives those
+adapters use; the resolved interpreter executable; interpreter resolution,
+environment construction, and `PATH` construction; the operation-private roots;
+and the capability-evidence and audit-record canonicalization code.
+
+The interpreter's standard library, `site-packages`, `node_modules`, and every
+other installed package tree it loads are inside that trusted base and are not
+verified. The manager verifies the interpreter executable file's identity per
+invocation; it does not fingerprint the interpreter installation, because that
+tree is user-writable, is mutated by unrelated package installations, and
+legitimately differs between two invocations of the same skill. This is the
+same rule `protocol/core.md` already states for any implementation whose worker
+graph contains an interpreter and an installed package tree, and it applies to
+a manager that is itself distributed as an interpreted package.
+
+The added threats are worker identity substitution and replacement races,
+interpreter substitution between resolution and launch, session framing and
+replay attacks, and dishonest capability evidence. The contract answers them
+with pre-launch identity verification of both the worker and the interpreter
+file, an in-session identity proof bound to a fresh nonce, identity re-checks at
+the launch boundary, a closed per-invocation evidence record, and full
+worker-domain teardown before the invocation returns.
+
+### Enforced script mechanisms and deferred guarantees
+
+The enforced script policy is honest about its limits in exactly the way the
+portable build policy is. Every rule it enforces is a manager mechanism, and
+each one stops short of a kernel-enforced guarantee that this release does not
+provide and MUST NOT claim:
+
+| Portable mechanism | Deferred guarantee it is not |
+|---|---|
+| offline environment configuration plus proxy and resolver scrubbing when the derived network capability is `none` | `script-total-network-denial` |
+| declared `network` host globs recorded and reported, with no portable filtering applied | `script-network-host-allowlisting` |
+| manager-built `PATH` over the resolved interpreter and the resolved declared `exec` names, with the inherited `PATH` discarded | `script-exact-executable-allowlisting` |
+| operation-private temporary, configuration, and cache roots plus a manager-selected working directory | `script-private-runtime-area-only-writes` |
+| per-invocation identity verification of the worker and of the resolved interpreter file, with the interpreter's library and installed package trees declared trusted | `script-read-only-runtime-tree` |
+| explicit standard-stream binding, descriptor and handle release, worker-domain teardown, and every inventory control the probe found available | `script-hard-aggregate-descendant-resource-bounds` |
+| mandatory-control preflight at install or update and again before every enforced invocation | `script-fail-closed-capability-preflight` |
+
+Those seven guarantees are reserved for a separately named script execution
+policy backed by a verified provider, not for this portable one, and MUST NOT
+be claimed by an enforced invocation. Their absence never rejects an
+invocation; falsely recording them does. None of the seven names aliases a
+guarantee deferred by the build policy, a build inventory control, or a script
+inventory control, and the build policy's six deferred guarantees may not
+appear on a script surface either.
+
+Per-host network filtering is deferred, not partial. Everything available
+unprivileged on the supported platforms — proxy variables, `NO_PROXY`, resolver
+configuration, interpreter proxy settings — is honored only by cooperating
+libraries and is ignored by a raw socket or an IP literal, and no supported host
+offers host-granular filtering as a kernel control. Declared host globs are
+therefore reporting-only: they configure nothing, they never appear as an
+inventory entry or an applied control, and an enforced command that declares
+them is admitted under the `script-command-unfiltered-declared-network` audit
+warning class rather than rejected, so it still receives the `exec`,
+`filesystem`, and environment controls it can have.
+
+Platform reach is deliberately uneven and stated rather than smoothed over.
+The mandatory portable set is environment-, process-, and path-level and applies
+in full on macOS, Linux, and Windows. Kernel confinement is not part of it. On
+macOS and Windows this release applies no kernel confinement primitive to an
+enforced invocation at all: `exec` and `filesystem` narrowing there are `PATH`,
+environment, private-root, and working-directory mechanisms, and a descendant
+that resolves an absolute path or writes outside the private roots is not
+stopped by this policy. On Linux, execute-right, write-right, and network-domain
+controls are host-conditional — present on some hosts and absent on others of
+the same platform — so the manager probes them per invocation, applies exactly
+what it found, and records the rest as unavailable. Applying a host-conditional
+control narrows that one invocation; it never upgrades the policy-level
+guarantee, which stays deferred precisely because the mechanism varies between
+hosts. A reader MUST NOT infer from `exec: "none"` or `network: "none"` a
+denial that the host does not provide.
+
+Package-controlled bytes cannot select or modify the worker executable or its
+hidden mode, the interpreter identifier's resolution or path, any argument
+vector the manager builds, environment value, `PATH` entry, working directory,
+private root, applied control, or limit, the worker messages, the capability
+evidence record or its destination, or the audit record.
+
+### Script evidence and failure boundary
+
+Host capability evidence is exactly one closed `script-capability-evidence-v1`
+record per enforced invocation, over the exhaustive
+`script-worker-v1-native-control-inventory-v1` inventory. It is a separate
+record version over a separate inventory version from the build side on purpose:
+a build-motivated revision of either must not silently re-scope what a script
+invocation claims, and a script record must never be admissible as build
+evidence.
+
+Availability is probed once, before the worker launches, and never re-probed
+while the command runs. A cached, inherited, or configured result is not a
+probe, and an install-generation record replayed at invocation time is a cached
+result, so the manager preflights the mandatory set at install or update as an
+additional moment and still probes per invocation.
+
+The record is result-only. It is exposed through dry-run plan and status results
+and through an operator-selected diagnostic destination, and it MUST NOT be
+written to the command's standard output or standard error — those streams
+belong to the caller's pipeline, and evidence on them would be both a corrupted
+command output and a package-visible side channel. It MUST NOT enter a cache
+key, receipt input, marker record, or conformance claim. Retention is bounded,
+machine-local, and operator-configurable by default, because one record per
+invocation kept forever is an unbounded log with a privacy surface.
+
+The failure boundary is exactly one rule: a mandatory portable control that
+cannot be applied rejects with `script_execution_control_unavailable` before the
+worker starts and runs nothing. An unavailable inventory control, a
+host-conditional control the probe did not find, and the absence of any deferred
+script guarantee never reject an invocation, never produce a diagnostic, and
+never prevent the command from running.
+
+Opting in is a breaking change for the skill that does it, and that is the
+intent. An undeclared environment variable is absent and an undeclared
+executable is not on `PATH`, so a declaration written as documentation stops
+being free. Enforcement is never applied implicitly: it is a versioned,
+per-command, audit-visible opt-in, and everything that has not opted in carries
+a label saying so.
 
 ## Registry security state
 

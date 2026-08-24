@@ -58,11 +58,13 @@ The suite contains:
   resolution cases;
 - context-selection and raw-tree hash fixtures;
 - closure graphs including diamond, conflict, cycle, narrowing, and tie order;
-- normalized install marker and adapter ledger objects, published in both
-  marker roles: `expected/marker.json` is byte-frozen marker-v1 legacy-read
-  evidence, and `expected/marker-v2.json` is the marker-v2 writer golden for
-  the same shared golden skill, because a manager writes marker schema 2 for
-  every schema 1 through 6 installation mutation;
+- normalized install marker and adapter ledger objects, published in every
+  marker role the suite exercises: `expected/marker.json` is byte-frozen
+  marker-v1 legacy-read evidence, `expected/marker-v2.json` is the marker-v2
+  writer golden for the same shared golden skill, because a manager writes
+  marker schema 2 for every schema 1 through 6 installation mutation, and
+  `expected/install-marker-v4.json` is the marker-v4 writer golden a manager
+  writes for every schema-8 installation mutation;
 - CCJ-1 exact bytes and rejection cases;
 - valid, forged, wrong-key-id, revoked, and malformed signed records;
 - snapshot rollback, freeze, future-skew, incomplete-field, and equivocation
@@ -84,6 +86,9 @@ The suite contains:
   CCJ-1-derived receipt-v1/v2 and marker-v3 hashes, receipt-v1/v2 and
   marker-v2/v3 mixed planning, rollback, status/repair/GC, shim/PATH, offline,
   and signing boundaries;
+- schema-8 first-party module-root declaration, containment, effective-replace
+  form and bijection cases, including snapshot escapes, nested/build/runtime
+  overlap, and Windows path collisions;
 - the portable `manager-worker-v1` execution contract: the fixed worker process
   graph and session order, the exact mandatory portable controls, the exhaustive
   versioned `rc5-native-control-inventory-v1` per-platform inventory, the closed
@@ -93,7 +98,13 @@ The suite contains:
   mechanism each one is not, worker identity and protocol negatives, closed
   package-influence surfaces, and the distinct portable, reserved-hardened, and
   pre-revision cache identities;
-- the rc.8 assurance contract: closed portable and verified policies, the
+- the `script-worker-v1` opt-in contract: schema-8 and legacy declared-only
+  selection, deny-by-default capability derivation, mandatory-control preflight,
+  the exhaustive three-platform `script-worker-v1-native-control-inventory-v1`
+  inventory (including host-conditional Linux cgroup v2 controls), the closed
+  `script-capability-evidence-v1` record and its negative cases, and audit labels
+  that distinguish enforced commands from legacy declared-only commands;
+- the rc.9 assurance contract: closed portable and verified policies, the
   platform-neutral provider descriptor, exact capability negotiation, typed
   permits, receipts, and checkpoints, cache non-aliasing, fail-closed
   no-downgrade selection, a fully hash-linked positive flow, stable relational
@@ -163,11 +174,13 @@ Windows qualification remains downstream, and Linux is excluded until
 `TASK-260728-1skseh` passes. Claims do not replace release CI evidence or
 artifact attestations.
 
-Claim schema 4 was introduced by rc.7 and is carried by rc.8 with disjoint portable and verified
-assurance branches. Its verified branch requires provider, capability-receipt,
-and execution-receipt identities; portable evidence cannot satisfy it. Rc.8
-emits no claim and qualifies no provider/platform tuple. Platform-neutral suite
-success is not native provider evidence.
+Claim schema 4 was introduced by rc.7 and remains byte-frozen for rc.8 with
+disjoint portable and verified assurance branches. Claim schema 5 carries the
+same closed assurance shape under the rc.9 protocol identity. Its verified
+branch requires provider, capability-receipt, and execution-receipt identities;
+portable evidence cannot satisfy it. Rc.9 emits no claim and qualifies no
+provider/platform tuple. Platform-neutral suite success is not native provider
+evidence.
 
 ## 6. Release gate
 

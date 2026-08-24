@@ -152,3 +152,13 @@ assurance contract or adding an implementation claim. The rc.7 tag and
 candidate version fields, claim-v4 protocol pins, suite manifest identity, and
 release metadata advance to rc.8; verified implementation and platform claim
 sets remain empty.
+
+## Rc.9 schema-8 candidate
+
+Rc.9 introduces manifest schema 8 and install marker schema 4. Schema 8 is the
+single manifest-version bump for this revision: it carries both the
+`script-worker-v1` execution-policy fields and Decision 0009 first-party module
+roots. Module roots therefore do not consume a separate sequential manifest
+version. Schemas 1 through 7 continue to reject the schema-8 fields, and rc.8
+and earlier release metadata remain byte-frozen while rc.9 owns the live suite
+manifest pin.
