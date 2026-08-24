@@ -55,6 +55,26 @@
     "valid": false
   },
   {
+    "instance": "agent-skill-v1/invalid-v8-top-level-execution-policy.json",
+    "schema": "agent-skill-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v1/invalid-v8-top-level-interpreter.json",
+    "schema": "agent-skill-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v1/invalid-v8-command-execution-policy.json",
+    "schema": "agent-skill-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v1/invalid-v8-command-interpreter.json",
+    "schema": "agent-skill-v1.schema.json",
+    "valid": false
+  },
+  {
     "instance": "agent-skill-v2/valid.json",
     "schema": "agent-skill-v2.schema.json",
     "valid": true
@@ -96,6 +116,26 @@
   },
   {
     "instance": "agent-skill-v2/invalid-v7-command-driver.json",
+    "schema": "agent-skill-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v2/invalid-v8-top-level-execution-policy.json",
+    "schema": "agent-skill-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v2/invalid-v8-top-level-interpreter.json",
+    "schema": "agent-skill-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v2/invalid-v8-command-execution-policy.json",
+    "schema": "agent-skill-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v2/invalid-v8-command-interpreter.json",
     "schema": "agent-skill-v2.schema.json",
     "valid": false
   },
@@ -145,6 +185,26 @@
     "valid": false
   },
   {
+    "instance": "agent-skill-v3/invalid-v8-top-level-execution-policy.json",
+    "schema": "agent-skill-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v3/invalid-v8-top-level-interpreter.json",
+    "schema": "agent-skill-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v3/invalid-v8-command-execution-policy.json",
+    "schema": "agent-skill-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v3/invalid-v8-command-interpreter.json",
+    "schema": "agent-skill-v3.schema.json",
+    "valid": false
+  },
+  {
     "instance": "agent-skill-v4/valid.json",
     "schema": "agent-skill-v4.schema.json",
     "valid": true
@@ -190,6 +250,26 @@
     "valid": false
   },
   {
+    "instance": "agent-skill-v4/invalid-v8-top-level-execution-policy.json",
+    "schema": "agent-skill-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v4/invalid-v8-top-level-interpreter.json",
+    "schema": "agent-skill-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v4/invalid-v8-command-execution-policy.json",
+    "schema": "agent-skill-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v4/invalid-v8-command-interpreter.json",
+    "schema": "agent-skill-v4.schema.json",
+    "valid": false
+  },
+  {
     "instance": "agent-skill-v5/valid.json",
     "schema": "agent-skill-v5.schema.json",
     "valid": true
@@ -231,6 +311,26 @@
   },
   {
     "instance": "agent-skill-v5/invalid-v7-command-driver.json",
+    "schema": "agent-skill-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v5/invalid-v8-top-level-execution-policy.json",
+    "schema": "agent-skill-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v5/invalid-v8-top-level-interpreter.json",
+    "schema": "agent-skill-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v5/invalid-v8-command-execution-policy.json",
+    "schema": "agent-skill-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v5/invalid-v8-command-interpreter.json",
     "schema": "agent-skill-v5.schema.json",
     "valid": false
   },
@@ -351,6 +451,26 @@
   },
   {
     "instance": "agent-skill-v6/invalid-v7-command-driver.json",
+    "schema": "agent-skill-v6.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v6/invalid-v8-top-level-execution-policy.json",
+    "schema": "agent-skill-v6.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v6/invalid-v8-top-level-interpreter.json",
+    "schema": "agent-skill-v6.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v6/invalid-v8-command-execution-policy.json",
+    "schema": "agent-skill-v6.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v6/invalid-v8-command-interpreter.json",
     "schema": "agent-skill-v6.schema.json",
     "valid": false
   },
@@ -517,6 +637,356 @@
   {
     "instance": "agent-skill-v7/invalid-command-fallback.json",
     "schema": "agent-skill-v7.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v7/invalid-v8-top-level-execution-policy.json",
+    "schema": "agent-skill-v7.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v7/invalid-v8-top-level-interpreter.json",
+    "schema": "agent-skill-v7.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v7/invalid-v8-command-execution-policy.json",
+    "schema": "agent-skill-v7.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v7/invalid-v8-command-interpreter.json",
+    "schema": "agent-skill-v7.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/valid.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/invalid.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/valid-sha256-lock.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/valid-untagged-lock.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/valid-ssh-source.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/valid-scp-source.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/valid-unicode-https-source.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/valid-tag-255-bytes.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/invalid-unselected-repository.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-missing-repository.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-sha1-width.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-sha256-width.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-https-userinfo.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-explicit-port.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-https-dot-component.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-ssh-dot-component.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-scp-dot-component.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-ssh-metacharacter.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-ssh-non-ascii.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-raw-revision-tag.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-tag-256-bytes.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-tag-300-bytes.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-generic-driver.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-command-argv.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-command-env.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-command-output.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-command-name.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-command-credentials.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-command-signing.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-command-hooks.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-command-plugins.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-command-generator.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-command-fallback.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/valid-script-worker-enforced.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/valid-script-worker-mixed-enforcement.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/valid-script-worker-node-interpreter.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/valid-script-worker-windows-only.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/valid-script-worker-unix-only.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/invalid-script-worker-missing-interpreter.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-script-worker-interpreter-without-policy.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-script-worker-missing-path.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-script-worker-unknown-interpreter.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-script-worker-successor-policy.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-script-worker-hardened-policy.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-script-worker-compiled-policy.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-script-worker-null-policy.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-script-worker-opt-out-policy.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-script-worker-on-system-command.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-script-worker-on-build-command.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-script-worker-top-level-execution-policy.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-script-worker-top-level-interpreter.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/valid-module-roots-declared.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/valid-module-roots-empty.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/valid-module-roots-absent.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-duplicate.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-dot.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-parent.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-absolute.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-backslash.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-windows-device.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-string.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-null.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-on-script-command.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-on-system-command.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-on-repository-command.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-module-roots-top-level.json",
+    "schema": "agent-skill-v8.schema.json",
     "valid": false
   },
   {
@@ -885,6 +1355,16 @@
     "valid": false
   },
   {
+    "instance": "conformance-claim-v5/valid.json",
+    "schema": "conformance-claim-v5.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "conformance-claim-v5/invalid.json",
+    "schema": "conformance-claim-v5.schema.json",
+    "valid": false
+  },
+  {
     "instance": "csk-skill-v1/valid.json",
     "schema": "csk-skill-v1.schema.json",
     "valid": true
@@ -926,6 +1406,26 @@
   },
   {
     "instance": "csk-skill-v1/invalid-v7-command-driver.json",
+    "schema": "csk-skill-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v1/invalid-v8-top-level-execution-policy.json",
+    "schema": "csk-skill-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v1/invalid-v8-top-level-interpreter.json",
+    "schema": "csk-skill-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v1/invalid-v8-command-execution-policy.json",
+    "schema": "csk-skill-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v1/invalid-v8-command-interpreter.json",
     "schema": "csk-skill-v1.schema.json",
     "valid": false
   },
@@ -975,6 +1475,26 @@
     "valid": false
   },
   {
+    "instance": "csk-skill-v2/invalid-v8-top-level-execution-policy.json",
+    "schema": "csk-skill-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v2/invalid-v8-top-level-interpreter.json",
+    "schema": "csk-skill-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v2/invalid-v8-command-execution-policy.json",
+    "schema": "csk-skill-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v2/invalid-v8-command-interpreter.json",
+    "schema": "csk-skill-v2.schema.json",
+    "valid": false
+  },
+  {
     "instance": "csk-skill-v3/valid.json",
     "schema": "csk-skill-v3.schema.json",
     "valid": true
@@ -1016,6 +1536,26 @@
   },
   {
     "instance": "csk-skill-v3/invalid-v7-command-driver.json",
+    "schema": "csk-skill-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v3/invalid-v8-top-level-execution-policy.json",
+    "schema": "csk-skill-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v3/invalid-v8-top-level-interpreter.json",
+    "schema": "csk-skill-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v3/invalid-v8-command-execution-policy.json",
+    "schema": "csk-skill-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v3/invalid-v8-command-interpreter.json",
     "schema": "csk-skill-v3.schema.json",
     "valid": false
   },
@@ -1065,6 +1605,26 @@
     "valid": false
   },
   {
+    "instance": "csk-skill-v4/invalid-v8-top-level-execution-policy.json",
+    "schema": "csk-skill-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v4/invalid-v8-top-level-interpreter.json",
+    "schema": "csk-skill-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v4/invalid-v8-command-execution-policy.json",
+    "schema": "csk-skill-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v4/invalid-v8-command-interpreter.json",
+    "schema": "csk-skill-v4.schema.json",
+    "valid": false
+  },
+  {
     "instance": "csk-skill-v5/valid.json",
     "schema": "csk-skill-v5.schema.json",
     "valid": true
@@ -1106,6 +1666,26 @@
   },
   {
     "instance": "csk-skill-v5/invalid-v7-command-driver.json",
+    "schema": "csk-skill-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v5/invalid-v8-top-level-execution-policy.json",
+    "schema": "csk-skill-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v5/invalid-v8-top-level-interpreter.json",
+    "schema": "csk-skill-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v5/invalid-v8-command-execution-policy.json",
+    "schema": "csk-skill-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v5/invalid-v8-command-interpreter.json",
     "schema": "csk-skill-v5.schema.json",
     "valid": false
   },
@@ -1226,6 +1806,26 @@
   },
   {
     "instance": "csk-skill-v6/invalid-v7-command-driver.json",
+    "schema": "csk-skill-v6.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v6/invalid-v8-top-level-execution-policy.json",
+    "schema": "csk-skill-v6.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v6/invalid-v8-top-level-interpreter.json",
+    "schema": "csk-skill-v6.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v6/invalid-v8-command-execution-policy.json",
+    "schema": "csk-skill-v6.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v6/invalid-v8-command-interpreter.json",
     "schema": "csk-skill-v6.schema.json",
     "valid": false
   },
@@ -1392,6 +1992,356 @@
   {
     "instance": "csk-skill-v7/invalid-command-fallback.json",
     "schema": "csk-skill-v7.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v7/invalid-v8-top-level-execution-policy.json",
+    "schema": "csk-skill-v7.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v7/invalid-v8-top-level-interpreter.json",
+    "schema": "csk-skill-v7.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v7/invalid-v8-command-execution-policy.json",
+    "schema": "csk-skill-v7.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v7/invalid-v8-command-interpreter.json",
+    "schema": "csk-skill-v7.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/valid.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/invalid.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/valid-sha256-lock.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/valid-untagged-lock.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/valid-ssh-source.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/valid-scp-source.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/valid-unicode-https-source.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/valid-tag-255-bytes.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/invalid-unselected-repository.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-missing-repository.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-sha1-width.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-sha256-width.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-https-userinfo.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-explicit-port.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-https-dot-component.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-ssh-dot-component.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-scp-dot-component.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-ssh-metacharacter.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-ssh-non-ascii.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-raw-revision-tag.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-tag-256-bytes.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-tag-300-bytes.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-generic-driver.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-command-argv.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-command-env.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-command-output.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-command-name.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-command-credentials.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-command-signing.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-command-hooks.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-command-plugins.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-command-generator.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-command-fallback.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/valid-script-worker-enforced.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/valid-script-worker-mixed-enforcement.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/valid-script-worker-node-interpreter.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/valid-script-worker-windows-only.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/valid-script-worker-unix-only.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/invalid-script-worker-missing-interpreter.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-script-worker-interpreter-without-policy.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-script-worker-missing-path.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-script-worker-unknown-interpreter.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-script-worker-successor-policy.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-script-worker-hardened-policy.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-script-worker-compiled-policy.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-script-worker-null-policy.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-script-worker-opt-out-policy.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-script-worker-on-system-command.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-script-worker-on-build-command.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-script-worker-top-level-execution-policy.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-script-worker-top-level-interpreter.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/valid-module-roots-declared.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/valid-module-roots-empty.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/valid-module-roots-absent.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-duplicate.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-dot.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-parent.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-absolute.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-backslash.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-windows-device.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-string.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-null.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-on-script-command.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-on-system-command.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-on-repository-command.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-module-roots-top-level.json",
+    "schema": "csk-skill-v8.schema.json",
     "valid": false
   },
   {
@@ -1697,6 +2647,141 @@
   {
     "instance": "install-marker-v3/invalid-package-signing.json",
     "schema": "install-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/valid.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v4/invalid.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/valid-empty-builds.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v4/valid-external-only-substituted.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v4/valid-external-only-unsubstituted.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v4/valid-local-only.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v4/valid-network-substitution-tag.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v4/valid-network-substitution-branch.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v4/valid-network-sha1-revision.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v4/valid-network-sha256-revision.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v4/valid-sha256-external.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v4/valid-untagged-external.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v4/invalid-missing-local-build-source.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/invalid-external-only-build-source.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/invalid-local-receipt-version.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/invalid-external-receipt-version.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/invalid-external-object-width.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/invalid-external-declared-effective-mismatch.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/invalid-marker-local-identity-kind-mismatch.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/invalid-marker-network-identity-kind-mismatch.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/invalid-marker-sha1-effective-revision-width.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/invalid-marker-sha256-effective-revision-width.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/invalid-local-hardened-execution-policy.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/invalid-external-hardened-execution-policy.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/invalid-local-missing-execution-policy.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/invalid-external-missing-execution-policy.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/invalid-package-signing.json",
+    "schema": "install-marker-v4.schema.json",
     "valid": false
   },
   {

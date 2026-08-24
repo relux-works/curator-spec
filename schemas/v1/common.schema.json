@@ -148,6 +148,44 @@
         {"$ref": "#/$defs/repositoryBuildCommandV1"}
       ]
     },
+    "scriptExecutionPolicyV1": {"const": "script-worker-v1"},
+    "scriptInterpreterV1": {"enum": ["node-v1", "python3-v1"]},
+    "scriptCommandV8": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {"const": "script"},
+        "unix_path": {"$ref": "#/$defs/portablePath"},
+        "win_path": {"$ref": "#/$defs/portablePath"},
+        "execution_policy": {"$ref": "#/$defs/scriptExecutionPolicyV1"},
+        "interpreter": {"$ref": "#/$defs/scriptInterpreterV1"}
+      },
+      "anyOf": [{"required": ["unix_path"]}, {"required": ["win_path"]}],
+      "dependentRequired": {
+        "execution_policy": ["interpreter"],
+        "interpreter": ["execution_policy"]
+      },
+      "additionalProperties": false
+    },
+    "buildCommandV8": {
+      "type": "object",
+      "required": ["type", "driver", "source_dir"],
+      "properties": {
+        "type": {"const": "build"},
+        "driver": {"const": "go-v1"},
+        "source_dir": {"$ref": "#/$defs/portablePath"},
+        "modules": {"$ref": "#/$defs/pathSet"}
+      },
+      "additionalProperties": false
+    },
+    "commandV8": {
+      "oneOf": [
+        {"$ref": "#/$defs/scriptCommandV8"},
+        {"$ref": "#/$defs/systemCommand"},
+        {"$ref": "#/$defs/buildCommandV8"},
+        {"$ref": "#/$defs/repositoryBuildCommandV1"}
+      ]
+    },
     "skillBuildTargetV1": {
       "type": "object",
       "required": ["driver", "build_root", "source_dir"],

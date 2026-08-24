@@ -152,3 +152,35 @@ assurance contract or adding an implementation claim. The rc.7 tag and
 candidate version fields, claim-v4 protocol pins, suite manifest identity, and
 release metadata advance to rc.8; verified implementation and platform claim
 sets remain empty.
+
+## Rc.9 schema-8 candidate
+
+Rc.9 introduces manifest schema 8 and install marker schema 4. Schema 8 is the
+single manifest-version bump for this revision: it carries both the
+`script-worker-v1` execution-policy fields and Decision 0009 first-party module
+roots. Module roots therefore do not consume a separate sequential manifest
+version. Schemas 1 through 7 continue to reject the schema-8 fields, and rc.8
+and earlier release metadata remain byte-frozen while rc.9 owns the live suite
+manifest pin.
+
+A schema-8 manifest that declares neither new field is a schema-7 manifest with
+a later version number. `execution_policy` is OPTIONAL and its absence means
+declared-only on every schema, so every existing script command keeps its exact
+schema-7 meaning; the field's value space is closed at `script-worker-v1`, and
+a package chooses only whether a command is enforced, never how. `interpreter`
+is co-required with it: declaring one without the other is an invalid manifest
+rather than a defaulted one, so no existing manifest acquires enforcement by
+omission. `modules` is likewise OPTIONAL, and a command with an absent or empty
+list MUST have an empty effective replace set -- the schema-6 and schema-7 rule
+unchanged -- so an existing local `go-v1` command is unaffected by the addition.
+
+Install marker schema 4 is written for skills installed from a schema-8
+manifest. Marker schemas 1 through 3 keep their exact bytes and their existing
+readers, and a manager reads back an older marker without rewriting it.
+
+Rc.9 supersedes rc.8 as the live suite manifest pin without changing one byte
+of rc.8. `release/1.0.0-rc.8.json` and the `v1.0.0-rc.8` tag stay exactly as
+published; `release/1.0.0-rc.9.json` records rc.8's metadata digest as its
+historical predecessor rather than replacing it. A consumer pinned to rc.8
+therefore keeps its qualification and advances by an explicit pin change, never
+implicitly.

@@ -1,8 +1,8 @@
 # Curator Protocol Specification
 
-**Version:** 1.0.0-rc.8
+**Version:** 1.0.0-rc.9
 
-**Date:** 2026-08-19
+**Date:** 2026-08-23
 
 **Status:** Draft release candidate
 
@@ -70,16 +70,24 @@ The implementations are evidence that the protocol is independently
 implementable. Conformance is established only by the released schemas and
 shared test vectors, not by copying behavior from either codebase.
 
+A pinned implementation must demonstrably *consume* what this repository
+publishes, not merely pass against it: a family's presence in the conformance
+root was never evidence that anything read it.
+[`.github/ci/implementation-coverage.tsv`](.github/ci/implementation-coverage.tsv)
+names the cases each pin must be observed passing for the schema-8 families,
+and `tools/implementation_coverage.py` enforces that ledger against each run's
+own result stream and against this suite's published manifest.
+
 ## Release status
 
-`1.0.0-rc.8` is a draft candidate. Portable remains the default CLI-only mode.
+`1.0.0-rc.9` is a draft candidate. Portable remains the default CLI-only mode.
 Verified mode is explicit, requires the platform-neutral
 `host-execution-provider-v1` contract, and fails before execution rather than
 silently downgrading. Provider binaries are separately installed trusted host
 components and are never skill-vendored artifacts. This candidate specifies
 the common contract for macOS, Linux, and Windows but ships no provider and
 emits no verified platform claim. Exact candidate-suite identity is recorded in
-[`release/1.0.0-rc.8.json`](release/1.0.0-rc.8.json); rc.7 and earlier release
+[`release/1.0.0-rc.9.json`](release/1.0.0-rc.9.json); rc.8 and earlier release
 metadata remain byte-frozen historical evidence. Review evidence is published
 under [`reviews/`](reviews/). See
 [COMPATIBILITY.md](COMPATIBILITY.md),

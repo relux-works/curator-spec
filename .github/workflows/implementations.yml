@@ -31,10 +31,12 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: relux-works/curator
-          # relux-works/curator PR 9 head. Its interop gate reads the lifecycle
-          # vector by case name, so it accepts the rc.6 dry-run case
-          # `compiled-cache-miss-is-read-only` that 17804ce rejected on length.
-          ref: bd6ba08acda3dc801512c408c759ac0ac6f79f26
+          # relux-works/curator main at PR 37, the commit that stopped treating
+          # a family's presence in the conformance root as evidence that
+          # anything read it. It declares the schema-8 artefacts its packages
+          # consume and adds `internal/scriptpolicy`; qualified against this
+          # suite by candidate dispatch 32689488293.
+          ref: a3abcf3468b4854904313295672eef6f7d8826fd
           path: implementations/go
           submodules: true
 
@@ -42,7 +44,11 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: ivanopcode/cocoaskills
-          ref: 6fc2fd97dbdf40f5b0e46f846eaa0d78a1b33d12
+          # ivanopcode/cocoaskills main at PR 43, the mirror of curator PR 37
+          # on the Python side. Its schema-8 consumer is root-derived, so it
+          # decides real behaviour against whatever suite this job publishes;
+          # qualified against this suite by candidate run 32756144649.
+          ref: 3ecca1dba9f8831e1617b7466c17ecc8a2957d3f
           path: implementations/manager
 
       - name: Checkout registry service
@@ -66,15 +72,71 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e "./implementations/manager[dev]" -e "./implementations/registry[dev]"
 
+      # The presence half of the coverage contract. Every artefact
+      # `.github/ci/implementation-coverage.tsv` claims a pinned implementation
+      # reads must still be published by this suite, so a family cannot be
+      # deleted while the ledger keeps claiming it is consumed.
+      - name: Require this suite to publish every declared artefact
+        run: python tools/implementation_coverage.py families --root conformance/v1
+
+      # The stream is captured rather than piped so the gate below reads the
+      # run it is gating, and this step still reports `go test`'s own status.
       - name: Go manager shared suite
+        shell: bash
         working-directory: implementations/go
-        run: go test -count=1 -v ./internal/interop ./internal/closure ./internal/skillspec
+        run: |
+          set +e
+          go test -count=1 -json \
+            ./internal/interop ./internal/closure ./internal/skillspec \
+            ./internal/marker ./internal/moduleroots ./internal/scriptpolicy \
+            > go-test.json
+          status=$?
+          set -e
+          cat go-test.json
+          exit "$status"
 
-      - name: Python manager shared suite
+      # The consumption half. A rename, a deletion, a package dropped from the
+      # invocation above or a skip fails here BY NAME rather than shrinking the
+      # run behind a green `go test`.
+      - name: Gate the declared Go consumption cases
         run: >-
-          python tools/run_pytest_no_skips.py -q
-          implementations/manager/tests/test_protocol_conformance.py
+          python tools/implementation_coverage.py go
+          --stream implementations/go/go-test.json
 
+      # The Python manager's own presence ledger, run against this suite. It
+      # fails when this root serves the schema-8 consumer only partly, so a
+      # half-published surface cannot run quieter instead of failing.
+      - name: Require the Python manager's declared artefacts
+        run: >-
+          python implementations/manager/.github/scripts/candidate_consumption.py
+          require --root conformance/v1
+
+      - name: Python manager schema-8 consumption
+        working-directory: implementations/manager
+        env:
+          CSK_REQUIRE_FULL_CANDIDATE_ROOT: "1"
+        run: >-
+          python -m pytest -q tests/test_schema8_candidate_conformance.py
+          --junitxml=manager-schema8-results.xml
+
+      - name: Gate the declared Python manager consumption cases
+        run: >-
+          python tools/implementation_coverage.py pytest
+          --results implementations/manager/manager-schema8-results.xml
+
+      # NOTE ON THE PYTHON MANAGER'S RELEASED-SUITE MODULE.
+      # `tests/test_protocol_conformance.py` used to run here against this
+      # repository's own root. At this pin it authenticates ONE immutable
+      # suite -- protocol `1.0.0-rc.6`, manifest `sha256:12e58b82...` -- and
+      # refuses every other root by design; it could be pointed at this
+      # repository's moving root only while the previous pin performed no
+      # authentication at all, which is the same false-green the schema-8
+      # coverage contract above exists to remove. That module keeps running
+      # against the suite it names in that implementation's own CI, and it
+      # returns to this job when its released suite pin advances to rc.9 --
+      # the step the landing order schedules after rc.9 is published. Until
+      # then the schema-8 consumption steps above, plus the root-independent
+      # lifecycle selection below, are what this job asserts about that pin.
       - name: Python manager lifecycle behavior
         run: >-
           python -m pytest -q

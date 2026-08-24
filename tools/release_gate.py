@@ -39,7 +39,8 @@ RETIRED_DESCRIPTOR_STEM = "curator" + "-build"
 # The schema-6 build-source digest algorithm namespace shares the retired stem
 # but is a different, byte-frozen identifier.
 BUILD_SOURCE_ALGORITHM_NAMESPACE = RETIRED_DESCRIPTOR_STEM + "-source"
-PROTOCOL_VERSION = "1.0.0-rc.8"
+PROTOCOL_VERSION = "1.0.0-rc.9"
+RC8_PROTOCOL_VERSION = "1.0.0-rc.8"
 RC7_PROTOCOL_VERSION = "1.0.0-rc.7"
 RC6_PROTOCOL_VERSION = "1.0.0-rc.6"
 RC5_PROTOCOL_VERSION = "1.0.0-rc.5"
@@ -55,11 +56,16 @@ RC7_RELEASE_METADATA_SHA256 = (
     "sha256:e5872ee4dd207bf6b190d8c8be15a9366d9c1e3638047ea983620b97c9f84d5d"
 )
 RC7_SOURCE_COMMIT = "99f70947d6f2447366d6c996127b73eca37a9159"
+RC8_RELEASE_METADATA_SHA256 = (
+    "sha256:293f101d10665061aa049efa72141f9e3c5d608bbde300e882f6e3e095e31ede"
+)
+RC8_SOURCE_COMMIT = "f8c405aa3ad0a39d260c2ed93684e55c5a346359"
 CLAIM_PROTOCOL_VERSIONS = {
     1: "1.0.0-rc.3",
     2: "1.0.0-rc.4",
     3: RC5_PROTOCOL_VERSION,
-    4: PROTOCOL_VERSION,
+    4: RC8_PROTOCOL_VERSION,
+    5: PROTOCOL_VERSION,
 }
 CLAIM_HISTORY_FROZEN_SHA256 = {
     "schemas/v1/conformance-claim-v1.schema.json": "c9f49460618ccc8b1d7d2dfaf760fc6ad3a53a870a6685a685ddc148d3c87b3f",
@@ -73,8 +79,11 @@ CLAIM_HISTORY_FROZEN_SHA256 = {
     "conformance/v1/schema-cases/conformance-claim-v2/invalid-unknown-field.json": "d10459fefb4b07aa1ade03a0627fbcfe9cd790c99d5d6374c9de15c5f22dc9a3",
     "conformance/v1/schema-cases/conformance-claim-v2/invalid.json": "79d244335cb2ddfb9c831aa38c31c6ca37c89f0704ad61a19032882b1bec8604",
     "conformance/v1/schema-cases/conformance-claim-v2/valid.json": "f7e7cc86f33ea03ee9bb4d149e1dba29cf34f5ceaf5504df8a9e91c659a1835f",
+    "schemas/v1/conformance-claim-v4.schema.json": "03f04723ef042403a09ba5cf0e3ae6a188e04f13ff87613e71f0b3d74b11074f",
+    "conformance/v1/schema-cases/conformance-claim-v4/valid.json": "40275ce1e08911c363b2a1ebe3fbc6fc8751d294dad8d2d59ec1e5586675f5f3",
+    "conformance/v1/schema-cases/conformance-claim-v4/invalid.json": "cd67f5624cd5c4eb97ad2d8bba151a70e215b407c3af91127f6d1fe7909b0066",
 }
-RC8_REQUIRED_FILES = {
+RC9_REQUIRED_FILES = {
     "decisions/0004-compile-only-build-drivers.md",
     "schemas/v1/agent-skill-v6.schema.json",
     "schemas/v1/csk-skill-v6.schema.json",
@@ -92,6 +101,15 @@ RC8_REQUIRED_FILES = {
     "release/1.0.0-rc.6.json",
     "release/1.0.0-rc.7.json",
     "release/1.0.0-rc.8.json",
+    "release/1.0.0-rc.9.json",
+    "decisions/0008-enforced-script-capabilities.md",
+    "decisions/0009-first-party-module-roots.md",
+    "schemas/v1/agent-skill-v8.schema.json",
+    "schemas/v1/csk-skill-v8.schema.json",
+    "schemas/v1/install-marker-v4.schema.json",
+    "conformance/v1/expected/install-marker-v4.json",
+    "conformance/v1/vectors/script-host-execution-policy.json",
+    "conformance/v1/vectors/module-roots.json",
     "decisions/0007-portable-and-verified-assurance.md",
     "protocol/assurance.md",
     "docs/assurance-modes.md",
@@ -102,15 +120,19 @@ RC8_REQUIRED_FILES = {
     "schemas/v1/execution-receipt-v1.schema.json",
     "schemas/v1/execution-checkpoint-v1.schema.json",
     "schemas/v1/conformance-claim-v4.schema.json",
+    "schemas/v1/conformance-claim-v5.schema.json",
     "conformance/v1/vectors/assurance-modes.json",
 }
-RC8_REQUIRED_MANIFEST_FILES = {
+RC9_REQUIRED_MANIFEST_FILES = {
     "schema-cases/index.json",
     "expected/marker.json",
     "expected/marker-v2.json",
     "vectors/build-drivers.json",
     "vectors/manager-lifecycle.json",
     "vectors/assurance-modes.json",
+    "expected/install-marker-v4.json",
+    "vectors/script-host-execution-policy.json",
+    "vectors/module-roots.json",
 }
 # The published marker-v1 legacy-read evidence. Its bytes are release history,
 # so the writer golden a candidate publishes for the same golden skill is a
@@ -122,7 +144,7 @@ FROZEN_MARKER_V1_SHA256 = (
 # schema-5 golden skill activates no compiled command, so the writer golden
 # restates the legacy marker with exactly these members changed.
 SHARED_FIXTURE_MARKER_V2_DELTA = frozenset({"schema_version", "build_roots", "builds"})
-RC8_REQUIRED_INDEXED_SCHEMAS = {
+RC9_REQUIRED_INDEXED_SCHEMAS = {
     "agent-skill-v6.schema.json",
     "csk-skill-v6.schema.json",
     "build-receipt-v1.schema.json",
@@ -136,6 +158,10 @@ RC8_REQUIRED_INDEXED_SCHEMAS = {
     "execution-receipt-v1.schema.json",
     "execution-checkpoint-v1.schema.json",
     "conformance-claim-v4.schema.json",
+    "conformance-claim-v5.schema.json",
+    "agent-skill-v8.schema.json",
+    "csk-skill-v8.schema.json",
+    "install-marker-v4.schema.json",
 }
 RC6_MANAGER_DRY_RUN_CASES = {"compiled-cache-miss-is-read-only"}
 RC6_MANAGER_LIFECYCLE_CASES = {
@@ -298,7 +324,7 @@ def validate_manifest_inventory() -> None:
     )
     if paths != actual:
         raise ReleaseFailure("conformance manifest inventory is incomplete or stale")
-    missing_required = sorted(RC8_REQUIRED_MANIFEST_FILES - set(paths))
+    missing_required = sorted(RC9_REQUIRED_MANIFEST_FILES - set(paths))
     if missing_required:
         raise ReleaseFailure(
             f"{PROTOCOL_VERSION} manifest omits required files: {missing_required}"
@@ -412,7 +438,7 @@ def validate_protocol_artifacts(version: str) -> None:
     if version != PROTOCOL_VERSION:
         return
 
-    missing = sorted(path for path in RC8_REQUIRED_FILES if not (ROOT / path).is_file())
+    missing = sorted(path for path in RC9_REQUIRED_FILES if not (ROOT / path).is_file())
     if missing:
         raise ReleaseFailure(
             f"{PROTOCOL_VERSION} required artifacts are missing: {missing}"
@@ -423,10 +449,14 @@ def validate_protocol_artifacts(version: str) -> None:
         "csk-skill-v6.schema.json": (6, None),
         "build-receipt-v1.schema.json": (1, None),
         "install-marker-v2.schema.json": (2, None),
+        "install-marker-v4.schema.json": (4, None),
+        "agent-skill-v8.schema.json": (8, None),
+        "csk-skill-v8.schema.json": (8, None),
         "conformance-claim-v1.schema.json": (1, CLAIM_PROTOCOL_VERSIONS[1]),
         "conformance-claim-v2.schema.json": (2, CLAIM_PROTOCOL_VERSIONS[2]),
         "conformance-claim-v3.schema.json": (3, CLAIM_PROTOCOL_VERSIONS[3]),
         "conformance-claim-v4.schema.json": (4, CLAIM_PROTOCOL_VERSIONS[4]),
+        "conformance-claim-v5.schema.json": (5, CLAIM_PROTOCOL_VERSIONS[5]),
         "verified-provider-v1.schema.json": (1, None),
         "provider-capability-receipt-v1.schema.json": (1, None),
         "execution-permit-v1.schema.json": (1, None),
@@ -449,6 +479,9 @@ def validate_protocol_artifacts(version: str) -> None:
     marker = load_json(schemas / "install-marker-v2.schema.json")
     if marker.get("properties", {}).get("skill_schema_version", {}).get("maximum") != 6:
         raise ReleaseFailure("install-marker-v2 does not admit manifest schema 6")
+    marker_v4 = load_json(schemas / "install-marker-v4.schema.json")
+    if marker_v4.get("properties", {}).get("skill_schema_version") != {"const": 8}:
+        raise ReleaseFailure("install-marker-v4 does not admit manifest schema 8")
 
     for relative, expected in CLAIM_HISTORY_FROZEN_SHA256.items():
         actual = sha256_identity(ROOT / relative).removeprefix("sha256:")
@@ -468,7 +501,7 @@ def validate_protocol_artifacts(version: str) -> None:
         for item in index
         if isinstance(item, dict) and isinstance(item.get("schema"), str)
     }
-    missing_schemas = sorted(RC8_REQUIRED_INDEXED_SCHEMAS - indexed)
+    missing_schemas = sorted(RC9_REQUIRED_INDEXED_SCHEMAS - indexed)
     if missing_schemas:
         raise ReleaseFailure(
             f"{PROTOCOL_VERSION} schema-case index is incomplete: {missing_schemas}"
@@ -480,25 +513,28 @@ def validate_protocol_artifacts(version: str) -> None:
     if sha256_identity(ROOT / "release" / "1.0.0-rc.7.json") != RC7_RELEASE_METADATA_SHA256:
         raise ReleaseFailure("historical rc.7 release metadata changed")
 
+    if sha256_identity(ROOT / "release" / "1.0.0-rc.8.json") != RC8_RELEASE_METADATA_SHA256:
+        raise ReleaseFailure("historical rc.8 release metadata changed")
+
     validate_assurance_release_surface()
 
-    release = load_json(ROOT / "release" / "1.0.0-rc.8.json")
+    release = load_json(ROOT / "release" / "1.0.0-rc.9.json")
     history = release.get("historical_release", {})
-    claim = release.get("claim_v4", {})
+    claim = release.get("claim_v5", {})
     assurance = release.get("assurance", {})
     if (
         release.get("protocol_version") != PROTOCOL_VERSION
-        or release.get("source_baseline_commit") != RC7_SOURCE_COMMIT
-        or release.get("legacy_release") != RC7_PROTOCOL_VERSION
+        or release.get("source_baseline_commit") != RC8_SOURCE_COMMIT
+        or release.get("legacy_release") != RC8_PROTOCOL_VERSION
         or not isinstance(history, dict)
-        or history.get("protocol_version") != RC7_PROTOCOL_VERSION
-        or history.get("metadata_path") != "release/1.0.0-rc.7.json"
-        or history.get("metadata_sha256") != RC7_RELEASE_METADATA_SHA256
-        or history.get("source_commit") != RC7_SOURCE_COMMIT
+        or history.get("protocol_version") != RC8_PROTOCOL_VERSION
+        or history.get("metadata_path") != "release/1.0.0-rc.8.json"
+        or history.get("metadata_sha256") != RC8_RELEASE_METADATA_SHA256
+        or history.get("source_commit") != RC8_SOURCE_COMMIT
         or history.get("immutable") is not True
         or not isinstance(claim, dict)
         or claim.get("claim_protocol_version") != PROTOCOL_VERSION
-        or claim.get("schema") != "schemas/v1/conformance-claim-v4.schema.json"
+        or claim.get("schema") != "schemas/v1/conformance-claim-v5.schema.json"
         or claim.get("claims_emitted") != []
         or not isinstance(assurance, dict)
         or assurance.get("default_mode") != "portable"
@@ -508,7 +544,7 @@ def validate_protocol_artifacts(version: str) -> None:
         or assurance.get("skill_vendored_provider_allowed") is not False
     ):
         raise ReleaseFailure(
-            "rc.8 metadata rewrites rc.7 evidence or fabricates a verified claim"
+            "rc.9 metadata rewrites rc.8 evidence or fabricates a verified claim"
         )
 
     validate_manager_lifecycle_release_surface()

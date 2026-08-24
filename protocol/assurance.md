@@ -1,6 +1,6 @@
 # Assurance protocol
 
-This document is normative for protocol 1.0.0-rc.8. It extends, and does not
+This document is normative for protocol 1.0.0-rc.9. It extends, and does not
 reinterpret, the portable execution contract in [`core.md`](core.md).
 
 ## 1. Closed selection

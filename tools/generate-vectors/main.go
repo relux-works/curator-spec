@@ -23,12 +23,13 @@ import (
 )
 
 const (
-	protocolVersion                   = "1.0.0-rc.8"
+	protocolVersion                   = "1.0.0-rc.9"
 	conformanceClaimV1ProtocolVersion = "1.0.0-rc.3"
 	conformanceClaimV2ProtocolVersion = "1.0.0-rc.4"
 	conformanceClaimV3ProtocolVersion = "1.0.0-rc.5"
+	conformanceClaimV4ProtocolVersion = "1.0.0-rc.8"
 	conformanceClaimV2CreatedAt       = "2026-07-20T00:00:00Z"
-	rc8CreatedAt                      = "2026-08-19T00:00:00Z"
+	rc9CreatedAt                      = "2026-08-23T00:00:00Z"
 	fixedCommit                       = "0123456789abcdef0123456789abcdef01234567"
 	fixedTime                         = "2026-07-13T00:00:00Z"
 	genesis                           = "0000000000000000000000000000000000000000000000000000000000000000"
@@ -38,6 +39,8 @@ const (
 	rc6SourceCommit                   = "dce6643c55434464c56f0fe20064db754cd58c61"
 	rc7ReleaseMetadataSHA256          = "sha256:e5872ee4dd207bf6b190d8c8be15a9366d9c1e3638047ea983620b97c9f84d5d"
 	rc7SourceCommit                   = "99f70947d6f2447366d6c996127b73eca37a9159"
+	rc8ReleaseMetadataSHA256          = "sha256:293f101d10665061aa049efa72141f9e3c5d608bbde300e882f6e3e095e31ede"
+	rc8SourceCommit                   = "f8c405aa3ad0a39d260c2ed93684e55c5a346359"
 
 	// portableExecutionPolicy is the only execution-policy identity that
 	// protocol 1.0 defines for go-v1 and go-repository-v1.
@@ -48,17 +51,23 @@ const (
 	// hardenedExecutionOwner names the board story that owns the deferred
 	// fail-closed guarantees.
 	hardenedExecutionOwner = "STORY-260728-327soo"
+	// scriptExecutionPolicy is the only script execution-policy identity that
+	// manifest schema 8 admits. It is a separate identity from the compiled
+	// portable policy and never aliases it.
+	scriptExecutionPolicy = "script-worker-v1"
 	// nativeControlInventoryVersion names the exhaustive rc.5 per-platform
 	// native-control inventory. Adding, removing, or re-scoping an entry
 	// requires a new inventory version.
 	nativeControlInventoryVersion = "rc5-native-control-inventory-v1"
 	// capabilityEvidenceRecordVersion names the closed per-operation reporting
 	// record. It never enters a cache key, receipt, marker, or claim.
-	capabilityEvidenceRecordVersion = "capability-evidence-v1"
-	portableAssurancePolicy         = "portable-cli-policy-v1"
-	verifiedAssurancePolicy         = "verified-provider-policy-v1"
-	verifiedExecutionPolicy         = "verified-provider-execution-v1"
-	verifiedProviderContract        = "host-execution-provider-v1"
+	capabilityEvidenceRecordVersion       = "capability-evidence-v1"
+	scriptNativeControlInventoryVersion   = "script-worker-v1-native-control-inventory-v1"
+	scriptCapabilityEvidenceRecordVersion = "script-capability-evidence-v1"
+	portableAssurancePolicy               = "portable-cli-policy-v1"
+	verifiedAssurancePolicy               = "verified-provider-policy-v1"
+	verifiedExecutionPolicy               = "verified-provider-execution-v1"
+	verifiedProviderContract              = "host-execution-provider-v1"
 	// unavailableNativeControlReason is the only reason an rc.5 inventory
 	// control is unavailable: the platform primitive exists but is not scoped
 	// to a private worker domain.
@@ -123,6 +132,7 @@ func main() {
 	}
 	writeJSON(filepath.Join(expected, "marker.json"), marker)
 	writeJSON(filepath.Join(expected, "marker-v2.json"), sharedFixtureMarkerV2(marker))
+	writeJSON(filepath.Join(expected, "install-marker-v4.json"), validInstallMarkerV4(marker))
 	ledger := map[string]any{"schema_version": 1, "entries": []any{"golden-skill"}}
 	writeJSON(filepath.Join(expected, "adapter-ledger.json"), ledger)
 
@@ -179,13 +189,140 @@ func main() {
 	writeManagerConfigVectors(vectors, pinned)
 	writeManagerLifecycleVectors(vectors)
 	writeBuildDriverVectors(vectors, filepath.Join(suite, "fixtures", "go-build-skill"), filepath.Join(expected, "build-driver"), marker)
+	writeModuleRootVectors(vectors)
 	writeExternalRepositoryFixtures(suite)
 	writeExternalRepositoryVectors(vectors)
 	writeAssuranceVectors(vectors)
 	writeSchemaCases(suite, marker, ledger, audited, snapshot, entries[0], bundle, pinned)
 	writeExternalRepositoryExpected(expected, marker)
 	writeManifest(suite)
-	writeRC8ReleaseMetadata(*root, suite)
+	writeRC9ReleaseMetadata(*root, suite)
+}
+
+// writeModuleRootVectors emits the filesystem and build-graph cases that JSON
+// Schema cannot express for schema-8 first-party module roots.
+func writeModuleRootVectors(dir string) {
+	caseFor := func(
+		name, platform string,
+		modules, buildRoots, runtimeRoots, directories, goModFiles, annotations []string,
+		expectedError, failsBefore any,
+	) map[string]any {
+		buildPermitted := expectedError == nil
+		goListStarted := failsBefore != "go-list"
+		var goListSucceeds any
+		if goListStarted {
+			goListSucceeds = true
+		}
+		return map[string]any{
+			"name":                  name,
+			"platform_path_mapping": platform,
+			"declaration": map[string]any{
+				"build_root": "tools/cli", "modules": stringsToAny(modules),
+				"build_roots": stringsToAny(buildRoots), "runtime_roots": stringsToAny(runtimeRoots),
+			},
+			"snapshot": map[string]any{
+				"directories": stringsToAny(directories), "go_mod_files": stringsToAny(goModFiles),
+				"link_paths": []any{},
+			},
+			"vendor_module_annotations": stringsToAny(annotations),
+			"go_list_started":           goListStarted,
+			"go_list_succeeds":          goListSucceeds,
+			"build_permitted":           buildPermitted,
+			"go_build_started":          buildPermitted,
+			"expected_error":            expectedError,
+			"fails_before":              failsBefore,
+			"persistent_state_changed":  false,
+		}
+	}
+
+	writeJSON(filepath.Join(dir, "module-roots.json"), map[string]any{
+		"schema_version":   1,
+		"protocol_version": protocolVersion,
+		"evaluation_order": []any{
+			"declaration-and-containment-before-go-list",
+			"go-list-vendor-consistency",
+			"directive-form-and-bijection-before-go-build",
+		},
+		"cases": []any{
+			caseFor(
+				"valid-declared-module-roots", "linux",
+				[]string{"pkg/board", "pkg/remoteconfig"}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"pkg/board", "pkg/remoteconfig", "scripts", "tools/cli", "tools/cli/vendor"},
+				[]string{"pkg/board/go.mod", "pkg/remoteconfig/go.mod", "tools/cli/go.mod"},
+				[]string{
+					"# example.com/board => ../../pkg/board",
+					"# example.com/board v0.0.0 => ../../pkg/board",
+					"# example.com/remoteconfig => ../../pkg/remoteconfig",
+					"# example.com/remoteconfig v0.0.0 => ../../pkg/remoteconfig",
+				}, nil, nil,
+			),
+			caseFor(
+				"replacement-target-escapes-snapshot", "linux",
+				[]string{}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"scripts", "tools/cli", "tools/cli/vendor"}, []string{"tools/cli/go.mod"},
+				[]string{"# example.com/escape => ../../../outside"},
+				"build_module_root_directive_undeclared", "go-build",
+			),
+			caseFor(
+				"module-to-module-redirect", "linux",
+				[]string{}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"scripts", "tools/cli", "tools/cli/vendor"}, []string{"tools/cli/go.mod"},
+				[]string{"# example.com/board => example.com/fork v1.2.3"},
+				"build_module_root_directive_form_unsupported", "go-build",
+			),
+			caseFor(
+				"undeclared-directory-replacement", "linux",
+				[]string{}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"pkg/extra", "scripts", "tools/cli", "tools/cli/vendor"},
+				[]string{"pkg/extra/go.mod", "tools/cli/go.mod"},
+				[]string{"# example.com/extra => ../../pkg/extra"},
+				"build_module_root_directive_undeclared", "go-build",
+			),
+			caseFor(
+				"declared-module-without-replacement", "linux",
+				[]string{"pkg/board"}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"pkg/board", "scripts", "tools/cli", "tools/cli/vendor"},
+				[]string{"pkg/board/go.mod", "tools/cli/go.mod"}, []string{},
+				"build_module_root_declaration_unused", "go-build",
+			),
+			caseFor(
+				"nested-declared-module-roots", "linux",
+				[]string{"pkg/board", "pkg/board/codec"}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"pkg/board", "pkg/board/codec", "scripts", "tools/cli", "tools/cli/vendor"},
+				[]string{"pkg/board/go.mod", "pkg/board/codec/go.mod", "tools/cli/go.mod"}, []string{},
+				"build_module_root_containment_invalid", "go-list",
+			),
+			caseFor(
+				"module-root-contained-by-build-root", "linux",
+				[]string{"tools/cli/pkg/lib"}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"scripts", "tools/cli", "tools/cli/pkg/lib", "tools/cli/vendor"},
+				[]string{"tools/cli/go.mod", "tools/cli/pkg/lib/go.mod"}, []string{},
+				"build_module_root_containment_invalid", "go-list",
+			),
+			caseFor(
+				"module-root-contained-by-runtime-root", "linux",
+				[]string{"pkg/board"}, []string{"tools/cli"}, []string{"pkg"},
+				[]string{"pkg", "pkg/board", "tools/cli", "tools/cli/vendor"},
+				[]string{"pkg/board/go.mod", "tools/cli/go.mod"}, []string{},
+				"build_module_root_containment_invalid", "go-list",
+			),
+			caseFor(
+				"versioned-left-directory-replacement", "linux",
+				[]string{"pkg/board"}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"pkg/board", "scripts", "tools/cli", "tools/cli/vendor"},
+				[]string{"pkg/board/go.mod", "tools/cli/go.mod"},
+				[]string{"# example.com/board v1.2.3 => ../../pkg/board"},
+				"build_module_root_directive_form_unsupported", "go-build",
+			),
+			caseFor(
+				"windows-case-colliding-declared-module-roots", "windows",
+				[]string{"pkg/Board", "pkg/board"}, []string{"tools/cli"}, []string{"scripts"},
+				[]string{"pkg/Board", "pkg/board", "scripts", "tools/cli", "tools/cli/vendor"},
+				[]string{"pkg/Board/go.mod", "pkg/board/go.mod", "tools/cli/go.mod"}, []string{},
+				"build_module_root_containment_invalid", "go-list",
+			),
+		},
+	})
 }
 
 func writeSkillManifestResolutionVectors(dir string) {
@@ -1186,6 +1323,7 @@ func writeExternalRepositoryVectors(dir string) {
 			map[string]any{"name": "schema7-external-only", "manifest_schema": 7, "drivers": []any{"go-repository-v1"}, "receipt_versions": []any{2}, "marker_version": 3},
 			map[string]any{"name": "schema7-mixed", "manifest_schema": 7, "drivers": []any{"go-repository-v1", "go-v1"}, "receipt_versions": []any{2, 1}, "marker_version": 3, "expected_marker": "expected/external-repository/install-marker-v3-mixed.json"},
 			map[string]any{"name": "schema7-substituted-external", "manifest_schema": 7, "drivers": []any{"go-repository-v1"}, "receipt_versions": []any{2}, "marker_version": 3, "declared_and_effective_sources": true},
+			map[string]any{"name": "schema8-script-worker", "manifest_schema": 8, "drivers": []any{"go-repository-v1", "go-v1"}, "receipt_versions": []any{2, 1}, "marker_version": 4, "expected_marker": "expected/install-marker-v4.json"},
 		},
 		"transaction_cases": []any{
 			map[string]any{"name": "failure-before-publication", "failure_at": "build", "live_state_unchanged": true, "journal_retained_if_uncertain": true},
@@ -1218,6 +1356,7 @@ func writeExternalRepositoryVectors(dir string) {
 	})
 
 	writeGoHostExecutionPolicyVectors(dir)
+	writeScriptHostExecutionPolicyVectors(dir)
 
 	writeJSON(filepath.Join(dir, "conformance-claim-v3-qualification.json"), map[string]any{
 		"schema_version":       1,
@@ -1495,6 +1634,137 @@ func writeGoHostExecutionPolicyVectors(dir string) {
 				"schema_valid":     false,
 			},
 			"aliases": false,
+		},
+	})
+}
+
+// writeScriptHostExecutionPolicyVectors emits the executable contract for the
+// schema-8 script-worker-v1 opt-in. The script policy deliberately owns a
+// separate inventory and evidence record from manager-worker-v1.
+func writeScriptHostExecutionPolicyVectors(dir string) {
+	available := func(mechanism string) map[string]any {
+		return map[string]any{"availability": "available", "mechanism": mechanism, "unavailable_reason": nil}
+	}
+	unavailable := func(reason string) map[string]any {
+		return map[string]any{"availability": "unavailable", "mechanism": nil, "unavailable_reason": reason}
+	}
+	conditional := func(mechanism string) map[string]any {
+		return map[string]any{"availability": "host-conditional", "mechanism": mechanism, "unavailable_reason": nil}
+	}
+	control := func(name string, macos, linux, windows map[string]any) map[string]any {
+		return map[string]any{
+			"name":      name,
+			"platforms": map[string]any{"linux": linux, "macos": macos, "windows": windows},
+		}
+	}
+	controls := []any{
+		control("descendant-domain-termination", available("process-group-and-session-teardown"), available("process-group-and-session-teardown"), available("job-object-kill-on-close")),
+		control("active-process-count-limit", unavailable("no-private-aggregate-domain"), conditional("delegated-cgroup-v2-pids.max"), available("job-object-active-process-limit")),
+		control("aggregate-memory-limit", unavailable("no-private-aggregate-domain"), conditional("delegated-cgroup-v2-memory.max"), available("job-object-process-and-job-memory-limit")),
+		control("per-file-size-limit", available("rlimit-fsize"), available("rlimit-fsize"), unavailable("no-private-aggregate-domain")),
+		control("inherited-handle-restriction", available("close-on-exec-and-explicit-descriptor-release"), available("close-on-exec-and-explicit-descriptor-release"), available("explicit-handle-inheritance-list")),
+		control("descendant-exec-denial", unavailable("no-unprivileged-per-process-exec-policy"), conditional("landlock-execute-right"), unavailable("child-process-policy-requires-appcontainer")),
+		control("filesystem-write-confinement", unavailable("no-unprivileged-filesystem-domain"), conditional("landlock-write-rights"), unavailable("no-unprivileged-filesystem-domain")),
+		control("network-isolation-domain", unavailable("no-unprivileged-network-domain"), conditional("network-namespace-without-interfaces"), unavailable("no-unprivileged-network-domain")),
+	}
+
+	examples := map[string]any{}
+	for _, platform := range []string{"linux", "macos", "windows"} {
+		entries := make([]any, 0, len(controls))
+		for _, raw := range controls {
+			item := raw.(map[string]any)
+			state := item["platforms"].(map[string]any)[platform].(map[string]any)
+			status := "unavailable"
+			if state["availability"] == "available" {
+				status = "applied"
+			}
+			entries = append(entries, map[string]any{
+				"name": item["name"], "availability": state["availability"],
+				"status": status, "probed_at": "pre-worker-launch",
+			})
+		}
+		examples[platform] = map[string]any{
+			"record_version":   scriptCapabilityEvidenceRecordVersion,
+			"execution_policy": scriptExecutionPolicy,
+			"platform":         platform,
+			"controls":         entries,
+		}
+	}
+
+	writeJSON(filepath.Join(dir, "script-host-execution-policy.json"), map[string]any{
+		"schema_version":   1,
+		"protocol_version": protocolVersion,
+		"execution_policy": scriptExecutionPolicy,
+		"interpreters":     []any{"node-v1", "python3-v1"},
+		"opt_in_cases": []any{
+			map[string]any{"name": "schema8-explicit-opt-in", "manifest_schema": 8, "execution_policy": scriptExecutionPolicy, "interpreter": "python3-v1", "mode": "enforced", "accepted": true},
+			map[string]any{"name": "schema8-absent-policy", "manifest_schema": 8, "execution_policy": nil, "interpreter": nil, "mode": "declared-only", "accepted": true},
+			map[string]any{"name": "legacy-schema7-script", "manifest_schema": 7, "execution_policy": nil, "interpreter": nil, "mode": "declared-only", "accepted": true},
+			map[string]any{"name": "interpreter-without-policy", "manifest_schema": 8, "execution_policy": nil, "interpreter": "python3-v1", "mode": nil, "accepted": false},
+			map[string]any{"name": "policy-without-interpreter", "manifest_schema": 8, "execution_policy": scriptExecutionPolicy, "interpreter": nil, "mode": nil, "accepted": false},
+			map[string]any{"name": "unknown-policy", "manifest_schema": 8, "execution_policy": "script-worker-v2", "interpreter": "python3-v1", "mode": nil, "accepted": false},
+		},
+		"capability_derivation_cases": []any{
+			map[string]any{"name": "all-fields-absent-deny-by-default", "declared": map[string]any{}, "derived": map[string]any{"network": "offline-environment", "exec": []any{"resolved-interpreter"}, "filesystem": []any{"private-cache-root", "private-config-root", "private-temp-root", "manager-selected-working-directory"}, "secrets": []any{}, "env_read": []any{}, "prompt_scope": nil}},
+			map[string]any{"name": "declared-network-hosts-are-reporting-only", "declared": map[string]any{"network": []any{"api.example.com"}}, "derived": map[string]any{"network_filter": nil}, "warning": "script-command-unfiltered-declared-network", "accepted": true},
+			map[string]any{"name": "declared-exec-is-manager-resolved", "declared": map[string]any{"exec": []any{"git"}}, "derived": map[string]any{"path": []any{"resolved-interpreter", "manager-resolved:git"}, "inherited_path": false}},
+			map[string]any{"name": "declared-secrets-remain-identifiers", "declared": map[string]any{"secrets": []any{"release-token"}}, "derived": map[string]any{"secret_values": []any{}}},
+		},
+		"mandatory_controls": []any{
+			"fixed-process-graph", "worker-identity-verification", "interpreter-resolution-and-identity-verification",
+			"manager-built-environment", "manager-built-path", "offline-network-configuration",
+			"operation-private-runtime-area", "explicit-standard-stream-binding",
+			"inventory-controls-applied", "closed-script-capability-evidence-record", "worker-domain-teardown",
+		},
+		"native_control_inventory": map[string]any{
+			"version":             scriptNativeControlInventoryVersion,
+			"authority":           "conformance/v1/vectors/script-host-execution-policy.json#native_control_inventory",
+			"exhaustive":          true,
+			"platforms":           []any{"linux", "macos", "windows"},
+			"availability_states": []any{"available", "host-conditional", "unavailable"},
+			"unavailable_reasons": []any{"child-process-policy-requires-appcontainer", "no-private-aggregate-domain", "no-unprivileged-filesystem-domain", "no-unprivileged-network-domain", "no-unprivileged-per-process-exec-policy"},
+			"probe_timing":        "pre-worker-launch", "probe_scope": "per-invocation", "controls": controls,
+		},
+		"preflight_cases": []any{
+			map[string]any{"name": "mandatory-control-unavailable-at-install", "operation": "install", "mandatory_control_available": false, "worker_started": false, "invocation_succeeds": false, "expected_error": "script_execution_control_unavailable"},
+			map[string]any{"name": "mandatory-control-unavailable-at-invocation", "operation": "invoke", "mandatory_control_available": false, "worker_started": false, "invocation_succeeds": false, "expected_error": "script_execution_control_unavailable"},
+			map[string]any{"name": "linux-pids-max-probe-available-evidence-applied-invocation-succeeds", "operation": "invoke", "platform": "linux", "control": "active-process-count-limit", "inventory_availability": "host-conditional", "mechanism": "delegated-cgroup-v2-pids.max", "probe_result": "available", "evidence_status": "applied", "worker_started": true, "invocation_succeeds": true, "expected_error": nil},
+			map[string]any{"name": "linux-pids-max-probe-unavailable-evidence-unavailable-invocation-succeeds", "operation": "invoke", "platform": "linux", "control": "active-process-count-limit", "inventory_availability": "host-conditional", "mechanism": "delegated-cgroup-v2-pids.max", "probe_result": "unavailable", "evidence_status": "unavailable", "worker_started": true, "invocation_succeeds": true, "expected_error": nil},
+			map[string]any{"name": "fixed-unavailable-control-does-not-reject", "operation": "invoke", "platform": "macos", "control": "active-process-count-limit", "inventory_availability": "unavailable", "probe_result": "unavailable", "evidence_status": "unavailable", "worker_started": true, "invocation_succeeds": true, "expected_error": nil},
+		},
+		"capability_evidence_record": map[string]any{
+			"record_version":       scriptCapabilityEvidenceRecordVersion,
+			"inventory_version":    scriptNativeControlInventoryVersion,
+			"record_fields":        []any{"controls", "execution_policy", "platform", "record_version"},
+			"control_entry_fields": []any{"availability", "name", "probed_at", "status"},
+			"entry_cardinality":    "exactly-one-per-inventory-control",
+			"record_cardinality":   "exactly-one-per-invocation",
+			"probe_timings":        []any{"pre-worker-launch"},
+			"result_only":          true,
+			"excluded_from":        []any{"cache-key", "command-stderr", "command-stdout", "conformance-claim", "install-marker", "receipt"},
+			"examples":             examples,
+		},
+		"capability_evidence_cases": []any{
+			map[string]any{"name": "valid-linux-host-conditional-unavailable", "mutation": nil, "record_valid": true, "invocation_succeeds": true, "expected_error": nil},
+			map[string]any{"name": "available-control-reported-unavailable", "mutation": "available-status-unavailable", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "unavailable-control-reported-applied", "mutation": "unavailable-status-applied", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "missing-control-entry", "mutation": "remove-control", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "duplicate-control-entry", "mutation": "duplicate-control", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "extra-control-entry", "mutation": "add-unknown-control", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "unknown-record-version", "mutation": "record-version-v2", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "host-conditional-status-contradicts-probe", "mutation": "probe-unavailable-status-applied", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "cached-probe-result", "mutation": "probed-at-install", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "second-record-for-invocation", "mutation": "record-count-two", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "foreign-build-record-version", "mutation": "capability-evidence-v1", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_capability_evidence_invalid"},
+			map[string]any{"name": "foreign-build-execution-policy", "mutation": "manager-worker-v1", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_hardened_claim_forbidden"},
+			map[string]any{"name": "deferred-script-guarantee-entry", "mutation": "script-total-network-denial", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_hardened_claim_forbidden"},
+			map[string]any{"name": "deferred-build-guarantee-entry", "mutation": "total-network-denial", "record_valid": false, "invocation_succeeds": false, "expected_error": "script_execution_hardened_claim_forbidden"},
+		},
+		"audit_label_cases": []any{
+			map[string]any{"name": "schema7-script", "manifest_schema": 7, "execution_policy": nil, "labels": []any{"script-command-declared-only"}},
+			map[string]any{"name": "schema8-declared-only-script", "manifest_schema": 8, "execution_policy": nil, "labels": []any{"script-command-declared-only"}},
+			map[string]any{"name": "schema8-enforced-script", "manifest_schema": 8, "execution_policy": scriptExecutionPolicy, "labels": []any{}},
+			map[string]any{"name": "schema8-enforced-unfiltered-network", "manifest_schema": 8, "execution_policy": scriptExecutionPolicy, "labels": []any{"script-command-unfiltered-declared-network"}},
 		},
 	})
 }
@@ -1830,25 +2100,25 @@ func writeAssuranceVectors(dir string) {
 	})
 }
 
-func writeRC8ReleaseMetadata(root, suite string) {
+func writeRC9ReleaseMetadata(root, suite string) {
 	manifest, err := os.ReadFile(filepath.Join(suite, "manifest.json"))
 	must(err)
 	digest := sha256.Sum256(manifest)
 	pin := "sha256:" + hex.EncodeToString(digest[:])
-	writeJSON(filepath.Join(root, "release", "1.0.0-rc.8.json"), map[string]any{
+	writeJSON(filepath.Join(root, "release", "1.0.0-rc.9.json"), map[string]any{
 		"protocol_version": protocolVersion,
-		"created_at":       rc8CreatedAt,
+		"created_at":       rc9CreatedAt,
 		"candidate_protocol_pin": map[string]any{
 			"suite_root":      "conformance/v1",
 			"manifest_sha256": pin,
 		},
-		"source_baseline_commit": rc7SourceCommit,
-		"legacy_release":         "1.0.0-rc.7",
+		"source_baseline_commit": rc8SourceCommit,
+		"legacy_release":         "1.0.0-rc.8",
 		"historical_release": map[string]any{
-			"protocol_version": "1.0.0-rc.7",
-			"metadata_path":    "release/1.0.0-rc.7.json",
-			"metadata_sha256":  rc7ReleaseMetadataSHA256,
-			"source_commit":    rc7SourceCommit,
+			"protocol_version": "1.0.0-rc.8",
+			"metadata_path":    "release/1.0.0-rc.8.json",
+			"metadata_sha256":  rc8ReleaseMetadataSHA256,
+			"source_commit":    rc8SourceCommit,
 			"immutable":        true,
 		},
 		"assurance": map[string]any{
@@ -1868,9 +2138,9 @@ func writeRC8ReleaseMetadata(root, suite string) {
 			"required_manifest_sha256":       pin,
 			"committed_release_pin_advanced": false,
 		},
-		"claim_v4": map[string]any{
+		"claim_v5": map[string]any{
 			"claim_protocol_version": protocolVersion,
-			"schema":                 "schemas/v1/conformance-claim-v4.schema.json",
+			"schema":                 "schemas/v1/conformance-claim-v5.schema.json",
 			"claims_emitted":         []any{},
 		},
 	})
@@ -2046,11 +2316,20 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 				"type": "build", "driver": "go-repository-v1", "repository": "golden-tools", "target": "golden-tool",
 			}
 		}
+		if version >= 8 {
+			obj["commands"].(map[string]any)["build-tool"].(map[string]any)["modules"] = []any{
+				"pkg/board", "pkg/remoteconfig",
+			}
+			obj["commands"].(map[string]any)["enforced-tool"] = map[string]any{
+				"type": "script", "unix_path": "scripts/enforced", "win_path": "scripts/enforced.cmd",
+				"execution_policy": scriptExecutionPolicy, "interpreter": "python3-v1",
+			}
+		}
 		return obj
 	}
 	cases := map[string]schemaCase{}
 	additionalCases := map[string][]schemaExample{}
-	for version := 1; version <= 7; version++ {
+	for version := 1; version <= 8; version++ {
 		invalid := map[string]any{"schema_version": version, "install": "echo unsafe"}
 		if version == 1 {
 			invalid = map[string]any{"schema_version": 1, "runtime_roots": []any{"scripts"}}
@@ -2060,12 +2339,17 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 		for _, prefix := range []string{"agent-skill", "csk-skill"} {
 			name := fmt.Sprintf("%s-v%d.schema.json", prefix, version)
 			cases[name] = schemaCase{validSkill(version), invalid}
-			if version == 6 {
+			switch {
+			case version == 6:
 				additionalCases[name] = append(v6SchemaExamples(), legacyV7SchemaExamples(validSkill(version))...)
-			} else if version == 7 {
-				additionalCases[name] = v7SchemaExamples()
-			} else {
-				additionalCases[name] = legacyV7SchemaExamples(validSkill(version))
+				additionalCases[name] = append(additionalCases[name], legacyV8SchemaExamples(validSkill(version))...)
+			case version == 7:
+				additionalCases[name] = append(repositorySchemaExamples(version), legacyV8SchemaExamples(validSkill(version))...)
+			case version == 8:
+				additionalCases[name] = append(repositorySchemaExamples(version), scriptWorkerSchemaExamples()...)
+				additionalCases[name] = append(additionalCases[name], moduleRootSchemaExamples()...)
+			default:
+				additionalCases[name] = append(legacyV7SchemaExamples(validSkill(version)), legacyV8SchemaExamples(validSkill(version))...)
 			}
 		}
 	}
@@ -2099,7 +2383,10 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	additionalCases["install-marker-v2.schema.json"] = installMarkerV2SchemaExamples(markerV2)
 	markerV3 := validInstallMarkerV3(marker)
 	cases["install-marker-v3.schema.json"] = schemaCase{markerV3, without(markerV3, "builds")}
-	additionalCases["install-marker-v3.schema.json"] = installMarkerV3SchemaExamples(markerV3)
+	additionalCases["install-marker-v3.schema.json"] = installMarkerBuildRecordSchemaExamples(markerV3)
+	markerV4 := validInstallMarkerV4(marker)
+	cases["install-marker-v4.schema.json"] = schemaCase{markerV4, without(markerV4, "builds")}
+	additionalCases["install-marker-v4.schema.json"] = installMarkerBuildRecordSchemaExamples(markerV4)
 	cases["adapter-ledger-v1.schema.json"] = schemaCase{ledger, map[string]any{"schema_version": 1, "entries": []any{"CON"}}}
 	cases["audit-record-v1.schema.json"] = schemaCase{audited, without(audited, "sig")}
 	cases["signature-envelope-v1.schema.json"] = schemaCase{audited["sig"], map[string]any{"algorithm": "rsa", "key_id": "bad", "signature": "bad"}}
@@ -2207,7 +2494,7 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 		{name: "invalid-execution-succeeded-null-predecessor", valid: false, instance: succeededWithoutPredecessor},
 	}
 	claimV4 := map[string]any{
-		"schema_version": 4, "protocol_version": protocolVersion, "claim_type": "assurance-conformance-claim-v1",
+		"schema_version": 4, "protocol_version": conformanceClaimV4ProtocolVersion, "claim_type": "assurance-conformance-claim-v1",
 		"implementation": "example", "implementation_version": "1.0", "classes": []any{"manager"},
 		"suite_sha256":      "sha256:" + strings.Repeat("0", 64),
 		"assurance":         map[string]any{"mode": "portable", "policy_id": portableAssurancePolicy, "execution_policy": portableExecutionPolicy},
@@ -2219,6 +2506,13 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 		"provider_contract": verifiedProviderContract, "provider_id": "example.host-provider",
 	}
 	cases["conformance-claim-v4.schema.json"] = schemaCase{claimV4, invalidClaimV4}
+	claimV5 := cloneMap(claimV4)
+	claimV5["schema_version"] = 5
+	claimV5["protocol_version"] = protocolVersion
+	invalidClaimV5 := cloneMap(invalidClaimV4)
+	invalidClaimV5["schema_version"] = 5
+	invalidClaimV5["protocol_version"] = protocolVersion
+	cases["conformance-claim-v5.schema.json"] = schemaCase{claimV5, invalidClaimV5}
 
 	root := filepath.Join(suite, "schema-cases")
 	var index []any
@@ -2276,9 +2570,174 @@ func legacyV7SchemaExamples(valid map[string]any) []schemaExample {
 	}
 }
 
-func validV7SkillManifest() map[string]any {
+// legacyV8SchemaExamples proves that every manifest schema below 8 rejects the
+// schema-8 script execution surface. Schema 1 accepts unknown top-level fields,
+// so its rejection comes from the wire-semantics layer rather than the schema.
+func legacyV8SchemaExamples(valid map[string]any) []schemaExample {
+	withTopLevel := func(field string, value any) map[string]any {
+		manifest := deepCloneMap(valid)
+		manifest[field] = value
+		return manifest
+	}
+	withCommand := func(field string, value any) map[string]any {
+		manifest := deepCloneMap(valid)
+		commands, ok := manifest["commands"].(map[string]any)
+		if !ok {
+			commands = map[string]any{}
+			manifest["commands"] = commands
+		}
+		command := map[string]any{"type": "script", "unix_path": "scripts/reserved"}
+		command[field] = value
+		commands["reserved-v8"] = command
+		return manifest
+	}
+	return []schemaExample{
+		{name: "invalid-v8-top-level-execution-policy", instance: withTopLevel("execution_policy", scriptExecutionPolicy)},
+		{name: "invalid-v8-top-level-interpreter", instance: withTopLevel("interpreter", "python3-v1")},
+		{name: "invalid-v8-command-execution-policy", instance: withCommand("execution_policy", scriptExecutionPolicy)},
+		{name: "invalid-v8-command-interpreter", instance: withCommand("interpreter", "python3-v1")},
+	}
+}
+
+func validModuleRootSkillManifest() map[string]any {
 	return map[string]any{
-		"schema_version": 7,
+		"schema_version": 8,
+		"capabilities":   map[string]any{},
+		"build_roots":    []any{"tools/cli"},
+		"commands": map[string]any{
+			"tool": map[string]any{
+				"type": "build", "driver": "go-v1", "source_dir": "tools/cli/cmd/tool",
+				"modules": []any{"pkg/board", "pkg/remoteconfig"},
+			},
+		},
+	}
+}
+
+// moduleRootSchemaExamples covers the structural portion of the schema-8
+// module-root declaration. Filesystem, graph, and platform-path comparisons
+// remain semantic conformance rules rather than JSON Schema rules.
+func moduleRootSchemaExamples() []schemaExample {
+	withModules := func(value any) map[string]any {
+		manifest := validModuleRootSkillManifest()
+		manifest["commands"].(map[string]any)["tool"].(map[string]any)["modules"] = value
+		return manifest
+	}
+	withCommand := func(name string, command map[string]any) map[string]any {
+		manifest := validModuleRootSkillManifest()
+		manifest["commands"].(map[string]any)[name] = command
+		return manifest
+	}
+	empty := withModules([]any{})
+	absent := validModuleRootSkillManifest()
+	delete(absent["commands"].(map[string]any)["tool"].(map[string]any), "modules")
+
+	return []schemaExample{
+		{name: "valid-module-roots-declared", valid: true, instance: validModuleRootSkillManifest()},
+		{name: "valid-module-roots-empty", valid: true, instance: empty},
+		{name: "valid-module-roots-absent", valid: true, instance: absent},
+		{name: "invalid-module-roots-duplicate", instance: withModules([]any{"pkg/lib", "pkg/lib"})},
+		{name: "invalid-module-roots-dot", instance: withModules([]any{"."})},
+		{name: "invalid-module-roots-parent", instance: withModules([]any{"../pkg/lib"})},
+		{name: "invalid-module-roots-absolute", instance: withModules([]any{"/pkg/lib"})},
+		{name: "invalid-module-roots-backslash", instance: withModules([]any{"pkg\\lib"})},
+		{name: "invalid-module-roots-windows-device", instance: withModules([]any{"pkg/CON"})},
+		{name: "invalid-module-roots-string", instance: withModules("pkg/lib")},
+		{name: "invalid-module-roots-null", instance: withModules(nil)},
+		{name: "invalid-module-roots-on-script-command", instance: withCommand("script", map[string]any{
+			"type": "script", "unix_path": "scripts/tool", "modules": []any{"pkg/lib"},
+		})},
+		{name: "invalid-module-roots-on-system-command", instance: withCommand("system", map[string]any{
+			"type": "system", "command": "tool", "modules": []any{"pkg/lib"},
+		})},
+		{name: "invalid-module-roots-on-repository-command", instance: withCommand("repository", map[string]any{
+			"type": "build", "driver": "go-repository-v1", "repository": "golden-tools", "target": "tool",
+			"modules": []any{"pkg/lib"},
+		})},
+		{name: "invalid-module-roots-top-level", instance: withNestedField(
+			validModuleRootSkillManifest(), []string{}, "modules", []any{"pkg/lib"})},
+	}
+}
+
+func validScriptWorkerSkillManifest() map[string]any {
+	return map[string]any{
+		"schema_version": 8,
+		"capabilities": map[string]any{
+			"network": "none", "filesystem": "repo", "exec": "none",
+			"secrets": "none", "env_read": []any{},
+		},
+		"runtime_roots": []any{"scripts"},
+		"commands": map[string]any{
+			"enforced-tool": map[string]any{
+				"type": "script", "unix_path": "scripts/enforced", "win_path": "scripts/enforced.cmd",
+				"execution_policy": scriptExecutionPolicy, "interpreter": "python3-v1",
+			},
+		},
+	}
+}
+
+// scriptWorkerSchemaExamples covers the schema-8 opt-in surface: enforcement is
+// per command, spelled exactly once, and carries a manager-resolved interpreter
+// identity. Absence of the field is the only spelling of declared-only.
+func scriptWorkerSchemaExamples() []schemaExample {
+	withEnforcedField := func(field string, value any) map[string]any {
+		manifest := validScriptWorkerSkillManifest()
+		manifest["commands"].(map[string]any)["enforced-tool"].(map[string]any)[field] = value
+		return manifest
+	}
+	withCommand := func(name string, command map[string]any) map[string]any {
+		manifest := validScriptWorkerSkillManifest()
+		manifest["commands"].(map[string]any)[name] = command
+		return manifest
+	}
+
+	mixed := withCommand("declared-tool", map[string]any{"type": "script", "unix_path": "scripts/declared"})
+	nodeInterpreter := withEnforcedField("interpreter", "node-v1")
+	windowsOnly := validScriptWorkerSkillManifest()
+	delete(windowsOnly["commands"].(map[string]any)["enforced-tool"].(map[string]any), "unix_path")
+	unixOnly := validScriptWorkerSkillManifest()
+	delete(unixOnly["commands"].(map[string]any)["enforced-tool"].(map[string]any), "win_path")
+
+	missingInterpreter := validScriptWorkerSkillManifest()
+	delete(missingInterpreter["commands"].(map[string]any)["enforced-tool"].(map[string]any), "interpreter")
+	interpreterWithoutPolicy := validScriptWorkerSkillManifest()
+	delete(interpreterWithoutPolicy["commands"].(map[string]any)["enforced-tool"].(map[string]any), "execution_policy")
+	pathless := validScriptWorkerSkillManifest()
+	enforcedPathless := pathless["commands"].(map[string]any)["enforced-tool"].(map[string]any)
+	delete(enforcedPathless, "unix_path")
+	delete(enforcedPathless, "win_path")
+
+	return []schemaExample{
+		{name: "valid-script-worker-enforced", valid: true, instance: validScriptWorkerSkillManifest()},
+		{name: "valid-script-worker-mixed-enforcement", valid: true, instance: mixed},
+		{name: "valid-script-worker-node-interpreter", valid: true, instance: nodeInterpreter},
+		{name: "valid-script-worker-windows-only", valid: true, instance: windowsOnly},
+		{name: "valid-script-worker-unix-only", valid: true, instance: unixOnly},
+		{name: "invalid-script-worker-missing-interpreter", instance: missingInterpreter},
+		{name: "invalid-script-worker-interpreter-without-policy", instance: interpreterWithoutPolicy},
+		{name: "invalid-script-worker-missing-path", instance: pathless},
+		{name: "invalid-script-worker-unknown-interpreter", instance: withEnforcedField("interpreter", "bash-v1")},
+		{name: "invalid-script-worker-successor-policy", instance: withEnforcedField("execution_policy", "script-worker-v2")},
+		{name: "invalid-script-worker-hardened-policy", instance: withEnforcedField("execution_policy", reservedHardenedExecutionPolicy)},
+		{name: "invalid-script-worker-compiled-policy", instance: withEnforcedField("execution_policy", portableExecutionPolicy)},
+		{name: "invalid-script-worker-null-policy", instance: withEnforcedField("execution_policy", nil)},
+		{name: "invalid-script-worker-opt-out-policy", instance: withEnforcedField("execution_policy", "none")},
+		{name: "invalid-script-worker-on-system-command", instance: withCommand("system-tool", map[string]any{
+			"type": "system", "command": "tool", "execution_policy": scriptExecutionPolicy, "interpreter": "python3-v1",
+		})},
+		{name: "invalid-script-worker-on-build-command", instance: withCommand("build-tool", map[string]any{
+			"type": "build", "driver": "go-v1", "source_dir": "build/cmd/tool",
+			"execution_policy": scriptExecutionPolicy, "interpreter": "python3-v1",
+		})},
+		{name: "invalid-script-worker-top-level-execution-policy", instance: withNestedField(
+			validScriptWorkerSkillManifest(), []string{}, "execution_policy", scriptExecutionPolicy)},
+		{name: "invalid-script-worker-top-level-interpreter", instance: withNestedField(
+			validScriptWorkerSkillManifest(), []string{}, "interpreter", "python3-v1")},
+	}
+}
+
+func validRepositorySkillManifest(version int) map[string]any {
+	return map[string]any{
+		"schema_version": version,
 		"capabilities":   map[string]any{},
 		"build_roots":    []any{"build"},
 		"build_repositories": map[string]any{
@@ -2297,29 +2756,29 @@ func validV7SkillManifest() map[string]any {
 	}
 }
 
-func v7SchemaExamples() []schemaExample {
+func repositorySchemaExamples(version int) []schemaExample {
 	withCommandField := func(field string, value any) map[string]any {
-		manifest := validV7SkillManifest()
+		manifest := validRepositorySkillManifest(version)
 		manifest["commands"].(map[string]any)["golden-tool"].(map[string]any)[field] = value
 		return manifest
 	}
 	withRepositoryField := func(field string, value any) map[string]any {
-		manifest := validV7SkillManifest()
+		manifest := validRepositorySkillManifest(version)
 		manifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)[field] = value
 		return manifest
 	}
-	sha256Manifest := validV7SkillManifest()
+	sha256Manifest := validRepositorySkillManifest(version)
 	sha256Manifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)["locked_commit"] =
 		map[string]any{"object_format": "sha256", "hex": strings.Repeat("a", 64)}
-	untaggedManifest := validV7SkillManifest()
+	untaggedManifest := validRepositorySkillManifest(version)
 	delete(untaggedManifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any), "tag")
-	sshManifest := validV7SkillManifest()
+	sshManifest := validRepositorySkillManifest(version)
 	sshManifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)["git"] = "ssh://git@github.com/example/golden-tools.git"
-	scpManifest := validV7SkillManifest()
+	scpManifest := validRepositorySkillManifest(version)
 	scpManifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)["git"] = "git@github.com:example/golden-tools.git"
-	unicodeHTTPSManifest := validV7SkillManifest()
+	unicodeHTTPSManifest := validRepositorySkillManifest(version)
 	unicodeHTTPSManifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)["git"] = "https://example.com/组织/工具.git"
-	tag255Manifest := validV7SkillManifest()
+	tag255Manifest := validRepositorySkillManifest(version)
 	tag255Manifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)["tag"] = strings.Repeat("界", 85)
 
 	examples := []schemaExample{
@@ -2329,11 +2788,11 @@ func v7SchemaExamples() []schemaExample {
 		{name: "valid-scp-source", valid: true, instance: scpManifest},
 		{name: "valid-unicode-https-source", valid: true, instance: unicodeHTTPSManifest},
 		{name: "valid-tag-255-bytes", valid: true, instance: tag255Manifest},
-		{name: "invalid-unselected-repository", instance: withNestedField(validV7SkillManifest(), []string{}, "build_repositories", map[string]any{
+		{name: "invalid-unselected-repository", instance: withNestedField(validRepositorySkillManifest(version), []string{}, "build_repositories", map[string]any{
 			"golden-tools": map[string]any{"git": "https://github.com/example/golden-tools.git", "locked_commit": map[string]any{"object_format": "sha1", "hex": fixedCommit}},
 			"unused":       map[string]any{"git": "ssh://git@example.com/unused.git", "locked_commit": map[string]any{"object_format": "sha1", "hex": fixedCommit}},
 		})},
-		{name: "invalid-missing-repository", instance: withNestedField(validV7SkillManifest(), []string{"commands", "golden-tool"}, "repository", "missing")},
+		{name: "invalid-missing-repository", instance: withNestedField(validRepositorySkillManifest(version), []string{"commands", "golden-tool"}, "repository", "missing")},
 		{name: "invalid-sha1-width", instance: withRepositoryField("locked_commit", map[string]any{"object_format": "sha1", "hex": strings.Repeat("a", 64)})},
 		{name: "invalid-sha256-width", instance: withRepositoryField("locked_commit", map[string]any{"object_format": "sha256", "hex": fixedCommit})},
 		{name: "invalid-https-userinfo", instance: withRepositoryField("git", "https://user@example.com/repo.git")},
@@ -2619,7 +3078,7 @@ func validBuildRecordV2ForMarkerV3(substituted bool) map[string]any {
 	return record
 }
 
-func markerV3WithExternalRecord(marker map[string]any, record map[string]any) map[string]any {
+func markerWithExternalRecord(marker map[string]any, record map[string]any) map[string]any {
 	result := cloneMap(marker)
 	result["commands"] = []any{"golden-tool"}
 	result["build_roots"] = []any{}
@@ -2659,9 +3118,16 @@ func validInstallMarkerV3(markerV1 map[string]any) map[string]any {
 	return marker
 }
 
-func installMarkerV3SchemaExamples(validMarker map[string]any) []schemaExample {
-	externalOnly := markerV3WithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(true))
-	externalOnlyUnsubstituted := markerV3WithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(false))
+func validInstallMarkerV4(markerV1 map[string]any) map[string]any {
+	marker := validInstallMarkerV3(markerV1)
+	marker["schema_version"] = 4
+	marker["skill_schema_version"] = 8
+	return marker
+}
+
+func installMarkerBuildRecordSchemaExamples(validMarker map[string]any) []schemaExample {
+	externalOnly := markerWithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(true))
+	externalOnlyUnsubstituted := markerWithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(false))
 	localOnly := cloneMap(validMarker)
 	localOnly["commands"] = []any{"local-helper"}
 	localOnly["builds"] = map[string]any{"local-helper": validBuildRecordV1ForMarkerV3()}
@@ -2670,19 +3136,19 @@ func installMarkerV3SchemaExamples(validMarker map[string]any) []schemaExample {
 	emptyBuilds["build_roots"] = []any{}
 	emptyBuilds["builds"] = map[string]any{}
 	delete(emptyBuilds, "build_source")
-	networkTag := markerV3WithExternalRecord(
+	networkTag := markerWithExternalRecord(
 		validMarker,
 		validNetworkBuildRecordV2ForMarkerV3("sha1", "tag", "v1.4.0"),
 	)
-	networkBranch := markerV3WithExternalRecord(
+	networkBranch := markerWithExternalRecord(
 		validMarker,
 		validNetworkBuildRecordV2ForMarkerV3("sha1", "branch", "release/v2"),
 	)
-	networkSHA1Revision := markerV3WithExternalRecord(
+	networkSHA1Revision := markerWithExternalRecord(
 		validMarker,
 		validNetworkBuildRecordV2ForMarkerV3("sha1", "revision", fixedCommit),
 	)
-	networkSHA256Revision := markerV3WithExternalRecord(
+	networkSHA256Revision := markerWithExternalRecord(
 		validMarker,
 		validNetworkBuildRecordV2ForMarkerV3("sha256", "revision", strings.Repeat("a", 64)),
 	)
@@ -2690,24 +3156,24 @@ func installMarkerV3SchemaExamples(validMarker map[string]any) []schemaExample {
 	sha256External["declared_locked_commit"] = map[string]any{"object_format": "sha256", "hex": strings.Repeat("a", 64)}
 	sha256External["object_format"] = "sha256"
 	sha256External["commit"] = strings.Repeat("a", 64)
-	sha256Marker := markerV3WithExternalRecord(validMarker, sha256External)
+	sha256Marker := markerWithExternalRecord(validMarker, sha256External)
 	untaggedExternal := validBuildRecordV2ForMarkerV3(false)
 	delete(untaggedExternal, "declared_tag")
-	untaggedMarker := markerV3WithExternalRecord(validMarker, untaggedExternal)
-	localIdentityMismatch := markerV3WithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(true))
+	untaggedMarker := markerWithExternalRecord(validMarker, untaggedExternal)
+	localIdentityMismatch := markerWithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(true))
 	localIdentityMismatch["builds"].(map[string]any)["golden-tool"].(map[string]any)["effective_identity"] =
 		map[string]any{"kind": "network-git", "value": "git.example.com/forks/golden-tools"}
-	networkIdentityMismatch := markerV3WithExternalRecord(
+	networkIdentityMismatch := markerWithExternalRecord(
 		validMarker,
 		validNetworkBuildRecordV2ForMarkerV3("sha1", "branch", "release/v2"),
 	)
 	networkIdentityMismatch["builds"].(map[string]any)["golden-tool"].(map[string]any)["effective_identity"] =
 		map[string]any{"kind": "operator-local-git", "value": "sha256:" + strings.Repeat("e", 64)}
-	sha1Revision64 := markerV3WithExternalRecord(
+	sha1Revision64 := markerWithExternalRecord(
 		validMarker,
 		validNetworkBuildRecordV2ForMarkerV3("sha1", "revision", strings.Repeat("a", 64)),
 	)
-	sha256Revision40 := markerV3WithExternalRecord(
+	sha256Revision40 := markerWithExternalRecord(
 		validMarker,
 		validNetworkBuildRecordV2ForMarkerV3("sha256", "revision", fixedCommit),
 	)
@@ -3203,8 +3669,9 @@ func writeBuildDriverVectors(dir, fixture, expected string, markerV1 map[string]
 				"build_source_preimage": "expected/build-driver/build-source.preimage.bin", "build_source_sha256": "expected/build-driver/build-source-sha256.txt",
 			},
 		},
-		"fixed_environment": fixedGoEnvironment(),
-		"argv":              argv,
+		"fixed_environment":       fixedGoEnvironment("darwin", "arm64"),
+		"fixed_environment_cases": fixedGoEnvironmentCases(),
+		"argv":                    argv,
 		"portable_identity": map[string]any{
 			"execution_policy":        portableExecutionPolicy,
 			"build_input":             buildInput,
@@ -3624,15 +4091,41 @@ func toolchainRecordsJSON(records []toolchainRecord) []any {
 	return result
 }
 
-func fixedGoEnvironment() map[string]any {
-	return map[string]any{
+func fixedGoEnvironment(goos, goarch string) map[string]any {
+	environment := map[string]any{
 		"GO111MODULE": "on", "GOENV": "off", "GOFLAGS": "", "GOPATH": "<operation-private>/gopath",
 		"GOMODCACHE": "<operation-private>/gomodcache", "GOCACHE": "<operation-private>/gocache", "GOTMPDIR": "<operation-private>/gotmp",
 		"GOPROXY": "off", "GOSUMDB": "off", "GOPRIVATE": "", "GONOPROXY": "none", "GONOSUMDB": "none", "GOVCS": "*:off",
 		"GOWORK": "off", "GOTOOLCHAIN": "local", "CGO_ENABLED": "0", "GO_EXTLINK_ENABLED": "0", "GOEXPERIMENT": "",
-		"GOROOT": "<resolved-trusted-goroot>", "GOOS": "darwin", "GOARCH": "arm64", "GOARM64": "v8.0",
+		"GOROOT": "<resolved-trusted-goroot>", "GOOS": goos, "GOARCH": goarch,
 		"HOME": "<operation-private>/home", "XDG_CONFIG_HOME": "<operation-private>/config", "PATH": "<operation-private>/empty-path",
 		"TMPDIR": "<operation-private>/tmp", "LC_ALL": "C", "LANG": "C",
+	}
+	switch goarch {
+	case "amd64":
+		environment["GOAMD64"] = "v1"
+	case "arm64":
+		environment["GOARM64"] = "v8.0"
+	}
+	if goos == "windows" {
+		for key, value := range map[string]any{
+			"APPDATA":      "<operation-private>/appdata",
+			"LOCALAPPDATA": "<operation-private>/localappdata",
+			"USERPROFILE":  "<operation-private>/userprofile",
+			"TEMP":         "<operation-private>/tmp",
+			"TMP":          "<operation-private>/tmp",
+		} {
+			environment[key] = value
+		}
+	}
+	return environment
+}
+
+func fixedGoEnvironmentCases() []any {
+	return []any{
+		map[string]any{"name": "darwin-arm64", "goos": "darwin", "goarch": "arm64", "environment": fixedGoEnvironment("darwin", "arm64"), "optional_variables": []any{}},
+		map[string]any{"name": "linux-amd64", "goos": "linux", "goarch": "amd64", "environment": fixedGoEnvironment("linux", "amd64"), "optional_variables": []any{}},
+		map[string]any{"name": "windows-amd64", "goos": "windows", "goarch": "amd64", "environment": fixedGoEnvironment("windows", "amd64"), "optional_variables": []any{"SYSTEMROOT", "WINDIR"}},
 	}
 }
 

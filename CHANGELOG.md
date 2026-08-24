@@ -3,6 +3,36 @@
 All notable protocol changes are recorded here. Versions follow Semantic
 Versioning for the complete specification set.
 
+## 1.0.0-rc.9 - 2026-08-23
+
+### Added
+
+- Added manifest schema 8 as the single shared schema bump for the
+  `script-worker-v1` execution policy and first-party module roots.
+- Added install marker schema 4, script-worker capability and evidence vectors,
+  module-root filesystem/build-graph vectors, and legacy-schema rejection cases.
+- Added an implementation coverage contract. Presence of a family in the
+  conformance root was never evidence that a pinned implementation read it, and
+  both pinned managers exited 0 against the schema-8 surface while consuming
+  none of it. `.github/ci/implementation-coverage.tsv` now names the cases each
+  pinned implementation must be observed passing against this suite, and
+  `tools/implementation_coverage.py` enforces the ledger against that run's own
+  `go test -json` and pytest `--junitxml` streams and against this suite's
+  published manifest.
+
+### Changed
+
+- Advanced the normative version through claim schema 5, conformance suite
+  identity, generated release metadata, and regeneration inventory to rc.9.
+- Moved the live candidate-suite pin to `release/1.0.0-rc.9.json`; rc.8 and
+  earlier release metadata remain byte-frozen historical evidence.
+- Advanced the pinned implementation references in the same commit as the new
+  normative bytes, so no interval of `main` pairs schema 8 with pins that do
+  not consume it: the Go manager to `a3abcf34` and the Python manager to
+  `3ecca1db`, each qualified against this exact suite manifest
+  (`sha256:803918bf...`) through its own candidate lane. The registry pin is
+  unchanged; schema 8 adds no registry surface.
+
 ## 1.0.0-rc.8 - 2026-08-19
 
 ### Changed

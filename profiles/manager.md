@@ -4,7 +4,7 @@ This document is normative for implementations claiming the **manager**
 conformance class. It defines behavior around the portable objects in the
 protocol core. It does not prescribe an executable name or machine-home path.
 
-For rc.8, assurance selection and verified-provider behavior are also governed
+For rc.9, assurance selection and verified-provider behavior are also governed
 by [`protocol/assurance.md`](../protocol/assurance.md). Portable remains the
 default behavior defined below. A manager MAY omit verified support, but if it
 accepts verified selection it MUST implement the complete provider contract,
@@ -102,6 +102,11 @@ duplicate encoded paths, and platform path collisions. A build root MUST be a
 real link-free directory below the snapshot, MUST NOT be `.`, MUST be disjoint
 from every runtime root, and MUST contain the nearest ancestor `go.mod` of each
 of its commands' `source_dir` values. Every declared build root MUST be used.
+Every module directory declared by a schema-8 build command satisfies the same
+directory, link, and `.` rules, MUST contain `go.mod` directly, and MUST be
+disjoint from every other declared module directory, every build root, and
+every runtime root under both exact and platform-path comparison, as required
+by Protocol Core section 4.2.3.
 Generated artifacts remain only in manager-owned staging and immutable cache
 state and MUST NOT become agent-facing context.
 
@@ -324,10 +329,58 @@ throughout the active dependency graph, while audited pure Go assembly in
 vendored deps is permitted. Each active non-standard `GoFiles` file is scanned
 as exact bytes and rejected if it contains `//go:cgo_import_dynamic`, except
 for the audited allowlist `golang.org/x/sys` and `golang.org/x/sys/*`
-(`zsyscall` trampolines). `//go:generate` in `GoFiles` is inert — managers
-MUST NOT run generators and `go build -mod=vendor` does not execute them; its
-presence in vendored `GoFiles` (vendor already materialized) does not fail
-preflight. Any other violation fails before `go build`.
+(`zsyscall` trampolines). Both exceptions are scoped to results whose module
+carries no replacement. A result whose module carries a replacement, and every
+active input below the declared module directory that replacement names, is
+held to the unexceptioned rules: `SFiles` MUST be empty and
+`//go:cgo_import_dynamic` MUST NOT appear. The exceptions cover widely audited
+third-party dependencies a package cannot reasonably fork, and first-party code
+in the package's own repository can simply not use those constructs.
+`//go:generate` in `GoFiles` is inert — managers MUST NOT run generators and
+`go build -mod=vendor` does not execute them; its presence in vendored
+`GoFiles` (vendor already materialized) does not fail preflight. Any other
+violation fails before `go build`.
+
+A schema-8 build command that declares `modules` is validated in a fixed order,
+and every step of it completes before `go build`.
+
+1. Before the fixed `go list`, the manager validates the declaration against
+   the frozen snapshot alone: portable relative path, not `.`, unique, a real
+   link-free directory strictly inside the snapshot, `go.mod` directly inside
+   it, and pairwise disjoint from every other declared module directory, every
+   declared build root, and every runtime root under both exact and
+   platform-path comparison. `Module.Replace.Dir` and `Module.Replace.GoMod`
+   are never evidence that a path exists.
+2. The fixed `go list -mod=vendor` runs unchanged. Go reconciles `go.mod`
+   against `vendor/modules.txt` itself and fails the command with its own
+   inconsistent-vendoring error before any manager check of this section
+   applies.
+3. After `go list` returns, the manager reads the effective replace set from
+   `<build root>/vendor/modules.txt` exactly as Protocol Core section 4.2.3
+   defines it, reconciles selection annotations with their unversioned-left
+   directive annotations, rejects every versioned replacement side and every
+   module-to-module redirect, resolves each directory-form target against the
+   build root, and checks the one-to-one correspondence with the declared list
+   in both directions.
+4. Only then does the scan surface above run with the declared directories
+   included and the vendored exceptions withheld from replaced modules.
+
+The manager MUST NOT parse `go.mod`, MUST NOT read `Module.Replace` as the
+source of the effective replace set, and MUST NOT reconcile a vendor copy
+against the declared directory it was made from. The vendor copy is
+authoritative for the build; both copies are already bound by
+`curator-build-source-v1`, so a divergence changes the build identity and is
+not separately diagnosed.
+
+Module-root results use these stable `phase: preflight` diagnostics:
+
+| Code | State | Severity | Meaning |
+|---|---|---|---|
+| `build_module_root_declaration_invalid` | `unsupported` | `error` | A declared module directory is `.`, is not a portable relative path, is duplicated, is not a real link-free directory in the snapshot, or has no `go.mod` directly inside it |
+| `build_module_root_containment_invalid` | `unsupported` | `error` | A declared module directory equals, contains, or is contained by another declared module directory, a declared build root, or a runtime root, under exact or platform-path comparison |
+| `build_module_root_directive_form_unsupported` | `unsupported` | `error` | An effective replacement carries a version on either side, is a module-to-module redirect, or has an unreadable or unreconciled annotation shape |
+| `build_module_root_directive_undeclared` | `unsupported` | `error` | An effective replacement names a directory the command does not declare |
+| `build_module_root_declaration_unused` | `unsupported` | `error` | A declared module directory is named by no effective replacement |
 
 The fixed build forces the native gc compiler, disabled PGO and cgo, and
 internal linking with no libgcc. If internal linking cannot produce the output,
@@ -511,6 +564,13 @@ dependencies, and any implementation runtime directories required by the
 command. It preserves the inherited `PATH`, forwards arguments without
 reinterpretation, and returns the child command's exit status.
 
+The launcher rules of this section govern every command other than an enforced
+script command. A script command that declares
+`execution_policy: "script-worker-v1"` is launched through the enforced worker
+of section 3.1 instead: none of the launcher forms below apply to it, its
+inherited `PATH` is discarded rather than preserved, and no shell, `.cmd`, or
+symlink shim stands between the manager and the interpreter.
+
 Build roots MUST NOT be copied into the commit-keyed runtime store. A build
 command launcher targets the immutable compiled-artifact cache entry selected
 by the effective plan and marker, never a source-tree output or the
@@ -542,6 +602,311 @@ an unmanaged entry. When no safe directory exists, it retains the canonical
 global shims and warns with the canonical location and optional shell
 activation path. Forwarding locations and their ownership records are
 machine-local and implementation-specific.
+
+### 3.1 Enforced `script-worker-v1` command launch
+
+A script command that declares `execution_policy: "script-worker-v1"` is an
+enforced command. Every other script command is declared-only: every script
+command of manifest schema 7 and earlier, and every schema-8 script command
+that omits the field. Declared-only script commands keep the launcher rules of
+section 3 unchanged, and their capability declaration remains an audit surface
+that bounds nothing at run time. Build commands are outside this policy
+entirely; their install-time execution boundary is section 2.2.1 and their
+launcher is unchanged. The manager implements exactly the portable
+`script-worker-v1` execution policy of Protocol Core section 4.1.1 and applies
+it identically on macOS, Linux, and Windows.
+
+The fixed process graph of an enforced invocation is:
+
+```text
+manager parent
+  -> identity-verified manager-owned script worker
+       -> identity-verified interpreter for the declared identifier
+            -> manager-resolved executables named by the `exec` capability
+```
+
+The fourth node exists only when `exec` names executables; under `exec: "none"`
+the graph is exactly three nodes.
+
+The worker is one hidden-mode re-execution of the installed manager executable,
+the same implementation boundary section 2.2.1 uses for builds, and not a
+user-visible command surface. No package file, manifest value, environment
+value, `PATH` lookup, shell, shebang line, Windows file association, or user
+option selects the worker executable, its hidden mode, or the interpreter. The
+shebang line and the Windows file association are inert under this policy and
+MUST NOT select the executed program.
+
+For each enforced invocation, in order, the manager:
+
+1. resolves the command's declared closed interpreter identifier to an
+   operator-trusted executable independently of package data and before
+   entering any package-controlled directory, rejecting resolution from the
+   repository, a runtime root, `.agents/bin`, the user `PATH`, or a manifest;
+2. probes, once for this invocation and before the worker starts, which
+   controls of the `script-worker-v1-native-control-inventory-v1` inventory
+   this host provides, without substituting a host label, a cached result, or
+   configuration for the probe;
+3. resolves its own executable to a canonical regular installed file, rejects
+   symlink, reparse-point, and hard-link substitution, records strong file
+   identity, and hashes the bytes;
+4. derives the containment profile from the declared capabilities of Protocol
+   Core section 4.3, taking every absent field at its deny-by-default meaning
+   under this policy, and rejects any attempt by package data to widen it;
+5. launches exactly that executable in the fixed hidden script-worker mode,
+   rechecking identity at the launch boundary so a replacement race cannot
+   widen the graph;
+6. requires the worker to prove the same executable identity and hash, verify
+   the resolved interpreter file's identity, release unrelated descriptors and
+   handles, bind the standard streams explicitly, apply every mandatory
+   portable control and exactly the inventory controls the probe found
+   available, and acknowledge a fresh session nonce together with its
+   `script-capability-evidence-v1` record;
+7. runs the interpreter against the command's commit-keyed runtime entry,
+   forwarding arguments without reinterpretation and returning the child's
+   exit status; and
+8. terminates and joins the complete worker domain before the invocation
+   returns.
+
+The capability set is a top-level manifest property, so one skill has exactly
+one containment profile and every enforced command in that skill runs under it.
+An `exec` name or an `env_read` name that only one command needs widens the
+profile of every enforced command in the same skill. This is a property of the
+schema 7 capability shape, not of this policy, and this release does not
+introduce per-command capabilities.
+
+The following controls are mandatory on every supported host, and they are the
+only controls whose absence rejects an invocation:
+
+- an identity-verified manager-owned worker between the manager and the
+  interpreter, launched by canonical image path and never through `sh -c`,
+  `cmd.exe /c`, PowerShell, a `.cmd` or `.ps1` wrapper, `PATHEXT`, or a file
+  association;
+- per-invocation identity verification of the resolved interpreter executable
+  file, with symlink, reparse-point, and hard-link substitution rejected and
+  identity re-checked at the launch boundary;
+- a manager-built environment: an empty bootstrap plus manager-set values plus
+  exactly the host variables named by `env_read`;
+- a manager-built `PATH` containing exactly the resolved interpreter and the
+  resolved declared `exec` names, with the inherited `PATH` discarded;
+- offline environment configuration plus proxy and resolver scrubbing when the
+  derived `network` capability is `none`;
+- a manager-selected working directory and operation-private temporary,
+  configuration, and cache roots;
+- explicit manager-controlled standard-stream binding and release of unrelated
+  descriptors and handles before the interpreter starts;
+- application of exactly the native controls the inventory below marks
+  available for the host platform, and of every `host-conditional` control the
+  same probe found present;
+- exactly one closed `script-capability-evidence-v1` record per invocation; and
+- termination and joining of the complete worker domain before the invocation
+  returns.
+
+Protocol Core section 4.1.1 states the criterion for manager ownership of an
+environment name and leaves the reserved set to this profile. A name in that
+set is manager-owned: an `env_read` entry naming one MUST NOT pass the
+inherited value through, and the manager-set value stands. The enumeration
+below is the reserved minimum: every conforming manager MUST reserve every name
+it lists, and a manager MUST reject an interpreter identifier it has no
+reserved set for rather than launch with an unfiltered environment.
+
+Reserved on every platform and for every interpreter identifier: `PATH`,
+`HOME`, `TMPDIR`, `TEMP`, `TMP`, `XDG_CONFIG_HOME`, `XDG_CACHE_HOME`,
+`XDG_DATA_HOME`, `XDG_STATE_HOME`, `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`,
+`FTP_PROXY`, `NO_PROXY`, every lowercase spelling of those five proxy names,
+`RES_OPTIONS`, `HOSTALIASES`, `LOCALDOMAIN`, every `LD_`-prefixed name,
+including `LD_PRELOAD`, `LD_LIBRARY_PATH`, and `LD_AUDIT`, `IFS`, and
+`CSK_PROJECT_ROOT`.
+
+Reserved additionally on macOS: every `DYLD_`-prefixed name, including
+`DYLD_INSERT_LIBRARIES`, `DYLD_LIBRARY_PATH`, and `DYLD_FRAMEWORK_PATH`.
+
+Reserved additionally on Windows: `USERPROFILE`, `APPDATA`, `LOCALAPPDATA`,
+`PATHEXT`, `COMSPEC`, `WINDIR`, and `SYSTEMROOT`. Windows environment-variable
+names are matched case-insensitively, so `SystemRoot` and `windir` are the same
+reserved names as `SYSTEMROOT` and `WINDIR`; on macOS and Linux the match is
+exact, which is why the lowercase proxy spellings are listed separately above.
+
+Reserved additionally for `python3-v1`: every `PYTHON`-prefixed name, including
+`PYTHONPATH`, `PYTHONHOME`, `PYTHONSTARTUP`, `PYTHONEXECUTABLE`,
+`PYTHONUSERBASE`, `PYTHONNOUSERSITE`, and `PYTHONSAFEPATH`, and
+`__PYVENV_LAUNCHER__`.
+
+Reserved additionally for `node-v1`: every `NODE_`- and `NPM_CONFIG_`-prefixed
+name, including `NODE_PATH`, `NODE_OPTIONS`, and `NODE_EXTRA_CA_CERTS`.
+
+Each reserved name selects a program, a library or module search path, an
+interpreter startup file or option, a temporary or configuration root, or proxy
+or resolver configuration, which is exactly the class Protocol Core section
+4.1.1 places under manager ownership. The loader, interpreter, and package
+manager families are reserved by prefix rather than by name so that a variable
+added by a future release of an admitted interpreter is covered without a
+revision of this profile.
+
+The criterion of section 4.1.1 continues to govern the names this enumeration
+does not reach. A name that meets it is manager-owned even when it is not
+listed here: a manager MUST reserve that name, and MUST NOT treat an `env_read`
+entry as licensed to pass an inherited value through merely because the name is
+unlisted. Such an omission is a defect of this profile, corrected by revising
+the enumeration rather than left to per-manager judgement, and it is visible
+because a manager MUST report every `env_read` entry it withholds, on this
+basis or any other, rather than drop it silently.
+
+A manager that cannot apply all of them MUST reject the invocation with
+`script_execution_control_unavailable` before starting the worker or the
+interpreter. The manager MUST also preflight the same mandatory set when it
+publishes or refreshes the launcher of an enforced command, and MUST reject the
+install or update with the same diagnostic rather than publish a shim that can
+never run. An install-time preflight is an additional moment, not a substitute:
+it MUST NOT stand in for the per-invocation probe.
+
+Three mandatory build controls of section 2.2.1 are deliberately not carried
+across, and a manager MUST NOT apply them here. Standard input is not closed: a
+script command legitimately reads a pipe or a terminal, and closing it would
+break the transparent forwarding this profile requires elsewhere. Instead the
+manager binds standard input explicitly, to the intended stream or to the
+platform null device, and never to an inherited descriptor it did not intend.
+The build's bounded combined output and bounded wall-clock deadline likewise do
+not bound an enforced invocation: the output bound applies only to output the
+manager itself captures, direct pass-through streaming is permitted when the
+manager binds the streams, and any deadline is an operator or invocation-level
+bound rather than a control of this policy. Descriptor and handle hygiene is
+retained in full.
+
+The `script-worker-v1-native-control-inventory-v1` inventory is exhaustive and
+normative per platform. The manager applies exactly the controls it marks
+available for the host platform, applies a `host-conditional` control exactly
+when the per-invocation probe finds it present, and MUST NOT apply, name, or
+report a control outside the inventory:
+
+| Control | macOS | Linux | Windows |
+|---|---|---|---|
+| `descendant-domain-termination` | available: process group and session teardown | available: process group and session teardown | available: Job Object kill-on-close |
+| `active-process-count-limit` | unavailable: `no-private-aggregate-domain` | host-conditional: delegated cgroup v2 `pids.max` | available: Job Object active-process limit |
+| `aggregate-memory-limit` | unavailable: `no-private-aggregate-domain` | host-conditional: delegated cgroup v2 `memory.max` | available: Job Object process and job memory limit |
+| `per-file-size-limit` | available: `RLIMIT_FSIZE` | available: `RLIMIT_FSIZE` | unavailable: `no-private-aggregate-domain` |
+| `inherited-handle-restriction` | available: close-on-exec plus explicit descriptor release | available: close-on-exec plus explicit descriptor release | available: explicit handle inheritance list |
+| `descendant-exec-denial` | unavailable: `no-unprivileged-per-process-exec-policy` | host-conditional: Landlock execute right | unavailable: `child-process-policy-requires-appcontainer` |
+| `filesystem-write-confinement` | unavailable: `no-unprivileged-filesystem-domain` | host-conditional: Landlock write rights | unavailable: `no-unprivileged-filesystem-domain` |
+| `network-isolation-domain` | unavailable: `no-unprivileged-network-domain` | host-conditional: network namespace without interfaces | unavailable: `no-unprivileged-network-domain` |
+
+This inventory is independent of `rc5-native-control-inventory-v1`. Its first
+five rows carry the same macOS and Windows verdicts because the underlying host
+facts do not depend on what the child is, but the two inventories are versioned
+separately and a revision of one MUST NOT re-scope the other.
+
+`availability` is `available`, `host-conditional`, or `unavailable`. An
+`available` control MUST be applied and reported `applied`. An `unavailable`
+control MUST be neither applied nor reported applied. A `host-conditional`
+control is applied and reported `applied` exactly when this invocation's probe
+found it present, and reported `unavailable` otherwise; a `host-conditional`
+control the probe did not find never rejects the invocation and never produces
+a diagnostic. Adding, removing, or re-scoping an entry requires a new inventory
+version.
+
+The unavailable-reason vocabulary of this inventory is closed and is exactly
+`no-private-aggregate-domain`, `no-unprivileged-per-process-exec-policy`,
+`child-process-policy-requires-appcontainer`,
+`no-unprivileged-filesystem-domain`, and `no-unprivileged-network-domain`.
+
+The manager emits exactly one `script-capability-evidence-v1` record per
+enforced invocation, containing exactly `record_version`, `execution_policy`,
+`platform`, and `controls`, with exactly one
+`{name, availability, status, probed_at}` entry per inventory control.
+`platform` is `macos`, `linux`, or `windows`, and `probed_at` is
+`pre-worker-launch`. A missing, duplicated, extra, or unknown entry, an unknown
+`record_version`, an availability value that was not probed for this
+invocation, a status inconsistent with the availability rules above, and a
+control name outside this inventory are all
+`script_execution_capability_evidence_invalid`. A guarantee deferred by this
+policy or by section 2.2.1 named as an entry, and a record `execution_policy`
+other than `script-worker-v1`, are
+`script_execution_hardened_claim_forbidden`. The
+manager MUST NOT emit a `capability-evidence-v1` record for an enforced script
+invocation, and MUST NOT emit a `script-capability-evidence-v1` record for a
+build operation.
+
+Availability is probed once, before the worker launches, and is never re-probed
+while the command runs, however long it runs; the worker returns the resulting
+record when it acknowledges the session nonce. Controls are installed before the
+interpreter starts and cannot change afterwards, so a second record for one
+invocation would be a contradiction rather than information. A cached,
+inherited, or configured result is not a probe, and an install-generation record
+replayed at invocation time is a cached result.
+
+That record is result-only. The manager exposes it through dry-run plan and
+status results and through an operator-selected diagnostic destination that
+package data can never choose. It MUST NOT be written to the command's standard
+output or standard error, because those streams belong to the caller's
+pipeline, and it MUST NOT enter a cache key, receipt input, marker record, or
+conformance claim. Retention is machine-local and operator-configurable, and a
+manager SHOULD retain at most the most recent record per command by default.
+
+Every rule this policy enforces is a manager mechanism. The policy does not
+provide, and a conforming manager MUST NOT claim, the seven guarantees deferred
+by Protocol Core section 4.1.1: `script-total-network-denial`;
+`script-network-host-allowlisting`; `script-exact-executable-allowlisting`;
+`script-private-runtime-area-only-writes`; `script-read-only-runtime-tree`;
+`script-hard-aggregate-descendant-resource-bounds`; and
+`script-fail-closed-capability-preflight`. None of the seven names may appear in
+the mandatory-control set, the native-control inventory, or a capability
+evidence record, and none of them aliases a guarantee deferred by section 2.2.1
+or a control of either inventory. Applying a `host-conditional` control on a host
+that provides it narrows what that invocation can do; it does not license
+claiming the corresponding policy-level guarantee, which stays deferred
+precisely because the mechanism varies between hosts.
+
+On macOS and Windows the first release applies no kernel confinement primitive
+at all: `exec` and `filesystem` narrowing there are `PATH`, environment,
+private-root, and working-directory mechanisms, and a descendant that resolves
+an absolute path or opens a path outside the private roots is not stopped by
+this policy. On Linux the three `host-conditional` controls narrow the
+descendant domain on hosts that provide them, and are absent on hosts that do
+not. A manager MUST report which of those it applied for this invocation and
+MUST NOT describe any of them as a guarantee of the policy.
+
+There is exactly one failure boundary. A mandatory portable control that cannot
+be applied rejects with `script_execution_control_unavailable` before the
+worker starts and runs nothing. An unavailable inventory control, a
+`host-conditional` control the probe did not find, and the absence of any
+deferred guarantee never reject an enforced invocation, never produce a
+diagnostic, and never prevent the command from running; a conforming manager
+MUST NOT record any of them as applied.
+
+Package-controlled bytes remain command input only. They MUST NOT select or
+modify the manager or worker executable, its hidden mode, or its identity; the
+interpreter identifier's resolution, path, or identity; the applied controls,
+limits, permitted roots, environment values, `PATH` entries, or working
+directory; the worker protocol messages; the capability-evidence record or its
+destination; or the audit record. The one package-visible field of this policy
+is `execution_policy` itself, whose single admissible value can only narrow
+what the command may do and can never widen it.
+
+Enforcement is a breaking change for the skills that opt in. Before this
+policy, a script inherited the caller's whole environment and `PATH`; under it,
+an undeclared variable is absent and an undeclared executable is not on `PATH`.
+A manager SHOULD report that difference when an enforced command is first
+installed or updated, rather than leaving it to the first invocation.
+
+Enforced-invocation results use these stable `phase: execution` diagnostics. The
+first four are the policy-level set of Protocol Core section 4.1.1. The last
+three are worker-session codes of this profile: they mirror the equivalent
+`build_execution_*` codes of section 2.2.1 and name the session failure modes an
+identity-verified worker has and a policy-level description does not enumerate.
+
+| Code | State | Severity | Meaning |
+|---|---|---|---|
+| `script_execution_control_unavailable` | `unsupported` | `error` | A mandatory portable control cannot be applied on this host, at shim install or update and again before worker launch |
+| `script_execution_capability_evidence_invalid` | `corrupt` | `error` | Script capability evidence contradicts the probe, is incomplete, or names a control outside the script inventory |
+| `script_execution_hardened_claim_forbidden` | `unsupported` | `error` | An evidence record names a guarantee deferred by this policy or by section 2.2.1, or a foreign execution policy |
+| `script_execution_policy_unsupported` | `unsupported` | `error` | A manager that does not implement `script-worker-v1` reads a command that selects it |
+| `script_execution_worker_identity_invalid` | `blocked` | `error` | Worker or interpreter executable identity, substitution, or replacement check fails |
+| `script_execution_worker_protocol_invalid` | `blocked` | `error` | Session framing, nonce, ordering, size, or message kind is invalid |
+| `script_execution_package_influence_forbidden` | `unsupported` | `error` | Package data attempts to influence the worker, interpreter resolution, controls, limits, environment, roots, or evidence |
+
+A manager that does not implement this policy MUST reject such a command with
+`script_execution_policy_unsupported`. It MUST NOT install the command
+declared-only, downgrade it, or ignore the field, because the resulting shim
+would run package code the manifest says is contained.
 
 ## 4. Install scopes
 
@@ -637,6 +1002,25 @@ Decisions are `allow`, `warn`, `block`, or `require_pin`:
 Pins record content hash, operator identity, reason, and creation time. Pins do
 not override local or registry revocation.
 
+Script execution policy is part of the audit record. For every script command
+the record carries the effective execution-policy identity or its absence, so a
+reviewer can separate enforced commands from declared-only ones and a registry
+can gate on the distinction. Two warning classes are REQUIRED, are always `warn`
+in every mode, and never block:
+
+- `script-command-declared-only` — a script command that does not declare
+  `execution_policy: "script-worker-v1"`. Its capability declaration is
+  documentation and bounds nothing at run time. Every script command of manifest
+  schema 7 and earlier carries this class.
+- `script-command-unfiltered-declared-network` — an enforced script command
+  whose `network` capability is a host-glob list. The declared globs are
+  recorded and reported; no portable filtering is applied and none is claimed.
+  The command is admitted so that the `exec`, `filesystem`, and environment
+  controls it can have are still applied.
+
+Neither class is a finding about source content, neither is subject to
+`fail_on`, and neither may be reported as an applied control.
+
 ## 8. Shell activation
 
 Shell activation is an OPTIONAL convenience for interactive users. A manager
@@ -714,6 +1098,12 @@ This section is the rc.5 manager profile for schema-7
 through 10. Schemas 1 through 6, `go-v1`, build receipt schema 1, marker
 schemas 1 and 2, and their cache, toolchain, transaction, status, repair, and
 GC behavior retain their rc.4 meaning.
+
+Schema 8 admits the same `go-repository-v1` commands, and a schema-8
+installation records marker v4 rather than marker v3 (`protocol/core.md`
+section 10). Marker v4 carries marker-v3 meaning unchanged, so every marker-v3
+obligation of this profile — shim selection, read-only status validation, and
+GC rooting — applies to a valid marker v4 without change.
 
 An rc.5 manager MUST implement the lifecycle below as a closed state machine:
 

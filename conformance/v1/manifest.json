@@ -69,6 +69,10 @@
       "sha256": "sha256:680407f392cf9c44c013d1438c5569099a8be683d25d3b423b4d5c7c2d653f74"
     },
     {
+      "path": "expected/install-marker-v4.json",
+      "sha256": "sha256:905101ee9ac58862eac2131f32a6aae4dfe56df23aae4763e47b4917c8914094"
+    },
+    {
       "path": "expected/marker-v2.json",
       "sha256": "sha256:22117126c8932769636bd5ca1f1623f26a3c55d4bb9da3266acf3dc3a3b7fc2c"
     },
@@ -245,6 +249,22 @@
       "sha256": "sha256:9dbec3a77710a52c8f1ee6b738105156693eca70e9c4bacd2b93503d91fb28e6"
     },
     {
+      "path": "schema-cases/agent-skill-v1/invalid-v8-command-execution-policy.json",
+      "sha256": "sha256:34b4770c5af166f8e108481adc84b09f79e3cb2d21b8896f1d4b74452104d622"
+    },
+    {
+      "path": "schema-cases/agent-skill-v1/invalid-v8-command-interpreter.json",
+      "sha256": "sha256:e9a6a9535d1a89ade361ff0d465b08163e0079cd49d9048f218805fb36c73bca"
+    },
+    {
+      "path": "schema-cases/agent-skill-v1/invalid-v8-top-level-execution-policy.json",
+      "sha256": "sha256:4b9f291a005929ea9fe4541cc7a46e98d9823be5deaa9f719db9d09322d7b2da"
+    },
+    {
+      "path": "schema-cases/agent-skill-v1/invalid-v8-top-level-interpreter.json",
+      "sha256": "sha256:9641d5bb993931da4ec5dacb05d92c574848c753d89f219046341e0656e9a945"
+    },
+    {
       "path": "schema-cases/agent-skill-v1/invalid.json",
       "sha256": "sha256:e6d8845d9637b1e21dd962f29f16ffd686103cb1b867eaa4d7d9a8b651d0415a"
     },
@@ -279,6 +299,22 @@
     {
       "path": "schema-cases/agent-skill-v2/invalid-v7-top-level-target.json",
       "sha256": "sha256:f0810e8a9bd9238d4ab6f0ad17bd826ac14bb3c0908b161361687faf7a28b27c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v2/invalid-v8-command-execution-policy.json",
+      "sha256": "sha256:dcf9f7e72c141751d2825e668a8c08e41a3b6f73ed96c095c1f6ad3d37292a1b"
+    },
+    {
+      "path": "schema-cases/agent-skill-v2/invalid-v8-command-interpreter.json",
+      "sha256": "sha256:b8825755d099d68aee8640acc7cb38f854f97d0e2cd4340c797d6aed7aef9a1d"
+    },
+    {
+      "path": "schema-cases/agent-skill-v2/invalid-v8-top-level-execution-policy.json",
+      "sha256": "sha256:70722fd572594bc5d1283e70f3500dbf8fba0a39758856b70dcba2d116158140"
+    },
+    {
+      "path": "schema-cases/agent-skill-v2/invalid-v8-top-level-interpreter.json",
+      "sha256": "sha256:2b652eceeeea7ca693b112bd46eb47dba751dd41fcfcd79f3afff3dc49e27a98"
     },
     {
       "path": "schema-cases/agent-skill-v2/invalid.json",
@@ -317,6 +353,22 @@
       "sha256": "sha256:47a9c14aa7baec0f684368157d250a3e573f55beec3a2ab1359de3b49609ea04"
     },
     {
+      "path": "schema-cases/agent-skill-v3/invalid-v8-command-execution-policy.json",
+      "sha256": "sha256:f5f86f83c6e973a926cc351f37ab847ec04c6e9669536d860f026d8344d3a664"
+    },
+    {
+      "path": "schema-cases/agent-skill-v3/invalid-v8-command-interpreter.json",
+      "sha256": "sha256:ecd1d06c78a6d5144fe251acee623b8a2091625cb92a5f9ac8a9bf23b156f2aa"
+    },
+    {
+      "path": "schema-cases/agent-skill-v3/invalid-v8-top-level-execution-policy.json",
+      "sha256": "sha256:e796d5cd9745fdc4eec2ba2e6b2e7bbd4d6d15b19d6176d3fb8e88bf5ae85805"
+    },
+    {
+      "path": "schema-cases/agent-skill-v3/invalid-v8-top-level-interpreter.json",
+      "sha256": "sha256:6b61cd15397f96cd9674ac4bb8cdf7d7998ed87a37b979490713b4f055525fea"
+    },
+    {
       "path": "schema-cases/agent-skill-v3/invalid.json",
       "sha256": "sha256:8ab25dca4c8b054f13753795ee1b9365d9d3b43578825ca756f32d46db4d49a3"
     },
@@ -353,6 +405,22 @@
       "sha256": "sha256:8086d12af60da48ad61ce891f3545268b6181dc7323ec45a75f43b9f365995ac"
     },
     {
+      "path": "schema-cases/agent-skill-v4/invalid-v8-command-execution-policy.json",
+      "sha256": "sha256:776c121c92ca0c27149b9d17d61b5834484f2b353b79b591ad9642e7b30887ea"
+    },
+    {
+      "path": "schema-cases/agent-skill-v4/invalid-v8-command-interpreter.json",
+      "sha256": "sha256:8b6ef5503512e947f7341a76b33249fffa6747cad2783fd0871f31360a2c7c29"
+    },
+    {
+      "path": "schema-cases/agent-skill-v4/invalid-v8-top-level-execution-policy.json",
+      "sha256": "sha256:17a2f704caab2bf63f61cde6a18f5c78888d8efa9bb0854f7c7bb5651b1cc6d5"
+    },
+    {
+      "path": "schema-cases/agent-skill-v4/invalid-v8-top-level-interpreter.json",
+      "sha256": "sha256:abcc73cab742a35cf7d0a5ef9bccaa060e3ccc96c10122afddcb4ae8bfc8322b"
+    },
+    {
       "path": "schema-cases/agent-skill-v4/invalid.json",
       "sha256": "sha256:0057844f12c30cb9a74bc251df912103956dc0975b369ed99c8534fd84490334"
     },
@@ -387,6 +455,22 @@
     {
       "path": "schema-cases/agent-skill-v5/invalid-v7-top-level-target.json",
       "sha256": "sha256:15be7bb7f9f4b216f3310018e281bccfd9ecac05a8e71362e65d6e4f205a9139"
+    },
+    {
+      "path": "schema-cases/agent-skill-v5/invalid-v8-command-execution-policy.json",
+      "sha256": "sha256:307eafc5024d5d60efabfa3faa7ea47052c0f471c1b69365e391a32ffc4ce3e3"
+    },
+    {
+      "path": "schema-cases/agent-skill-v5/invalid-v8-command-interpreter.json",
+      "sha256": "sha256:fe16d320d46dfc650f8c137ee164d6cc6c8e7888afdee504f5f9e51448b74a62"
+    },
+    {
+      "path": "schema-cases/agent-skill-v5/invalid-v8-top-level-execution-policy.json",
+      "sha256": "sha256:388cda68db1d39baad5dd1acb291ec1201f4f3d845b38583245b7f5bcae7f026"
+    },
+    {
+      "path": "schema-cases/agent-skill-v5/invalid-v8-top-level-interpreter.json",
+      "sha256": "sha256:6556cee14702e5fc3fe6c609c5e41f8103f5cc83ab0ad053e5e01ad113540a1d"
     },
     {
       "path": "schema-cases/agent-skill-v5/invalid.json",
@@ -483,6 +567,22 @@
     {
       "path": "schema-cases/agent-skill-v6/invalid-v7-top-level-target.json",
       "sha256": "sha256:afa77c9901ae8686cf2ce098bf755ea2b31d0f9531d80bb32564577df631e90e"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-v8-command-execution-policy.json",
+      "sha256": "sha256:45aef7111187d08219185247ca8ea554447472c208cd192d7c13511c0736bbe0"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-v8-command-interpreter.json",
+      "sha256": "sha256:47d3abb4a4303fbca29f99d74f065b3575633d0a516cba7d9ad58656bb86cf78"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-v8-top-level-execution-policy.json",
+      "sha256": "sha256:2420efadb05d779246afbb607a9cc28672e49c02e0b508d8fe65786caef20f5f"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-v8-top-level-interpreter.json",
+      "sha256": "sha256:8c636c3874eb356a32d7ed5580dab4d1f3a5e8f6043bb583eda436514cf27446"
     },
     {
       "path": "schema-cases/agent-skill-v6/invalid.json",
@@ -593,6 +693,22 @@
       "sha256": "sha256:6655c019c17de4b072bddeda26369d9164dedb1d55ad710c4722f983c4eebad8"
     },
     {
+      "path": "schema-cases/agent-skill-v7/invalid-v8-command-execution-policy.json",
+      "sha256": "sha256:bf35ad809769842dd4a9b141e3b83ebe26b2a961dcae05f28012af8be53ad165"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-v8-command-interpreter.json",
+      "sha256": "sha256:a2792019b408b30f392fc00d893f0442934ed3679bee0fa13b86977a9dca07f8"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-v8-top-level-execution-policy.json",
+      "sha256": "sha256:3fd41fa22d317bdc238cf4b2af55a7662f65f8be0934a20bc2ac2ec382da297c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-v8-top-level-interpreter.json",
+      "sha256": "sha256:b4bc3177dccdc46af438cba3300a502e0fab83ae6050b8a5efa5c320826ec171"
+    },
+    {
       "path": "schema-cases/agent-skill-v7/invalid.json",
       "sha256": "sha256:a589d36c5b0f990b02af5c0827980858e0004d2d0874868185c6e89ef049b2e4"
     },
@@ -623,6 +739,270 @@
     {
       "path": "schema-cases/agent-skill-v7/valid.json",
       "sha256": "sha256:90176154672a411dbdb2c68ff22afe719a6b7773c3ac74f29d3fedd17cd055b6"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-command-argv.json",
+      "sha256": "sha256:7725f93a2623ab1d8516aab4e362bf34dd75b1e100690f0b4d61e3300c6d3216"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-command-credentials.json",
+      "sha256": "sha256:0435fe2c6e858448c67ba93c1a57a990f847ae88064670a17efbde36567c0b94"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-command-env.json",
+      "sha256": "sha256:d07485b983f4f0e76db13512f88cc602bf650229259aaaab0e26ed5ecbd071bf"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-command-fallback.json",
+      "sha256": "sha256:83767c537f973e9d20f445084dcd50309d43ce33bf8a752d2140707e2088cfe9"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-command-generator.json",
+      "sha256": "sha256:68633f2e3c405c3b7902c2db15b1103efa0df5afa54c5354e8298d45f22c512b"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-command-hooks.json",
+      "sha256": "sha256:48886a9262fa6e250a53f7a02daee7b7c045ca2e0e644ee231fdd5f9c25b4a8a"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-command-name.json",
+      "sha256": "sha256:beca8f96b8141b61d216357d75b98bbd6f4d78c72ed3f876fc42cd9573225027"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-command-output.json",
+      "sha256": "sha256:c0f0afb1f419a50902f9821f285711d21d1c5beeabbf12862ff05ef49399ab75"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-command-plugins.json",
+      "sha256": "sha256:e686d7fa74cfa79cec3917abecb26e9fc478e736cbdc52c133d3f51b00b3173a"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-command-signing.json",
+      "sha256": "sha256:f5d7a791c9a5aeaad2d9067dba1cf5f71e011c7f7f386a2be5c94e2a688eb292"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-explicit-port.json",
+      "sha256": "sha256:43df75f4462686624670415ac81ee17d70cf28ad056927e69467740b997f0d97"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-generic-driver.json",
+      "sha256": "sha256:eff4d7836788d5f1f81dcf4b3f4081a10703043636cd1d821036d3c7051af6ef"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-https-dot-component.json",
+      "sha256": "sha256:3649be0932564c84423360afaa29c11ea519e7368e95707768cd96dd2f7d98c9"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-https-userinfo.json",
+      "sha256": "sha256:395726ddb4ff7b936b00da2d4d874119612f1b8bfdd6ad593660df17a8e13fb0"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-missing-repository.json",
+      "sha256": "sha256:04b75b014b6d3b0d3d5da55c5683ca1085cb46cb6dc471ba2d801fab7963354d"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-absolute.json",
+      "sha256": "sha256:33618a1ddeca646e82ac27520dea6671f8fe01ce2c72c3bbb0f836ba8d0bdc98"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-backslash.json",
+      "sha256": "sha256:d2567a3e2853fccdf805bfd104cdbd52396917ff0123bb9aceecd23ba2141a08"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-dot.json",
+      "sha256": "sha256:fd3430cd4e99a1027035b7066d7054284c5db6adb6d55a6bdf208cc749dab919"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-duplicate.json",
+      "sha256": "sha256:6762126c2e02f416057920f00b54345839cf6381185372bff4c381d98b2ced8c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-null.json",
+      "sha256": "sha256:32b0489a3c0fb84172b43870ee6c674a97f6b2681e339ff67abc135bbe9faa8b"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-on-repository-command.json",
+      "sha256": "sha256:648fab60b6eaa2d8414eb74f7e84a9b495c3374753ba9c776d9323854e72825c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-on-script-command.json",
+      "sha256": "sha256:b64a95ec915b7244efdfdca847f7f7a444fbe764445c8394ba2aa07d80b09ceb"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-on-system-command.json",
+      "sha256": "sha256:90c4e544639c709b28cedbbbffd5db69029344a9a827df781e8a714a5c1704fb"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-parent.json",
+      "sha256": "sha256:3cbc875edb80d851d98b40dc8476de6d06afdd0f62706bb4275ea997a1333d2c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-string.json",
+      "sha256": "sha256:02da8ed9e09fa34e145e9ba18eb9bb103ab308e8672435be0242ef75049bdc5c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-top-level.json",
+      "sha256": "sha256:419182b45601fbc6a349a50b3d54854f537c0383792c976bb92e9e48d823de92"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-module-roots-windows-device.json",
+      "sha256": "sha256:dcd6a53ced88241e4ae2f1ccfb9437b5cd568a8bb149a88bc8d184e49ff4a5ed"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-raw-revision-tag.json",
+      "sha256": "sha256:153a8ddd30e3a6db004ff64afbc900baedaf581cb6be9bb9d5e274a2b40264ef"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-scp-dot-component.json",
+      "sha256": "sha256:3f2a26b95da5ba1afe624d6592e3f385684f19a08580834cd2c18b0ad0ed3e64"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-script-worker-compiled-policy.json",
+      "sha256": "sha256:8be797d813de17aafa1ec8dd9a660971d0af0afbcb8c9a19a059402553ac7c0b"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-script-worker-hardened-policy.json",
+      "sha256": "sha256:53374eefaa8fdd35ef604f85c6772f97b8fe7e862561060f38d79b7f3443c2c6"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-script-worker-interpreter-without-policy.json",
+      "sha256": "sha256:9123f130a6da11ad2bfb2830f0d1b3a4c8ebb613871e509b1c5372815a30d5b0"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-script-worker-missing-interpreter.json",
+      "sha256": "sha256:92e512d4ec8f926950902930ae2438aad02a133a9cfa2e9236a0922eaac2d00c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-script-worker-missing-path.json",
+      "sha256": "sha256:92b9132958b76825f03a5028545dadd50db8a79061cc2d19a14b8b745f5198fc"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-script-worker-null-policy.json",
+      "sha256": "sha256:c7775bc78af06745741b72109319d17f9e34392a12ac015d6dbe7f57663ab85f"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-script-worker-on-build-command.json",
+      "sha256": "sha256:8041827a1548d12bf917941246c4ccc776e82a9295798b6d177135a2e697d067"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-script-worker-on-system-command.json",
+      "sha256": "sha256:8555dff905eeb609d8889a3daf7f23f81341b8d430bc9fd98bfb210fa8a8630c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-script-worker-opt-out-policy.json",
+      "sha256": "sha256:e42aa3b199e9aea95f80caa66d14f75f61b87101dc12a9cd189cad423c77a957"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-script-worker-successor-policy.json",
+      "sha256": "sha256:080dc12defd8f3465e8b7ddc2b912d1de4461a6ab5c069b1b18742982d9ddc56"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-script-worker-top-level-execution-policy.json",
+      "sha256": "sha256:426227d70f472b1b8edffbe242ceba3ed9da92d04df35d54a945b070f7925595"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-script-worker-top-level-interpreter.json",
+      "sha256": "sha256:b11798fa16687e1ce6f09d501d4db3a9596026ce60b540ef9885a120c299d9ca"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-script-worker-unknown-interpreter.json",
+      "sha256": "sha256:18b0b57e198237c2defe951202bc3eac611de628a70ec752ac09899b3c9d3914"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-sha1-width.json",
+      "sha256": "sha256:d409f8b944e613ec280959af9d9d0968966e85e658433a364198b1bbbedb673d"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-sha256-width.json",
+      "sha256": "sha256:f3b554e5a1c075e0f7f9e381b2ce7dc001675dbad8bdd8f40bb17b25f35c4e8a"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-ssh-dot-component.json",
+      "sha256": "sha256:5e4009fbdf76d79801b2caeb94d2588c11b71a54c5826eb6485b011a3763e646"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-ssh-metacharacter.json",
+      "sha256": "sha256:d846748f3741a99382f6f1f8b4f82ed4ece741c9e36d68c85d7f1abd8681763e"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-ssh-non-ascii.json",
+      "sha256": "sha256:5f26e1cb230812c41d1a3ff51ae40c63067564ad9f6c9aec5df2bac662a657a9"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-tag-256-bytes.json",
+      "sha256": "sha256:572f04d319f4b7c9bd35cbea225775e1770c5942ab5ab00d78132a2dbff65d8a"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-tag-300-bytes.json",
+      "sha256": "sha256:3290179e11bff8a89e7e1914a201dbd6a2030fa39bf87c4c693d27e2f22591e5"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid-unselected-repository.json",
+      "sha256": "sha256:ca187db5cdbd58e70e64e75bdb971ac3776803e6ee389d598702cb5dbb9b3b40"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/invalid.json",
+      "sha256": "sha256:ad45a7699a05e67c693f02477ed9999b10afe008222e0d9117646b1bd62bd87f"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-module-roots-absent.json",
+      "sha256": "sha256:893e2c91ef28b86b26ae6517ff01b95474b5d2187bb22198eb6b1eb82aac4644"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-module-roots-declared.json",
+      "sha256": "sha256:45476a18fbb28503ac125044b25ad75a228c79fa376a83239e8b8d377ff3ee90"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-module-roots-empty.json",
+      "sha256": "sha256:c3fdf1da855d1b828fce96f066c45b60209bc29c7d6cf5ce2a86be0716e1a154"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-scp-source.json",
+      "sha256": "sha256:ade27aeed55c4ee0f2d59e4e348fa017c7284b6ccae136a00607d5105263233f"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-script-worker-enforced.json",
+      "sha256": "sha256:1e31d7acefbd61bfe5e502131291abb77d5e606a2faf345fa9f47ee0339d74b6"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-script-worker-mixed-enforcement.json",
+      "sha256": "sha256:a54ac8b4b2764f0550b2a62238546e026b072917908a0ae4cfa3f331c98e4e76"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-script-worker-node-interpreter.json",
+      "sha256": "sha256:85ed4f9467b5eff82e7c10ae44eb89761e3f614cd8a2dcd43d3b065ff87185c3"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-script-worker-unix-only.json",
+      "sha256": "sha256:6ca47069ac27e8da4a901efdc502f8eee321006970da96ea3c1d615a45cd3b51"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-script-worker-windows-only.json",
+      "sha256": "sha256:e47353551cb53bd79ed98bee41c2427059ca1f8a8a2c0d3ed55945163d8e328c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-sha256-lock.json",
+      "sha256": "sha256:cd7cf511cf4f12b81935ec17ff51b26452dbf1996390c3482e60577025bd2763"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-ssh-source.json",
+      "sha256": "sha256:483c1b20d2118107f550c3279c7cb3c7263bc8f386ca5c21e9f5d01ff08b522c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-tag-255-bytes.json",
+      "sha256": "sha256:96cefc89ca2ae2c8d566fc3d325fabcd154b14e8e27db6fe30a880e6b5847bb0"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-unicode-https-source.json",
+      "sha256": "sha256:9cd10a68fb37691a9f64b5e0ffc44e6e72b97dc788b00f0f5c02bf307237f84c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid-untagged-lock.json",
+      "sha256": "sha256:222efa75d9b942826059d5a4ddae380625b7f65bac6372a00e890c99e8696307"
+    },
+    {
+      "path": "schema-cases/agent-skill-v8/valid.json",
+      "sha256": "sha256:a5e806176064dd5ebcfa2d5a1fb19363f73907b035d75149004711ffd5c40a11"
     },
     {
       "path": "schema-cases/assurance-policy-v1/invalid.json",
@@ -917,6 +1297,14 @@
       "sha256": "sha256:40275ce1e08911c363b2a1ebe3fbc6fc8751d294dad8d2d59ec1e5586675f5f3"
     },
     {
+      "path": "schema-cases/conformance-claim-v5/invalid.json",
+      "sha256": "sha256:d4a78d3fb159023781debd26382b7f8fa33681704cef5f0109942ff44cc967fd"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v5/valid.json",
+      "sha256": "sha256:e87ba543bb8e871eb93a4d25de3a6a05ba79b6bd0cfbe8d508f279855a0981bf"
+    },
+    {
       "path": "schema-cases/csk-skill-v1/invalid-v7-build-repositories.json",
       "sha256": "sha256:3c9eda4dfa64d78be6db5184a9bb15eec5a1a47234cbfdc4ae9c34f0b23bd52e"
     },
@@ -943,6 +1331,22 @@
     {
       "path": "schema-cases/csk-skill-v1/invalid-v7-top-level-target.json",
       "sha256": "sha256:9dbec3a77710a52c8f1ee6b738105156693eca70e9c4bacd2b93503d91fb28e6"
+    },
+    {
+      "path": "schema-cases/csk-skill-v1/invalid-v8-command-execution-policy.json",
+      "sha256": "sha256:34b4770c5af166f8e108481adc84b09f79e3cb2d21b8896f1d4b74452104d622"
+    },
+    {
+      "path": "schema-cases/csk-skill-v1/invalid-v8-command-interpreter.json",
+      "sha256": "sha256:e9a6a9535d1a89ade361ff0d465b08163e0079cd49d9048f218805fb36c73bca"
+    },
+    {
+      "path": "schema-cases/csk-skill-v1/invalid-v8-top-level-execution-policy.json",
+      "sha256": "sha256:4b9f291a005929ea9fe4541cc7a46e98d9823be5deaa9f719db9d09322d7b2da"
+    },
+    {
+      "path": "schema-cases/csk-skill-v1/invalid-v8-top-level-interpreter.json",
+      "sha256": "sha256:9641d5bb993931da4ec5dacb05d92c574848c753d89f219046341e0656e9a945"
     },
     {
       "path": "schema-cases/csk-skill-v1/invalid.json",
@@ -981,6 +1385,22 @@
       "sha256": "sha256:f0810e8a9bd9238d4ab6f0ad17bd826ac14bb3c0908b161361687faf7a28b27c"
     },
     {
+      "path": "schema-cases/csk-skill-v2/invalid-v8-command-execution-policy.json",
+      "sha256": "sha256:dcf9f7e72c141751d2825e668a8c08e41a3b6f73ed96c095c1f6ad3d37292a1b"
+    },
+    {
+      "path": "schema-cases/csk-skill-v2/invalid-v8-command-interpreter.json",
+      "sha256": "sha256:b8825755d099d68aee8640acc7cb38f854f97d0e2cd4340c797d6aed7aef9a1d"
+    },
+    {
+      "path": "schema-cases/csk-skill-v2/invalid-v8-top-level-execution-policy.json",
+      "sha256": "sha256:70722fd572594bc5d1283e70f3500dbf8fba0a39758856b70dcba2d116158140"
+    },
+    {
+      "path": "schema-cases/csk-skill-v2/invalid-v8-top-level-interpreter.json",
+      "sha256": "sha256:2b652eceeeea7ca693b112bd46eb47dba751dd41fcfcd79f3afff3dc49e27a98"
+    },
+    {
       "path": "schema-cases/csk-skill-v2/invalid.json",
       "sha256": "sha256:b34b7633c5351bc53a4b3fc95ffc84e91167c57d682fc000fc0d8079598f54c2"
     },
@@ -1015,6 +1435,22 @@
     {
       "path": "schema-cases/csk-skill-v3/invalid-v7-top-level-target.json",
       "sha256": "sha256:47a9c14aa7baec0f684368157d250a3e573f55beec3a2ab1359de3b49609ea04"
+    },
+    {
+      "path": "schema-cases/csk-skill-v3/invalid-v8-command-execution-policy.json",
+      "sha256": "sha256:f5f86f83c6e973a926cc351f37ab847ec04c6e9669536d860f026d8344d3a664"
+    },
+    {
+      "path": "schema-cases/csk-skill-v3/invalid-v8-command-interpreter.json",
+      "sha256": "sha256:ecd1d06c78a6d5144fe251acee623b8a2091625cb92a5f9ac8a9bf23b156f2aa"
+    },
+    {
+      "path": "schema-cases/csk-skill-v3/invalid-v8-top-level-execution-policy.json",
+      "sha256": "sha256:e796d5cd9745fdc4eec2ba2e6b2e7bbd4d6d15b19d6176d3fb8e88bf5ae85805"
+    },
+    {
+      "path": "schema-cases/csk-skill-v3/invalid-v8-top-level-interpreter.json",
+      "sha256": "sha256:6b61cd15397f96cd9674ac4bb8cdf7d7998ed87a37b979490713b4f055525fea"
     },
     {
       "path": "schema-cases/csk-skill-v3/invalid.json",
@@ -1053,6 +1489,22 @@
       "sha256": "sha256:8086d12af60da48ad61ce891f3545268b6181dc7323ec45a75f43b9f365995ac"
     },
     {
+      "path": "schema-cases/csk-skill-v4/invalid-v8-command-execution-policy.json",
+      "sha256": "sha256:776c121c92ca0c27149b9d17d61b5834484f2b353b79b591ad9642e7b30887ea"
+    },
+    {
+      "path": "schema-cases/csk-skill-v4/invalid-v8-command-interpreter.json",
+      "sha256": "sha256:8b6ef5503512e947f7341a76b33249fffa6747cad2783fd0871f31360a2c7c29"
+    },
+    {
+      "path": "schema-cases/csk-skill-v4/invalid-v8-top-level-execution-policy.json",
+      "sha256": "sha256:17a2f704caab2bf63f61cde6a18f5c78888d8efa9bb0854f7c7bb5651b1cc6d5"
+    },
+    {
+      "path": "schema-cases/csk-skill-v4/invalid-v8-top-level-interpreter.json",
+      "sha256": "sha256:abcc73cab742a35cf7d0a5ef9bccaa060e3ccc96c10122afddcb4ae8bfc8322b"
+    },
+    {
       "path": "schema-cases/csk-skill-v4/invalid.json",
       "sha256": "sha256:0057844f12c30cb9a74bc251df912103956dc0975b369ed99c8534fd84490334"
     },
@@ -1087,6 +1539,22 @@
     {
       "path": "schema-cases/csk-skill-v5/invalid-v7-top-level-target.json",
       "sha256": "sha256:15be7bb7f9f4b216f3310018e281bccfd9ecac05a8e71362e65d6e4f205a9139"
+    },
+    {
+      "path": "schema-cases/csk-skill-v5/invalid-v8-command-execution-policy.json",
+      "sha256": "sha256:307eafc5024d5d60efabfa3faa7ea47052c0f471c1b69365e391a32ffc4ce3e3"
+    },
+    {
+      "path": "schema-cases/csk-skill-v5/invalid-v8-command-interpreter.json",
+      "sha256": "sha256:fe16d320d46dfc650f8c137ee164d6cc6c8e7888afdee504f5f9e51448b74a62"
+    },
+    {
+      "path": "schema-cases/csk-skill-v5/invalid-v8-top-level-execution-policy.json",
+      "sha256": "sha256:388cda68db1d39baad5dd1acb291ec1201f4f3d845b38583245b7f5bcae7f026"
+    },
+    {
+      "path": "schema-cases/csk-skill-v5/invalid-v8-top-level-interpreter.json",
+      "sha256": "sha256:6556cee14702e5fc3fe6c609c5e41f8103f5cc83ab0ad053e5e01ad113540a1d"
     },
     {
       "path": "schema-cases/csk-skill-v5/invalid.json",
@@ -1183,6 +1651,22 @@
     {
       "path": "schema-cases/csk-skill-v6/invalid-v7-top-level-target.json",
       "sha256": "sha256:afa77c9901ae8686cf2ce098bf755ea2b31d0f9531d80bb32564577df631e90e"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-v8-command-execution-policy.json",
+      "sha256": "sha256:45aef7111187d08219185247ca8ea554447472c208cd192d7c13511c0736bbe0"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-v8-command-interpreter.json",
+      "sha256": "sha256:47d3abb4a4303fbca29f99d74f065b3575633d0a516cba7d9ad58656bb86cf78"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-v8-top-level-execution-policy.json",
+      "sha256": "sha256:2420efadb05d779246afbb607a9cc28672e49c02e0b508d8fe65786caef20f5f"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-v8-top-level-interpreter.json",
+      "sha256": "sha256:8c636c3874eb356a32d7ed5580dab4d1f3a5e8f6043bb583eda436514cf27446"
     },
     {
       "path": "schema-cases/csk-skill-v6/invalid.json",
@@ -1293,6 +1777,22 @@
       "sha256": "sha256:6655c019c17de4b072bddeda26369d9164dedb1d55ad710c4722f983c4eebad8"
     },
     {
+      "path": "schema-cases/csk-skill-v7/invalid-v8-command-execution-policy.json",
+      "sha256": "sha256:bf35ad809769842dd4a9b141e3b83ebe26b2a961dcae05f28012af8be53ad165"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-v8-command-interpreter.json",
+      "sha256": "sha256:a2792019b408b30f392fc00d893f0442934ed3679bee0fa13b86977a9dca07f8"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-v8-top-level-execution-policy.json",
+      "sha256": "sha256:3fd41fa22d317bdc238cf4b2af55a7662f65f8be0934a20bc2ac2ec382da297c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-v8-top-level-interpreter.json",
+      "sha256": "sha256:b4bc3177dccdc46af438cba3300a502e0fab83ae6050b8a5efa5c320826ec171"
+    },
+    {
       "path": "schema-cases/csk-skill-v7/invalid.json",
       "sha256": "sha256:a589d36c5b0f990b02af5c0827980858e0004d2d0874868185c6e89ef049b2e4"
     },
@@ -1323,6 +1823,270 @@
     {
       "path": "schema-cases/csk-skill-v7/valid.json",
       "sha256": "sha256:90176154672a411dbdb2c68ff22afe719a6b7773c3ac74f29d3fedd17cd055b6"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-command-argv.json",
+      "sha256": "sha256:7725f93a2623ab1d8516aab4e362bf34dd75b1e100690f0b4d61e3300c6d3216"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-command-credentials.json",
+      "sha256": "sha256:0435fe2c6e858448c67ba93c1a57a990f847ae88064670a17efbde36567c0b94"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-command-env.json",
+      "sha256": "sha256:d07485b983f4f0e76db13512f88cc602bf650229259aaaab0e26ed5ecbd071bf"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-command-fallback.json",
+      "sha256": "sha256:83767c537f973e9d20f445084dcd50309d43ce33bf8a752d2140707e2088cfe9"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-command-generator.json",
+      "sha256": "sha256:68633f2e3c405c3b7902c2db15b1103efa0df5afa54c5354e8298d45f22c512b"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-command-hooks.json",
+      "sha256": "sha256:48886a9262fa6e250a53f7a02daee7b7c045ca2e0e644ee231fdd5f9c25b4a8a"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-command-name.json",
+      "sha256": "sha256:beca8f96b8141b61d216357d75b98bbd6f4d78c72ed3f876fc42cd9573225027"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-command-output.json",
+      "sha256": "sha256:c0f0afb1f419a50902f9821f285711d21d1c5beeabbf12862ff05ef49399ab75"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-command-plugins.json",
+      "sha256": "sha256:e686d7fa74cfa79cec3917abecb26e9fc478e736cbdc52c133d3f51b00b3173a"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-command-signing.json",
+      "sha256": "sha256:f5d7a791c9a5aeaad2d9067dba1cf5f71e011c7f7f386a2be5c94e2a688eb292"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-explicit-port.json",
+      "sha256": "sha256:43df75f4462686624670415ac81ee17d70cf28ad056927e69467740b997f0d97"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-generic-driver.json",
+      "sha256": "sha256:eff4d7836788d5f1f81dcf4b3f4081a10703043636cd1d821036d3c7051af6ef"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-https-dot-component.json",
+      "sha256": "sha256:3649be0932564c84423360afaa29c11ea519e7368e95707768cd96dd2f7d98c9"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-https-userinfo.json",
+      "sha256": "sha256:395726ddb4ff7b936b00da2d4d874119612f1b8bfdd6ad593660df17a8e13fb0"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-missing-repository.json",
+      "sha256": "sha256:04b75b014b6d3b0d3d5da55c5683ca1085cb46cb6dc471ba2d801fab7963354d"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-absolute.json",
+      "sha256": "sha256:33618a1ddeca646e82ac27520dea6671f8fe01ce2c72c3bbb0f836ba8d0bdc98"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-backslash.json",
+      "sha256": "sha256:d2567a3e2853fccdf805bfd104cdbd52396917ff0123bb9aceecd23ba2141a08"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-dot.json",
+      "sha256": "sha256:fd3430cd4e99a1027035b7066d7054284c5db6adb6d55a6bdf208cc749dab919"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-duplicate.json",
+      "sha256": "sha256:6762126c2e02f416057920f00b54345839cf6381185372bff4c381d98b2ced8c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-null.json",
+      "sha256": "sha256:32b0489a3c0fb84172b43870ee6c674a97f6b2681e339ff67abc135bbe9faa8b"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-on-repository-command.json",
+      "sha256": "sha256:648fab60b6eaa2d8414eb74f7e84a9b495c3374753ba9c776d9323854e72825c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-on-script-command.json",
+      "sha256": "sha256:b64a95ec915b7244efdfdca847f7f7a444fbe764445c8394ba2aa07d80b09ceb"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-on-system-command.json",
+      "sha256": "sha256:90c4e544639c709b28cedbbbffd5db69029344a9a827df781e8a714a5c1704fb"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-parent.json",
+      "sha256": "sha256:3cbc875edb80d851d98b40dc8476de6d06afdd0f62706bb4275ea997a1333d2c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-string.json",
+      "sha256": "sha256:02da8ed9e09fa34e145e9ba18eb9bb103ab308e8672435be0242ef75049bdc5c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-top-level.json",
+      "sha256": "sha256:419182b45601fbc6a349a50b3d54854f537c0383792c976bb92e9e48d823de92"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-module-roots-windows-device.json",
+      "sha256": "sha256:dcd6a53ced88241e4ae2f1ccfb9437b5cd568a8bb149a88bc8d184e49ff4a5ed"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-raw-revision-tag.json",
+      "sha256": "sha256:153a8ddd30e3a6db004ff64afbc900baedaf581cb6be9bb9d5e274a2b40264ef"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-scp-dot-component.json",
+      "sha256": "sha256:3f2a26b95da5ba1afe624d6592e3f385684f19a08580834cd2c18b0ad0ed3e64"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-script-worker-compiled-policy.json",
+      "sha256": "sha256:8be797d813de17aafa1ec8dd9a660971d0af0afbcb8c9a19a059402553ac7c0b"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-script-worker-hardened-policy.json",
+      "sha256": "sha256:53374eefaa8fdd35ef604f85c6772f97b8fe7e862561060f38d79b7f3443c2c6"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-script-worker-interpreter-without-policy.json",
+      "sha256": "sha256:9123f130a6da11ad2bfb2830f0d1b3a4c8ebb613871e509b1c5372815a30d5b0"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-script-worker-missing-interpreter.json",
+      "sha256": "sha256:92e512d4ec8f926950902930ae2438aad02a133a9cfa2e9236a0922eaac2d00c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-script-worker-missing-path.json",
+      "sha256": "sha256:92b9132958b76825f03a5028545dadd50db8a79061cc2d19a14b8b745f5198fc"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-script-worker-null-policy.json",
+      "sha256": "sha256:c7775bc78af06745741b72109319d17f9e34392a12ac015d6dbe7f57663ab85f"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-script-worker-on-build-command.json",
+      "sha256": "sha256:8041827a1548d12bf917941246c4ccc776e82a9295798b6d177135a2e697d067"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-script-worker-on-system-command.json",
+      "sha256": "sha256:8555dff905eeb609d8889a3daf7f23f81341b8d430bc9fd98bfb210fa8a8630c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-script-worker-opt-out-policy.json",
+      "sha256": "sha256:e42aa3b199e9aea95f80caa66d14f75f61b87101dc12a9cd189cad423c77a957"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-script-worker-successor-policy.json",
+      "sha256": "sha256:080dc12defd8f3465e8b7ddc2b912d1de4461a6ab5c069b1b18742982d9ddc56"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-script-worker-top-level-execution-policy.json",
+      "sha256": "sha256:426227d70f472b1b8edffbe242ceba3ed9da92d04df35d54a945b070f7925595"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-script-worker-top-level-interpreter.json",
+      "sha256": "sha256:b11798fa16687e1ce6f09d501d4db3a9596026ce60b540ef9885a120c299d9ca"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-script-worker-unknown-interpreter.json",
+      "sha256": "sha256:18b0b57e198237c2defe951202bc3eac611de628a70ec752ac09899b3c9d3914"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-sha1-width.json",
+      "sha256": "sha256:d409f8b944e613ec280959af9d9d0968966e85e658433a364198b1bbbedb673d"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-sha256-width.json",
+      "sha256": "sha256:f3b554e5a1c075e0f7f9e381b2ce7dc001675dbad8bdd8f40bb17b25f35c4e8a"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-ssh-dot-component.json",
+      "sha256": "sha256:5e4009fbdf76d79801b2caeb94d2588c11b71a54c5826eb6485b011a3763e646"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-ssh-metacharacter.json",
+      "sha256": "sha256:d846748f3741a99382f6f1f8b4f82ed4ece741c9e36d68c85d7f1abd8681763e"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-ssh-non-ascii.json",
+      "sha256": "sha256:5f26e1cb230812c41d1a3ff51ae40c63067564ad9f6c9aec5df2bac662a657a9"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-tag-256-bytes.json",
+      "sha256": "sha256:572f04d319f4b7c9bd35cbea225775e1770c5942ab5ab00d78132a2dbff65d8a"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-tag-300-bytes.json",
+      "sha256": "sha256:3290179e11bff8a89e7e1914a201dbd6a2030fa39bf87c4c693d27e2f22591e5"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid-unselected-repository.json",
+      "sha256": "sha256:ca187db5cdbd58e70e64e75bdb971ac3776803e6ee389d598702cb5dbb9b3b40"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/invalid.json",
+      "sha256": "sha256:ad45a7699a05e67c693f02477ed9999b10afe008222e0d9117646b1bd62bd87f"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-module-roots-absent.json",
+      "sha256": "sha256:893e2c91ef28b86b26ae6517ff01b95474b5d2187bb22198eb6b1eb82aac4644"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-module-roots-declared.json",
+      "sha256": "sha256:45476a18fbb28503ac125044b25ad75a228c79fa376a83239e8b8d377ff3ee90"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-module-roots-empty.json",
+      "sha256": "sha256:c3fdf1da855d1b828fce96f066c45b60209bc29c7d6cf5ce2a86be0716e1a154"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-scp-source.json",
+      "sha256": "sha256:ade27aeed55c4ee0f2d59e4e348fa017c7284b6ccae136a00607d5105263233f"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-script-worker-enforced.json",
+      "sha256": "sha256:1e31d7acefbd61bfe5e502131291abb77d5e606a2faf345fa9f47ee0339d74b6"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-script-worker-mixed-enforcement.json",
+      "sha256": "sha256:a54ac8b4b2764f0550b2a62238546e026b072917908a0ae4cfa3f331c98e4e76"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-script-worker-node-interpreter.json",
+      "sha256": "sha256:85ed4f9467b5eff82e7c10ae44eb89761e3f614cd8a2dcd43d3b065ff87185c3"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-script-worker-unix-only.json",
+      "sha256": "sha256:6ca47069ac27e8da4a901efdc502f8eee321006970da96ea3c1d615a45cd3b51"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-script-worker-windows-only.json",
+      "sha256": "sha256:e47353551cb53bd79ed98bee41c2427059ca1f8a8a2c0d3ed55945163d8e328c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-sha256-lock.json",
+      "sha256": "sha256:cd7cf511cf4f12b81935ec17ff51b26452dbf1996390c3482e60577025bd2763"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-ssh-source.json",
+      "sha256": "sha256:483c1b20d2118107f550c3279c7cb3c7263bc8f386ca5c21e9f5d01ff08b522c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-tag-255-bytes.json",
+      "sha256": "sha256:96cefc89ca2ae2c8d566fc3d325fabcd154b14e8e27db6fe30a880e6b5847bb0"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-unicode-https-source.json",
+      "sha256": "sha256:9cd10a68fb37691a9f64b5e0ffc44e6e72b97dc788b00f0f5c02bf307237f84c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid-untagged-lock.json",
+      "sha256": "sha256:222efa75d9b942826059d5a4ddae380625b7f65bac6372a00e890c99e8696307"
+    },
+    {
+      "path": "schema-cases/csk-skill-v8/valid.json",
+      "sha256": "sha256:a5e806176064dd5ebcfa2d5a1fb19363f73907b035d75149004711ffd5c40a11"
     },
     {
       "path": "schema-cases/error-response-v1/invalid.json",
@@ -1398,7 +2162,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:7aff010c514969506bfbb67d3266f437fd14d43b8c6a73f0550a8e542ff3ca21"
+      "sha256": "sha256:3e4d297e74f63f211c84938d5f830985f3ca485e07df4e9e25289bdeebbac071"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -1571,6 +2335,114 @@
     {
       "path": "schema-cases/install-marker-v3/valid.json",
       "sha256": "sha256:20a1ef924f54f8c6dab582a78c22be0778b2f08c17f1cedaeb8016efd624ddd0"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid-external-declared-effective-mismatch.json",
+      "sha256": "sha256:5306412d404b8da68fe12db28f7fa7e469d84a80a28d825bb241aa3c65a02dd7"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid-external-hardened-execution-policy.json",
+      "sha256": "sha256:a1b545aa1eb0a33b779d562093322a61ec20f87126383e913e14f0165a8c65c1"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid-external-missing-execution-policy.json",
+      "sha256": "sha256:ccb9776e758f9995a8143ca7e6268cc67b29bc4efd583b5a22c0c29cb07a9f8c"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid-external-object-width.json",
+      "sha256": "sha256:17329d79b2e1ef39c56b3ff55ea20d80fa78fa146e022ab9a479c3b0f136a4a3"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid-external-only-build-source.json",
+      "sha256": "sha256:c6a1a385305050aa3d1d3c40a430d1330939ff654a3b82f8cd0b651ce5c95f7f"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid-external-receipt-version.json",
+      "sha256": "sha256:1dda57f073ce273daf9dbab1ba584695aef1146fb82515976dca4d36b41d86c9"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid-local-hardened-execution-policy.json",
+      "sha256": "sha256:64a49f6709d238a7ee3362e47421c8c15298eb87792e34a02d02598b635f6ec1"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid-local-missing-execution-policy.json",
+      "sha256": "sha256:5763bd38c0f2bc9c84ac4257c106d8a36ed4b9b267b87a4ab9b7460d5f36533c"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid-local-receipt-version.json",
+      "sha256": "sha256:13259663535be76e3d036c0c2b3935fb2d4972eb176029835686999dbc9045e4"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid-marker-local-identity-kind-mismatch.json",
+      "sha256": "sha256:d6ef5e7b8a3f2fdf1cd88463bccf5303206d7c80f0fccf252a10607f0122794c"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid-marker-network-identity-kind-mismatch.json",
+      "sha256": "sha256:ed5bf21cbeb533d49c57df49ec22a0b9b6e1158a180a94d378a4d11886ce6792"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid-marker-sha1-effective-revision-width.json",
+      "sha256": "sha256:f49c09faa9d5b0ce93ee0731650cff808016bf32bed4c77a5f285c42f0a569c0"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid-marker-sha256-effective-revision-width.json",
+      "sha256": "sha256:585cf25137770c094a65bb781e1e64a97865e6e85af488e8a97188e40c0da1b9"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid-missing-local-build-source.json",
+      "sha256": "sha256:370aa3b254adf19903052132c90e9e9d613cd358c159ec9868c1e3415d204c46"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid-package-signing.json",
+      "sha256": "sha256:517c971d01272187f974ab362859ef6608f309764a1b89d220dfaf83c44f8588"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/invalid.json",
+      "sha256": "sha256:041d9e8b35e1f2d1462666d902f84601b412032c426913102861fe998ccb789e"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/valid-empty-builds.json",
+      "sha256": "sha256:9475ddab55f340b5e421a7d5832b915925d6f5fb56d6d26517a5328a9660f32e"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/valid-external-only-substituted.json",
+      "sha256": "sha256:58c5f3dc382adc3ac04159080249d9afda158338f8b868b5be6dfc450ee79d25"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/valid-external-only-unsubstituted.json",
+      "sha256": "sha256:c3832af3617005050ab16b9435717176e18fe8f93514546e55e1b94693577253"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/valid-local-only.json",
+      "sha256": "sha256:e946a828eef95d9e27be92130a11dedf83b87d59141174c91c4d3ea076ef2431"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/valid-network-sha1-revision.json",
+      "sha256": "sha256:41aef630818ae0cb460951c1fd7ab8f57ccc2a440cba17bed5eb52af304e5add"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/valid-network-sha256-revision.json",
+      "sha256": "sha256:7b7aba7cc233f4cf06b8d5f88c957814bc4d341b9e47170938bb8bfd9cd51099"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/valid-network-substitution-branch.json",
+      "sha256": "sha256:3517461c012d66c47dd96c39155a00d4ecc03d91ac083811c010d1709ec0d71a"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/valid-network-substitution-tag.json",
+      "sha256": "sha256:d9a0e0bce605fd8c8da498f6ead6e1b3de14187e246152ce060ba7eb719fb45e"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/valid-sha256-external.json",
+      "sha256": "sha256:e629b9fd1f1011424a091e0d6b08b0f72d1ba1a3ba312f717005305b51799826"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/valid-untagged-external.json",
+      "sha256": "sha256:8b49fe58bd7a85d1c84f0bed456829810687fb67e6e66d60b8e53f135c7582c5"
+    },
+    {
+      "path": "schema-cases/install-marker-v4/valid.json",
+      "sha256": "sha256:905101ee9ac58862eac2131f32a6aae4dfe56df23aae4763e47b4917c8914094"
     },
     {
       "path": "schema-cases/log-response-v1/invalid.json",
@@ -1810,7 +2682,7 @@
     },
     {
       "path": "vectors/build-drivers.json",
-      "sha256": "sha256:f412c107091cf82f980523afe5361212a3b89a3425f5d885373191f8acb12aea"
+      "sha256": "sha256:f9c77e499e986ddf42bfc121bf63ee7589bbd23c8c817a6a6499870dc1d4b5bc"
     },
     {
       "path": "vectors/canonical-invalid.json",
@@ -1826,19 +2698,19 @@
     },
     {
       "path": "vectors/conformance-claim-v3-qualification.json",
-      "sha256": "sha256:ef2c997a3ab48441321c9aaac69980e24bf596baf0d6369b1cdd18b20cc3277c"
+      "sha256": "sha256:aefa6ee21c70cb46e5552f3fd608849d0f69b0ea034428f81eacd00d9d1fffe1"
     },
     {
       "path": "vectors/external-repository-acquisition.json",
-      "sha256": "sha256:c13e13d0271ea51288a1d289eb3caf97e6e19d9b36c7be99a167850680ababd4"
+      "sha256": "sha256:df29609d2b29dd07d4b3ebedda229fe554142bf3e4457375b57c5aa44d3b403a"
     },
     {
       "path": "vectors/external-repository-lifecycle.json",
-      "sha256": "sha256:175d709f183775b22ed3db27bc923ca78d6394d93a13096b5d6890c509aab072"
+      "sha256": "sha256:5a8b99c688018f12c1cf8d0089a64e1e63f3b416c75e847694b4f0fdd6587aa3"
     },
     {
       "path": "vectors/go-host-execution-policy.json",
-      "sha256": "sha256:94a93a69ea4c76f1936061306f5cb616714fcf30ddc007593628000fb970c23f"
+      "sha256": "sha256:a4995233b78042f4bc290510efcbb7d350d23247e25f1213743b2d57a97e7efd"
     },
     {
       "path": "vectors/identifiers.json",
@@ -1855,6 +2727,10 @@
     {
       "path": "vectors/manager-lifecycle.json",
       "sha256": "sha256:25f573a40652dfaf6bb52818b2209c2f8c1e6aec2a7515023e0ac531c2d91289"
+    },
+    {
+      "path": "vectors/module-roots.json",
+      "sha256": "sha256:3c8a3ba5986723e6179205e2be779ceb766b0b05e011f4f62121be5defa22d1b"
     },
     {
       "path": "vectors/portable-paths.json",
@@ -1877,6 +2753,10 @@
       "sha256": "sha256:7e8cb23ccb18e786ea06c20e617553d17d4e6b0a1001142fcc89360fb69ca2f5"
     },
     {
+      "path": "vectors/script-host-execution-policy.json",
+      "sha256": "sha256:35a58adc2df68bca8c89a042cbd617d76121a58601237de19013a62c5976617d"
+    },
+    {
       "path": "vectors/skill-manifest-resolution.json",
       "sha256": "sha256:07c42987cdfcbdb0b78a0149373ad8b49ac2d1d70a5484b4e42a54e20586647c"
     },
@@ -1887,5 +2767,5 @@
   ],
   "generated_at": "2026-07-13T00:00:00Z",
   "generator": "tools/generate-vectors",
-  "protocol_version": "1.0.0-rc.8"
+  "protocol_version": "1.0.0-rc.9"
 }
