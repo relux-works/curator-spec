@@ -1381,12 +1381,26 @@ executes:
  <exact-expected-git-upload-pack-command>]
 ```
 
-The authentication tail is exactly either
-`-o IdentitiesOnly=yes -o IdentityAgent=none -i <operator-identity>` or
-`-o IdentitiesOnly=no -o IdentityFile=none -o
-IdentityAgent=<operator-agent-socket>`. No ambient agent socket, default
-identity, user/system SSH configuration, prompt, TTY, forwarding, proxy,
-local command, or control connection is admitted.
+The authentication tail is exactly one of:
+
+1. `-o IdentitiesOnly=yes -o IdentityAgent=none -i <operator-identity>` —
+   an operator identity file and no agent;
+2. `-o IdentitiesOnly=no -o IdentityFile=none -o
+   IdentityAgent=<operator-agent-socket>` — an operator agent socket and no
+   named identity, so the agent offers each loaded key in turn;
+3. `-o IdentitiesOnly=yes -o IdentityAgent=<operator-agent-socket>
+   -i <operator-identity>` — the pinned-agent form: the operator agent holds
+   the private key and the named identity (conventionally the public half)
+   pins which single key the agent offers.
+
+The pinned-agent form is the RECOMMENDED selection when an agent is in use:
+it authenticates passphrase-protected keys without a prompt, spends exactly
+one server authentication attempt instead of one per loaded key, and
+discloses one public key to the destination rather than enumerating every
+key the agent holds. In every form the operator names each element
+explicitly. No ambient agent socket, default identity, user/system SSH
+configuration, prompt, TTY, forwarding, proxy, local command, or control
+connection is admitted.
 
 ### 11.4 Local-substitution admission
 
