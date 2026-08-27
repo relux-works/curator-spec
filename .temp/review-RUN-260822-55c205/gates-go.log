@@ -1,0 +1,14 @@
+=== go test ./tools/... ===
+ok  	github.com/relux-works/curator-spec/tools/generate-vectors	6.486s
+exit=
+=== gofmt -l tools ===
+exit=0
+=== generate-vectors ===
+exit=
+=== git diff --exit-code conformance/v1 release ===
+exit=0
+=== git diff --check ===
+exit=0
+=== full git status ===
+?? .temp/
+?? tools/__pycache__/
