@@ -74,3 +74,23 @@ stable 1.0.0 release. Schema v2 adds explicit non-maintainer and non-author
 attestations; producers migrate by adding both fields with truthful boolean
 values. The original schema v1 remains available for draft evidence, but a v1
 report is not accepted by the stable release gate.
+
+Protocol rc.4 introduced manifest schema 6, the closed local `go-v1` driver,
+build receipt v1, install marker v2, and claim v2. Their schemas, generated
+positive/negative bytes, driver meaning, and marker relationships are frozen.
+An rc.5 reader continues to accept them and never treats local `go-v1` input as
+an external repository.
+
+Protocol rc.5 adds manifest schema 7, `curator-build.json` schema 1,
+`Skillfile.dev.json` schema 2, the closed `go-repository-v1` driver, build
+receipt v2, install marker v3, and claim v3. A schema-7 local `go-v1` command
+still uses receipt v1; an external command uses receipt v2; marker v3 records
+local, external, or mixed commands with those explicit receipt versions.
+Schemas 1 through 6, receipt v1, markers v1/v2, claim v1/v2, and the rc.4
+conformance bytes do not acquire repository fields or new semantics.
+
+Candidate downstream runs consume rc.5 through an explicitly supplied
+`CURATOR_CONFORMANCE_ROOT` and verify the manifest digest recorded in
+`release/1.0.0-rc.5.json`. That candidate identity does not advance a
+repository's committed released-suite pin and is not a published release,
+platform claim, signature, or attestation.

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import subprocess
 import tempfile
 import unittest
@@ -122,6 +123,41 @@ class StableReleaseGateTests(unittest.TestCase):
         release_commit = self._git("rev-parse", "HEAD")
         with self.assertRaisesRegex(release_gate.ReleaseFailure, "normative files changed"):
             release_gate.validate_reviews(VERSION, release_commit)
+
+    def test_candidate_requires_exact_suite_manifest_pin(self) -> None:
+        version = "1.0.0-rc.5"
+        (self.root / "README.md").write_text(
+            f"**Version:** {version}\n", encoding="utf-8"
+        )
+        (self.root / "CHANGELOG.md").write_text(
+            f"## {version}\n", encoding="utf-8"
+        )
+        manifest_path = self.root / "conformance" / "v1" / "manifest.json"
+        self._write_json(
+            manifest_path, {"protocol_version": version, "files": []}
+        )
+        digest = "sha256:" + hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+        metadata_path = self.root / "release" / f"{version}.json"
+        self._write_json(
+            metadata_path,
+            {
+                "protocol_version": version,
+                "candidate_protocol_pin": {"manifest_sha256": digest},
+                "downstream_consumption": {
+                    "required_manifest_sha256": digest,
+                },
+            },
+        )
+        release_gate.validate_version(version)
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        metadata["downstream_consumption"]["required_manifest_sha256"] = (
+            "sha256:" + "0" * 64
+        )
+        self._write_json(metadata_path, metadata)
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "does not pin the exact suite manifest"
+        ):
+            release_gate.validate_version(version)
 
 
 if __name__ == "__main__":
