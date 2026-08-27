@@ -1,0 +1,3 @@
+implementation-coverage: FAILED
+manager: tests/test_schema8_candidate_conformance.py::test_module_root_sections_are_all_classified was not observed in this run -- every top-level section of the published module-roots family is classified
+manager: tests/test_schema8_candidate_conformance.py::test_module_root_case was not observed in this run -- every published module-roots case drives the go-v1 driver to its own declared failure boundary

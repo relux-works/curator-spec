@@ -1,0 +1,2 @@
+524f505c5f9170f15730485888db27dfa8ad48ee2939176e35a225daf3a01bd7  curator-protocol-1.0.0-rc.9.tar.gz
+dc8df7112418d636be86fc089eb7162409136d60ccc472bf41849e6e908b33cf  curator-protocol-1.0.0-rc.9.zip

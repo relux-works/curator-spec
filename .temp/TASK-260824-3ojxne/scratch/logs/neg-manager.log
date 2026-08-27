@@ -1,0 +1,146 @@
+........................................................................ [ 41%]
+........................................................................ [ 83%]
+............................                                             [100%]
+=============================== warnings summary ===============================
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7cdbc20-6694-4461-9f91-2d5e083dc991/test_rc6_toolchain_case_toolch0/toolchain-mode-1/pkg
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7cdbc20-6694-4461-9f91-2d5e083dc991/test_rc6_toolchain_case_toolch0/toolchain-mode-1/pkg'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7cdbc20-6694-4461-9f91-2d5e083dc991/test_rc6_toolchain_case_toolch0/toolchain-mode-1
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7cdbc20-6694-4461-9f91-2d5e083dc991/test_rc6_toolchain_case_toolch0/toolchain-mode-1'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7cdbc20-6694-4461-9f91-2d5e083dc991/test_rc6_toolchain_case_toolch0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7cdbc20-6694-4461-9f91-2d5e083dc991/test_rc6_toolchain_case_toolch0'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7cdbc20-6694-4461-9f91-2d5e083dc991
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7cdbc20-6694-4461-9f91-2d5e083dc991'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-f61cff53-c257-4af5-a3e6-8fea3d7e63d9/test_rc6_toolchain_case_toolch0/toolchain-mode-1/pkg
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-f61cff53-c257-4af5-a3e6-8fea3d7e63d9/test_rc6_toolchain_case_toolch0/toolchain-mode-1/pkg'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-f61cff53-c257-4af5-a3e6-8fea3d7e63d9/test_rc6_toolchain_case_toolch0/toolchain-mode-1
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-f61cff53-c257-4af5-a3e6-8fea3d7e63d9/test_rc6_toolchain_case_toolch0/toolchain-mode-1'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-f61cff53-c257-4af5-a3e6-8fea3d7e63d9/test_rc6_toolchain_case_toolch0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-f61cff53-c257-4af5-a3e6-8fea3d7e63d9/test_rc6_toolchain_case_toolch0'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-f61cff53-c257-4af5-a3e6-8fea3d7e63d9
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-f61cff53-c257-4af5-a3e6-8fea3d7e63d9'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-a82795a0-8c75-459e-a7df-1c0d8c3b3eba/test_rc6_toolchain_case_toolch0/toolchain-mode-1/pkg
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-a82795a0-8c75-459e-a7df-1c0d8c3b3eba/test_rc6_toolchain_case_toolch0/toolchain-mode-1/pkg'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-a82795a0-8c75-459e-a7df-1c0d8c3b3eba/test_rc6_toolchain_case_toolch0/toolchain-mode-1
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-a82795a0-8c75-459e-a7df-1c0d8c3b3eba/test_rc6_toolchain_case_toolch0/toolchain-mode-1'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-a82795a0-8c75-459e-a7df-1c0d8c3b3eba/test_rc6_toolchain_case_toolch0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-a82795a0-8c75-459e-a7df-1c0d8c3b3eba/test_rc6_toolchain_case_toolch0'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-a82795a0-8c75-459e-a7df-1c0d8c3b3eba
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-a82795a0-8c75-459e-a7df-1c0d8c3b3eba'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7f292c0-10b9-43dd-a389-a747aec85340/test_rc6_toolchain_case_toolch0/toolchain-mode-1/pkg
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7f292c0-10b9-43dd-a389-a747aec85340/test_rc6_toolchain_case_toolch0/toolchain-mode-1/pkg'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7f292c0-10b9-43dd-a389-a747aec85340/test_rc6_toolchain_case_toolch0/toolchain-mode-1
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7f292c0-10b9-43dd-a389-a747aec85340/test_rc6_toolchain_case_toolch0/toolchain-mode-1'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7f292c0-10b9-43dd-a389-a747aec85340/test_rc6_toolchain_case_toolch0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7f292c0-10b9-43dd-a389-a747aec85340/test_rc6_toolchain_case_toolch0'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7f292c0-10b9-43dd-a389-a747aec85340
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-e7f292c0-10b9-43dd-a389-a747aec85340'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-1b4145f6-b211-4281-a8f6-e816ee4b0f3a/test_rc6_toolchain_case_toolch0/toolchain-mode-1/pkg
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-1b4145f6-b211-4281-a8f6-e816ee4b0f3a/test_rc6_toolchain_case_toolch0/toolchain-mode-1/pkg'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-1b4145f6-b211-4281-a8f6-e816ee4b0f3a/test_rc6_toolchain_case_toolch0/toolchain-mode-1
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-1b4145f6-b211-4281-a8f6-e816ee4b0f3a/test_rc6_toolchain_case_toolch0/toolchain-mode-1'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-1b4145f6-b211-4281-a8f6-e816ee4b0f3a/test_rc6_toolchain_case_toolch0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-1b4145f6-b211-4281-a8f6-e816ee4b0f3a/test_rc6_toolchain_case_toolch0'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-1b4145f6-b211-4281-a8f6-e816ee4b0f3a
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-1b4145f6-b211-4281-a8f6-e816ee4b0f3a'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-b189a86a-b7a4-4ba2-8a06-6b4845f6093a/test_rc6_toolchain_case_toolch0/toolchain-mode-1/pkg
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-b189a86a-b7a4-4ba2-8a06-6b4845f6093a/test_rc6_toolchain_case_toolch0/toolchain-mode-1/pkg'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-b189a86a-b7a4-4ba2-8a06-6b4845f6093a/test_rc6_toolchain_case_toolch0/toolchain-mode-1
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-b189a86a-b7a4-4ba2-8a06-6b4845f6093a/test_rc6_toolchain_case_toolch0/toolchain-mode-1'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-b189a86a-b7a4-4ba2-8a06-6b4845f6093a/test_rc6_toolchain_case_toolch0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-b189a86a-b7a4-4ba2-8a06-6b4845f6093a/test_rc6_toolchain_case_toolch0'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-b189a86a-b7a4-4ba2-8a06-6b4845f6093a
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-b189a86a-b7a4-4ba2-8a06-6b4845f6093a'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-80311512-ca30-45fb-a756-0e4472522c96/test_rc6_toolchain_case_toolch0/toolchain-mode-1/pkg
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-80311512-ca30-45fb-a756-0e4472522c96/test_rc6_toolchain_case_toolch0/toolchain-mode-1/pkg'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-80311512-ca30-45fb-a756-0e4472522c96/test_rc6_toolchain_case_toolch0/toolchain-mode-1
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-80311512-ca30-45fb-a756-0e4472522c96/test_rc6_toolchain_case_toolch0/toolchain-mode-1'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-80311512-ca30-45fb-a756-0e4472522c96/test_rc6_toolchain_case_toolch0
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-80311512-ca30-45fb-a756-0e4472522c96/test_rc6_toolchain_case_toolch0'
+    warnings.warn(
+
+../pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95
+  /Users/iv/Developer/ReluxWorks/curator-spec/.temp/TASK-260824-3ojxne/scratch/pyvenv/lib/python3.14/site-packages/_pytest/pathlib.py:95: PytestWarning: (rm_rf) error removing /private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-80311512-ca30-45fb-a756-0e4472522c96
+  <class 'OSError'>: [Errno 66] Directory not empty: '/private/var/folders/cz/jqbthtks55zbkpcdkfyk4bl80000gp/T/pytest-of-iv/garbage-80311512-ca30-45fb-a756-0e4472522c96'
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+172 passed, 11 deselected, 28 warnings in 0.49s

@@ -1,0 +1,18 @@
+implementation-coverage: FAILED
+go: internal/skillspec.TestReleasedSchemaCases reads schema-cases/agent-skill-v8, schema-cases/csk-skill-v8, which this suite does not publish
+go: internal/marker.TestReadAuthoritativeMarkerV4SchemaCases reads schema-cases/install-marker-v4, which this suite does not publish
+go: internal/moduleroots.TestModuleRootVectors reads vectors/module-roots.json, which this suite does not publish
+go: internal/scriptpolicy.TestScriptHostExecutionPolicySectionsAreAllClassified reads vectors/script-host-execution-policy.json, which this suite does not publish
+go: internal/scriptpolicy.TestScriptExecutionPolicyIdentityMatchesTheSuite reads vectors/script-host-execution-policy.json, which this suite does not publish
+go: internal/scriptpolicy.TestScriptExecutionOptInCases reads vectors/script-host-execution-policy.json, which this suite does not publish
+go: internal/scriptpolicy.TestARefusalPrecedesEveryWorkerSurface reads vectors/script-host-execution-policy.json, which this suite does not publish
+manager: tests/test_schema8_candidate_conformance.py::test_both_manifest_families_are_consumed_in_full reads schema-cases/agent-skill-v8, schema-cases/csk-skill-v8, which this suite does not publish
+manager: tests/test_schema8_candidate_conformance.py::test_schema8_manifest_case reads schema-cases/agent-skill-v8, schema-cases/csk-skill-v8, which this suite does not publish
+manager: tests/test_schema8_candidate_conformance.py::test_the_marker_v4_family_is_consumed_in_full reads schema-cases/install-marker-v4, which this suite does not publish
+manager: tests/test_schema8_candidate_conformance.py::test_marker_v4_case reads schema-cases/install-marker-v4, which this suite does not publish
+manager: tests/test_schema8_candidate_conformance.py::test_module_root_sections_are_all_classified reads vectors/module-roots.json, which this suite does not publish
+manager: tests/test_schema8_candidate_conformance.py::test_module_root_case reads vectors/module-roots.json, which this suite does not publish
+manager: tests/test_schema8_candidate_conformance.py::test_script_policy_sections_are_all_classified reads vectors/script-host-execution-policy.json, which this suite does not publish
+manager: tests/test_schema8_candidate_conformance.py::test_script_policy_identity_matches_the_suite reads vectors/script-host-execution-policy.json, which this suite does not publish
+manager: tests/test_schema8_candidate_conformance.py::test_script_policy_opt_in_case reads vectors/script-host-execution-policy.json, which this suite does not publish
+manager: tests/test_schema8_candidate_conformance.py::test_a_refusal_precedes_every_worker_surface reads vectors/script-host-execution-policy.json, which this suite does not publish

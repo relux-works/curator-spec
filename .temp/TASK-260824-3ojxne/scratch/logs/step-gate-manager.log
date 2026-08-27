@@ -1,0 +1,12 @@
+implementation-coverage: passed  manager	tests/test_schema8_candidate_conformance.py::test_every_declared_schema8_artefact_is_published	1 case(s)
+implementation-coverage: passed  manager	tests/test_schema8_candidate_conformance.py::test_both_manifest_families_are_consumed_in_full	1 case(s)
+implementation-coverage: passed  manager	tests/test_schema8_candidate_conformance.py::test_schema8_manifest_case	132 case(s)
+implementation-coverage: passed  manager	tests/test_schema8_candidate_conformance.py::test_the_marker_v4_family_is_consumed_in_full	1 case(s)
+implementation-coverage: passed  manager	tests/test_schema8_candidate_conformance.py::test_marker_v4_case	27 case(s)
+implementation-coverage: passed  manager	tests/test_schema8_candidate_conformance.py::test_module_root_sections_are_all_classified	1 case(s)
+implementation-coverage: passed  manager	tests/test_schema8_candidate_conformance.py::test_module_root_case	10 case(s)
+implementation-coverage: passed  manager	tests/test_schema8_candidate_conformance.py::test_script_policy_sections_are_all_classified	1 case(s)
+implementation-coverage: passed  manager	tests/test_schema8_candidate_conformance.py::test_script_policy_identity_matches_the_suite	1 case(s)
+implementation-coverage: passed  manager	tests/test_schema8_candidate_conformance.py::test_script_policy_opt_in_case	6 case(s)
+implementation-coverage: passed  manager	tests/test_schema8_candidate_conformance.py::test_a_refusal_precedes_every_worker_surface	2 case(s)
+implementation-coverage: 11 declared claim(s) upheld

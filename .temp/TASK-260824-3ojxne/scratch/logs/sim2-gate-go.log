@@ -1,0 +1,8 @@
+implementation-coverage: passed  go	internal/skillspec.TestReleasedSchemaCases
+implementation-coverage: passed  go	internal/marker.TestReadAuthoritativeMarkerV4SchemaCases
+implementation-coverage: passed  go	internal/moduleroots.TestModuleRootVectors
+implementation-coverage: passed  go	internal/scriptpolicy.TestScriptHostExecutionPolicySectionsAreAllClassified
+implementation-coverage: passed  go	internal/scriptpolicy.TestScriptExecutionPolicyIdentityMatchesTheSuite
+implementation-coverage: passed  go	internal/scriptpolicy.TestScriptExecutionOptInCases
+implementation-coverage: passed  go	internal/scriptpolicy.TestARefusalPrecedesEveryWorkerSurface
+implementation-coverage: 7 declared claim(s) upheld

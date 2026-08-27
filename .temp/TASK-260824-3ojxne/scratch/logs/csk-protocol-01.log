@@ -1,0 +1,19 @@
+
+==================================== ERRORS ====================================
+_____________ ERROR collecting tests/test_protocol_conformance.py ______________
+implementations/manager/tests/test_protocol_conformance.py:207: in <module>
+    BUILD_DRIVER_VECTORS = _json("vectors/build-drivers.json") if ROOT_TEXT else {}
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+implementations/manager/tests/test_protocol_conformance.py:192: in _json
+    return json.loads(_authenticated_bytes(relative))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+implementations/manager/tests/test_protocol_conformance.py:188: in _authenticated_bytes
+    return _read_manifest_entry(_root(), _manifest_inventory(), relative)
+                                ^^^^^^^
+implementations/manager/tests/test_protocol_conformance.py:140: in _root
+    assert digest == EXPECTED_CANDIDATE_MANIFEST_SHA256
+E   AssertionError: assert 'sha256:803918bf8672f76cf990985e51db213b826674cd5bb54fbf47731b8404b44403' == 'sha256:12e58b82579645ba1ccafba49d3e2dd3216005ddf37ae63c68a9fafd46773071'
+=========================== short test summary info ============================
+ERROR implementations/manager/tests/test_protocol_conformance.py - AssertionE...
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 1.52s

@@ -1,0 +1,207 @@
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* v1.0.0-rc.9 Release specification · 32764992277
+Triggered via push less than a minute ago
+
+JOBS
+* Publish signed specification artifacts (ID 97552345603)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  * Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate release input
+  * Package normative release
+  * Run actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373
+  * Run softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* v1.0.0-rc.9 Release specification · 32764992277
+Triggered via push less than a minute ago
+
+JOBS
+* Publish signed specification artifacts (ID 97552345603)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate release input
+  * Package normative release
+  * Run actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373
+  * Run softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
+  * Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* v1.0.0-rc.9 Release specification · 32764992277
+Triggered via push less than a minute ago
+
+JOBS
+* Publish signed specification artifacts (ID 97552345603)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  * Validate release input
+  * Package normative release
+  * Run actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373
+  * Run softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
+  * Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* v1.0.0-rc.9 Release specification · 32764992277
+Triggered via push less than a minute ago
+
+JOBS
+* Publish signed specification artifacts (ID 97552345603)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  * Validate release input
+  * Package normative release
+  * Run actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373
+  * Run softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
+  * Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* v1.0.0-rc.9 Release specification · 32764992277
+Triggered via push less than a minute ago
+
+JOBS
+* Publish signed specification artifacts (ID 97552345603)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  * Validate release input
+  * Package normative release
+  * Run actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373
+  * Run softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
+  * Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* v1.0.0-rc.9 Release specification · 32764992277
+Triggered via push less than a minute ago
+
+JOBS
+* Publish signed specification artifacts (ID 97552345603)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  * Validate release input
+  * Package normative release
+  * Run actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373
+  * Run softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
+  * Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* v1.0.0-rc.9 Release specification · 32764992277
+Triggered via push less than a minute ago
+
+JOBS
+* Publish signed specification artifacts (ID 97552345603)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  * Validate release input
+  * Package normative release
+  * Run actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373
+  * Run softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
+  * Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* v1.0.0-rc.9 Release specification · 32764992277
+Triggered via push less than a minute ago
+
+JOBS
+* Publish signed specification artifacts (ID 97552345603)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  * Validate release input
+  * Package normative release
+  * Run actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373
+  * Run softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
+  * Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* v1.0.0-rc.9 Release specification · 32764992277
+Triggered via push less than a minute ago
+
+JOBS
+* Publish signed specification artifacts (ID 97552345603)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  ✓ Validate release input
+  ✓ Package normative release
+  ✓ Run actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373
+  * Run softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
+  * Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* v1.0.0-rc.9 Release specification · 32764992277
+Triggered via push less than a minute ago
+
+JOBS
+* Publish signed specification artifacts (ID 97552345603)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  ✓ Validate release input
+  ✓ Package normative release
+  ✓ Run actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373
+  ✓ Run softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
+  ✓ Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+✓ v1.0.0-rc.9 Release specification · 32764992277
+Triggered via push less than a minute ago
+
+JOBS
+✓ Publish signed specification artifacts in 53s (ID 97552345603)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  ✓ Validate release input
+  ✓ Package normative release
+  ✓ Run actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373
+  ✓ Run softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
+  ✓ Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job

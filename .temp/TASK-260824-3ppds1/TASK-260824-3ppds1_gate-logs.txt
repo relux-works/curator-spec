@@ -1,0 +1,11 @@
+validated 53 schemas and 691 vector files
+......................................................................................................................................
+----------------------------------------------------------------------
+Ran 134 tests in 9.435s
+
+OK
+ok  	github.com/relux-works/curator-spec/tools/generate-vectors	0.409s
+repository relux-works/curator-spec permits only GitHub-verified squash release targets
+release target 0ed5c691e9208eea52f21db2fc05e226ce3516fd is a GitHub-verified commit on origin/main
+release gate passed for 1.0.0-rc.9 at 0ed5c691e9208eea52f21db2fc05e226ce3516fd
+Good "git" signature for oparin@me.com with ECDSA key SHA256:V6JiKG7J29mjsvikcLoSVp0bLa77VTsFy12gnLO81cM

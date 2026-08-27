@@ -1,0 +1,5 @@
+implementation-coverage: FAILED
+go: internal/scriptpolicy.TestScriptHostExecutionPolicySectionsAreAllClassified was not observed in this run -- every top-level section of the published script-worker family is classified, so a section this specification adds cannot be ignored
+go: internal/scriptpolicy.TestScriptExecutionPolicyIdentityMatchesTheSuite was not observed in this run -- the closed policy identity and interpreter set the implementation hard-codes are read back from the suite's own bytes
+go: internal/scriptpolicy.TestScriptExecutionOptInCases was not observed in this run -- every published opt-in case decides manifest acceptance and the enforced/declared-only classification
+go: internal/scriptpolicy.TestARefusalPrecedesEveryWorkerSurface was not observed in this run -- every enforced shape the suite declares is refused before any worker surface
