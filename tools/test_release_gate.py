@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import subprocess
 import tempfile
 import unittest
@@ -122,6 +123,116 @@ class StableReleaseGateTests(unittest.TestCase):
         release_commit = self._git("rev-parse", "HEAD")
         with self.assertRaisesRegex(release_gate.ReleaseFailure, "normative files changed"):
             release_gate.validate_reviews(VERSION, release_commit)
+
+    def test_candidate_requires_exact_suite_manifest_pin(self) -> None:
+        version = "1.0.0-rc.5"
+        (self.root / "README.md").write_text(
+            f"**Version:** {version}\n", encoding="utf-8"
+        )
+        (self.root / "CHANGELOG.md").write_text(
+            f"## {version}\n", encoding="utf-8"
+        )
+        manifest_path = self.root / "conformance" / "v1" / "manifest.json"
+        self._write_json(
+            manifest_path, {"protocol_version": version, "files": []}
+        )
+        digest = "sha256:" + hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+        metadata_path = self.root / "release" / f"{version}.json"
+        self._write_json(
+            metadata_path,
+            {
+                "protocol_version": version,
+                "candidate_protocol_pin": {"manifest_sha256": digest},
+                "downstream_consumption": {
+                    "required_manifest_sha256": digest,
+                },
+                "execution_policy": {
+                    "portable": release_gate.PORTABLE_EXECUTION_POLICY,
+                    "hardened_profile_claimed": False,
+                    "hardened_profile_owner": "STORY-260728-327soo",
+                    "native_control_inventory_version": (
+                        release_gate.NATIVE_CONTROL_INVENTORY_VERSION
+                    ),
+                    "capability_evidence_record_version": (
+                        release_gate.CAPABILITY_EVIDENCE_RECORD_VERSION
+                    ),
+                },
+            },
+        )
+        release_gate.validate_version(version)
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        metadata["downstream_consumption"]["required_manifest_sha256"] = (
+            "sha256:" + "0" * 64
+        )
+        self._write_json(metadata_path, metadata)
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "does not pin the exact suite manifest"
+        ):
+            release_gate.validate_version(version)
+
+    def test_candidate_rejects_dishonest_execution_policy_metadata(self) -> None:
+        version = "1.0.0-rc.5"
+        (self.root / "README.md").write_text(
+            f"**Version:** {version}\n", encoding="utf-8"
+        )
+        (self.root / "CHANGELOG.md").write_text(
+            f"## {version}\n", encoding="utf-8"
+        )
+        manifest_path = self.root / "conformance" / "v1" / "manifest.json"
+        self._write_json(
+            manifest_path, {"protocol_version": version, "files": []}
+        )
+        digest = "sha256:" + hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+        metadata_path = self.root / "release" / f"{version}.json"
+        base = {
+            "protocol_version": version,
+            "candidate_protocol_pin": {"manifest_sha256": digest},
+            "downstream_consumption": {"required_manifest_sha256": digest},
+            "execution_policy": {
+                "portable": release_gate.PORTABLE_EXECUTION_POLICY,
+                "hardened_profile_claimed": False,
+                "hardened_profile_owner": "STORY-260728-327soo",
+                "native_control_inventory_version": (
+                    release_gate.NATIVE_CONTROL_INVENTORY_VERSION
+                ),
+                "capability_evidence_record_version": (
+                    release_gate.CAPABILITY_EVIDENCE_RECORD_VERSION
+                ),
+            },
+        }
+        self._write_json(metadata_path, base)
+        release_gate.validate_version(version)
+
+        for label, mutation in {
+            "hardened claim": {"hardened_profile_claimed": True},
+            "unknown portable policy": {"portable": "hardened-worker-v1"},
+            "unowned deferral": {"hardened_profile_owner": ""},
+            "unpinned native-control inventory": {
+                "native_control_inventory_version": None
+            },
+            "drifted native-control inventory": {
+                "native_control_inventory_version": "rc5-native-control-inventory-v2"
+            },
+            "unpinned capability-evidence record": {
+                "capability_evidence_record_version": None
+            },
+            "drifted capability-evidence record": {
+                "capability_evidence_record_version": "capability-evidence-v2"
+            },
+            "missing policy": None,
+        }.items():
+            metadata = json.loads(json.dumps(base))
+            if mutation is None:
+                del metadata["execution_policy"]
+            else:
+                metadata["execution_policy"].update(mutation)
+            self._write_json(metadata_path, metadata)
+            with self.assertRaisesRegex(
+                release_gate.ReleaseFailure,
+                "does not honestly record its execution policy",
+                msg=f"{label} was accepted",
+            ):
+                release_gate.validate_version(version)
 
 
 if __name__ == "__main__":
