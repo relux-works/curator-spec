@@ -17,8 +17,8 @@ implementation behavior silently resolves it.
 
 A core implementation:
 
-1. validates skill schemas 1 through 5, Skillfile schema 1, development
-   substitutions, install markers, and adapter ledgers;
+1. validates every supported skill schema, Skillfile schema, development
+   substitution, build receipt, install marker, claim, and adapter ledger;
 2. applies portable identifier, path, source identity, and schema-version
    rejection rules;
 3. computes context selection and content hashes exactly;
@@ -69,15 +69,39 @@ The suite contains:
   total deadlines, redirect refusal, cursor cycles, and response limits;
 - shell-neutral runtime launchers, idempotent machine bootstrap, closure-scoped
   upgrades, fetch deduplication, and persistent-side-effect-free dry runs;
+- SHA-1/SHA-256 tagged and untagged external acquisition over HTTPS and SSH,
+  exact-ref failure ordering, and network/local substitutions;
+- byte-exact Git config, files-ref, raw commit/tag/tree/blob, pack-v2/v3,
+  index-v2, and Git LFS parser-family fixtures, including submodule, link,
+  special-file, alternate, replace, graft, promisor, filter, and helper
+  boundaries;
+- whole-snapshot audit-before-cache/compiler ordering for cache hit/miss,
+  source-covering dry-run, audit-only, and repair paths; cache corruption,
+  CCJ-1-derived receipt-v1/v2 and marker-v3 hashes, receipt-v1/v2 and
+  marker-v2/v3 mixed planning, rollback, status/repair/GC, shim/PATH, offline,
+  and signing boundaries;
+- the portable `manager-worker-v1` execution contract: the fixed worker process
+  graph and session order, the exact mandatory portable controls, the exhaustive
+  versioned `rc5-native-control-inventory-v1` per-platform inventory, the closed
+  `capability-evidence-v1` record with its states, probe timing, exposure, and
+  contradiction errors, the single failure boundary, the six hardened guarantees
+  deferred to `STORY-260728-327soo` with their non-rejection guards, the portable
+  mechanism each one is not, worker identity and protocol negatives, closed
+  package-influence surfaces, and the distinct portable, reserved-hardened, and
+  pre-revision cache identities;
 - transparency chain, Merkle, bundle, pagination, caching, and deny-wins cases;
 - conjunctive registry queries, exact artifact identity, snapshot-bound pages,
   scoped idempotency, concurrent writers, transaction rollback, crash recovery,
   immutable snapshots, restore checkpoints, key rotation, transport bounds,
   rate limiting, and cache-control cases.
 
-Files under `conformance/v1/expected` are generated only by
+Files under `conformance/v1/expected` and
+`conformance/v1/fixtures/external-repository` are generated only by
 `tools/generate-vectors`. The generator imports no implementation packages.
 Updating expected bytes is a protocol change and requires a reviewed diff.
+Pack/index negatives carry concrete bytes plus deterministic base-fixture
+mutations; harnesses must materialize the mutation and recompute the declared
+Git hash-family checksums.
 
 ## 4. Execution
 
@@ -102,10 +126,12 @@ CURATOR_CONFORMANCE_ROOT=<spec>/conformance/v1 python -m pytest -v tests/test_pr
 CURATOR_CONFORMANCE_ROOT=<spec>/conformance/v1 python -m pytest -v tests/test_protocol_conformance.py  # registry service
 ```
 
-The suite runs on Linux, macOS, and Windows. A skipped vector is a failure in
-the specification gate. Implementation repositories MAY skip the external
-suite only when `CURATOR_CONFORMANCE_ROOT` is absent from a developer checkout;
-their required release CI always supplies it.
+The platform-neutral specification suite runs on Linux, macOS, and Windows. A
+skipped vector is a failure in the specification gate. That execution proves
+the corpus itself, not a manager's native driver/platform tuple.
+Implementation repositories MAY skip the external suite only when
+`CURATOR_CONFORMANCE_ROOT` is absent from a developer checkout; their required
+release CI always supplies it.
 
 `.github/workflows/implementations.yml` pins every implementation by full Git
 commit ID. A pin may advance only after that implementation has passed the
@@ -114,10 +140,16 @@ NOT be used as implementation pins.
 
 ## 5. Claim format
 
-A machine-readable claim conforms to `schemas/v1/conformance-claim-v1.schema.json`.
-At minimum it records protocol version, implementation name and version,
-classes, suite digest, operating systems, timestamp, and pass result. Claims do
-not replace release CI evidence or artifact attestations.
+Claims for rc.3, rc.4, and rc.5 conform respectively to claim schemas 1, 2,
+and 3. Claim v3 records driver/platform/execution-policy tuples in addition to
+the common implementation, class, suite, time, and pass fields. Claim v3 admits
+only the portable `manager-worker-v1` execution policy, so a hardened claim
+cannot be expressed in this schema version and requires a later one. Schema
+validity is not qualification: every emitted tuple requires immutable native
+evidence against the exact suite pin. The rc.5 specification candidate emits no manager claim;
+macOS and Windows qualification remains downstream, and Linux is excluded
+until `TASK-260728-1skseh` passes. Claims do not replace release CI evidence or
+artifact attestations.
 
 ## 6. Release gate
 
@@ -126,7 +158,9 @@ A protocol release candidate may be published only when:
 1. all schemas compile under Draft 2020-12;
 2. every example has the expected validation result;
 3. two consecutive vector generations are byte-identical;
-4. Go and Python pass the same suite on all three operating systems;
+4. the platform-neutral specification suite passes on Linux, macOS, and
+   Windows, while each emitted manager driver/platform tuple has separate
+   immutable native evidence;
 5. registry-service vectors pass;
 6. Markdown links and version references are valid;
 7. required security and interoperability review reports have no open critical
