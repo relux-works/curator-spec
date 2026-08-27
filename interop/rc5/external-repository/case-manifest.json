@@ -1,0 +1,860 @@
+{
+  "architecture_v6_coverage": {
+    "audit-and-cache": [
+      "audit-order-cache-hit",
+      "audit-order-cache-miss",
+      "cache-corrupt-receipt",
+      "cache-corrupt-artifact",
+      "protected-offline-reuse"
+    ],
+    "descriptor-and-output": [
+      "monorepo-root-target",
+      "monorepo-nested-target",
+      "path-collision"
+    ],
+    "identity-and-substitution": [
+      "canonical-https-ssh-scp",
+      "operator-local-identity",
+      "local-substitution",
+      "network-substitution-revision",
+      "network-substitution-tag",
+      "network-substitution-branch"
+    ],
+    "raw-object-boundary": [
+      "raw-object-malformed",
+      "lfs-pointer",
+      "submodule-gitlink",
+      "symbolic-link",
+      "special-file-mode",
+      "alternate-object-store",
+      "replace-ref",
+      "graft",
+      "promisor-pack",
+      "partial-clone",
+      "filter-config-inert",
+      "credential-helper-inert",
+      "pack-index-checksum-mismatch"
+    ],
+    "receipt-marker-and-lifecycle": [
+      "mixed-receipt-v1-v2-marker-v3",
+      "external-receipt-v2-exact-bytes",
+      "status-current",
+      "status-corrupt",
+      "repair-reacquires",
+      "gc-retains-marker-and-journal-roots"
+    ],
+    "source-lock-and-tag": [
+      "sha1-tag-match-https",
+      "sha1-tag-moved",
+      "sha1-tag-missing",
+      "sha256-untagged",
+      "untagged-object-missing"
+    ],
+    "transaction-path-signing-claims": [
+      "shim-path-structural",
+      "shim-collision-rollback",
+      "consumer-last-rollback",
+      "package-signing-request",
+      "platform-requires-signing",
+      "truthful-platform-claims"
+    ]
+  },
+  "architecture_v6_threat_matrix": [
+    {
+      "cases": [
+        "sha1-tag-moved",
+        "sha256-untagged"
+      ],
+      "threat": "mutable-or-symbolic-revision"
+    },
+    {
+      "cases": [
+        "local-substitution",
+        "network-substitution-revision"
+      ],
+      "threat": "declared-effective-substitution-confusion"
+    },
+    {
+      "cases": [
+        "replace-ref",
+        "graft"
+      ],
+      "threat": "replace-refs-or-grafts"
+    },
+    {
+      "cases": [
+        "promisor-pack",
+        "partial-clone",
+        "raw-object-reader-closed-shape"
+      ],
+      "threat": "partial-clone-or-lazy-fetch"
+    },
+    {
+      "cases": [
+        "alternate-object-store",
+        "object-link"
+      ],
+      "threat": "alternates-or-object-store-escape"
+    },
+    {
+      "cases": [
+        "exact-fetch-closed-shape",
+        "sha1-tag-missing",
+        "untagged-object-missing"
+      ],
+      "threat": "fetch-default-or-tag-fallback"
+    },
+    {
+      "cases": [
+        "clean-git-session",
+        "credential-helper-inert",
+        "filter-config-inert"
+      ],
+      "threat": "ambient-config-url-proxy-helper"
+    },
+    {
+      "cases": [
+        "ssh-wrapper-closed-shape",
+        "sha1-tag-match-ssh"
+      ],
+      "threat": "ssh-mitm-system-config-or-variant-argv"
+    },
+    {
+      "cases": [
+        "gitfile",
+        "linked-worktree",
+        "bare-repository",
+        "reftable"
+      ],
+      "threat": "local-extension-ref-ambiguity"
+    },
+    {
+      "cases": [
+        "pack-v2-sha1",
+        "pack-v3-sha1",
+        "pack-v2-sha256",
+        "pack-index-checksum-mismatch"
+      ],
+      "threat": "malicious-or-incomplete-pack-metadata"
+    },
+    {
+      "cases": [
+        "raw-object-reader-closed-shape",
+        "raw-object-malformed"
+      ],
+      "threat": "object-reader-transformation-or-process-escape"
+    },
+    {
+      "cases": [
+        "raw-object-malformed",
+        "sha1-tag-moved"
+      ],
+      "threat": "commit-tag-parser-disagreement"
+    },
+    {
+      "cases": [
+        "lfs-pointer",
+        "submodule-gitlink",
+        "filter-config-inert"
+      ],
+      "threat": "hook-filter-lfs-submodule-execution"
+    },
+    {
+      "cases": [
+        "path-collision",
+        "package-argv-forbidden",
+        "package-signing-request"
+      ],
+      "threat": "package-output-argv-or-signing-selection"
+    },
+    {
+      "cases": [
+        "audit-order-cache-hit",
+        "protected-offline-reuse"
+      ],
+      "threat": "audit-bypass-on-cache-hit"
+    },
+    {
+      "cases": [
+        "cache-corrupt-receipt",
+        "cache-corrupt-artifact"
+      ],
+      "threat": "forged-cache"
+    },
+    {
+      "cases": [
+        "shim-path-structural",
+        "shim-collision-rollback"
+      ],
+      "threat": "shim-or-path-hijack"
+    },
+    {
+      "cases": [
+        "consumer-last-rollback",
+        "shim-collision-rollback"
+      ],
+      "threat": "partial-or-cross-project-install"
+    }
+  ],
+  "cases": [
+    {
+      "category": "acquisition",
+      "expected": {
+        "commit": "403e2376b1e8b794b83d1d5647ebecc79a02f1e4",
+        "fetch": "exact-tag-only",
+        "outcome": "source-resolved",
+        "transport": "https"
+      },
+      "id": "sha1-tag-match-https",
+      "source": "bundles/canonical-sha1-tagged.json"
+    },
+    {
+      "category": "acquisition",
+      "expected": {
+        "commit": "403e2376b1e8b794b83d1d5647ebecc79a02f1e4",
+        "fetch": "exact-tag-only",
+        "outcome": "source-resolved",
+        "transport": "ssh"
+      },
+      "id": "sha1-tag-match-ssh",
+      "source": "bundles/canonical-sha1-tagged.json"
+    },
+    {
+      "category": "acquisition",
+      "expected": {
+        "code": "build_repository_ref_moved",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "sha1-tag-moved",
+      "source": "bundles/canonical-sha1-tag-moved.json"
+    },
+    {
+      "category": "acquisition",
+      "expected": {
+        "code": "build_repository_source_unavailable",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "sha1-tag-missing",
+      "source": "bundles/canonical-sha1-tag-missing.json"
+    },
+    {
+      "category": "acquisition",
+      "expected": {
+        "commit": "677281dee3fad31f17522948150f364a689a5cd5478836e19cfa0d982ecd6240",
+        "fetch": "full-oid-only",
+        "outcome": "source-resolved"
+      },
+      "id": "sha256-untagged",
+      "source": "bundles/canonical-sha256-untagged.json"
+    },
+    {
+      "category": "acquisition",
+      "expected": {
+        "code": "build_repository_source_unavailable",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "untagged-object-missing",
+      "source": "conformance/v1/vectors/external-repository-acquisition.json#untagged-missing-object"
+    },
+    {
+      "category": "identity",
+      "expected": {
+        "equal_network_identity": true,
+        "outcome": "canonicalized"
+      },
+      "id": "canonical-https-ssh-scp",
+      "source": "vectors/source-identities.json"
+    },
+    {
+      "category": "identity",
+      "expected": {
+        "absolute_path_disclosed": false,
+        "outcome": "canonicalized"
+      },
+      "id": "operator-local-identity",
+      "source": "vectors/source-identities.json#local_case"
+    },
+    {
+      "category": "process-boundary",
+      "expected": {
+        "ambient_config_applied": false,
+        "outcome": "accepted",
+        "unexpected_children": false
+      },
+      "id": "clean-git-session",
+      "source": "vectors/transport-and-process-boundaries.json#git_session"
+    },
+    {
+      "category": "process-boundary",
+      "expected": {
+        "default_refspec_applied": false,
+        "fetch_head_written": false,
+        "outcome": "accepted"
+      },
+      "id": "exact-fetch-closed-shape",
+      "source": "vectors/transport-and-process-boundaries.json#fetch"
+    },
+    {
+      "category": "process-boundary",
+      "expected": {
+        "outcome": "accepted",
+        "shell_started": false,
+        "system_config_applied": false
+      },
+      "id": "ssh-wrapper-closed-shape",
+      "source": "vectors/transport-and-process-boundaries.json#ssh_wrapper"
+    },
+    {
+      "category": "process-boundary",
+      "expected": {
+        "child_started": false,
+        "outcome": "accepted",
+        "transformations_applied": false
+      },
+      "id": "raw-object-reader-closed-shape",
+      "source": "vectors/transport-and-process-boundaries.json#object_reader"
+    },
+    {
+      "category": "target",
+      "expected": {
+        "outcome": "selected",
+        "output_manager_derived": true
+      },
+      "id": "monorepo-root-target",
+      "source": "vectors/expected-snapshots.json#golden-tool"
+    },
+    {
+      "category": "target",
+      "expected": {
+        "nearest_module_enforced": true,
+        "outcome": "selected"
+      },
+      "id": "monorepo-nested-target",
+      "source": "vectors/expected-snapshots.json#admin-tool"
+    },
+    {
+      "category": "substitution",
+      "expected": {
+        "declared_and_effective_retained": true,
+        "outcome": "accepted"
+      },
+      "id": "local-substitution",
+      "source": "conformance/v1/schema-cases/build-receipt-v2/valid-local-substitution.json"
+    },
+    {
+      "category": "substitution",
+      "expected": {
+        "declared_and_effective_retained": true,
+        "outcome": "accepted"
+      },
+      "id": "network-substitution-revision",
+      "source": "conformance/v1/vectors/external-repository-acquisition.json#network-substitution-revision"
+    },
+    {
+      "category": "substitution",
+      "expected": {
+        "declared_and_effective_retained": true,
+        "outcome": "accepted"
+      },
+      "id": "network-substitution-tag",
+      "source": "conformance/v1/vectors/external-repository-acquisition.json#network-substitution-tag"
+    },
+    {
+      "category": "substitution",
+      "expected": {
+        "declared_and_effective_retained": true,
+        "outcome": "accepted"
+      },
+      "id": "network-substitution-branch",
+      "source": "conformance/v1/vectors/external-repository-acquisition.json#network-substitution-branch"
+    },
+    {
+      "category": "raw-object",
+      "expected": {
+        "code": "build_repository_git_object_semantics_invalid",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "raw-object-malformed",
+      "source": "conformance/v1/fixtures/external-repository/raw-objects.json#reject-duplicate-tree-header"
+    },
+    {
+      "category": "raw-object",
+      "expected": {
+        "code": "build_repository_git_lfs_unsupported",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "lfs-pointer",
+      "source": "conformance/v1/fixtures/external-repository/lfs-pointers.json#canonical-current-pointer"
+    },
+    {
+      "category": "raw-object",
+      "expected": {
+        "code": "build_repository_git_object_semantics_invalid",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "submodule-gitlink",
+      "source": "conformance/v1/fixtures/external-repository/raw-objects.json#reject-submodule-gitlink"
+    },
+    {
+      "category": "raw-object",
+      "expected": {
+        "code": "build_repository_git_object_semantics_invalid",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "symbolic-link",
+      "source": "conformance/v1/fixtures/external-repository/raw-objects.json#reject-symbolic-link"
+    },
+    {
+      "category": "raw-object",
+      "expected": {
+        "code": "build_repository_git_object_semantics_invalid",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "special-file-mode",
+      "source": "conformance/v1/fixtures/external-repository/raw-objects.json#reject-special-file-mode"
+    },
+    {
+      "category": "local-store",
+      "expected": {
+        "code": "build_repository_local_format_unsupported",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "alternate-object-store",
+      "source": "bundles/adversarial-local-stores.json#alternate-object-store"
+    },
+    {
+      "category": "local-store",
+      "expected": {
+        "code": "build_repository_local_format_unsupported",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "replace-ref",
+      "source": "bundles/adversarial-local-stores.json#replace-ref"
+    },
+    {
+      "category": "local-store",
+      "expected": {
+        "code": "build_repository_local_format_unsupported",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "graft",
+      "source": "bundles/adversarial-local-stores.json#graft"
+    },
+    {
+      "category": "local-store",
+      "expected": {
+        "code": "build_repository_local_format_unsupported",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "promisor-pack",
+      "source": "bundles/adversarial-local-stores.json#promisor-pack"
+    },
+    {
+      "category": "local-store",
+      "expected": {
+        "code": "build_repository_local_format_unsupported",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "partial-clone",
+      "source": "bundles/adversarial-local-stores.json#partial-clone"
+    },
+    {
+      "category": "local-store",
+      "expected": {
+        "code": "build_repository_local_gitfile_unsupported",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "gitfile",
+      "source": "bundles/adversarial-local-stores.json#gitfile"
+    },
+    {
+      "category": "local-store",
+      "expected": {
+        "code": "build_repository_local_linked_worktree_unsupported",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "linked-worktree",
+      "source": "bundles/adversarial-local-stores.json#linked-worktree"
+    },
+    {
+      "category": "local-store",
+      "expected": {
+        "code": "build_repository_local_bare_unsupported",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "bare-repository",
+      "source": "bundles/adversarial-local-stores.json#bare-repository"
+    },
+    {
+      "category": "local-store",
+      "expected": {
+        "code": "build_repository_local_format_unsupported",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "reftable",
+      "source": "bundles/adversarial-local-stores.json#reftable"
+    },
+    {
+      "category": "local-store",
+      "expected": {
+        "code": "build_repository_local_layout_unsafe",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "object-link",
+      "source": "bundles/adversarial-local-stores.json#object-link"
+    },
+    {
+      "category": "local-store",
+      "expected": {
+        "child_started": false,
+        "outcome": "admitted-inert"
+      },
+      "id": "filter-config-inert",
+      "source": "bundles/adversarial-local-stores.json#filter-config-inert"
+    },
+    {
+      "category": "local-store",
+      "expected": {
+        "child_started": false,
+        "outcome": "admitted-inert"
+      },
+      "id": "credential-helper-inert",
+      "source": "bundles/adversarial-local-stores.json#credential-helper-inert"
+    },
+    {
+      "category": "pack-index",
+      "expected": {
+        "checksums_recomputed": true,
+        "outcome": "accepted"
+      },
+      "id": "pack-v2-sha1",
+      "source": "conformance/v1/fixtures/external-repository/pack-index.json#valid-empty-pack-v2-sha1"
+    },
+    {
+      "category": "pack-index",
+      "expected": {
+        "checksums_recomputed": true,
+        "outcome": "accepted"
+      },
+      "id": "pack-v3-sha1",
+      "source": "conformance/v1/fixtures/external-repository/pack-index.json#valid-empty-pack-v3-sha1"
+    },
+    {
+      "category": "pack-index",
+      "expected": {
+        "checksums_recomputed": true,
+        "outcome": "accepted"
+      },
+      "id": "pack-v2-sha256",
+      "source": "conformance/v1/fixtures/external-repository/pack-index.json#valid-empty-pack-v2-sha256"
+    },
+    {
+      "category": "pack-index",
+      "expected": {
+        "code": "build_repository_local_object_format_unsupported",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "pack-index-checksum-mismatch",
+      "source": "conformance/v1/fixtures/external-repository/pack-index.json#reject-index-checksum-mismatch"
+    },
+    {
+      "category": "audit-ordering",
+      "expected": {
+        "audit_before_cache": true,
+        "compiler_started": false,
+        "outcome": "cache-hit"
+      },
+      "id": "audit-order-cache-hit",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#verified-cache-hit"
+    },
+    {
+      "category": "audit-ordering",
+      "expected": {
+        "audit_before_cache": true,
+        "audit_before_compiler": true,
+        "outcome": "built"
+      },
+      "id": "audit-order-cache-miss",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#cache-miss"
+    },
+    {
+      "category": "cache",
+      "expected": {
+        "code": "build_repository_receipt_invalid",
+        "outcome": "rebuilt"
+      },
+      "id": "cache-corrupt-receipt",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#corrupt-receipt"
+    },
+    {
+      "category": "cache",
+      "expected": {
+        "code": "build_repository_artifact_invalid",
+        "outcome": "rebuilt"
+      },
+      "id": "cache-corrupt-artifact",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#corrupt-artifact"
+    },
+    {
+      "category": "cache",
+      "expected": {
+        "audit_before_cache": true,
+        "network_started": false,
+        "outcome": "cache-hit",
+        "snapshot_revalidated": true
+      },
+      "id": "protected-offline-reuse",
+      "source": "bundles/canonical-sha1-tagged.json"
+    },
+    {
+      "category": "offline",
+      "expected": {
+        "code": "build_repository_unverified_offline",
+        "outcome": "warning",
+        "source_claimed": false
+      },
+      "id": "offline-syntax-only",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#offline-syntax-only"
+    },
+    {
+      "category": "offline",
+      "expected": {
+        "code": "build_repository_source_unavailable",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "offline-install-without-snapshot",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#offline-install"
+    },
+    {
+      "category": "receipt-marker",
+      "expected": {
+        "marker_version": 3,
+        "outcome": "accepted",
+        "receipt_versions": [
+          1,
+          2
+        ]
+      },
+      "id": "mixed-receipt-v1-v2-marker-v3",
+      "source": "expected/install-marker-v3-mixed-exact.json"
+    },
+    {
+      "category": "receipt-marker",
+      "expected": {
+        "canonical_bytes": true,
+        "outcome": "accepted"
+      },
+      "id": "external-receipt-v2-exact-bytes",
+      "source": "expected/build-receipt-v2.ccj.json"
+    },
+    {
+      "category": "lifecycle",
+      "expected": {
+        "mutation": false,
+        "network_started": false,
+        "outcome": "current"
+      },
+      "id": "status-current",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#status-current"
+    },
+    {
+      "category": "lifecycle",
+      "expected": {
+        "mutation": false,
+        "network_started": false,
+        "outcome": "unknown"
+      },
+      "id": "status-corrupt",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#status-unreadable-protected-state"
+    },
+    {
+      "category": "lifecycle",
+      "expected": {
+        "audit_before_cache": true,
+        "outcome": "repaired"
+      },
+      "id": "repair-reacquires",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#repair-reacquires-exact-source"
+    },
+    {
+      "category": "lifecycle",
+      "expected": {
+        "exec_started": false,
+        "outcome": "retained"
+      },
+      "id": "gc-retains-marker-and-journal-roots",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#gc-retains-roots"
+    },
+    {
+      "category": "path-shim",
+      "expected": {
+        "artifact_executed": false,
+        "outcome": "accepted"
+      },
+      "id": "shim-path-structural",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#external-command-shim"
+    },
+    {
+      "category": "path-shim",
+      "expected": {
+        "code": "build_repository_package_output_forbidden",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "path-collision",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#package-path-entry-rejected"
+    },
+    {
+      "category": "process-boundary",
+      "expected": {
+        "code": "manifest_invalid",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "package-argv-forbidden",
+      "source": "conformance/v1/schema-cases/agent-skill-v7/invalid-command-argv.json"
+    },
+    {
+      "category": "rollback",
+      "expected": {
+        "code": "build_repository_transaction_failed",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "shim-collision-rollback",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#shim-collision-rolls-back"
+    },
+    {
+      "category": "rollback",
+      "expected": {
+        "consumer_last": true,
+        "outcome": "committed"
+      },
+      "id": "consumer-last-rollback",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#marker-consumer-last"
+    },
+    {
+      "category": "signing",
+      "expected": {
+        "code": "build_repository_package_signing_forbidden",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "package-signing-request",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#package-signing-request"
+    },
+    {
+      "category": "signing",
+      "expected": {
+        "code": "build_repository_signer_policy_unsupported",
+        "mutation": false,
+        "outcome": "rejected"
+      },
+      "id": "platform-requires-signing",
+      "source": "conformance/v1/vectors/external-repository-lifecycle.json#platform-requires-local-signing"
+    },
+    {
+      "category": "platform-claim",
+      "expected": {
+        "linux_excluded": true,
+        "native_evidence_required": true,
+        "outcome": "no-candidate-claims"
+      },
+      "id": "truthful-platform-claims",
+      "source": "conformance/v1/vectors/conformance-claim-v3-qualification.json"
+    }
+  ],
+  "corpus_version": "rc5-external-repository-interop-v1",
+  "implementation_neutral": true,
+  "lifecycle_boundaries": [
+    "syntax",
+    "source-acquisition",
+    "snapshot-proof",
+    "audit",
+    "cache",
+    "compiler",
+    "receipt",
+    "publication",
+    "status",
+    "repair",
+    "gc",
+    "rollback"
+  ],
+  "lifecycle_matrix": {
+    "audit": [
+      "audit-order-cache-hit",
+      "audit-order-cache-miss"
+    ],
+    "cache": [
+      "audit-order-cache-hit",
+      "cache-corrupt-receipt",
+      "cache-corrupt-artifact",
+      "protected-offline-reuse"
+    ],
+    "compiler": [
+      "audit-order-cache-miss",
+      "package-argv-forbidden"
+    ],
+    "gc": [
+      "gc-retains-marker-and-journal-roots"
+    ],
+    "publication": [
+      "consumer-last-rollback",
+      "shim-collision-rollback"
+    ],
+    "receipt": [
+      "external-receipt-v2-exact-bytes",
+      "mixed-receipt-v1-v2-marker-v3"
+    ],
+    "repair": [
+      "repair-reacquires"
+    ],
+    "rollback": [
+      "shim-collision-rollback",
+      "consumer-last-rollback"
+    ],
+    "snapshot-proof": [
+      "raw-object-malformed",
+      "lfs-pointer",
+      "pack-index-checksum-mismatch"
+    ],
+    "source-acquisition": [
+      "sha1-tag-match-https",
+      "sha1-tag-moved",
+      "sha1-tag-missing",
+      "sha256-untagged"
+    ],
+    "status": [
+      "status-current",
+      "status-corrupt"
+    ],
+    "syntax": [
+      "canonical-https-ssh-scp",
+      "offline-syntax-only"
+    ]
+  },
+  "manager_adapter": null,
+  "physical_paths": "implementation-specific",
+  "protocol_version": "1.0.0-rc.5",
+  "schema_version": 1
+}

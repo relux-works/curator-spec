@@ -1,0 +1,53 @@
+{
+  "cases": [
+    {
+      "build_source": {
+        "algorithm": "curator-build-source-v1",
+        "content_sha256": "sha256:ca58ca530ac7ca3d7365cabc33d6143c8b445b9cbfe9124fb28d356dd1e0115e"
+      },
+      "bundle": "bundles/canonical-sha1-tagged.json",
+      "commit": "403e2376b1e8b794b83d1d5647ebecc79a02f1e4",
+      "descriptor_targets": [
+        "admin-tool",
+        "golden-tool"
+      ],
+      "id": "sha1",
+      "object_format": "sha1"
+    },
+    {
+      "build_source": {
+        "algorithm": "curator-build-source-v1",
+        "content_sha256": "sha256:ca58ca530ac7ca3d7365cabc33d6143c8b445b9cbfe9124fb28d356dd1e0115e"
+      },
+      "bundle": "bundles/canonical-sha256-untagged.json",
+      "commit": "677281dee3fad31f17522948150f364a689a5cd5478836e19cfa0d982ecd6240",
+      "descriptor_targets": [
+        "admin-tool",
+        "golden-tool"
+      ],
+      "id": "sha256",
+      "object_format": "sha256"
+    }
+  ],
+  "schema_version": 1,
+  "selected_targets": [
+    {
+      "artifact_path_template": "bin/<manifest-command-key>[.exe]",
+      "build_root": ".",
+      "source_dir": "cmd/golden-tool",
+      "target": "golden-tool"
+    },
+    {
+      "artifact_path_template": "bin/<manifest-command-key>[.exe]",
+      "build_root": "tools/admin",
+      "source_dir": "tools/admin/cmd/admin-tool",
+      "target": "admin-tool"
+    }
+  ],
+  "whole_snapshot_includes": [
+    "README.md",
+    "scripts/not-compiler-input",
+    "skill-build.json",
+    "tools/admin"
+  ]
+}

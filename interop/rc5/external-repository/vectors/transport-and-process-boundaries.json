@@ -1,0 +1,99 @@
+{
+  "fetch": {
+    "destination_namespace": "refs/curator/",
+    "forbidden": [
+      "configured-refspec",
+      "depth",
+      "filter",
+      "mirror",
+      "prune",
+      "remote-name",
+      "server-option",
+      "stdin-refspec",
+      "tag-auto-follow"
+    ],
+    "source_count": 1,
+    "stdin": "closed",
+    "unexpected_state": [
+      "FETCH_HEAD",
+      "remote-tracking-ref",
+      "local-head",
+      "local-tag",
+      "commit-graph",
+      "maintenance-state"
+    ]
+  },
+  "git_session": {
+    "environment_source": "empty",
+    "forbidden_inherited_families": [
+      "GIT_*",
+      "SSH_*",
+      "HTTP_PROXY",
+      "HTTPS_PROXY",
+      "ALL_PROXY",
+      "NO_PROXY"
+    ],
+    "required": [
+      "GIT_CONFIG_NOSYSTEM=1",
+      "GIT_NO_LAZY_FETCH=1",
+      "GIT_NO_REPLACE_OBJECTS=1",
+      "GIT_OPTIONAL_LOCKS=0",
+      "GIT_PROTOCOL_FROM_USER=0",
+      "GIT_TERMINAL_PROMPT=0",
+      "LC_ALL=C",
+      "LANG=C",
+      "PATH=<manager-owned-empty-or-exact-helper-directory>"
+    ],
+    "unexpected_child": {
+      "code": "build_repository_git_process_unexpected",
+      "outcome": "rejected"
+    }
+  },
+  "object_reader": {
+    "forbidden": [
+      "--batch-command",
+      "--batch-all-objects",
+      "--follow-symlinks",
+      "--textconv",
+      "--filters",
+      "--filter",
+      "--use-mailmap",
+      "--path",
+      "revision-expression",
+      "child-process",
+      "network"
+    ],
+    "malformed_response": {
+      "code": "build_repository_incomplete_source",
+      "outcome": "rejected"
+    },
+    "request": "<full-lowercase-object-id> LF",
+    "response": "<same-id> SP <type> SP <size> LF <exact-content> LF"
+  },
+  "schema_version": 1,
+  "ssh_wrapper": {
+    "accepted_argv": [
+      "<absolute-manager-wrapper>",
+      "<host-or-user-at-host>",
+      "git-upload-pack '<validated-ascii-path>'"
+    ],
+    "argc": 3,
+    "forbidden": [
+      "-G",
+      "-p",
+      "-4",
+      "-6",
+      "-o",
+      "SendEnv",
+      "extra-operand",
+      "proxy-command",
+      "proxy-jump",
+      "forwarding",
+      "tty",
+      "control-master"
+    ],
+    "known_hosts": "operator-selected",
+    "shell_started": false,
+    "ssh_config": "manager-owned-empty"
+  }
+}

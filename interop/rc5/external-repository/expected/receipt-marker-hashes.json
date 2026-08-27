@@ -1,0 +1,20 @@
+{
+  "marker_v3": {
+    "path": "install-marker-v3-mixed-exact.json",
+    "receipt_versions": [
+      1,
+      2
+    ]
+  },
+  "receipt_v1": {
+    "cache_key": "sha256:4bb7f35b0f5acf9c8fa13db9d22d41dcb2cfdb43ab583a0150e28afc23d7e75e",
+    "path": "build-receipt-v1.ccj.json",
+    "receipt_sha256": "sha256:f36882fafc3dfdee0fbec0425be201747060d9c1500da4d4d4330570ed0f1666"
+  },
+  "receipt_v2": {
+    "cache_key": "sha256:4abc903bde7d8d9f65d32fd276f37dadccc88eb28bbaf693106dcebc4a19107a",
+    "path": "build-receipt-v2.ccj.json",
+    "receipt_sha256": "sha256:0f8f910a2b6ba9b35531bb232cb2890e11eb55a64ba01bcdd2d93d5ea421d0e0"
+  },
+  "schema_version": 1
+}

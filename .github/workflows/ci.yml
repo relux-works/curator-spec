@@ -50,10 +50,12 @@ jobs:
         run: go test ./tools/...
 
       - name: Regenerate authoritative vectors
-        run: go run ./tools/generate-vectors -root .
+        run: |
+          go run ./tools/generate-vectors -root .
+          go run ./tools/generate-external-repository-corpus -root .
 
       - name: Prove deterministic regeneration
-        run: git diff --exit-code -- conformance/v1 release/1.0.0-rc.5.json
+        run: git diff --exit-code -- conformance/v1 release/1.0.0-rc.5.json interop/rc5/external-repository
 
   formatting:
     name: Formatting

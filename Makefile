@@ -7,10 +7,13 @@ validate:
 
 regenerate:
 	go run ./tools/generate-vectors -root .
+	go run ./tools/generate-external-repository-corpus -root .
 
 regenerate-check:
 	go run ./tools/generate-vectors -root .
+	go run ./tools/generate-external-repository-corpus -root .
 	git diff --exit-code -- conformance/v1 release/1.0.0-rc.5.json
+	git diff --exit-code -- interop/rc5/external-repository
 
 release-check: validate regenerate-check
 	test -n "$(VERSION)"
