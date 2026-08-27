@@ -1,0 +1,25 @@
+{
+  "code": "build_toolchain_changed",
+  "driver": "go-v1",
+  "effective_requirement": {
+    "min": "1.23.0",
+    "min_inclusive": true
+  },
+  "guidance_id": "toolchain.go.changed.any.r1",
+  "identity_after": {
+    "algorithm": "curator-go-toolchain-v1",
+    "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "primary_relpath": "bin/go",
+    "version": "1.23.4"
+  },
+  "identity_before": {
+    "algorithm": "curator-go-toolchain-v1",
+    "content_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "primary_relpath": "bin/go",
+    "version": "1.23.4"
+  },
+  "prerelease": false,
+  "resolved_version": "1.23.4",
+  "stage": "publication",
+  "toolchain_id": "go"
+}

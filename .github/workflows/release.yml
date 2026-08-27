@@ -46,7 +46,7 @@ jobs:
           python -B -m unittest discover -s tools -p 'test_*.py'
           go test ./tools/...
           go run ./tools/generate-vectors -root .
-          git diff --exit-code -- conformance/v1
+          git diff --exit-code -- conformance/v1 conformance/next release/1.0.0-rc.5.json
           version="${GITHUB_REF_NAME#v}"
           python tools/release_gate.py --version "$version" --commit "$GITHUB_SHA"
 
@@ -56,7 +56,7 @@ jobs:
           directory="curator-protocol-${version}"
           mkdir "$directory"
           cp -R README.md LICENSE CHANGELOG.md COMPATIBILITY.md SECURITY.md GOVERNANCE.md RELEASE.md maintainers.allowed_signers \
-            protocol profiles cli conformance schemas decisions reviews "$directory/"
+            protocol profiles cli conformance schemas decisions docs release reviews "$directory/"
           tar -czf "${directory}.tar.gz" "$directory"
           zip -qr "${directory}.zip" "$directory"
           sha256sum "${directory}.tar.gz" "${directory}.zip" > checksums.txt

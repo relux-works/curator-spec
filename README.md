@@ -1,8 +1,8 @@
 # Curator Protocol Specification
 
-**Version:** 1.0.0-rc.3
+**Version:** 1.0.0-rc.5
 
-**Date:** 2026-07-14
+**Date:** 2026-07-28
 
 **Status:** Draft release candidate
 
@@ -40,8 +40,10 @@ The release consists of the following documents and artifacts:
 | [Registry service profile](profiles/registry-service.md) | Normative production guarantees for pagination, transactions, durability, recovery, keys, and operations |
 | [Curator CLI](cli/curator.md) | Informative command and CI guide for the Go implementation |
 | [Conformance](conformance/README.md) | Normative conformance classes, vectors, and execution contract |
+| [External repositories](docs/external-build-repositories.md) | Author and operator guide for schema 7 and `go-repository-v1` |
 | [`schemas/v1`](schemas/v1) | Normative JSON Schemas for every versioned wire object |
 | [`conformance/v1`](conformance/v1) | Normative positive and negative test vectors |
+| [`conformance/next`](conformance/next) | Candidate vectors for a minted but unreleased surface; validated identically, pinned by no release |
 | [Release checklist](RELEASE.md) | Candidate, independent review, signing, checksum, and attestation gates |
 
 The normative keywords **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL
@@ -69,9 +71,14 @@ shared test vectors, not by copying behavior from either codebase.
 
 ## Release status
 
-`1.0.0-rc.3` remains a draft until it receives an independent security review
-of the registry protocol and an independent interoperability review of the
-shared suite. Review evidence is published under [`reviews/`](reviews/). See
+`1.0.0-rc.5` is a draft candidate. Its shared external-repository corpus is
+platform-neutral and emits no native conformance claim. Compiled builds run
+under the portable `manager-worker-v1` execution policy described in
+[`docs/portable-go-execution-policy.md`](docs/portable-go-execution-policy.md);
+the fail-closed hardened profile is tracked separately and is not claimed by
+this candidate. Exact candidate-suite identity and downstream consumption rules
+are recorded under [`release/1.0.0-rc.5.json`](release/1.0.0-rc.5.json). Review
+evidence is published under [`reviews/`](reviews/). See
 [COMPATIBILITY.md](COMPATIBILITY.md),
 [SECURITY.md](SECURITY.md), and [GOVERNANCE.md](GOVERNANCE.md).
 

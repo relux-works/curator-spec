@@ -1,0 +1,7 @@
+{
+  "code": "build_toolchain_unavailable",
+  "driver": "go-v1",
+  "guidance_id": "toolchain.go.unavailable.macos.r1",
+  "stage": "A",
+  "toolchain_id": "go"
+}

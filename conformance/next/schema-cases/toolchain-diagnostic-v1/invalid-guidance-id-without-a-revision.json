@@ -1,0 +1,11 @@
+{
+  "code": "build_toolchain_unavailable",
+  "driver": "go-v1",
+  "effective_requirement": {
+    "min": "1.23.0",
+    "min_inclusive": true
+  },
+  "guidance_id": "toolchain.go.unavailable.macos",
+  "stage": "A",
+  "toolchain_id": "go"
+}

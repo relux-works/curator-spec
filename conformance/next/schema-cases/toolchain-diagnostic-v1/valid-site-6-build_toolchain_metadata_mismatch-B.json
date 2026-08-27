@@ -1,0 +1,21 @@
+{
+  "assertion": {
+    "kind": "at_least",
+    "min": "1.24.0"
+  },
+  "code": "build_toolchain_metadata_mismatch",
+  "driver": "go-v1",
+  "effective_requirement": {
+    "min": "1.23.0",
+    "min_inclusive": true
+  },
+  "guidance_id": "toolchain.go.metadata_mismatch.any.r1",
+  "prerelease": false,
+  "resolved_version": "1.23.4",
+  "source_ref": {
+    "location": "go.mod#go",
+    "surface": "source_metadata"
+  },
+  "stage": "B",
+  "toolchain_id": "go"
+}

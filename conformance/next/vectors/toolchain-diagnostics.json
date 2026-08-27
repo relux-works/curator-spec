@@ -1,0 +1,827 @@
+{
+  "payloads": [
+    {
+      "asserts": {
+        "absent": [
+          "effective_requirement",
+          "resolved_version",
+          "prerelease"
+        ],
+        "carries": [
+          "source_ref",
+          "violation"
+        ],
+        "note": "the payload never reproduces an unvalidated package byte",
+        "value_echoed": false
+      },
+      "case": "65",
+      "name": "requirement-invalid-carries-a-location-and-a-closed-violation-token",
+      "payloads": [
+        {
+          "code": "build_toolchain_requirement_invalid",
+          "driver": "go-v1",
+          "guidance_id": "toolchain.go.requirement_invalid.any.r1",
+          "source_ref": {
+            "location": "/commands/build-tool/toolchain",
+            "surface": "manifest"
+          },
+          "stage": "validation",
+          "toolchain_id": "go",
+          "violation": "version_literal_malformed"
+        }
+      ]
+    },
+    {
+      "asserts": {
+        "absent": [
+          "effective_requirement"
+        ],
+        "byte_identical_under_reorder": true,
+        "carries": [
+          "fragments",
+          "conflict"
+        ],
+        "fragments_validated": true,
+        "sources_in_unicode_scalar_order": true
+      },
+      "case": "66",
+      "name": "requirement-unsatisfiable-carries-validated-fragments-and-the-conflicting-bounds",
+      "payloads": [
+        {
+          "code": "build_toolchain_requirement_unsatisfiable",
+          "conflict": {
+            "lower_bound": "1.23.0",
+            "lower_sources": [
+              "registry_baseline"
+            ],
+            "upper_bound": "1.22.0",
+            "upper_inclusive": false,
+            "upper_sources": [
+              {
+                "location": "/commands/build-tool/toolchain",
+                "surface": "manifest"
+              }
+            ]
+          },
+          "driver": "go-v1",
+          "fragments": [
+            {
+              "requirement": {
+                "kind": "at_least",
+                "min": "1.23.0"
+              },
+              "source_ref": {
+                "location": "go",
+                "surface": "registry"
+              }
+            },
+            {
+              "requirement": {
+                "below": "1.22.0",
+                "kind": "range",
+                "min": "1.20.0"
+              },
+              "source_ref": {
+                "location": "/commands/build-tool/toolchain",
+                "surface": "manifest"
+              }
+            }
+          ],
+          "guidance_id": "toolchain.go.requirement_unsatisfiable.any.r1",
+          "stage": "validation",
+          "toolchain_id": "go"
+        }
+      ]
+    },
+    {
+      "asserts": {
+        "absent": [
+          "resolved_version",
+          "prerelease"
+        ],
+        "carries": [
+          "effective_requirement"
+        ]
+      },
+      "case": "67",
+      "name": "unavailable-carries-the-effective-requirement-and-no-resolved-version",
+      "payloads": [
+        {
+          "code": "build_toolchain_unavailable",
+          "driver": "go-v1",
+          "effective_requirement": {
+            "min": "1.23.0",
+            "min_inclusive": true
+          },
+          "guidance_id": "toolchain.go.unavailable.macos.r1",
+          "stage": "A",
+          "toolchain_id": "go"
+        }
+      ]
+    },
+    {
+      "asserts": {
+        "carries": [
+          "resolved_version",
+          "prerelease"
+        ]
+      },
+      "case": "68",
+      "name": "prerelease-unsupported-carries-the-resolved-version-and-the-prerelease-flag",
+      "payloads": [
+        {
+          "code": "build_toolchain_prerelease_unsupported",
+          "driver": "go-v1",
+          "effective_requirement": {
+            "min": "1.23.0",
+            "min_inclusive": true
+          },
+          "guidance_id": "toolchain.go.prerelease_unsupported.any.r1",
+          "prerelease": true,
+          "resolved_version": "1.24.0",
+          "stage": "A",
+          "toolchain_id": "go"
+        }
+      ]
+    },
+    {
+      "asserts": {
+        "carries": [
+          "admitted_families"
+        ]
+      },
+      "case": "69",
+      "name": "untested-release-carries-the-admitted-families",
+      "payloads": [
+        {
+          "admitted_families": [
+            [
+              1,
+              23
+            ]
+          ],
+          "code": "build_toolchain_untested_release",
+          "driver": "go-v1",
+          "effective_requirement": {
+            "min": "1.23.0",
+            "min_inclusive": true
+          },
+          "guidance_id": "toolchain.go.untested_release.any.r1",
+          "prerelease": false,
+          "resolved_version": "1.99.0",
+          "stage": "A",
+          "toolchain_id": "go"
+        }
+      ]
+    },
+    {
+      "asserts": {
+        "assertion_kinds": [
+          "derived",
+          "unclassifiable"
+        ],
+        "carries": [
+          "source_ref",
+          "assertion"
+        ],
+        "note": "always unclassifiable at the B step 3 file-shape site, because no value was classified"
+      },
+      "case": "70",
+      "name": "metadata-mismatch-carries-a-source-ref-plus-a-derived-assertion-or-the-unclassifiable-token",
+      "payloads": [
+        {
+          "assertion": {
+            "kind": "at_least",
+            "min": "1.24.0"
+          },
+          "code": "build_toolchain_metadata_mismatch",
+          "driver": "go-v1",
+          "effective_requirement": {
+            "min": "1.23.0",
+            "min_inclusive": true
+          },
+          "guidance_id": "toolchain.go.metadata_mismatch.any.r1",
+          "prerelease": false,
+          "resolved_version": "1.23.4",
+          "source_ref": {
+            "location": "go.mod#go",
+            "surface": "source_metadata"
+          },
+          "stage": "B",
+          "toolchain_id": "go"
+        },
+        {
+          "assertion": "unclassifiable",
+          "code": "build_toolchain_metadata_mismatch",
+          "driver": "go-v1",
+          "effective_requirement": {
+            "min": "1.23.0",
+            "min_inclusive": true
+          },
+          "guidance_id": "toolchain.go.metadata_mismatch.any.r1",
+          "prerelease": false,
+          "resolved_version": "1.23.4",
+          "source_ref": {
+            "location": "go.mod#toolchain",
+            "surface": "source_metadata"
+          },
+          "stage": "B",
+          "toolchain_id": "go"
+        }
+      ]
+    },
+    {
+      "asserts": {
+        "carries": [
+          "substep"
+        ],
+        "origin_class_absent_for": [
+          "shape"
+        ],
+        "origin_class_present_for": [
+          "origin"
+        ]
+      },
+      "case": "71",
+      "name": "untrusted-carries-substep-and-origin-class-exactly-for-the-origin-sub-step",
+      "payloads": [
+        {
+          "code": "build_toolchain_untrusted",
+          "driver": "go-v1",
+          "effective_requirement": {
+            "min": "1.23.0",
+            "min_inclusive": true
+          },
+          "guidance_id": "toolchain.go.untrusted.any.r1",
+          "origin_class": "ambient_path",
+          "stage": "A",
+          "substep": "origin",
+          "toolchain_id": "go"
+        },
+        {
+          "code": "build_toolchain_untrusted",
+          "driver": "go-v1",
+          "effective_requirement": {
+            "min": "1.23.0",
+            "min_inclusive": true
+          },
+          "guidance_id": "toolchain.go.untrusted.windows.r2",
+          "stage": "A",
+          "substep": "shape",
+          "toolchain_id": "go"
+        }
+      ]
+    }
+  ],
+  "sites": [
+    {
+      "code": "build_toolchain_requirement_invalid",
+      "effective_requirement": false,
+      "prerelease": false,
+      "resolved_version": false,
+      "stage": "validation",
+      "step": "validation"
+    },
+    {
+      "code": "build_toolchain_requirement_unsatisfiable",
+      "effective_requirement": false,
+      "prerelease": false,
+      "resolved_version": false,
+      "stage": "validation",
+      "step": "validation"
+    },
+    {
+      "code": "build_toolchain_requirement_unsatisfiable",
+      "effective_requirement": false,
+      "prerelease": true,
+      "resolved_version": true,
+      "stage": "B",
+      "step": "1"
+    },
+    {
+      "code": "build_toolchain_unavailable",
+      "effective_requirement": true,
+      "prerelease": false,
+      "resolved_version": false,
+      "stage": "A",
+      "step": "3a"
+    },
+    {
+      "code": "build_toolchain_untrusted",
+      "discriminant": {
+        "substep": "origin"
+      },
+      "effective_requirement": true,
+      "prerelease": false,
+      "resolved_version": false,
+      "stage": "A",
+      "step": "3b"
+    },
+    {
+      "code": "build_toolchain_untrusted",
+      "discriminant": {
+        "substep": "shape"
+      },
+      "effective_requirement": true,
+      "prerelease": false,
+      "resolved_version": false,
+      "stage": "A",
+      "step": "3c"
+    },
+    {
+      "code": "build_toolchain_version_undetermined",
+      "effective_requirement": true,
+      "prerelease": false,
+      "resolved_version": false,
+      "stage": "A",
+      "step": "4"
+    },
+    {
+      "code": "build_toolchain_platform_unsupported",
+      "discriminant": {
+        "check": "host_pair"
+      },
+      "effective_requirement": true,
+      "prerelease": false,
+      "resolved_version": false,
+      "stage": "A",
+      "step": "2"
+    },
+    {
+      "code": "build_toolchain_platform_unsupported",
+      "discriminant": {
+        "check": "native_target"
+      },
+      "effective_requirement": true,
+      "prerelease": true,
+      "resolved_version": true,
+      "stage": "A",
+      "step": "6"
+    },
+    {
+      "code": "build_toolchain_prerelease_unsupported",
+      "effective_requirement": true,
+      "prerelease": true,
+      "resolved_version": true,
+      "stage": "A",
+      "step": "5"
+    },
+    {
+      "code": "build_toolchain_incompatible",
+      "effective_requirement": true,
+      "prerelease": true,
+      "resolved_version": true,
+      "stage": "A",
+      "step": "7"
+    },
+    {
+      "code": "build_toolchain_incompatible",
+      "effective_requirement": true,
+      "prerelease": true,
+      "resolved_version": true,
+      "stage": "B",
+      "step": "2"
+    },
+    {
+      "code": "build_toolchain_untested_release",
+      "effective_requirement": true,
+      "prerelease": true,
+      "resolved_version": true,
+      "stage": "A",
+      "step": "8"
+    },
+    {
+      "code": "build_toolchain_metadata_mismatch",
+      "effective_requirement": true,
+      "prerelease": true,
+      "resolved_version": true,
+      "stage": "B",
+      "step": "3"
+    },
+    {
+      "code": "build_toolchain_metadata_mismatch",
+      "effective_requirement": true,
+      "prerelease": true,
+      "resolved_version": true,
+      "stage": "B",
+      "step": "5"
+    },
+    {
+      "code": "build_toolchain_package_influence_forbidden",
+      "effective_requirement": true,
+      "prerelease": true,
+      "resolved_version": true,
+      "stage": "B",
+      "step": "4"
+    },
+    {
+      "code": "build_toolchain_changed",
+      "effective_requirement": true,
+      "prerelease": true,
+      "resolved_version": true,
+      "stage": "A",
+      "step": "fingerprint"
+    },
+    {
+      "code": "build_toolchain_changed",
+      "effective_requirement": true,
+      "prerelease": true,
+      "resolved_version": true,
+      "stage": "publication",
+      "step": "publication"
+    }
+  ],
+  "union": [
+    {
+      "code": "build_toolchain_requirement_invalid",
+      "driver": "go-v1",
+      "guidance_id": "toolchain.go.requirement_invalid.any.r1",
+      "source_ref": {
+        "location": "/commands/build-tool/toolchain",
+        "surface": "manifest"
+      },
+      "stage": "validation",
+      "toolchain_id": "go",
+      "violation": "version_literal_malformed"
+    },
+    {
+      "code": "build_toolchain_requirement_unsatisfiable",
+      "conflict": {
+        "lower_bound": "1.23.0",
+        "lower_sources": [
+          "registry_baseline"
+        ],
+        "upper_bound": "1.22.0",
+        "upper_inclusive": false,
+        "upper_sources": [
+          {
+            "location": "/commands/build-tool/toolchain",
+            "surface": "manifest"
+          }
+        ]
+      },
+      "driver": "go-v1",
+      "fragments": [
+        {
+          "requirement": {
+            "kind": "at_least",
+            "min": "1.23.0"
+          },
+          "source_ref": {
+            "location": "go",
+            "surface": "registry"
+          }
+        },
+        {
+          "requirement": {
+            "below": "1.22.0",
+            "kind": "range",
+            "min": "1.20.0"
+          },
+          "source_ref": {
+            "location": "/commands/build-tool/toolchain",
+            "surface": "manifest"
+          }
+        }
+      ],
+      "guidance_id": "toolchain.go.requirement_unsatisfiable.any.r1",
+      "stage": "validation",
+      "toolchain_id": "go"
+    },
+    {
+      "code": "build_toolchain_unavailable",
+      "driver": "go-v1",
+      "effective_requirement": {
+        "min": "1.23.0",
+        "min_inclusive": true
+      },
+      "guidance_id": "toolchain.go.unavailable.macos.r1",
+      "stage": "A",
+      "toolchain_id": "go"
+    },
+    {
+      "code": "build_toolchain_prerelease_unsupported",
+      "driver": "go-v1",
+      "effective_requirement": {
+        "min": "1.23.0",
+        "min_inclusive": true
+      },
+      "guidance_id": "toolchain.go.prerelease_unsupported.any.r1",
+      "prerelease": true,
+      "resolved_version": "1.24.0",
+      "stage": "A",
+      "toolchain_id": "go"
+    },
+    {
+      "admitted_families": [
+        [
+          1,
+          23
+        ]
+      ],
+      "code": "build_toolchain_untested_release",
+      "driver": "go-v1",
+      "effective_requirement": {
+        "min": "1.23.0",
+        "min_inclusive": true
+      },
+      "guidance_id": "toolchain.go.untested_release.any.r1",
+      "prerelease": false,
+      "resolved_version": "1.99.0",
+      "stage": "A",
+      "toolchain_id": "go"
+    },
+    {
+      "assertion": {
+        "kind": "at_least",
+        "min": "1.24.0"
+      },
+      "code": "build_toolchain_metadata_mismatch",
+      "driver": "go-v1",
+      "effective_requirement": {
+        "min": "1.23.0",
+        "min_inclusive": true
+      },
+      "guidance_id": "toolchain.go.metadata_mismatch.any.r1",
+      "prerelease": false,
+      "resolved_version": "1.23.4",
+      "source_ref": {
+        "location": "go.mod#go",
+        "surface": "source_metadata"
+      },
+      "stage": "B",
+      "toolchain_id": "go"
+    },
+    {
+      "assertion": "unclassifiable",
+      "code": "build_toolchain_metadata_mismatch",
+      "driver": "go-v1",
+      "effective_requirement": {
+        "min": "1.23.0",
+        "min_inclusive": true
+      },
+      "guidance_id": "toolchain.go.metadata_mismatch.any.r1",
+      "prerelease": false,
+      "resolved_version": "1.23.4",
+      "source_ref": {
+        "location": "go.mod#toolchain",
+        "surface": "source_metadata"
+      },
+      "stage": "B",
+      "toolchain_id": "go"
+    },
+    {
+      "code": "build_toolchain_untrusted",
+      "driver": "go-v1",
+      "effective_requirement": {
+        "min": "1.23.0",
+        "min_inclusive": true
+      },
+      "guidance_id": "toolchain.go.untrusted.any.r1",
+      "origin_class": "ambient_path",
+      "stage": "A",
+      "substep": "origin",
+      "toolchain_id": "go"
+    },
+    {
+      "code": "build_toolchain_untrusted",
+      "driver": "go-v1",
+      "effective_requirement": {
+        "min": "1.23.0",
+        "min_inclusive": true
+      },
+      "guidance_id": "toolchain.go.untrusted.windows.r2",
+      "stage": "A",
+      "substep": "shape",
+      "toolchain_id": "go"
+    },
+    {
+      "code": "build_toolchain_requirement_unsatisfiable",
+      "conflict": {
+        "lower_bound": "1.26.0",
+        "lower_sources": [
+          {
+            "location": "/targets/golden-tool/toolchain",
+            "surface": "descriptor"
+          }
+        ],
+        "upper_bound": "1.25.0",
+        "upper_inclusive": false,
+        "upper_sources": [
+          {
+            "location": "/commands/golden-tool/toolchain",
+            "surface": "manifest"
+          }
+        ]
+      },
+      "driver": "go-repository-v1",
+      "fragments": [
+        {
+          "requirement": {
+            "kind": "at_least",
+            "min": "1.23.0"
+          },
+          "source_ref": {
+            "location": "go",
+            "surface": "registry"
+          }
+        },
+        {
+          "requirement": {
+            "below": "1.25.0",
+            "kind": "range",
+            "min": "1.23.0"
+          },
+          "source_ref": {
+            "location": "/commands/golden-tool/toolchain",
+            "surface": "manifest"
+          }
+        },
+        {
+          "requirement": {
+            "equals": "1.26.0",
+            "kind": "exact"
+          },
+          "source_ref": {
+            "location": "/targets/golden-tool/toolchain",
+            "surface": "descriptor"
+          }
+        }
+      ],
+      "guidance_id": "toolchain.go.requirement_unsatisfiable.any.r1",
+      "prerelease": false,
+      "resolved_version": "1.23.4",
+      "stage": "B",
+      "toolchain_id": "go"
+    },
+    {
+      "check": "host_pair",
+      "code": "build_toolchain_platform_unsupported",
+      "driver": "go-v1",
+      "effective_requirement": {
+        "min": "1.23.0",
+        "min_inclusive": true
+      },
+      "guidance_id": "toolchain.go.platform_unsupported.any.r1",
+      "host_platform": {
+        "architecture": "arm64",
+        "operating_system": "linux"
+      },
+      "stage": "A",
+      "supported_platforms": [
+        {
+          "architecture": "amd64",
+          "operating_system": "linux"
+        },
+        {
+          "architecture": "arm64",
+          "operating_system": "linux"
+        },
+        {
+          "architecture": "amd64",
+          "operating_system": "macos"
+        },
+        {
+          "architecture": "arm64",
+          "operating_system": "macos"
+        },
+        {
+          "architecture": "amd64",
+          "operating_system": "windows"
+        },
+        {
+          "architecture": "arm64",
+          "operating_system": "windows"
+        }
+      ],
+      "toolchain_id": "go"
+    },
+    {
+      "check": "native_target",
+      "code": "build_toolchain_platform_unsupported",
+      "driver": "go-v1",
+      "effective_requirement": {
+        "min": "1.23.0",
+        "min_inclusive": true
+      },
+      "guidance_id": "toolchain.go.platform_unsupported.any.r1",
+      "host_platform": {
+        "architecture": "arm64",
+        "operating_system": "macos"
+      },
+      "native_target": "darwin/arm64",
+      "prerelease": false,
+      "reported_target": "linux/amd64",
+      "resolved_version": "1.23.4",
+      "stage": "A",
+      "toolchain_id": "go"
+    },
+    {
+      "code": "build_toolchain_incompatible",
+      "driver": "go-repository-v1",
+      "effective_requirement": {
+        "min": "1.24.0",
+        "min_inclusive": true
+      },
+      "guidance_id": "toolchain.go.incompatible.any.r1",
+      "prerelease": false,
+      "resolved_version": "1.23.0",
+      "stage": "B",
+      "toolchain_id": "go"
+    },
+    {
+      "code": "build_toolchain_version_undetermined",
+      "driver": "go-v1",
+      "effective_requirement": {
+        "min": "1.23.0",
+        "min_inclusive": true
+      },
+      "guidance_id": "toolchain.go.version_undetermined.any.r1",
+      "probe": "version",
+      "reason": "unmatched",
+      "stage": "A",
+      "toolchain_id": "go"
+    },
+    {
+      "code": "build_toolchain_package_influence_forbidden",
+      "driver": "go-v1",
+      "effective_requirement": {
+        "min": "1.23.0",
+        "min_inclusive": true
+      },
+      "guidance_id": "toolchain.go.package_influence_forbidden.any.r1",
+      "prerelease": false,
+      "resolved_version": "1.23.4",
+      "source_ref": {
+        "location": "go.mod#toolchain",
+        "surface": "source_metadata"
+      },
+      "stage": "B",
+      "toolchain_id": "go",
+      "value_class": "custom-distribution-name"
+    },
+    {
+      "code": "build_toolchain_changed",
+      "driver": "go-v1",
+      "effective_requirement": {
+        "min": "1.23.0",
+        "min_inclusive": true
+      },
+      "guidance_id": "toolchain.go.changed.any.r1",
+      "identity_after": {
+        "algorithm": "curator-go-toolchain-v1",
+        "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "primary_relpath": "bin/go",
+        "version": "1.23.4"
+      },
+      "identity_before": {
+        "algorithm": "curator-go-toolchain-v1",
+        "content_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "primary_relpath": "bin/go",
+        "version": "1.23.4"
+      },
+      "prerelease": false,
+      "resolved_version": "1.23.4",
+      "stage": "publication",
+      "toolchain_id": "go"
+    },
+    {
+      "code": "build_toolchain_incompatible",
+      "driver": "go-v1",
+      "effective_requirement": {
+        "min": "1.23.4",
+        "min_inclusive": true
+      },
+      "guidance_id": "toolchain.go.incompatible.any.r1",
+      "prerelease": false,
+      "resolved_version": "1.23.0",
+      "stage": "A",
+      "toolchain_id": "go"
+    },
+    {
+      "code": "build_toolchain_changed",
+      "driver": "go-v1",
+      "effective_requirement": {
+        "min": "1.23.0",
+        "min_inclusive": true
+      },
+      "guidance_id": "toolchain.go.changed.any.r1",
+      "identity_after": {
+        "algorithm": "curator-go-toolchain-v1",
+        "content_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "primary_relpath": "bin/go",
+        "version": "1.23.4"
+      },
+      "identity_before": {
+        "algorithm": "curator-go-toolchain-v1",
+        "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "primary_relpath": "bin/go",
+        "version": "1.23.4"
+      },
+      "prerelease": false,
+      "resolved_version": "1.23.4",
+      "stage": "A",
+      "toolchain_id": "go"
+    }
+  ]
+}

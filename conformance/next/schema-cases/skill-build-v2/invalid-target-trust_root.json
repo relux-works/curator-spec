@@ -1,0 +1,23 @@
+{
+  "schema_version": 2,
+  "targets": {
+    "admin-tool": {
+      "build_root": "tools/admin",
+      "driver": "go-repository-v1",
+      "source_dir": "tools/admin/cmd/admin"
+    },
+    "golden-tool": {
+      "build_root": ".",
+      "driver": "go-repository-v1",
+      "source_dir": "cmd/golden-tool",
+      "toolchain": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      },
+      "trust_root": "https://example.test/roots.pem"
+    }
+  }
+}

@@ -3,6 +3,187 @@
 All notable protocol changes are recorded here. Versions follow Semantic
 Versioning for the complete specification set.
 
+## 1.0.0-rc.5 - 2026-07-28
+
+### Added
+
+- Manifest schema 7, repository-root `skill-build.json` descriptor schema 1,
+  development substitution schema 2, build receipt schema 2, install marker
+  schema 3, and conformance claim schema 3 for the closed `go-repository-v1`
+  driver. The descriptor filename is manager-neutral: it names the artifact a
+  skill is built from, not the manager that reads it.
+- Platform-neutral shared fixtures and vectors for SHA-1/SHA-256 tagged and
+  untagged acquisition, HTTPS/SSH/local identities, exact Git config/refs/raw
+  objects/pack/index/LFS bytes, and fail-closed repository features.
+- Whole-snapshot audit ordering, cache, offline, mixed-build, rollback,
+  status/repair/GC, shim/PATH, signing-boundary, and claim-qualification cases.
+- Author/operator guidance and generated rc.5 metadata carrying the exact
+  downstream candidate suite-manifest pin.
+- The portable `manager-worker-v1` execution policy for `go-v1` and
+  `go-repository-v1`: one identity-verified manager-owned worker in the fixed
+  process graph, an exact worker session state machine, the mandatory portable
+  control set, the exhaustive versioned `rc5-native-control-inventory-v1`
+  per-platform inventory, the closed `capability-evidence-v1` reporting record,
+  a single explicit failure boundary, and the `build_execution_*` stable
+  diagnostics.
+- An explicit statement, in normative text and in vectors, of the portable
+  mechanism behind each rule and the kernel-enforced guarantee it is not, so
+  `network: "none"`, the frozen snapshot, and the fixed manager-selected graph
+  can no longer be read as network denial, read-only presentation, or executable
+  allowlisting.
+- Executable `go-host-execution-policy` vectors covering the worker graph and
+  session order, mandatory controls, the per-platform native-control inventory,
+  the closed capability-evidence record and its negatives, the six deferred
+  hardened guarantees with their non-rejection guards, worker identity and
+  protocol negatives, closed package-influence surfaces, and distinct portable,
+  reserved-hardened, and pre-revision cache identities.
+- Decision 0006 recording the portable execution policy, the rejected
+  hardened-Linux-only and direct-Go alternatives, and the deferral of the
+  fail-closed profile to `STORY-260728-327soo`.
+- Decision 0007 and its reference guide recording the shared compiled-build
+  toolchain requirement contract: closed toolchain identifiers and driver
+  mapping, one canonical version grammar and interval intersection, the
+  manager-owned tested-release-family gate that carries the existing Go
+  allowlist rule forward, the two declaration channels behind trusted
+  resolution and fingerprint identity, the two-stage preflight order with
+  host-pair applicability ahead of resolution and the descriptor-narrowed
+  requirement re-evaluated before compiler work, the wire-surface versus
+  source-metadata disposition split behind package-influence rejection, the
+  source-file shape gate, exhaustive value classifiers for the `go.mod` `go` and
+  `toolchain` directives defined over upstream's two-layer acceptance — the
+  `modfile` shape grammar conjoined with `gover` version semantics, with the
+  ecosystem's own host-version gate kept out of both — under a no-widening and a
+  no-narrowing-outside-the-security-partition property that an executable
+  boundary probe measures against real toolchains from an isolated semantic
+  measurement and a closed command classifier that recognises whole diagnostics
+  exactly rather than message leads, whose unrecognised outcomes fail rather than
+  becoming verdicts, and whose closure is itself measured in both laundering
+  directions, including `default`, custom distribution names
+  and releases newer than the runner's own, the twelve `build_toolchain_*`
+  diagnostics with disjoint triggers and a payload union derived from the
+  firing site, the manager-owned guidance catalog with revisioned identifiers,
+  total reason coverage, resolution-and-reachability coverage modes and
+  immutable version transitions, and the no-auto-install rule.
+- Manifest schema 8 and `skill-build.json` schema 2 landing that contract on the
+  wire: a REQUIRED `toolchain` requirement of exactly `id` and `version` on both
+  schema-8 build commands, the same object OPTIONAL on a descriptor schema-2
+  target, and no other member on either surface. Manifest schemas 1 through 7
+  and descriptor schema 1 keep their exact bytes, reject `toolchain`, and gain
+  the two-stage preflight through the driver's registry baseline instead of
+  through a field.
+- The manager-owned `toolchain-registry-v1`, `toolchain-guidance-catalog-v1`,
+  and `toolchain-diagnostic-v1` schemas, and the executable
+  `toolchain-preflight`, `toolchain-registry`, `toolchain-guidance-catalog`,
+  `toolchain-go-metadata`, and `toolchain-diagnostics` vector suites covering
+  the whole section 8 inventory: the three requirement kinds and their
+  intersection, the compatibility gate that `at_least` alone never satisfies,
+  Stage A's eight ordered steps with host-pair applicability ahead of resolution
+  and the three disjoint resolution sub-steps, Stage B's five ordered steps with
+  the descriptor-narrowed requirement re-evaluated before any metadata work, the
+  Go two-layer grammar boundary in both directions, the twelve diagnostics and
+  every payload shape their firing sites admit, catalog coverage in all three
+  modes with reachability and the version-transition rules, and the identity
+  guards proving a requirement, a compatibility set, or a guidance revision
+  changes no cache key.
+- A wire-surface release gate that enumerates the build-command and
+  descriptor-target property names of every published schema version and fails
+  on a name that would make a field a resolution input rather than a
+  version-domain assertion. That constraint cannot be a runtime diagnostic,
+  because a field that does not exist produces no value to diagnose.
+- The section 4.2.1.2 boundary probe as a maintained check under
+  `tools/toolchain-boundary-probe`, with its five regression controls that are
+  required to fail.
+- `conformance/next`, a second suite root carrying the generated cases of a
+  surface that is minted but not yet released. A release document pins the
+  SHA-256 of its suite root's `manifest.json`, so a case added under
+  `conformance/v1` changes the identity of an already released candidate; the
+  candidate root keeps the whole schema-8, descriptor schema-2 and manager-owned
+  toolchain corpus out of that digest while validating it identically. Its
+  manifest deliberately carries no `protocol_version`, because naming one would
+  mint one.
+- `release/frozen.json`, the authored record of every released artifact's
+  accepted byte identity, and the guard over it in `tools/generate-vectors`,
+  `tools/validate.py`, and `tools/release_gate.py`. Regenerating a suite also
+  regenerates the document pinning it, so a rewrite of a frozen release is
+  internally consistent and proves nothing; comparing against a record that
+  generation cannot move is what makes it fail.
+
+### Changed
+
+- The shared-suite manifest and repository version metadata now identify
+  `1.0.0-rc.5`.
+- Claim v3 qualification requires immutable native evidence for every emitted
+  driver/platform tuple. This candidate emits no native manager claim; macOS
+  and Windows remain pending downstream evidence and Linux remains excluded
+  until `TASK-260728-1skseh`.
+- `goBuildPolicyV1` and `goRepositoryBuildPolicyV1` require
+  `execution_policy: "manager-worker-v1"`; marker-v3 build records and claim-v3
+  driver assertions require the same closed constant. Every `go-v1` logical
+  cache key and the generated `go-v1` receipt example change accordingly.
+- Decision 0004 supersedes its direct-Go process-graph clause before
+  publication.
+
+### Compatibility
+
+- Manifest schemas 1 through 6, the `build-receipt-v1`, `install-marker-v2`,
+  and `conformance-claim-v2` schema bytes, markers v1/v2, claim v1/v2, and the
+  `go-v1` package-controlled surface retain their prior meaning and frozen
+  guards. No manifest or descriptor gains a package-controlled field.
+- The unreleased execution-policy revision intentionally changes `go-v1` cache
+  identity so a pre-revision candidate entry misses instead of aliasing. The
+  exact rc.4 candidate key
+  `sha256:3fcd714a40e8918eb67dbd35d435875dcce6c9047da811a1fa26626e5e57be48`
+  is retained in the suite only as that non-aliasing proof.
+- A future hardened execution profile requires a new execution-policy identity
+  and a new claim schema version; claim v3 cannot express one.
+- Schema-7 mixed builds keep receipt v1 for local `go-v1`, use receipt v2 only
+  for `go-repository-v1`, and write marker v3.
+- Candidate suite consumption is explicit and digest-pinned; no committed
+  downstream released-suite pin is advanced by this candidate metadata.
+
+### Security
+
+- Exact source and raw-object proof, full-snapshot validation, Git LFS
+  rejection, and independent external audit precede both artifact-cache lookup
+  and compiler execution.
+- Compiled builds apply their mandatory controls inside an identity-verified
+  manager-owned worker before any package byte reaches a compiler, and reject
+  the build before the worker or Go when a mandatory control is unavailable.
+- The portable policy does not claim total network denial, kernel-enforced
+  read-only source and toolchain, private-build-root-only writes, hard aggregate
+  descendant resource bounds, exact executable allowlisting, or fail-closed
+  capability preflight. Those six guarantees are deferred to
+  `STORY-260728-327soo`, their absence never rejects a portable build, and
+  recording them under `manager-worker-v1` is an error.
+- Exactly one control set can reject at this boundary: a mandatory portable
+  control that cannot be applied rejects before the worker starts. An unavailable
+  inventory native control is reported and never rejects, and capability evidence
+  stays out of cache, receipt, marker, and claim identity.
+- Source hooks, helpers, filters, submodules, LFS hydration, alternates,
+  replacements, grafts, promisor/lazy fetch, package PATH/output control,
+  package influence over the execution boundary, and install-time signing remain
+  outside the closed driver.
+
+## 1.0.0-rc.4 - 2026-07-20
+
+### Added
+
+- Manifest schema 6 with the closed compile-only local `go-v1` build command.
+- Build receipt schema 1, install marker schema 2, conformance claim schema 2,
+  protected artifact-cache rules, mixed lifecycle planning, and deterministic
+  build vectors.
+
+### Compatibility
+
+- Schemas 1 through 5 and marker schema 1 retain their published bytes and
+  meanings. Schema 6 is selected only by exact `schema_version`.
+
+### Security
+
+- Package source is compiler input only. Package-controlled recipes, hooks,
+  argv, environment, output selection, dynamic/native toolchains, produced
+  program execution, and receipt self-attestation are rejected.
+
 ## 1.0.0-rc.3 - 2026-07-14
 
 ### Added

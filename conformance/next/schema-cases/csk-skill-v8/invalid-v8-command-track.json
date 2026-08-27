@@ -1,0 +1,54 @@
+{
+  "build_repositories": {
+    "golden-tools": {
+      "git": "https://github.com/example/golden-tools.git",
+      "locked_commit": {
+        "hex": "0123456789abcdef0123456789abcdef01234567",
+        "object_format": "sha1"
+      },
+      "tag": "v1.4.0"
+    }
+  },
+  "build_roots": [
+    "build"
+  ],
+  "capabilities": {},
+  "commands": {
+    "build-tool": {
+      "driver": "go-v1",
+      "source_dir": "build/cmd/tool",
+      "toolchain": {
+        "id": "go",
+        "version": {
+          "kind": "at_least",
+          "min": "1.23.0"
+        }
+      },
+      "track": "beta",
+      "type": "build"
+    },
+    "golden-tool": {
+      "driver": "go-repository-v1",
+      "repository": "golden-tools",
+      "target": "golden-tool",
+      "toolchain": {
+        "id": "go",
+        "version": {
+          "below": "1.25.0",
+          "kind": "range",
+          "min": "1.23.0"
+        }
+      },
+      "type": "build"
+    },
+    "script-tool": {
+      "type": "script",
+      "unix_path": "scripts/tool"
+    },
+    "system-tool": {
+      "command": "tool",
+      "type": "system"
+    }
+  },
+  "schema_version": 8
+}

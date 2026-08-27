@@ -1,0 +1,13 @@
+{
+  "code": "build_toolchain_incompatible",
+  "driver": "go-v1",
+  "effective_requirement": {
+    "min": "1.23.4",
+    "min_inclusive": true
+  },
+  "guidance_id": "toolchain.go.incompatible.any.r1",
+  "prerelease": false,
+  "resolved_version": "1.23.0",
+  "stage": "A",
+  "toolchain_id": "go"
+}

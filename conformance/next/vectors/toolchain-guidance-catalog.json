@@ -1,0 +1,873 @@
+{
+  "cases": [
+    {
+      "case": "72",
+      "expected": {
+        "release_gate": "pass"
+      },
+      "name": "every-reason-resolves-for-every-supported-toolchain-and-platform",
+      "resolution": [
+        {
+          "active": true,
+          "operating_system": "linux",
+          "reason": "changed",
+          "resolves_to": "toolchain.go.changed.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "macos",
+          "reason": "changed",
+          "resolves_to": "toolchain.go.changed.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "windows",
+          "reason": "changed",
+          "resolves_to": "toolchain.go.changed.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "linux",
+          "reason": "incompatible",
+          "resolves_to": "toolchain.go.incompatible.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "macos",
+          "reason": "incompatible",
+          "resolves_to": "toolchain.go.incompatible.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "windows",
+          "reason": "incompatible",
+          "resolves_to": "toolchain.go.incompatible.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "linux",
+          "reason": "metadata_mismatch",
+          "resolves_to": "toolchain.go.metadata_mismatch.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "macos",
+          "reason": "metadata_mismatch",
+          "resolves_to": "toolchain.go.metadata_mismatch.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "windows",
+          "reason": "metadata_mismatch",
+          "resolves_to": "toolchain.go.metadata_mismatch.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "linux",
+          "reason": "package_influence_forbidden",
+          "resolves_to": "toolchain.go.package_influence_forbidden.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "macos",
+          "reason": "package_influence_forbidden",
+          "resolves_to": "toolchain.go.package_influence_forbidden.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "windows",
+          "reason": "package_influence_forbidden",
+          "resolves_to": "toolchain.go.package_influence_forbidden.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "linux",
+          "reason": "platform_unsupported",
+          "resolves_to": "toolchain.go.platform_unsupported.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "macos",
+          "reason": "platform_unsupported",
+          "resolves_to": "toolchain.go.platform_unsupported.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "windows",
+          "reason": "platform_unsupported",
+          "resolves_to": "toolchain.go.platform_unsupported.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "linux",
+          "reason": "prerelease_unsupported",
+          "resolves_to": "toolchain.go.prerelease_unsupported.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "macos",
+          "reason": "prerelease_unsupported",
+          "resolves_to": "toolchain.go.prerelease_unsupported.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "windows",
+          "reason": "prerelease_unsupported",
+          "resolves_to": "toolchain.go.prerelease_unsupported.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "linux",
+          "reason": "requirement_invalid",
+          "resolves_to": "toolchain.go.requirement_invalid.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "macos",
+          "reason": "requirement_invalid",
+          "resolves_to": "toolchain.go.requirement_invalid.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "windows",
+          "reason": "requirement_invalid",
+          "resolves_to": "toolchain.go.requirement_invalid.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "linux",
+          "reason": "requirement_unsatisfiable",
+          "resolves_to": "toolchain.go.requirement_unsatisfiable.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "macos",
+          "reason": "requirement_unsatisfiable",
+          "resolves_to": "toolchain.go.requirement_unsatisfiable.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "windows",
+          "reason": "requirement_unsatisfiable",
+          "resolves_to": "toolchain.go.requirement_unsatisfiable.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "linux",
+          "reason": "untested_release",
+          "resolves_to": "toolchain.go.untested_release.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "macos",
+          "reason": "untested_release",
+          "resolves_to": "toolchain.go.untested_release.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "windows",
+          "reason": "untested_release",
+          "resolves_to": "toolchain.go.untested_release.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "linux",
+          "reason": "untrusted",
+          "resolves_to": "toolchain.go.untrusted.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "macos",
+          "reason": "untrusted",
+          "resolves_to": "toolchain.go.untrusted.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "windows",
+          "reason": "untrusted",
+          "resolves_to": "toolchain.go.untrusted.windows.r2",
+          "selected_platform": "windows",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "linux",
+          "reason": "unavailable",
+          "resolves_to": "toolchain.go.unavailable.linux.r1",
+          "selected_platform": "linux",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "macos",
+          "reason": "unavailable",
+          "resolves_to": "toolchain.go.unavailable.macos.r1",
+          "selected_platform": "macos",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "windows",
+          "reason": "unavailable",
+          "resolves_to": "toolchain.go.unavailable.windows.r1",
+          "selected_platform": "windows",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "linux",
+          "reason": "version_undetermined",
+          "resolves_to": "toolchain.go.version_undetermined.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "macos",
+          "reason": "version_undetermined",
+          "resolves_to": "toolchain.go.version_undetermined.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        },
+        {
+          "active": true,
+          "operating_system": "windows",
+          "reason": "version_undetermined",
+          "resolves_to": "toolchain.go.version_undetermined.any.r1",
+          "selected_platform": "any",
+          "toolchain_id": "go"
+        }
+      ]
+    },
+    {
+      "case": "73",
+      "expected": {
+        "release_gate": "fail"
+      },
+      "mutation": {
+        "remove_tuple": {
+          "reason": "changed",
+          "toolchain_id": "go"
+        }
+      },
+      "name": "missing-reason-for-a-supported-toolchain"
+    },
+    {
+      "case": "74",
+      "expected": {
+        "release_gate": "fail"
+      },
+      "mutation": {
+        "add_active": {
+          "platform": "any",
+          "reason": "changed",
+          "revision": 2,
+          "toolchain_id": "go"
+        },
+        "reason": "at most one entry per tuple is active"
+      },
+      "name": "two-active-entries-for-one-tuple"
+    },
+    {
+      "case": "75",
+      "expected": {
+        "release_gate": "fail"
+      },
+      "mutation": {
+        "reason": "superseded_by must name an existing entry of the same tuple at a strictly greater revision",
+        "set_superseded_by": {
+          "guidance_id": "toolchain.go.untrusted.windows.r1",
+          "values": [
+            "toolchain.go.untrusted.windows.r1",
+            "toolchain.go.untrusted.windows.r3"
+          ]
+        }
+      },
+      "name": "superseded-by-naming-a-lower-equal-or-absent-revision"
+    },
+    {
+      "case": "76",
+      "expected": {
+        "release_gate": "fail"
+      },
+      "mutation": {
+        "set_superseded_by": {
+          "guidance_id": "toolchain.go.untrusted.windows.r1",
+          "values": [
+            "toolchain.go.unavailable.windows.r2"
+          ]
+        }
+      },
+      "name": "superseded-by-naming-a-different-tuple"
+    },
+    {
+      "case": "77",
+      "expected": {
+        "release_gate": "pass",
+        "resolvable": "toolchain.go.untrusted.windows.r1",
+        "retained": true,
+        "selection_returns": "toolchain.go.untrusted.windows.r2"
+      },
+      "name": "a-superseded-entry-stays-resolvable"
+    },
+    {
+      "case": "78",
+      "diagnostics": [
+        {
+          "active": true,
+          "code": "build_toolchain_changed",
+          "guidance_id": "toolchain.go.changed.any.r1",
+          "operating_system": "macos",
+          "revision": 1
+        },
+        {
+          "active": true,
+          "code": "build_toolchain_incompatible",
+          "guidance_id": "toolchain.go.incompatible.any.r1",
+          "operating_system": "macos",
+          "revision": 1
+        },
+        {
+          "active": true,
+          "code": "build_toolchain_metadata_mismatch",
+          "guidance_id": "toolchain.go.metadata_mismatch.any.r1",
+          "operating_system": "macos",
+          "revision": 1
+        },
+        {
+          "active": true,
+          "code": "build_toolchain_package_influence_forbidden",
+          "guidance_id": "toolchain.go.package_influence_forbidden.any.r1",
+          "operating_system": "macos",
+          "revision": 1
+        },
+        {
+          "active": true,
+          "code": "build_toolchain_platform_unsupported",
+          "guidance_id": "toolchain.go.platform_unsupported.any.r1",
+          "operating_system": "macos",
+          "revision": 1
+        },
+        {
+          "active": true,
+          "code": "build_toolchain_prerelease_unsupported",
+          "guidance_id": "toolchain.go.prerelease_unsupported.any.r1",
+          "operating_system": "macos",
+          "revision": 1
+        },
+        {
+          "active": true,
+          "code": "build_toolchain_requirement_invalid",
+          "guidance_id": "toolchain.go.requirement_invalid.any.r1",
+          "operating_system": "macos",
+          "revision": 1
+        },
+        {
+          "active": true,
+          "code": "build_toolchain_requirement_unsatisfiable",
+          "guidance_id": "toolchain.go.requirement_unsatisfiable.any.r1",
+          "operating_system": "macos",
+          "revision": 1
+        },
+        {
+          "active": true,
+          "code": "build_toolchain_untested_release",
+          "guidance_id": "toolchain.go.untested_release.any.r1",
+          "operating_system": "macos",
+          "revision": 1
+        },
+        {
+          "active": true,
+          "code": "build_toolchain_untrusted",
+          "guidance_id": "toolchain.go.untrusted.any.r1",
+          "operating_system": "macos",
+          "revision": 1
+        },
+        {
+          "active": true,
+          "code": "build_toolchain_unavailable",
+          "guidance_id": "toolchain.go.unavailable.macos.r1",
+          "operating_system": "macos",
+          "revision": 1
+        },
+        {
+          "active": true,
+          "code": "build_toolchain_version_undetermined",
+          "guidance_id": "toolchain.go.version_undetermined.any.r1",
+          "operating_system": "macos",
+          "revision": 1
+        }
+      ],
+      "expected": {
+        "release_gate": "pass"
+      },
+      "name": "every-code-emits-an-active-revisioned-guidance-id"
+    },
+    {
+      "case": "79",
+      "example_reason": "changed",
+      "expected": {
+        "release_gate": "pass",
+        "shape": "one active any entry, no active exact entries"
+      },
+      "mode": "any",
+      "name": "any-mode"
+    },
+    {
+      "case": "80",
+      "example_reason": "unavailable",
+      "expected": {
+        "release_gate": "pass",
+        "shape": "one active exact entry for every registry operating system, no any entry"
+      },
+      "mode": "per_os",
+      "name": "per-os-mode"
+    },
+    {
+      "case": "81",
+      "example_reason": "untrusted",
+      "expected": {
+        "release_gate": "pass",
+        "resolution": [
+          {
+            "operating_system": "linux",
+            "resolves_to": "toolchain.go.untrusted.any.r1"
+          },
+          {
+            "operating_system": "macos",
+            "resolves_to": "toolchain.go.untrusted.any.r1"
+          },
+          {
+            "operating_system": "windows",
+            "resolves_to": "toolchain.go.untrusted.windows.r2"
+          }
+        ]
+      },
+      "mode": "hybrid",
+      "name": "hybrid-coverage"
+    },
+    {
+      "case": "82",
+      "expected": {
+        "release_gate": "fail"
+      },
+      "mutation": {
+        "add_exact_for": [
+          "linux",
+          "macos"
+        ],
+        "reason": "an active any entry shadowed by active exact entries for every registry operating system can never be selected",
+        "tuple": {
+          "reason": "untrusted",
+          "toolchain_id": "go"
+        }
+      },
+      "name": "unreachable-fallback"
+    },
+    {
+      "case": "83",
+      "expected": {
+        "release_gate": "fail"
+      },
+      "mutation": {
+        "add_exact": {
+          "platform": "linux",
+          "reason": "changed",
+          "toolchain_id": "go"
+        },
+        "reason": "an active exact entry whose platform is outside the toolchain's registry platforms set is unreachable",
+        "registry": {
+          "entry": "go",
+          "restrict_platforms_to": [
+            "macos",
+            "windows"
+          ]
+        }
+      },
+      "name": "unreachable-override"
+    },
+    {
+      "case": "84",
+      "expected": {
+        "release_gate": "fail"
+      },
+      "mutation": {
+        "reason": "every operating system in the registry platforms set must resolve to exactly one active entry",
+        "remove": [
+          "toolchain.go.unavailable.linux.r1"
+        ]
+      },
+      "name": "operating-system-with-neither-exact-nor-any"
+    }
+  ],
+  "catalog": {
+    "catalog_version": 1,
+    "entries": [
+      {
+        "active": true,
+        "guidance_class": "configuration",
+        "guidance_id": "toolchain.go.changed.any.r1",
+        "platform": "any",
+        "primary_source": "https://relux-works.github.io/curator/operator/toolchains",
+        "reason": "changed",
+        "summary": "See the primary source for this reason.",
+        "toolchain_id": "go"
+      },
+      {
+        "active": true,
+        "guidance_class": "host",
+        "guidance_id": "toolchain.go.incompatible.any.r1",
+        "platform": "any",
+        "primary_source": "https://go.dev/doc/install",
+        "reason": "incompatible",
+        "summary": "See the primary source for this reason.",
+        "toolchain_id": "go"
+      },
+      {
+        "active": true,
+        "guidance_class": "host",
+        "guidance_id": "toolchain.go.metadata_mismatch.any.r1",
+        "platform": "any",
+        "primary_source": "https://go.dev/doc/toolchain",
+        "reason": "metadata_mismatch",
+        "summary": "See the primary source for this reason.",
+        "toolchain_id": "go"
+      },
+      {
+        "active": true,
+        "guidance_class": "authoring",
+        "guidance_id": "toolchain.go.package_influence_forbidden.any.r1",
+        "platform": "any",
+        "primary_source": "https://relux-works.github.io/curator-spec/protocol/core.html#toolchain-requirements",
+        "reason": "package_influence_forbidden",
+        "summary": "See the primary source for this reason.",
+        "toolchain_id": "go"
+      },
+      {
+        "active": true,
+        "guidance_class": "host",
+        "guidance_id": "toolchain.go.platform_unsupported.any.r1",
+        "platform": "any",
+        "primary_source": "https://go.dev/doc/install",
+        "reason": "platform_unsupported",
+        "summary": "See the primary source for this reason.",
+        "toolchain_id": "go"
+      },
+      {
+        "active": true,
+        "guidance_class": "host",
+        "guidance_id": "toolchain.go.prerelease_unsupported.any.r1",
+        "platform": "any",
+        "primary_source": "https://go.dev/doc/install",
+        "reason": "prerelease_unsupported",
+        "summary": "See the primary source for this reason.",
+        "toolchain_id": "go"
+      },
+      {
+        "active": true,
+        "guidance_class": "authoring",
+        "guidance_id": "toolchain.go.requirement_invalid.any.r1",
+        "platform": "any",
+        "primary_source": "https://relux-works.github.io/curator-spec/protocol/core.html#toolchain-requirements",
+        "reason": "requirement_invalid",
+        "summary": "See the primary source for this reason.",
+        "toolchain_id": "go"
+      },
+      {
+        "active": true,
+        "guidance_class": "authoring",
+        "guidance_id": "toolchain.go.requirement_unsatisfiable.any.r1",
+        "platform": "any",
+        "primary_source": "https://relux-works.github.io/curator-spec/protocol/core.html#toolchain-requirements",
+        "reason": "requirement_unsatisfiable",
+        "summary": "See the primary source for this reason.",
+        "toolchain_id": "go"
+      },
+      {
+        "active": true,
+        "guidance_class": "host",
+        "guidance_id": "toolchain.go.untested_release.any.r1",
+        "platform": "any",
+        "primary_source": "https://go.dev/doc/install",
+        "reason": "untested_release",
+        "summary": "See the primary source for this reason.",
+        "toolchain_id": "go"
+      },
+      {
+        "active": true,
+        "guidance_class": "configuration",
+        "guidance_id": "toolchain.go.untrusted.any.r1",
+        "platform": "any",
+        "primary_source": "https://relux-works.github.io/curator/operator/toolchains",
+        "reason": "untrusted",
+        "summary": "Point the operator toolchain configuration at a concrete toolchain root.",
+        "toolchain_id": "go"
+      },
+      {
+        "active": false,
+        "guidance_class": "configuration",
+        "guidance_id": "toolchain.go.untrusted.windows.r1",
+        "platform": "windows",
+        "primary_source": "https://relux-works.github.io/curator/operator/toolchains",
+        "reason": "untrusted",
+        "summary": "Point the operator toolchain configuration at a concrete toolchain root.",
+        "superseded_by": "toolchain.go.untrusted.windows.r2",
+        "toolchain_id": "go"
+      },
+      {
+        "active": true,
+        "guidance_class": "configuration",
+        "guidance_id": "toolchain.go.untrusted.windows.r2",
+        "platform": "windows",
+        "primary_source": "https://relux-works.github.io/curator/operator/toolchains",
+        "reason": "untrusted",
+        "summary": "Point the operator toolchain configuration at a concrete toolchain root, not a launcher on PATH.",
+        "toolchain_id": "go"
+      },
+      {
+        "active": true,
+        "guidance_class": "host",
+        "guidance_id": "toolchain.go.unavailable.linux.r1",
+        "platform": "linux",
+        "primary_source": "https://go.dev/doc/install",
+        "reason": "unavailable",
+        "summary": "Install a manager-trusted Go release and declare its root in operator configuration.",
+        "toolchain_id": "go"
+      },
+      {
+        "active": true,
+        "guidance_class": "host",
+        "guidance_id": "toolchain.go.unavailable.macos.r1",
+        "platform": "macos",
+        "primary_source": "https://go.dev/doc/install",
+        "reason": "unavailable",
+        "summary": "Install a manager-trusted Go release and declare its root in operator configuration.",
+        "toolchain_id": "go"
+      },
+      {
+        "active": true,
+        "guidance_class": "host",
+        "guidance_id": "toolchain.go.unavailable.windows.r1",
+        "platform": "windows",
+        "primary_source": "https://go.dev/doc/install",
+        "reason": "unavailable",
+        "summary": "Install a manager-trusted Go release and declare its root in operator configuration.",
+        "toolchain_id": "go"
+      },
+      {
+        "active": true,
+        "guidance_class": "host",
+        "guidance_id": "toolchain.go.version_undetermined.any.r1",
+        "platform": "any",
+        "primary_source": "https://go.dev/doc/install",
+        "reason": "version_undetermined",
+        "summary": "See the primary source for this reason.",
+        "toolchain_id": "go"
+      }
+    ],
+    "schema_version": 1
+  },
+  "reasons": [
+    {
+      "code": "build_toolchain_changed",
+      "guidance_class": "configuration",
+      "primary_source": "https://relux-works.github.io/curator/operator/toolchains",
+      "reason": "changed"
+    },
+    {
+      "code": "build_toolchain_incompatible",
+      "guidance_class": "host",
+      "primary_source": "https://go.dev/doc/install",
+      "reason": "incompatible"
+    },
+    {
+      "code": "build_toolchain_metadata_mismatch",
+      "guidance_class": "host",
+      "primary_source": "https://go.dev/doc/toolchain",
+      "reason": "metadata_mismatch"
+    },
+    {
+      "code": "build_toolchain_package_influence_forbidden",
+      "guidance_class": "authoring",
+      "primary_source": "https://relux-works.github.io/curator-spec/protocol/core.html#toolchain-requirements",
+      "reason": "package_influence_forbidden"
+    },
+    {
+      "code": "build_toolchain_platform_unsupported",
+      "guidance_class": "host",
+      "primary_source": "https://go.dev/doc/install",
+      "reason": "platform_unsupported"
+    },
+    {
+      "code": "build_toolchain_prerelease_unsupported",
+      "guidance_class": "host",
+      "primary_source": "https://go.dev/doc/install",
+      "reason": "prerelease_unsupported"
+    },
+    {
+      "code": "build_toolchain_requirement_invalid",
+      "guidance_class": "authoring",
+      "primary_source": "https://relux-works.github.io/curator-spec/protocol/core.html#toolchain-requirements",
+      "reason": "requirement_invalid"
+    },
+    {
+      "code": "build_toolchain_requirement_unsatisfiable",
+      "guidance_class": "authoring",
+      "primary_source": "https://relux-works.github.io/curator-spec/protocol/core.html#toolchain-requirements",
+      "reason": "requirement_unsatisfiable"
+    },
+    {
+      "code": "build_toolchain_untested_release",
+      "guidance_class": "host",
+      "primary_source": "https://go.dev/doc/install",
+      "reason": "untested_release"
+    },
+    {
+      "code": "build_toolchain_untrusted",
+      "guidance_class": "configuration",
+      "primary_source": "https://relux-works.github.io/curator/operator/toolchains",
+      "reason": "untrusted"
+    },
+    {
+      "code": "build_toolchain_unavailable",
+      "guidance_class": "host",
+      "primary_source": "https://go.dev/doc/install",
+      "reason": "unavailable"
+    },
+    {
+      "code": "build_toolchain_version_undetermined",
+      "guidance_class": "host",
+      "primary_source": "https://go.dev/doc/install",
+      "reason": "version_undetermined"
+    }
+  ],
+  "transitions": [
+    {
+      "case": "85",
+      "expected": {
+        "release_gate": "pass"
+      },
+      "from_revision": 1,
+      "name": "retire-with-a-successor-across-versions",
+      "to_revision": 2,
+      "transition": "retire_with_successor",
+      "tuple": {
+        "platform": "windows",
+        "reason": "untrusted",
+        "toolchain_id": "go"
+      }
+    },
+    {
+      "case": "86",
+      "expected": {
+        "release_gate": "pass"
+      },
+      "name": "retire-without-a-successor-when-the-tuple-is-no-longer-required",
+      "precondition": "the tuple's platform or toolchain left the registry",
+      "transition": "retire_without_successor",
+      "tuple": {
+        "platform": "linux",
+        "reason": "unavailable",
+        "toolchain_id": "go"
+      }
+    },
+    {
+      "case": "87",
+      "expected": {
+        "release_gate": "fail"
+      },
+      "name": "an-entry-present-in-n-and-absent-from-n-plus-1",
+      "reason": "the entry set is append-only across versions",
+      "transition": "remove"
+    },
+    {
+      "case": "88",
+      "expected": {
+        "release_gate": "fail"
+      },
+      "members": [
+        "guidance_class",
+        "primary_source",
+        "summary"
+      ],
+      "name": "a-carried-forward-entry-whose-immutable-members-differ",
+      "transition": "carry_forward_modified"
+    },
+    {
+      "case": "89",
+      "expected": {
+        "release_gate": "fail"
+      },
+      "name": "reactivating-a-retired-entry",
+      "reason": "active is one-way monotone, true to false and never back",
+      "transition": "reactivate"
+    },
+    {
+      "case": "90",
+      "expected": {
+        "release_gate": "fail"
+      },
+      "name": "any-edit-inside-an-already-published-catalog-version",
+      "reason": "a published catalog version is immutable in whole, including active and superseded_by",
+      "transition": "edit_in_place"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "code": "build_toolchain_requirement_unsatisfiable",
+  "conflict": {
+    "lower_bound": "1.23.0",
+    "lower_sources": [
+      "registry_baseline"
+    ],
+    "upper_bound": "1.22.0",
+    "upper_inclusive": false,
+    "upper_sources": [
+      {
+        "location": "/commands/build-tool/toolchain",
+        "surface": "manifest"
+      }
+    ]
+  },
+  "driver": "go-v1",
+  "effective_requirement": {
+    "min": "1.23.0",
+    "min_inclusive": true
+  },
+  "fragments": [
+    {
+      "requirement": {
+        "kind": "at_least",
+        "min": "1.23.0"
+      },
+      "source_ref": {
+        "location": "go",
+        "surface": "registry"
+      }
+    },
+    {
+      "requirement": {
+        "below": "1.22.0",
+        "kind": "range",
+        "min": "1.20.0"
+      },
+      "source_ref": {
+        "location": "/commands/build-tool/toolchain",
+        "surface": "manifest"
+      }
+    }
+  ],
+  "guidance_id": "toolchain.go.requirement_unsatisfiable.any.r1",
+  "stage": "validation",
+  "toolchain_id": "go"
+}

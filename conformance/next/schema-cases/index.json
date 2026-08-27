@@ -1,0 +1,822 @@
+[
+  {
+    "instance": "agent-skill-v8/valid.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/invalid.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/valid-exact-requirement.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-skill-v8/invalid-identifier-not-the-drivers-primary.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-local-command-without-toolchain.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-repository-command-without-toolchain.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-toolchain-as-a-bare-string.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-toolchain-without-version.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-toolchain-without-id.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-unknown-toolchain-identifier.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-jdk-is-companion-only.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-unknown-version-kind.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-range-without-below.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-exact-with-an-extra-member.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-version-literal-with-a-go-prefix.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-version-literal-with-a-v-prefix.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-version-literal-two-components.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-version-literal-leading-zero.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-version-literal-prerelease.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-version-literal-wildcard.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-version-literal-component-overflow.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-version-literal-executable-path.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-version-literal-url.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-version-literal-track.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-generic-driver.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-v8-command-toolchain_path.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-v8-command-toolchain_root.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-v8-command-download_url.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-v8-command-mirror.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-v8-command-channel.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-v8-command-track.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-v8-command-version_manager.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-v8-command-install_command.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-v8-command-package_manager.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-v8-command-env.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-v8-command-path.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-v8-command-credentials.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-v8-command-keyring.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-v8-command-checksum.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-skill-v8/invalid-v8-command-trust_root.json",
+    "schema": "agent-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/valid.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/invalid.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/valid-exact-requirement.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "csk-skill-v8/invalid-identifier-not-the-drivers-primary.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-local-command-without-toolchain.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-repository-command-without-toolchain.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-toolchain-as-a-bare-string.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-toolchain-without-version.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-toolchain-without-id.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-unknown-toolchain-identifier.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-jdk-is-companion-only.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-unknown-version-kind.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-range-without-below.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-exact-with-an-extra-member.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-version-literal-with-a-go-prefix.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-version-literal-with-a-v-prefix.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-version-literal-two-components.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-version-literal-leading-zero.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-version-literal-prerelease.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-version-literal-wildcard.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-version-literal-component-overflow.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-version-literal-executable-path.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-version-literal-url.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-version-literal-track.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-generic-driver.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-v8-command-toolchain_path.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-v8-command-toolchain_root.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-v8-command-download_url.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-v8-command-mirror.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-v8-command-channel.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-v8-command-track.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-v8-command-version_manager.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-v8-command-install_command.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-v8-command-package_manager.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-v8-command-env.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-v8-command-path.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-v8-command-credentials.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-v8-command-keyring.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-v8-command-checksum.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "csk-skill-v8/invalid-v8-command-trust_root.json",
+    "schema": "csk-skill-v8.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/valid.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "skill-build-v2/invalid.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/valid-optional-toolchain-absent.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "skill-build-v2/valid-exact-toolchain.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "skill-build-v2/invalid-source-outside-build-root.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-toolchain-as-a-bare-string.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-version-literal-prerelease.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-schema-1-version.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-target-toolchain_path.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-target-toolchain_root.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-target-download_url.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-target-mirror.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-target-channel.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-target-track.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-target-version_manager.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-target-install_command.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-target-package_manager.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-target-env.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-target-path.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-target-credentials.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-target-keyring.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-target-checksum.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "skill-build-v2/invalid-target-trust_root.json",
+    "schema": "skill-build-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-1-build_toolchain_requirement_invalid-validation.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-2-build_toolchain_requirement_unsatisfiable-validation.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-3-build_toolchain_unavailable-A.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-4-build_toolchain_prerelease_unsupported-A.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-5-build_toolchain_untested_release-A.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-6-build_toolchain_metadata_mismatch-B.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-7-build_toolchain_metadata_mismatch-B.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-8-build_toolchain_untrusted-A.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-9-build_toolchain_untrusted-A.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-10-build_toolchain_requirement_unsatisfiable-B.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-11-build_toolchain_platform_unsupported-A.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-12-build_toolchain_platform_unsupported-A.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-13-build_toolchain_incompatible-B.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-14-build_toolchain_version_undetermined-A.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-15-build_toolchain_package_influence_forbidden-B.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-16-build_toolchain_changed-publication.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-17-build_toolchain_incompatible-A.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/valid-site-18-build_toolchain_changed-A.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-requirement-invalid-carries-a-resolved-version.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-requirement-invalid-carries-an-effective-requirement.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-requirement-invalid-echoes-the-offending-value.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-unknown-violation-token.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-requirement-unsatisfiable-carries-an-effective-requirement.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-unavailable-carries-a-resolved-version.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-unavailable-without-an-effective-requirement.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-prerelease-unsupported-with-a-release-flag.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-untested-release-without-admitted-families.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-metadata-mismatch-with-a-free-text-assertion.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-untrusted-origin-without-an-origin-class.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-untrusted-shape-with-an-origin-class.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-host-pair-check-with-a-reported-target.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-native-target-check-with-supported-platforms.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-guidance-id-without-a-revision.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-diagnostic-carrying-prose-guidance.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-diagnostic-v1/invalid-diagnostic-carrying-a-url.json",
+    "schema": "toolchain-diagnostic-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-guidance-catalog-v1/valid.json",
+    "schema": "toolchain-guidance-catalog-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-guidance-catalog-v1/invalid.json",
+    "schema": "toolchain-guidance-catalog-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-guidance-catalog-v1/invalid-guidance-id-without-a-revision.json",
+    "schema": "toolchain-guidance-catalog-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-guidance-catalog-v1/invalid-guidance-id-revision-leading-zero.json",
+    "schema": "toolchain-guidance-catalog-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-guidance-catalog-v1/invalid-unknown-reason.json",
+    "schema": "toolchain-guidance-catalog-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-guidance-catalog-v1/invalid-unknown-guidance-class.json",
+    "schema": "toolchain-guidance-catalog-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-guidance-catalog-v1/invalid-non-https-primary-source.json",
+    "schema": "toolchain-guidance-catalog-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-guidance-catalog-v1/invalid-install-command-primary-source.json",
+    "schema": "toolchain-guidance-catalog-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-guidance-catalog-v1/invalid-active-entry-with-superseded-by.json",
+    "schema": "toolchain-guidance-catalog-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-guidance-catalog-v1/invalid-entry-with-an-install-script.json",
+    "schema": "toolchain-guidance-catalog-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-guidance-catalog-v1/invalid-catalog-version-zero.json",
+    "schema": "toolchain-guidance-catalog-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-registry-v1/valid.json",
+    "schema": "toolchain-registry-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "toolchain-registry-v1/invalid.json",
+    "schema": "toolchain-registry-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-registry-v1/invalid-complete-entry-without-compatibility.json",
+    "schema": "toolchain-registry-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-registry-v1/invalid-complete-entry-without-platforms.json",
+    "schema": "toolchain-registry-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-registry-v1/invalid-baseline-prerelease-literal.json",
+    "schema": "toolchain-registry-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-registry-v1/invalid-fingerprint-algorithm.json",
+    "schema": "toolchain-registry-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-registry-v1/invalid-unanchored-normalization.json",
+    "schema": "toolchain-registry-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-registry-v1/invalid-unbounded-probe-output.json",
+    "schema": "toolchain-registry-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-registry-v1/invalid-download-url-on-an-entry.json",
+    "schema": "toolchain-registry-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-registry-v1/invalid-install-command-on-an-entry.json",
+    "schema": "toolchain-registry-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-registry-v1/invalid-classifier-with-one-class.json",
+    "schema": "toolchain-registry-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-registry-v1/invalid-unknown-class-outcome.json",
+    "schema": "toolchain-registry-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "toolchain-registry-v1/invalid-unknown-operating-system-relpath.json",
+    "schema": "toolchain-registry-v1.schema.json",
+    "valid": false
+  }
+]
