@@ -20,10 +20,12 @@ import (
 )
 
 const (
-	protocolVersion = "1.0.0-rc.3"
-	fixedCommit     = "0123456789abcdef0123456789abcdef01234567"
-	fixedTime       = "2026-07-13T00:00:00Z"
-	genesis         = "0000000000000000000000000000000000000000000000000000000000000000"
+	protocolVersion                   = "1.0.0-rc.4"
+	conformanceClaimV1ProtocolVersion = "1.0.0-rc.3"
+	conformanceClaimV2CreatedAt       = "2026-07-20T00:00:00Z"
+	fixedCommit                       = "0123456789abcdef0123456789abcdef01234567"
+	fixedTime                         = "2026-07-13T00:00:00Z"
+	genesis                           = "0000000000000000000000000000000000000000000000000000000000000000"
 )
 
 var includeRoots = map[string]bool{
@@ -41,6 +43,12 @@ var excludedPatterns = []string{
 type schemaCase struct {
 	valid   any
 	invalid any
+}
+
+type schemaExample struct {
+	name     string
+	valid    bool
+	instance any
 }
 
 func main() {
@@ -586,17 +594,47 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 		if version >= 5 {
 			obj["dependencies"].(map[string]any)["mcp_servers"] = map[string]any{}
 		}
+		if version >= 6 {
+			obj["build_roots"] = []any{"build"}
+			obj["commands"] = map[string]any{
+				"build-tool":  map[string]any{"type": "build", "driver": "go-v1", "source_dir": "build/cmd/tool"},
+				"script-tool": map[string]any{"type": "script", "unix_path": "scripts/tool"},
+				"system-tool": map[string]any{"type": "system", "command": "tool"},
+			}
+		}
+		if version >= 7 {
+			obj["build_repositories"] = map[string]any{
+				"golden-tools": map[string]any{
+					"git":           "https://github.com/example/golden-tools.git",
+					"locked_commit": map[string]any{"object_format": "sha1", "hex": fixedCommit},
+					"tag":           "v1.4.0",
+				},
+			}
+			obj["commands"].(map[string]any)["golden-tool"] = map[string]any{
+				"type": "build", "driver": "go-repository-v1", "repository": "golden-tools", "target": "golden-tool",
+			}
+		}
 		return obj
 	}
 	cases := map[string]schemaCase{}
-	for version := 1; version <= 5; version++ {
+	additionalCases := map[string][]schemaExample{}
+	for version := 1; version <= 7; version++ {
 		invalid := map[string]any{"schema_version": version, "install": "echo unsafe"}
 		if version == 1 {
 			invalid = map[string]any{"schema_version": 1, "runtime_roots": []any{"scripts"}}
+		} else if version >= 6 {
+			invalid = map[string]any{"schema_version": version, "capabilities": map[string]any{}, "install": "echo unsafe"}
 		}
 		for _, prefix := range []string{"agent-skill", "csk-skill"} {
 			name := fmt.Sprintf("%s-v%d.schema.json", prefix, version)
 			cases[name] = schemaCase{validSkill(version), invalid}
+			if version == 6 {
+				additionalCases[name] = append(v6SchemaExamples(), legacyV7SchemaExamples(validSkill(version))...)
+			} else if version == 7 {
+				additionalCases[name] = v7SchemaExamples()
+			} else {
+				additionalCases[name] = legacyV7SchemaExamples(validSkill(version))
+			}
 		}
 	}
 	cases["skillfile-v1.schema.json"] = schemaCase{
@@ -611,7 +649,25 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 		map[string]any{"substitutions": map[string]any{"golden-skill": map[string]any{"path": "../golden-skill"}}},
 		map[string]any{"substitutions": map[string]any{"golden-skill": map[string]any{"path": "x", "git": "https://example/x"}}},
 	}
+	skillfileDevV2 := validSkillfileDevV2()
+	cases["skillfile-dev-v2.schema.json"] = schemaCase{skillfileDevV2, withNestedField(validSkillfileDevV2(), []string{"build_repository_substitutions", "golden-skill", "golden-tools"}, "argv", []any{"go", "build"})}
+	additionalCases["skillfile-dev-v2.schema.json"] = skillfileDevV2SchemaExamples()
+	descriptor := validCuratorBuildV1()
+	cases["curator-build-v1.schema.json"] = schemaCase{descriptor, without(descriptor, "targets")}
+	additionalCases["curator-build-v1.schema.json"] = curatorBuildV1SchemaExamples()
 	cases["install-marker-v1.schema.json"] = schemaCase{marker, without(marker, "locale")}
+	receipt := validBuildReceiptV1()
+	cases["build-receipt-v1.schema.json"] = schemaCase{receipt, without(receipt, "cache_key")}
+	additionalCases["build-receipt-v1.schema.json"] = buildReceiptV1SchemaExamples()
+	receiptV2 := validBuildReceiptV2(false, false)
+	cases["build-receipt-v2.schema.json"] = schemaCase{receiptV2, without(receiptV2, "input")}
+	additionalCases["build-receipt-v2.schema.json"] = buildReceiptV2SchemaExamples()
+	markerV2 := validInstallMarkerV2(marker)
+	cases["install-marker-v2.schema.json"] = schemaCase{markerV2, without(markerV2, "builds")}
+	additionalCases["install-marker-v2.schema.json"] = installMarkerV2SchemaExamples(markerV2)
+	markerV3 := validInstallMarkerV3(marker)
+	cases["install-marker-v3.schema.json"] = schemaCase{markerV3, without(markerV3, "builds")}
+	additionalCases["install-marker-v3.schema.json"] = installMarkerV3SchemaExamples(markerV3)
 	cases["adapter-ledger-v1.schema.json"] = schemaCase{ledger, map[string]any{"schema_version": 1, "entries": []any{"CON"}}}
 	cases["audit-record-v1.schema.json"] = schemaCase{audited, without(audited, "sig")}
 	cases["signature-envelope-v1.schema.json"] = schemaCase{audited["sig"], map[string]any{"algorithm": "rsa", "key_id": "bad", "signature": "bad"}}
@@ -638,9 +694,15 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	cases["submission-response-v1.schema.json"] = schemaCase{map[string]any{"seq": 1, "entry_hash": logEntry["entry_hash"]}, map[string]any{"seq": 0, "entry_hash": "bad"}}
 	cases["error-response-v1.schema.json"] = schemaCase{map[string]any{"error": map[string]any{"code": "invalid_record", "message": "invalid record", "details": map[string]any{}}}, map[string]any{"detail": "invalid"}}
 	cases["conformance-claim-v1.schema.json"] = schemaCase{
-		map[string]any{"schema_version": 1, "protocol_version": protocolVersion, "implementation": "example", "implementation_version": "1.0", "classes": []any{"core"}, "suite_sha256": "sha256:" + strings.Repeat("0", 64), "operating_systems": []any{"linux"}, "created_at": fixedTime, "result": "pass"},
-		map[string]any{"schema_version": 1, "protocol_version": protocolVersion, "result": "fail"},
+		map[string]any{"schema_version": 1, "protocol_version": conformanceClaimV1ProtocolVersion, "implementation": "example", "implementation_version": "1.0", "classes": []any{"core"}, "suite_sha256": "sha256:" + strings.Repeat("0", 64), "operating_systems": []any{"linux"}, "created_at": fixedTime, "result": "pass"},
+		map[string]any{"schema_version": 1, "protocol_version": conformanceClaimV1ProtocolVersion, "result": "fail"},
 	}
+	claimV2 := validConformanceClaimV2()
+	cases["conformance-claim-v2.schema.json"] = schemaCase{claimV2, without(claimV2, "implementation")}
+	additionalCases["conformance-claim-v2.schema.json"] = conformanceClaimV2SchemaExamples()
+	claimV3 := validConformanceClaimV3()
+	cases["conformance-claim-v3.schema.json"] = schemaCase{claimV3, without(claimV3, "build_drivers")}
+	additionalCases["conformance-claim-v3.schema.json"] = conformanceClaimV3SchemaExamples()
 
 	root := filepath.Join(suite, "schema-cases")
 	var index []any
@@ -658,8 +720,780 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 			map[string]any{"schema": name, "instance": filepath.ToSlash(filepath.Join(strings.TrimSuffix(name, ".schema.json"), "valid.json")), "valid": true},
 			map[string]any{"schema": name, "instance": filepath.ToSlash(filepath.Join(strings.TrimSuffix(name, ".schema.json"), "invalid.json")), "valid": false},
 		)
+		for _, example := range additionalCases[name] {
+			filename := example.name + ".json"
+			writeJSON(filepath.Join(caseDir, filename), example.instance)
+			index = append(index, map[string]any{
+				"schema": name, "instance": filepath.ToSlash(filepath.Join(strings.TrimSuffix(name, ".schema.json"), filename)), "valid": example.valid,
+			})
+		}
 	}
 	writeJSON(filepath.Join(root, "index.json"), index)
+}
+
+func legacyV7SchemaExamples(valid map[string]any) []schemaExample {
+	withTopLevel := func(field string, value any) map[string]any {
+		manifest := deepCloneMap(valid)
+		manifest[field] = value
+		return manifest
+	}
+	withCommand := func(field string, value any) map[string]any {
+		manifest := deepCloneMap(valid)
+		commands, ok := manifest["commands"].(map[string]any)
+		if !ok {
+			commands = map[string]any{}
+			manifest["commands"] = commands
+		}
+		command := map[string]any{"type": "system", "command": "legacy-tool"}
+		command[field] = value
+		commands["reserved-v7"] = command
+		return manifest
+	}
+	return []schemaExample{
+		{name: "invalid-v7-build-repositories", instance: withTopLevel("build_repositories", map[string]any{})},
+		{name: "invalid-v7-top-level-repository", instance: withTopLevel("repository", "repo")},
+		{name: "invalid-v7-top-level-target", instance: withTopLevel("target", "tool")},
+		{name: "invalid-v7-top-level-driver", instance: withTopLevel("driver", "go-repository-v1")},
+		{name: "invalid-v7-command-repository", instance: withCommand("repository", "repo")},
+		{name: "invalid-v7-command-target", instance: withCommand("target", "tool")},
+		{name: "invalid-v7-command-driver", instance: withCommand("driver", "go-repository-v1")},
+	}
+}
+
+func validV7SkillManifest() map[string]any {
+	return map[string]any{
+		"schema_version": 7,
+		"capabilities":   map[string]any{},
+		"build_roots":    []any{"build"},
+		"build_repositories": map[string]any{
+			"golden-tools": map[string]any{
+				"git":           "https://github.com/example/golden-tools.git",
+				"locked_commit": map[string]any{"object_format": "sha1", "hex": fixedCommit},
+				"tag":           "v1.4.0",
+			},
+		},
+		"commands": map[string]any{
+			"local-helper": map[string]any{"type": "build", "driver": "go-v1", "source_dir": "build/cmd/helper"},
+			"golden-tool": map[string]any{
+				"type": "build", "driver": "go-repository-v1", "repository": "golden-tools", "target": "golden-tool",
+			},
+		},
+	}
+}
+
+func v7SchemaExamples() []schemaExample {
+	withCommandField := func(field string, value any) map[string]any {
+		manifest := validV7SkillManifest()
+		manifest["commands"].(map[string]any)["golden-tool"].(map[string]any)[field] = value
+		return manifest
+	}
+	withRepositoryField := func(field string, value any) map[string]any {
+		manifest := validV7SkillManifest()
+		manifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)[field] = value
+		return manifest
+	}
+	sha256Manifest := validV7SkillManifest()
+	sha256Manifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)["locked_commit"] =
+		map[string]any{"object_format": "sha256", "hex": strings.Repeat("a", 64)}
+	untaggedManifest := validV7SkillManifest()
+	delete(untaggedManifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any), "tag")
+	sshManifest := validV7SkillManifest()
+	sshManifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)["git"] = "ssh://git@github.com/example/golden-tools.git"
+	scpManifest := validV7SkillManifest()
+	scpManifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)["git"] = "git@github.com:example/golden-tools.git"
+	unicodeHTTPSManifest := validV7SkillManifest()
+	unicodeHTTPSManifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)["git"] = "https://example.com/组织/工具.git"
+	tag255Manifest := validV7SkillManifest()
+	tag255Manifest["build_repositories"].(map[string]any)["golden-tools"].(map[string]any)["tag"] = strings.Repeat("界", 85)
+
+	examples := []schemaExample{
+		{name: "valid-sha256-lock", valid: true, instance: sha256Manifest},
+		{name: "valid-untagged-lock", valid: true, instance: untaggedManifest},
+		{name: "valid-ssh-source", valid: true, instance: sshManifest},
+		{name: "valid-scp-source", valid: true, instance: scpManifest},
+		{name: "valid-unicode-https-source", valid: true, instance: unicodeHTTPSManifest},
+		{name: "valid-tag-255-bytes", valid: true, instance: tag255Manifest},
+		{name: "invalid-unselected-repository", instance: withNestedField(validV7SkillManifest(), []string{}, "build_repositories", map[string]any{
+			"golden-tools": map[string]any{"git": "https://github.com/example/golden-tools.git", "locked_commit": map[string]any{"object_format": "sha1", "hex": fixedCommit}},
+			"unused":       map[string]any{"git": "ssh://git@example.com/unused.git", "locked_commit": map[string]any{"object_format": "sha1", "hex": fixedCommit}},
+		})},
+		{name: "invalid-missing-repository", instance: withNestedField(validV7SkillManifest(), []string{"commands", "golden-tool"}, "repository", "missing")},
+		{name: "invalid-sha1-width", instance: withRepositoryField("locked_commit", map[string]any{"object_format": "sha1", "hex": strings.Repeat("a", 64)})},
+		{name: "invalid-sha256-width", instance: withRepositoryField("locked_commit", map[string]any{"object_format": "sha256", "hex": fixedCommit})},
+		{name: "invalid-https-userinfo", instance: withRepositoryField("git", "https://user@example.com/repo.git")},
+		{name: "invalid-explicit-port", instance: withRepositoryField("git", "https://example.com:8443/repo.git")},
+		{name: "invalid-https-dot-component", instance: withRepositoryField("git", "https://example.com/org/../repo.git")},
+		{name: "invalid-ssh-dot-component", instance: withRepositoryField("git", "ssh://git@example.com/./repo.git")},
+		{name: "invalid-scp-dot-component", instance: withRepositoryField("git", "git@example.com:org/../repo.git")},
+		{name: "invalid-ssh-metacharacter", instance: withRepositoryField("git", "git@example.com:repo;touch")},
+		{name: "invalid-ssh-non-ascii", instance: withRepositoryField("git", "ssh://git@example.com/répo.git")},
+		{name: "invalid-raw-revision-tag", instance: withRepositoryField("tag", "main^{commit}")},
+		{name: "invalid-tag-256-bytes", instance: withRepositoryField("tag", strings.Repeat("a", 256))},
+		{name: "invalid-tag-300-bytes", instance: withRepositoryField("tag", strings.Repeat("界", 100))},
+		{name: "invalid-generic-driver", instance: withCommandField("driver", "go-v2")},
+	}
+	for _, field := range []string{"argv", "env", "output", "name", "credentials", "signing", "hooks", "plugins", "generator", "fallback"} {
+		examples = append(examples, schemaExample{name: "invalid-command-" + field, instance: withCommandField(field, []any{})})
+	}
+	return examples
+}
+
+func validCuratorBuildV1() map[string]any {
+	return map[string]any{
+		"schema_version": 1,
+		"targets": map[string]any{
+			"golden-tool": map[string]any{"driver": "go-repository-v1", "build_root": ".", "source_dir": "cmd/golden-tool"},
+			"admin-tool":  map[string]any{"driver": "go-repository-v1", "build_root": "tools/admin", "source_dir": "tools/admin/cmd/admin"},
+		},
+	}
+}
+
+func curatorBuildV1SchemaExamples() []schemaExample {
+	target := func(buildRoot, sourceDir string) map[string]any {
+		return map[string]any{"schema_version": 1, "targets": map[string]any{
+			"tool": map[string]any{"driver": "go-repository-v1", "build_root": buildRoot, "source_dir": sourceDir},
+		}}
+	}
+	withField := func(field string, value any) map[string]any {
+		descriptor := validCuratorBuildV1()
+		descriptor["targets"].(map[string]any)["golden-tool"].(map[string]any)[field] = value
+		return descriptor
+	}
+	return []schemaExample{
+		{name: "valid-root-target", valid: true, instance: target(".", ".")},
+		{name: "valid-contained-target", valid: true, instance: target("tools/admin", "tools/admin/cmd/tool")},
+		{name: "invalid-source-outside-build-root", instance: target("tools/admin", "cmd/tool")},
+		{name: "invalid-parent-build-root", instance: target("../tools", "../tools/cmd/tool")},
+		{name: "invalid-output", instance: withField("output", "bin/tool")},
+		{name: "invalid-command-name", instance: withField("name", "tool")},
+		{name: "invalid-argv", instance: withField("argv", []any{"go", "build"})},
+		{name: "invalid-environment", instance: withField("environment", map[string]any{"GOFLAGS": "-mod=mod"})},
+		{name: "invalid-signing", instance: withField("signing", "developer-id")},
+		{name: "invalid-hook", instance: withField("hook", "post-build")},
+		{name: "invalid-plugin", instance: withField("plugin", "custom")},
+	}
+}
+
+func validSkillfileDevV2() map[string]any {
+	return map[string]any{
+		"schema_version": 2,
+		"substitutions":  map[string]any{},
+		"build_repository_substitutions": map[string]any{
+			"golden-skill": map[string]any{
+				"golden-tools": map[string]any{"path": "../golden-tools"},
+			},
+		},
+	}
+}
+
+func skillfileDevV2SchemaExamples() []schemaExample {
+	ordinaryOnly := map[string]any{
+		"schema_version": 2,
+		"substitutions": map[string]any{
+			"golden-skill": map[string]any{"path": "../golden-skill"},
+		},
+	}
+	emptyExternal := map[string]any{
+		"schema_version":                 2,
+		"substitutions":                  map[string]any{},
+		"build_repository_substitutions": map[string]any{},
+	}
+	network := validSkillfileDevV2()
+	network["build_repository_substitutions"].(map[string]any)["golden-skill"].(map[string]any)["golden-tools"] =
+		map[string]any{"git": "ssh://git@example.com/golden-tools.git", "ref": map[string]any{"kind": "tag", "value": "v1.4.0"}}
+	revision := validSkillfileDevV2()
+	revision["build_repository_substitutions"].(map[string]any)["golden-skill"].(map[string]any)["golden-tools"] =
+		map[string]any{"git": "https://example.com/golden-tools.git", "ref": map[string]any{"kind": "revision", "value": strings.Repeat("a", 64)}}
+	branch := validSkillfileDevV2()
+	branch["build_repository_substitutions"].(map[string]any)["golden-skill"].(map[string]any)["golden-tools"] =
+		map[string]any{"git": "https://example.com/golden-tools.git", "ref": map[string]any{"kind": "branch", "value": "release/v2"}}
+	branch256 := withNestedField(branch, []string{"build_repository_substitutions", "golden-skill", "golden-tools", "ref"}, "value", strings.Repeat("a", 256))
+	rawRef := withNestedField(network, []string{"build_repository_substitutions", "golden-skill", "golden-tools", "ref"}, "kind", "revision")
+	rawRef = withNestedField(rawRef, []string{"build_repository_substitutions", "golden-skill", "golden-tools", "ref"}, "value", "HEAD")
+	return []schemaExample{
+		{name: "valid-ordinary-only", valid: true, instance: ordinaryOnly},
+		{name: "valid-empty-build-repository-substitutions", valid: true, instance: emptyExternal},
+		{name: "valid-populated-build-repository-substitutions", valid: true, instance: validSkillfileDevV2()},
+		{name: "valid-network-tag", valid: true, instance: network},
+		{name: "valid-network-branch", valid: true, instance: branch},
+		{name: "valid-network-sha256-revision", valid: true, instance: revision},
+		{name: "invalid-path-and-git", instance: withNestedField(validSkillfileDevV2(), []string{"build_repository_substitutions", "golden-skill", "golden-tools"}, "git", "https://example.com/repo.git")},
+		{name: "invalid-raw-ref", instance: rawRef},
+		{name: "invalid-network-branch-256-bytes", instance: branch256},
+		{name: "invalid-output", instance: withNestedField(validSkillfileDevV2(), []string{"build_repository_substitutions", "golden-skill", "golden-tools"}, "output", "bin/tool")},
+		{name: "invalid-credentials", instance: withNestedField(validSkillfileDevV2(), []string{"build_repository_substitutions", "golden-skill", "golden-tools"}, "credentials", "secret")},
+		{name: "invalid-target-ownership", instance: withNestedField(validSkillfileDevV2(), []string{"build_repository_substitutions", "golden-skill", "golden-tools"}, "target", "other")},
+		{name: "invalid-driver-ownership", instance: withNestedField(validSkillfileDevV2(), []string{"build_repository_substitutions", "golden-skill", "golden-tools"}, "driver", "go-repository-v1")},
+		{name: "invalid-command-ownership", instance: withNestedField(validSkillfileDevV2(), []string{"build_repository_substitutions", "golden-skill", "golden-tools"}, "command", "other")},
+	}
+}
+
+func validDeclaredRepositorySource() map[string]any {
+	return map[string]any{
+		"identity":      map[string]any{"kind": "network-git", "value": "github.com/example/golden-tools"},
+		"transport":     "https",
+		"locked_commit": map[string]any{"object_format": "sha1", "hex": fixedCommit},
+		"tag":           "v1.4.0",
+	}
+}
+
+func validEffectiveRepositorySource(substituted, sha256Object bool) map[string]any {
+	format, commit := "sha1", fixedCommit
+	if sha256Object {
+		format, commit = "sha256", strings.Repeat("a", 64)
+	}
+	effective := map[string]any{
+		"identity":  map[string]any{"kind": "network-git", "value": "github.com/example/golden-tools"},
+		"transport": "https", "object_format": format, "commit": commit, "substituted": substituted,
+		"build_source": validBuildSourceIdentity(),
+	}
+	if substituted {
+		effective["identity"] = map[string]any{"kind": "operator-local-git", "value": "sha256:" + strings.Repeat("e", 64)}
+		delete(effective, "transport")
+		effective["substitution"] = map[string]any{"type": "local-path"}
+	}
+	return effective
+}
+
+func validBuildReceiptV2(substituted, sha256Object bool) map[string]any {
+	declared := validDeclaredRepositorySource()
+	if sha256Object {
+		declared["locked_commit"] = map[string]any{"object_format": "sha256", "hex": strings.Repeat("a", 64)}
+	}
+	return map[string]any{
+		"schema_version": 2,
+		"cache_key":      "sha256:" + strings.Repeat("4", 64),
+		"input": map[string]any{
+			"schema_version": 2, "driver": "go-repository-v1",
+			"source": map[string]any{
+				"repository": "golden-tools", "declared": declared,
+				"effective":  validEffectiveRepositorySource(substituted, sha256Object),
+				"descriptor": map[string]any{"path": "curator-build.json", "target": "golden-tool"},
+			},
+			"command": "golden-tool", "build_root": ".", "source_dir": "cmd/golden-tool",
+			"target":    map[string]any{"goos": "darwin", "goarch": "arm64", "tuning": map[string]any{"GOARM64": "v8.0"}},
+			"toolchain": map[string]any{"algorithm": "curator-go-toolchain-v1", "go_relpath": "bin/go", "go_version": "go version go1.26.1 darwin/arm64", "content_sha256": "sha256:" + strings.Repeat("c", 64)},
+			"policy": map[string]any{
+				"module_mode": "vendor", "network": "none", "workspace": false, "cgo": false,
+				"compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1", "target_mode": "native",
+				"link_mode": "internal", "libgcc": "none", "package_assembly": false, "host_objects": false,
+				"telemetry": "off-private", "source_kind": "locked-external-git-v1",
+			},
+		},
+		"artifact": map[string]any{"path": "bin/golden-tool", "sha256": "sha256:" + strings.Repeat("6", 64), "size": 1234567},
+	}
+}
+
+func buildReceiptV2SchemaExamples() []schemaExample {
+	withInputField := func(field string, value any) map[string]any {
+		receipt := validBuildReceiptV2(false, false)
+		receipt["input"].(map[string]any)[field] = value
+		return receipt
+	}
+	networkSubstitution := validBuildReceiptV2(false, false)
+	effective := networkSubstitution["input"].(map[string]any)["source"].(map[string]any)["effective"].(map[string]any)
+	effective["identity"] = map[string]any{"kind": "network-git", "value": "git.example.com/forks/golden-tools"}
+	effective["transport"] = "ssh"
+	effective["substituted"] = true
+	effective["substitution"] = map[string]any{
+		"type": "network-git",
+		"ref":  map[string]any{"kind": "branch", "value": "release"},
+	}
+	sha256NetworkSubstitution := validBuildReceiptV2(false, true)
+	sha256Effective := sha256NetworkSubstitution["input"].(map[string]any)["source"].(map[string]any)["effective"].(map[string]any)
+	sha256Effective["identity"] = map[string]any{"kind": "network-git", "value": "git.example.com/forks/golden-tools"}
+	sha256Effective["transport"] = "https"
+	sha256Effective["substituted"] = true
+	sha256Effective["substitution"] = map[string]any{
+		"type": "network-git",
+		"ref":  map[string]any{"kind": "revision", "value": strings.Repeat("a", 64)},
+	}
+	sha1Revision64 := withNestedField(networkSubstitution, []string{"input", "source", "effective", "substitution", "ref"}, "kind", "revision")
+	sha1Revision64 = withNestedField(sha1Revision64, []string{"input", "source", "effective", "substitution", "ref"}, "value", strings.Repeat("a", 64))
+	sha256Revision40 := withNestedField(sha256NetworkSubstitution, []string{"input", "source", "effective", "substitution", "ref"}, "value", fixedCommit)
+	unsubstitutedMismatch := withNestedField(validBuildReceiptV2(false, false), []string{"input", "source", "effective"}, "commit", strings.Repeat("1", 40))
+	canonicalUppercaseGitSuffix := validBuildReceiptV2(false, false)
+	for _, side := range []string{"declared", "effective"} {
+		canonicalUppercaseGitSuffix["input"].(map[string]any)["source"].(map[string]any)[side].(map[string]any)["identity"] =
+			map[string]any{"kind": "network-git", "value": "github.com/example/golden-tools.GIT"}
+	}
+	identityWithLowercaseGitSuffix := validBuildReceiptV2(false, false)
+	for _, side := range []string{"declared", "effective"} {
+		identityWithLowercaseGitSuffix["input"].(map[string]any)["source"].(map[string]any)[side].(map[string]any)["identity"] =
+			map[string]any{"kind": "network-git", "value": "github.com/example/golden-tools.git"}
+	}
+	identityWithUppercaseHost := validBuildReceiptV2(false, false)
+	for _, side := range []string{"declared", "effective"} {
+		identityWithUppercaseHost["input"].(map[string]any)["source"].(map[string]any)[side].(map[string]any)["identity"] =
+			map[string]any{"kind": "network-git", "value": "GitHub.com/example/golden-tools"}
+	}
+	identityWithDotComponent := validBuildReceiptV2(false, false)
+	for _, side := range []string{"declared", "effective"} {
+		identityWithDotComponent["input"].(map[string]any)["source"].(map[string]any)[side].(map[string]any)["identity"] =
+			map[string]any{"kind": "network-git", "value": "github.com/example/../golden-tools"}
+	}
+	sourceOutsideBuildRoot := validBuildReceiptV2(false, false)
+	sourceOutsideBuildRoot["input"].(map[string]any)["build_root"] = "tools/admin"
+	sourceOutsideBuildRoot["input"].(map[string]any)["source_dir"] = "other/cmd/tool"
+	untagged := validBuildReceiptV2(false, false)
+	delete(untagged["input"].(map[string]any)["source"].(map[string]any)["declared"].(map[string]any), "tag")
+	return []schemaExample{
+		{name: "valid-local-substitution", valid: true, instance: validBuildReceiptV2(true, false)},
+		{name: "valid-network-substitution", valid: true, instance: networkSubstitution},
+		{name: "valid-network-sha256-revision", valid: true, instance: sha256NetworkSubstitution},
+		{name: "valid-sha256", valid: true, instance: validBuildReceiptV2(false, true)},
+		{name: "valid-untagged", valid: true, instance: untagged},
+		{name: "valid-canonical-uppercase-git-suffix", valid: true, instance: canonicalUppercaseGitSuffix},
+		{name: "invalid-unsubstituted-substitution", instance: withNestedField(validBuildReceiptV2(false, false), []string{"input", "source", "effective"}, "substitution", map[string]any{"type": "local-path"})},
+		{name: "invalid-substituted-without-state", instance: withNestedField(validBuildReceiptV2(true, false), []string{"input", "source", "effective"}, "substitution", nil)},
+		{name: "invalid-local-substitution-network-identity", instance: withNestedField(validBuildReceiptV2(true, false), []string{"input", "source", "effective"}, "identity", map[string]any{"kind": "network-git", "value": "example.com/repo"})},
+		{name: "invalid-network-substitution-local-identity", instance: withNestedField(networkSubstitution, []string{"input", "source", "effective"}, "identity", map[string]any{"kind": "operator-local-git", "value": "sha256:" + strings.Repeat("e", 64)})},
+		{name: "invalid-effective-commit-width", instance: withNestedField(validBuildReceiptV2(false, false), []string{"input", "source", "effective"}, "commit", strings.Repeat("a", 64))},
+		{name: "invalid-unsubstituted-declared-effective-mismatch", instance: unsubstitutedMismatch},
+		{name: "invalid-source-outside-build-root", instance: sourceOutsideBuildRoot},
+		{name: "invalid-sha1-effective-revision-width", instance: sha1Revision64},
+		{name: "invalid-sha256-effective-revision-width", instance: sha256Revision40},
+		{name: "invalid-canonical-lowercase-git-suffix", instance: identityWithLowercaseGitSuffix},
+		{name: "invalid-canonical-uppercase-host", instance: identityWithUppercaseHost},
+		{name: "invalid-canonical-dot-component", instance: identityWithDotComponent},
+		{name: "invalid-driver", instance: withInputField("driver", "go-v1")},
+		{name: "invalid-output", instance: withInputField("output", "bin/other")},
+		{name: "invalid-argv", instance: withInputField("argv", []any{"go", "build"})},
+		{name: "invalid-trust-boolean", instance: withNestedField(validBuildReceiptV2(false, false), []string{}, "trusted", true)},
+	}
+}
+
+func validBuildRecordV1ForMarkerV3() map[string]any {
+	record := validBuildRecordV1("bin/local-helper", "1")
+	record["receipt_schema_version"] = 1
+	return record
+}
+
+func validBuildRecordV2ForMarkerV3(substituted bool) map[string]any {
+	record := map[string]any{
+		"driver": "go-repository-v1", "receipt_schema_version": 2, "repository": "golden-tools",
+		"declared_identity":      map[string]any{"kind": "network-git", "value": "github.com/example/golden-tools"},
+		"declared_locked_commit": map[string]any{"object_format": "sha1", "hex": fixedCommit},
+		"declared_tag":           "v1.4.0",
+		"effective_identity":     map[string]any{"kind": "network-git", "value": "github.com/example/golden-tools"},
+		"object_format":          "sha1", "commit": fixedCommit, "substituted": substituted,
+		"build_source": validBuildSourceIdentity(), "descriptor_target": "golden-tool",
+		"cache_key": "sha256:" + strings.Repeat("4", 64), "receipt_sha256": "sha256:" + strings.Repeat("5", 64),
+		"artifact_sha256": "sha256:" + strings.Repeat("6", 64), "artifact_path": "bin/golden-tool",
+	}
+	if substituted {
+		record["effective_identity"] = map[string]any{"kind": "operator-local-git", "value": "sha256:" + strings.Repeat("e", 64)}
+		record["substitution"] = map[string]any{"type": "local-path"}
+	}
+	return record
+}
+
+func markerV3WithExternalRecord(marker map[string]any, record map[string]any) map[string]any {
+	result := cloneMap(marker)
+	result["commands"] = []any{"golden-tool"}
+	result["build_roots"] = []any{}
+	result["builds"] = map[string]any{"golden-tool": record}
+	delete(result, "build_source")
+	return result
+}
+
+func validNetworkBuildRecordV2ForMarkerV3(objectFormat, refKind, refValue string) map[string]any {
+	record := validBuildRecordV2ForMarkerV3(false)
+	record["effective_identity"] = map[string]any{"kind": "network-git", "value": "git.example.com/forks/golden-tools"}
+	record["substituted"] = true
+	record["substitution"] = map[string]any{
+		"type": "network-git",
+		"ref":  map[string]any{"kind": refKind, "value": refValue},
+	}
+	if objectFormat == "sha256" {
+		record["declared_locked_commit"] = map[string]any{"object_format": "sha256", "hex": strings.Repeat("a", 64)}
+		record["object_format"] = "sha256"
+		record["commit"] = strings.Repeat("a", 64)
+	}
+	return record
+}
+
+func validInstallMarkerV3(markerV1 map[string]any) map[string]any {
+	marker := cloneMap(markerV1)
+	marker["schema_version"] = 3
+	marker["skill_schema_version"] = 7
+	marker["runtime_roots"] = []any{}
+	marker["build_roots"] = []any{"build"}
+	marker["build_source"] = validBuildSourceIdentity()
+	marker["commands"] = []any{"golden-tool", "local-helper"}
+	marker["builds"] = map[string]any{
+		"local-helper": validBuildRecordV1ForMarkerV3(),
+		"golden-tool":  validBuildRecordV2ForMarkerV3(false),
+	}
+	return marker
+}
+
+func installMarkerV3SchemaExamples(validMarker map[string]any) []schemaExample {
+	externalOnly := markerV3WithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(true))
+	externalOnlyUnsubstituted := markerV3WithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(false))
+	localOnly := cloneMap(validMarker)
+	localOnly["commands"] = []any{"local-helper"}
+	localOnly["builds"] = map[string]any{"local-helper": validBuildRecordV1ForMarkerV3()}
+	emptyBuilds := cloneMap(validMarker)
+	emptyBuilds["commands"] = []any{}
+	emptyBuilds["build_roots"] = []any{}
+	emptyBuilds["builds"] = map[string]any{}
+	delete(emptyBuilds, "build_source")
+	networkTag := markerV3WithExternalRecord(
+		validMarker,
+		validNetworkBuildRecordV2ForMarkerV3("sha1", "tag", "v1.4.0"),
+	)
+	networkBranch := markerV3WithExternalRecord(
+		validMarker,
+		validNetworkBuildRecordV2ForMarkerV3("sha1", "branch", "release/v2"),
+	)
+	networkSHA1Revision := markerV3WithExternalRecord(
+		validMarker,
+		validNetworkBuildRecordV2ForMarkerV3("sha1", "revision", fixedCommit),
+	)
+	networkSHA256Revision := markerV3WithExternalRecord(
+		validMarker,
+		validNetworkBuildRecordV2ForMarkerV3("sha256", "revision", strings.Repeat("a", 64)),
+	)
+	sha256External := validBuildRecordV2ForMarkerV3(false)
+	sha256External["declared_locked_commit"] = map[string]any{"object_format": "sha256", "hex": strings.Repeat("a", 64)}
+	sha256External["object_format"] = "sha256"
+	sha256External["commit"] = strings.Repeat("a", 64)
+	sha256Marker := markerV3WithExternalRecord(validMarker, sha256External)
+	untaggedExternal := validBuildRecordV2ForMarkerV3(false)
+	delete(untaggedExternal, "declared_tag")
+	untaggedMarker := markerV3WithExternalRecord(validMarker, untaggedExternal)
+	localIdentityMismatch := markerV3WithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(true))
+	localIdentityMismatch["builds"].(map[string]any)["golden-tool"].(map[string]any)["effective_identity"] =
+		map[string]any{"kind": "network-git", "value": "git.example.com/forks/golden-tools"}
+	networkIdentityMismatch := markerV3WithExternalRecord(
+		validMarker,
+		validNetworkBuildRecordV2ForMarkerV3("sha1", "branch", "release/v2"),
+	)
+	networkIdentityMismatch["builds"].(map[string]any)["golden-tool"].(map[string]any)["effective_identity"] =
+		map[string]any{"kind": "operator-local-git", "value": "sha256:" + strings.Repeat("e", 64)}
+	sha1Revision64 := markerV3WithExternalRecord(
+		validMarker,
+		validNetworkBuildRecordV2ForMarkerV3("sha1", "revision", strings.Repeat("a", 64)),
+	)
+	sha256Revision40 := markerV3WithExternalRecord(
+		validMarker,
+		validNetworkBuildRecordV2ForMarkerV3("sha256", "revision", fixedCommit),
+	)
+	missingLocalSource := cloneMap(validMarker)
+	delete(missingLocalSource, "build_source")
+	externalWithTopSource := cloneMap(externalOnly)
+	externalWithTopSource["build_source"] = validBuildSourceIdentity()
+	return []schemaExample{
+		{name: "valid-empty-builds", valid: true, instance: emptyBuilds},
+		{name: "valid-external-only-substituted", valid: true, instance: externalOnly},
+		{name: "valid-external-only-unsubstituted", valid: true, instance: externalOnlyUnsubstituted},
+		{name: "valid-local-only", valid: true, instance: localOnly},
+		{name: "valid-network-substitution-tag", valid: true, instance: networkTag},
+		{name: "valid-network-substitution-branch", valid: true, instance: networkBranch},
+		{name: "valid-network-sha1-revision", valid: true, instance: networkSHA1Revision},
+		{name: "valid-network-sha256-revision", valid: true, instance: networkSHA256Revision},
+		{name: "valid-sha256-external", valid: true, instance: sha256Marker},
+		{name: "valid-untagged-external", valid: true, instance: untaggedMarker},
+		{name: "invalid-missing-local-build-source", instance: missingLocalSource},
+		{name: "invalid-external-only-build-source", instance: externalWithTopSource},
+		{name: "invalid-local-receipt-version", instance: withNestedField(validMarker, []string{"builds", "local-helper"}, "receipt_schema_version", 2)},
+		{name: "invalid-external-receipt-version", instance: withNestedField(validMarker, []string{"builds", "golden-tool"}, "receipt_schema_version", 1)},
+		{name: "invalid-external-object-width", instance: withNestedField(validMarker, []string{"builds", "golden-tool"}, "commit", strings.Repeat("a", 64))},
+		{name: "invalid-external-declared-effective-mismatch", instance: withNestedField(validMarker, []string{"builds", "golden-tool"}, "commit", strings.Repeat("1", 40))},
+		{name: "invalid-marker-local-identity-kind-mismatch", instance: localIdentityMismatch},
+		{name: "invalid-marker-network-identity-kind-mismatch", instance: networkIdentityMismatch},
+		{name: "invalid-marker-sha1-effective-revision-width", instance: sha1Revision64},
+		{name: "invalid-marker-sha256-effective-revision-width", instance: sha256Revision40},
+		{name: "invalid-package-signing", instance: withNestedField(validMarker, []string{"builds", "golden-tool"}, "signing", "developer-id")},
+	}
+}
+
+func validConformanceClaimV3() map[string]any {
+	return map[string]any{
+		"schema_version": 3, "protocol_version": "1.0.0-rc.5",
+		"implementation": "example-manager", "implementation_version": "1.0",
+		"classes": []any{"core", "manager"}, "suite_sha256": "sha256:" + strings.Repeat("0", 64),
+		"operating_systems": []any{"macos", "windows"},
+		"build_drivers": []any{
+			map[string]any{"driver": "go-v1", "language": "go", "operating_systems": []any{"macos", "windows"}},
+			map[string]any{"driver": "go-repository-v1", "language": "go", "operating_systems": []any{"macos", "windows"}},
+		},
+		"created_at": fixedTime, "result": "pass",
+	}
+}
+
+func conformanceClaimV3SchemaExamples() []schemaExample {
+	withField := func(field string, value any) map[string]any {
+		claim := validConformanceClaimV3()
+		claim[field] = value
+		return claim
+	}
+	macosOnly := validConformanceClaimV3()
+	macosOnly["operating_systems"] = []any{"macos"}
+	for _, raw := range macosOnly["build_drivers"].([]any) {
+		raw.(map[string]any)["operating_systems"] = []any{"macos"}
+	}
+	return []schemaExample{
+		{name: "valid-macos-only", valid: true, instance: macosOnly},
+		{name: "invalid-rc4", instance: withField("protocol_version", protocolVersion)},
+		{name: "invalid-duplicate-platform", instance: withField("operating_systems", []any{"macos", "macos"})},
+		{name: "invalid-duplicate-driver-assertion", instance: withField("build_drivers", []any{
+			map[string]any{"driver": "go-v1", "language": "go", "operating_systems": []any{"macos"}},
+			map[string]any{"driver": "go-v1", "language": "go", "operating_systems": []any{"windows"}},
+		})},
+		{name: "invalid-driver-platform-outside-claim", instance: withField("build_drivers", []any{
+			map[string]any{"driver": "go-repository-v1", "language": "go", "operating_systems": []any{"linux"}},
+		})},
+		{name: "invalid-generic-driver", instance: withField("build_drivers", []any{map[string]any{"driver": "custom-v1", "language": "go", "operating_systems": []any{"macos"}}})},
+		{name: "invalid-language-mismatch", instance: withField("build_drivers", []any{map[string]any{"driver": "go-repository-v1", "language": "rust", "operating_systems": []any{"macos"}}})},
+		{name: "invalid-unknown-field", instance: withField("platform_verified", true)},
+	}
+}
+
+func withNestedField(object map[string]any, path []string, field string, value any) map[string]any {
+	cloned := deepCloneMap(object)
+	current := cloned
+	for _, component := range path {
+		current = current[component].(map[string]any)
+	}
+	if value == nil {
+		delete(current, field)
+	} else {
+		current[field] = value
+	}
+	return cloned
+}
+
+func deepCloneMap(value map[string]any) map[string]any {
+	payload, err := json.Marshal(value)
+	must(err)
+	var cloned map[string]any
+	must(json.Unmarshal(payload, &cloned))
+	return cloned
+}
+
+func validConformanceClaimV2() map[string]any {
+	return map[string]any{
+		"schema_version":         2,
+		"protocol_version":       protocolVersion,
+		"implementation":         "example-manager",
+		"implementation_version": "1.0",
+		"classes":                []any{"core", "manager"},
+		"suite_sha256":           "sha256:" + strings.Repeat("0", 64),
+		"operating_systems":      []any{"linux"},
+		"created_at":             conformanceClaimV2CreatedAt,
+		"result":                 "pass",
+	}
+}
+
+func conformanceClaimV2SchemaExamples() []schemaExample {
+	withField := func(field string, value any) map[string]any {
+		claim := validConformanceClaimV2()
+		claim[field] = value
+		return claim
+	}
+	return []schemaExample{
+		{"invalid-protocol-version-rc3", false, withField("protocol_version", conformanceClaimV1ProtocolVersion)},
+		{"invalid-schema-version-1", false, withField("schema_version", 1)},
+		{"invalid-duplicate-classes", false, withField("classes", []any{"manager", "manager"})},
+		{"invalid-result-fail", false, withField("result", "fail")},
+		{"invalid-unknown-field", false, withField("build_driver", "go-v1")},
+	}
+}
+
+func validBuildSourceIdentity() map[string]any {
+	return map[string]any{
+		"algorithm":      "curator-build-source-v1",
+		"content_sha256": "sha256:" + strings.Repeat("b", 64),
+	}
+}
+
+func validGoBuildInputV1() map[string]any {
+	return map[string]any{
+		"schema_version": 1,
+		"driver":         "go-v1",
+		"build_source":   validBuildSourceIdentity(),
+		"build_root":     "build",
+		"command":        "golden-tool",
+		"source_dir":     "build/cmd/golden-tool",
+		"target": map[string]any{
+			"goos": "darwin", "goarch": "arm64",
+			"tuning": map[string]any{"GOARM64": "v8.0"},
+		},
+		"toolchain": map[string]any{
+			"algorithm": "curator-go-toolchain-v1", "go_relpath": "bin/go",
+			"go_version": "go version go1.26.1 darwin/arm64", "content_sha256": "sha256:" + strings.Repeat("c", 64),
+		},
+		"policy": map[string]any{
+			"module_mode": "vendor", "network": "none", "workspace": false, "cgo": false,
+			"compiler_directives": "reject-nonstandard-cgo-import-dynamic-v1",
+			"target_mode":         "native", "link_mode": "internal", "libgcc": "none",
+			"package_assembly": false, "host_objects": false, "telemetry": "off-private",
+		},
+	}
+}
+
+func validBuildReceiptV1() map[string]any {
+	return map[string]any{
+		"schema_version": 1,
+		"cache_key":      "sha256:3fcd714a40e8918eb67dbd35d435875dcce6c9047da811a1fa26626e5e57be48",
+		"input":          validGoBuildInputV1(),
+		"artifact": map[string]any{
+			"path": "bin/golden-tool", "sha256": "sha256:" + strings.Repeat("d", 64), "size": 1234567,
+		},
+	}
+}
+
+func buildReceiptV1SchemaExamples() []schemaExample {
+	withTopLevelField := func(field string, value any) map[string]any {
+		receipt := validBuildReceiptV1()
+		receipt[field] = value
+		return receipt
+	}
+	withInputField := func(field string, value any) map[string]any {
+		receipt := validBuildReceiptV1()
+		receipt["input"].(map[string]any)[field] = value
+		return receipt
+	}
+
+	missingInput := without(validBuildReceiptV1(), "input")
+	missingArtifact := without(validBuildReceiptV1(), "artifact")
+	driverMismatch := validBuildReceiptV1()
+	driverMismatch["input"].(map[string]any)["driver"] = "go-v2"
+	buildSourceMismatch := validBuildReceiptV1()
+	buildSourceMismatch["input"].(map[string]any)["build_source"].(map[string]any)["algorithm"] = "curator-build-source-v2"
+	toolchainMismatch := validBuildReceiptV1()
+	toolchainMismatch["input"].(map[string]any)["toolchain"].(map[string]any)["algorithm"] = "curator-go-toolchain-v2"
+	policyMismatch := validBuildReceiptV1()
+	policyMismatch["input"].(map[string]any)["policy"].(map[string]any)["network"] = "proxy"
+	artifactMismatch := validBuildReceiptV1()
+	artifactMismatch["artifact"].(map[string]any)["sha256"] = "sha256:UPPERCASE"
+
+	examples := []schemaExample{
+		{name: "invalid-missing-input", instance: missingInput},
+		{name: "invalid-missing-artifact", instance: missingArtifact},
+		{name: "invalid-driver-mismatch", instance: driverMismatch},
+		{name: "invalid-build-source-algorithm", instance: buildSourceMismatch},
+		{name: "invalid-toolchain-algorithm", instance: toolchainMismatch},
+		{name: "invalid-policy-mismatch", instance: policyMismatch},
+		{name: "invalid-artifact-hash", instance: artifactMismatch},
+		{name: "invalid-unknown-input-field", instance: withInputField("output", "bin/other")},
+	}
+	for _, field := range []string{"trusted", "provenance", "manager_created"} {
+		examples = append(examples, schemaExample{name: "invalid-self-asserted-" + strings.ReplaceAll(field, "_", "-"), instance: withTopLevelField(field, true)})
+	}
+	for _, field := range []string{"cache_path", "receipt_path", "lock_path"} {
+		examples = append(examples, schemaExample{name: "invalid-physical-" + strings.ReplaceAll(field, "_", "-"), instance: withTopLevelField(field, "/tmp/cache")})
+	}
+	return examples
+}
+
+func validBuildRecordV1(artifactPath string, digit string) map[string]any {
+	return map[string]any{
+		"driver": "go-v1", "cache_key": "sha256:" + strings.Repeat(digit, 64),
+		"receipt_sha256":  "sha256:" + strings.Repeat("e", 64),
+		"artifact_sha256": "sha256:" + strings.Repeat("d", 64), "artifact_path": artifactPath,
+	}
+}
+
+func validInstallMarkerV2(markerV1 map[string]any) map[string]any {
+	marker := cloneMap(markerV1)
+	marker["schema_version"] = 2
+	marker["skill_schema_version"] = 6
+	marker["runtime_roots"] = []any{}
+	marker["build_roots"] = []any{"build"}
+	marker["build_source"] = validBuildSourceIdentity()
+	marker["builds"] = map[string]any{
+		"golden-tool": validBuildRecordV1("bin/golden-tool", "3"),
+	}
+	return marker
+}
+
+func installMarkerV2SchemaExamples(validMarker map[string]any) []schemaExample {
+	emptyBuilds := cloneMap(validMarker)
+	emptyBuilds["build_roots"] = []any{}
+	emptyBuilds["builds"] = map[string]any{}
+	delete(emptyBuilds, "build_source")
+
+	multipleBuilds := cloneMap(validMarker)
+	multipleBuilds["commands"] = []any{"alpha-tool", "golden-tool"}
+	multipleBuilds["build_roots"] = []any{"build", "tools"}
+	multipleBuilds["builds"] = map[string]any{
+		"golden-tool": validBuildRecordV1("bin/golden-tool", "3"),
+		"alpha-tool":  validBuildRecordV1("bin/alpha-tool", "4"),
+	}
+
+	missingBuildRoots := without(validMarker, "build_roots")
+	missingBuildSource := without(validMarker, "build_source")
+	buildSourceWithEmptyBuilds := cloneMap(emptyBuilds)
+	buildSourceWithEmptyBuilds["build_source"] = validBuildSourceIdentity()
+	unknownTopLevel := cloneMap(validMarker)
+	unknownTopLevel["cache_path"] = "/tmp/cache"
+	unknownBuildField := cloneMap(validMarker)
+	unknownBuildField["builds"].(map[string]any)["golden-tool"].(map[string]any)["receipt_path"] = "/tmp/receipt"
+	driverMismatch := cloneMap(validMarker)
+	driverMismatch["builds"].(map[string]any)["golden-tool"].(map[string]any)["driver"] = "go-v2"
+	buildSourceMismatch := cloneMap(validMarker)
+	buildSourceMismatch["build_source"].(map[string]any)["algorithm"] = "curator-build-source-v2"
+	skillSchemaMismatch := cloneMap(validMarker)
+	skillSchemaMismatch["skill_schema_version"] = 7
+	receiptHashMismatch := cloneMap(validMarker)
+	receiptHashMismatch["builds"].(map[string]any)["golden-tool"].(map[string]any)["receipt_sha256"] = "bad"
+	artifactPathMismatch := cloneMap(validMarker)
+	artifactPathMismatch["builds"].(map[string]any)["golden-tool"].(map[string]any)["artifact_path"] = "/absolute/cache/artifact"
+
+	return []schemaExample{
+		{name: "valid-empty-builds", valid: true, instance: emptyBuilds},
+		{name: "valid-multiple-builds", valid: true, instance: multipleBuilds},
+		{name: "invalid-missing-build-roots", instance: missingBuildRoots},
+		{name: "invalid-missing-build-source", instance: missingBuildSource},
+		{name: "invalid-build-source-with-empty-builds", instance: buildSourceWithEmptyBuilds},
+		{name: "invalid-unknown-top-level", instance: unknownTopLevel},
+		{name: "invalid-unknown-build-field", instance: unknownBuildField},
+		{name: "invalid-driver-mismatch", instance: driverMismatch},
+		{name: "invalid-build-source-algorithm", instance: buildSourceMismatch},
+		{name: "invalid-skill-schema-version", instance: skillSchemaMismatch},
+		{name: "invalid-receipt-hash", instance: receiptHashMismatch},
+		{name: "invalid-artifact-path", instance: artifactPathMismatch},
+	}
+}
+
+func v6SkillManifest(command map[string]any) map[string]any {
+	return map[string]any{
+		"schema_version": 6,
+		"capabilities":   map[string]any{},
+		"build_roots":    []any{"build"},
+		"commands":       map[string]any{"build-tool": command},
+	}
+}
+
+func v6SchemaExamples() []schemaExample {
+	buildCommand := func() map[string]any {
+		return map[string]any{"type": "build", "driver": "go-v1", "source_dir": "build/cmd/tool"}
+	}
+	withField := func(field string, value any) map[string]any {
+		command := buildCommand()
+		command[field] = value
+		return v6SkillManifest(command)
+	}
+
+	examples := []schemaExample{
+		{name: "invalid-build-missing-driver", instance: v6SkillManifest(map[string]any{"type": "build", "source_dir": "build/cmd/tool"})},
+		{name: "invalid-build-missing-source-dir", instance: v6SkillManifest(map[string]any{"type": "build", "driver": "go-v1"})},
+		{name: "invalid-build-root-dot", instance: map[string]any{"schema_version": 6, "capabilities": map[string]any{}, "build_roots": []any{"."}}},
+		{name: "invalid-build-source-dir-dot", instance: v6SkillManifest(map[string]any{"type": "build", "driver": "go-v1", "source_dir": "."})},
+		{name: "invalid-build-unsupported-driver", instance: v6SkillManifest(map[string]any{"type": "build", "driver": "custom-v1", "source_dir": "build/cmd/tool"})},
+		{name: "invalid-build-mixed-script", instance: withField("unix_path", "scripts/tool")},
+		{name: "invalid-build-mixed-system", instance: withField("command", "tool")},
+	}
+	for _, field := range []string{"args", "env", "flags", "hooks", "output", "scripts", "tags", "toolchain"} {
+		examples = append(examples, schemaExample{
+			name:     "invalid-build-" + field,
+			instance: withField(field, []any{}),
+		})
+	}
+	return examples
 }
 
 func buildLog(records []map[string]any) []map[string]any {
