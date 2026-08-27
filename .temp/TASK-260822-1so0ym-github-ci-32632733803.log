@@ -1,0 +1,40 @@
+Specification (macos-latest)	Validate schemas, cases, manifest, and local links	﻿2026-08-23T10:04:18.9021500Z ##[group]Run python tools/validate.py
+Specification (macos-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:18.9021770Z ^[[36;1mpython tools/validate.py^[[0m
+Specification (macos-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:18.9052250Z shell: /bin/bash -e {0}
+Specification (macos-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:18.9052430Z env:
+Specification (macos-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:18.9052560Z   GOTOOLCHAIN: local
+Specification (macos-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:18.9052830Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+Specification (macos-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:18.9053230Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.12.10/arm64/lib/pkgconfig
+Specification (macos-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:18.9053630Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+Specification (macos-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:18.9053990Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+Specification (macos-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:18.9054350Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+Specification (macos-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:18.9054630Z ##[endgroup]
+Specification (macos-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:19.8438760Z validation failed: rc.8 downstream candidate pin does not match the suite manifest
+Specification (macos-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:19.8535460Z ##[error]Process completed with exit code 1.
+Specification (windows-latest)	Validate schemas, cases, manifest, and local links	﻿2026-08-23T10:04:39.5607802Z ##[group]Run python tools/validate.py
+Specification (windows-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:39.5608380Z ^[[36;1mpython tools/validate.py^[[0m
+Specification (windows-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:39.5684551Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+Specification (windows-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:39.5684825Z env:
+Specification (windows-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:39.5684980Z   GOTOOLCHAIN: local
+Specification (windows-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:39.5685211Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+Specification (windows-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:39.5685563Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+Specification (windows-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:39.5685915Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+Specification (windows-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:39.5686581Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+Specification (windows-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:39.5686889Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+Specification (windows-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:39.5687130Z ##[endgroup]
+Specification (windows-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:41.2034388Z validation failed: rc.8 downstream candidate pin does not match the suite manifest
+Specification (windows-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:41.3032568Z ##[error]Process completed with exit code 1.
+Specification (ubuntu-latest)	Validate schemas, cases, manifest, and local links	﻿2026-08-23T10:04:17.3501891Z ##[group]Run python tools/validate.py
+Specification (ubuntu-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:17.3502280Z ^[[36;1mpython tools/validate.py^[[0m
+Specification (ubuntu-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:17.3547774Z shell: /usr/bin/bash -e {0}
+Specification (ubuntu-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:17.3548052Z env:
+Specification (ubuntu-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:17.3548256Z   GOTOOLCHAIN: local
+Specification (ubuntu-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:17.3548581Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.14/x64
+Specification (ubuntu-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:17.3549031Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib/pkgconfig
+Specification (ubuntu-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:17.3549466Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+Specification (ubuntu-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:17.3550265Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+Specification (ubuntu-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:17.3550695Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.14/x64
+Specification (ubuntu-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:17.3551095Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.14/x64/lib
+Specification (ubuntu-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:17.3551422Z ##[endgroup]
+Specification (ubuntu-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:19.3284559Z validation failed: rc.8 downstream candidate pin does not match the suite manifest
+Specification (ubuntu-latest)	Validate schemas, cases, manifest, and local links	2026-08-23T10:04:19.3476366Z ##[error]Process completed with exit code 1.
