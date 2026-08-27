@@ -1,0 +1,5 @@
+--- FAIL: TestRC8ReleaseMetadataPinsSuiteWithoutClaimFabrication (0.00s)
+    main_test.go:715: rc.8 release does not pin manifest sha256:24d873ad604a408f74a9d1adff51443be4c37c3ab374aebaa7b68c51d848b950
+FAIL
+FAIL	github.com/relux-works/curator-spec/tools/generate-vectors	0.509s
+FAIL

@@ -1,0 +1,82 @@
+diff --git a/conformance/v1/manifest.json b/conformance/v1/manifest.json
+index 5c74965..5b558e5 100644
+--- a/conformance/v1/manifest.json
++++ b/conformance/v1/manifest.json
+@@ -68,6 +68,10 @@
+       "path": "expected/external-repository/mixed-build-plan.json",
+       "sha256": "sha256:680407f392cf9c44c013d1438c5569099a8be683d25d3b423b4d5c7c2d653f74"
+     },
++    {
++      "path": "expected/install-marker-v4.json",
++      "sha256": "sha256:905101ee9ac58862eac2131f32a6aae4dfe56df23aae4763e47b4917c8914094"
++    },
+     {
+       "path": "expected/marker-v2.json",
+       "sha256": "sha256:22117126c8932769636bd5ca1f1623f26a3c55d4bb9da3266acf3dc3a3b7fc2c"
+@@ -2574,7 +2578,7 @@
+     },
+     {
+       "path": "vectors/external-repository-lifecycle.json",
+-      "sha256": "sha256:175d709f183775b22ed3db27bc923ca78d6394d93a13096b5d6890c509aab072"
++      "sha256": "sha256:5a8b99c688018f12c1cf8d0089a64e1e63f3b416c75e847694b4f0fdd6587aa3"
+     },
+     {
+       "path": "vectors/go-host-execution-policy.json",
+@@ -2616,6 +2620,10 @@
+       "path": "vectors/registry-service.json",
+       "sha256": "sha256:7e8cb23ccb18e786ea06c20e617553d17d4e6b0a1001142fcc89360fb69ca2f5"
+     },
++    {
++      "path": "vectors/script-host-execution-policy.json",
++      "sha256": "sha256:9c410b1b2d01b29389eeedf3abfd10985682a85cd0e731c0df5620aad766b655"
++    },
+     {
+       "path": "vectors/skill-manifest-resolution.json",
+       "sha256": "sha256:07c42987cdfcbdb0b78a0149373ad8b49ac2d1d70a5484b4e42a54e20586647c"
+diff --git a/conformance/v1/vectors/external-repository-lifecycle.json b/conformance/v1/vectors/external-repository-lifecycle.json
+index f610ba7..d6f70f3 100644
+--- a/conformance/v1/vectors/external-repository-lifecycle.json
++++ b/conformance/v1/vectors/external-repository-lifecycle.json
+@@ -193,6 +193,20 @@
+       "receipt_versions": [
+         2
+       ]
++    },
++    {
++      "drivers": [
++        "go-repository-v1",
++        "go-v1"
++      ],
++      "expected_marker": "expected/install-marker-v4.json",
++      "manifest_schema": 8,
++      "marker_version": 4,
++      "name": "schema8-script-worker",
++      "receipt_versions": [
++        2,
++        1
++      ]
+     }
+   ],
+   "path_shim_cases": [
+diff --git a/release/1.0.0-rc.8.json b/release/1.0.0-rc.8.json
+index 85968a1..b53cb92 100644
+--- a/release/1.0.0-rc.8.json
++++ b/release/1.0.0-rc.8.json
+@@ -12,7 +12,7 @@
+     "verified_provider_contract": "host-execution-provider-v1"
+   },
+   "candidate_protocol_pin": {
+-    "manifest_sha256": "sha256:d490284c3486085d72092d608a06e6769bd67ec89f5dde8ceab5c14af882d055",
++    "manifest_sha256": "sha256:9dc1c659697f7218dd844863cef08255a4526b4ab04bdcdb6cfc7d21e3784322",
+     "suite_root": "conformance/v1"
+   },
+   "claim_v4": {
+@@ -24,7 +24,7 @@
+   "downstream_consumption": {
+     "committed_release_pin_advanced": false,
+     "environment": "CURATOR_CONFORMANCE_ROOT",
+-    "required_manifest_sha256": "sha256:d490284c3486085d72092d608a06e6769bd67ec89f5dde8ceab5c14af882d055"
++    "required_manifest_sha256": "sha256:9dc1c659697f7218dd844863cef08255a4526b4ab04bdcdb6cfc7d21e3784322"
+   },
+   "historical_release": {
+     "immutable": true,

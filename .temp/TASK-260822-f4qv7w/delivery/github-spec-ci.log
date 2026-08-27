@@ -1,0 +1,947 @@
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* spec/script-worker-v1-normative Specification CI · 32632173590
+Triggered via workflow_dispatch less than a minute ago
+
+JOBS
+* Formatting (ID 97176502308)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Check Go formatting
+  ✓ Check whitespace
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  * Complete job
+* Specification (macos-latest) (ID 97176502332)
+  ✓ Set up job
+  * Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  * Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+* Release target provenance (ID 97176502343)
+* Links (ID 97176502345)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  * Run lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+* Specification (windows-latest) (ID 97176502403)
+  * Set up job
+* Specification (ubuntu-latest) (ID 97176502422)
+  ✓ Set up job
+  * Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  * Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* spec/script-worker-v1-normative Specification CI · 32632173590
+Triggered via workflow_dispatch less than a minute ago
+
+JOBS
+✓ Formatting in 4s (ID 97176502308)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Check Go formatting
+  ✓ Check whitespace
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+* Specification (macos-latest) (ID 97176502332)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  * Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+✓ Release target provenance in 4s (ID 97176502343)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Reject unsigned main-branch release targets
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Links in 6s (ID 97176502345)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+* Specification (windows-latest) (ID 97176502403)
+  ✓ Set up job
+  * Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  * Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+* Specification (ubuntu-latest) (ID 97176502422)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  * Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+
+ANNOTATIONS
+- Summary report available at: https://github.com/relux-works/curator-spec/actions/runs/32632173590#summary-97176502345
+Links: .github#127
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* spec/script-worker-v1-normative Specification CI · 32632173590
+Triggered via workflow_dispatch less than a minute ago
+
+JOBS
+✓ Formatting in 4s (ID 97176502308)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Check Go formatting
+  ✓ Check whitespace
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+* Specification (macos-latest) (ID 97176502332)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  * Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+✓ Release target provenance in 4s (ID 97176502343)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Reject unsigned main-branch release targets
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Links in 6s (ID 97176502345)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+* Specification (windows-latest) (ID 97176502403)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  * Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+* Specification (ubuntu-latest) (ID 97176502422)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+
+ANNOTATIONS
+- Summary report available at: https://github.com/relux-works/curator-spec/actions/runs/32632173590#summary-97176502345
+Links: .github#127
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* spec/script-worker-v1-normative Specification CI · 32632173590
+Triggered via workflow_dispatch less than a minute ago
+
+JOBS
+✓ Formatting in 4s (ID 97176502308)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Check Go formatting
+  ✓ Check whitespace
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+* Specification (macos-latest) (ID 97176502332)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+✓ Release target provenance in 4s (ID 97176502343)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Reject unsigned main-branch release targets
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Links in 6s (ID 97176502345)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+* Specification (windows-latest) (ID 97176502403)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  * Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+X Specification (ubuntu-latest) in 20s (ID 97176502422)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+
+ANNOTATIONS
+- Summary report available at: https://github.com/relux-works/curator-spec/actions/runs/32632173590#summary-97176502345
+Links: .github#127
+
+X Process completed with exit code 1.
+Specification (ubuntu-latest): .github#14
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* spec/script-worker-v1-normative Specification CI · 32632173590
+Triggered via workflow_dispatch less than a minute ago
+
+JOBS
+✓ Formatting in 4s (ID 97176502308)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Check Go formatting
+  ✓ Check whitespace
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+X Specification (macos-latest) in 23s (ID 97176502332)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Release target provenance in 4s (ID 97176502343)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Reject unsigned main-branch release targets
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Links in 6s (ID 97176502345)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+* Specification (windows-latest) (ID 97176502403)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  * Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+X Specification (ubuntu-latest) in 20s (ID 97176502422)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+
+ANNOTATIONS
+- Summary report available at: https://github.com/relux-works/curator-spec/actions/runs/32632173590#summary-97176502345
+Links: .github#127
+
+X Process completed with exit code 1.
+Specification (ubuntu-latest): .github#14
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* spec/script-worker-v1-normative Specification CI · 32632173590
+Triggered via workflow_dispatch less than a minute ago
+
+JOBS
+✓ Formatting in 4s (ID 97176502308)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Check Go formatting
+  ✓ Check whitespace
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+X Specification (macos-latest) in 23s (ID 97176502332)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Release target provenance in 4s (ID 97176502343)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Reject unsigned main-branch release targets
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Links in 6s (ID 97176502345)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+* Specification (windows-latest) (ID 97176502403)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  * Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+X Specification (ubuntu-latest) in 20s (ID 97176502422)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+
+ANNOTATIONS
+- Summary report available at: https://github.com/relux-works/curator-spec/actions/runs/32632173590#summary-97176502345
+Links: .github#127
+
+X Process completed with exit code 1.
+Specification (ubuntu-latest): .github#14
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* spec/script-worker-v1-normative Specification CI · 32632173590
+Triggered via workflow_dispatch less than a minute ago
+
+JOBS
+✓ Formatting in 4s (ID 97176502308)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Check Go formatting
+  ✓ Check whitespace
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+X Specification (macos-latest) in 23s (ID 97176502332)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Release target provenance in 4s (ID 97176502343)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Reject unsigned main-branch release targets
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Links in 6s (ID 97176502345)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+* Specification (windows-latest) (ID 97176502403)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  * Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+X Specification (ubuntu-latest) in 20s (ID 97176502422)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+
+ANNOTATIONS
+- Summary report available at: https://github.com/relux-works/curator-spec/actions/runs/32632173590#summary-97176502345
+Links: .github#127
+
+X Process completed with exit code 1.
+Specification (ubuntu-latest): .github#14
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* spec/script-worker-v1-normative Specification CI · 32632173590
+Triggered via workflow_dispatch less than a minute ago
+
+JOBS
+✓ Formatting in 4s (ID 97176502308)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Check Go formatting
+  ✓ Check whitespace
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+X Specification (macos-latest) in 23s (ID 97176502332)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Release target provenance in 4s (ID 97176502343)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Reject unsigned main-branch release targets
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Links in 6s (ID 97176502345)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+* Specification (windows-latest) (ID 97176502403)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  * Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+X Specification (ubuntu-latest) in 20s (ID 97176502422)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+
+ANNOTATIONS
+- Summary report available at: https://github.com/relux-works/curator-spec/actions/runs/32632173590#summary-97176502345
+Links: .github#127
+
+X Process completed with exit code 1.
+Specification (ubuntu-latest): .github#14
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* spec/script-worker-v1-normative Specification CI · 32632173590
+Triggered via workflow_dispatch less than a minute ago
+
+JOBS
+✓ Formatting in 4s (ID 97176502308)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Check Go formatting
+  ✓ Check whitespace
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+X Specification (macos-latest) in 23s (ID 97176502332)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Release target provenance in 4s (ID 97176502343)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Reject unsigned main-branch release targets
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Links in 6s (ID 97176502345)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+* Specification (windows-latest) (ID 97176502403)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+X Specification (ubuntu-latest) in 20s (ID 97176502422)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+
+ANNOTATIONS
+- Summary report available at: https://github.com/relux-works/curator-spec/actions/runs/32632173590#summary-97176502345
+Links: .github#127
+
+X Process completed with exit code 1.
+Specification (ubuntu-latest): .github#14
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* spec/script-worker-v1-normative Specification CI · 32632173590
+Triggered via workflow_dispatch less than a minute ago
+
+JOBS
+✓ Formatting in 4s (ID 97176502308)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Check Go formatting
+  ✓ Check whitespace
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+X Specification (macos-latest) in 23s (ID 97176502332)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Release target provenance in 4s (ID 97176502343)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Reject unsigned main-branch release targets
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Links in 6s (ID 97176502345)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+* Specification (windows-latest) (ID 97176502403)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Install validation dependencies
+  * Validate schemas, cases, manifest, and local links
+  * Test stable release gate
+  * Verify generator and cryptographic vectors
+  * Regenerate authoritative vectors
+  * Prove deterministic regeneration
+  * Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+X Specification (ubuntu-latest) in 20s (ID 97176502422)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+
+ANNOTATIONS
+- Summary report available at: https://github.com/relux-works/curator-spec/actions/runs/32632173590#summary-97176502345
+Links: .github#127
+
+X Process completed with exit code 1.
+Specification (ubuntu-latest): .github#14
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* spec/script-worker-v1-normative Specification CI · 32632173590
+Triggered via workflow_dispatch less than a minute ago
+
+JOBS
+✓ Formatting in 4s (ID 97176502308)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Check Go formatting
+  ✓ Check whitespace
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+X Specification (macos-latest) in 23s (ID 97176502332)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Release target provenance in 4s (ID 97176502343)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Reject unsigned main-branch release targets
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Links in 6s (ID 97176502345)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+* Specification (windows-latest) (ID 97176502403)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  * Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  * Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  * Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+X Specification (ubuntu-latest) in 20s (ID 97176502422)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+
+ANNOTATIONS
+- Summary report available at: https://github.com/relux-works/curator-spec/actions/runs/32632173590#summary-97176502345
+Links: .github#127
+
+X Process completed with exit code 1.
+Specification (ubuntu-latest): .github#14
+
+Refreshing run status every 3 seconds. Press Ctrl+C to quit.
+
+* spec/script-worker-v1-normative Specification CI · 32632173590
+Triggered via workflow_dispatch about 1 minute ago
+
+JOBS
+✓ Formatting in 4s (ID 97176502308)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Check Go formatting
+  ✓ Check whitespace
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+X Specification (macos-latest) in 23s (ID 97176502332)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Release target provenance in 4s (ID 97176502343)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Reject unsigned main-branch release targets
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Links in 6s (ID 97176502345)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+* Specification (windows-latest) (ID 97176502403)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+X Specification (ubuntu-latest) in 20s (ID 97176502422)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+
+ANNOTATIONS
+- Summary report available at: https://github.com/relux-works/curator-spec/actions/runs/32632173590#summary-97176502345
+Links: .github#127
+
+X Process completed with exit code 1.
+Specification (ubuntu-latest): .github#14
+
+X spec/script-worker-v1-normative Specification CI · 32632173590
+Triggered via workflow_dispatch about 1 minute ago
+
+JOBS
+✓ Formatting in 4s (ID 97176502308)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Check Go formatting
+  ✓ Check whitespace
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+X Specification (macos-latest) in 23s (ID 97176502332)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Release target provenance in 4s (ID 97176502343)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Reject unsigned main-branch release targets
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+✓ Links in 6s (ID 97176502345)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+X Specification (windows-latest) in 56s (ID 97176502403)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+X Specification (ubuntu-latest) in 20s (ID 97176502422)
+  ✓ Set up job
+  ✓ Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  ✓ Install validation dependencies
+  X Validate schemas, cases, manifest, and local links
+  - Test stable release gate
+  - Verify generator and cryptographic vectors
+  - Regenerate authoritative vectors
+  - Prove deterministic regeneration
+  - Post Run actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+  - Post Run actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+  ✓ Post Run actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+  ✓ Complete job
+
+ANNOTATIONS
+- Summary report available at: https://github.com/relux-works/curator-spec/actions/runs/32632173590#summary-97176502345
+Links: .github#127
+
+X Process completed with exit code 1.
+Specification (ubuntu-latest): .github#14
+

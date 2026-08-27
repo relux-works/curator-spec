@@ -1,0 +1,84 @@
+..................FFFF............................................................E...............
+======================================================================
+ERROR: test_rc6_release_metadata_pins_exact_suite_without_claims (test_validate.WireSemanticValidationTests.test_rc6_release_metadata_pins_exact_suite_without_claims)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/iv/Developer/ReluxWorks/curator-spec/.temp/STORY-260822-3k3hbs/normative-worktree/tools/test_validate.py", line 670, in test_rc6_release_metadata_pins_exact_suite_without_claims
+    validate.validate_manifest()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/iv/Developer/ReluxWorks/curator-spec/.temp/STORY-260822-3k3hbs/normative-worktree/tools/validate.py", line 784, in validate_manifest
+    raise ValidationFailure("rc.8 downstream candidate pin does not match the suite manifest")
+curator_spec_validate.ValidationFailure: rc.8 downstream candidate pin does not match the suite manifest
+
+======================================================================
+FAIL: test_rejects_rc8_silent_downgrade_or_claim_fabrication (test_release_gate.ProtocolRC8ReleaseGateTests.test_rejects_rc8_silent_downgrade_or_claim_fabrication) (field='silent_downgrade_permitted')
+----------------------------------------------------------------------
+release_gate.ReleaseFailure: release/1.0.0-rc.8.json does not pin the exact suite manifest
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/iv/Developer/ReluxWorks/curator-spec/.temp/STORY-260822-3k3hbs/normative-worktree/tools/test_release_gate.py", line 481, in test_rejects_rc8_silent_downgrade_or_claim_fabrication
+    with self.assertRaisesRegex(
+         ~~~~~~~~~~~~~~~~~~~~~~^
+        release_gate.ReleaseFailure, "assurance policy"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ):
+    ^
+AssertionError: "assurance policy" does not match "release/1.0.0-rc.8.json does not pin the exact suite manifest"
+
+======================================================================
+FAIL: test_rejects_rc8_silent_downgrade_or_claim_fabrication (test_release_gate.ProtocolRC8ReleaseGateTests.test_rejects_rc8_silent_downgrade_or_claim_fabrication) (field='verified_implementations')
+----------------------------------------------------------------------
+release_gate.ReleaseFailure: release/1.0.0-rc.8.json does not pin the exact suite manifest
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/iv/Developer/ReluxWorks/curator-spec/.temp/STORY-260822-3k3hbs/normative-worktree/tools/test_release_gate.py", line 481, in test_rejects_rc8_silent_downgrade_or_claim_fabrication
+    with self.assertRaisesRegex(
+         ~~~~~~~~~~~~~~~~~~~~~~^
+        release_gate.ReleaseFailure, "assurance policy"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ):
+    ^
+AssertionError: "assurance policy" does not match "release/1.0.0-rc.8.json does not pin the exact suite manifest"
+
+======================================================================
+FAIL: test_rejects_rc8_silent_downgrade_or_claim_fabrication (test_release_gate.ProtocolRC8ReleaseGateTests.test_rejects_rc8_silent_downgrade_or_claim_fabrication) (field='verified_platform_claims')
+----------------------------------------------------------------------
+release_gate.ReleaseFailure: release/1.0.0-rc.8.json does not pin the exact suite manifest
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/iv/Developer/ReluxWorks/curator-spec/.temp/STORY-260822-3k3hbs/normative-worktree/tools/test_release_gate.py", line 481, in test_rejects_rc8_silent_downgrade_or_claim_fabrication
+    with self.assertRaisesRegex(
+         ~~~~~~~~~~~~~~~~~~~~~~^
+        release_gate.ReleaseFailure, "assurance policy"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ):
+    ^
+AssertionError: "assurance policy" does not match "release/1.0.0-rc.8.json does not pin the exact suite manifest"
+
+======================================================================
+FAIL: test_rejects_rc8_silent_downgrade_or_claim_fabrication (test_release_gate.ProtocolRC8ReleaseGateTests.test_rejects_rc8_silent_downgrade_or_claim_fabrication) (field='skill_vendored_provider_allowed')
+----------------------------------------------------------------------
+release_gate.ReleaseFailure: release/1.0.0-rc.8.json does not pin the exact suite manifest
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/iv/Developer/ReluxWorks/curator-spec/.temp/STORY-260822-3k3hbs/normative-worktree/tools/test_release_gate.py", line 481, in test_rejects_rc8_silent_downgrade_or_claim_fabrication
+    with self.assertRaisesRegex(
+         ~~~~~~~~~~~~~~~~~~~~~~^
+        release_gate.ReleaseFailure, "assurance policy"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ):
+    ^
+AssertionError: "assurance policy" does not match "release/1.0.0-rc.8.json does not pin the exact suite manifest"
+
+----------------------------------------------------------------------
+Ran 95 tests in 12.380s
+
+FAILED (failures=4, errors=1)

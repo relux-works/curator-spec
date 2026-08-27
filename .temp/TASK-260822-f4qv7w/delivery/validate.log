@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/iv/Developer/ReluxWorks/curator-spec/.temp/STORY-260822-3k3hbs/normative-worktree/tools/validate.py", line 16, in <module>
+    from jsonschema import Draft202012Validator, FormatChecker
+ModuleNotFoundError: No module named 'jsonschema'

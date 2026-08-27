@@ -1,0 +1,8 @@
+Issues found in 1 input. Find details below.
+
+[README.md]:
+[ERROR] https://github.com/relux-works/curator (at 62:3) | Connection failed. Check network connectivity and firewall settings
+
+🔍 42 Total (in 1s 578ms) 🔗 29 Unique ✅ 40 OK 🚫 1 Error 👻 1 Excluded 🔀 1 Redirects
+
+Hint: Followed 1 redirect. You might want to consider replacing redirecting URLs with the resolved URLs. Use verbose mode (`-v`/`-vv`) to see redirection details.
