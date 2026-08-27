@@ -1,0 +1,108 @@
+{
+  "build_drivers": [
+    {
+      "driver": "go-v1",
+      "execution_policy": "hardened-worker-v1",
+      "hardened_profile": "hardened-profile-v1",
+      "language": "go",
+      "operating_systems": [
+        "linux"
+      ]
+    }
+  ],
+  "capability_inventory_version": "hardened-capability-inventory-v1",
+  "classes": [
+    "core",
+    "manager"
+  ],
+  "created_at": "2026-07-28T00:00:00Z",
+  "enforcement_backends": [
+    {
+      "enforcement_backend": "linux-namespace-seccomp-v1",
+      "minimum_version": "6.1",
+      "operating_system": "linux",
+      "required_configuration": [
+        {
+          "required_value": "2",
+          "setting": "cgroup.version"
+        },
+        {
+          "required_value": "enabled",
+          "setting": "user_namespaces.unprivileged"
+        }
+      ]
+    }
+  ],
+  "guarantees": [
+    "exact-executable-allowlisting",
+    "fail-closed-capability-preflight",
+    "hard-aggregate-descendant-resource-bounds",
+    "private-build-root-only-writes",
+    "read-only-source-and-toolchain",
+    "total-network-denial"
+  ],
+  "hardened_profile": "hardened-profile-v1",
+  "implementation": "example-manager",
+  "implementation_version": "0.0.0",
+  "operating_systems": [
+    "linux"
+  ],
+  "portable_suite_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "protocol_version": "hardened-1.0.0-rc.1",
+  "result": "pass",
+  "schema_version": 4,
+  "suite_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "tcb": {
+    "backend": {
+      "configuration": [
+        {
+          "observed_value": "2",
+          "setting": "cgroup.version"
+        },
+        {
+          "observed_value": "enabled",
+          "setting": "user_namespaces.unprivileged"
+        }
+      ],
+      "version": "cgroup2-6.12"
+    },
+    "enforcement_backend": "linux-namespace-seccomp-v1",
+    "execution_policy": "hardened-worker-v1",
+    "hardened_profile": "hardened-profile-v1",
+    "host": {
+      "build": {
+        "algorithm": "curator-hardened-host-build-v1",
+        "content_sha256": "sha256:9ea0a283a4864185fc8e5c62fbfa619826d6d0809b6f9703f6847991ae1b0bae",
+        "identifier": "4f2a1c8e6b90d3574a1e2f8c0b7d69315ae4c2f8"
+      },
+      "identity": "linux",
+      "kind": "operating-system",
+      "version": "6.12.0"
+    },
+    "parent_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+    "platform": "linux",
+    "record_version": "hardened-tcb-v1",
+    "supervisor_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "toolchain": {
+      "algorithm": "curator-go-toolchain-v1",
+      "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "go_relpath": "bin/go",
+      "go_version": "go version go1.26.1 linux/arm64"
+    },
+    "trusted_components": [
+      {
+        "algorithm": "curator-hardened-component-tree-v1",
+        "content_sha256": "sha256:92f9047451c3a6e5057d13d7eb9cc3f6a42c00f136313c5a8b31ccc4b9e2ee18",
+        "kind": "capability-probe",
+        "name": "capability-probe-suite"
+      },
+      {
+        "algorithm": "curator-hardened-component-file-v1",
+        "content_sha256": "sha256:a5313564d5288332fa5d42fc2b29dbcdc9ce619dbe434834df9c04db347532c0",
+        "kind": "enforcement-adapter",
+        "name": "enforcement-backend-adapter"
+      }
+    ],
+    "worker_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+  }
+}

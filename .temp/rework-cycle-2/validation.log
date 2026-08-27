@@ -1,0 +1,15 @@
+=== make validate ===
+python3 tools/validate.py
+validated 42 schemas and 422 vector files
+python3 tools/validate_hardened.py
+validated 6 hardened schemas and 79 hardened suite files
+python3 -B -m unittest discover -s tools -p 'test_*.py'
+.................................................................................................................
+----------------------------------------------------------------------
+Ran 113 tests in 24.947s
+
+OK
+validated 6 hardened schemas and 79 hardened suite files
+go test ./tools/...
+ok  	github.com/relux-works/curator-spec/tools/generate-hardened	0.874s
+ok  	github.com/relux-works/curator-spec/tools/generate-vectors	0.451s

@@ -1,0 +1,14 @@
+python3 tools/validate.py
+validated 42 schemas and 422 vector files
+python3 tools/validate_hardened.py
+validated 6 hardened schemas and 39 hardened suite files
+python3 -B -m unittest discover -s tools -p 'test_*.py'
+................................................................
+----------------------------------------------------------------------
+Ran 64 tests in 6.218s
+
+OK
+validated 6 hardened schemas and 39 hardened suite files
+go test ./tools/...
+ok  	github.com/relux-works/curator-spec/tools/generate-hardened	0.703s
+ok  	github.com/relux-works/curator-spec/tools/generate-vectors	0.402s

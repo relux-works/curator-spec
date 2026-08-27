@@ -1,0 +1,10 @@
+python3 tools/validate.py
+validated 42 schemas and 422 vector files
+python3 -B -m unittest discover -s tools -p 'test_*.py'
+.............................
+----------------------------------------------------------------------
+Ran 29 tests in 3.054s
+
+OK
+go test ./tools/...
+ok  	github.com/relux-works/curator-spec/tools/generate-vectors	0.493s

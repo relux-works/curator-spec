@@ -1,0 +1,6 @@
+9ba9b8ecf6f06cafda1425aed3539dee8d12af43dabd36f803f4f420dbb1dacf  conformance/v1/manifest.json
+b32ee9d35fc2fce0539d0b1c4b15f9c5239115c22fe54a72401f5da6d6646441  release/1.0.0-rc.5.json
+--- schemas/v1 tree ---
+c02a880e8e079405aa8d2250856db1e4b7547659834c648b152db084cb483d1f  -
+--- conformance/v1 tree ---
+82c13f7dbf31a53777f5a1688783287eae2d05e1637eed2d1f53fecd56731b4a  -

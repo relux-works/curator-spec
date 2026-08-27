@@ -1,0 +1,439 @@
+{
+  "files": [
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-missing-execution-policy.json",
+      "sha256": "sha256:21a8a90af3cca7b4fc340fc23938ab49fa63de034f451fe85f7f985bf1dae8d9"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-missing-hardened-identity.json",
+      "sha256": "sha256:feddc6e5f9c20efa9db827a973deabf9bdd478afa93ca3986485edf619c4b386"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-missing-profile-identity.json",
+      "sha256": "sha256:66243638436c63d73620fe6bb321b112b72436955712b109b882772b09d4184e"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-missing-tcb-digest.json",
+      "sha256": "sha256:e74c087b3c2450d4ccd4409b756603fed63f8292c1696271a046328dbad64713"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-missing-tcb.json",
+      "sha256": "sha256:d5d6d29be9f8434d88316a3bf9f370f99da5bd33bebbf7190f5d2c6d45611e4c"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-non-hardened-target-platform.json",
+      "sha256": "sha256:99d4b2bf35d48a402b9517bee100e4a39c69c988cc92142d3fa6a8b79b6abe60"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-portable-execution-policy.json",
+      "sha256": "sha256:038e2e345f83d77d54fcdb24f52c559484ef13a4792937fe8bd95ccc9dea71e7"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-portable-schema-version.json",
+      "sha256": "sha256:2c9d20408999e0bc98f37a6ef9f0f4b2041191ddd894f38b20c3ffdee44375fa"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-portable-tcb-digest-algorithm.json",
+      "sha256": "sha256:16b6b23ac9591b8ee105510904acfb5be5c1899a33803fe24092bac46d11445f"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-backend-version-malformed.json",
+      "sha256": "sha256:c55089dbc133cc4e1830e140be1ea23db1982a1cb1a6f8e31b5508b707df1123"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-backend-version-without-series.json",
+      "sha256": "sha256:f34727a7cd8e541bdca53a88fc4b6f81ed397854d43edd29b6771eb078e79225"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-backend-version-wrong-series.json",
+      "sha256": "sha256:bdd09b581f129cb25caca092a28d7b13c691319dc6b233c97b52e7f31ac8e91b"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-backend-without-version.json",
+      "sha256": "sha256:0c9ec662047feee06f4b27fd02226b475f52dedb51faf9350894e1c3d065f065"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-component-file-algorithm-on-tree-kind.json",
+      "sha256": "sha256:b2d509fbb841178f736cea9d9464101dd863da4da96ae0b68934973ca429051a"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-component-tree-algorithm-on-file-kind.json",
+      "sha256": "sha256:0d6837f26c4301b9533cb1fa9d194c2b53fd3bf2696e6cedbc689e8fa03993b5"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-host-build-bare-string.json",
+      "sha256": "sha256:1a89b02fb0b2d62c8e5b45351df250635a2d22830c929de17ff5c8625fa6bebc"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-host-build-extra-field.json",
+      "sha256": "sha256:502f1dcc812f78ed9f5eb5429241e539ad75201ac10fd5952eb80d87cd36c55e"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-host-build-identifier-platform-mismatch.json",
+      "sha256": "sha256:cefa1ef2bd4b5ec77187fec06a06e954f2d790dee1a42a13d067d06eaed4b797"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-host-build-missing.json",
+      "sha256": "sha256:492e8296cc023c6376df3737f879787cc3328038af26e1fff4c3933ce6d006fa"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-host-build-null.json",
+      "sha256": "sha256:51ba28cad7e82828ef1a35c08ca3682f6f1e732b7e9910e41fd83a5c7593dc03"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-host-build-unknown-algorithm.json",
+      "sha256": "sha256:8f04747f5beeaa808e21c9d5bbdf03ca8524820eead9b60c940ac72fee037806"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-host-build-without-digest.json",
+      "sha256": "sha256:90d80d34b9bec746665427ec77f08c9ec9a8674ddbf914fdc970504abcd43745"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-host-identity-platform-mismatch.json",
+      "sha256": "sha256:a0ba6084864e971c5827996262fc69d41f674ad12526f48423100ebbbede82bc"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-host-kind-hypervisor.json",
+      "sha256": "sha256:fce05cae0c2d2d657eefb18b32fbdc67857fcb3a4b5610f7fad0ac6f26b8f5f8"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-host-version-outside-grammar.json",
+      "sha256": "sha256:3b229e45b4c2b3bd13cb86a0ce7de465e96cfa1cb6795cec17572332d994ef0e"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-host-version-trailing-newline.json",
+      "sha256": "sha256:7bcc289670d709f6bc7798d4d0dfe293f10e57b0c66f7d029ce2d014ca8451bf"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-host-without-version.json",
+      "sha256": "sha256:df4de9a57135af5ceebf769a4d2be58457416aa22576e34a4f23d638ac1f2ba9"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-missing-backend.json",
+      "sha256": "sha256:7c028184d18a093d2aa36aee4df1c30503b07336fc456174285cd46d5fac9bf1"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-missing-host.json",
+      "sha256": "sha256:1f04332dc50f62e4bd1ddf35c8e3c8695effe47ed92a8c1298cfe0c2d198e67e"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-missing-parent-sha256.json",
+      "sha256": "sha256:53c6af92846154615a981677f501fa9107bc575a8e075f73e552b1e3424933ac"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-missing-supervisor-sha256.json",
+      "sha256": "sha256:145949d0aa5eda2ffe78f92e308fa1569adda29b67c179d3dbac7377b3aa36e8"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-missing-toolchain.json",
+      "sha256": "sha256:35bb6d7435bc0b501c282840ae3c63e87648b67daa1449e36e3fb82cf7640913"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-missing-trusted-components.json",
+      "sha256": "sha256:fa5c6c71d23a9a2ceeae3117e8217031177c98fc1e6505d010f25212dc9f2f7f"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-missing-worker-sha256.json",
+      "sha256": "sha256:323393eb3f607ab890c3b4192974c953980fff4dd87b158322a31405129e2f8b"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-platform-backend-mismatch.json",
+      "sha256": "sha256:9fbc930b284ea2a62f1792c959e31669f98f519b9116f209b8e656f53549f14b"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-reintroduced-string-component-field.json",
+      "sha256": "sha256:04f50bda76234dc04b7572fb84d5fe7e427937afc84f0ef31fb48555516e3267"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-target-platform-mismatch.json",
+      "sha256": "sha256:8c79e105ea24f5ec5db2df332e3a50cf5ca3c2e63169a7bd33611adf57dd6beb"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-trusted-component-without-digest.json",
+      "sha256": "sha256:739bdf7be8356a508965e74e6a56edbb55849d51153ffeae71337119cd036677"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-unknown-component-kind.json",
+      "sha256": "sha256:9d89af4e0cce6bfe34270db7f201fc1f147b36c316ca2c150133604e559ce0c8"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-tcb-untyped-trusted-component.json",
+      "sha256": "sha256:b3c6be54dd7290391ef42e4414fca3ac28d8974bd8527ae7151b3761ae105d3b"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/invalid-unknown-field.json",
+      "sha256": "sha256:67fc9d7faab85beafe571c77aa80d49dfae38db5bd611b93bda1ca296c146c68"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v3/valid.json",
+      "sha256": "sha256:70855aa45b431dbd567e0f98cf0897696a845874f8fc30e15a6452aca7f42709"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v4/invalid-missing-hardened-identity.json",
+      "sha256": "sha256:14fd44d13157f88f7739c26839c648cce2952682d4d6dd8102810f61ee0cbf61"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v4/invalid-missing-tcb.json",
+      "sha256": "sha256:fccdba6c92ea3dbee31cd7023146ac6add68df7e45d32912cfa82fd4bdae7365"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v4/invalid-portable-execution-policy.json",
+      "sha256": "sha256:bf8a98e82b9e822057bd8fdc0b37e838c67d3364f726dbc67ff3f86440f80e78"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v4/invalid-portable-schema-version.json",
+      "sha256": "sha256:d22f4005d7f3ef6c72cb22befa3bb9d62959eee762f2d8395ac56e5affc26080"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v4/invalid-tcb-host-build-identifier-platform-mismatch.json",
+      "sha256": "sha256:b08152ed133d44d82a39767d0a776c4b74ba6f2f6372e23604065b6d7ad6e5fc"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v4/invalid-tcb-host-build-null.json",
+      "sha256": "sha256:a3bfa3343a3b8379adc17d5a3ce9ad309f70294fd7b68129c354f2c95d671355"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v4/invalid-tcb-missing-host.json",
+      "sha256": "sha256:1332d7b8e479d72eee2f6dbce2f6d45f95dd7407de80a1f4dbfb46f98720cfa4"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v4/invalid-tcb-missing-parent-identity.json",
+      "sha256": "sha256:9ff29a2b3361585984eb2eaf4de9527d4442e7cc8de1a607b0bccd22855a339b"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v4/invalid-tcb-platform-backend-mismatch.json",
+      "sha256": "sha256:6a7751048dbdbc662ee806f15afd5d75dcdcaaa9bddfed5d9fdca6f5913926b9"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v4/invalid-tcb-target-platform-mismatch.json",
+      "sha256": "sha256:9616891d0c1e9df678debce7b2015eaf8f3172a9df71c59bd738e370910a6855"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v4/invalid-tcb-untyped-trusted-component.json",
+      "sha256": "sha256:eb16ab33b52d2c2e66427275bc6fe4b4562147b72e71b820405de1f61888c7b5"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v4/invalid-unknown-field.json",
+      "sha256": "sha256:910d54f149028d485e7fe37080a98f0aab4b59ffd4e618410ab5cb6f417066e1"
+    },
+    {
+      "path": "schema-cases/hardened-build-receipt-v4/valid.json",
+      "sha256": "sha256:acab92f18e35f026d5af7771c29f60820ad4fd957822bc86b3d2193985c0f2fd"
+    },
+    {
+      "path": "schema-cases/hardened-capability-evidence-v1/invalid-available-not-applied.json",
+      "sha256": "sha256:4d379bfac8d71d7552e11b638899c58b3d8509893492c5aabb44cdd341dd029c"
+    },
+    {
+      "path": "schema-cases/hardened-capability-evidence-v1/invalid-established-with-unavailable.json",
+      "sha256": "sha256:02fbfee99ca21462a1697dfac70d4c11cfa7a57be6fc70968bef5b43418fb705"
+    },
+    {
+      "path": "schema-cases/hardened-capability-evidence-v1/invalid-established-without-qualification.json",
+      "sha256": "sha256:3b3451b5d5b0638f2d301b52692b00585aa3d64cf4d7d4535fa695b407e20d40"
+    },
+    {
+      "path": "schema-cases/hardened-capability-evidence-v1/invalid-extra-capability-entry.json",
+      "sha256": "sha256:021d01c876e4737b2779e8c9e590b4e30dbf4cecda80e6aa28d8feb82f214170"
+    },
+    {
+      "path": "schema-cases/hardened-capability-evidence-v1/invalid-guarantee-named-as-capability.json",
+      "sha256": "sha256:bfa0b3fdc1e2ff6cca9d2835830a8a3b4f42cf36a61ccde33696af81558d6c88"
+    },
+    {
+      "path": "schema-cases/hardened-capability-evidence-v1/invalid-missing-capability-entry.json",
+      "sha256": "sha256:613025586c78f3bd2fe4eeea66d47294b58c77a79473e850698d65ead0862dd8"
+    },
+    {
+      "path": "schema-cases/hardened-capability-evidence-v1/invalid-platform-backend-mismatch.json",
+      "sha256": "sha256:7f37c9ba68f7776b6803e5da832dabd6a46cf2ddd5068c3f529ab1ba5189f7a6"
+    },
+    {
+      "path": "schema-cases/hardened-capability-evidence-v1/invalid-portable-execution-policy.json",
+      "sha256": "sha256:3f3465926212ee71eb8fe894644566ce5388fa242c0048c9e83664f1a6539907"
+    },
+    {
+      "path": "schema-cases/hardened-capability-evidence-v1/invalid-portable-probe-timing.json",
+      "sha256": "sha256:c37d63fe5db2971f9aa3693c04fad5ce8d68d918f769acbf441b7144cfaf5b83"
+    },
+    {
+      "path": "schema-cases/hardened-capability-evidence-v1/invalid-rejected-without-diagnostic.json",
+      "sha256": "sha256:a90ae3670c0f4683ba9e9f246d50ecc3e09f02f9f22ea061727f2570be471bd9"
+    },
+    {
+      "path": "schema-cases/hardened-capability-evidence-v1/invalid-unknown-capability-class.json",
+      "sha256": "sha256:9617c096caa14c1e0e2b7747695771e891ec4e24ded89d7ed70ed2b57967ddc6"
+    },
+    {
+      "path": "schema-cases/hardened-capability-evidence-v1/invalid-unknown-record-version.json",
+      "sha256": "sha256:9315c8537b79689ddf410cad705ead4c20395c3c9fb0a2388fcc4e817ed2485d"
+    },
+    {
+      "path": "schema-cases/hardened-capability-evidence-v1/invalid-unprobed-applied.json",
+      "sha256": "sha256:d77a9fe280a6165af1036c8a0d453ae17c3dd8d4cbad84c2433eff6140ff9f05"
+    },
+    {
+      "path": "schema-cases/hardened-capability-evidence-v1/valid-established.json",
+      "sha256": "sha256:d63e99d81e987e8ddc57087e8a4e05ff7379d8099058edff0040fbb05322be50"
+    },
+    {
+      "path": "schema-cases/hardened-capability-evidence-v1/valid-rejected-unqualified.json",
+      "sha256": "sha256:4e29465ae67e05278f40b0f273c9148c8608969029bbc52f1015deb4287aa75a"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-backend-operating-system-mismatch.json",
+      "sha256": "sha256:ac6eaa0a7b2c5132c2d41870797085d2c204db71ab11c804701d4892c97c5ec9"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-minimum-version-malformed.json",
+      "sha256": "sha256:f19fe4b6d4273d3af841d684d55fb00a86b0c975e89e9c8deda6314477f5d32f"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-minimum-version-without-series.json",
+      "sha256": "sha256:b819f4a9cf97242634e872fde05c48b30785dfd665f0858d401a7e93a04e4389"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-minimum-version-wrong-series.json",
+      "sha256": "sha256:b7ff7ee65533fa7fc99c66e218049996e1c04da5dab04fedc0e3324ee30b600b"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-missing-hardened-profile.json",
+      "sha256": "sha256:acfa33aeb43dc13c820faaae2f89365c35040208c0a2bd28b6739e85b5b7af08"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-missing-tcb.json",
+      "sha256": "sha256:7375c3f1ca99d62093882cb4659149817ad78d624d69f03eb3ec97e7a216f763"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-partial-guarantee-set.json",
+      "sha256": "sha256:93d1ffd557d2aa67358e31aa6828485bbc7067ecec55bb48bc36b5f9b589d198"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-portable-execution-policy.json",
+      "sha256": "sha256:f57568ff6388b84c2eec24f2a50814af30af6a83caec5d6c235536d2f79fbc1d"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-portable-protocol-version.json",
+      "sha256": "sha256:6600df909cfde8fc2cac3a25c4d7914b032990358205e7ef852f77204a435908"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-registry-class.json",
+      "sha256": "sha256:43459e1ba2bb0a2638e031d6aeacb23003c73dd755e388e14174dd8ba721e9e2"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-tcb-host-build-identifier-platform-mismatch.json",
+      "sha256": "sha256:0b537e84824fa6b62a2c807153818a33c632768bc3b1fafa8738dd7a0c8fb89c"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-tcb-host-build-null.json",
+      "sha256": "sha256:22262f3e8bc9230b66622677563484bcfca80b7e89d13e3987b96ce9d3845211"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-tcb-host-identity-platform-mismatch.json",
+      "sha256": "sha256:7eabf92ce74c1654bfd3170d157d16b9adbf35252112cbf1b57d0c03d86095d7"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-tcb-host-version-outside-grammar.json",
+      "sha256": "sha256:b233ab4bb94e1ffb33296320adcaea5e3d551893f74dbe449538eff137e52192"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-tcb-missing-host.json",
+      "sha256": "sha256:6ed840fcb0438f958387623407fc55d64ba24acffc6acff24eb03268c4a896a3"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-tcb-missing-parent-identity.json",
+      "sha256": "sha256:91facd76821c1fbb56869a2a564072038e47e867869bf141083e4e1bdb0bc1eb"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-tcb-platform-backend-mismatch.json",
+      "sha256": "sha256:dd2d4e976f506a5c1b178f52122a8f960774f1c4db5a0196ca080ae6482243b0"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/invalid-untyped-required-configuration.json",
+      "sha256": "sha256:800dd7784917614b4e95851a84ee8f59c1f163230be4b3083123c9b844383dae"
+    },
+    {
+      "path": "schema-cases/hardened-conformance-claim-v4/valid.json",
+      "sha256": "sha256:fdd6f03223b4302b4ea75cff040452d43d27b2f5bfac4497e51b7d51fbbfbd45"
+    },
+    {
+      "path": "schema-cases/hardened-install-marker-v4/invalid-missing-hardened-profile.json",
+      "sha256": "sha256:4fcf0c3722dd2130f93a0080e01d94b9b0d5ff0f1cc4e42414f347600136ed49"
+    },
+    {
+      "path": "schema-cases/hardened-install-marker-v4/invalid-missing-tcb.json",
+      "sha256": "sha256:eeb33e57adbfbb0e9aadf576bb4417b45509e1272b4ac98b1b391cf770c10b9a"
+    },
+    {
+      "path": "schema-cases/hardened-install-marker-v4/invalid-portable-build-record.json",
+      "sha256": "sha256:db8f99aa53ca6b1f37c23171de5e7e2a2c49ab241667017808fec8138b9ff515"
+    },
+    {
+      "path": "schema-cases/hardened-install-marker-v4/invalid-portable-schema-version.json",
+      "sha256": "sha256:5640b033ef75e0bc1c4121572e0886ae44b919d6b3f40c13e9bb33d0394821e8"
+    },
+    {
+      "path": "schema-cases/hardened-install-marker-v4/invalid-pre-build-skill-schema-version.json",
+      "sha256": "sha256:e02bac5a5a4f708ad540e856f725109b4c7e7781b5c486ec943700fbca956de5"
+    },
+    {
+      "path": "schema-cases/hardened-install-marker-v4/invalid-tcb-component-algorithm-kind-mismatch.json",
+      "sha256": "sha256:a5a01da2436345bc4963bf03782457435e3762f63a69445f551c8e91bf92d86c"
+    },
+    {
+      "path": "schema-cases/hardened-install-marker-v4/invalid-tcb-host-build-identifier-platform-mismatch.json",
+      "sha256": "sha256:54602d8221530b16b5e2579480d60dfb7893b8ae052955d754acf98c00839e67"
+    },
+    {
+      "path": "schema-cases/hardened-install-marker-v4/invalid-tcb-host-build-null.json",
+      "sha256": "sha256:2da35dfcb91ca938da35b9df221cf551bc70f7702115d527deae91591bcb41a1"
+    },
+    {
+      "path": "schema-cases/hardened-install-marker-v4/invalid-tcb-host-identity-platform-mismatch.json",
+      "sha256": "sha256:f721e4033df7469cdf3afda3863dc4c39d2c70990de8ac2aa6f9af06da5aecc9"
+    },
+    {
+      "path": "schema-cases/hardened-install-marker-v4/invalid-tcb-missing-parent-identity.json",
+      "sha256": "sha256:502cc337f60f3d580d4a8d184d3d3f5408f898b29473d89a3a9916f498eda925"
+    },
+    {
+      "path": "schema-cases/hardened-install-marker-v4/invalid-tcb-missing-trusted-components.json",
+      "sha256": "sha256:01f0560698eb7c25d129c408c105915ddce20c682a1e597f0b73b0e138c48e88"
+    },
+    {
+      "path": "schema-cases/hardened-install-marker-v4/invalid-tcb-platform-backend-mismatch.json",
+      "sha256": "sha256:620d8ef5082b43a809f4c1bc6bfba0f7b8725db59423c674540e4f584118f632"
+    },
+    {
+      "path": "schema-cases/hardened-install-marker-v4/invalid-tcb-untyped-trusted-component.json",
+      "sha256": "sha256:2f7e794f1ec04598ff3d835845a7243b1be2a8b7beae4072d33730eecde991fb"
+    },
+    {
+      "path": "schema-cases/hardened-install-marker-v4/valid-schema-6-package.json",
+      "sha256": "sha256:a43e950c7110c199355a766489b724d36e41f437767e902c5c7175c7207dc09d"
+    },
+    {
+      "path": "schema-cases/hardened-install-marker-v4/valid.json",
+      "sha256": "sha256:14c2d81b32e0a113c210fef2901f405ccb37c5bab7e275933e54be179d985a93"
+    },
+    {
+      "path": "schema-cases/index.json",
+      "sha256": "sha256:d889fbf9abf6d611229808e0125460d999cc6b66ab6eb20bebcc9de1d4e38b73"
+    },
+    {
+      "path": "vectors/hardened-adversarial-vectors.json",
+      "sha256": "sha256:421dc3efc10d2773cb3e2217f6e766688c11f23215e977d811c587072573bc20"
+    },
+    {
+      "path": "vectors/hardened-execution-profile.json",
+      "sha256": "sha256:62db81849d69132050812a8e06c49de81b71441c89c8efd9f3e9d69ebc73352c"
+    },
+    {
+      "path": "vectors/hardened-identity-separation.json",
+      "sha256": "sha256:e70dc88a29785029a94f03a302da90d1108bb499989cc4b320eaa11b8deb96d5"
+    }
+  ],
+  "generated_at": "2026-07-28T00:00:00Z",
+  "generator": "tools/generate-hardened",
+  "profile_version": "hardened-1.0.0-rc.1"
+}

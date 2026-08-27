@@ -43,6 +43,9 @@ jobs:
       - name: Validate schemas, cases, manifest, and local links
         run: python tools/validate.py
 
+      - name: Validate the hardened execution profile suite
+        run: python tools/validate_hardened.py
+
       - name: Test stable release gate
         run: python -B -m unittest discover -s tools -p 'test_*.py'
 
@@ -52,8 +55,14 @@ jobs:
       - name: Regenerate authoritative vectors
         run: go run ./tools/generate-vectors -root .
 
+      - name: Regenerate the hardened profile suite
+        run: go run ./tools/generate-hardened -root .
+
       - name: Prove deterministic regeneration
-        run: git diff --exit-code -- conformance/v1
+        run: git diff --exit-code -- conformance/v1 release/1.0.0-rc.5.json
+
+      - name: Prove deterministic hardened regeneration
+        run: git diff --exit-code -- conformance/hardened release/hardened-1.0.0-rc.1.json
 
   formatting:
     name: Formatting

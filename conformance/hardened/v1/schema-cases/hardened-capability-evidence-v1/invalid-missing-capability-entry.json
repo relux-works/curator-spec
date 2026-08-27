@@ -1,0 +1,99 @@
+{
+  "capabilities": [
+    {
+      "availability": "available",
+      "name": "aggregate-resource-bounds",
+      "probed_at": "pre-domain-entry",
+      "status": "applied"
+    },
+    {
+      "availability": "available",
+      "name": "domain-atomic-termination",
+      "probed_at": "pre-domain-entry",
+      "status": "applied"
+    },
+    {
+      "availability": "available",
+      "name": "domain-membership-enforcement",
+      "probed_at": "pre-domain-entry",
+      "status": "applied"
+    },
+    {
+      "availability": "available",
+      "name": "exec-path-allowlist",
+      "probed_at": "pre-domain-entry",
+      "status": "applied"
+    },
+    {
+      "availability": "available",
+      "name": "filesystem-view-restriction",
+      "probed_at": "pre-domain-entry",
+      "status": "applied"
+    },
+    {
+      "availability": "available",
+      "name": "network-syscall-denial",
+      "probed_at": "pre-domain-entry",
+      "status": "applied"
+    },
+    {
+      "availability": "available",
+      "name": "preexisting-endpoint-revocation",
+      "probed_at": "pre-domain-entry",
+      "status": "applied"
+    },
+    {
+      "availability": "available",
+      "name": "read-only-source-view",
+      "probed_at": "pre-domain-entry",
+      "status": "applied"
+    },
+    {
+      "availability": "available",
+      "name": "read-only-toolchain-view",
+      "probed_at": "pre-domain-entry",
+      "status": "applied"
+    },
+    {
+      "availability": "available",
+      "name": "write-path-confinement",
+      "probed_at": "pre-domain-entry",
+      "status": "applied"
+    }
+  ],
+  "diagnostic": null,
+  "enforcement_backend": "linux-namespace-seccomp-v1",
+  "execution_policy": "hardened-worker-v1",
+  "guarantees": [
+    {
+      "established": true,
+      "name": "exact-executable-allowlisting"
+    },
+    {
+      "established": true,
+      "name": "fail-closed-capability-preflight"
+    },
+    {
+      "established": true,
+      "name": "hard-aggregate-descendant-resource-bounds"
+    },
+    {
+      "established": true,
+      "name": "private-build-root-only-writes"
+    },
+    {
+      "established": true,
+      "name": "read-only-source-and-toolchain"
+    },
+    {
+      "established": true,
+      "name": "total-network-denial"
+    }
+  ],
+  "hardened_profile": "hardened-profile-v1",
+  "outcome": "established",
+  "platform": "linux",
+  "qualification_status": "qualified",
+  "record_version": "hardened-capability-evidence-v1",
+  "rejected_before": null
+}

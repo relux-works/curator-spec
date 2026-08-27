@@ -1,0 +1,522 @@
+[
+  {
+    "instance": "hardened-build-receipt-v3/invalid-missing-execution-policy.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-missing-hardened-identity.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-missing-profile-identity.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-missing-tcb-digest.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-missing-tcb.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-non-hardened-target-platform.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-portable-execution-policy.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-portable-schema-version.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-portable-tcb-digest-algorithm.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-backend-version-malformed.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-backend-version-without-series.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-backend-version-wrong-series.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-backend-without-version.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-component-file-algorithm-on-tree-kind.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-component-tree-algorithm-on-file-kind.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-host-build-bare-string.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-host-build-extra-field.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-host-build-identifier-platform-mismatch.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-host-build-missing.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-host-build-null.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-host-build-unknown-algorithm.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-host-build-without-digest.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-host-identity-platform-mismatch.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-host-kind-hypervisor.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-host-version-outside-grammar.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-host-version-trailing-newline.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-host-without-version.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-missing-backend.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-missing-host.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-missing-parent-sha256.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-missing-supervisor-sha256.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-missing-toolchain.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-missing-trusted-components.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-missing-worker-sha256.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-platform-backend-mismatch.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-reintroduced-string-component-field.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-target-platform-mismatch.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-trusted-component-without-digest.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-unknown-component-kind.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-tcb-untyped-trusted-component.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/invalid-unknown-field.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v3/valid.json",
+    "schema": "hardened-build-receipt-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "hardened-build-receipt-v4/invalid-missing-hardened-identity.json",
+    "schema": "hardened-build-receipt-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v4/invalid-missing-tcb.json",
+    "schema": "hardened-build-receipt-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v4/invalid-portable-execution-policy.json",
+    "schema": "hardened-build-receipt-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v4/invalid-portable-schema-version.json",
+    "schema": "hardened-build-receipt-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v4/invalid-tcb-host-build-identifier-platform-mismatch.json",
+    "schema": "hardened-build-receipt-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v4/invalid-tcb-host-build-null.json",
+    "schema": "hardened-build-receipt-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v4/invalid-tcb-missing-host.json",
+    "schema": "hardened-build-receipt-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v4/invalid-tcb-missing-parent-identity.json",
+    "schema": "hardened-build-receipt-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v4/invalid-tcb-platform-backend-mismatch.json",
+    "schema": "hardened-build-receipt-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v4/invalid-tcb-target-platform-mismatch.json",
+    "schema": "hardened-build-receipt-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v4/invalid-tcb-untyped-trusted-component.json",
+    "schema": "hardened-build-receipt-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v4/invalid-unknown-field.json",
+    "schema": "hardened-build-receipt-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-build-receipt-v4/valid.json",
+    "schema": "hardened-build-receipt-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "hardened-capability-evidence-v1/invalid-available-not-applied.json",
+    "schema": "hardened-capability-evidence-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-capability-evidence-v1/invalid-established-with-unavailable.json",
+    "schema": "hardened-capability-evidence-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-capability-evidence-v1/invalid-established-without-qualification.json",
+    "schema": "hardened-capability-evidence-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-capability-evidence-v1/invalid-extra-capability-entry.json",
+    "schema": "hardened-capability-evidence-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-capability-evidence-v1/invalid-guarantee-named-as-capability.json",
+    "schema": "hardened-capability-evidence-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-capability-evidence-v1/invalid-missing-capability-entry.json",
+    "schema": "hardened-capability-evidence-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-capability-evidence-v1/invalid-platform-backend-mismatch.json",
+    "schema": "hardened-capability-evidence-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-capability-evidence-v1/invalid-portable-execution-policy.json",
+    "schema": "hardened-capability-evidence-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-capability-evidence-v1/invalid-portable-probe-timing.json",
+    "schema": "hardened-capability-evidence-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-capability-evidence-v1/invalid-rejected-without-diagnostic.json",
+    "schema": "hardened-capability-evidence-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-capability-evidence-v1/invalid-unknown-capability-class.json",
+    "schema": "hardened-capability-evidence-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-capability-evidence-v1/invalid-unknown-record-version.json",
+    "schema": "hardened-capability-evidence-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-capability-evidence-v1/invalid-unprobed-applied.json",
+    "schema": "hardened-capability-evidence-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-capability-evidence-v1/valid-established.json",
+    "schema": "hardened-capability-evidence-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "hardened-capability-evidence-v1/valid-rejected-unqualified.json",
+    "schema": "hardened-capability-evidence-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-backend-operating-system-mismatch.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-minimum-version-malformed.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-minimum-version-without-series.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-minimum-version-wrong-series.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-missing-hardened-profile.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-missing-tcb.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-partial-guarantee-set.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-portable-execution-policy.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-portable-protocol-version.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-registry-class.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-tcb-host-build-identifier-platform-mismatch.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-tcb-host-build-null.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-tcb-host-identity-platform-mismatch.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-tcb-host-version-outside-grammar.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-tcb-missing-host.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-tcb-missing-parent-identity.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-tcb-platform-backend-mismatch.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/invalid-untyped-required-configuration.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-conformance-claim-v4/valid.json",
+    "schema": "hardened-conformance-claim-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "hardened-install-marker-v4/invalid-missing-hardened-profile.json",
+    "schema": "hardened-install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-install-marker-v4/invalid-missing-tcb.json",
+    "schema": "hardened-install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-install-marker-v4/invalid-portable-build-record.json",
+    "schema": "hardened-install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-install-marker-v4/invalid-portable-schema-version.json",
+    "schema": "hardened-install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-install-marker-v4/invalid-pre-build-skill-schema-version.json",
+    "schema": "hardened-install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-install-marker-v4/invalid-tcb-component-algorithm-kind-mismatch.json",
+    "schema": "hardened-install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-install-marker-v4/invalid-tcb-host-build-identifier-platform-mismatch.json",
+    "schema": "hardened-install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-install-marker-v4/invalid-tcb-host-build-null.json",
+    "schema": "hardened-install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-install-marker-v4/invalid-tcb-host-identity-platform-mismatch.json",
+    "schema": "hardened-install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-install-marker-v4/invalid-tcb-missing-parent-identity.json",
+    "schema": "hardened-install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-install-marker-v4/invalid-tcb-missing-trusted-components.json",
+    "schema": "hardened-install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-install-marker-v4/invalid-tcb-platform-backend-mismatch.json",
+    "schema": "hardened-install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-install-marker-v4/invalid-tcb-untyped-trusted-component.json",
+    "schema": "hardened-install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "hardened-install-marker-v4/valid-schema-6-package.json",
+    "schema": "hardened-install-marker-v4.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "hardened-install-marker-v4/valid.json",
+    "schema": "hardened-install-marker-v4.schema.json",
+    "valid": true
+  }
+]

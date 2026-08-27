@@ -1,0 +1,30 @@
+# clean probe: fresh git repo seeded from the task worktree, everything committed
+# HEAD=68a1065690e5e1fe2ce8d3aa40f9169688b2a8c3
+
+$ make validate -> exit=0
+python3 tools/validate.py
+validated 42 schemas and 422 vector files
+python3 tools/validate_hardened.py
+validated 6 hardened schemas and 48 hardened suite files
+python3 -B -m unittest discover -s tools -p 'test_*.py'
+.......................................................................................
+----------------------------------------------------------------------
+Ran 87 tests in 6.362s
+
+OK
+validated 6 hardened schemas and 48 hardened suite files
+go test ./tools/...
+ok  	github.com/relux-works/curator-spec/tools/generate-hardened	0.548s
+ok  	github.com/relux-works/curator-spec/tools/generate-vectors	0.273s
+
+$ make regenerate-check -> exit=0
+go run ./tools/generate-vectors -root .
+git diff --exit-code -- conformance/v1 release/1.0.0-rc.5.json
+
+$ make regenerate-hardened-check -> exit=0
+go run ./tools/generate-hardened -root .
+git diff --exit-code -- conformance/hardened release/hardened-1.0.0-rc.1.json
+git diff --exit-code -- conformance/v1 release/1.0.0-rc.5.json
+
+$ python3 tools/release_gate.py --version 1.0.0-rc.5 --commit HEAD -> exit=0
+release gate passed for 1.0.0-rc.5 at 68a1065690e5e1fe2ce8d3aa40f9169688b2a8c3
