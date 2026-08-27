@@ -81,10 +81,11 @@ def validate_schemas() -> None:
         schema = load_json(paths[schema_name])
         instance = load_json(SUITE / "schema-cases" / case["instance"])
         errors = list(Draft202012Validator(schema, registry=registry).iter_errors(instance))
-        actual = not errors
+        semantic_error = validate_wire_semantics(schema_name, instance) if not errors else None
+        actual = not errors and semantic_error is None
         expected = case["valid"]
         if actual != expected:
-            detail = "valid" if actual else errors[0].message
+            detail = "valid" if actual else (errors[0].message if errors else semantic_error)
             raise ValidationFailure(
                 f"schema case {case['instance']} against {schema_name}: expected valid={expected}, got {detail}"
             )
@@ -95,12 +96,348 @@ def validate_schemas() -> None:
     if missing:
         raise ValidationFailure(f"schemas without positive/negative cases: {', '.join(missing)}")
 
+    for prefix in ("agent-skill", "csk-skill"):
+        for version in range(1, 7):
+            schema_name = f"{prefix}-v{version}.schema.json"
+            schema = load_json(paths[schema_name])
+            legacy_with_v7_repository = {
+                "schema_version": version,
+                "build_repositories": {
+                    "repo": {
+                        "git": "https://example.com/repo.git",
+                        "locked_commit": {
+                            "object_format": "sha1",
+                            "hex": "0" * 40,
+                        },
+                    }
+                },
+            }
+            if version >= 2:
+                legacy_with_v7_repository["runtime_roots"] = []
+                legacy_with_v7_repository["dependencies"] = {"commands": {}}
+            if version >= 3:
+                legacy_with_v7_repository["capabilities"] = {}
+            if version >= 4:
+                legacy_with_v7_repository["dependencies"]["skills"] = {}
+            if version >= 5:
+                legacy_with_v7_repository["dependencies"]["mcp_servers"] = {}
+            if version >= 6:
+                legacy_with_v7_repository["build_roots"] = []
+            schema_errors = list(
+                Draft202012Validator(schema, registry=registry).iter_errors(
+                    legacy_with_v7_repository
+                )
+            )
+            semantic_error = (
+                validate_wire_semantics(schema_name, legacy_with_v7_repository)
+                if not schema_errors
+                else None
+            )
+            if not schema_errors and semantic_error is None:
+                raise ValidationFailure(
+                    f"{schema_name}: accepts schema-7-only build_repositories"
+                )
+
+
+def is_below_or_equal(path: str, root: str) -> bool:
+    return root == "." or path == root or path.startswith(root + "/")
+
+
+HOST_PATTERN = r"[A-Za-z0-9][A-Za-z0-9.-]*"
+SSH_USER_PATTERN = r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}"
+HTTPS_REPOSITORY = re.compile(
+    rf"https://(?P<host>{HOST_PATTERN})/(?P<path>.+)", re.ASCII
+)
+SSH_URI_REPOSITORY = re.compile(
+    rf"ssh://(?:(?P<user>{SSH_USER_PATTERN})@)?"
+    rf"(?P<host>{HOST_PATTERN})/(?P<path>.+)",
+    re.ASCII,
+)
+SSH_SCP_REPOSITORY = re.compile(
+    rf"(?:(?P<user>{SSH_USER_PATTERN})@)?"
+    rf"(?P<host>{HOST_PATTERN}):(?P<path>.+)",
+    re.ASCII,
+)
+SSH_REPOSITORY_PATH = re.compile(r"[A-Za-z0-9._/-]+", re.ASCII)
+LOWERCASE_HOST = re.compile(r"[a-z0-9][a-z0-9.-]*", re.ASCII)
+
+
+def validate_repository_path(path: str, *, ssh: bool) -> str | None:
+    try:
+        path.encode("utf-8", errors="strict")
+    except UnicodeEncodeError:
+        return "repository path must contain only valid Unicode scalar text"
+    if ssh and SSH_REPOSITORY_PATH.fullmatch(path) is None:
+        return "SSH repository path must contain only ASCII letters, digits, dot, underscore, hyphen, and slash"
+    if (
+        not path
+        or path.startswith("/")
+        or path.endswith("/")
+        or any(component in {"", ".", ".."} for component in path.split("/"))
+    ):
+        return "repository path must have non-empty components other than dot or dot-dot"
+    if any(
+        character.isspace()
+        or character in "%?#\\:"
+        or ord(character) < 32
+        or 127 <= ord(character) <= 159
+        for character in path
+    ):
+        return "repository path contains a forbidden character"
+    return None
+
+
+def validate_repository_git(value: Any) -> str | None:
+    if not isinstance(value, str):
+        return None
+    if len(value) > 4096:
+        return "repository Git source exceeds 4096 Unicode scalar values"
+    match = HTTPS_REPOSITORY.fullmatch(value)
+    ssh = False
+    if match is None:
+        match = SSH_URI_REPOSITORY.fullmatch(value)
+        ssh = match is not None
+    if match is None:
+        match = SSH_SCP_REPOSITORY.fullmatch(value)
+        ssh = match is not None
+    if match is None:
+        return "repository Git source must be exact HTTPS, SSH URI, or SSH SCP form"
+    return validate_repository_path(match.group("path"), ssh=ssh)
+
+
+def validate_network_identity(identity: Any, transport: Any = None) -> str | None:
+    if not isinstance(identity, dict) or identity.get("kind") != "network-git":
+        return None
+    value = identity.get("value")
+    if not isinstance(value, str):
+        return None
+    try:
+        value.encode("utf-8", errors="strict")
+    except UnicodeEncodeError:
+        return "network source identity must contain only valid Unicode scalar text"
+    if len(value) > 4096 or "/" not in value:
+        return "network source identity must be canonical host/path of at most 4096 Unicode scalar values"
+    host, path = value.split("/", 1)
+    if LOWERCASE_HOST.fullmatch(host) is None:
+        return "network source identity host must use canonical lowercase ASCII spelling"
+    path_error = validate_repository_path(path, ssh=transport == "ssh")
+    if path_error is not None:
+        return f"network source identity is not canonical: {path_error}"
+    if path.endswith(".git"):
+        return "network source identity must remove one trailing lowercase .git"
+    return None
+
+
+def validate_git_ref_name(value: Any) -> str | None:
+    if not isinstance(value, str):
+        return None
+    try:
+        encoded = value.encode("utf-8", errors="strict")
+    except UnicodeEncodeError:
+        return "Git ref name must contain only valid Unicode scalar text"
+    if not 1 <= len(encoded) <= 255:
+        return "Git ref name must encode to 1 through 255 UTF-8 bytes"
+    components = value.split("/")
+    if (
+        value.startswith("/")
+        or value.endswith("/")
+        or value.endswith(".")
+        or any(component == "" or component.startswith(".") or component.endswith(".lock") for component in components)
+        or ".." in value
+        or "@{" in value
+        or value == "@"
+        or any(ord(character) <= 32 or ord(character) == 127 or character in "~^:?*[\\"
+               for character in value)
+    ):
+        return "Git ref name is not a safe exact tag or branch name"
+    return None
+
+
+def validate_structured_ref(ref: Any, object_format: Any = None) -> str | None:
+    if not isinstance(ref, dict):
+        return None
+    kind, value = ref.get("kind"), ref.get("value")
+    if kind in {"tag", "branch"}:
+        return validate_git_ref_name(value)
+    if kind == "revision" and isinstance(value, str) and object_format in {"sha1", "sha256"}:
+        expected = 40 if object_format == "sha1" else 64
+        if len(value) != expected:
+            return f"structured revision width must match effective {object_format} object format"
+    return None
+
+
+def validate_effective_source(
+    declared: dict[str, Any], effective: dict[str, Any]
+) -> str | None:
+    substitution = effective.get("substitution", {})
+    identity = effective.get("identity", {})
+    declared_identity_error = validate_network_identity(
+        declared.get("identity"), declared.get("transport")
+    )
+    if declared_identity_error is not None:
+        return declared_identity_error
+    effective_identity_error = validate_network_identity(
+        identity, effective.get("transport")
+    )
+    if effective_identity_error is not None:
+        return effective_identity_error
+    tag_error = validate_git_ref_name(declared.get("tag"))
+    if tag_error is not None:
+        return tag_error
+    object_format = effective.get("object_format")
+    commit = effective.get("commit")
+    if object_format in {"sha1", "sha256"} and isinstance(commit, str):
+        expected = 40 if object_format == "sha1" else 64
+        if len(commit) != expected:
+            return f"effective commit width must match {object_format} object format"
+    ref_error = validate_structured_ref(
+        substitution.get("ref") if isinstance(substitution, dict) else None,
+        object_format,
+    )
+    if ref_error is not None:
+        return ref_error
+    if effective.get("substituted") is False:
+        locked = declared.get("locked_commit", {})
+        if (
+            effective.get("identity") != declared.get("identity")
+            or effective.get("transport") != declared.get("transport")
+            or not isinstance(locked, dict)
+            or effective.get("object_format") != locked.get("object_format")
+            or effective.get("commit") != locked.get("hex")
+        ):
+            return "unsubstituted effective source must equal declared source and lock"
+    elif isinstance(substitution, dict) and isinstance(identity, dict):
+        substitution_type = substitution.get("type")
+        identity_kind = identity.get("kind")
+        if substitution_type == "local-path" and identity_kind != "operator-local-git":
+            return "local substitution requires operator-local-git effective identity"
+        if substitution_type == "network-git" and identity_kind != "network-git":
+            return "network substitution requires network-git effective identity"
+    return None
+
+
+def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
+    if not isinstance(instance, dict):
+        return None
+    legacy_manifest = re.fullmatch(r"(?:agent-skill|csk-skill)-v([1-6])\.schema\.json", schema_name)
+    if legacy_manifest is not None:
+        for field in ("build_repositories", "repository", "target"):
+            if field in instance:
+                return f"{field} is legal only in manifest schema 7"
+        if instance.get("driver") == "go-repository-v1":
+            return "go-repository-v1 is legal only in manifest schema 7"
+        commands = instance.get("commands", {})
+        if isinstance(commands, dict):
+            for command in commands.values():
+                if not isinstance(command, dict):
+                    continue
+                for field in ("repository", "target"):
+                    if field in command:
+                        return f"command {field} is legal only in manifest schema 7"
+                if command.get("driver") == "go-repository-v1":
+                    return "go-repository-v1 is legal only in manifest schema 7"
+    if schema_name in {"agent-skill-v7.schema.json", "csk-skill-v7.schema.json"}:
+        repositories = instance.get("build_repositories", {})
+        commands = instance.get("commands", {})
+        if not isinstance(repositories, dict) or not isinstance(commands, dict):
+            return None
+        for repository in repositories.values():
+            if not isinstance(repository, dict):
+                continue
+            git_error = validate_repository_git(repository.get("git"))
+            if git_error is not None:
+                return git_error
+            tag_error = validate_git_ref_name(repository.get("tag"))
+            if tag_error is not None:
+                return tag_error
+        selected = {
+            command.get("repository")
+            for command in commands.values()
+            if isinstance(command, dict) and command.get("driver") == "go-repository-v1"
+        }
+        if selected - set(repositories):
+            return "repository command selects an undeclared build repository"
+        if set(repositories) - selected:
+            return "every build repository declaration must be selected by a command"
+    elif schema_name == "skillfile-dev-v2.schema.json":
+        substitutions = instance.get("build_repository_substitutions", {})
+        if isinstance(substitutions, dict):
+            for repositories in substitutions.values():
+                if not isinstance(repositories, dict):
+                    continue
+                for substitution in repositories.values():
+                    if not isinstance(substitution, dict) or "git" not in substitution:
+                        continue
+                    git_error = validate_repository_git(substitution.get("git"))
+                    if git_error is not None:
+                        return git_error
+                    ref_error = validate_structured_ref(substitution.get("ref"))
+                    if ref_error is not None:
+                        return ref_error
+    elif schema_name == "curator-build-v1.schema.json":
+        for target in instance.get("targets", {}).values():
+            if isinstance(target, dict):
+                root, source = target.get("build_root"), target.get("source_dir")
+                if isinstance(root, str) and isinstance(source, str) and not is_below_or_equal(source, root):
+                    return "source_dir must equal or be below build_root"
+    elif schema_name == "build-receipt-v2.schema.json":
+        build_input = instance.get("input", {})
+        if isinstance(build_input, dict):
+            root, source_dir = build_input.get("build_root"), build_input.get("source_dir")
+            if isinstance(root, str) and isinstance(source_dir, str) and not is_below_or_equal(source_dir, root):
+                return "receipt source_dir must equal or be below build_root"
+            source = build_input.get("source", {})
+            if isinstance(source, dict):
+                declared, effective = source.get("declared", {}), source.get("effective", {})
+                if isinstance(declared, dict) and isinstance(effective, dict):
+                    error = validate_effective_source(declared, effective)
+                    if error is not None:
+                        return error
+    elif schema_name == "install-marker-v3.schema.json":
+        builds = instance.get("builds", {})
+        if not isinstance(builds, dict):
+            return None
+        has_local = any(isinstance(record, dict) and record.get("driver") == "go-v1" for record in builds.values())
+        if has_local != ("build_source" in instance):
+            return "marker build_source is present exactly when a local go-v1 build is active"
+        for record in builds.values():
+            if not isinstance(record, dict) or record.get("driver") != "go-repository-v1":
+                continue
+            declared = {
+                "identity": record.get("declared_identity"),
+                "locked_commit": record.get("declared_locked_commit"),
+            }
+            if "declared_tag" in record:
+                declared["tag"] = record["declared_tag"]
+            effective = {
+                "identity": record.get("effective_identity"),
+                "object_format": record.get("object_format"),
+                "commit": record.get("commit"),
+                "substituted": record.get("substituted"),
+            }
+            if "substitution" in record:
+                effective["substitution"] = record["substitution"]
+            error = validate_effective_source(declared, effective)
+            if error is not None:
+                return error
+    elif schema_name == "conformance-claim-v3.schema.json":
+        systems = set(instance.get("operating_systems", []))
+        claims = instance.get("build_drivers", [])
+        if isinstance(claims, list):
+            drivers = [claim.get("driver") for claim in claims if isinstance(claim, dict)]
+            if len(drivers) != len(set(drivers)):
+                return "build driver assertions must be unique"
+            for claim in claims:
+                if isinstance(claim, dict) and not set(claim.get("operating_systems", [])).issubset(systems):
+                    return "build driver platforms must be a subset of the top-level evidenced platforms"
+    return None
+
 
 def validate_manifest() -> None:
     manifest_path = SUITE / "manifest.json"
     manifest = load_json(manifest_path)
-    if manifest.get("protocol_version") != "1.0.0-rc.3":
-        raise ValidationFailure("vector manifest protocol_version is not 1.0.0-rc.3")
+    if manifest.get("protocol_version") != "1.0.0-rc.4":
+        raise ValidationFailure("vector manifest protocol_version is not 1.0.0-rc.4")
     entries = manifest.get("files")
     if not isinstance(entries, list):
         raise ValidationFailure("vector manifest files must be a list")
