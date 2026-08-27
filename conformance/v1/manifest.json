@@ -13,6 +13,18 @@
       "sha256": "sha256:5ec200cfb97f15ae1a379c071a4be7199db24719e20e47ee1ca54b9ee695d43b"
     },
     {
+      "path": "expected/external-repository/build-receipt-v2.json",
+      "sha256": "sha256:28d3340295731b4271ceb002ef3fc063bbf187237f4012e2269b0c702bf78622"
+    },
+    {
+      "path": "expected/external-repository/install-marker-v3-mixed.json",
+      "sha256": "sha256:0088cb9536eaacea2c087efeb70a5bc453c923020c5c01d3a87146f6e85773e3"
+    },
+    {
+      "path": "expected/external-repository/mixed-build-plan.json",
+      "sha256": "sha256:6f594b0467a166d4a2f3e58f3f1e976dc5dc46067c6b2ba5580f70c3bb500e6e"
+    },
+    {
       "path": "expected/marker.json",
       "sha256": "sha256:80989f850887814ec09c724a7dd891ac7e2422d5fef7e31f330be3554aa9b28a"
     },
@@ -53,6 +65,22 @@
       "sha256": "sha256:6c67a5b415fa432c0d6118bcc66d878da7dec90b65d6a276e200437c083f7ab4"
     },
     {
+      "path": "fixtures/external-repository/lfs-pointers.json",
+      "sha256": "sha256:6bc87ae5d697e08e5533eabbc83e231015edddee51470e413de678e72c264217"
+    },
+    {
+      "path": "fixtures/external-repository/local-config-and-refs.json",
+      "sha256": "sha256:e2a3f66c4ff46605215b18121a54ccfca011ff03a53e692e0692a8c27bec83b7"
+    },
+    {
+      "path": "fixtures/external-repository/pack-index.json",
+      "sha256": "sha256:09768bac46eb9966e76baf7fbe613ed87a88dd665962f4d3c18f20dc6a98791c"
+    },
+    {
+      "path": "fixtures/external-repository/raw-objects.json",
+      "sha256": "sha256:febea2ca5d58c0fe900163a3b9d55d04d906046e61800e23ae73fdc2dc0d8643"
+    },
+    {
       "path": "fixtures/skill/.skill_triggers/en.md",
       "sha256": "sha256:ba431f8ce1d9c6cb079b381caae9c71a470e26d4dbbdc2e6badbd392e753c679"
     },
@@ -89,12 +117,68 @@
       "sha256": "sha256:f116910f2f10858ce307c18d4fe0b01ef60a171879ad09083374c298b0d9d3d2"
     },
     {
+      "path": "schema-cases/agent-skill-v1/invalid-v7-build-repositories.json",
+      "sha256": "sha256:3c9eda4dfa64d78be6db5184a9bb15eec5a1a47234cbfdc4ae9c34f0b23bd52e"
+    },
+    {
+      "path": "schema-cases/agent-skill-v1/invalid-v7-command-driver.json",
+      "sha256": "sha256:e5f17ee0dabeda1c5f18c8bb2c3a2fbeb07ae712083be0745a0b53c1c3f07d6c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v1/invalid-v7-command-repository.json",
+      "sha256": "sha256:405cfa4bb923c4e862c9c3a3c2680b3364c000a371ae84cca96d7f392b99e840"
+    },
+    {
+      "path": "schema-cases/agent-skill-v1/invalid-v7-command-target.json",
+      "sha256": "sha256:ed14ebce43e7b602f88fab48c6d19784853e4c5b2c2ea328d1d2b4e786339cb1"
+    },
+    {
+      "path": "schema-cases/agent-skill-v1/invalid-v7-top-level-driver.json",
+      "sha256": "sha256:93e62283006f59ac5ab21924b5661ab2ccda4ead78dba67110e2877aaeb86805"
+    },
+    {
+      "path": "schema-cases/agent-skill-v1/invalid-v7-top-level-repository.json",
+      "sha256": "sha256:602fc2a37abec2f2562a39917afda50ca96504f27d5c1aa97a6caa5deca7a647"
+    },
+    {
+      "path": "schema-cases/agent-skill-v1/invalid-v7-top-level-target.json",
+      "sha256": "sha256:9dbec3a77710a52c8f1ee6b738105156693eca70e9c4bacd2b93503d91fb28e6"
+    },
+    {
       "path": "schema-cases/agent-skill-v1/invalid.json",
       "sha256": "sha256:e6d8845d9637b1e21dd962f29f16ffd686103cb1b867eaa4d7d9a8b651d0415a"
     },
     {
       "path": "schema-cases/agent-skill-v1/valid.json",
       "sha256": "sha256:51e646bb0bb903db17b1b76cde49e4be8e33956c73944f1d59e14e150df6666c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v2/invalid-v7-build-repositories.json",
+      "sha256": "sha256:9a14808af79ccd7ff16027de3800029e24b58f79e193117d6ee7786291482357"
+    },
+    {
+      "path": "schema-cases/agent-skill-v2/invalid-v7-command-driver.json",
+      "sha256": "sha256:dacc833f6f9d2e1325ccaba6654f7532993a807791b05465c7ad9f6a5bfb229d"
+    },
+    {
+      "path": "schema-cases/agent-skill-v2/invalid-v7-command-repository.json",
+      "sha256": "sha256:3f5969f4a7f1e696b20b15bf9039be83a3882a5673e6070bbef5176e3cadc90d"
+    },
+    {
+      "path": "schema-cases/agent-skill-v2/invalid-v7-command-target.json",
+      "sha256": "sha256:95859f75298e77365d910e1b613055716c2a182239b6948ef5b6daf79a9219ce"
+    },
+    {
+      "path": "schema-cases/agent-skill-v2/invalid-v7-top-level-driver.json",
+      "sha256": "sha256:89e1a522ddd0b6b8d4fe91b6e0f5fc5b440b540a661e44fc7e938b512faf1cbc"
+    },
+    {
+      "path": "schema-cases/agent-skill-v2/invalid-v7-top-level-repository.json",
+      "sha256": "sha256:983d39ea2eb575125a6499bfdfceeb44ae7983bb1efad8f92a8298481492afd5"
+    },
+    {
+      "path": "schema-cases/agent-skill-v2/invalid-v7-top-level-target.json",
+      "sha256": "sha256:f0810e8a9bd9238d4ab6f0ad17bd826ac14bb3c0908b161361687faf7a28b27c"
     },
     {
       "path": "schema-cases/agent-skill-v2/invalid.json",
@@ -105,12 +189,68 @@
       "sha256": "sha256:dd924e1e339e6d4b32be8a6bfb0419d5925523e8d75b2508786a7835fffd113b"
     },
     {
+      "path": "schema-cases/agent-skill-v3/invalid-v7-build-repositories.json",
+      "sha256": "sha256:790fe7480a6e0d17c80223f78c27c40589acf8e14b6fa0d1fd6f61bebe35b700"
+    },
+    {
+      "path": "schema-cases/agent-skill-v3/invalid-v7-command-driver.json",
+      "sha256": "sha256:ec61633f9acbfa384c860406d2d6b617c51abf8a2510aa1838923330c1c00c9a"
+    },
+    {
+      "path": "schema-cases/agent-skill-v3/invalid-v7-command-repository.json",
+      "sha256": "sha256:e08989577da358aeb2ae010ca79239f9b2c6fb4b0a01104783b28e0b2574ee22"
+    },
+    {
+      "path": "schema-cases/agent-skill-v3/invalid-v7-command-target.json",
+      "sha256": "sha256:d979b2331d2811de7b4e992c4130d29527421550df944278a9669161c612983f"
+    },
+    {
+      "path": "schema-cases/agent-skill-v3/invalid-v7-top-level-driver.json",
+      "sha256": "sha256:52e907399333cf8b5b70e236aead0080c8ca5bc7939494a3037cdecd5b9b7028"
+    },
+    {
+      "path": "schema-cases/agent-skill-v3/invalid-v7-top-level-repository.json",
+      "sha256": "sha256:fa5f70f3c4975fd3ea7be297c5e7c8f2edd2a555453564b230e19af131c6161d"
+    },
+    {
+      "path": "schema-cases/agent-skill-v3/invalid-v7-top-level-target.json",
+      "sha256": "sha256:47a9c14aa7baec0f684368157d250a3e573f55beec3a2ab1359de3b49609ea04"
+    },
+    {
       "path": "schema-cases/agent-skill-v3/invalid.json",
       "sha256": "sha256:8ab25dca4c8b054f13753795ee1b9365d9d3b43578825ca756f32d46db4d49a3"
     },
     {
       "path": "schema-cases/agent-skill-v3/valid.json",
       "sha256": "sha256:55dc5c603d4ec1633ecd30c84d95aa40d2ab5192dc93436f314c88abf33c3145"
+    },
+    {
+      "path": "schema-cases/agent-skill-v4/invalid-v7-build-repositories.json",
+      "sha256": "sha256:bb9dfc4b372f59d3b91da7d706d5e282dd4af4825748086222f0262488b2af4f"
+    },
+    {
+      "path": "schema-cases/agent-skill-v4/invalid-v7-command-driver.json",
+      "sha256": "sha256:0cf49c8e3465fc721854dc65ce7639fcef93583fa5ae070e520c30b86bca2105"
+    },
+    {
+      "path": "schema-cases/agent-skill-v4/invalid-v7-command-repository.json",
+      "sha256": "sha256:10da16175b7109f22df6f27e357c434808c6b714f29c193a80de2cadc76aca47"
+    },
+    {
+      "path": "schema-cases/agent-skill-v4/invalid-v7-command-target.json",
+      "sha256": "sha256:2645322344cbc7013ccc7456499d6a3a46d9a454ce242d9b77c2cdd6bd84a681"
+    },
+    {
+      "path": "schema-cases/agent-skill-v4/invalid-v7-top-level-driver.json",
+      "sha256": "sha256:8faaf4730a518f4a1eee714132049353b5f7aa2f54af741c10fdda7a2cdccf37"
+    },
+    {
+      "path": "schema-cases/agent-skill-v4/invalid-v7-top-level-repository.json",
+      "sha256": "sha256:4c7355c25564d4f9fefe7ae531b334e874e4fa6c5e8b1012a0ebc830090d6063"
+    },
+    {
+      "path": "schema-cases/agent-skill-v4/invalid-v7-top-level-target.json",
+      "sha256": "sha256:8086d12af60da48ad61ce891f3545268b6181dc7323ec45a75f43b9f365995ac"
     },
     {
       "path": "schema-cases/agent-skill-v4/invalid.json",
@@ -121,12 +261,268 @@
       "sha256": "sha256:5a132fcd357b74761648facba8d29406060de0713563b275c173efba1e647681"
     },
     {
+      "path": "schema-cases/agent-skill-v5/invalid-v7-build-repositories.json",
+      "sha256": "sha256:e20c728f83957f5d7e43c37c84153e286a6611990d56386627fefd886d0f551a"
+    },
+    {
+      "path": "schema-cases/agent-skill-v5/invalid-v7-command-driver.json",
+      "sha256": "sha256:21e54f362543fc526cec8ae891ba50512b6a4607c560e1abb58b3453dc6fe452"
+    },
+    {
+      "path": "schema-cases/agent-skill-v5/invalid-v7-command-repository.json",
+      "sha256": "sha256:9ecf31d615c469b179b2e32dceb26204ad0e6e972d83aeb271c901e805659c41"
+    },
+    {
+      "path": "schema-cases/agent-skill-v5/invalid-v7-command-target.json",
+      "sha256": "sha256:0d2df6c1f66b04c6ac859c196dae4abf139e4bcad1114ae90c0abc937f5f767f"
+    },
+    {
+      "path": "schema-cases/agent-skill-v5/invalid-v7-top-level-driver.json",
+      "sha256": "sha256:49f6c0bd440281e8abb0be3995f73be3d870c91acf51a71cdcbe49d54edc4775"
+    },
+    {
+      "path": "schema-cases/agent-skill-v5/invalid-v7-top-level-repository.json",
+      "sha256": "sha256:917341eca35f60c895693471eefc627743bb637c5d38969c7c306df47f3c9180"
+    },
+    {
+      "path": "schema-cases/agent-skill-v5/invalid-v7-top-level-target.json",
+      "sha256": "sha256:15be7bb7f9f4b216f3310018e281bccfd9ecac05a8e71362e65d6e4f205a9139"
+    },
+    {
       "path": "schema-cases/agent-skill-v5/invalid.json",
       "sha256": "sha256:ea9a68b486d27311a73c82f794675eb62bd9c2b8b5917aeb04293d0a13048071"
     },
     {
       "path": "schema-cases/agent-skill-v5/valid.json",
       "sha256": "sha256:9f3bb9d9aff11fceed665b3283d6b4b9e531785d751f53c37517d71b72f9a26f"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-build-args.json",
+      "sha256": "sha256:6054669cc6c91d1f0f840b7a8b7b7e895b5ab27e8275602a07a91e005ee4d288"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-build-env.json",
+      "sha256": "sha256:23dcd672e61facbf1af2b42979209bd6ab4fb22ab4ac46f98905947aa5faccb7"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-build-flags.json",
+      "sha256": "sha256:1366d81382d4beb2b70f368329cd856527254b4079a0c7966b2a39932f7b6699"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-build-hooks.json",
+      "sha256": "sha256:79832092a5d8bda4e0278018f4b1766f147d42514bc7cd1443cd0e87c298f1ae"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-build-missing-driver.json",
+      "sha256": "sha256:0a5937ccee214e7f0b5aa71fccb08c9898438eb0e6ecc6292a31174abb5d0ddf"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-build-missing-source-dir.json",
+      "sha256": "sha256:fb1bd235cb614d0bbc9eb7b6812b1b7e68d030c190e450bd22ae90a4f3d5ca2d"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-build-mixed-script.json",
+      "sha256": "sha256:d6aba4c8cd7e317bafc4cc09972892832e1e778553bfd7885a2a4f174faca511"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-build-mixed-system.json",
+      "sha256": "sha256:56ddd6306280b1d66dd30fdccf94c9d4c8b6b64ca3065587584aff5d1c0d53e1"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-build-output.json",
+      "sha256": "sha256:91ae44a8fa2d47aa1ce77f912113eed68dd91b7bf9b50e3998b8ce35850506b9"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-build-root-dot.json",
+      "sha256": "sha256:ba76f4c11aaf8d362a928676138f428a98f4116a59dc3ac725a515169efd384d"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-build-scripts.json",
+      "sha256": "sha256:a8ad2035ebf9e7f597fc2fd1ff09ebd9839d5134b4665a42ea4ccd4d65af70f5"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-build-source-dir-dot.json",
+      "sha256": "sha256:7ae07442190a6d96eea9c1f815fddd0db5ab2295bf6d6f72db9884a37a73f3f1"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-build-tags.json",
+      "sha256": "sha256:b7dbe3ab90ecf29c4c9481d8e87a0134ecc865755b3183a712406788edf397d8"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-build-toolchain.json",
+      "sha256": "sha256:8cc900b454e9a8e0de40f9af83b2e9f8b9feabe14db4862faf258e439222b3cf"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-build-unsupported-driver.json",
+      "sha256": "sha256:6d77b172ec23f4f65186a2839557f112961615810217996d0e442389aabd940f"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-v7-build-repositories.json",
+      "sha256": "sha256:a94697a4ef1f8d68c6e544b8b0325b245896caf3a35040c2c23dfa79d226af4c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-v7-command-driver.json",
+      "sha256": "sha256:0a4d6ca78177c3cdde7c43f6547793c6f72e1a62bd3a1b111b5043391eed6e3f"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-v7-command-repository.json",
+      "sha256": "sha256:43ff3bbab707cf25e9749a1289dad9cc1f35dea250a358fb51e1e966b9c0739e"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-v7-command-target.json",
+      "sha256": "sha256:f094bc8b1d9f515e81c71feae51294096dddbddebb2975aaa13cb8756c1adaca"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-v7-top-level-driver.json",
+      "sha256": "sha256:d77492dc75e35371c868ef668e62b9e0f1d98721a0942095745656ee7114a41d"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-v7-top-level-repository.json",
+      "sha256": "sha256:0b65676ba4d06f8f76496187becd8f27180a61b0f6c410b4c76e55b6be0689b7"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid-v7-top-level-target.json",
+      "sha256": "sha256:afa77c9901ae8686cf2ce098bf755ea2b31d0f9531d80bb32564577df631e90e"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/invalid.json",
+      "sha256": "sha256:99ac85b48486065791cd82bada12f852cf61fb3e66235ba15a1b2a70cb99a985"
+    },
+    {
+      "path": "schema-cases/agent-skill-v6/valid.json",
+      "sha256": "sha256:cf029927b7032aaad2fb17931133a897fc8183cce3d091df7321912ad152d634"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-command-argv.json",
+      "sha256": "sha256:40051f0c9de4294523eddeb557b05c6d8727ddf7fc8691c8fd993d3758f9b671"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-command-credentials.json",
+      "sha256": "sha256:ae899e7ff02a3aef7663cf6fd6b60827bff8ee3c1b45a4e8db9c9d304f38046c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-command-env.json",
+      "sha256": "sha256:6f6a4108dde7e882edf3808299ba6db7442be40b04ccc434aef6495468f45b25"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-command-fallback.json",
+      "sha256": "sha256:2d38109bee4439dc3da006bb75776a36380f85002fa780dacb947156326088dc"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-command-generator.json",
+      "sha256": "sha256:8de1d3b855614ad05e68283bcd164453008f15f4796a0088bdd7f03d634479db"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-command-hooks.json",
+      "sha256": "sha256:d00f86ab868c66a5bbddaa47980669b76ba02af54fa73c3c7052eb0e85f1f6da"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-command-name.json",
+      "sha256": "sha256:2c1381ddf88919c6e42f357b05f85ebeb71f1da1f15895dc807bcc4c0edb9e5e"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-command-output.json",
+      "sha256": "sha256:654b02072e427a1dc85aac93ccf4d364deec2cc36943962d5085e90202d59829"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-command-plugins.json",
+      "sha256": "sha256:bd4a995ca23ade391b8099faa95b912aef043a8f6599eb3b1e1fddff85465b1b"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-command-signing.json",
+      "sha256": "sha256:70133c51cc2a0c3c643c851b1c3dc55ea800fdfdcea77e780048c39301c8de48"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-explicit-port.json",
+      "sha256": "sha256:38f86471e50baa0ca7b4f3c452ad6c82dd26e7706bfb2ded7d7a7afb0ebdcfda"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-generic-driver.json",
+      "sha256": "sha256:47705f55089b33eb011ed6f5081afd1dfb48fdf8a77cdbaee4da75e249ed385d"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-https-dot-component.json",
+      "sha256": "sha256:b630050f246df5f5591e51096aab2da46b697b36122108122918f06f54b29b3c"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-https-userinfo.json",
+      "sha256": "sha256:f385e2e59fecc4a19ecb8ed4dba0ccdeb1364a86879df2a4baaa01260e9b3f86"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-missing-repository.json",
+      "sha256": "sha256:1229ac265b4b937b1352282af4769f076393cdb2163be89e39b1567903757579"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-raw-revision-tag.json",
+      "sha256": "sha256:f652e50575a6c454876aad25c8836d5b33690d7ee4b71a853a327db967a80f8b"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-scp-dot-component.json",
+      "sha256": "sha256:1c53724dace438c4684a877435f2f7d6eda28d3b555348d30666b2fd35955e40"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-sha1-width.json",
+      "sha256": "sha256:58d3b2c833b0eb9858730fe7f4c667360860a206925f9799f4933116cb0c7c5b"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-sha256-width.json",
+      "sha256": "sha256:b9312ac794cf550a9bf6c3075112150613484492c7a3e6f1232e8e64e77d0789"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-ssh-dot-component.json",
+      "sha256": "sha256:4b5594a6ff3ac1f3686634b0fd79fed70684e754a4d8de91f8c3a2f78919f319"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-ssh-metacharacter.json",
+      "sha256": "sha256:6facd3b32f54e07e8b51e178a06ceaec1bf053a15188884674f86a765ca81c78"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-ssh-non-ascii.json",
+      "sha256": "sha256:eb40a0809f0a25296671a3d725f1c3e17a839bb8a6952215ae47aa94de7c1336"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-tag-256-bytes.json",
+      "sha256": "sha256:b96b8d8e681cc002b936fc00608f419a6fa76b96f95400eb9f5fae034ae46b0f"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-tag-300-bytes.json",
+      "sha256": "sha256:2bdf9798aee0353042e4f64a466c9bdded97a0a34792f935c63f744445738af0"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid-unselected-repository.json",
+      "sha256": "sha256:6655c019c17de4b072bddeda26369d9164dedb1d55ad710c4722f983c4eebad8"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/invalid.json",
+      "sha256": "sha256:a589d36c5b0f990b02af5c0827980858e0004d2d0874868185c6e89ef049b2e4"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/valid-scp-source.json",
+      "sha256": "sha256:a212fb00d04b0bbcff5098d1573bf59361651cd82f6839e68e59ba422bcce324"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/valid-sha256-lock.json",
+      "sha256": "sha256:648ec7b966acb842734de139bba296eb59bb1ad70025223ae8f475b9fb2343f8"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/valid-ssh-source.json",
+      "sha256": "sha256:d09bfbad2c21f93752c13ea736039795e13aa91587f791ba5a53be0514319394"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/valid-tag-255-bytes.json",
+      "sha256": "sha256:180fe7253ceff35881fa3f571bb786cbd1fd6c1bbbc2d2dec4fb76e5aeae30c2"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/valid-unicode-https-source.json",
+      "sha256": "sha256:91f511c76297100e306224a48b319843309748ec3d4e5692d21a84de6b7ed970"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/valid-untagged-lock.json",
+      "sha256": "sha256:78f5cbede00ff9c59ef4de220271994866bd2adf9874edac6a16361317ce3a85"
+    },
+    {
+      "path": "schema-cases/agent-skill-v7/valid.json",
+      "sha256": "sha256:90176154672a411dbdb2c68ff22afe719a6b7773c3ac74f29d3fedd17cd055b6"
     },
     {
       "path": "schema-cases/audit-record-v1/invalid.json",
@@ -137,12 +533,272 @@
       "sha256": "sha256:994220de5f8f40861b3bdd1bd4f3cc0c1716c2cf79540f7499dafe50d3dc1d0a"
     },
     {
+      "path": "schema-cases/build-receipt-v1/invalid-artifact-hash.json",
+      "sha256": "sha256:0605c1dd74a47786315c657266daf6ed9b328a769b64612a4ee1c4ec7cab4730"
+    },
+    {
+      "path": "schema-cases/build-receipt-v1/invalid-build-source-algorithm.json",
+      "sha256": "sha256:2c99317d6306b66f4b98dd442c72ad36851374690ab74a91b373b11b7e046213"
+    },
+    {
+      "path": "schema-cases/build-receipt-v1/invalid-driver-mismatch.json",
+      "sha256": "sha256:9478b247296777432ed1f414ee31871215fd49bc2f0d8d479c7d32048869f928"
+    },
+    {
+      "path": "schema-cases/build-receipt-v1/invalid-missing-artifact.json",
+      "sha256": "sha256:5236f47f17912e79faf6b22735020720e5bf0b9bab760e5e1c8822aaacb378f0"
+    },
+    {
+      "path": "schema-cases/build-receipt-v1/invalid-missing-input.json",
+      "sha256": "sha256:bca52b1260a58e2ea03f6a5adc0ff4b9e463297ca931c3228651e5728a991f98"
+    },
+    {
+      "path": "schema-cases/build-receipt-v1/invalid-physical-cache-path.json",
+      "sha256": "sha256:704da5ef98b423f4373b1d042b7bce711fa2785f1aa9b478996d75cac9703735"
+    },
+    {
+      "path": "schema-cases/build-receipt-v1/invalid-physical-lock-path.json",
+      "sha256": "sha256:ad3b5150715d03cd60d6dce6107966394bc23aae3d5605685343aa4aede87561"
+    },
+    {
+      "path": "schema-cases/build-receipt-v1/invalid-physical-receipt-path.json",
+      "sha256": "sha256:81ad8990c0c0c69d332955b1a3bb543badaded17c88b8d00067031c68f0ef687"
+    },
+    {
+      "path": "schema-cases/build-receipt-v1/invalid-policy-mismatch.json",
+      "sha256": "sha256:288a855c99a2610f71d688c76b1f4a6fef130589bf37c86e0492045875999516"
+    },
+    {
+      "path": "schema-cases/build-receipt-v1/invalid-self-asserted-manager-created.json",
+      "sha256": "sha256:1f8d0d6b22ced9e09861bea2d7d1354a99432993a6abe77ab18c3a88910b0d2f"
+    },
+    {
+      "path": "schema-cases/build-receipt-v1/invalid-self-asserted-provenance.json",
+      "sha256": "sha256:ef05ad98e3aa9848151134ca0513f486020d3e35521c98a34a35545c1c8abeb1"
+    },
+    {
+      "path": "schema-cases/build-receipt-v1/invalid-self-asserted-trusted.json",
+      "sha256": "sha256:198f7c620483bb9f14e71f355533e7964d0993d32959e52d1728c2c52251638f"
+    },
+    {
+      "path": "schema-cases/build-receipt-v1/invalid-toolchain-algorithm.json",
+      "sha256": "sha256:66bd07d88511bc6fe3bfebaa77a036bd4b8d7a252c7b8c6fd4814d77eb679b36"
+    },
+    {
+      "path": "schema-cases/build-receipt-v1/invalid-unknown-input-field.json",
+      "sha256": "sha256:8756575c3210de942fae1a8c0128039a20e25cd9664dbd98f034225c1a400093"
+    },
+    {
+      "path": "schema-cases/build-receipt-v1/invalid.json",
+      "sha256": "sha256:118f6fcfc209242e68311887bbf7d5650a78c353a8c349ed1fb0f109a38a7a1a"
+    },
+    {
+      "path": "schema-cases/build-receipt-v1/valid.json",
+      "sha256": "sha256:93217cf1ce2965435042f8e20ebfec45498bae67a128cc16f38b3f4c8b64ecab"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-argv.json",
+      "sha256": "sha256:bd4c14e9bc4fcb45af46b043f2cdae4337ba7b7392c8580bfcf97cee655b380e"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-canonical-dot-component.json",
+      "sha256": "sha256:cfaeb8380b62c9020c568bf7b5399aa60c33352984a70dc95f9002fdef0bff0b"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-canonical-lowercase-git-suffix.json",
+      "sha256": "sha256:b6028ae12bd46b090d40a93ed5f53601ce3aa77f891fb8a83fb1e5bb8ec47729"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-canonical-uppercase-host.json",
+      "sha256": "sha256:0456375bfda7d3ebe5fcf752ca77c58a850bbffd0e020084eed673c9b83dd1d2"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-driver.json",
+      "sha256": "sha256:cb22d4ac0922043d36adc318cd89cbbf38476942fc5b58dabed31ee4fe0fd9d5"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-effective-commit-width.json",
+      "sha256": "sha256:db4965f118a4d19671344e836813493ca4ae9a006683fceb96cccbd886cfad7f"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-local-substitution-network-identity.json",
+      "sha256": "sha256:f925d717e3fefa48bf64653b70533f70432ed5178b6fce1eb91577ec4b5d2f5c"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-network-substitution-local-identity.json",
+      "sha256": "sha256:3842ae143cd7dfa5ffe2c2814589efc1fc81066ded04e77e605b0813167194cb"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-output.json",
+      "sha256": "sha256:25668ffa601fea33dee2895d4c58882ba3a7362b026cdea85f68eb64c72fdc01"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-sha1-effective-revision-width.json",
+      "sha256": "sha256:31c9d3e8e0b4332857efb195fce1ea50c0db797cdea74f018cd54e12663155a2"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-sha256-effective-revision-width.json",
+      "sha256": "sha256:cc403e160939c00cd7a6abbad298176210146ab71bc34c3555818c7813e42d63"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-source-outside-build-root.json",
+      "sha256": "sha256:65f6fbad4c4d470f01dece228bede523b1b1d81d878511cae05789389dd0291e"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-substituted-without-state.json",
+      "sha256": "sha256:2ddca4c93af7f36cab610c52db15e7d19d3138b374ac27582f250f7dae4e7f3f"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-trust-boolean.json",
+      "sha256": "sha256:8ac822253b0bc3e15dc6668cdde7be79ca30da33219fe5a91d398ed4c592e010"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-unsubstituted-declared-effective-mismatch.json",
+      "sha256": "sha256:b56686cb47172e9ed3255579df8677a3fe43e6870e3d3fdd00da0adebd71728d"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid-unsubstituted-substitution.json",
+      "sha256": "sha256:d24d1d761669dc1a1e1a55b480332a2a6ddbf1b4043f6d7bcef5b4b700f09298"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/invalid.json",
+      "sha256": "sha256:2e0cbb334127e2150a74ce971b41e1962cdb8877546d9f388fa62a79f0c6139e"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/valid-canonical-uppercase-git-suffix.json",
+      "sha256": "sha256:e66c65a35a1bca90e9d4b89494736a20178b3c71ad83820efafcb2fb07ed5546"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/valid-local-substitution.json",
+      "sha256": "sha256:63a00d3c8dc390e1d4ce6acdd7026c3fe4beaa91d762a37d6e55fddbccf86ad4"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/valid-network-sha256-revision.json",
+      "sha256": "sha256:91a2bd29d8d28dc06ce1e153b8866a16396aadfeeebc289a45161da8302ad979"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/valid-network-substitution.json",
+      "sha256": "sha256:f1dfb2ccc633c63ea02d23dadd37abd9e3eefb4d93b009c2d92b4724c2188c1a"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/valid-sha256.json",
+      "sha256": "sha256:07ae09b05b83c39a620e5a1610438dc96f5117dba26a41b51d8bfa6158a212e9"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/valid-untagged.json",
+      "sha256": "sha256:b3867fe9e3d1e923505b9f719837a7cff2524820feb4cd3f8917277f5e767877"
+    },
+    {
+      "path": "schema-cases/build-receipt-v2/valid.json",
+      "sha256": "sha256:28d3340295731b4271ceb002ef3fc063bbf187237f4012e2269b0c702bf78622"
+    },
+    {
       "path": "schema-cases/conformance-claim-v1/invalid.json",
       "sha256": "sha256:de9568757a2bb89c87702e47f6d9c162df24f5ee964f1ef49b9e191ed94b7017"
     },
     {
       "path": "schema-cases/conformance-claim-v1/valid.json",
       "sha256": "sha256:799682489be118331135d91798db90b8d020cbb703207331824ab113f037693c"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v2/invalid-duplicate-classes.json",
+      "sha256": "sha256:2d74783021873fb41b0176205835624e56db4fa7fb3c0435c8dbcd0e05b58fc0"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v2/invalid-protocol-version-rc3.json",
+      "sha256": "sha256:5558db5556576993d4abe93c0f4849380591f71c25173a77f2493448fbe11eef"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v2/invalid-result-fail.json",
+      "sha256": "sha256:eeeecc9577f418b78a9a5edbaea9d6294d30f1d06886d6af9f56e64e271d8268"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v2/invalid-schema-version-1.json",
+      "sha256": "sha256:aa5588297fb49d39eb39ca3052f6f97bb67236608b72cc9d0478b043cce6562f"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v2/invalid-unknown-field.json",
+      "sha256": "sha256:d10459fefb4b07aa1ade03a0627fbcfe9cd790c99d5d6374c9de15c5f22dc9a3"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v2/invalid.json",
+      "sha256": "sha256:79d244335cb2ddfb9c831aa38c31c6ca37c89f0704ad61a19032882b1bec8604"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v2/valid.json",
+      "sha256": "sha256:f7e7cc86f33ea03ee9bb4d149e1dba29cf34f5ceaf5504df8a9e91c659a1835f"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v3/invalid-driver-platform-outside-claim.json",
+      "sha256": "sha256:b559e8100ff3e1be151547678c98d51ce16f7b32316f5e2e4639729695e9c192"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v3/invalid-duplicate-driver-assertion.json",
+      "sha256": "sha256:c0d78165b7600746132b266237dddf725ac4df86256e140529055f35a25edd15"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v3/invalid-duplicate-platform.json",
+      "sha256": "sha256:06a7a40ca5d9c2e90dde58aa110ec89a51489ac36b81ea6ba474d2f1e1dba0d0"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v3/invalid-generic-driver.json",
+      "sha256": "sha256:aa67d7ee95e03a18b99b0f6343a5051d38b341313ecbcefe25bc16b040be23eb"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v3/invalid-language-mismatch.json",
+      "sha256": "sha256:45182995703ad321544618c6e8777d5a02781bb1f858bae1603f7f920758d2a9"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v3/invalid-linux-unqualified.json",
+      "sha256": "sha256:df31019a519f4f943fd2f3ec0a40f70abacc82ebae6bd77a9b627cee3a109f1f"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v3/invalid-rc4.json",
+      "sha256": "sha256:74488ebe576e94db13de62be40435b8b1b900f3611cf2819045ef6ecc456cc71"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v3/invalid-unknown-field.json",
+      "sha256": "sha256:b86c85287edbdbfde1f6e3f2e6fe6721276eab7f71e86a56535603ff5ff36d22"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v3/invalid.json",
+      "sha256": "sha256:e348e2f1adb786275b8cb428d9e592775c97cfd4cbafafbed07b74c6c2265863"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v3/valid-macos-only.json",
+      "sha256": "sha256:d2c74d09b3c8ffb6c6230d3815bef42cf6d4ce0b920e78f6ee505b5c439230d7"
+    },
+    {
+      "path": "schema-cases/conformance-claim-v3/valid.json",
+      "sha256": "sha256:df34653391a22628e4bd79b33ab1fc456b64ce3d0fe83186994d8bd2f6c54e12"
+    },
+    {
+      "path": "schema-cases/csk-skill-v1/invalid-v7-build-repositories.json",
+      "sha256": "sha256:3c9eda4dfa64d78be6db5184a9bb15eec5a1a47234cbfdc4ae9c34f0b23bd52e"
+    },
+    {
+      "path": "schema-cases/csk-skill-v1/invalid-v7-command-driver.json",
+      "sha256": "sha256:e5f17ee0dabeda1c5f18c8bb2c3a2fbeb07ae712083be0745a0b53c1c3f07d6c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v1/invalid-v7-command-repository.json",
+      "sha256": "sha256:405cfa4bb923c4e862c9c3a3c2680b3364c000a371ae84cca96d7f392b99e840"
+    },
+    {
+      "path": "schema-cases/csk-skill-v1/invalid-v7-command-target.json",
+      "sha256": "sha256:ed14ebce43e7b602f88fab48c6d19784853e4c5b2c2ea328d1d2b4e786339cb1"
+    },
+    {
+      "path": "schema-cases/csk-skill-v1/invalid-v7-top-level-driver.json",
+      "sha256": "sha256:93e62283006f59ac5ab21924b5661ab2ccda4ead78dba67110e2877aaeb86805"
+    },
+    {
+      "path": "schema-cases/csk-skill-v1/invalid-v7-top-level-repository.json",
+      "sha256": "sha256:602fc2a37abec2f2562a39917afda50ca96504f27d5c1aa97a6caa5deca7a647"
+    },
+    {
+      "path": "schema-cases/csk-skill-v1/invalid-v7-top-level-target.json",
+      "sha256": "sha256:9dbec3a77710a52c8f1ee6b738105156693eca70e9c4bacd2b93503d91fb28e6"
     },
     {
       "path": "schema-cases/csk-skill-v1/invalid.json",
@@ -153,12 +809,68 @@
       "sha256": "sha256:51e646bb0bb903db17b1b76cde49e4be8e33956c73944f1d59e14e150df6666c"
     },
     {
+      "path": "schema-cases/csk-skill-v2/invalid-v7-build-repositories.json",
+      "sha256": "sha256:9a14808af79ccd7ff16027de3800029e24b58f79e193117d6ee7786291482357"
+    },
+    {
+      "path": "schema-cases/csk-skill-v2/invalid-v7-command-driver.json",
+      "sha256": "sha256:dacc833f6f9d2e1325ccaba6654f7532993a807791b05465c7ad9f6a5bfb229d"
+    },
+    {
+      "path": "schema-cases/csk-skill-v2/invalid-v7-command-repository.json",
+      "sha256": "sha256:3f5969f4a7f1e696b20b15bf9039be83a3882a5673e6070bbef5176e3cadc90d"
+    },
+    {
+      "path": "schema-cases/csk-skill-v2/invalid-v7-command-target.json",
+      "sha256": "sha256:95859f75298e77365d910e1b613055716c2a182239b6948ef5b6daf79a9219ce"
+    },
+    {
+      "path": "schema-cases/csk-skill-v2/invalid-v7-top-level-driver.json",
+      "sha256": "sha256:89e1a522ddd0b6b8d4fe91b6e0f5fc5b440b540a661e44fc7e938b512faf1cbc"
+    },
+    {
+      "path": "schema-cases/csk-skill-v2/invalid-v7-top-level-repository.json",
+      "sha256": "sha256:983d39ea2eb575125a6499bfdfceeb44ae7983bb1efad8f92a8298481492afd5"
+    },
+    {
+      "path": "schema-cases/csk-skill-v2/invalid-v7-top-level-target.json",
+      "sha256": "sha256:f0810e8a9bd9238d4ab6f0ad17bd826ac14bb3c0908b161361687faf7a28b27c"
+    },
+    {
       "path": "schema-cases/csk-skill-v2/invalid.json",
       "sha256": "sha256:b34b7633c5351bc53a4b3fc95ffc84e91167c57d682fc000fc0d8079598f54c2"
     },
     {
       "path": "schema-cases/csk-skill-v2/valid.json",
       "sha256": "sha256:dd924e1e339e6d4b32be8a6bfb0419d5925523e8d75b2508786a7835fffd113b"
+    },
+    {
+      "path": "schema-cases/csk-skill-v3/invalid-v7-build-repositories.json",
+      "sha256": "sha256:790fe7480a6e0d17c80223f78c27c40589acf8e14b6fa0d1fd6f61bebe35b700"
+    },
+    {
+      "path": "schema-cases/csk-skill-v3/invalid-v7-command-driver.json",
+      "sha256": "sha256:ec61633f9acbfa384c860406d2d6b617c51abf8a2510aa1838923330c1c00c9a"
+    },
+    {
+      "path": "schema-cases/csk-skill-v3/invalid-v7-command-repository.json",
+      "sha256": "sha256:e08989577da358aeb2ae010ca79239f9b2c6fb4b0a01104783b28e0b2574ee22"
+    },
+    {
+      "path": "schema-cases/csk-skill-v3/invalid-v7-command-target.json",
+      "sha256": "sha256:d979b2331d2811de7b4e992c4130d29527421550df944278a9669161c612983f"
+    },
+    {
+      "path": "schema-cases/csk-skill-v3/invalid-v7-top-level-driver.json",
+      "sha256": "sha256:52e907399333cf8b5b70e236aead0080c8ca5bc7939494a3037cdecd5b9b7028"
+    },
+    {
+      "path": "schema-cases/csk-skill-v3/invalid-v7-top-level-repository.json",
+      "sha256": "sha256:fa5f70f3c4975fd3ea7be297c5e7c8f2edd2a555453564b230e19af131c6161d"
+    },
+    {
+      "path": "schema-cases/csk-skill-v3/invalid-v7-top-level-target.json",
+      "sha256": "sha256:47a9c14aa7baec0f684368157d250a3e573f55beec3a2ab1359de3b49609ea04"
     },
     {
       "path": "schema-cases/csk-skill-v3/invalid.json",
@@ -169,6 +881,34 @@
       "sha256": "sha256:55dc5c603d4ec1633ecd30c84d95aa40d2ab5192dc93436f314c88abf33c3145"
     },
     {
+      "path": "schema-cases/csk-skill-v4/invalid-v7-build-repositories.json",
+      "sha256": "sha256:bb9dfc4b372f59d3b91da7d706d5e282dd4af4825748086222f0262488b2af4f"
+    },
+    {
+      "path": "schema-cases/csk-skill-v4/invalid-v7-command-driver.json",
+      "sha256": "sha256:0cf49c8e3465fc721854dc65ce7639fcef93583fa5ae070e520c30b86bca2105"
+    },
+    {
+      "path": "schema-cases/csk-skill-v4/invalid-v7-command-repository.json",
+      "sha256": "sha256:10da16175b7109f22df6f27e357c434808c6b714f29c193a80de2cadc76aca47"
+    },
+    {
+      "path": "schema-cases/csk-skill-v4/invalid-v7-command-target.json",
+      "sha256": "sha256:2645322344cbc7013ccc7456499d6a3a46d9a454ce242d9b77c2cdd6bd84a681"
+    },
+    {
+      "path": "schema-cases/csk-skill-v4/invalid-v7-top-level-driver.json",
+      "sha256": "sha256:8faaf4730a518f4a1eee714132049353b5f7aa2f54af741c10fdda7a2cdccf37"
+    },
+    {
+      "path": "schema-cases/csk-skill-v4/invalid-v7-top-level-repository.json",
+      "sha256": "sha256:4c7355c25564d4f9fefe7ae531b334e874e4fa6c5e8b1012a0ebc830090d6063"
+    },
+    {
+      "path": "schema-cases/csk-skill-v4/invalid-v7-top-level-target.json",
+      "sha256": "sha256:8086d12af60da48ad61ce891f3545268b6181dc7323ec45a75f43b9f365995ac"
+    },
+    {
       "path": "schema-cases/csk-skill-v4/invalid.json",
       "sha256": "sha256:0057844f12c30cb9a74bc251df912103956dc0975b369ed99c8534fd84490334"
     },
@@ -177,12 +917,320 @@
       "sha256": "sha256:5a132fcd357b74761648facba8d29406060de0713563b275c173efba1e647681"
     },
     {
+      "path": "schema-cases/csk-skill-v5/invalid-v7-build-repositories.json",
+      "sha256": "sha256:e20c728f83957f5d7e43c37c84153e286a6611990d56386627fefd886d0f551a"
+    },
+    {
+      "path": "schema-cases/csk-skill-v5/invalid-v7-command-driver.json",
+      "sha256": "sha256:21e54f362543fc526cec8ae891ba50512b6a4607c560e1abb58b3453dc6fe452"
+    },
+    {
+      "path": "schema-cases/csk-skill-v5/invalid-v7-command-repository.json",
+      "sha256": "sha256:9ecf31d615c469b179b2e32dceb26204ad0e6e972d83aeb271c901e805659c41"
+    },
+    {
+      "path": "schema-cases/csk-skill-v5/invalid-v7-command-target.json",
+      "sha256": "sha256:0d2df6c1f66b04c6ac859c196dae4abf139e4bcad1114ae90c0abc937f5f767f"
+    },
+    {
+      "path": "schema-cases/csk-skill-v5/invalid-v7-top-level-driver.json",
+      "sha256": "sha256:49f6c0bd440281e8abb0be3995f73be3d870c91acf51a71cdcbe49d54edc4775"
+    },
+    {
+      "path": "schema-cases/csk-skill-v5/invalid-v7-top-level-repository.json",
+      "sha256": "sha256:917341eca35f60c895693471eefc627743bb637c5d38969c7c306df47f3c9180"
+    },
+    {
+      "path": "schema-cases/csk-skill-v5/invalid-v7-top-level-target.json",
+      "sha256": "sha256:15be7bb7f9f4b216f3310018e281bccfd9ecac05a8e71362e65d6e4f205a9139"
+    },
+    {
       "path": "schema-cases/csk-skill-v5/invalid.json",
       "sha256": "sha256:ea9a68b486d27311a73c82f794675eb62bd9c2b8b5917aeb04293d0a13048071"
     },
     {
       "path": "schema-cases/csk-skill-v5/valid.json",
       "sha256": "sha256:9f3bb9d9aff11fceed665b3283d6b4b9e531785d751f53c37517d71b72f9a26f"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-build-args.json",
+      "sha256": "sha256:6054669cc6c91d1f0f840b7a8b7b7e895b5ab27e8275602a07a91e005ee4d288"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-build-env.json",
+      "sha256": "sha256:23dcd672e61facbf1af2b42979209bd6ab4fb22ab4ac46f98905947aa5faccb7"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-build-flags.json",
+      "sha256": "sha256:1366d81382d4beb2b70f368329cd856527254b4079a0c7966b2a39932f7b6699"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-build-hooks.json",
+      "sha256": "sha256:79832092a5d8bda4e0278018f4b1766f147d42514bc7cd1443cd0e87c298f1ae"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-build-missing-driver.json",
+      "sha256": "sha256:0a5937ccee214e7f0b5aa71fccb08c9898438eb0e6ecc6292a31174abb5d0ddf"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-build-missing-source-dir.json",
+      "sha256": "sha256:fb1bd235cb614d0bbc9eb7b6812b1b7e68d030c190e450bd22ae90a4f3d5ca2d"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-build-mixed-script.json",
+      "sha256": "sha256:d6aba4c8cd7e317bafc4cc09972892832e1e778553bfd7885a2a4f174faca511"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-build-mixed-system.json",
+      "sha256": "sha256:56ddd6306280b1d66dd30fdccf94c9d4c8b6b64ca3065587584aff5d1c0d53e1"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-build-output.json",
+      "sha256": "sha256:91ae44a8fa2d47aa1ce77f912113eed68dd91b7bf9b50e3998b8ce35850506b9"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-build-root-dot.json",
+      "sha256": "sha256:ba76f4c11aaf8d362a928676138f428a98f4116a59dc3ac725a515169efd384d"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-build-scripts.json",
+      "sha256": "sha256:a8ad2035ebf9e7f597fc2fd1ff09ebd9839d5134b4665a42ea4ccd4d65af70f5"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-build-source-dir-dot.json",
+      "sha256": "sha256:7ae07442190a6d96eea9c1f815fddd0db5ab2295bf6d6f72db9884a37a73f3f1"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-build-tags.json",
+      "sha256": "sha256:b7dbe3ab90ecf29c4c9481d8e87a0134ecc865755b3183a712406788edf397d8"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-build-toolchain.json",
+      "sha256": "sha256:8cc900b454e9a8e0de40f9af83b2e9f8b9feabe14db4862faf258e439222b3cf"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-build-unsupported-driver.json",
+      "sha256": "sha256:6d77b172ec23f4f65186a2839557f112961615810217996d0e442389aabd940f"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-v7-build-repositories.json",
+      "sha256": "sha256:a94697a4ef1f8d68c6e544b8b0325b245896caf3a35040c2c23dfa79d226af4c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-v7-command-driver.json",
+      "sha256": "sha256:0a4d6ca78177c3cdde7c43f6547793c6f72e1a62bd3a1b111b5043391eed6e3f"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-v7-command-repository.json",
+      "sha256": "sha256:43ff3bbab707cf25e9749a1289dad9cc1f35dea250a358fb51e1e966b9c0739e"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-v7-command-target.json",
+      "sha256": "sha256:f094bc8b1d9f515e81c71feae51294096dddbddebb2975aaa13cb8756c1adaca"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-v7-top-level-driver.json",
+      "sha256": "sha256:d77492dc75e35371c868ef668e62b9e0f1d98721a0942095745656ee7114a41d"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-v7-top-level-repository.json",
+      "sha256": "sha256:0b65676ba4d06f8f76496187becd8f27180a61b0f6c410b4c76e55b6be0689b7"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid-v7-top-level-target.json",
+      "sha256": "sha256:afa77c9901ae8686cf2ce098bf755ea2b31d0f9531d80bb32564577df631e90e"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/invalid.json",
+      "sha256": "sha256:99ac85b48486065791cd82bada12f852cf61fb3e66235ba15a1b2a70cb99a985"
+    },
+    {
+      "path": "schema-cases/csk-skill-v6/valid.json",
+      "sha256": "sha256:cf029927b7032aaad2fb17931133a897fc8183cce3d091df7321912ad152d634"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-command-argv.json",
+      "sha256": "sha256:40051f0c9de4294523eddeb557b05c6d8727ddf7fc8691c8fd993d3758f9b671"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-command-credentials.json",
+      "sha256": "sha256:ae899e7ff02a3aef7663cf6fd6b60827bff8ee3c1b45a4e8db9c9d304f38046c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-command-env.json",
+      "sha256": "sha256:6f6a4108dde7e882edf3808299ba6db7442be40b04ccc434aef6495468f45b25"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-command-fallback.json",
+      "sha256": "sha256:2d38109bee4439dc3da006bb75776a36380f85002fa780dacb947156326088dc"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-command-generator.json",
+      "sha256": "sha256:8de1d3b855614ad05e68283bcd164453008f15f4796a0088bdd7f03d634479db"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-command-hooks.json",
+      "sha256": "sha256:d00f86ab868c66a5bbddaa47980669b76ba02af54fa73c3c7052eb0e85f1f6da"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-command-name.json",
+      "sha256": "sha256:2c1381ddf88919c6e42f357b05f85ebeb71f1da1f15895dc807bcc4c0edb9e5e"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-command-output.json",
+      "sha256": "sha256:654b02072e427a1dc85aac93ccf4d364deec2cc36943962d5085e90202d59829"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-command-plugins.json",
+      "sha256": "sha256:bd4a995ca23ade391b8099faa95b912aef043a8f6599eb3b1e1fddff85465b1b"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-command-signing.json",
+      "sha256": "sha256:70133c51cc2a0c3c643c851b1c3dc55ea800fdfdcea77e780048c39301c8de48"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-explicit-port.json",
+      "sha256": "sha256:38f86471e50baa0ca7b4f3c452ad6c82dd26e7706bfb2ded7d7a7afb0ebdcfda"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-generic-driver.json",
+      "sha256": "sha256:47705f55089b33eb011ed6f5081afd1dfb48fdf8a77cdbaee4da75e249ed385d"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-https-dot-component.json",
+      "sha256": "sha256:b630050f246df5f5591e51096aab2da46b697b36122108122918f06f54b29b3c"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-https-userinfo.json",
+      "sha256": "sha256:f385e2e59fecc4a19ecb8ed4dba0ccdeb1364a86879df2a4baaa01260e9b3f86"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-missing-repository.json",
+      "sha256": "sha256:1229ac265b4b937b1352282af4769f076393cdb2163be89e39b1567903757579"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-raw-revision-tag.json",
+      "sha256": "sha256:f652e50575a6c454876aad25c8836d5b33690d7ee4b71a853a327db967a80f8b"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-scp-dot-component.json",
+      "sha256": "sha256:1c53724dace438c4684a877435f2f7d6eda28d3b555348d30666b2fd35955e40"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-sha1-width.json",
+      "sha256": "sha256:58d3b2c833b0eb9858730fe7f4c667360860a206925f9799f4933116cb0c7c5b"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-sha256-width.json",
+      "sha256": "sha256:b9312ac794cf550a9bf6c3075112150613484492c7a3e6f1232e8e64e77d0789"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-ssh-dot-component.json",
+      "sha256": "sha256:4b5594a6ff3ac1f3686634b0fd79fed70684e754a4d8de91f8c3a2f78919f319"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-ssh-metacharacter.json",
+      "sha256": "sha256:6facd3b32f54e07e8b51e178a06ceaec1bf053a15188884674f86a765ca81c78"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-ssh-non-ascii.json",
+      "sha256": "sha256:eb40a0809f0a25296671a3d725f1c3e17a839bb8a6952215ae47aa94de7c1336"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-tag-256-bytes.json",
+      "sha256": "sha256:b96b8d8e681cc002b936fc00608f419a6fa76b96f95400eb9f5fae034ae46b0f"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-tag-300-bytes.json",
+      "sha256": "sha256:2bdf9798aee0353042e4f64a466c9bdded97a0a34792f935c63f744445738af0"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid-unselected-repository.json",
+      "sha256": "sha256:6655c019c17de4b072bddeda26369d9164dedb1d55ad710c4722f983c4eebad8"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/invalid.json",
+      "sha256": "sha256:a589d36c5b0f990b02af5c0827980858e0004d2d0874868185c6e89ef049b2e4"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/valid-scp-source.json",
+      "sha256": "sha256:a212fb00d04b0bbcff5098d1573bf59361651cd82f6839e68e59ba422bcce324"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/valid-sha256-lock.json",
+      "sha256": "sha256:648ec7b966acb842734de139bba296eb59bb1ad70025223ae8f475b9fb2343f8"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/valid-ssh-source.json",
+      "sha256": "sha256:d09bfbad2c21f93752c13ea736039795e13aa91587f791ba5a53be0514319394"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/valid-tag-255-bytes.json",
+      "sha256": "sha256:180fe7253ceff35881fa3f571bb786cbd1fd6c1bbbc2d2dec4fb76e5aeae30c2"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/valid-unicode-https-source.json",
+      "sha256": "sha256:91f511c76297100e306224a48b319843309748ec3d4e5692d21a84de6b7ed970"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/valid-untagged-lock.json",
+      "sha256": "sha256:78f5cbede00ff9c59ef4de220271994866bd2adf9874edac6a16361317ce3a85"
+    },
+    {
+      "path": "schema-cases/csk-skill-v7/valid.json",
+      "sha256": "sha256:90176154672a411dbdb2c68ff22afe719a6b7773c3ac74f29d3fedd17cd055b6"
+    },
+    {
+      "path": "schema-cases/curator-build-v1/invalid-argv.json",
+      "sha256": "sha256:09ea0603cf31a769bc68bc29a539c1f38c84a45fd66982385a03ffe965fcfacf"
+    },
+    {
+      "path": "schema-cases/curator-build-v1/invalid-command-name.json",
+      "sha256": "sha256:3345c54a875d036e43a12b8cadc9e6a51a504368023f36cf2867415278261231"
+    },
+    {
+      "path": "schema-cases/curator-build-v1/invalid-environment.json",
+      "sha256": "sha256:e5815456d75e8f99636d8f880ae0e7e2042d8fc3a733887a8ac4a222b4640a3a"
+    },
+    {
+      "path": "schema-cases/curator-build-v1/invalid-hook.json",
+      "sha256": "sha256:d6a1e7192eb841eaae4518e7897d564907e12774c4990065351719dd272573cc"
+    },
+    {
+      "path": "schema-cases/curator-build-v1/invalid-output.json",
+      "sha256": "sha256:abb8044763babf78102f00b4ebc86bf87edd9a59346b665d05ffa171efa584fa"
+    },
+    {
+      "path": "schema-cases/curator-build-v1/invalid-parent-build-root.json",
+      "sha256": "sha256:227d5ebc5455bf2817a0a76fad07d58fe967ec20cc790d77806c6d99b54931da"
+    },
+    {
+      "path": "schema-cases/curator-build-v1/invalid-plugin.json",
+      "sha256": "sha256:0f5073ed3d57d67dc2b103079ba5ee0e0c8c791152b0264811cba59a3139cd2d"
+    },
+    {
+      "path": "schema-cases/curator-build-v1/invalid-signing.json",
+      "sha256": "sha256:928cf13fc2a58ae2d1ca89b7f20d98fcdf3ed0891f89570ec86985b3d6a9ad86"
+    },
+    {
+      "path": "schema-cases/curator-build-v1/invalid-source-outside-build-root.json",
+      "sha256": "sha256:918d5a471e739820c13f79fd53aea8ed5b828c9949ae83ba1f6ee29d43fab199"
+    },
+    {
+      "path": "schema-cases/curator-build-v1/invalid.json",
+      "sha256": "sha256:cba2e027925c2a8c9b0ccbe58ab575a62b3651db29d639598ca1aeedd639ad8a"
+    },
+    {
+      "path": "schema-cases/curator-build-v1/valid-contained-target.json",
+      "sha256": "sha256:6ddd529d434c3e61086db8683a99b0875285fe900583ece177ad6caa4cf316a0"
+    },
+    {
+      "path": "schema-cases/curator-build-v1/valid-root-target.json",
+      "sha256": "sha256:77abaf22e058d3661c5d6da6e72b8ff1b7b4c5939b073deb8193d02e7939ddd1"
+    },
+    {
+      "path": "schema-cases/curator-build-v1/valid.json",
+      "sha256": "sha256:cb41db4a243ab68e1b224ce950ad2cafd70445de1840fd9934830e5c7f59315d"
     },
     {
       "path": "schema-cases/error-response-v1/invalid.json",
@@ -210,7 +1258,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:3948feb1ff1d60048066a6455cd1748e1e5d5b1e7fe1a0436c159d7bcd822686"
+      "sha256": "sha256:ac8dfbc86b8f0c71cb6a9bd9569fe365b14e79bcd4f50b3f4c1e5424a71e0f1e"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -219,6 +1267,154 @@
     {
       "path": "schema-cases/install-marker-v1/valid.json",
       "sha256": "sha256:80989f850887814ec09c724a7dd891ac7e2422d5fef7e31f330be3554aa9b28a"
+    },
+    {
+      "path": "schema-cases/install-marker-v2/invalid-artifact-path.json",
+      "sha256": "sha256:c38c9adeddf4b1485654aa67dcb38f73fe1d358edc09be6274f854180e7e2f1c"
+    },
+    {
+      "path": "schema-cases/install-marker-v2/invalid-build-source-algorithm.json",
+      "sha256": "sha256:ecb215c4e06c2880c28ea07a69f69bafc51f2142ab34e90020c201e53d3397ec"
+    },
+    {
+      "path": "schema-cases/install-marker-v2/invalid-build-source-with-empty-builds.json",
+      "sha256": "sha256:4da1709f3f7a695b839799acd4ae727c9f920f19b2836de3763671144fc8fcfb"
+    },
+    {
+      "path": "schema-cases/install-marker-v2/invalid-driver-mismatch.json",
+      "sha256": "sha256:ac3f8cdfba116f5dad4c9535b8b1ab5d98c836138612878e6740c2fa42a63434"
+    },
+    {
+      "path": "schema-cases/install-marker-v2/invalid-missing-build-roots.json",
+      "sha256": "sha256:89af00e92dd96a92bf80e5af3ed6896bd31bd318a3cb76f20d93568f4e8b263e"
+    },
+    {
+      "path": "schema-cases/install-marker-v2/invalid-missing-build-source.json",
+      "sha256": "sha256:249acf3f6ca16e8e97fbb8ce888801b82cd496c8a155d074467aca758c4c0aa6"
+    },
+    {
+      "path": "schema-cases/install-marker-v2/invalid-receipt-hash.json",
+      "sha256": "sha256:e06c1c10bdd5a1873980fcd0266bf376616e98e6872144f67c05fa8775706c44"
+    },
+    {
+      "path": "schema-cases/install-marker-v2/invalid-skill-schema-version.json",
+      "sha256": "sha256:505758922ea1ec46a0b8947379c7d0fe3684519c46047ad8adb8e2bdfba34bcd"
+    },
+    {
+      "path": "schema-cases/install-marker-v2/invalid-unknown-build-field.json",
+      "sha256": "sha256:a67edbce5c4cd480215a8933c29d54b6ab7eaaca4a7cce6c4b1a344d4a6fb666"
+    },
+    {
+      "path": "schema-cases/install-marker-v2/invalid-unknown-top-level.json",
+      "sha256": "sha256:875ebf78b8e35492e0fac32eb61952ab19c942fa4cb38e6218b215e31dddf9a3"
+    },
+    {
+      "path": "schema-cases/install-marker-v2/invalid.json",
+      "sha256": "sha256:0355a5ac4a165ff6782e96f5ecc59e587fd7550ac44948210c3d25552f4deab4"
+    },
+    {
+      "path": "schema-cases/install-marker-v2/valid-empty-builds.json",
+      "sha256": "sha256:105077c6867fb0dae06125a6a6521ec1dd37a696e5273e09439cac22a74ed32a"
+    },
+    {
+      "path": "schema-cases/install-marker-v2/valid-multiple-builds.json",
+      "sha256": "sha256:02d7743ae662228549b38edf89321577d070d79fe6a2e9570839b489a1629b4d"
+    },
+    {
+      "path": "schema-cases/install-marker-v2/valid.json",
+      "sha256": "sha256:538d12bb89d2d15259bbb378efc9e6496fe7de195af82099da36fd9d7a1e2c73"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/invalid-external-declared-effective-mismatch.json",
+      "sha256": "sha256:f037806cc3693b479bb507c680c5799018db7cc78cee8937bc02f3c72ccf5d5e"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/invalid-external-object-width.json",
+      "sha256": "sha256:9dd231d2a42441bf07a2ad495d93239691bccce727076d7e094d38e81fe068dc"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/invalid-external-only-build-source.json",
+      "sha256": "sha256:c500c4bd71f98bcb9a39282811fa896116d993a7a5e4a59bbf7cc80505179742"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/invalid-external-receipt-version.json",
+      "sha256": "sha256:51c6f7be5610c1226b33e1985c8a5cc176273b2d0fa7f6782a8ed55277e280ba"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/invalid-local-receipt-version.json",
+      "sha256": "sha256:aef916e4cf3fcb9440c82e65a94ca468e2a0f629c50eedbef57ad18662a36151"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/invalid-marker-local-identity-kind-mismatch.json",
+      "sha256": "sha256:4aaed27c57376439d5f944164a003eb88f872f03865df125fad0c7854dafa8a5"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/invalid-marker-network-identity-kind-mismatch.json",
+      "sha256": "sha256:5ac021338b506a975fb58162a327b63c8d5143abdfb1d2179fffb20586646b6b"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/invalid-marker-sha1-effective-revision-width.json",
+      "sha256": "sha256:cb99810f2da1a1c96be9de4d758d3d3a62b106ae0fa6aedb9f81f7df3acc9096"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/invalid-marker-sha256-effective-revision-width.json",
+      "sha256": "sha256:42880da310fd82c739e5935ee634f998a2a3f46eb8e3abbbeb890c43ad61a002"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/invalid-missing-local-build-source.json",
+      "sha256": "sha256:13756a03ff27fe5a0925f928716ad74188449b120cce3306b207b1e9ed670226"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/invalid-package-signing.json",
+      "sha256": "sha256:0805f41ed181506b6300deaf419da1e719b377e5102d11768a64e17a58ff9272"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/invalid.json",
+      "sha256": "sha256:00a2977cebedde6af58cb217405747117b12665ebc9c83eb007a369706c0b89f"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/valid-empty-builds.json",
+      "sha256": "sha256:e58ad6581ce578a142b8aab830307d1ea9d42e459230697fca20c2d74db11b2f"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/valid-external-only-substituted.json",
+      "sha256": "sha256:5d0285b8291c43b833c758f3692efe0aa83dcb17afd2b7bc81b4686d9f557086"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/valid-external-only-unsubstituted.json",
+      "sha256": "sha256:4685640d04d74eb7fb9b47e530da375757fcf8b4b1a1b81d3976fcaea151d5b2"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/valid-local-only.json",
+      "sha256": "sha256:fbdefbf9ba4e8c2c2c0bc7d049f584d78c351bbb460fb174775f1b249bd52af0"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/valid-network-sha1-revision.json",
+      "sha256": "sha256:8ada1ec81dc421dd6d76e321e6b4078d3d1cb6a90399f9e6466c117d7d7693df"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/valid-network-sha256-revision.json",
+      "sha256": "sha256:189f81216beaaeae4e3cbf50aa74bea8f1878a61970070a8352cb916a3b40794"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/valid-network-substitution-branch.json",
+      "sha256": "sha256:bddad569c194ae953ac00ef58451ce58ff8ec9eba3c2135ef19dec8075a7ee8b"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/valid-network-substitution-tag.json",
+      "sha256": "sha256:61b1abec0c462194a584f6acc6e4d738ccfbb3ecca190e98097198542ec355bd"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/valid-sha256-external.json",
+      "sha256": "sha256:385df7935f760b5a2f9f05358bfc3810a071986859658568ef105ba83025923c"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/valid-untagged-external.json",
+      "sha256": "sha256:097088c47abaf7ec93dd638a1cb1d55a2f4a95bf45fef74e67a22842d36acfe1"
+    },
+    {
+      "path": "schema-cases/install-marker-v3/valid.json",
+      "sha256": "sha256:0088cb9536eaacea2c087efeb70a5bc453c923020c5c01d3a87146f6e85773e3"
     },
     {
       "path": "schema-cases/log-response-v1/invalid.json",
@@ -293,6 +1489,70 @@
       "sha256": "sha256:bc40b5d56e1e89ac409b5092a227cb5e8f04062f038e6d7364c54ae2e4d5dbe2"
     },
     {
+      "path": "schema-cases/skillfile-dev-v2/invalid-command-ownership.json",
+      "sha256": "sha256:ccb37d40f116582ea5071a2a23ed1d676473d0ce2d4fedd9eebc341ab6587813"
+    },
+    {
+      "path": "schema-cases/skillfile-dev-v2/invalid-credentials.json",
+      "sha256": "sha256:17b3c5fe2261966becba2df84b39f5962ebebeb63fcfa47e3c795f2790246f80"
+    },
+    {
+      "path": "schema-cases/skillfile-dev-v2/invalid-driver-ownership.json",
+      "sha256": "sha256:8877b4b5bb040235534e8d84320a10758b38f960cf8016b1c3fd2aba6b430ba9"
+    },
+    {
+      "path": "schema-cases/skillfile-dev-v2/invalid-network-branch-256-bytes.json",
+      "sha256": "sha256:b8fb2397920d338a7ab328a38d5caafb38b633cada552004d9f9eda27c3ee1d5"
+    },
+    {
+      "path": "schema-cases/skillfile-dev-v2/invalid-output.json",
+      "sha256": "sha256:5fc5813f8d85c56a88b2133c16403802ceb92f3e69fc35a5b43f7353cf1fe177"
+    },
+    {
+      "path": "schema-cases/skillfile-dev-v2/invalid-path-and-git.json",
+      "sha256": "sha256:5fa75f01bba1161d759d29c4e8a06741eac5c6bb1018f0f49ec78c03586ddbb9"
+    },
+    {
+      "path": "schema-cases/skillfile-dev-v2/invalid-raw-ref.json",
+      "sha256": "sha256:f161f31497425bcd43464c3031b42c4865bb37537dac3a60c9a9f167e94304b3"
+    },
+    {
+      "path": "schema-cases/skillfile-dev-v2/invalid-target-ownership.json",
+      "sha256": "sha256:3c866dc85cffb078d797cdd2c021f7c3809048ad8ec564488ca842a0105e67be"
+    },
+    {
+      "path": "schema-cases/skillfile-dev-v2/invalid.json",
+      "sha256": "sha256:1e3984d717896e32d672f36ff689285ae3482fc8d5fc16c8de40c6f3e60cfb61"
+    },
+    {
+      "path": "schema-cases/skillfile-dev-v2/valid-empty-build-repository-substitutions.json",
+      "sha256": "sha256:fba4a6b41c343523a585e9bc322e3f0006d57d816a4b2f1ec6aeb857b55a1a32"
+    },
+    {
+      "path": "schema-cases/skillfile-dev-v2/valid-network-branch.json",
+      "sha256": "sha256:a648b9f5ce259adaff7c1c08457707fefef063e707afb2a5a57c14c4fc771910"
+    },
+    {
+      "path": "schema-cases/skillfile-dev-v2/valid-network-sha256-revision.json",
+      "sha256": "sha256:17b5ce0a10fe673390a384cadd4ed25cc0f328e369e4110c3e4e1dc589e27b4a"
+    },
+    {
+      "path": "schema-cases/skillfile-dev-v2/valid-network-tag.json",
+      "sha256": "sha256:a38b2455f30c9c2d9837e3ff3c37ec09a7bd25bbd000b32773d4df2f189f49f9"
+    },
+    {
+      "path": "schema-cases/skillfile-dev-v2/valid-ordinary-only.json",
+      "sha256": "sha256:2fb8a620feb743e535114d6451c0204088d3882fdc137ee4aee34efb77620508"
+    },
+    {
+      "path": "schema-cases/skillfile-dev-v2/valid-populated-build-repository-substitutions.json",
+      "sha256": "sha256:3364b5705e19fbc41dbbedfaa498a81d7e72385617609217696e360726d5d90e"
+    },
+    {
+      "path": "schema-cases/skillfile-dev-v2/valid.json",
+      "sha256": "sha256:3364b5705e19fbc41dbbedfaa498a81d7e72385617609217696e360726d5d90e"
+    },
+    {
       "path": "schema-cases/skillfile-v1/invalid.json",
       "sha256": "sha256:69c0ce70d9e451610ae71352b532d8b40eeb9c405b0dd493a4231221eb69e06e"
     },
@@ -327,6 +1587,18 @@
     {
       "path": "vectors/closures.json",
       "sha256": "sha256:d8032d222c64609067ea66c00403ccfe702349085c230c013e461145779485a5"
+    },
+    {
+      "path": "vectors/conformance-claim-v3-qualification.json",
+      "sha256": "sha256:c4b9132ce8344d5b210aa7fbc2715a06586ea2efc2b88ae7f6464468e48de2ee"
+    },
+    {
+      "path": "vectors/external-repository-acquisition.json",
+      "sha256": "sha256:d67524fe072702fa5e908fc0167918813430675cf25ad73abcd7e86c2dac32d8"
+    },
+    {
+      "path": "vectors/external-repository-lifecycle.json",
+      "sha256": "sha256:175d709f183775b22ed3db27bc923ca78d6394d93a13096b5d6890c509aab072"
     },
     {
       "path": "vectors/identifiers.json",
@@ -375,5 +1647,5 @@
   ],
   "generated_at": "2026-07-13T00:00:00Z",
   "generator": "tools/generate-vectors",
-  "protocol_version": "1.0.0-rc.3"
+  "protocol_version": "1.0.0-rc.5"
 }

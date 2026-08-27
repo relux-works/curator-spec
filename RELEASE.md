@@ -11,12 +11,19 @@ approve changes; CI enforces the mechanically verifiable items.
   legacy aliases remain covered by compatibility tests.
 - [ ] `make validate` passes on Linux, macOS, and Windows.
 - [ ] `make regenerate-check` proves byte-identical generated vectors.
+- [ ] `release/<version>.json` pins the exact SHA-256 of the generated suite
+  manifest, and every downstream candidate run verifies that digest before
+  consuming `CURATOR_CONFORMANCE_ROOT`.
 - [ ] Go Curator, the independent Python manager, and Curator Skill Registry
   pass the same full-commit-pinned suite without skips on all three operating
   systems.
 - [ ] Implementation pins refer to commits whose own required CI is green.
 - [ ] `CHANGELOG.md`, `COMPATIBILITY.md`, `SECURITY.md`, and version metadata
   describe the candidate.
+- [ ] A claim-v3 driver/platform tuple is listed only with immutable native
+  passing evidence. Schema examples and platform-neutral corpus runs are not
+  native evidence; Linux remains excluded from rc.5 until
+  `TASK-260728-1skseh` passes.
 
 ## Stable 1.0.0
 

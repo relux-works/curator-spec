@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -58,6 +59,23 @@ def validate_version(version: str) -> None:
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     if not re.search(rf"^## {re.escape(version)}(?: - [0-9]{{4}}-[0-9]{{2}}-[0-9]{{2}})?$", changelog, re.MULTILINE):
         raise ReleaseFailure(f"CHANGELOG has no {version} release heading")
+    if "-" in version:
+        metadata_path = ROOT / "release" / f"{version}.json"
+        metadata = load_json(metadata_path)
+        if metadata.get("protocol_version") != version:
+            raise ReleaseFailure(f"{metadata_path.relative_to(ROOT)} identifies the wrong protocol version")
+        expected = "sha256:" + hashlib.sha256(
+            (ROOT / "conformance" / "v1" / "manifest.json").read_bytes()
+        ).hexdigest()
+        pin = metadata.get("candidate_protocol_pin", {})
+        downstream = metadata.get("downstream_consumption", {})
+        if (
+            not isinstance(pin, dict)
+            or pin.get("manifest_sha256") != expected
+            or not isinstance(downstream, dict)
+            or downstream.get("required_manifest_sha256") != expected
+        ):
+            raise ReleaseFailure(f"{metadata_path.relative_to(ROOT)} does not pin the exact suite manifest")
 
 
 def validate_reviews(version: str, release_commit: str) -> None:
