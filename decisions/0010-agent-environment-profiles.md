@@ -149,7 +149,7 @@ per-project approval recorded in `.claude.json`
 CLAUDE.md content only where that approval is present or the references
 stay inside the home, and falls back to `monolithic` otherwise. Surveying
 the remaining environments' import semantics is a research item of open
-question 8.
+question 7.
 
 **Generation header.** Every materialized root-context file begins with a
 deterministic HTML comment that markdown renderers do not display:
@@ -190,7 +190,7 @@ modules materialize only into managed homes and activate only through the
 launcher's explicit opt-in (Decision 6) or through natively typed commands.
 Secondary fixed-home targets never receive system modules in revision 1;
 whether an embedded host offers any override channel at all is open
-question 9.
+question 8.
 
 Profile repositories are data. No file in a profile repository is executed,
 sourced, or interpreted as configuration for Curator itself. The existing
@@ -367,10 +367,14 @@ serve as an overlay — an overlay is not a distinct package shape — and the
 declaration lives in Curator's machine configuration, never in profile
 data, so activating `companyA` on one machine composes `personal` into it
 while another machine's `companyA` stays pure. The declaration also names
-the precedence direction (`later-overrides-earlier` or the reverse) that
-Decision 2's generation header states and the chapter joining makes
-legible; instruction text cannot be merged mechanically, so precedence is
-declared to the reader and the agent rather than silently resolved.
+the precedence direction; the default is `later-overrides-earlier` — an
+overlay is typically the operator's refinement of an organizational base,
+and the closest declaration winning matches how operators already expect
+configuration layers to resolve — with the reverse available explicitly.
+Decision 2's generation header states the effective direction and the
+chapter joining makes it legible; instruction text cannot be merged
+mechanically, so precedence is declared to the reader and the agent rather
+than silently resolved.
 Skill-set composition is mechanical: the composed closure resolves with the
 declared precedence picking the winner when two composed profiles declare
 the same skill, and a version divergence between them is reported. The
@@ -468,7 +472,7 @@ discard the tool's built-in behavior entirely, and that a custom system
 prefix can change how requests are cached and therefore billed (Claude
 Code's default system prompt participates in shared prompt caching; a
 custom one forms its own cache prefix — exact per-tool behavior is open
-question 9's research). Without the opt-in, managed homes carry no active
+question 8's research). Without the opt-in, managed homes carry no active
 system-prompt file — in particular pi's `APPEND_SYSTEM.md`, which the tool
 applies unconditionally when present, is materialized only under the
 opt-in — and native in-place homes never receive one at all (Decision 2).
@@ -591,7 +595,7 @@ piecemeal edits; until that PR lands, nothing here constrains `ax`.
 | Root context (IR → `CLAUDE.md`/`AGENTS.md`) | claude_code, codex_cli, opencode, pi | gemini, cursor | — |
 | Root-context forms (Decision 2) | monolithic everywhere; referenced for claude_code, opencode | referenced for gemini as research admits | — |
 | Composition (overlay profiles, chapters, precedence) | ✓ | — | — |
-| System-prompt modules + launcher opt-in | claude_code, codex_cli, pi (managed homes / flags only) | gemini (`GEMINI_SYSTEM_MD`), opencode | embedded hosts, if open question 9 admits any |
+| System-prompt modules + launcher opt-in | claude_code, codex_cli, pi (managed homes / flags only) | gemini (`GEMINI_SYSTEM_MD`), opencode | embedded hosts, if open question 8 admits any |
 | Skills | already shipped; becomes profile-scoped | — | — |
 | Profiles, switching (incl. scoped `--env`/`--target`), launcher, fragments | ✓ | — | — |
 | Onboarding: detect, foreign-manager stop, backup, takeover | ✓ | — | — |
@@ -765,20 +769,14 @@ MUST implement the closed revision-1 surface exactly.
    against a pinned Xcode release. Recommendation: hold the
    conformance-vector freeze on that platform evidence and draft against the
    recorded shapes meanwhile.
-7. **Composition precedence default.** Decision 5 lets the machine declare
-   `later-overrides-earlier` or the reverse per activation; which is the
-   default? Recommendation: `later-overrides-earlier` — overlays are
-   typically the operator's personal refinements on an organizational base,
-   and "the closest declaration wins" matches how the shells and config
-   systems operators already know resolve precedence.
-8. **Import semantics per environment.** claude_code `@path` imports
+7. **Import semantics per environment.** claude_code `@path` imports
    (documented, five hops, external-include approval in `.claude.json`) and
    opencode `instructions` lists are recorded; whether gemini's `GEMINI.md`
    import mechanism is real and stable enough for a `referenced` form, and
    whether codex or pi grow one, is research to complete before the
    `referenced` conformance vectors freeze. Recommendation: ship revision 1
    with the two verified referenced targets and re-survey at revision 2.
-9. **System-prompt channels: exact behavior and embedded hosts.** Per-tool
+8. **System-prompt channels: exact behavior and embedded hosts.** Per-tool
    research to finish before the system-module vectors freeze: the precise
    cache/billing consequence of a custom system prompt per tool (Claude
    Code's shared-prompt-cache interaction is the recorded example), whether
