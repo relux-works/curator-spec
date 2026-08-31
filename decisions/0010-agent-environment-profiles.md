@@ -79,8 +79,14 @@ canonical git identity, the §6.2 git safety rules, and §6.3-style exact
 references. A directly installed profile MAY track a branch — the same
 allowance `Skillfile.json` gives direct project declarations — and the
 resolved commit is recorded as the effective pin; `--strict-tags` semantics
-carry over unchanged. Decision 8 admits one additional source kind, `local`,
-reserved for the builtin migration profile.
+carry over unchanged. Two additional source kinds exist beside `git`:
+`local`, reserved for the builtin migration profile of Decision 8, and
+`path` — an operator-local profile directory installed by absolute or
+project-relative path instead of a URL, snapshotted and keyed by the §8
+content hash of its state. `path` is the vehicle for first-run onboarding
+imports (Decision 5) and for authoring profiles before they have a
+repository; it is delivered with the onboarding import story, not in
+revision 1.
 
 ### 2. Profile repository shape
 
@@ -101,26 +107,90 @@ portable paths. Each profile directory contains:
 
 `context.json` declares an ordered module list. Each entry names a module
 file (a portable relative path below `context/`) and an optional
-`environments` selector: a set of environment identifiers, or the wildcard
-default meaning every environment. Version 1 is deliberately minimal —
-ordered concatenation with per-module environment selection. There is no
-templating, no variable substitution, no conditional syntax inside module
-bytes, and no per-module remote inclusion. A module is UTF-8 markdown.
-Snapshot validation rejects a module that is not valid UTF-8, contains a
-line ending other than LF, or does not end with exactly one trailing LF —
-the fail-closed posture of the other strict schema surfaces, chosen over
-silent normalization. A module that validates is thereafter treated as
-opaque bytes: materialization never rewrites it.
+`environments` selector: the set of environment identifiers the module
+applies to. An absent selector means every environment. The selector is how
+one profile serves different tools without duplication — `00-base.md` with
+no selector reaches every materialized root context, while `20-claude.md`
+with `"environments": ["claude_code"]` appears only in `CLAUDE.md` and never
+in a `codex_cli` or `pi` output. An entry MAY also declare
+`class: "system"`, marking the module as system-prompt content under the
+system-prompt rules below; the default class is `root`. Version 1 is
+deliberately minimal — ordered selection with no templating, no variable
+substitution, no conditional syntax inside module bytes, and no per-module
+remote inclusion. A module is UTF-8 markdown. Snapshot validation rejects a
+module that is not valid UTF-8, contains a line ending other than LF, or
+does not end with exactly one trailing LF — the fail-closed posture of the
+other strict schema surfaces, chosen over silent normalization. A module
+that validates is thereafter treated as opaque bytes: materialization never
+rewrites it.
 
-Materialized root context is deterministic: the applicable modules in
-manifest order, joined by exactly one empty line (a single additional LF
-between modules), with no other transformation. Because every module ends
-with exactly one LF, the output is LF-encoded and ends with exactly one
-trailing LF by construction. The output is hashed with the §8 content
-hash; identical profile commit plus identical adapter set yields
-byte-identical output on every platform. Determinism is what makes drift
-detection and `status --check` possible, and it is a conformance-vector
-surface.
+**Materialization forms.** Granularity is preserved end to end where the
+tool allows it. Each adapter declares which root-context forms the
+environment supports:
+
+- **`monolithic`** — one file, the applicable modules concatenated. Always
+  supported; the only form for `codex_cli` and `pi` (neither tool reads
+  imports from its root file; verified for pi from the loader source,
+  docs-confidence for codex).
+- **`referenced`** — the modules materialize as individual files beside the
+  root file, and the root file references them through the tool's native
+  mechanism: `@path` imports for `claude_code` (documented up to five hops),
+  the `instructions` file list in `opencode.json` for `opencode`. A team
+  that already maintains a reference-structured `CLAUDE.md` migrates by
+  turning each referenced file into a module — the materialized shape is
+  what they already have.
+
+The effective form per environment is chosen by machine configuration with
+the adapter's default, never by profile data. Where the tool itself gates
+the referenced form, the adapter consults the tool's own configuration
+before selecting it — `claude_code` gates external imports behind a
+per-project approval recorded in `.claude.json`
+(`hasClaudeMdExternalIncludesApproved`), so the adapter emits `referenced`
+CLAUDE.md content only where that approval is present or the references
+stay inside the home, and falls back to `monolithic` otherwise. Surveying
+the remaining environments' import semantics is a research item of open
+question 8.
+
+**Generation header.** Every materialized root-context file begins with a
+deterministic HTML comment that markdown renderers do not display:
+generated-by Curator (project URL), the profile identity and effective
+commit (or state hash for a `local` profile), the composition chain when
+Decision 5 composition is active, the declared precedence, and the notice
+that direct edits are unsupported and will be detected as drift — update
+the profile repository, or the managed context it composes, instead. The
+header contains no timestamp, machine path, or operator identity, so the
+output stays byte-deterministic and carries no personal data.
+
+Materialized root context is deterministic: the header, then the applicable
+modules in manifest order, joined by exactly one empty line (a single
+additional LF between parts), with no other transformation. Under Decision 5
+composition, each composed profile's modules form a titled chapter — a
+readable separator line and a heading naming the source profile — so a
+reader and the agent can always tell which profile a passage came from.
+Because every module ends with exactly one LF, the output is LF-encoded and
+ends with exactly one trailing LF by construction. The output is hashed with
+the §8 content hash; identical profile commit plus identical adapter set,
+form, and composition yields byte-identical output on every platform.
+Determinism is what makes drift detection and `status --check` possible,
+and it is a conformance-vector surface.
+
+**System prompt.** A profile MAY carry `class: "system"` modules: an
+environment-agnostic system-prompt overlay for tools that expose a
+system-prompt override channel. The channel is adapter-declared and varies:
+`claude_code` takes `--system-prompt`/`--append-system-prompt`(-file)
+arguments (verified in 2.1.251), `pi` takes the same flags and additionally
+reads `APPEND_SYSTEM.md` from its agent dir (verified in 0.84.2),
+`codex_cli` takes a `model_instructions_file` configuration override
+(verified key in 0.151.0; full replacement), and `gemini` — a revision-2
+adapter — takes the `GEMINI_SYSTEM_MD` variable (full replacement,
+docs-recorded). Because a system-prompt override changes tool behavior far
+more than instructions the model merely reads, it never materializes into a
+native in-place home where it would silently apply to every session: system
+modules materialize only into managed homes and activate only through the
+launcher's explicit opt-in (Decision 6) or through natively typed commands.
+Secondary fixed-home targets never receive system modules in revision 1;
+whether an embedded host offers any override channel at all is open
+question 9.
 
 Profile repositories are data. No file in a profile repository is executed,
 sourced, or interpreted as configuration for Curator itself. The existing
@@ -150,9 +220,12 @@ The manager §5 adapter table generalizes from one surface (skills) to an
 
 Each adapter normatively declares: the environment-variable name and whether
 it names the home or a parent; the home-relative path of every managed
-surface; the surfaces it supports per revision; the credential passthrough
-entries of Decision 7; the materialization-mode default of Decision 4; its
-known shadowing paths — higher-precedence unmanaged files whose presence
+surface; the surfaces it supports per revision; the root-context forms of
+Decision 2 it supports (`monolithic` always; `referenced` where the tool has
+a native reference mechanism) and its form default; its system-prompt
+override channel of Decision 2, when the tool has one; the credential
+passthrough entries of Decision 7; the materialization-mode default of
+Decision 4; its known shadowing paths — higher-precedence unmanaged files whose presence
 makes a managed surface inert, such as pi's `AGENTS.override.md`, which the
 tool's discovery chain prefers over `AGENTS.md`; and its secondary
 fixed-home targets below. The §11 ledger protects only managed paths, so
@@ -226,7 +299,10 @@ A profile materializes into an environment in one of three modes:
   3, which run their agents in a restricted environment), sandboxed tools
   that refuse links, or network filesystems. Drift is detected by hash
   comparison; a hash mismatch marks the installation non-current rather than
-  being silently overwritten.
+  being silently overwritten, and the diagnostic states both halves
+  explicitly — the surface was modified outside the manager, the file was
+  left untouched, the installation is non-current, and `repair` restores the
+  managed bytes.
 
 Mode defaults: the four native-home adapters default to `linked` for their
 in-place surfaces — the manager §5 symlink-with-copy-fallback discipline
@@ -236,15 +312,21 @@ in-place default; the declaration lives in the adapter registry, never in
 profile data.
 
 Every in-place surface is recorded in a per-home **environment marker**
-(`.csk-environment.json`, schema 1) alongside the generalized ledger:
+(`.agent-environment.json`, schema 1) alongside the generalized ledger:
 profile identity, source identity, effective commit, mode, and per-surface
-content hashes. The §11
+content hashes. The marker name deliberately joins the `agent-skill.json`
+family rather than the legacy `csk-` family: new identifiers introduced by
+this capability carry no `csk` spelling. The frozen §1.1 identifiers
+(`.csk-install.json`, `.csk-managed.json`, `CSK_PROJECT_ROOT`) are wire
+compatibility surfaces and stay as they are here; retiring them follows the
+`csk-skill.json` → `agent-skill.json` alias precedent and is separately
+tracked cleanup work, not part of this decision. The §11
 rule extends unchanged: Curator removes or replaces only entries its
 preceding ledger owns and MUST fail rather than overwrite an unmanaged file.
-A pre-existing unmanaged `~/.claude/CLAUDE.md` is never clobbered; the
-operation fails with guidance to either move the file into a profile
-(adoption) or pass an explicit takeover flag that backs the file up beside
-the marker.
+A pre-existing unmanaged `~/.claude/CLAUDE.md` is never clobbered by an
+ordinary operation; first-run onboarding (Decision 5) is the supported path
+that turns such files into managed state with an explicit backup, and the
+takeover flag remains the manual equivalent.
 
 Both in-place modes and managed homes materialize from the same commit-keyed
 profile store, so `linked`, `copied`, and `managed-home` cannot diverge for
@@ -252,7 +334,7 @@ one profile commit. A `local` profile (Decision 8) is keyed in the same
 store by the §8 content hash of its state in place of a commit; the
 non-divergence guarantee holds identically.
 
-### 5. Current profile and switching
+### 5. Current profile, composition, and switching
 
 The machine configuration records at most one **current profile**. `curator
 profile use <name>`:
@@ -267,13 +349,83 @@ profile use <name>`:
    memory and may write state derived from it, and recommends the launcher
    for concurrent multi-profile work.
 
+**Scoped switching.** `profile use` accepts `--env <env-id>` and
+`--target <target-id>` to narrow the switch to a subset of adapters or to
+one secondary fixed-home target. The motivating case is Xcode: its embedded
+agents are unreachable by the launcher, so pinning only
+`--target xcode-coding-assistant` to a company profile while terminal
+sessions run personal profiles through the launcher is the only way to hold
+those two apart. A scoped switch records a per-scope current profile;
+`env status` and `profile list` surface every scope whose current profile
+differs from the machine default, so a split-brain configuration is always
+visible, never implicit.
+
+**Composition.** A machine MAY declare, per installed profile, an ordered
+overlay list: additional installed profiles whose root context and skills
+are appended when that profile is activated or resolved. Any profile can
+serve as an overlay — an overlay is not a distinct package shape — and the
+declaration lives in Curator's machine configuration, never in profile
+data, so activating `companyA` on one machine composes `personal` into it
+while another machine's `companyA` stays pure. The declaration also names
+the precedence direction (`later-overrides-earlier` or the reverse) that
+Decision 2's generation header states and the chapter joining makes
+legible; instruction text cannot be merged mechanically, so precedence is
+declared to the reader and the agent rather than silently resolved.
+Skill-set composition is mechanical: the composed closure resolves with the
+declared precedence picking the winner when two composed profiles declare
+the same skill, and a version divergence between them is reported. The
+composed output is deterministic — profiles in declared order, chapters per
+Decision 2 — and the composition chain enters the environment marker and
+the launch fragment, so drift detection and `ax` resume fidelity see
+composed state exactly as they see a single profile.
+
 Installation follows the operator's intent without magic: `curator profile
 install <git-url>` installs every profile the repository declares as
-independent pinned profiles. It sets the current profile only when the
-machine has none (first install — activation is reported, not silent) or when
-the operator passes `--use <name>` (`--use` alone is valid when the
-repository declares exactly one profile). In every other case it prints the
-installed profiles and how to activate one.
+independent pinned profiles — one repository MAY declare several (that is
+what `Profilefile.json` is for), and profiles installed from any number of
+repositories coexist as one machine profile set. `install` sets the current
+profile only when the machine has none (first install — activation is
+reported, not silent) or when the operator passes `--use <name>` (`--use`
+alone is valid when the repository declares exactly one profile). In every
+other case it prints the installed profiles and how to activate one.
+
+**First-run onboarding.** A machine that already has hand-maintained global
+context must reach managed state without loss and, in the common case,
+without ceremony. Onboarding — run on bootstrap or on the first profile
+operation that meets unmanaged state — proceeds:
+
+1. **Inventory.** Detect, per adapter: existing unmanaged root-context
+   files; existing global skills; and surfaces that are already symlinks
+   pointing outside Curator's store — evidence of another manager, which
+   stops onboarding with the finding and an explicit choice (abort, or take
+   over with backup) rather than silently absorbing a foreign tool's state.
+2. **Classification.** Report whether an import into managed state would be
+   lossless (every detected surface maps onto a Curator-supported surface)
+   or lossy (something detected — an unsupported surface, an unreadable
+   file — would not carry over), naming exactly what would be lost.
+3. **Consent gate.** A lossless import proceeds without stopping; a lossy
+   import stops and asks with the loss list; either way the operator is told
+   that the native global contexts are being replaced by Curator-managed
+   ones and where the backup lands.
+4. **Backup, always.** Every replaced file is backed up beside the
+   environment marker before the first write, whether or not an import was
+   requested.
+5. **Import (optional).** The detected context is reassembled into a
+   profile-shaped directory inside Curator's machine home, marked as
+   imported-from-native, and installed through the ordinary profile pipeline
+   with a directory path in place of a git URL — Decision 1's `path` source
+   kind. Pre-existing globally installed skills import into that profile's
+   Skillfile with a warning that they were managed by other means and SHOULD
+   be re-declared from their upstream sources to receive updates.
+6. Authentication is never part of import or takeover: credential files
+   stay where the Decision 7 passthrough expects them, untouched.
+
+Revision 1 ships steps 1–4 — detection, foreign-manager stop, backup, and
+takeover are prerequisites for a safe `install` on a used machine. The
+import machinery of step 5 (the `path` source kind, lossless/lossy
+classification, native-skill migration) is designed here but delivered as
+its own tracked story on this decision's epic, targeted between revisions 1
+and 2.
 
 ### 6. Launcher
 
@@ -302,6 +454,36 @@ value is the profile-name path segment, which the §2 identifier grammar
 bounds — no separators, no traversal. A profile chooses what the context
 says, never how the process is launched. This is the same package-influence
 boundary the execution policies draw, applied to environment injection.
+
+**System-prompt opt-in.** The system modules of Decision 2 are inert until
+explicitly activated. `curator launch <env-id> --system-prompt` (and the
+equivalent per-profile×environment machine setting for operators who want
+it standing) makes the launcher engage the adapter's declared channel: the
+materialized system file passed through `--system-prompt-file`-class
+arguments for `claude_code` and `pi`, a `model_instructions_file` override
+argument for `codex_cli`, the `GEMINI_SYSTEM_MD` fragment variable once the
+`gemini` adapter lands. On every activation the launcher prints a warning
+that the run's system prompt is customized, that replacement channels
+discard the tool's built-in behavior entirely, and that a custom system
+prefix can change how requests are cached and therefore billed (Claude
+Code's default system prompt participates in shared prompt caching; a
+custom one forms its own cache prefix — exact per-tool behavior is open
+question 9's research). Without the opt-in, managed homes carry no active
+system-prompt file — in particular pi's `APPEND_SYSTEM.md`, which the tool
+applies unconditionally when present, is materialized only under the
+opt-in — and native in-place homes never receive one at all (Decision 2).
+An operator can always pass the tool's own flags by hand; the launcher's
+job is to make the managed path explicit, warned, and reproducible, not to
+be the only door.
+
+In plain terms the launcher is two verbs. `resolve` answers "what would you
+set?" — it prints the environment variables that point a tool at a profile
+home, for a human to eyeball, a script to `eval`, or `ax` to merge into its
+spawn plan. `launch` answers "just run it" — same resolution, then it
+replaces itself with the real tool so the operator types
+`curator launch codex_cli --profile companyA -- codex resume --last` and
+gets exactly the codex they know, with `CODEX_HOME` already pointing at the
+companyA home. Everything after `--` belongs to the tool, untouched.
 
 The command names above are the contract; a short standalone alias
 (`cual`-style) is packaging and deliberately not decided here (open question
@@ -359,10 +541,12 @@ reports `local` as its source, `-` for ref, and its §8 state hash in the
 effective-pin column. `curator env status [--check]
 [--json]` reports the profile × environment × surface matrix: mode,
 materialized commit, content-hash currency, drift, missing surfaces,
-unregistered adapters, and any declared shadowing path that exists
-(Decision 3), with the existing exit-code discipline (`--check`
-non-zero on any non-current row). Both are read-only and follow the manager
-§10 status discipline: recompute and report, never mutate.
+unregistered adapters, any declared shadowing path that exists (Decision
+3), the active composition chain per activation, every scope whose current
+profile differs from the machine default (Decision 5 scoped switching), and
+secondary-target probe results, with the existing exit-code discipline
+(`--check` non-zero on any non-current row). Both are read-only and follow
+the manager §10 status discipline: recompute and report, never mutate.
 
 ### 10. Composition with the agent session manager
 
@@ -394,13 +578,24 @@ rejected as a dependency direction (see Rejected alternatives), not as a
 workflow: an operator can still type one command, because the `ax` side is
 free to expose profile selection in its own UX.
 
+Every change this decision asks of `ax` — the extension keys, the resume
+drift policy, any fragment-consumption note — is delivered to the
+`agent-session-manager-spec` repository as one detailed pull request opened
+after this decision and its normative surfaces are finalized, never as
+piecemeal edits; until that PR lands, nothing here constrains `ax`.
+
 ### 11. Revision phasing
 
 | Surface | Revision 1 | Revision 2 | Revision 3 |
 |---|---|---|---|
 | Root context (IR → `CLAUDE.md`/`AGENTS.md`) | claude_code, codex_cli, opencode, pi | gemini, cursor | — |
+| Root-context forms (Decision 2) | monolithic everywhere; referenced for claude_code, opencode | referenced for gemini as research admits | — |
+| Composition (overlay profiles, chapters, precedence) | ✓ | — | — |
+| System-prompt modules + launcher opt-in | claude_code, codex_cli, pi (managed homes / flags only) | gemini (`GEMINI_SYSTEM_MD`), opencode | embedded hosts, if open question 9 admits any |
 | Skills | already shipped; becomes profile-scoped | — | — |
-| Profiles, switching, launcher, fragments | ✓ | — | — |
+| Profiles, switching (incl. scoped `--env`/`--target`), launcher, fragments | ✓ | — | — |
+| Onboarding: detect, foreign-manager stop, backup, takeover | ✓ | — | — |
+| Onboarding import (`path` source kind, lossless/lossy, skill migration) | — | ✓ own story between rev 1 and 2 | — |
 | Secondary fixed-home targets (Xcode CodingAssistant, auto-probed) | ✓ root context + skills | commands, MCP state | — |
 | MCP server write management | read-only verification stays (manager §6) | ✓ own decision | — |
 | Settings/permissions/model fragments | — | ✓ own decision | — |
@@ -459,10 +654,11 @@ read-only.
 Additive only. No existing portable object, schema, identifier, or behavior
 changes. New separately versioned surfaces: `Profilefile.json` (profile
 index, schema 1), `context.json` (context module manifest, schema 1), the
-environment marker (`.csk-environment.json`, schema 1), and
+environment marker (`.agent-environment.json`, schema 1), and
 `launch-env-fragment-v1`. Each gets a JSON
 Schema under `schemas/v1/`, positive and negative conformance vectors, and —
-for root-context materialization — byte-exact determinism vectors. The new
+for root-context materialization, including the generation header, chapter
+composition, and both forms of Decision 2 — byte-exact determinism vectors. The new
 filenames join the §1.1 compatibility identifier list. The manager profile
 gains sections for the adapter registry, materialization modes, profile
 lifecycle, launcher, and credential passthrough, and a secret-detection
@@ -486,6 +682,16 @@ MUST implement the closed revision-1 surface exactly.
   not intent).
 - No code execution: profiles are data end to end. No adapter, materializer,
   hook, or generator is ever selected by profile bytes.
+- A system-prompt override is the sharpest instruction surface a profile
+  carries, so it is inert by default: never materialized into a native
+  in-place home, never applied by a plain launch, active only under the
+  Decision 6 explicit opt-in with its warning, and every composed chapter
+  and generation header keeps its provenance readable.
+- Composition widens what one activation reads to several audited sources;
+  each composed profile passes the gates independently, the declared
+  precedence is stated in the generated output rather than resolved
+  silently, and the composition chain is recorded in the marker and
+  fragment, so status and resume always see exactly what was assembled.
 - Environment-variable injection is bounded: fragment names come from the
   closed adapter registry and values are paths below the manager-owned
   environments root. Profile data cannot add, rename, or retarget a
@@ -559,7 +765,28 @@ MUST implement the closed revision-1 surface exactly.
    against a pinned Xcode release. Recommendation: hold the
    conformance-vector freeze on that platform evidence and draft against the
    recorded shapes meanwhile.
-7. **`pi` `APPEND_SYSTEM.md`.** pi reads an additional system-prompt append
-   file from its agent dir; whether the IR grows a distinct `append_system`
-   module class for it in revision 1 or the surface waits — recommendation:
-   wait; one root-context class keeps revision 1 small.
+7. **Composition precedence default.** Decision 5 lets the machine declare
+   `later-overrides-earlier` or the reverse per activation; which is the
+   default? Recommendation: `later-overrides-earlier` — overlays are
+   typically the operator's personal refinements on an organizational base,
+   and "the closest declaration wins" matches how the shells and config
+   systems operators already know resolve precedence.
+8. **Import semantics per environment.** claude_code `@path` imports
+   (documented, five hops, external-include approval in `.claude.json`) and
+   opencode `instructions` lists are recorded; whether gemini's `GEMINI.md`
+   import mechanism is real and stable enough for a `referenced` form, and
+   whether codex or pi grow one, is research to complete before the
+   `referenced` conformance vectors freeze. Recommendation: ship revision 1
+   with the two verified referenced targets and re-survey at revision 2.
+9. **System-prompt channels: exact behavior and embedded hosts.** Per-tool
+   research to finish before the system-module vectors freeze: the precise
+   cache/billing consequence of a custom system prompt per tool (Claude
+   Code's shared-prompt-cache interaction is the recorded example), whether
+   codex's `model_instructions_file` is injectable per-invocation through
+   its `-c` override safely, and whether any embedded host — the Xcode
+   CodingAssistant agents first — exposes a system-prompt override channel
+   at all (none is currently recorded; claude_code output styles inside
+   `ClaudeAgentConfig/` are the one candidate worth testing).
+   Recommendation: keep system modules launcher-only and
+   managed-home-only exactly as Decision 2 states until this research
+   lands; never widen activation to native homes on partial evidence.
