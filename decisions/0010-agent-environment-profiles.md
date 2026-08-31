@@ -134,9 +134,33 @@ The manager §5 adapter table generalizes from one surface (skills) to an
 Each adapter normatively declares: the environment-variable name and whether
 it names the home or a parent; the home-relative path of every managed
 surface; the surfaces it supports per revision; the credential passthrough
-entries of Decision 7; and the materialization-mode default of Decision 4.
-Unknown environment identifiers keep their §5 behavior: a warning and no
-output.
+entries of Decision 7; the materialization-mode default of Decision 4; and
+its secondary fixed-home targets below. Unknown environment identifiers keep
+their §5 behavior: a warning and no output.
+
+**Secondary fixed-home targets.** Some hosts embed an agent environment at a
+fixed home no environment variable can retarget, but with the same internal
+layout the primary home has. An adapter MAY declare a closed list of such
+targets: a probe path, the home path, and the subset of surfaces the embedded
+host honors. Revision 1 declares two, both introduced by Xcode 26.3's
+CodingAssistant:
+
+| Adapter | Target id | Home | Surfaces honored |
+|---|---|---|---|
+| `claude_code` | `xcode-coding-assistant` | `~/Library/Developer/Xcode/CodingAssistant/ClaudeAgentConfig/` | root context, skills (embedded host also reads `commands/` and `.claude.json` MCP state, unmanaged in revision 1) |
+| `codex_cli` | `xcode-coding-assistant` | `~/Library/Developer/Xcode/CodingAssistant/codex/` | root context, skills (embedded host reads `config.toml`, unmanaged in revision 1) |
+
+A secondary target is an in-place surface set like any other: it carries the
+same environment marker and ledger discipline, defaults to `copied` mode
+(Decision 4), and always reflects the current profile — an embedded host
+launches its agent itself, so the launcher and managed homes can never reach
+it. Target participation is governed by machine configuration, not by profile
+data: `auto` (default — the target participates exactly when its probe path
+exists on the machine), `off`, or an explicit per-target enable. Under `auto`
+a machine without Xcode materializes nothing there and reports nothing
+missing; a machine with Xcode gets its embedded agents flashed on every
+install, `use`, and `sync` without further ceremony. Probe results appear in
+`env status` so an operator can see which targets are live.
 
 Adapters are manager code, never package code. Admitting a new adapter is a
 specification revision with its own review — the same closed-set discipline
@@ -164,10 +188,11 @@ A profile materializes into an environment in one of three modes:
   context. Only the current profile (Decision 5) is materialized in-place.
 - **`copied`** — in-place materialization as plain files with recorded
   content hashes, for surfaces or targets where symlinks are unreliable:
-  fixed-home embedded environments (the Xcode CodingAssistant homes),
-  sandboxed tools that refuse links, or network filesystems. Drift is
-  detected by hash comparison; a hash mismatch marks the installation
-  non-current rather than being silently overwritten.
+  secondary fixed-home targets (the Xcode CodingAssistant homes of Decision
+  3, which run their agents in a restricted environment), sandboxed tools
+  that refuse links, or network filesystems. Drift is detected by hash
+  comparison; a hash mismatch marks the installation non-current rather than
+  being silently overwritten.
 
 Every in-place surface is recorded in a per-home **environment marker**
 (schema 1) alongside the generalized ledger: profile identity, source
@@ -188,9 +213,11 @@ one profile commit.
 The machine configuration records at most one **current profile**. `curator
 profile use <name>`:
 
-1. re-materializes every in-place surface of every registered adapter from
-   the selected profile atomically per entry, under the manager-home mutation
-   lock, journaled like any other manager-home transaction (manager §2.5);
+1. re-materializes every in-place surface of every registered adapter —
+   native default homes and every participating secondary fixed-home target —
+   from the selected profile atomically per entry, under the manager-home
+   mutation lock, journaled like any other manager-home transaction (manager
+   §2.5);
 2. updates the recorded current profile;
 3. warns that already-running agent sessions keep the previous context in
    memory and may write state derived from it, and recommends the launcher
@@ -317,6 +344,7 @@ free to expose profile selection in its own UX.
 | Root context (IR → `CLAUDE.md`/`AGENTS.md`) | claude_code, codex_cli, opencode, pi | gemini, cursor | — |
 | Skills | already shipped; becomes profile-scoped | — | — |
 | Profiles, switching, launcher, fragments | ✓ | — | — |
+| Secondary fixed-home targets (Xcode CodingAssistant, auto-probed) | ✓ root context + skills | commands, MCP state | — |
 | MCP server write management | read-only verification stays (manager §6) | ✓ own decision | — |
 | Settings/permissions/model fragments | — | ✓ own decision | — |
 | Prompts / commands surfaces | — | ✓ | — |
@@ -400,7 +428,11 @@ MUST implement the closed revision-1 surface exactly.
   closed adapter registry and values from Curator's machine configuration.
   Profile data cannot add, rename, or retarget a variable.
 - In-place materialization keeps the §11 ledger guarantee: an unmanaged file
-  is never overwritten; takeover is explicit and backed up.
+  is never overwritten; takeover is explicit and backed up. Secondary
+  fixed-home targets live inside another application's support directory, so
+  the guarantee matters doubly there: Curator touches only its ledgered
+  surface entries and never the host application's own files (`.claude.json`,
+  `config.toml`, caches) in revision 1.
 - Credentials: never profile content (audit-blocked), never copied between
   homes by default; `isolated` mode exists precisely so account separation
   does not degenerate into credential copying.
@@ -447,10 +479,14 @@ MUST implement the closed revision-1 surface exactly.
    profile name, commit, and fragment digest, and whether resume drift
    defaults to warn-and-continue (recommended) with a strict refuse flag —
    to be settled with the `ax` spec once revision 1 stabilizes.
-6. **Windows verification.** The four revision-1 variables inject
-   identically on Windows, but opencode's `XDG_CONFIG_HOME` behavior there
-   and the Xcode-style fixed-home inventory need platform evidence before
-   the conformance vectors freeze.
+6. **Windows and embedded-target verification.** The four revision-1
+   variables inject identically on Windows, but opencode's `XDG_CONFIG_HOME`
+   behavior there needs platform evidence before the conformance vectors
+   freeze. The Xcode secondary-target homes are recorded
+   (`ClaudeAgentConfig/` with `.claude.json`, `skills/`, `commands/`;
+   `codex/` with `config.toml`), but whether the embedded Codex honors
+   `AGENTS.md` from its fixed home exactly as `CODEX_HOME` semantics imply
+   needs implementation-time verification against a pinned Xcode release.
 7. **`pi` `APPEND_SYSTEM.md`.** pi reads an additional system-prompt append
    file from its agent dir; whether the IR grows a distinct `append_system`
    module class for it in revision 1 or the surface waits — recommendation:
