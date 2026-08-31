@@ -36,10 +36,12 @@ whole global home: `CLAUDE_CONFIG_DIR` (Claude Code), `CODEX_HOME` (Codex),
 (Gemini CLI), `CURSOR_CONFIG_DIR` (Cursor CLI), `COPILOT_HOME` (Copilot CLI),
 `GOOSE_PATH_ROOT` (goose). The variables disagree about whether they name the
 home itself or its parent, and a minority of tools support only config-file
-overrides or nothing, but the mechanism is established practice — Xcode 26.3
-ships its embedded Claude and Codex agents with exactly this shape, a
-dedicated fixed home per agent under
-`~/Library/Developer/Xcode/CodingAssistant/`. The verified per-tool matrix,
+overrides or nothing, but the mechanism is established practice — Xcode's
+CodingAssistant ships its embedded Claude and Codex agents with exactly this
+shape, a dedicated fixed home per agent, recorded from vendor documentation
+as `~/Library/Developer/Xcode/CodingAssistant/` since Xcode 26.3 (the
+parent path and the version attribution are docs-confidence; open question
+6 verifies them). The verified per-tool matrix,
 with local-binary evidence for Claude Code 2.1.251, Codex 0.151.0, pi 0.84.2,
 and Gemini CLI 0.54.4, is recorded in the research resource attached to
 `TASK-260831-hbq9n6`.
@@ -77,7 +79,8 @@ canonical git identity, the §6.2 git safety rules, and §6.3-style exact
 references. A directly installed profile MAY track a branch — the same
 allowance `Skillfile.json` gives direct project declarations — and the
 resolved commit is recorded as the effective pin; `--strict-tags` semantics
-carry over unchanged.
+carry over unchanged. Decision 8 admits one additional source kind, `local`,
+reserved for the builtin migration profile.
 
 ### 2. Profile repository shape
 
@@ -102,12 +105,18 @@ file (a portable relative path below `context/`) and an optional
 default meaning every environment. Version 1 is deliberately minimal —
 ordered concatenation with per-module environment selection. There is no
 templating, no variable substitution, no conditional syntax inside module
-bytes, and no per-module remote inclusion. A module is UTF-8 markdown and is
-treated as opaque bytes.
+bytes, and no per-module remote inclusion. A module is UTF-8 markdown.
+Snapshot validation rejects a module that is not valid UTF-8, contains a
+line ending other than LF, or does not end with exactly one trailing LF —
+the fail-closed posture of the other strict schema surfaces, chosen over
+silent normalization. A module that validates is thereafter treated as
+opaque bytes: materialization never rewrites it.
 
 Materialized root context is deterministic: the applicable modules in
-manifest order, joined with exactly one blank line, encoded with LF line
-endings and exactly one trailing LF. The output is hashed with the §8 content
+manifest order, joined by exactly one empty line (a single additional LF
+between modules), with no other transformation. Because every module ends
+with exactly one LF, the output is LF-encoded and ends with exactly one
+trailing LF by construction. The output is hashed with the §8 content
 hash; identical profile commit plus identical adapter set yields
 byte-identical output on every platform. Determinism is what makes drift
 detection and `status --check` possible, and it is a conformance-vector
@@ -115,9 +124,17 @@ surface.
 
 Profile repositories are data. No file in a profile repository is executed,
 sourced, or interpreted as configuration for Curator itself. The existing
-source-audit pipeline (manager §7) applies to profile snapshots as it does to
-skill snapshots, including the secret canary; a profile that carries
-credential-like material is blocked, not installed.
+source-audit pipeline (manager §7) applies to profile snapshots as it does
+to skill snapshots: raw-tree hashing, the static canary whose failure always
+blocks, deterministic detectors, and revocation. That pipeline alone does
+not block credentials — today's deterministic detectors cover undeclared
+network hosts and undeclared executable names, not secrets in context
+modules — so this decision adds two rules. Profile installation always runs
+the audit in strict mode; an advisory profile install does not exist. And
+the normative work this decision authorizes includes a secret-detection
+detector class over context modules and the profile manifest, making
+credential-like material a verifiable finding at blocking severity, so a
+profile that carries it fails installation.
 
 ### 3. Environment adapter registry
 
@@ -134,16 +151,33 @@ The manager §5 adapter table generalizes from one surface (skills) to an
 Each adapter normatively declares: the environment-variable name and whether
 it names the home or a parent; the home-relative path of every managed
 surface; the surfaces it supports per revision; the credential passthrough
-entries of Decision 7; the materialization-mode default of Decision 4; and
-its secondary fixed-home targets below. Unknown environment identifiers keep
-their §5 behavior: a warning and no output.
+entries of Decision 7; the materialization-mode default of Decision 4; its
+known shadowing paths — higher-precedence unmanaged files whose presence
+makes a managed surface inert, such as pi's `AGENTS.override.md`, which the
+tool's discovery chain prefers over `AGENTS.md`; and its secondary
+fixed-home targets below. The §11 ledger protects only managed paths, so
+materialization and `env status` warn when a declared shadowing path exists
+on the machine. Unknown environment identifiers keep their manager §5
+behavior: a warning and no output.
+
+One fragment is wider than its tool: `XDG_CONFIG_HOME` is a generic XDG
+variable, so every XDG-conforming child of a launched opencode session —
+git, editors, anything honoring the spec — resolves its configuration under
+the managed parent instead of the operator's `~/.config` for the whole
+process tree. This is a bounded relative of the side-effect class that
+disqualifies `HOME` substitution (Rejected alternatives). Revision 1 accepts
+the tradeoff and narrows it: when the launcher provisions a managed opencode
+parent, Curator seeds it with symlinks to the operator's existing
+`~/.config` entries other than `opencode/`, and a dedicated opencode home
+variable, should the vendor ship one, supersedes the XDG mechanism.
 
 **Secondary fixed-home targets.** Some hosts embed an agent environment at a
 fixed home no environment variable can retarget, but with the same internal
 layout the primary home has. An adapter MAY declare a closed list of such
 targets: a probe path, the home path, and the subset of surfaces the embedded
-host honors. Revision 1 declares two, both introduced by Xcode 26.3's
-CodingAssistant:
+host honors. Revision 1 declares two, both introduced by Xcode's
+CodingAssistant (docs-recorded as of Xcode 26.3; path and version verify
+under open question 6):
 
 | Adapter | Target id | Home | Surfaces honored |
 |---|---|---|---|
@@ -194,9 +228,17 @@ A profile materializes into an environment in one of three modes:
   comparison; a hash mismatch marks the installation non-current rather than
   being silently overwritten.
 
+Mode defaults: the four native-home adapters default to `linked` for their
+in-place surfaces — the manager §5 symlink-with-copy-fallback discipline
+unchanged — secondary fixed-home targets default to `copied`, and managed
+homes always link from the store. An adapter MAY declare a different
+in-place default; the declaration lives in the adapter registry, never in
+profile data.
+
 Every in-place surface is recorded in a per-home **environment marker**
-(schema 1) alongside the generalized ledger: profile identity, source
-identity, effective commit, mode, and per-surface content hashes. The §11
+(`.csk-environment.json`, schema 1) alongside the generalized ledger:
+profile identity, source identity, effective commit, mode, and per-surface
+content hashes. The §11
 rule extends unchanged: Curator removes or replaces only entries its
 preceding ledger owns and MUST fail rather than overwrite an unmanaged file.
 A pre-existing unmanaged `~/.claude/CLAUDE.md` is never clobbered; the
@@ -206,7 +248,9 @@ the marker.
 
 Both in-place modes and managed homes materialize from the same commit-keyed
 profile store, so `linked`, `copied`, and `managed-home` cannot diverge for
-one profile commit.
+one profile commit. A `local` profile (Decision 8) is keyed in the same
+store by the §8 content hash of its state in place of a commit; the
+non-divergence guarantee holds identically.
 
 ### 5. Current profile and switching
 
@@ -250,10 +294,13 @@ Two commands, one contract:
   native argument pass through untouched; launch adds no shell between the
   operator and the tool.
 
-Fragment values are derived only from the adapter registry and Curator's
-machine configuration. Profile bytes MUST NOT select or contribute an
-environment-variable name or value: a profile chooses what the context says,
-never how the process is launched. This is the same package-influence
+Fragment variable names come from the closed adapter registry, and fragment
+values are managed-home paths below the manager-owned environments root.
+Profile bytes MUST NOT select an environment-variable name and MUST NOT
+move a value outside that root; the only profile-derived component of a
+value is the profile-name path segment, which the §2 identifier grammar
+bounds — no separators, no traversal. A profile chooses what the context
+says, never how the process is launched. This is the same package-influence
 boundary the execution policies draw, applied to environment injection.
 
 The command names above are the contract; a short standalone alias
@@ -265,9 +312,11 @@ The command names above are the contract; a short standalone alias
 Credentials are never profile content and never managed surfaces. Each
 adapter declares its credential passthrough set — the auth entries a managed
 home shares with the native home by symlink or seeding (`auth.json` for
-`codex_cli` and `pi`; Claude Code's macOS Keychain entries are ambient and
-need nothing; opencode keeps auth in the XDG data directory, which the config
-swap never touches). Default is `shared`: every profile home reuses the
+`codex_cli` and `pi`; `claude_code` splits by platform — macOS Keychain
+entries are ambient and need nothing, Linux keeps `.credentials.json` inside
+the home and passes it through, and Windows needs the open question 6
+verification; opencode keeps auth in the XDG data directory, which the
+config swap never touches). Default is `shared`: every profile home reuses the
 operator's existing authentication. A profile×environment pair MAY be
 configured `isolated` — no passthrough, the tool authenticates fresh inside
 the profile home — which is the supported shape for genuinely separate
@@ -293,19 +342,27 @@ machine.
 
 Migration: on first use of the profile surface, the existing machine-local
 global scope is renamed into a builtin profile `default` with its current
-Skillfile and no root context. Nothing else changes for a machine that never
-installs another profile — `default` simply is the current profile, and
-existing global installations keep their behavior byte-for-byte.
+Skillfile and no root context. `default` carries the source kind `local`
+(Decision 1): no git identity, no pinned ref, no effective commit. Its
+store key is the §8 content hash of its state (Decision 4), `profile list`
+reports it accordingly (Decision 9), and switching, `profile sync`, and
+`env status` treat a `local` profile exactly like an installed one. Nothing
+else changes for a machine that never installs another profile — `default`
+simply is the current profile, and existing global installations keep their
+behavior byte-for-byte.
 
 ### 9. Inventory and status
 
 `curator profile list` reports installed profiles: name, source identity,
-pinned ref, effective commit, current marker. `curator env status [--check]
+pinned ref, effective commit, current marker; a `local` profile (Decision 8)
+reports `local` as its source, `-` for ref, and its §8 state hash in the
+effective-pin column. `curator env status [--check]
 [--json]` reports the profile × environment × surface matrix: mode,
-materialized commit, content-hash currency, drift, missing surfaces, and
-unregistered adapters, with the existing exit-code discipline (`--check`
-non-zero on any non-current row). Both are read-only and honor the manager
-§2.4 dry-run constraints.
+materialized commit, content-hash currency, drift, missing surfaces,
+unregistered adapters, and any declared shadowing path that exists
+(Decision 3), with the existing exit-code discipline (`--check`
+non-zero on any non-current row). Both are read-only and follow the manager
+§10 status discipline: recompute and report, never mutate.
 
 ### 10. Composition with the agent session manager
 
@@ -402,12 +459,15 @@ read-only.
 Additive only. No existing portable object, schema, identifier, or behavior
 changes. New separately versioned surfaces: `Profilefile.json` (profile
 index, schema 1), `context.json` (context module manifest, schema 1), the
-environment marker (schema 1), and `launch-env-fragment-v1`. Each gets a JSON
+environment marker (`.csk-environment.json`, schema 1), and
+`launch-env-fragment-v1`. Each gets a JSON
 Schema under `schemas/v1/`, positive and negative conformance vectors, and —
 for root-context materialization — byte-exact determinism vectors. The new
 filenames join the §1.1 compatibility identifier list. The manager profile
 gains sections for the adapter registry, materialization modes, profile
-lifecycle, launcher, and credential passthrough; `cli/curator.md` gains the
+lifecycle, launcher, and credential passthrough, and a secret-detection
+detector class over context modules joins the manager §7 audit pipeline
+(Decision 2); `cli/curator.md` gains the
 informative command table. The capability lands as `protocol/environments.md`
 in the pattern `assurance.md` established: a separately versioned document
 that adds identities without widening existing objects. Managers that do not
@@ -418,24 +478,30 @@ MUST implement the closed revision-1 surface exactly.
 
 - Profile repositories pass the same gates as skill repositories: canonical
   source identity, allowlist, snapshot validation, and the manager §7 audit
-  pipeline including the secret canary. Root-context modules are prompt
+  pipeline. Profile installation is always strict, and the Decision 2
+  secret-detection detector class makes credential-like material a blocking
+  finding instead of an unscanned surface. Root-context modules are prompt
   material and SHOULD be surfaced by audit tooling as such (prompt-injection
   review is human work; the pipeline guarantees provenance and immutability,
   not intent).
 - No code execution: profiles are data end to end. No adapter, materializer,
   hook, or generator is ever selected by profile bytes.
 - Environment-variable injection is bounded: fragment names come from the
-  closed adapter registry and values from Curator's machine configuration.
-  Profile data cannot add, rename, or retarget a variable.
+  closed adapter registry and values are paths below the manager-owned
+  environments root. Profile data cannot add, rename, or retarget a
+  variable; its only reach into a value is the profile-name path segment,
+  bounded by the §2 identifier grammar.
 - In-place materialization keeps the §11 ledger guarantee: an unmanaged file
   is never overwritten; takeover is explicit and backed up. Secondary
   fixed-home targets live inside another application's support directory, so
   the guarantee matters doubly there: Curator touches only its ledgered
   surface entries and never the host application's own files (`.claude.json`,
   `config.toml`, caches) in revision 1.
-- Credentials: never profile content (audit-blocked), never copied between
-  homes by default; `isolated` mode exists precisely so account separation
-  does not degenerate into credential copying.
+- Credentials: never profile content — the always-strict install audit and
+  the Decision 2 secret-detection detectors block credential-like material —
+  and never copied between homes by default; `isolated` mode exists
+  precisely so account separation does not degenerate into credential
+  copying.
 - The switch warning in Decision 5 is a real hazard, not ceremony: a live
   session under the old profile can still write trust records and state into
   in-place homes. The launcher path avoids the race entirely, which is why
@@ -445,7 +511,8 @@ MUST implement the closed revision-1 surface exactly.
 
 ## Consequences
 
-- Curator's machine home grows a commit-keyed profile store and a managed
+- Curator's machine home grows a commit-keyed profile store (state-hash-keyed
+  for a `local` profile) and a managed
   environment-home tree; garbage collection gains their live roots (§9.4
   pattern).
 - The manager §5 skills table becomes a special case of the adapter
@@ -474,19 +541,24 @@ MUST implement the closed revision-1 surface exactly.
 4. **opencode skills placement.** Whether the opencode adapter's skills
    surface moves into `<home>/skills/` (config-dir native) or keeps the
    `.agents/skills` native surface of manager §5 needs implementation-time
-   verification against a pinned opencode release.
+   verification against a pinned opencode release. Recommendation: keep the
+   manager §5 native surface until a pinned release proves `<home>/skills/`.
 5. **`ax` extension fields.** Exact Session Record extension keys for
    profile name, commit, and fragment digest, and whether resume drift
    defaults to warn-and-continue (recommended) with a strict refuse flag —
    to be settled with the `ax` spec once revision 1 stabilizes.
 6. **Windows and embedded-target verification.** The four revision-1
    variables inject identically on Windows, but opencode's `XDG_CONFIG_HOME`
-   behavior there needs platform evidence before the conformance vectors
-   freeze. The Xcode secondary-target homes are recorded
-   (`ClaudeAgentConfig/` with `.claude.json`, `skills/`, `commands/`;
-   `codex/` with `config.toml`), but whether the embedded Codex honors
-   `AGENTS.md` from its fixed home exactly as `CODEX_HOME` semantics imply
-   needs implementation-time verification against a pinned Xcode release.
+   behavior and the claude_code credential passthrough shape there (Decision
+   7) need platform evidence before the conformance vectors freeze. The
+   Xcode secondary-target homes are recorded (`ClaudeAgentConfig/` with
+   `.claude.json`, `skills/`, `commands/`; `codex/` with `config.toml`), but
+   the CodingAssistant parent path, the Xcode 26.3 attribution, and whether
+   the embedded Codex honors `AGENTS.md` from its fixed home exactly as
+   `CODEX_HOME` semantics imply need implementation-time verification
+   against a pinned Xcode release. Recommendation: hold the
+   conformance-vector freeze on that platform evidence and draft against the
+   recorded shapes meanwhile.
 7. **`pi` `APPEND_SYSTEM.md`.** pi reads an additional system-prompt append
    file from its agent dir; whether the IR grows a distinct `append_system`
    module class for it in revision 1 or the surface waits — recommendation:
