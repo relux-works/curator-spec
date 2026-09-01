@@ -1351,5 +1351,230 @@ class WorkflowRegenerationScopeTests(unittest.TestCase):
         )
 
 
+class EnvironmentVectorTests(unittest.TestCase):
+    """The environments.md section 5 determinism gate must fail closed.
+
+    validate_environment_vectors is the production gate: tools/validate.py
+    main() runs it on every `make validate` and CI run, recomputing the
+    section 5 bytes independently and comparing them against the generated
+    expected files. Each test narrows one rule and proves the gate rejects
+    what the rule must reject.
+    """
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.SUITE / "vectors" / "environments.json"
+        )
+
+    def case(self, name: str, vector: dict | None = None) -> dict:
+        source = self.vector if vector is None else vector
+        return next(
+            item
+            for item in source["materialization_cases"]
+            if item["name"] == name
+        )
+
+    def header_case(self, name: str, vector: dict) -> dict:
+        return next(
+            item for item in vector["header_cases"] if item["name"] == name
+        )
+
+    def test_generated_vector_passes(self) -> None:
+        validate.validate_environment_vectors(self.vector)
+
+    def test_dropped_case_fails_closed(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["materialization_cases"] = [
+            item
+            for item in changed["materialization_cases"]
+            if item["name"] != "referenced-opencode"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_header_precedence_mutation_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.header_case("composed-default-precedence", changed)[
+            "precedence"
+        ] = "earlier-overrides-later"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_header_pin_mutation_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.header_case("single-profile", changed)["chain"][0]["pin"] = (
+            "commit " + "f" * 40
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_crlf_module_bytes_are_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        module = self.case("monolithic-claude-code", changed)["chain"][0][
+            "modules"
+        ][0]
+        module["content"] = module["content"].replace("\n", "\r\n")
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_missing_trailing_lf_module_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        module = self.case("monolithic-claude-code", changed)["chain"][0][
+            "modules"
+        ][0]
+        module["content"] = module["content"].rstrip("\n")
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_selector_widening_changes_the_expected_bytes(self) -> None:
+        # Removing the claude_code selector makes the module applicable to
+        # codex_cli, so the codex expected bytes must stop matching.
+        changed = copy.deepcopy(self.vector)
+        for member in self.case("monolithic-codex-selector-excluded", changed)[
+            "chain"
+        ]:
+            for module in member.get("modules", []):
+                module.pop("environments", None)
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_surface_hash_mutation_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("referenced-opencode", changed)["surface_sha256"] = (
+            "sha256:" + "0" * 64
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_absent_surface_cannot_claim_a_written_file(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("no-context-directory", changed)["file_written"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_written_surface_cannot_claim_absence(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("monolithic-zero-modules", changed)["file_written"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_opencode_config_without_trailing_lf_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            source = validate.SUITE / "expected" / "environments"
+            for path in source.rglob("*"):
+                if not path.is_file():
+                    continue
+                relative = path.relative_to(validate.SUITE)
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(path.read_bytes())
+            (root / "vectors").mkdir()
+            (root / "vectors" / "environments.json").write_bytes(
+                (validate.SUITE / "vectors" / "environments.json").read_bytes()
+            )
+            tampered = (
+                root
+                / "expected"
+                / "environments"
+                / "referenced-opencode"
+                / "opencode.json"
+            )
+            tampered.write_bytes(tampered.read_bytes().rstrip(b"\n"))
+            with self.assertRaises(validate.ValidationFailure):
+                validate.validate_environment_vectors(suite_root=root)
+
+    def test_stale_expected_file_fails_the_inventory(self) -> None:
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            source = validate.SUITE / "expected" / "environments"
+            for path in source.rglob("*"):
+                if not path.is_file():
+                    continue
+                relative = path.relative_to(validate.SUITE)
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(path.read_bytes())
+            (root / "vectors").mkdir()
+            (root / "vectors" / "environments.json").write_bytes(
+                (validate.SUITE / "vectors" / "environments.json").read_bytes()
+            )
+            stale = root / "expected" / "environments" / "stale" / "CLAUDE.md"
+            stale.parent.mkdir(parents=True)
+            stale.write_bytes(b"orphaned\n")
+            with self.assertRaises(validate.ValidationFailure):
+                validate.validate_environment_vectors(suite_root=root)
+
+    def test_environment_schema_semantics_fail_closed(self) -> None:
+        rejected = {
+            "duplicate profile directory": (
+                "profilefile-v1.schema.json",
+                {
+                    "version": 1,
+                    "profiles": {"a": "profiles/shared", "b": "profiles/shared"},
+                },
+            ),
+            "nested profile root": (
+                "profilefile-v1.schema.json",
+                {
+                    "version": 1,
+                    "profiles": {"a": "profiles/a", "b": "profiles/a/inner"},
+                },
+            ),
+            "duplicate module path": (
+                "context-manifest-v1.schema.json",
+                {
+                    "version": 1,
+                    "modules": [
+                        {"path": "00-base.md"},
+                        {"path": "00-base.md", "class": "system"},
+                    ],
+                },
+            ),
+            "unsorted marker surfaces": (
+                "agent-environment-marker-v1.schema.json",
+                {
+                    "surfaces": dict(
+                        [("skills", {}), ("root-context", {})]
+                    )
+                },
+            ),
+        }
+        for label, (schema_name, instance) in rejected.items():
+            with self.subTest(label=label):
+                self.assertIsNotNone(
+                    validate.validate_wire_semantics(schema_name, instance)
+                )
+        accepted = {
+            "distinct profile roots": (
+                "profilefile-v1.schema.json",
+                {
+                    "version": 1,
+                    "profiles": {"a": "profiles/a", "b": "profiles/ab"},
+                },
+            ),
+            "unique module paths": (
+                "context-manifest-v1.schema.json",
+                {
+                    "version": 1,
+                    "modules": [{"path": "00-base.md"}, {"path": "10-style.md"}],
+                },
+            ),
+            "sorted marker surfaces": (
+                "agent-environment-marker-v1.schema.json",
+                {
+                    "surfaces": dict(
+                        [("root-context", {}), ("skills", {})]
+                    )
+                },
+            ),
+        }
+        for label, (schema_name, instance) in accepted.items():
+            with self.subTest(label=label):
+                self.assertIsNone(
+                    validate.validate_wire_semantics(schema_name, instance)
+                )
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -11,6 +11,20 @@ conformance claim v5. Rc.8 carries `assurance-policy-v1`,
 conformance claim v4. These are new closed objects; no prior schema is widened
 or reinterpreted.
 
+The agent-environments capability of `protocol/environments.md` (revision 1)
+carries four closed objects: `profilefile-v1` for the repository index,
+`context-manifest-v1` for `context/context.json` module manifests,
+`agent-environment-marker-v1` for the per-home `.agent-environment.json`
+ledger, and `launch-env-fragment-v1` for the `env resolve` output. Cross-field
+rules that Draft 2020-12 cannot express — profile roots that alias or nest,
+duplicate module manifest paths, and sorted marker surface keys — are enforced
+by `tools/validate.py`, exactly as the manifest-schema semantic rules are. The
+byte-exact section 5 materialization rules (generation header, part joining,
+chapter parts, zero-module output, referenced layout, managed `opencode.json`
+CCJ-1 bytes, system-prompt output, and section 5.6 surface hashes) live in
+`conformance/v1/vectors/environments.json` with expected bytes under
+`conformance/v1/expected/environments/`.
+
 All `$id` values are stable identifiers. Relative `$ref` values resolve from
 the containing schema. `common.schema.json` is a definition library and is not
 a standalone wire object.

@@ -193,6 +193,7 @@ func main() {
 	writeExternalRepositoryFixtures(suite)
 	writeExternalRepositoryVectors(vectors)
 	writeAssuranceVectors(vectors)
+	writeEnvironmentVectors(vectors, filepath.Join(expected, "environments"))
 	writeSchemaCases(suite, marker, ledger, audited, snapshot, entries[0], bundle, pinned)
 	writeExternalRepositoryExpected(expected, marker)
 	writeManifest(suite)
@@ -2513,6 +2514,25 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	invalidClaimV5["schema_version"] = 5
 	invalidClaimV5["protocol_version"] = protocolVersion
 	cases["conformance-claim-v5.schema.json"] = schemaCase{claimV5, invalidClaimV5}
+	profilefileValid := map[string]any{
+		"version": 1,
+		"profiles": map[string]any{
+			"companyA": "profiles/companyA", "personal": "profiles/personal",
+		},
+	}
+	cases["profilefile-v1.schema.json"] = schemaCase{
+		profilefileValid, map[string]any{"version": 1, "profiles": map[string]any{}},
+	}
+	additionalCases["profilefile-v1.schema.json"] = profilefileSchemaExamples(profilefileValid)
+	contextManifest := validContextManifestV1()
+	cases["context-manifest-v1.schema.json"] = schemaCase{contextManifest, without(contextManifest, "modules")}
+	additionalCases["context-manifest-v1.schema.json"] = contextManifestSchemaExamples(contextManifest)
+	environmentMarker := validEnvironmentMarkerV1()
+	cases["agent-environment-marker-v1.schema.json"] = schemaCase{environmentMarker, without(environmentMarker, "surfaces")}
+	additionalCases["agent-environment-marker-v1.schema.json"] = environmentMarkerSchemaExamples(environmentMarker)
+	launchFragment := validLaunchEnvFragmentV1()
+	cases["launch-env-fragment-v1.schema.json"] = schemaCase{launchFragment, without(launchFragment, "env")}
+	additionalCases["launch-env-fragment-v1.schema.json"] = launchEnvFragmentSchemaExamples(launchFragment)
 
 	root := filepath.Join(suite, "schema-cases")
 	var index []any

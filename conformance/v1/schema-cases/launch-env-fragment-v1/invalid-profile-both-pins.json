@@ -1,0 +1,34 @@
+{
+  "composition": [
+    {
+      "commit": "fedcba9876543210fedcba9876543210fedcba98",
+      "name": "personal"
+    }
+  ],
+  "env": {
+    "CLAUDE_CONFIG_DIR": "/manager/environments/companyA/claude_code"
+  },
+  "environment": "claude_code",
+  "fragment": "launch-env-fragment-v1",
+  "precedence": "later-overrides-earlier",
+  "profile": {
+    "commit": "0123456789abcdef0123456789abcdef01234567",
+    "name": "companyA",
+    "state_sha256": "abababababababababababababababababababababababababababababababab"
+  },
+  "system_prompt": {
+    "channels": [
+      {
+        "flag": "--append-system-prompt-file",
+        "kind": "flag",
+        "semantics": "append"
+      },
+      {
+        "flag": "--system-prompt-file",
+        "kind": "flag",
+        "semantics": "replace"
+      }
+    ],
+    "path": "/manager/environments/companyA/claude_code/.agent-context/system-prompt.md"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "modules": [
+    {
+      "environments": [
+        "claude_code",
+        "claude_code"
+      ],
+      "path": "00-base.md"
+    }
+  ],
+  "version": 1
+}

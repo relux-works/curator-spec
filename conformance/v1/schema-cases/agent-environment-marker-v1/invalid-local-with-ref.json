@@ -1,0 +1,26 @@
+{
+  "mode": "managed-home",
+  "profile": {
+    "name": "default",
+    "ref": {
+      "kind": "branch",
+      "value": "main"
+    },
+    "source_kind": "local",
+    "state_sha256": "abababababababababababababababababababababababababababababababab"
+  },
+  "surfaces": {
+    "root-context": {
+      "content_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "form": "monolithic",
+      "paths": [
+        "CLAUDE.md"
+      ]
+    },
+    "skills": {
+      "content_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "paths": []
+    }
+  },
+  "version": 1
+}

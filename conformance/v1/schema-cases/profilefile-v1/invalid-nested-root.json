@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "companyA": "profiles/companyA",
+    "personal": "profiles/companyA/inner"
+  },
+  "version": 1
+}

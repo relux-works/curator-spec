@@ -1,0 +1,21 @@
+{
+  "env": {
+    "CODEX_HOME": "/manager/environments/companyA/codex_cli"
+  },
+  "environment": "codex_cli",
+  "fragment": "launch-env-fragment-v1",
+  "profile": {
+    "commit": "0123456789abcdef0123456789abcdef01234567",
+    "name": "companyA"
+  },
+  "system_prompt": {
+    "channels": [
+      {
+        "key": "model_instructions_file",
+        "kind": "config-key",
+        "semantics": "replace"
+      }
+    ],
+    "path": "/manager/environments/companyA/codex_cli/.agent-context/system-prompt.md"
+  }
+}

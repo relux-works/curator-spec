@@ -1,0 +1,37 @@
+{
+  "composition": [
+    {
+      "commit": "fedcba9876543210fedcba9876543210fedcba98",
+      "name": "personal"
+    }
+  ],
+  "mode": "managed-home",
+  "precedence": "later-overrides-earlier",
+  "profile": {
+    "commit": "0123456789abcdef0123456789abcdef01234567",
+    "name": "companyA",
+    "ref": {
+      "kind": "tag",
+      "value": "v1.2.0"
+    },
+    "source_identity": {
+      "kind": "network-git",
+      "value": "github.com/example/profiles"
+    },
+    "source_kind": "git"
+  },
+  "surfaces": {
+    "root-context": {
+      "content_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "form": "monolithic",
+      "paths": [
+        "CLAUDE.md"
+      ]
+    },
+    "skills": {
+      "content_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "paths": []
+    }
+  },
+  "version": 1
+}

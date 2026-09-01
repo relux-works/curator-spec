@@ -1,0 +1,12 @@
+{
+  "modules": [
+    {
+      "path": "00-base.md"
+    },
+    {
+      "class": "system",
+      "path": "00-base.md"
+    }
+  ],
+  "version": 1
+}

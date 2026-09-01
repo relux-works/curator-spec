@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/v1/launch-env-fragment-v1.schema.json",
+  "title": "launch-env-fragment-v1",
+  "type": "object",
+  "required": ["fragment", "environment", "profile", "env"],
+  "properties": {
+    "fragment": {"const": "launch-env-fragment-v1"},
+    "environment": {"enum": ["claude_code", "codex_cli", "opencode", "pi"]},
+    "profile": {"$ref": "#/$defs/pinnedProfile"},
+    "composition": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/pinnedProfile"}
+    },
+    "precedence": {"enum": ["later-overrides-earlier", "earlier-overrides-later"]},
+    "env": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"enum": ["CLAUDE_CONFIG_DIR", "CODEX_HOME", "XDG_CONFIG_HOME", "PI_CODING_AGENT_DIR"]},
+      "additionalProperties": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
+    },
+    "system_prompt": {
+      "type": "object",
+      "required": ["path", "channels"],
+      "properties": {
+        "path": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "channels": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/channelDescriptor"}
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "dependentRequired": {
+    "composition": ["precedence"],
+    "precedence": ["composition"]
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "pinnedProfile": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["name", "commit"],
+          "properties": {
+            "name": {"$ref": "common.schema.json#/$defs/identifier"},
+            "commit": {"$ref": "common.schema.json#/$defs/commit"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["name", "state_sha256"],
+          "properties": {
+            "name": {"$ref": "common.schema.json#/$defs/identifier"},
+            "state_sha256": {"$ref": "common.schema.json#/$defs/hex256"}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "channelDescriptor": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "semantics", "flag"],
+          "properties": {
+            "kind": {"const": "flag"},
+            "semantics": {"enum": ["append", "replace"]},
+            "flag": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["kind", "semantics", "key"],
+          "properties": {
+            "kind": {"const": "config-key"},
+            "semantics": {"enum": ["append", "replace"]},
+            "key": {"$ref": "common.schema.json#/$defs/identifier"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["kind", "semantics", "variable"],
+          "properties": {
+            "kind": {"const": "variable"},
+            "semantics": {"enum": ["append", "replace"]},
+            "variable": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["kind", "semantics", "filename"],
+          "properties": {
+            "kind": {"const": "file"},
+            "semantics": {"enum": ["append", "replace"]},
+            "filename": {"$ref": "common.schema.json#/$defs/portablePath"}
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

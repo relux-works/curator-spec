@@ -111,6 +111,14 @@ The suite contains:
   mutations for every provider/capability/nonce/operation/permit/input/artifact/
   freshness/checkpoint binding, provider packaging denial, and zero released
   verified claims;
+- the agent-environments revision-1 surfaces: valid and invalid
+  `Profilefile.json`, `context.json`, `.agent-environment.json`, and
+  `launch-env-fragment-v1` examples; module byte validation; the byte-exact
+  section 5 materialization vectors — generation-header grammar, monolithic
+  part joining, chapter composition including the empty chapter, zero-module
+  and no-context outputs, referenced-form layout paths, managed
+  `opencode.json` CCJ-1 bytes with the trailing-LF rule, and header-free
+  system-prompt output — with their section 5.6 surface hashes;
 - transparency chain, Merkle, bundle, pagination, caching, and deny-wins cases;
 - conjunctive registry queries, exact artifact identity, snapshot-bound pages,
   scoped idempotency, concurrent writers, transaction rollback, crash recovery,

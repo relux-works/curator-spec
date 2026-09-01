@@ -10,6 +10,101 @@
     "valid": false
   },
   {
+    "instance": "agent-environment-marker-v1/valid.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/valid-local-profile.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v1/valid-linked-copy-fallback.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v1/valid-no-composition.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v1/valid-seeded-opencode-parent.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-version.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-unknown-field.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-git-with-state-pin.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-local-with-ref.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-mode.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-composition-without-precedence.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-precedence-without-composition.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-empty-composition.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-managed-home-copy-fallback.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-linked-missing-copy-fallback.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-seed-links-on-linked-home.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-surfaces-unsorted.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-missing-surface-paths.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
     "instance": "agent-skill-v1/valid.json",
     "schema": "agent-skill-v1.schema.json",
     "valid": true
@@ -1362,6 +1457,61 @@
   {
     "instance": "conformance-claim-v5/invalid.json",
     "schema": "conformance-claim-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-manifest-v1/valid.json",
+    "schema": "context-manifest-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "context-manifest-v1/invalid.json",
+    "schema": "context-manifest-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-manifest-v1/valid-empty-modules.json",
+    "schema": "context-manifest-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "context-manifest-v1/valid-system-selector.json",
+    "schema": "context-manifest-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "context-manifest-v1/invalid-version.json",
+    "schema": "context-manifest-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-manifest-v1/invalid-unknown-entry-field.json",
+    "schema": "context-manifest-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-manifest-v1/invalid-empty-environments.json",
+    "schema": "context-manifest-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-manifest-v1/invalid-duplicate-environments.json",
+    "schema": "context-manifest-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-manifest-v1/invalid-unknown-class.json",
+    "schema": "context-manifest-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-manifest-v1/invalid-parent-path.json",
+    "schema": "context-manifest-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-manifest-v1/invalid-duplicate-path.json",
+    "schema": "context-manifest-v1.schema.json",
     "valid": false
   },
   {
@@ -2785,6 +2935,96 @@
     "valid": false
   },
   {
+    "instance": "launch-env-fragment-v1/valid.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/valid-local-state-pin.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v1/valid-no-composition.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v1/valid-config-key-channel.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v1/valid-empty-channels.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v1/valid-file-channels.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-fragment-identity.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-unknown-environment.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-unknown-field.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-profile-both-pins.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-composition-without-precedence.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-precedence-without-composition.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-unknown-channel-kind.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-unknown-semantics.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-flag-channel-with-filename.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-lowercase-variable-name.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-empty-env.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
     "instance": "log-response-v1/valid.json",
     "schema": "log-response-v1.schema.json",
     "valid": true
@@ -2802,6 +3042,51 @@
   {
     "instance": "manager-config-v1/invalid.json",
     "schema": "manager-config-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "profilefile-v1/valid.json",
+    "schema": "profilefile-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "profilefile-v1/invalid.json",
+    "schema": "profilefile-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "profilefile-v1/valid-single-profile.json",
+    "schema": "profilefile-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "profilefile-v1/invalid-version.json",
+    "schema": "profilefile-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "profilefile-v1/invalid-unknown-field.json",
+    "schema": "profilefile-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "profilefile-v1/invalid-profile-name.json",
+    "schema": "profilefile-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "profilefile-v1/invalid-traversal-path.json",
+    "schema": "profilefile-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "profilefile-v1/invalid-duplicate-directory.json",
+    "schema": "profilefile-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "profilefile-v1/invalid-nested-root.json",
+    "schema": "profilefile-v1.schema.json",
     "valid": false
   },
   {

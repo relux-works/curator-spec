@@ -719,6 +719,32 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
             return "permit-issued checkpoint must have a null predecessor"
         if phase in {"execution-started", "execution-succeeded"} and previous is None:
             return f"{phase} checkpoint must have a digest predecessor"
+    elif schema_name == "profilefile-v1.schema.json":
+        profiles = instance.get("profiles")
+        if isinstance(profiles, dict):
+            roots = [value for value in profiles.values() if isinstance(value, str)]
+            if len(roots) != len(set(roots)):
+                return "two profile members must not name the same directory"
+            for outer in roots:
+                for inner in roots:
+                    if inner != outer and inner.startswith(outer + "/"):
+                        return "a declared profile root must not contain another declared profile root"
+    elif schema_name == "context-manifest-v1.schema.json":
+        modules = instance.get("modules")
+        if isinstance(modules, list):
+            paths = [
+                module.get("path")
+                for module in modules
+                if isinstance(module, dict) and isinstance(module.get("path"), str)
+            ]
+            if len(paths) != len(set(paths)):
+                return "module paths must be unique across the manifest"
+    elif schema_name == "agent-environment-marker-v1.schema.json":
+        surfaces = instance.get("surfaces")
+        if isinstance(surfaces, dict):
+            keys = list(surfaces)
+            if keys != sorted(keys):
+                return "environment marker surface keys must be sorted"
     elif schema_name == "conformance-claim-v3.schema.json":
         systems = set(instance.get("operating_systems", []))
         if "linux" in systems:
@@ -3013,6 +3039,244 @@ def validate_assurance_vectors(vector: Any = None) -> None:
             )
 
 
+# The agent-environments revision-1 determinism surfaces of
+# protocol/environments.md section 5. This is an independent implementation of
+# the generation-header grammar, part joining, chapter parts, the referenced
+# layout, the managed opencode.json CCJ-1 bytes, the system-prompt output, and
+# the section 5.6 surface hash, cross-checked byte-for-byte against the Go
+# generator's expected files.
+ENVIRONMENT_HEADER_MARKER = "curator-root-context-v1"
+ENVIRONMENT_GENERATED_LINE = (
+    "generated: Curator Protocol environments revision 1 "
+    "(https://github.com/relux-works/curator-spec)"
+)
+ENVIRONMENT_NOTICE_LINE = (
+    "notice: generated file; direct edits are unsupported and are detected as "
+    "drift; update the source profile repository or its composed profiles instead"
+)
+ENVIRONMENT_ROOT_TARGETS = {
+    "claude_code": "CLAUDE.md",
+    "codex_cli": "AGENTS.md",
+    "opencode": "AGENTS.md",
+    "pi": "AGENTS.md",
+}
+ENVIRONMENT_PRECEDENCE_DIRECTIONS = {
+    "later-overrides-earlier",
+    "earlier-overrides-later",
+}
+ENVIRONMENT_SYSTEM_PROMPT_PATH = ".agent-context/system-prompt.md"
+ENVIRONMENT_HEADER_CASES = {
+    "single-profile",
+    "composed-default-precedence",
+    "composed-earlier-overrides-later",
+    "local-state-pin",
+}
+ENVIRONMENT_MATERIALIZATION_CASES = {
+    "monolithic-claude-code",
+    "monolithic-codex-selector-excluded",
+    "monolithic-composed-empty-chapter",
+    "monolithic-zero-modules",
+    "monolithic-zero-modules-composed",
+    "referenced-claude-code-composed",
+    "referenced-opencode",
+    "referenced-opencode-zero-modules",
+    "no-context-directory",
+    "system-prompt-composed",
+    "system-prompt-none-applicable",
+}
+
+
+def environment_module_error(content: Any) -> str | None:
+    if not isinstance(content, str):
+        return "module content must be UTF-8 text"
+    if "\r" in content:
+        return "module carries a non-LF line ending"
+    if not content.endswith("\n") or content.endswith("\n\n"):
+        return "module must end with exactly one trailing LF"
+    return None
+
+
+def environment_header_bytes(chain: list[dict[str, Any]], precedence: Any) -> bytes:
+    lines = ["<!--", ENVIRONMENT_HEADER_MARKER, f"profile: {chain[0]['name']} {chain[0]['pin']}"]
+    if len(chain) > 1:
+        for member in chain[1:]:
+            lines.append(f"compose: {member['name']} {member['pin']}")
+        if precedence not in ENVIRONMENT_PRECEDENCE_DIRECTIONS:
+            raise ValidationFailure("composed environment case has no valid precedence direction")
+        lines.append(f"precedence: {precedence}")
+    elif precedence is not None:
+        raise ValidationFailure("uncomposed environment case declares a precedence direction")
+    lines.extend([ENVIRONMENT_GENERATED_LINE, ENVIRONMENT_NOTICE_LINE, "-->"])
+    return ("\n".join(lines) + "\n").encode("utf-8")
+
+
+def environment_applicable(member: dict[str, Any], environment: str, module_class: str) -> list[dict[str, Any]]:
+    applicable = []
+    for module in member.get("modules", []):
+        if module.get("class", "root") != module_class:
+            continue
+        selector = module.get("environments")
+        if selector is not None and environment not in selector:
+            continue
+        applicable.append(module)
+    return applicable
+
+
+def environment_case_files(case: dict[str, Any]) -> dict[str, bytes]:
+    name = case.get("name", "<unnamed>")
+    chain = case["chain"]
+    environment = case["environment"]
+    precedence = case.get("precedence")
+    for member in chain:
+        if not member.get("has_context"):
+            continue
+        for module in member.get("modules", []):
+            error = environment_module_error(module.get("content"))
+            if error is not None:
+                raise ValidationFailure(
+                    f"environment case {name}: module {module.get('path')}: {error}"
+                )
+    if case["surface"] == "system-prompt":
+        parts = [
+            module["content"]
+            for member in chain
+            for module in environment_applicable(member, environment, "system")
+        ]
+        if not parts:
+            return {}
+        return {ENVIRONMENT_SYSTEM_PROMPT_PATH: "\n".join(parts).encode("utf-8")}
+    if not chain[0].get("has_context"):
+        return {}
+    form = case["form"]
+    header = environment_header_bytes(chain, precedence).decode("utf-8")
+    files: dict[str, bytes] = {}
+    instructions: list[str] = []
+    parts = [header]
+
+    def emit(member: dict[str, Any], module: dict[str, Any]) -> None:
+        if form == "monolithic":
+            parts.append(module["content"])
+            return
+        if form != "referenced":
+            raise ValidationFailure(f"environment case {name}: unsupported form {form!r}")
+        reference = f".agent-context/modules/{member['name']}/{module['path']}"
+        files[reference] = module["content"].encode("utf-8")
+        instructions.append(reference)
+        if environment != "opencode":
+            parts.append("@" + reference + "\n")
+
+    if len(chain) == 1:
+        for module in environment_applicable(chain[0], environment, "root"):
+            emit(chain[0], module)
+    else:
+        for member in chain:
+            if not (environment == "opencode" and form == "referenced"):
+                parts.append(f"---\n\n## Profile: {member['name']}\n")
+            for module in environment_applicable(member, environment, "root"):
+                emit(member, module)
+    target = ENVIRONMENT_ROOT_TARGETS[environment]
+    if environment == "opencode" and form == "referenced":
+        files[target] = header.encode("utf-8")
+        files["opencode.json"] = ccj1_bytes({"instructions": instructions}) + b"\n"
+    else:
+        files[target] = "\n".join(parts).encode("utf-8")
+    return files
+
+
+def environment_content_hash(files: dict[str, bytes]) -> str:
+    records = [path.encode("utf-8") + b"\x00" + files[path] for path in sorted(files)]
+    return "sha256:" + hashlib.sha256(b"\x00".join(records)).hexdigest()
+
+
+def validate_environment_vectors(vector: Any = None, suite_root: Path | None = None) -> None:
+    root = SUITE if suite_root is None else Path(suite_root)
+    if vector is None:
+        vector = load_json(root / "vectors" / "environments.json")
+    if (
+        vector.get("schema_version") != 1
+        or vector.get("protocol_version") != PROTOCOL_VERSION
+        or vector.get("capability") != "agent-environments"
+        or vector.get("capability_revision") != 1
+    ):
+        raise ValidationFailure("environments vector has the wrong capability identity")
+
+    header_cases = named_cases(vector.get("header_cases"), "environment header")
+    if set(header_cases) != ENVIRONMENT_HEADER_CASES:
+        raise ValidationFailure("environment header case inventory is not exact")
+    for name, case in header_cases.items():
+        expected = environment_header_bytes(case["chain"], case.get("precedence"))
+        declared = case.get("expected_bytes")
+        if not isinstance(declared, str) or declared.encode("utf-8") != expected:
+            raise ValidationFailure(f"environment header case {name} bytes are stale")
+        if case.get("sha256") != "sha256:" + hashlib.sha256(expected).hexdigest():
+            raise ValidationFailure(f"environment header case {name} digest is stale")
+        if case.get("line_count") != expected.count(b"\n"):
+            raise ValidationFailure(f"environment header case {name} line count is false")
+
+    cases = named_cases(
+        vector.get("materialization_cases"), "environment materialization"
+    )
+    if set(cases) != ENVIRONMENT_MATERIALIZATION_CASES:
+        raise ValidationFailure("environment materialization case inventory is not exact")
+    referenced_expected: set[str] = set()
+    for name, case in cases.items():
+        files = environment_case_files(case)
+        if case.get("file_written") is not bool(files):
+            raise ValidationFailure(
+                f"environment case {name}: file_written contradicts the section 5 rules"
+            )
+        entries = case.get("files")
+        if not isinstance(entries, list):
+            raise ValidationFailure(f"environment case {name}: files must be an array")
+        declared_paths = [
+            entry.get("path") for entry in entries if isinstance(entry, dict)
+        ]
+        if declared_paths != sorted(files):
+            raise ValidationFailure(f"environment case {name}: file inventory mismatch")
+        if not files:
+            if "surface_sha256" in case:
+                raise ValidationFailure(
+                    f"environment case {name}: an absent surface must not bind a hash"
+                )
+            continue
+        for entry in entries:
+            path = entry["path"]
+            payload = files[path]
+            if entry.get("sha256") != "sha256:" + hashlib.sha256(payload).hexdigest():
+                raise ValidationFailure(
+                    f"environment case {name}: digest for {path} is stale"
+                )
+            expected_name = entry.get("expected")
+            if (
+                not isinstance(expected_name, str)
+                or not expected_name.startswith("expected/environments/")
+            ):
+                raise ValidationFailure(
+                    f"environment case {name}: {path} has no expected byte file"
+                )
+            referenced_expected.add(expected_name)
+            expected_path = root / expected_name
+            if not expected_path.is_file() or expected_path.read_bytes() != payload:
+                raise ValidationFailure(
+                    f"environment case {name}: expected bytes for {path} differ"
+                )
+        if case.get("surface_sha256") != environment_content_hash(files):
+            raise ValidationFailure(
+                f"environment case {name}: surface hash is not the core section 8 content hash"
+            )
+
+    expected_root = root / "expected" / "environments"
+    on_disk = {
+        "expected/environments/" + path.relative_to(expected_root).as_posix()
+        for path in expected_root.rglob("*")
+        if path.is_file()
+    } if expected_root.is_dir() else set()
+    if on_disk != referenced_expected:
+        raise ValidationFailure(
+            "expected/environments inventory does not match the vector's referenced files"
+        )
+
+
 def main() -> int:
     checks = [
         validate_schemas,
@@ -3022,6 +3286,7 @@ def main() -> int:
         validate_shared_fixture_markers,
         validate_vector_semantics,
         validate_assurance_vectors,
+        validate_environment_vectors,
         validate_local_links,
     ]
     try:

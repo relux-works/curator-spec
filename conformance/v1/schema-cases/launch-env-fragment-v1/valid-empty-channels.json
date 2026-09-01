@@ -1,0 +1,15 @@
+{
+  "env": {
+    "XDG_CONFIG_HOME": "/manager/environments/companyA/opencode"
+  },
+  "environment": "opencode",
+  "fragment": "launch-env-fragment-v1",
+  "profile": {
+    "commit": "0123456789abcdef0123456789abcdef01234567",
+    "name": "companyA"
+  },
+  "system_prompt": {
+    "channels": [],
+    "path": "/manager/environments/companyA/opencode/opencode/.agent-context/system-prompt.md"
+  }
+}

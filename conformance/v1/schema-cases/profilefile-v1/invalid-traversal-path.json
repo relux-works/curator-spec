@@ -1,0 +1,6 @@
+{
+  "profiles": {
+    "companyA": "../outside"
+  },
+  "version": 1
+}
