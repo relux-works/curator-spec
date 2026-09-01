@@ -25,8 +25,14 @@ identifiers.
 | `curator project add\|resolve` | Register projects and resolve ownership of a path |
 | `curator config show` | Print effective configuration |
 | `curator skill check <dir> [--locale <code>] [--json]` | Validate one package |
-| `curator global init\|add\|remove\|list\|status\|install\|update\|upgrade` | Manage global scope |
+| `curator global init\|add\|remove\|list\|status\|install\|update\|upgrade [--profile <name>\|--all-profiles]` | Manage global scope; under the environments capability skill operations act on the current profile unless `--profile` or `--all-profiles` selects otherwise |
 | `curator hybrid add\|remove\|list\|status` | Manage hybrid scope |
+| `curator profile install <git-url> [--use [name]]` | Install every profile the repository declares under always-strict audit; activate one only on first install or with `--use` |
+| `curator profile list` | List installed profiles: source, ref, effective pin, and per-scope current markers |
+| `curator profile use <name> [--env <env-id>] [--target <target-id>]` | Switch the machine or scoped current profile and re-materialize in-place surfaces |
+| `curator profile sync` | Re-materialize every installed profile across every registered adapter and participating target |
+| `curator env resolve <env-id> [--profile <name>] [--format json\|env\|shell]` | Verify and repair the managed home, then print a `launch-env-fragment-v1` |
+| `curator env status [--check] [--json]` | Report the profile × environment × surface matrix read-only |
 | `curator audit [target] [--all] [--global] [--json]` | Run source audit |
 | `curator audit --allow <hash> --reason <text>` | Create an operator pin |
 | `curator audit --publish <record> --registry <url>` | Publish an auditor-signed record |
@@ -98,6 +104,35 @@ steps:
 
 Organizations normally install enforced source, audit, and registry policy
 before this job. CI MUST NOT disable a policy required on developer machines.
+
+## Environment profiles
+
+The agent-environments capability of
+[`protocol/environments.md`](../protocol/environments.md) adds the `profile`
+and `env` command families; manager behavior is
+[manager-profile section 12](../profiles/manager.md#12-agent-environments-manager-profile).
+`curator run` and `curator session` are not builtins: an unknown subcommand
+resolves to an executable named `curator-<name>` on `PATH` and receives the
+remaining arguments verbatim, so `curator run` dispatches to a separately
+installed `curator-run` and `curator session` to `curator-session`. A missing
+provider fails with the exact executable name and installation guidance;
+nothing is downloaded or installed implicitly.
+
+```bash
+# Install every profile the repository declares; profile audit is always strict.
+curator profile install https://github.com/example/agent-profiles --use companyA
+
+# Switch the whole machine, or narrow the switch to one environment.
+curator profile use personal
+curator profile use companyA --env claude_code
+
+# Read-only state: installed profiles and the surface matrix.
+curator profile list
+curator env status --check
+
+# Resolve a launch fragment; a stale managed home is repaired from the store.
+curator env resolve claude_code --profile companyA --format shell
+```
 
 ## External repository lifecycle
 

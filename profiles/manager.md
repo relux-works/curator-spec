@@ -1021,6 +1021,12 @@ in every mode, and never block:
 Neither class is a finding about source content, neither is subject to
 `fail_on`, and neither may be reported as an applied control.
 
+Under the agent-environments capability, profile-snapshot audit runs this
+pipeline in strict mode unconditionally and adds the REQUIRED
+`context-secret-material` detector class. Section 12.6 states the manager
+behavior; [`protocol/environments.md`](../protocol/environments.md) section
+9.1 is normative for the class.
+
 ## 8. Shell activation
 
 Shell activation is an OPTIONAL convenience for interactive users. A manager
@@ -1921,3 +1927,273 @@ hooks, filters, attributes, alternates, replacements, grafts, promisor/lazy
 network reads, credentials, proxy, host verification, compiler program, argv,
 environment, target, output, PATH entry, signing identity, signer argv,
 timestamp/notary service, fallback, or diagnostic rendering.
+
+## 12. Agent-environments manager profile
+
+This section is the revision-1 manager profile for the agent-environments
+capability. [`protocol/environments.md`](../protocol/environments.md) is the
+normative source for every object, byte rule, wire identity, and diagnostic
+code this section names; references of the form "environments §N" name that
+document, and no byte rule is restated here. This section extends, but does
+not reinterpret, sections 1 through 10. A manager MAY omit the capability
+entirely and remains a conforming skill manager. A manager that implements
+it MUST implement the complete closed revision-1 surface and MUST pass the
+complete environments conformance-vector set (environments §13); there is no
+partial claim.
+
+### 12.1 Environment adapter registry
+
+The section 5 agent-adapter table generalizes to the closed environment
+adapter registry of environments §7. Adapters are manager code, never
+package or profile code, and admitting a new adapter is a specification
+revision with its own review. The closed revision-1 set is exactly the four
+adapters of environments §7.1 — `claude_code`, `codex_cli`, `opencode`, and
+`pi` — with the home mechanisms, home shapes, root-context targets, and
+skills targets that table declares. `gemini`, `cursor`, and `windsurf`
+remain skills-only adapters under the unchanged section 5 table, and an
+environment identifier outside the registry keeps the section 5
+unknown-identifier discipline — a warning and no output — except where
+environments requires an error for an explicit operand.
+
+The manager selects each environment's effective root-context form from
+machine configuration with the adapter defaults of environments §7.2;
+profile data never selects a form. A configured form the adapter does not
+support is a configuration error. A supported form that is unavailable at
+materialization time — the tool gates it, or an unmanaged file blocks it —
+falls back to `monolithic` with a warning and never fails the operation for
+form availability alone (environments §5.3). For a managed `opencode`
+parent the manager maintains exactly the recorded XDG seed links of
+environments §7.1: refresh adds missing recorded seeds, removes recorded
+seeds whose target no longer exists, and MUST NOT touch an entry the marker
+does not record.
+
+An adapter MAY declare the closed secondary fixed-home targets of
+environments §7.6; revision 1 declares exactly the two
+`xcode-coding-assistant` rows. Target participation is machine
+configuration — `auto` (default), `off`, or an explicit per-target enable —
+never profile data. Under `auto` the manager probes the declared probe path:
+a machine without it materializes nothing there and reports nothing missing;
+a machine with it re-materializes the target on every install, `use`, and
+`sync`. Probe results appear in `env status`. The embedded hosts' own files
+are unmanaged in revision 1 and MUST NOT be written.
+
+For each declared shadowing path of environments §7.5, materialization and
+`env status` MUST warn when the path exists: the marker and ledger protect
+only managed paths, and the shadowing file makes the managed surface inert.
+The shadowing file itself is never touched.
+
+| Condition | Diagnostic (environments §5.7, §7.7) |
+|---|---|
+| explicit operand names an unregistered environment | `environment_unknown` |
+| explicit operand names an undeclared target | `environment_target_unknown` |
+| configured form not supported by the adapter | `environment_form_unsupported` |
+| configured form unavailable; monolithic emitted (warning) | `environment_form_unavailable` |
+| declared shadowing path exists (warning) | `environment_shadowing_path_present` |
+
+### 12.2 Materialization modes and the environment marker
+
+A profile materializes into an environment in exactly one of the three
+modes of environments §8.1: `managed-home`, `linked`, or `copied`. Mode
+defaults are fixed there: the four adapters default to `linked` for their
+in-place surfaces, secondary fixed-home targets default to `copied`, and
+managed homes always link from the profile store. An adapter MAY declare a
+different in-place default in the registry; profile data cannot select a
+mode. The `linked` mode extends the section 5 symlink-with-copy-fallback
+discipline from skills to root context, and all three modes materialize
+from the same immutable store entry (environments §4), so the modes cannot
+diverge for one effective pin.
+
+Every in-place surface set and every managed home carries the
+`.agent-environment.json` environment marker of environments §8.2. The
+marker is the ledger of record for environment surfaces, extending the
+Protocol Core section 11 rule unchanged: the manager MUST remove or replace
+only files the preceding marker records and MUST fail rather than overwrite
+an unmanaged file. Skill entries keep the core adapter ledger; the two
+records never merge. An unreadable or invalid marker fails closed: the
+home's surfaces are treated as unmanaged and nothing is removed or
+replaced. The marker is a record, not a signature, and MUST NOT be used as
+an authorization token or provenance proof.
+
+Takeover and onboarding backups land in `.agent-environment-backup/` beside
+the marker, are never overwritten, are outside every surface hash, and are
+never garbage-collected by revision-1 rules (environments §8.3).
+
+Drift follows environments §8.4. A `linked` surface drifts when a link no
+longer targets the expected store path or its target's bytes fail the
+recorded hash; `copied` and `managed-home` surfaces drift when a recorded
+content hash no longer matches. A drifted file is never silently
+overwritten outside repair, and an absent surface file and a failed read
+are different facts: unreadable evidence is reported as unreadable with
+currency unknown, never as absence.
+
+| Condition | Diagnostic (environments §8.5) |
+|---|---|
+| marker unreadable, malformed, or unsupported version | `environment_marker_invalid` |
+| managed surface bytes or link differ from the record | `environment_surface_drift` |
+| recorded surface file absent | `environment_surface_missing` |
+| recorded surface file exists but cannot be read | `environment_surface_unreadable` |
+| write would touch a file the marker does not record | `environment_surface_unmanaged_conflict` |
+| backup path already exists | `environment_backup_exists` |
+
+### 12.3 Profile lifecycle
+
+`profile install` resolves the declared source, validates the snapshot,
+audits it under section 12.6, and installs every profile the repository
+declares as independent pinned profiles into the profile store
+(environments §9.1, §4). Activation follows operator intent without magic:
+install activates a profile only on a machine with no current profile —
+reported, never silent — or under an explicit `--use`, and a bare `--use`
+is valid exactly when the repository declares one profile. In every other
+case the manager prints the installed profiles and how to activate one.
+
+`profile use <name>` re-materializes every in-place surface of every
+registered adapter — native default homes and every participating secondary
+fixed-home target — from the selected profile's store entry, atomically per
+entry, under the manager-home mutation lock, journaled like any other
+manager-home transaction (section 2.5). It then updates the recorded
+current profile for the affected scope and warns that already-running agent
+sessions keep the previous context in memory and may write state derived
+from it. The switch never touches environment-owned mutable state,
+credential files beyond the section 12.4 links, unmanaged files, or
+backups.
+
+`profile use --env <env-id>` or `--target <target-id>` narrows the switch
+and records a per-scope current profile (environments §9.3). `env status`
+and `profile list` MUST surface every scope whose current profile differs
+from the machine default: a split-brain configuration is always visible,
+never implicit.
+
+The machine-global skill scope becomes profile-scoped (environments §9.4):
+each profile's `Skillfile.json` resolves through the unchanged section 2
+lifecycle, global skill operations act on the current profile and accept
+`--profile <name>` and `--all-profiles`, and `profile sync` re-materializes
+every installed profile across every registered adapter and participating
+target — the actualization path when a new adapter or target is registered
+on the machine. On first use of the profile surface the existing
+machine-local global scope is renamed into the builtin `local`-kind profile
+`default`; a machine that never installs another profile observes no
+behavior change.
+
+On bootstrap, or on the first profile operation that meets unmanaged state,
+the manager runs the revision-1 onboarding subset of environments §9.5:
+
+1. **detect** — inventory, per registered adapter and participating target,
+   existing unmanaged root-context files, existing global skills, and
+   managed-surface paths that are already symlinks pointing outside the
+   manager's store;
+2. **foreign-manager stop** — an outside-store symlink is evidence of
+   another manager and stops the operation with an explicit choice — abort,
+   or take over with backup — never a silent absorption;
+3. **replace notice** — before any write, the operator is told that native
+   global context files are being replaced by managed ones and where the
+   backup lands;
+4. **backup, always** — every file the operation will replace is copied
+   into the section 12.2 backup location before the first write, whether or
+   not any import was requested; and
+5. **takeover** — outside onboarding, replacing a specific unmanaged file
+   requires the explicit takeover flag and performs the same notice and
+   backup; without the flag the section 12.2 ledger discipline fails the
+   operation rather than overwrite.
+
+The import machinery — lossless/lossy classification, the lossy consent
+branch, the `path` source kind, and native-skill migration — is deferred
+with the onboarding-import capability: a revision-1 manager MUST reject a
+`path` source declaration and MUST NOT emulate it through the `local` kind
+(environments §1). Authentication is never part of onboarding or takeover;
+credential files stay where the section 12.4 passthrough expects them.
+
+| Condition | Diagnostic (environments §1.1, §9.6) |
+|---|---|
+| foreign-manager symlink detected during onboarding | `environment_foreign_manager_detected` |
+| `--use <name>` names an undeclared profile | `profile_unknown` |
+| bare `--use` with more than one declared profile | `profile_index_ambiguous` |
+| `path` source kind declared | `profile_source_kind_unsupported` |
+
+### 12.4 Credential passthrough
+
+Credentials are never profile content and never managed surfaces. Each
+adapter declares the closed per-platform passthrough set of environments
+§7.4. The default per profile × environment is `shared`: a managed home
+reuses the operator's existing authentication through exactly the declared
+entries. A pair MAY be configured `isolated` — no passthrough, the tool
+authenticates fresh inside the managed home — the supported shape for
+genuinely separate accounts. Passthrough entries are excluded from surface
+content hashes and drift detection, are never copied into the profile
+store, and are never audited as profile content. Materialization, refresh,
+switch, and garbage collection MUST NOT create, rewrite, or delete a
+credential file beyond maintaining the declared passthrough links
+themselves: the operator-owned credential boundary of section 1, applied to
+environment homes.
+
+### 12.5 `env resolve`
+
+`env resolve` is the manager's only execution-facing primitive
+(environments §10.1): a pure function from (profile, composition chain,
+environment, machine configuration) to the closed `launch-env-fragment-v1`
+object. It launches nothing and applies no system-prompt channel; channel
+descriptors in the fragment are data for a separately specified launcher,
+behind that launcher's explicit opt-in.
+
+Resolution verifies that the profile's managed home for the environment is
+materialized and current under section 12.2 and repairs it from the profile
+store when it is not, re-materializing managed surfaces and passthrough
+links while leaving environment-owned mutable state, unmanaged files, and
+backups untouched. Repair restores managed bytes from the store entry and
+MUST NOT adopt candidate bytes found in the home — the no-adoption rule of
+sections 2.6 and 11.9. A repair that cannot complete emits no fragment.
+
+The profile-influence boundary of environments §10.3 is this profile's
+package-influence boundary applied to environment injection: fragment
+variable names come only from the closed registry, fragment values stay
+below the manager-owned environments root, and profile bytes choose what
+the context says, never how a process is launched.
+
+| Condition | Diagnostic (environments §10.4) |
+|---|---|
+| operand names an unregistered environment | `environment_unknown` |
+| named or current profile not installed | `profile_unknown` |
+| managed home cannot be repaired from the store | `environment_repair_failed` |
+
+### 12.6 Profile audit
+
+Profile installation always runs the section 7 source audit in strict mode.
+An advisory profile install does not exist, and no configuration, flag, or
+policy may downgrade the mode. The pipeline is unchanged — raw-tree
+hashing, the static canary whose failure always blocks, deterministic
+detectors, revocation — and gains one REQUIRED detector class for profile
+snapshots: `context-secret-material` (environments §9.1), a deterministic
+detector over context modules, `Profilefile.json`, `context.json`, and
+`PROFILE.md` that reports credential-like material — keys, tokens,
+passwords, and equivalent secret classes — as a verifiable finding at
+blocking severity. Because profile installation is always strict, a profile
+carrying such a finding fails installation.
+
+Root-context modules are prompt material: audit tooling SHOULD surface them
+for human prompt-injection review. The pipeline guarantees provenance and
+immutability, not intent.
+
+### 12.7 Status and garbage collection
+
+`profile list` and `env status` extend the section 10 read-only discipline
+unchanged: recompute and report, never mutate — no fetch, no repair, no
+adoption, no channel application. `profile list` reports every installed
+profile with its source identity, declared ref, effective pin, and current
+markers — the machine default and every scope that differs. `env status`
+reports the profile × environment × surface matrix of environments §12:
+mode, form, materialized pin, content-hash currency, drift, missing
+surfaces, marker validity, unregistered adapters found in machine
+configuration, existing shadowing paths, active composition chains,
+split-brain scopes, and secondary-target probe results. `--check` returns
+non-zero when any row is non-current. Row currency follows environments §12
+exactly, and unreadable evidence is reported as unreadable, never as
+absence (environments §8.4).
+
+Garbage collection extends section 10: it runs under the manager-home
+mutation lock, and its live roots additionally include every profile store
+entry referenced by an installed profile's effective pin, every managed
+home and in-place surface set referenced by a valid environment marker, and
+every entry referenced by an in-flight transaction journal. An unreadable
+marker or unprovable reference fails safe: the uncertain entries are
+retained and the uncertainty reported. Environment-owned mutable state
+inside managed homes is never collected, and the section 12.2 backups are
+never collected by revision-1 rules.
