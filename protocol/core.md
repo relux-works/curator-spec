@@ -1641,7 +1641,7 @@ The logical cache key, exact receipt bytes, artifact-relative path, artifact
 bytes/hash/size, and validation outcomes are portable. Manager-home paths,
 physical cache-root and driver-directory names, receipt filenames, lock and
 quarantine names, and storage backends are implementation-specific. A manager
-MUST NOT infer portable paths such as `build-cache` or `.csk-build.json`.
+MUST NOT infer portable paths such as `build-cache` or `.agent-build.json`.
 
 Entries are built in operation-private staging and published atomically and
 immutably under the manager-home mutation lock. Receipt hashes are deterministic
