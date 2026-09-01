@@ -431,24 +431,21 @@ classification, native-skill migration) is designed here but delivered as
 its own tracked story on this decision's epic, targeted between revisions 1
 and 2.
 
-### 6. Launcher
+### 6. Resolution primitive, umbrella subcommands, and the launcher
 
-Two commands, one contract:
+Curator's own execution surface is exactly one primitive:
 
 - `curator env resolve <env-id> [--profile <name>] [--format json|env|shell]`
-  — the composable primitive. Resolves a profile to a **launch environment
-  fragment**: the adapter's environment variable set to the managed-home
-  path, plus the profile identity, effective commit, and fragment schema
-  version. `--format env` prints `NAME=value` lines; `shell` prints export
+  resolves a profile to a **launch environment fragment**: the adapter's
+  environment variable set to the managed-home path, the profile identity,
+  effective commit, active composition chain, and fragment schema version,
+  plus — when the profile carries system modules — an inert system-prompt
+  section: the materialized system file's path and the adapter's declared
+  channel descriptor (flag-class, configuration-key, or variable-class).
+  `--format env` prints `NAME=value` lines; `shell` prints export
   statements; `json` prints the closed `launch-env-fragment-v1` object.
   Resolution verifies the managed home is materialized and current, and
   repairs it from the store when it is not.
-- `curator launch <env-id> [--profile <name>] [--] <native args…>` — resolves
-  the fragment, merges it into the inherited environment, and replaces itself
-  with the environment's native executable, forwarding the argument vector
-  verbatim with no reinterpretation. Resume flags, prompts, and every other
-  native argument pass through untouched; launch adds no shell between the
-  operator and the tool.
 
 Fragment variable names come from the closed adapter registry, and fragment
 values are managed-home paths below the manager-owned environments root.
@@ -457,41 +454,70 @@ move a value outside that root; the only profile-derived component of a
 value is the profile-name path segment, which the §2 identifier grammar
 bounds — no separators, no traversal. A profile chooses what the context
 says, never how the process is launched. This is the same package-influence
-boundary the execution policies draw, applied to environment injection.
+boundary the execution policies draw, applied to environment injection. The
+system-prompt section is data about a channel, never an applied override:
+resolving a fragment activates nothing.
 
-**System-prompt opt-in.** The system modules of Decision 2 are inert until
-explicitly activated. `curator launch <env-id> --system-prompt` (and the
-equivalent per-profile×environment machine setting for operators who want
-it standing) makes the launcher engage the adapter's declared channel: the
-materialized system file passed through `--system-prompt-file`-class
-arguments for `claude_code` and `pi`, a `model_instructions_file` override
-argument for `codex_cli`, the `GEMINI_SYSTEM_MD` fragment variable once the
-`gemini` adapter lands. On every activation the launcher prints a warning
-that the run's system prompt is customized, that replacement channels
-discard the tool's built-in behavior entirely, and that a custom system
-prefix can change how requests are cached and therefore billed (Claude
-Code's default system prompt participates in shared prompt caching; a
-custom one forms its own cache prefix — exact per-tool behavior is open
-question 8's research). Without the opt-in, managed homes carry no active
-system-prompt file — in particular pi's `APPEND_SYSTEM.md`, which the tool
-applies unconditionally when present, is materialized only under the
-opt-in — and native in-place homes never receive one at all (Decision 2).
-An operator can always pass the tool's own flags by hand; the launcher's
-job is to make the managed path explicit, warned, and reproducible, not to
-be the only door.
+**Umbrella subcommands.** Curator adopts the established external-subcommand
+convention: a subcommand Curator does not implement resolves to an
+executable named `curator-<name>` on `PATH` and is executed with the
+remaining arguments — the `git`/`kubectl`/`docker` plugin model. Curator
+knows only the discovery rule; it carries no knowledge of any provider. A
+missing provider fails with the provider name and installation guidance.
+The first two providers are `curator run` (the launcher below) and
+`curator session` (a shim delegating to the `ax` agent session manager).
 
-In plain terms the launcher is two verbs. `resolve` answers "what would you
-set?" — it prints the environment variables that point a tool at a profile
-home, for a human to eyeball, a script to `eval`, or `ax` to merge into its
-spawn plan. `launch` answers "just run it" — same resolution, then it
-replaces itself with the real tool so the operator types
-`curator launch codex_cli --profile companyA -- codex resume --last` and
-gets exactly the codex they know, with `CODEX_HOME` already pointing at the
-companyA home. Everything after `--` belongs to the tool, untouched.
+**The launcher (`curator run`).** Launching is not Curator's plane.
+Executing an agent composes three independent contracts, and the launcher —
+a separate component with its own repository and its own specification — is
+their composer:
 
-The command names above are the contract; a short standalone alias
-(`cual`-style) is packaging and deliberately not decided here (open question
-1).
+1. the **spawn plane** (the `agents-management` module): which agentic
+   system, model, reasoning effort, and vendor, and whether provider limits
+   admit a launch right now — consumed as a built launch plan
+   (binary/argv/environment), never rebuilt;
+2. the **context plane** (Curator): the fragment above, obtained through
+   `curator env resolve --format json` and merged into the child
+   environment;
+3. the **session plane** (`ax`): when the machine has the `ax` integration
+   configured, the launcher always launches through `ax`'s instrumentation
+   so the session is tracked from birth — a configured integration is not a
+   per-launch option, and bypassing it is a configuration change, not a
+   flag. Without the integration the launcher execs directly.
+
+The launcher holds no session state of its own — fire is the launcher's
+verb, manage is `ax`'s — and it is the component that applies the
+system-prompt channel: an explicit opt-in engages the fragment's channel
+descriptor (`--system-prompt-file`-class arguments for `claude_code` and
+`pi`, a `model_instructions_file` override for `codex_cli`, the
+`GEMINI_SYSTEM_MD` variable once the `gemini` adapter lands), and every
+activation prints a warning that the run's system prompt is customized,
+that replacement channels discard the tool's built-in behavior entirely,
+and that a custom system prefix can change how requests are cached and
+therefore billed (Claude Code's default system prompt participates in
+shared prompt caching; a custom one forms its own cache prefix — exact
+per-tool behavior is open question 8's research). Without the opt-in,
+managed homes carry no active system-prompt file — in particular pi's
+`APPEND_SYSTEM.md`, which the tool applies unconditionally when present, is
+materialized only under the per-profile×environment machine setting — and
+native in-place homes never receive one at all (Decision 2). An operator
+can always pass the tool's own flags by hand; the launcher's job is to make
+the managed path explicit, warned, and reproducible, not to be the only
+door.
+
+In plain terms: `curator env resolve` answers "what would you set?" — it
+prints the environment variables that point a tool at a profile home, for a
+human to eyeball, a script to `eval`, or another tool to merge into its
+spawn plan. `curator run` answers "just run it" — the operator types
+`curator run codex_cli --profile companyA -- resume --last` and gets
+exactly the codex they know, in the companyA home, on an admitted model,
+tracked by `ax` when the integration is configured. Everything after `--`
+belongs to the tool, untouched.
+
+This decision fixes the umbrella name `curator run` and the boundary above;
+the launcher's own specification defines its flags, its `agents-management`
+consumption, its `ax` handoff, and its warnings, and this document does not
+constrain them further.
 
 ### 7. Credentials and mutable state
 
@@ -552,35 +578,39 @@ secondary-target probe results, with the existing exit-code discipline
 (`--check` non-zero on any non-current row). Both are read-only and follow
 the manager §10 status discipline: recompute and report, never mutate.
 
-### 10. Composition with the agent session manager
+### 10. Composition across the planes
 
-Curator and `ax` compose without depending on each other; the entire
-contract is one closed JSON object and one CLI invocation.
+Four components, four owners, and every contract between them is a CLI
+invocation plus a closed object — no shared libraries, no import edges
+between Curator, the launcher, `agents-management`, and `ax` beyond the
+launcher's declared consumption of the `agents-management` module:
 
-- **Standalone Curator**: `curator launch` execs the tool directly. No `ax`,
-  no session tracking — fine for everyday use.
-- **Standalone ax**: sessions launch against native default homes, exactly as
-  today. No Curator, no profiles.
-- **Composed**: `ax` is the outer layer and owns the session lifecycle;
-  Curator is the inner resolver and owns environment resolution. An `ax`
-  integration (host logic or provider plugin) obtains the fragment by
-  invoking `curator env resolve <env> --profile <p> --format json` and merges
-  the fragment's variables into the `SpawnPlan` `env_literals` it already
-  emits. The fragment is stateless and idempotent; the session state lives
-  where it already lives, in `ax`.
+| Plane | Owner | Question it answers |
+|---|---|---|
+| Context | Curator | what the agent reads: profiles, homes, skills |
+| Spawn | `agents-management` | who runs: system, vendor, model, effort, limits → launch plan |
+| Session | `ax` | what happens to a running session: leases, checkpoints, resume |
+| Execution | the launcher (`curator run`) | compose the three planes and exec |
+
+Degradation is graceful in every direction. Curator alone: `env resolve`
+plus in-place materialization — every natively started tool already sees
+the current profile. `ax` alone: sessions against native homes, exactly as
+today. The launcher without `ax`: resolve, plan, exec — untracked. With the
+`ax` integration configured, the launcher always goes through `ax` and
+every launch is tracked from birth (Decision 6).
 
 For resume fidelity, the `ax` side SHOULD record the profile name, effective
 commit, and fragment digest in its Session Record extensions at launch, and
 re-resolve the same profile on resume. A resolved commit that differs from
 the recorded one is drift: the recommended behavior is to warn and continue,
-with a strict flag to refuse. The recommendation direction — `ax` calls
-Curator, never the reverse — follows from state: session leases,
+with a strict flag to refuse. Direction follows from state: session leases,
 checkpoints, and takeover semantics are `ax`'s domain, while resolution is a
 pure function from (profile, environment, machine config) to a fragment, and
-the pure function belongs on the inside. `cual`-style wrapping of `ax` is
-rejected as a dependency direction (see Rejected alternatives), not as a
-workflow: an operator can still type one command, because the `ax` side is
-free to expose profile selection in its own UX.
+the pure function belongs on the inside — `ax` and the launcher call
+Curator, never the reverse. Merging any two of these components is rejected
+(see Rejected alternatives); the umbrella subcommand convention of Decision
+6 gives the operator one brand over four codebases without coupling one
+release train to another.
 
 Every change this decision asks of `ax` — the extension keys, the resume
 drift policy, any fragment-consumption note — is delivered to the
@@ -595,9 +625,12 @@ piecemeal edits; until that PR lands, nothing here constrains `ax`.
 | Root context (IR → `CLAUDE.md`/`AGENTS.md`) | claude_code, codex_cli, opencode, pi | gemini, cursor | — |
 | Root-context forms (Decision 2) | monolithic everywhere; referenced for claude_code, opencode | referenced for gemini as research admits | — |
 | Composition (overlay profiles, chapters, precedence) | ✓ | — | — |
-| System-prompt modules + launcher opt-in | claude_code, codex_cli, pi (managed homes / flags only) | gemini (`GEMINI_SYSTEM_MD`), opencode | embedded hosts, if open question 8 admits any |
+| System-prompt modules: materialization + fragment channel description | claude_code, codex_cli, pi (managed homes only) | gemini (`GEMINI_SYSTEM_MD`), opencode | embedded hosts, if open question 8 admits any |
+| System-prompt application + warnings | launcher's own specification | — | — |
 | Skills | already shipped; becomes profile-scoped | — | — |
-| Profiles, switching (incl. scoped `--env`/`--target`), launcher, fragments | ✓ | — | — |
+| Profiles, switching (incl. scoped `--env`/`--target`), `env resolve`, fragments | ✓ | — | — |
+| Umbrella subcommand discovery (`curator-<name>`) | ✓ | — | — |
+| Launcher (`curator run`) and `curator session` shim | own repositories and specification, tracked on this epic | — | — |
 | Onboarding: detect, foreign-manager stop, backup, takeover | ✓ | — | — |
 | Onboarding import (`path` source kind, lossless/lossy, skill migration) | — | ✓ own story between rev 1 and 2 | — |
 | Secondary fixed-home targets (Xcode CodingAssistant, auto-probed) | ✓ root context + skills | commands, MCP state | — |
@@ -649,9 +682,21 @@ read-only.
 - **Making `ax` depend on Curator or Curator on `ax`.** Either direction
   couples release trains and forces both tools on users who want one. The
   fragment contract keeps each fully usable alone.
+- **Merging `ax` under Curator as one specification and binary.** Considered
+  explicitly and rejected in favor of the Decision 6 umbrella: the `ax`
+  domain (leases, checkpoints, terminal backends, provider plugins) is a
+  large, separately reviewed, actively evolving normative surface, and
+  stapling it to this protocol's frozen-surface discipline would slow both.
+  One brand over independent codebases delivers the "one full manager"
+  experience without the coupling.
+- **A rich launcher inside Curator.** An earlier draft of this decision had
+  `curator launch` growing binary maps and system-prompt argv handling —
+  spawn-plane concerns that belong to `agents-management` and to the
+  launcher's own specification. Curator keeps exactly `env resolve`;
+  `curator run` is umbrella discovery, not Curator code.
 - **Curator-side session management.** Continue/resume UX beyond verbatim
-  argument pass-through duplicates `ax`'s reason to exist; `curator launch`
-  deliberately stays a resolver plus `exec`.
+  argument pass-through duplicates `ax`'s reason to exist; the execution
+  plane deliberately stays a composer plus `exec`.
 
 ## Compatibility impact
 
@@ -731,17 +776,33 @@ MUST implement the closed revision-1 surface exactly.
 - `status` output, documentation, and conformance suites grow the
   environment matrix.
 - `ax` gains an optional, contract-shaped integration and loses nothing when
-  Curator is absent.
+  Curator is absent; once the integration is configured on a machine, the
+  launcher path always runs through it.
+- Two repositories are authorized alongside the normative work: the launcher
+  implementation (consuming `agents-management` as a module and Curator/`ax`
+  as CLI contracts) and its specification, per open question 1's layout
+  recommendation; `curator session` ships as a thin shim from the `ax` side.
 - Multi-machine profile distribution needs no new mechanism: profiles are
   git repositories; installing the same pinned profiles on another machine
   is the sync story.
 
 ## Open questions
 
-1. **Launcher alias naming.** `curator env resolve` / `curator launch` are
-   the contract; is a short standalone binary (`cual`, `agx`, …) wanted at
-   revision 1, and under what name? Recommendation: ship the subcommands
-   first; decide the alias in packaging once the contract is exercised.
+1. **Launcher specification home and `agents-management` decomposition.**
+   The launcher needs its own specification, and its implementation
+   repository is new; three layouts compete: (a) specification and
+   implementation inside the existing `skill-agents-management` repository;
+   (b) a full split of that repository into library, CLI, and skill; (c) a
+   new launcher repository consuming `agents-management` as a Go module,
+   with the specification either in a sibling `-spec` repository (the
+   `curator-spec` / `agent-session-manager-spec` pattern) or as an in-repo
+   draft promoted to a `-spec` repository at stabilization.
+   Recommendation: (c) — the launcher composes three planes and must not
+   live inside one of them, and `skill-agents-management` stays unsplit
+   until a consumer besides the launcher needs its CLI apart from its
+   module, since a Go module imports cleanly from a skill-carrying
+   repository today and a second consecutive extraction without a second
+   consumer is decomposition ahead of evidence.
 2. **`Profilefile.json` vs directory-convention discovery.** Recommendation:
    the strict descriptor file — discovery-by-layout invites accidental
    profiles and unvalidated shapes.
