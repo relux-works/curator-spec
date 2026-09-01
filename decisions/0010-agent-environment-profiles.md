@@ -41,7 +41,7 @@ CodingAssistant ships its embedded Claude and Codex agents with exactly this
 shape, a dedicated fixed home per agent, recorded from vendor documentation
 as `~/Library/Developer/Xcode/CodingAssistant/` since Xcode 26.3 (the
 parent path and the version attribution are docs-confidence; open question
-6 verifies them). The verified per-tool matrix,
+5 verifies them). The verified per-tool matrix,
 with local-binary evidence for Claude Code 2.1.251, Codex 0.151.0, pi 0.84.2,
 and Gemini CLI 0.54.4, is recorded in the research resource attached to
 `TASK-260831-hbq9n6`.
@@ -149,7 +149,7 @@ per-project approval recorded in `.claude.json`
 CLAUDE.md content only where that approval is present or the references
 stay inside the home, and falls back to `monolithic` otherwise. Surveying
 the remaining environments' import semantics is a research item of open
-question 7.
+question 6.
 
 **Generation header.** Every materialized root-context file begins with a
 deterministic HTML comment that markdown renderers do not display:
@@ -190,7 +190,7 @@ modules materialize only into managed homes and activate only through the
 launcher's explicit opt-in (Decision 6) or through natively typed commands.
 Secondary fixed-home targets never receive system modules in revision 1;
 whether an embedded host offers any override channel at all is open
-question 8.
+question 7.
 
 Profile repositories are data. No file in a profile repository is executed,
 sourced, or interpreted as configuration for Curator itself. The existing
@@ -250,7 +250,7 @@ layout the primary home has. An adapter MAY declare a closed list of such
 targets: a probe path, the home path, and the subset of surfaces the embedded
 host honors. Revision 1 declares two, both introduced by Xcode's
 CodingAssistant (docs-recorded as of Xcode 26.3; path and version verify
-under open question 6):
+under open question 5):
 
 | Adapter | Target id | Home | Surfaces honored |
 |---|---|---|---|
@@ -496,7 +496,7 @@ that replacement channels discard the tool's built-in behavior entirely,
 and that a custom system prefix can change how requests are cached and
 therefore billed (Claude Code's default system prompt participates in
 shared prompt caching; a custom one forms its own cache prefix — exact
-per-tool behavior is open question 8's research). Without the opt-in,
+per-tool behavior is open question 7's research). Without the opt-in,
 managed homes carry no active system-prompt file — in particular pi's
 `APPEND_SYSTEM.md`, which the tool applies unconditionally when present, is
 materialized only under the per-profile×environment machine setting — and
@@ -514,10 +514,15 @@ exactly the codex they know, in the companyA home, on an admitted model,
 tracked by `ax` when the integration is configured. Everything after `--`
 belongs to the tool, untouched.
 
-This decision fixes the umbrella name `curator run` and the boundary above;
-the launcher's own specification defines its flags, its `agents-management`
-consumption, its `ax` handoff, and its warnings, and this document does not
-constrain them further.
+This decision fixes the umbrella name `curator run`, the boundary above,
+and the launcher's home: the `curator-agent-launcher` repository, providing
+the `curator-run` executable, consuming `agents-management` as a Go module
+and Curator and `ax` as CLI contracts. Its specification starts as an
+in-repository draft and is promoted to a sibling `-spec` repository when
+the contract stabilizes — the moment a second implementer or a conformance
+suite needs it. The launcher's own specification defines its flags, its
+`agents-management` consumption, its `ax` handoff, and its warnings; this
+document does not constrain them further.
 
 ### 7. Credentials and mutable state
 
@@ -526,7 +531,7 @@ adapter declares its credential passthrough set — the auth entries a managed
 home shares with the native home by symlink or seeding (`auth.json` for
 `codex_cli` and `pi`; `claude_code` splits by platform — macOS Keychain
 entries are ambient and need nothing, Linux keeps `.credentials.json` inside
-the home and passes it through, and Windows needs the open question 6
+the home and passes it through, and Windows needs the open question 5
 verification; opencode keeps auth in the XDG data directory, which the
 config swap never touches). Default is `shared`: every profile home reuses the
 operator's existing authentication. A profile×environment pair MAY be
@@ -625,7 +630,7 @@ piecemeal edits; until that PR lands, nothing here constrains `ax`.
 | Root context (IR → `CLAUDE.md`/`AGENTS.md`) | claude_code, codex_cli, opencode, pi | gemini, cursor | — |
 | Root-context forms (Decision 2) | monolithic everywhere; referenced for claude_code, opencode | referenced for gemini as research admits | — |
 | Composition (overlay profiles, chapters, precedence) | ✓ | — | — |
-| System-prompt modules: materialization + fragment channel description | claude_code, codex_cli, pi (managed homes only) | gemini (`GEMINI_SYSTEM_MD`), opencode | embedded hosts, if open question 8 admits any |
+| System-prompt modules: materialization + fragment channel description | claude_code, codex_cli, pi (managed homes only) | gemini (`GEMINI_SYSTEM_MD`), opencode | embedded hosts, if open question 7 admits any |
 | System-prompt application + warnings | launcher's own specification | — | — |
 | Skills | already shipped; becomes profile-scoped | — | — |
 | Profiles, switching (incl. scoped `--env`/`--target`), `env resolve`, fragments | ✓ | — | — |
@@ -778,47 +783,32 @@ MUST implement the closed revision-1 surface exactly.
 - `ax` gains an optional, contract-shaped integration and loses nothing when
   Curator is absent; once the integration is configured on a machine, the
   launcher path always runs through it.
-- Two repositories are authorized alongside the normative work: the launcher
-  implementation (consuming `agents-management` as a module and Curator/`ax`
-  as CLI contracts) and its specification, per open question 1's layout
-  recommendation; `curator session` ships as a thin shim from the `ax` side.
+- One repository is authorized alongside the normative work:
+  `curator-agent-launcher`, carrying the `curator-run` executable and its
+  in-repository specification draft (Decision 6); `curator session` ships as
+  a thin shim from the `ax` side.
 - Multi-machine profile distribution needs no new mechanism: profiles are
   git repositories; installing the same pinned profiles on another machine
   is the sync story.
 
 ## Open questions
 
-1. **Launcher specification home and `agents-management` decomposition.**
-   The launcher needs its own specification, and its implementation
-   repository is new; three layouts compete: (a) specification and
-   implementation inside the existing `skill-agents-management` repository;
-   (b) a full split of that repository into library, CLI, and skill; (c) a
-   new launcher repository consuming `agents-management` as a Go module,
-   with the specification either in a sibling `-spec` repository (the
-   `curator-spec` / `agent-session-manager-spec` pattern) or as an in-repo
-   draft promoted to a `-spec` repository at stabilization.
-   Recommendation: (c) — the launcher composes three planes and must not
-   live inside one of them, and `skill-agents-management` stays unsplit
-   until a consumer besides the launcher needs its CLI apart from its
-   module, since a Go module imports cleanly from a skill-carrying
-   repository today and a second consecutive extraction without a second
-   consumer is decomposition ahead of evidence.
-2. **`Profilefile.json` vs directory-convention discovery.** Recommendation:
+1. **`Profilefile.json` vs directory-convention discovery.** Recommendation:
    the strict descriptor file — discovery-by-layout invites accidental
    profiles and unvalidated shapes.
-3. **Module manifest vs frontmatter.** Recommendation: the `context.json`
+2. **Module manifest vs frontmatter.** Recommendation: the `context.json`
    manifest — YAML frontmatter inside modules would leak into materialized
    output or require stripping, and stripping breaks byte-opacity.
-4. **opencode skills placement.** Whether the opencode adapter's skills
+3. **opencode skills placement.** Whether the opencode adapter's skills
    surface moves into `<home>/skills/` (config-dir native) or keeps the
    `.agents/skills` native surface of manager §5 needs implementation-time
    verification against a pinned opencode release. Recommendation: keep the
    manager §5 native surface until a pinned release proves `<home>/skills/`.
-5. **`ax` extension fields.** Exact Session Record extension keys for
+4. **`ax` extension fields.** Exact Session Record extension keys for
    profile name, commit, and fragment digest, and whether resume drift
    defaults to warn-and-continue (recommended) with a strict refuse flag —
    to be settled with the `ax` spec once revision 1 stabilizes.
-6. **Windows and embedded-target verification.** The four revision-1
+5. **Windows and embedded-target verification.** The four revision-1
    variables inject identically on Windows, but opencode's `XDG_CONFIG_HOME`
    behavior and the claude_code credential passthrough shape there (Decision
    7) need platform evidence before the conformance vectors freeze. The
@@ -830,14 +820,14 @@ MUST implement the closed revision-1 surface exactly.
    against a pinned Xcode release. Recommendation: hold the
    conformance-vector freeze on that platform evidence and draft against the
    recorded shapes meanwhile.
-7. **Import semantics per environment.** claude_code `@path` imports
+6. **Import semantics per environment.** claude_code `@path` imports
    (documented, five hops, external-include approval in `.claude.json`) and
    opencode `instructions` lists are recorded; whether gemini's `GEMINI.md`
    import mechanism is real and stable enough for a `referenced` form, and
    whether codex or pi grow one, is research to complete before the
    `referenced` conformance vectors freeze. Recommendation: ship revision 1
    with the two verified referenced targets and re-survey at revision 2.
-8. **System-prompt channels: exact behavior and embedded hosts.** Per-tool
+7. **System-prompt channels: exact behavior and embedded hosts.** Per-tool
    research to finish before the system-module vectors freeze: the precise
    cache/billing consequence of a custom system prompt per tool (Claude
    Code's shared-prompt-cache interaction is the recorded example), whether
