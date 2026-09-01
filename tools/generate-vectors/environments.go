@@ -427,6 +427,33 @@ func environmentMarkerSchemaExamples(valid map[string]any) []schemaExample {
 	delete(localProfile, "composition")
 	delete(localProfile, "precedence")
 
+	pathProfile := cloneMap(valid)
+	pathProfile["profile"] = map[string]any{
+		"name": "authoring", "source_kind": "path",
+		"source_path": "/Users/operator/profiles", "state_sha256": strings.Repeat("cd", 32),
+	}
+	delete(pathProfile, "composition")
+	delete(pathProfile, "precedence")
+
+	importedPathProfile := cloneMap(pathProfile)
+	importedPathProfile["profile"].(map[string]any)["name"] = "imported"
+	importedPathProfile["profile"].(map[string]any)["imported_from_native"] = true
+
+	pathWithCommit := cloneMap(pathProfile)
+	pathWithCommit["profile"].(map[string]any)["commit"] = fixedCommit
+
+	pathWithRef := cloneMap(pathProfile)
+	pathWithRef["profile"].(map[string]any)["ref"] = map[string]any{"kind": "branch", "value": "main"}
+
+	pathMissingSourcePath := cloneMap(pathProfile)
+	delete(pathMissingSourcePath["profile"].(map[string]any), "source_path")
+
+	pathImportedFalse := cloneMap(pathProfile)
+	pathImportedFalse["profile"].(map[string]any)["imported_from_native"] = false
+
+	gitWithSourcePath := cloneMap(valid)
+	gitWithSourcePath["profile"].(map[string]any)["source_path"] = "/Users/operator/profiles"
+
 	linked := cloneMap(valid)
 	linked["mode"] = "linked"
 	for _, entry := range linked["surfaces"].(map[string]any) {
@@ -482,13 +509,20 @@ func environmentMarkerSchemaExamples(valid map[string]any) []schemaExample {
 
 	return []schemaExample{
 		{name: "valid-local-profile", valid: true, instance: localProfile},
+		{name: "valid-path-profile", valid: true, instance: pathProfile},
+		{name: "valid-imported-path-profile", valid: true, instance: importedPathProfile},
 		{name: "valid-linked-copy-fallback", valid: true, instance: linked},
 		{name: "valid-no-composition", valid: true, instance: noComposition},
 		{name: "valid-seeded-opencode-parent", valid: true, instance: seededParent},
 		{name: "invalid-version", valid: false, instance: withField(valid, "version", 2)},
 		{name: "invalid-unknown-field", valid: false, instance: unknownField},
 		{name: "invalid-git-with-state-pin", valid: false, instance: gitWithStatePin},
+		{name: "invalid-git-with-source-path", valid: false, instance: gitWithSourcePath},
 		{name: "invalid-local-with-ref", valid: false, instance: localWithRef},
+		{name: "invalid-path-with-commit", valid: false, instance: pathWithCommit},
+		{name: "invalid-path-with-ref", valid: false, instance: pathWithRef},
+		{name: "invalid-path-missing-source-path", valid: false, instance: pathMissingSourcePath},
+		{name: "invalid-path-imported-from-native-false", valid: false, instance: pathImportedFalse},
 		{name: "invalid-mode", valid: false, instance: invalidMode},
 		{name: "invalid-composition-without-precedence", valid: false, instance: compositionWithoutPrecedence},
 		{name: "invalid-precedence-without-composition", valid: false, instance: precedenceWithoutComposition},

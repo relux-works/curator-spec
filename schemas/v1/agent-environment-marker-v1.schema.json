@@ -29,6 +29,18 @@
             "state_sha256": {"$ref": "common.schema.json#/$defs/hex256"}
           },
           "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["name", "source_kind", "source_path", "state_sha256"],
+          "properties": {
+            "name": {"$ref": "common.schema.json#/$defs/identifier"},
+            "source_kind": {"const": "path"},
+            "source_path": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+            "state_sha256": {"$ref": "common.schema.json#/$defs/hex256"},
+            "imported_from_native": {"const": true}
+          },
+          "additionalProperties": false
         }
       ]
     },

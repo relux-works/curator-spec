@@ -297,6 +297,10 @@
       "sha256": "sha256:da8c66c881d95be166a0ccce338809804b2c24f9a4e5076abedc806542e6ff72"
     },
     {
+      "path": "schema-cases/agent-environment-marker-v1/invalid-git-with-source-path.json",
+      "sha256": "sha256:1e9f3abe267cdf5df5b48b9e9989a374627a3980f9153b3195a7a69dd7f2a2ce"
+    },
+    {
       "path": "schema-cases/agent-environment-marker-v1/invalid-git-with-state-pin.json",
       "sha256": "sha256:fbe0ca0cbaf7d238097355406e87de2c7cfff17c4fdf82a836e5d857950827b2"
     },
@@ -319,6 +323,22 @@
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-mode.json",
       "sha256": "sha256:409edcdadb01c14d759a0ec089d324c5b4cbd67337e777c9c4549cdfecb3efd4"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v1/invalid-path-imported-from-native-false.json",
+      "sha256": "sha256:f577b44acba43cccaaa28c42b9776082187511116f30e30b2343bdc1a17b560a"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v1/invalid-path-missing-source-path.json",
+      "sha256": "sha256:77827aa5e5044fdbb3505bcd970582d81de43a63db764caf97cedced9a452bb9"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v1/invalid-path-with-commit.json",
+      "sha256": "sha256:071e4d265829a09cf21cd194e172d4494fc40c8c52197bb2b4c91c8ae861be11"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v1/invalid-path-with-ref.json",
+      "sha256": "sha256:c4f8d7dd8a03299aa3841d5d9d48660298772e6e557805992e3ecd50886cdef5"
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-precedence-without-composition.json",
@@ -345,6 +365,10 @@
       "sha256": "sha256:7696be8f7eef3ea09ae346429cfc95761fe90b98b8072f828f718f6659be2da4"
     },
     {
+      "path": "schema-cases/agent-environment-marker-v1/valid-imported-path-profile.json",
+      "sha256": "sha256:7dd5ed16ec5e552af74cd2a4042bf479ae9bb2543b676254e458f84bf2c7109a"
+    },
+    {
       "path": "schema-cases/agent-environment-marker-v1/valid-linked-copy-fallback.json",
       "sha256": "sha256:3ef24f049cf137d5e4b34879891af39a82260ca34f64645ac61e514883de8c30"
     },
@@ -355,6 +379,10 @@
     {
       "path": "schema-cases/agent-environment-marker-v1/valid-no-composition.json",
       "sha256": "sha256:c58d6982d72b0c2fc894363148acdd092dea635fede0e292736e9da5732e4bd5"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v1/valid-path-profile.json",
+      "sha256": "sha256:db2b8224e498dcce7e542142f410b6bd9668dfd23ecd0255be34a59f37db3882"
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/valid-seeded-opencode-parent.json",
@@ -2350,7 +2378,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:fffec12ecf04ff195224d265750c0f2a7f19d2870979b62d589d6d117a0bae00"
+      "sha256": "sha256:9390843815dadbdf6a794eb533557b4161f8a30d398c62f8c653b7d54c664aa1"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",

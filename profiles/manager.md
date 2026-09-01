@@ -2037,10 +2037,14 @@ currency unknown, never as absence.
 
 ### 12.3 Profile lifecycle
 
-`profile install` resolves the declared source, validates the snapshot,
-audits it under section 12.6, and installs every profile the repository
-declares as independent pinned profiles into the profile store
-(environments §9.1, §4). Activation follows operator intent without magic:
+`profile install` takes a git URL or a `path` operand, resolves the
+declared source with the install-level ref selection of environments §9.1
+— exactly one of `--tag`, `--branch`, or `--revision`, applying to the
+whole repository snapshot and defaulting to tracking the remote default
+branch — validates the snapshot, audits it under section 12.6, and
+installs every profile the snapshot declares as independent pinned
+profiles into the profile store (environments §9.1, §4). Activation
+follows operator intent without magic:
 install activates a profile only on a machine with no current profile —
 reported, never silent — or under an explicit `--use`, and a bare `--use`
 is valid exactly when the repository declares one profile. In every other
@@ -2075,7 +2079,7 @@ machine-local global scope is renamed into the builtin `local`-kind profile
 behavior change.
 
 On bootstrap, or on the first profile operation that meets unmanaged state,
-the manager runs the revision-1 onboarding subset of environments §9.5:
+the manager runs the environments §9.5 onboarding:
 
 1. **detect** — inventory, per registered adapter and participating target,
    existing unmanaged root-context files, existing global skills, and
@@ -2095,19 +2099,22 @@ the manager runs the revision-1 onboarding subset of environments §9.5:
    backup; without the flag the section 12.2 ledger discipline fails the
    operation rather than overwrite.
 
-The import machinery — lossless/lossy classification, the lossy consent
-branch, the `path` source kind, and native-skill migration — is deferred
-with the onboarding-import capability: a revision-1 manager MUST reject a
-`path` source declaration and MUST NOT emulate it through the `local` kind
-(environments §1). Authentication is never part of onboarding or takeover;
-credential files stay where the section 12.4 passthrough expects them.
+The onboarding import — the closed detected-surface list, lossless/lossy
+classification with its named loss list, the per-operation lossy consent
+gate, reassembly into an imported-from-native `path` profile, and
+native-skill migration into the profile Skillfile — follows environments
+§9.6 exactly; the assembled profile installs through the ordinary `path`
+pipeline of environments §9.1 and §1. Authentication is never part of
+onboarding, takeover, or import; credential files stay where the section
+12.4 passthrough expects them.
 
-| Condition | Diagnostic (environments §1.1, §9.6) |
+| Condition | Diagnostic (environments §1.1, §9.7) |
 |---|---|
 | foreign-manager symlink detected during onboarding | `environment_foreign_manager_detected` |
 | `--use <name>` names an undeclared profile | `profile_unknown` |
 | bare `--use` with more than one declared profile | `profile_index_ambiguous` |
-| `path` source kind declared | `profile_source_kind_unsupported` |
+| more than one install ref flag, or a ref flag with a `path` operand | `profile_install_ref_conflict` |
+| lossy classification without the consent flag | `environment_import_lossy` |
 
 ### 12.4 Credential passthrough
 
@@ -2166,7 +2173,10 @@ detector over context modules, `Profilefile.json`, `context.json`, and
 `PROFILE.md` that reports credential-like material — keys, tokens,
 passwords, and equivalent secret classes — as a verifiable finding at
 blocking severity. Because profile installation is always strict, a profile
-carrying such a finding fails installation.
+carrying such a finding fails installation. A `path` profile snapshot
+audits identically; it has no network identity — its local identity for
+revocation is its state hash — and the network allowlist does not apply
+(environments §9.1).
 
 Root-context modules are prompt material: audit tooling SHOULD surface them
 for human prompt-injection review. The pipeline guarantees provenance and

@@ -1,0 +1,24 @@
+{
+  "mode": "managed-home",
+  "profile": {
+    "imported_from_native": true,
+    "name": "imported",
+    "source_kind": "path",
+    "source_path": "/Users/operator/profiles",
+    "state_sha256": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+  },
+  "surfaces": {
+    "root-context": {
+      "content_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "form": "monolithic",
+      "paths": [
+        "CLAUDE.md"
+      ]
+    },
+    "skills": {
+      "content_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "paths": []
+    }
+  },
+  "version": 1
+}

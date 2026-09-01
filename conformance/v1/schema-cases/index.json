@@ -25,6 +25,16 @@
     "valid": true
   },
   {
+    "instance": "agent-environment-marker-v1/valid-path-profile.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v1/valid-imported-path-profile.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": true
+  },
+  {
     "instance": "agent-environment-marker-v1/valid-linked-copy-fallback.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": true
@@ -55,7 +65,32 @@
     "valid": false
   },
   {
+    "instance": "agent-environment-marker-v1/invalid-git-with-source-path.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
     "instance": "agent-environment-marker-v1/invalid-local-with-ref.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-path-with-commit.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-path-with-ref.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-path-missing-source-path.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-path-imported-from-native-false.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": false
   },

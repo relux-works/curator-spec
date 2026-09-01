@@ -120,7 +120,14 @@ nothing is downloaded or installed implicitly.
 
 ```bash
 # Install every profile the repository declares; profile audit is always strict.
+# One install-level ref applies to the whole repository snapshot; without a
+# ref flag the declaration tracks the remote default branch.
 curator profile install https://github.com/example/agent-profiles --use companyA
+curator profile install https://github.com/example/agent-profiles --tag v1.2.0
+
+# Install an operator-local profile directory; the snapshot is copied into
+# the store and pinned by its state hash.
+curator profile install ./profiles
 
 # Switch the whole machine, or narrow the switch to one environment.
 curator profile use personal

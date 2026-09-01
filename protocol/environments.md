@@ -10,9 +10,9 @@ widens no object defined there. Section references of the form "core §N" name
 A manager MAY omit this capability entirely and remains a conforming skill
 manager. A manager that implements it MUST implement the complete closed
 revision-1 surface defined here: partial adapter sets, partial form support,
-or partial marker semantics are not a conforming subset. Launcher internals,
-MCP write management, settings fragments, hooks, and the `path` source-kind
-import mechanics are outside this document; each returns under its own
+partial source-kind support, or partial marker semantics are not a
+conforming subset. Launcher internals, MCP write management, settings
+fragments, and hooks are outside this document; each returns under its own
 review.
 
 ## 1. Environment profiles and sources
@@ -43,13 +43,23 @@ The closed set of revision-1 source kinds is:
   machine (section 9.4). A `local` profile has no git identity, no ref, and
   no effective commit; its store key and effective pin are the core §8
   content hash of its current state, called its **state hash** below.
-
-The source kind `path` — an operator-local profile directory installed by
-path and keyed by the core §8 content hash of its snapshot — is reserved. It
-is delivered with the onboarding-import capability (tracked as
-STORY-260901-2hkq49), not in revision 1. A revision-1 manager MUST reject a
-`path` source declaration with `profile_source_kind_unsupported` and MUST NOT
-emulate it through the `local` kind.
+- **`path`** — an operator-local profile directory named by an absolute
+  path, or by a project-relative path when the operation runs inside a
+  project. The operand names a directory whose root contains
+  `Profilefile.json`; the section 2 and section 3 shapes apply unchanged.
+  Installation copies the directory's tree into the profile store as an
+  immutable snapshot and never reads the source directory again: later
+  edits to the source directory change nothing until the operator
+  reinstalls, and nothing about a `path` source is ever fetched from a
+  network. The snapshot contains only directories and regular files under
+  the core §6.2 archive discipline — a symbolic link, hard link, special
+  file, or platform path collision in the tree is `profile_source_invalid`.
+  A root-level `.git` entry is excluded from the snapshot; a `.git` entry
+  anywhere below the root is `profile_source_invalid`. A `path` profile
+  has no git identity, no ref, and no resolved commit; its store key and
+  effective pin are the core §8 content hash of the snapshot — a state
+  hash, exactly the `local` pin shape. A `path` declaration that carries
+  `tag`, `branch`, or `revision` is `profile_source_invalid`.
 
 Profiles are data end to end. No file in a profile snapshot is executed,
 sourced, or interpreted as configuration for the manager itself. No adapter,
@@ -61,10 +71,16 @@ machine configuration.
 
 | Condition | Diagnostic |
 | --- | --- |
-| source kind not `git` or `local`, or `path` declared | `profile_source_kind_unsupported` |
-| invalid canonical identity, ref form, or ref grammar | `profile_source_invalid` |
+| source kind not `git`, `local`, or `path` | `profile_source_kind_unsupported` |
+| invalid canonical identity, ref form, or ref grammar; a ref on a `path` declaration; a `path` operand naming a non-directory; a snapshot-tree discipline violation | `profile_source_invalid` |
+| `path` operand names no existing filesystem entry | `profile_source_path_missing` |
+| `path` operand names a directory that cannot be read | `profile_source_path_unreadable` |
 | profile name violates the core §2 grammar | `profile_name_invalid` |
 | operation names a profile that is not installed | `profile_unknown` |
+
+A missing `path` operand and an unreadable one are different facts (the
+section 8.4 discipline): `profile_source_path_missing` never fires on a
+failed read, and `profile_source_path_unreadable` never fires on absence.
 
 ## 2. Profile repository shape
 
@@ -181,8 +197,8 @@ modules that apply, in manifest order.
 
 Every installed profile has exactly one store entry below the manager home,
 keyed by its effective pin: the resolved commit for a `git` profile, the
-state hash for a `local` profile. Store entries are immutable regular-file
-trees. Every materialization mode of section 8 — `managed-home`, `linked`,
+state hash for a `local` or `path` profile. Store entries are immutable
+regular-file trees. Every materialization mode of section 8 — `managed-home`, `linked`,
 and `copied` — materializes from the same store entry, so the modes cannot
 diverge for one pin. Physical store paths are implementation-specific
 (manager §1); the store joins garbage collection under section 12.
@@ -252,7 +268,10 @@ notice: generated file; direct edits are unsupported and are detected as drift; 
 ```
 
 - `<pin>` is `commit <full-hex>` — the full lowercase commit — for a `git`
-  profile, or `state sha256:<64 lowercase hex>` for a `local` profile.
+  profile, or `state sha256:<64 lowercase hex>` for a `local` or `path`
+  profile. The pin grammar is closed at these two spellings; a `path`
+  profile uses the state spelling because its effective pin is a state
+  hash, and no source-kind information enters the header.
 - The `profile:` line names the activated profile and appears exactly once.
 - One `compose:` line per overlay, in declared order, and one `precedence:`
   line — `later-overrides-earlier` or `earlier-overrides-later` — appear
@@ -621,9 +640,13 @@ Every in-place surface set and every managed home carries a per-home
 beside the managed surfaces. The marker records:
 
 - `version` — exactly `1`;
-- `profile` — name, source kind, canonical source identity and declared ref
-  for `git`, and the effective pin (`commit` for `git`, `state_sha256` for
-  `local`);
+- `profile` — name, source kind, and the effective pin (`commit` for
+  `git`, `state_sha256` for `local` and `path`). A `git` profile
+  additionally records its canonical source identity and declared ref; a
+  `path` profile additionally records `source_path` — the operand exactly
+  as the operator supplied it at install, an informative provenance record
+  whose bytes never enter any identity — and, exactly when the profile was
+  created by the section 9.6 import, `imported_from_native: true`;
 - `composition` — the ordered overlay chain with each member's name and
   effective pin, present exactly when composition is active, together with
   the declared `precedence`;
@@ -690,19 +713,47 @@ with its currency reported as unknown, and no absence-shaped outcome —
 
 ## 9. Profile lifecycle
 
-### 9.1 Installation and audit
+### 9.1 Installation, ref selection, and audit
 
-`profile install <git-url>` resolves the source under section 1, validates
-the snapshot under sections 2 and 3, audits it, and installs **every**
-profile the repository declares as independent pinned profiles. Profiles
-installed from any number of repositories coexist as one machine profile
-set.
+`profile install <source>` takes either a git URL or a `path` operand.
+The distinction is syntactic, never probed from the filesystem: an operand
+beginning with `/`, `./`, or `../` (or a platform absolute-path spelling)
+is a `path` declaration; every other operand resolves as `git` under
+section 1. It resolves the source, validates the snapshot under
+sections 2 and 3, audits it, and installs **every** profile the snapshot
+declares as independent pinned profiles. Profiles installed from any
+number of repositories coexist as one machine profile set.
+
+For a `git` source the operator expresses the declared ref with exactly
+one of the install-level flags `--tag <tag>`, `--branch <branch>`, or
+`--revision <commit>`, mapping one-to-one onto the section 1 declaration
+forms: `--tag` uses the core §6.3 tag grammar and selects only
+`refs/tags/<value>`; `--revision` takes a full lowercase commit object id;
+`--branch` resolves per core §6.2. When no ref flag is supplied, the
+declaration tracks the remote's default branch — the branch the remote's
+`HEAD` symbolic reference names at resolution time; a remote that
+advertises none is `profile_source_invalid`. In every case the resolved
+commit is recorded as the effective pin, and strict-tag policy carries
+over unchanged (section 1).
+
+The selection applies to the whole repository snapshot: `Profilefile.json`
+names sibling directories of one snapshot, so every profile one repository
+declares installs from the same resolved commit by construction. Revision
+1 has no per-profile ref mechanism — supplying more than one ref flag, or
+a ref flag with a `path` operand, is `profile_install_ref_conflict`.
+Holding two profiles of one repository at two different commits is not
+supported in revision 1; the supported shape is separate repositories.
 
 Profile installation always runs the manager §7 source audit in strict
-mode; an advisory profile install does not exist. The audit pipeline is
-unchanged — raw-tree hashing, the static canary whose failure always
-blocks, deterministic detectors, revocation — and gains one REQUIRED
-detector class for profile snapshots:
+mode; an advisory profile install does not exist. A `path` snapshot audits
+identically to a `git` snapshot. A `path` profile has no network identity:
+its identity for local revocation is its state hash, the core §6.1 network
+allowlist does not apply (local sources bypass it), and a `path` snapshot
+never produces a shared `audit-record-v1` object, whose shape requires a
+network identity and a commit. The audit pipeline is unchanged — raw-tree
+hashing, the static canary whose failure always blocks, deterministic
+detectors, revocation — and gains one REQUIRED detector class for profile
+snapshots:
 
 - **`context-secret-material`** — a deterministic detector over context
   modules, `Profilefile.json`, `context.json`, and `PROFILE.md` that reports
@@ -774,14 +825,12 @@ machine that never installs another profile observes no behavior change:
 `default` simply is the current profile and existing global installations
 keep their behavior byte-for-byte.
 
-### 9.5 Onboarding, revision-1 subset
+### 9.5 Onboarding
 
 A machine with hand-maintained global context must reach managed state
-without loss. Revision 1 ships detection, the foreign-manager stop, the
-replace notice, backup, and takeover; the import machinery — lossless/lossy
-classification, the lossy consent branch, the `path` source kind, and
-native-skill migration — is deferred with the `path` kind
-(STORY-260901-2hkq49).
+without loss. Onboarding ships complete in revision 1: detection, the
+foreign-manager stop, the replace notice, backup, takeover, and the
+section 9.6 import.
 
 On bootstrap, or on the first profile operation that meets unmanaged state,
 the manager:
@@ -798,14 +847,104 @@ the manager:
 3. **Backs up, always**: every file the operation will replace is copied
    into the section 8.3 backup location before the first write, whether or
    not any import was requested, subject to `environment_backup_exists`.
+4. **Classifies and offers the import**: the detected state is classified
+   under section 9.6 and the classification is reported before any write;
+   the import itself runs only on the operator's request and under the
+   section 9.6 consent rules. Onboarding without an import ends after
+   step 3 and the takeover writes the operator chose.
 
 Takeover of a specific unmanaged file outside onboarding requires the
 explicit takeover flag and performs the same notice and backup; without the
 flag, section 8.3 applies and the operation fails rather than overwrite.
-Authentication is never part of onboarding or takeover: credential files
-stay where the section 7.4 passthrough expects them, untouched.
+Authentication is never part of onboarding, takeover, or import: credential
+files stay where the section 7.4 passthrough expects them, untouched.
 
-### 9.6 Diagnostics
+### 9.6 Onboarding import
+
+The import turns the detected native context into an installed profile
+through the ordinary `path` pipeline of section 9.1. Its input is the
+section 9.5 inventory; its output is one installed, audited, pinned
+profile whose environment markers record `imported_from_native`.
+
+**Detected surfaces.** The revision-1 detected-surface list is closed.
+For each registered adapter, over its native default home:
+
+- the **root-context file** at the adapter's section 7.1 root-context
+  target; and
+- each **skills entry** of the adapter's manager §5 global skills surface
+  that the manager's adapter ledger does not record. A ledgered entry
+  belongs to the machine-global scope and reaches managed state through
+  the section 9.4 migration, never through import.
+
+A surface that is absent is simply not detected. A participating
+secondary fixed-home target (section 7.6) joins the section 9.5 inventory
+and backup but contributes no detected surface of its own: its unmanaged
+root-context file is a lossy finding exactly when its bytes differ from
+the same adapter's detected native root-context file, because those
+distinct bytes would not carry over — the backup still preserves them.
+
+**Classification.** An import is **lossless** iff every detected surface
+maps onto a supported surface of the detecting adapter's revision:
+
+- a root-context file maps when it can be read and is valid UTF-8 —
+  reassembly normalization (below) is content-preserving and does not
+  make an import lossy;
+- a skills entry maps when the manager can recover a complete exact
+  declaration from the entry's own records: a valid install marker
+  (core §10) recording the source identity, declared ref, and resolved
+  commit, or a git checkout whose `origin` remote canonicalizes under
+  core §6.1 and whose committed `HEAD` carries no staged, dirty, or
+  untracked bytes.
+
+Every other detected surface is a **loss**: an unreadable file, a
+root-context file that is not valid UTF-8, a skills entry with no
+recoverable exact declaration, or a divergent secondary-target
+root-context file. The **loss list** names each loss — adapter, platform
+path, and reason — and an absence and a failed read stay different facts
+(section 8.4): an absent surface never appears in the loss list, and a
+failed read is always a loss, never treated as absence.
+
+**Consent gate.** A lossless import proceeds without stopping. A lossy
+import stops with `environment_import_lossy` and the loss list; it
+proceeds only under an explicit per-operation consent flag, which
+re-reports the loss list as warnings under the same diagnostic. Machine
+configuration MUST NOT pre-record consent.
+
+**Reassembly.** The manager assembles a profile-repository-shaped
+directory inside the machine home (physical location
+implementation-specific, manager §1):
+
+- `Profilefile.json`, version 1, declaring exactly one profile, named
+  `imported` unless the operator supplies a name under the core §2
+  grammar. A chosen name that is already installed stops the import with
+  `profile_import_name_taken` before any write.
+- One module `context/<env-id>.md` per adapter with a detected
+  root-context file, carrying that file's normalized bytes with the
+  selector `environments: ["<env-id>"]` and class `root`, listed in the
+  manifest in ascending environment-identifier order. **Normalization**
+  is exactly: every CRLF and bare-CR line ending becomes LF, and the
+  content ends with exactly one trailing LF. It applies only at
+  reassembly — the section 3 no-normalization rule for snapshot modules
+  is untouched — and the original bytes are already in the section 9.5
+  backup.
+- One `Skillfile.json` declaration per mapping skills entry, reproducing
+  the recovered declaration: the install marker's declared ref when a
+  valid install marker exists, otherwise the git checkout's canonical
+  identity pinned by `revision` to its committed `HEAD`. Each such
+  declaration is reported with the warning
+  `environment_import_skill_foreign`: the skill was managed by other
+  means, and the operator SHOULD re-declare it from its upstream source —
+  a tag or branch — to receive updates.
+
+The assembled directory then installs through section 9.1 exactly as an
+operator-supplied `path` source — snapshot copy, state-hash pin,
+always-strict audit; a blocking finding, `context-secret-material`
+included, fails the import like any install. Activation follows the
+section 9.1 rules without magic. The import writes nothing into any
+native home by itself: replacing native files remains the section 9.5
+takeover path with its notice and backup.
+
+### 9.7 Diagnostics
 
 | Condition | Diagnostic |
 | --- | --- |
@@ -813,6 +952,11 @@ stay where the section 7.4 passthrough expects them, untouched.
 | audit finding from the secret-material detector class (blocking) | finding class `context-secret-material` |
 | `--use <name>` names an undeclared profile | `profile_unknown` |
 | bare `--use` with more than one declared profile | `profile_index_ambiguous` |
+| more than one install ref flag, or a ref flag with a `path` operand | `profile_install_ref_conflict` |
+| lossy classification without the consent flag (stops with the loss list) | `environment_import_lossy` |
+| lossy import proceeding under explicit consent (warning, loss list) | `environment_import_lossy` |
+| imported skill declaration recovered from foreign records (warning) | `environment_import_skill_foreign` |
+| chosen import profile name already installed | `profile_import_name_taken` |
 
 ## 10. Resolution and the launch fragment
 
@@ -870,7 +1014,9 @@ unknown kinds, and unknown semantics values:
 ```
 
 - `profile` carries `commit` for a `git` profile and `state_sha256` for a
-  `local` profile, never both.
+  `local` or `path` profile, never both. The fragment carries no
+  source-kind or source-path record: a consumer needs the pin, not the
+  provenance.
 - `composition` and `precedence` are present exactly when composition is
   active; `composition` members carry the same pin shape as `profile`.
 - `env` maps each registry-declared variable name for the environment to a
@@ -937,7 +1083,10 @@ specification) and `curator-session` (a shim to the agent session manager).
 `profile list` reports every installed profile: name, source identity,
 declared ref, effective pin, and current markers — the machine default and
 every section 9.3 scope that differs. A `local` profile reports `local` as
-its source, `-` for ref, and its state hash as the effective pin.
+its source, `-` for ref, and its state hash as the effective pin. A `path`
+profile reports `path` as its source, its recorded source path as the
+identity, `-` for ref, its state hash as the effective pin, and whether it
+is imported-from-native.
 
 `env status [--check] [--json]` reports the
 profile × environment × surface matrix: mode, form, materialized pin,
