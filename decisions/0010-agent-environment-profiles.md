@@ -324,9 +324,12 @@ content hashes. The marker name deliberately joins the `agent-skill.json`
 family rather than the legacy `csk-` family: new identifiers introduced by
 this capability carry no `csk` spelling. The frozen §1.1 identifiers
 (`.csk-install.json`, `.csk-managed.json`, `CSK_PROJECT_ROOT`) are wire
-compatibility surfaces and stay as they are here; retiring them follows the
-`csk-skill.json` → `agent-skill.json` alias precedent and is separately
-tracked cleanup work, not part of this decision. The §11
+compatibility surfaces and stay exactly as they are — no retirement, alias
+migration, or deprecation is planned. The separately tracked cleanup is
+surface-level naming uniformity only: prose, documentation, and diagnostics
+across Curator and this specification stop spelling `csk` except where they
+name one of those frozen wire identifiers, and every new identifier joins
+the `agent-*` family. The §11
 rule extends unchanged: Curator removes or replaces only entries its
 preceding ledger owns and MUST fail rather than overwrite an unmanaged file.
 A pre-existing unmanaged `~/.claude/CLAUDE.md` is never clobbered by an
