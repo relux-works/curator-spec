@@ -195,6 +195,16 @@ yield byte-identical output on every platform and in every mode. The rules
 below define the exact bytes; they are a determinism conformance-vector
 surface.
 
+**Platform-path collisions.** Protocol paths compare case-sensitively (core
+§2); platform paths may not. Any materialization or provisioning step that
+would write two protocol paths mapping to one platform path — module files
+of composed profiles whose names or manifest paths fold together on a
+case-insensitive filesystem, managed homes for two such profile names
+(section 8.1), backup paths (section 8.3) — MUST detect the collision and
+fail with `environment_path_collision` before writing anything: the core §2
+extraction rule, extended to every materialization and provisioning write
+path.
+
 **Parts and joining.** Output is assembled from ordered **parts**. Every
 part is a byte string ending with exactly one LF. The document is the parts
 joined with exactly one additional LF between adjacent parts — one empty
@@ -274,10 +284,12 @@ mechanism. The layout is fixed:
 
   `<module-path>` is the module's manifest `path` verbatim. Grouping by
   profile name makes two composed profiles carrying the same module filename
-  collision-free by construction; within one profile, manifest paths are
-  unique by section 3. The literal path segment `modules` is fixed and is
-  not a profile name, so no profile-name value can collide with the sibling
-  `system-prompt.md` of section 5.5.
+  collision-free in protocol-path space; within one profile, manifest paths
+  are unique by section 3. Where a platform filesystem folds two of these
+  protocol paths to one platform path, the section 5 collision rule fails
+  the materialization before writing. The literal path segment `modules`
+  is fixed and is not a profile name, so no profile-name value can collide
+  with the sibling `system-prompt.md` of section 5.5.
 
 - Each materialized module file is the module's exact bytes. No header,
   chapter, or reference line is added to a module file.
@@ -296,12 +308,16 @@ mechanism. The layout is fixed:
 
 - For `opencode`, the tool's reference mechanism is the `instructions` array
   of `<home>/opencode.json`, not root-file syntax. The root file is the
-  generation header part alone. The manager maintains the `instructions`
-  member as the ordered list of `.agent-context/modules/<profile-name>/<module-path>`
-  values, in exactly the order the modules would appear monolithically. The
-  `opencode.json` surface is then a managed surface recorded in the
-  environment marker. When `<home>/opencode.json` exists and is not recorded
-  by the preceding marker, the referenced form is unavailable: the adapter
+  generation header part alone. The managed `opencode.json` is fully
+  manager-authored and its bytes are exact: the CCJ-1 bytes
+  ([`registry.md`](registry.md) §1) of the object whose single member,
+  `instructions`, is the ordered list of
+  `.agent-context/modules/<profile-name>/<module-path>` values in exactly
+  the order the modules would appear monolithically — no other member —
+  followed by exactly one trailing LF. The `opencode.json` surface is then
+  a managed surface recorded in the environment marker. When
+  `<home>/opencode.json` exists and is not recorded by the preceding
+  marker, the referenced form is unavailable: the adapter
   MUST warn `environment_form_unavailable` and materialize `monolithic`
   instead — it MUST NOT edit the unmanaged file.
 
@@ -372,6 +388,7 @@ is a conformance-vector surface.
 | --- | --- |
 | configured form unavailable; monolithic emitted (warning) | `environment_form_unavailable` |
 | materialization would overwrite a file the marker does not record | `environment_surface_unmanaged_conflict` |
+| two protocol paths to be written map to one platform path | `environment_path_collision` |
 
 ## 6. Composition
 
@@ -405,6 +422,8 @@ The composition chain and precedence direction are recorded in the
 generation header, the environment marker, and the launch fragment, so
 status, drift detection, and session resume always see exactly what was
 assembled.
+
+### 6.1 Diagnostics
 
 | Condition | Diagnostic |
 | --- | --- |
@@ -456,7 +475,8 @@ the vendor ship one, supersedes the XDG mechanism in a later revision.
 
 The effective form is machine configuration with these defaults; profile
 data cannot select a form. Requesting `referenced` for an adapter that does
-not support it is a configuration error, not a fallback case.
+not support it is a configuration error, `environment_form_unsupported`,
+not a fallback case.
 
 ### 7.3 System-prompt channels
 
@@ -473,7 +493,10 @@ Each adapter declares its closed channel-descriptor list. A descriptor's
 
 `pi`'s two `file` channels are applied by the tool unconditionally when the
 file exists in the agent home; section 5.5 therefore keeps both absent
-unless machine configuration explicitly materializes one. Channel
+unless machine configuration explicitly materializes one. The `flag`
+spellings above are recorded from vendor documentation; the exact spellings
+verify against the pinned tool releases before the conformance vectors
+freeze — the section 7.6 discipline. Channel
 descriptors are data about a channel: nothing in this document applies one.
 Application is the launcher's surface, behind its explicit opt-in and
 warnings, outside this specification.
@@ -552,6 +575,7 @@ registry is `environment_target_unknown`.
 | --- | --- |
 | explicit operand names an unregistered environment | `environment_unknown` |
 | explicit operand names an undeclared target | `environment_target_unknown` |
+| configured form not supported by the adapter | `environment_form_unsupported` |
 | declared shadowing path exists (warning) | `environment_shadowing_path_present` |
 
 ## 8. Materialization modes and the environment marker
@@ -563,7 +587,10 @@ A profile materializes into an environment in exactly one of three modes:
 - **`managed-home`** — the manager provisions a complete home directory per
   profile × environment below a manager-owned **environments root** in the
   manager home. The only profile-derived path component below that root is
-  the profile name, bounded by the core §2 grammar. Managed surfaces inside
+  the profile name, bounded by the core §2 grammar; two profile names that
+  map to one platform path below that root are a section 5 platform-path
+  collision, and provisioning fails with `environment_path_collision`
+  before writing. Managed surfaces inside
   the home are symlinks into the profile store, with copies where a surface
   or platform requires bytes. The environment's own mutable state — session
   logs, history, caches, trust records — lives beside them, owned by the
@@ -644,9 +671,11 @@ modified outside the manager, and the file was left untouched; the
 installation is non-current, and `repair` restores the managed bytes. A
 drifted file is never silently overwritten outside `repair`.
 
-An absent surface file and a failed read are different facts: a read failure
-is `environment_marker_invalid` or an I/O error, never treated as a
-legitimate absence, and no absence-shaped fallback may fire on it.
+An absent surface file and a failed read are different facts: a failed
+marker read is `environment_marker_invalid`; a failed read of a recorded
+surface file is `environment_surface_unreadable`, the row is non-current
+with its currency reported as unknown, and no absence-shaped outcome —
+`environment_surface_missing` included — may fire on either.
 
 ### 8.5 Diagnostics
 
@@ -655,6 +684,7 @@ legitimate absence, and no absence-shaped fallback may fire on it.
 | marker unreadable, malformed, or unsupported version | `environment_marker_invalid` |
 | managed surface bytes or link differ from the record (non-current) | `environment_surface_drift` |
 | recorded surface file absent (non-current) | `environment_surface_missing` |
+| recorded surface file exists but cannot be read (non-current) | `environment_surface_unreadable` |
 | write would touch a file the marker does not record | `environment_surface_unmanaged_conflict` |
 | backup path already exists | `environment_backup_exists` |
 
@@ -895,6 +925,8 @@ This is the one place the manager executes an executable it does not ship;
 the trust model is exactly the host plugin convention named above. The
 first providers, informative here, are `curator-run` (the launcher, its own
 specification) and `curator-session` (a shim to the agent session manager).
+
+### 11.1 Diagnostics
 
 | Condition | Diagnostic |
 | --- | --- |
