@@ -132,13 +132,17 @@ environment supports:
   supported; the only form for `codex_cli` and `pi` (neither tool reads
   imports from its root file; verified for pi from the loader source,
   docs-confidence for codex).
-- **`referenced`** — the modules materialize as individual files beside the
-  root file, and the root file references them through the tool's native
-  mechanism: `@path` imports for `claude_code` (documented up to five hops),
-  the `instructions` file list in `opencode.json` for `opencode`. A team
-  that already maintains a reference-structured `CLAUDE.md` migrates by
-  turning each referenced file into a module — the materialized shape is
-  what they already have.
+- **`referenced`** — the modules materialize as individual files that the
+  root file references through the tool's native mechanism: `@path` imports
+  for `claude_code` (documented up to five hops), the `instructions` file
+  list in `opencode.json` for `opencode`. Module files land under a managed
+  subdirectory beside the root file, every entry ledgered, grouped per
+  source profile under Decision 5 composition so two composed profiles
+  carrying the same module filename cannot collide; the exact naming and
+  layout rule is normative-phase work bound to the referenced-form
+  determinism vectors (open question 6). A team that already maintains a
+  reference-structured `CLAUDE.md` migrates by turning each referenced file
+  into a module — the materialized shape is what they already have.
 
 The effective form per environment is chosen by machine configuration with
 the adapter's default, never by profile data. Where the tool itself gates
@@ -179,7 +183,9 @@ environment-agnostic system-prompt overlay for tools that expose a
 system-prompt override channel. The channel is adapter-declared and varies:
 `claude_code` takes `--system-prompt`/`--append-system-prompt`(-file)
 arguments (verified in 2.1.251), `pi` takes the same flags and additionally
-reads `APPEND_SYSTEM.md` from its agent dir (verified in 0.84.2),
+reads agent-dir `APPEND_SYSTEM.md` (append) and `SYSTEM.md` (full
+replacement), both applied unconditionally when present (verified in
+0.84.2),
 `codex_cli` takes a `model_instructions_file` configuration override
 (verified key in 0.151.0; full replacement), and `gemini` — a revision-2
 adapter — takes the `GEMINI_SYSTEM_MD` variable (full replacement,
@@ -216,7 +222,7 @@ The manager §5 adapter table generalizes from one surface (skills) to an
 | `claude_code` | `CLAUDE_CONFIG_DIR=<home>` | variable names the home | `<home>/CLAUDE.md` | `<home>/skills/` |
 | `codex_cli` | `CODEX_HOME=<home>` | variable names the home | `<home>/AGENTS.md` | `<home>/skills/` |
 | `opencode` | `XDG_CONFIG_HOME=<parent>` | tool reads `<parent>/opencode/` | `<home>/AGENTS.md` | `<home>/skills/` |
-| `pi` | `PI_CODING_AGENT_DIR=<home>` | variable names the home | `<home>/AGENTS.md` (also honors `APPEND_SYSTEM.md`; not managed in revision 1) | `<home>/skills/` |
+| `pi` | `PI_CODING_AGENT_DIR=<home>` | variable names the home | `<home>/AGENTS.md` (the tool also honors agent-dir `APPEND_SYSTEM.md` — system-prompt append — and `SYSTEM.md` — full system-prompt replacement — both applied unconditionally when present; system-prompt rules in Decisions 2 and 6) | `<home>/skills/` |
 
 Each adapter normatively declares: the environment-variable name and whether
 it names the home or a parent; the home-relative path of every managed
@@ -424,12 +430,14 @@ operation that meets unmanaged state — proceeds:
 6. Authentication is never part of import or takeover: credential files
    stay where the Decision 7 passthrough expects them, untouched.
 
-Revision 1 ships steps 1–4 — detection, foreign-manager stop, backup, and
-takeover are prerequisites for a safe `install` on a used machine. The
-import machinery of step 5 (the `path` source kind, lossless/lossy
-classification, native-skill migration) is designed here but delivered as
-its own tracked story on this decision's epic, targeted between revisions 1
-and 2.
+Revision 1 ships step 1, step 4, and step 3's replace-notice half —
+detection, the foreign-manager stop, the you-are-being-replaced notice,
+backup, and takeover are prerequisites for a safe `install` on a used
+machine. The import machinery — step 5 together with step 2's
+lossless/lossy classification and step 3's lossy-consent branch (the
+`path` source kind, native-skill migration) — is designed here but
+delivered as its own tracked story on this decision's epic, targeted
+between revisions 1 and 2.
 
 ### 6. Resolution primitive, umbrella subcommands, and the launcher
 
@@ -475,7 +483,7 @@ their composer:
 1. the **spawn plane** (the `agents-management` module): which agentic
    system, model, reasoning effort, and vendor, and whether provider limits
    admit a launch right now — consumed as a built launch plan
-   (binary/argv/environment), never rebuilt;
+   (binary/argv/environment/stdin), never rebuilt;
 2. the **context plane** (Curator): the fragment above, obtained through
    `curator env resolve --format json` and merged into the child
    environment;
@@ -497,10 +505,12 @@ and that a custom system prefix can change how requests are cached and
 therefore billed (Claude Code's default system prompt participates in
 shared prompt caching; a custom one forms its own cache prefix — exact
 per-tool behavior is open question 7's research). Without the opt-in,
-managed homes carry no active system-prompt file — in particular pi's
-`APPEND_SYSTEM.md`, which the tool applies unconditionally when present, is
-materialized only under the per-profile×environment machine setting — and
-native in-place homes never receive one at all (Decision 2). An operator
+managed homes carry no active system-prompt file — for pi that means
+neither `APPEND_SYSTEM.md` (append) nor `SYSTEM.md` (full replacement,
+discovered from the agent dir under the same unconditional semantics,
+verified in the 0.84.2 loader source), both materialized only under the
+per-profile×environment machine setting — and native in-place homes never
+receive one at all (Decision 2). An operator
 can always pass the tool's own flags by hand; the launcher's job is to make
 the managed path explicit, warned, and reproducible, not to be the only
 door.
@@ -736,6 +746,11 @@ MUST implement the closed revision-1 surface exactly.
   not intent).
 - No code execution: profiles are data end to end. No adapter, materializer,
   hook, or generator is ever selected by profile bytes.
+- Umbrella dispatch executes a `curator-<name>` binary found on `PATH` —
+  the one place Curator runs an executable it does not ship. The trust
+  model is exactly the git/kubectl/docker plugin convention, the dispatched
+  name comes from the operator's typed subcommand, and profile data cannot
+  influence it.
 - A system-prompt override is the sharpest instruction surface a profile
   carries, so it is inert by default: never materialized into a native
   in-place home, never applied by a plain launch, active only under the
@@ -826,7 +841,7 @@ MUST implement the closed revision-1 surface exactly.
    import mechanism is real and stable enough for a `referenced` form, and
    whether codex or pi grow one, is research to complete before the
    `referenced` conformance vectors freeze. Recommendation: ship revision 1
-   with the two verified referenced targets and re-survey at revision 2.
+   with the two documented referenced targets and re-survey at revision 2.
 7. **System-prompt channels: exact behavior and embedded hosts.** Per-tool
    research to finish before the system-module vectors freeze: the precise
    cache/billing consequence of a custom system prompt per tool (Claude
@@ -835,7 +850,9 @@ MUST implement the closed revision-1 surface exactly.
    its `-c` override safely, and whether any embedded host — the Xcode
    CodingAssistant agents first — exposes a system-prompt override channel
    at all (none is currently recorded; claude_code output styles inside
-   `ClaudeAgentConfig/` are the one candidate worth testing).
+   `ClaudeAgentConfig/` are the one candidate worth testing), and the full
+   behavioral matrix of pi's two file channels (`APPEND_SYSTEM.md` append
+   vs `SYSTEM.md` replacement) against its flag channel.
    Recommendation: keep system modules launcher-only and
    managed-home-only exactly as Decision 2 states until this research
    lands; never widen activation to native homes on partial evidence.
