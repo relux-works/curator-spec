@@ -92,7 +92,7 @@ modules. The manifest declares:
       "companyA-root-context-core":             { "git": "…", "range": "^3.0" },
       "companyA-root-context-developers-core":  { "git": "…", "range": "^1.4" },
       "companyA-root-context-developers-ios":   { "git": "…", "range": ">=2.1 <3", "weight": 60 },
-      "companyA-root-context-developers-figma": { "git": "…", "path": "contexts/figma", "range": "^1.0", "weight": 40 }
+      "companyA-root-context-developers-figma": { "git": "…", "directory": "contexts/figma", "range": "^1.0", "weight": 40 }
     },
     "skills": {
       "swiftui": { "git": "…", "range": "^4" },
@@ -126,9 +126,13 @@ modules. The manifest declares:
 - `requires` names other context packages, skills, and MCP declaration
   packages. Every entry carries a canonical git source (§6.1) and exactly
   one of `range` (Decision 2), `tag`, or `revision` (the §4.4 exact forms).
-  A context or MCP requirement MAY carry `path`, a portable relative path
-  naming the package's directory within the snapshot — new wire for those
-  two kinds. A skill requirement carries no `path`: a skill package is
+  A context or MCP requirement MAY carry `directory`, a portable relative
+  path naming the package's directory within the snapshot — new wire for
+  those two kinds, spelled `directory` so that it is never confused with
+  the `path` source kind of environments §1 (an operator-local directory);
+  the install flag that selects a directory within a snapshot is spelled
+  `--directory` for the same reason (Decision 7). A skill requirement
+  carries no `directory`: a skill package is
   addressed exactly as §4.4 addresses it, and `mode` and `commands` keep
   their §4.4 meaning. A context requirement MAY carry `weight` to override
   the required package's own default (Decision 4).
@@ -190,7 +194,7 @@ Two npm forms are excluded: hyphen ranges (`1.2.3 - 2.3.4`) are not
 admitted, and `v` is not admitted inside a range — a range is over
 versions, a tag carries the prefix. The spelling `latest` is a Curator
 spelling equivalent to `*` (in npm, `latest` is a distribution tag, not
-range grammar). `*`, `x`, and `latest` select the highest **stable**
+range grammar). `*`, `x`, `X`, and `latest` select the highest **stable**
 version.
 
 **Prereleases.** A version with a prerelease satisfies a range only when
@@ -220,8 +224,11 @@ The algorithm is fixed so that two managers lock identically:
    to the machine; the root and each overlay are pending names.
 2. **Select and expand.** While a pending name exists, take the
    lexicographically smallest (Unicode scalar value order, as §7). Compute
-   its effective constraint; if empty, fail `context_range_conflict`. Select
-   the highest candidate satisfying it — for a `||` disjunction, the
+   its effective constraint; if no candidate satisfies it — an empty
+   intersection, a source whose version tags all fall outside it, or a
+   source with no version tags — fail `context_range_conflict` naming every
+   requirer with its range or exact form and the candidate versions
+   considered. Select the highest candidate satisfying it — for a `||` disjunction, the
    highest candidate satisfying any member — and expand the manifest at
    that commit: every requirement it declares is added to the constraint
    set, attributed to this name at this version, and every name whose
@@ -263,7 +270,7 @@ The result of resolution is the profile **lock**: a strict schema-1 object
 contexts, skills, and MCP declarations, the root and the overlays among
 them — with its `kind` (`context`, `mcp`, or `skill`), `name`, canonical
 source identity (absent for a `path` package) and, when declared, its
-`path` within the snapshot, resolved `version` (absent for a skill pinned
+`directory` within the snapshot, resolved `version` (absent for a skill pinned
 exactly with no version tag), its pin — `commit`, or `state_sha256` for a
 `path` package: the revision-1 pin shape — its effective weight (Decision
 4), its `required_by` list (the sorted names of its direct requirers; empty
@@ -349,8 +356,9 @@ source with a range or exact form, or by a `path` source (an operator-local
 directory under the environments §1 `path` rules) — a personal repository
 or a local directory on the machine. Each overlay declaration carries a
 machine-assigned weight (default: the configurable machine default,
-initially above any root weight so that personal refinements prevail under
-the default policy) and joins the closure: its own requirements resolve
+initially above the weights roots use in practice — Open question 1
+recommends `1000` — so that personal refinements prevail under the default
+policy) and joins the closure: its own requirements resolve
 jointly with the root's, so an overlay that needs a skill version the root
 forbids is a reported `context_range_conflict`, never a silent second copy.
 Overlay declarations are the only composition surface; a package MUST NOT
@@ -385,8 +393,10 @@ query, or fragment. `args` and `url` are inside the `context-secret-material`
 detector scope: a token in an argument or a URL is a blocking finding like
 a token in a module. `env_names` lists environment-variable **names** the
 server expects at run time; each MUST match the §2 identifier grammar and
-MUST NOT name a manager-reserved variable (the manager §3.1 reserved set —
-`PATH`, `HOME`, the `LD_`/`DYLD_`/`NODE_` families, and the rest), and
+MUST NOT name a manager-reserved variable (the union of every manager §3.1
+reserved set across platforms and interpreter identifiers — `PATH`, `HOME`,
+the `LD_`, `DYLD_`, `NODE_`, `NPM_CONFIG_`, and `PYTHON` families, and the
+rest), and
 machine configuration MAY bound the passable names further by a lockable
 allowlist. Values never appear in any package, lock, marker, fragment, or
 materialized file; the operator's environment supplies them. `environments`
@@ -400,16 +410,21 @@ other.
 Materialization is a **launch channel**, the environments §5.5 pattern.
 The resolved MCP set of a profile materializes as one inert, hashed,
 marker-recorded file per adapter format below `<home>/.agent-context/mcp/`
-in a managed home only — never into a native in-place home, whose MCP
+— except where the tool fixes the location, as `codex_cli` does with its
+layer file at `<home>/curator-mcp.config.toml` — in a managed home only — never into a native in-place home, whose MCP
 configuration lives in tool-owned mutable state — and the launch fragment
 gains an `mcp` section naming the file, the sorted union of the `env_names`
 of the servers in that adapter's set, and the adapter's channel descriptor.
 The descriptor reuses the environments §7.3 descriptor grammar with an
 `argument` member (`path`, `contents`, or `name`) and, for `flag`, an
-OPTIONAL `with` list of companion flags. Revision-1 channels:
+OPTIONAL `with` list of companion flags; `semantics` is a system-prompt
+member and is absent on an MCP descriptor, which readers MUST accept.
+Revision-1 channels:
 
 - `claude_code` — `flag` `--mcp-config` with `argument: path`, `with:
-  ["--strict-mcp-config"]` (both verified in 2.1.258 help). Under
+  ["--strict-mcp-config"]` (both verified in the 2.1.258 and 2.1.259 help;
+  the vectors freeze against the pinned release under the environments
+  §7.3 discipline). Under
   `--strict-mcp-config` the tool ignores every other MCP configuration,
   including servers recorded in the managed home's own `.claude.json`;
   this is intended — a managed home's MCP set is exactly the profile's.
@@ -450,7 +465,7 @@ reviewed; an empty allowlist permits every network identity, as §6.1.
 ### 7. Profiles, installation, and the default profile
 
 A profile is a root context package plus its lock plus the machine
-overlays declared for it. `profile install <source> [--path <dir>]
+overlays declared for it. `profile install <source> [--directory <dir>]
 [--range <range> | --tag <tag> | --revision <commit>]` names the root;
 `--range` defaults to `latest`. Branch tracking is withdrawn for profile
 roots: ranges replace it, and a repository with no `v*` tags installs only
@@ -464,8 +479,12 @@ adds through the existing global skill commands, which now write into the
 profile's lock through the same resolution.
 
 The builtin `default` profile of Decision 0010 Decision 8 remains: a
-synthesized `local` root with no modules whose lock carries only the
-migrated global skills.
+synthesized `local` root with no `context` whose lock carries only the
+migrated global skills. It records version `0.0.0`. A root with no
+`context` declares no root-context surface (environments §2), so no
+root-context file is written for it — the §5.4 header-only output applies
+only to a root that declares `context` with zero applicable modules — and
+`default` materializes skills alone.
 
 ### 8. Update, materialization, marker, and fragment
 
@@ -506,7 +525,9 @@ The umbrella manifest of Decision 1 is the root. `companyA-root-context-core`
 is required twice — by the umbrella (`^3.0`) and by
 `companyA-root-context-developers-core` (`^3.1`); the effective constraint
 is `>=3.1.0 <4.0.0-0` and neither requirer declares an edge weight, so
-the core keeps its manifest weight `0`. The core requires
+the core keeps its manifest weight `0`;
+`companyA-root-context-developers-core` likewise keeps its manifest weight
+`20`, no requirer declaring an edge weight for it. The core requires
 `companyA-root-context-organizational-structure` (`^1.0`), which the root's
 `weights` map sets to `10`. `companyA-root-context-developers-ios` also
 requires `swiftui` `^4.2`; jointly with the umbrella's `^4` that is
@@ -522,7 +543,7 @@ bytes):
   "members": [
     { "kind": "context", "name": "companyA-root-context-core", "source": "github.com/companyA/root-context-core", "version": "3.2.1", "commit": "1111111111111111111111111111111111111111", "weight": 0, "required_by": ["companyA-root-context-developers-core", "companyA-root-context-ios-developer-umbrella"], "overlay": false },
     { "kind": "context", "name": "companyA-root-context-developers-core", "source": "github.com/companyA/root-context-developers-core", "version": "1.6.0", "commit": "3333333333333333333333333333333333333333", "weight": 20, "required_by": ["companyA-root-context-ios-developer-umbrella"], "overlay": false },
-    { "kind": "context", "name": "companyA-root-context-developers-figma", "source": "github.com/companyA/root-contexts", "path": "contexts/figma", "version": "1.1.0", "commit": "4444444444444444444444444444444444444444", "weight": 40, "required_by": ["companyA-root-context-ios-developer-umbrella"], "overlay": false },
+    { "kind": "context", "name": "companyA-root-context-developers-figma", "source": "github.com/companyA/root-contexts", "directory": "contexts/figma", "version": "1.1.0", "commit": "4444444444444444444444444444444444444444", "weight": 40, "required_by": ["companyA-root-context-ios-developer-umbrella"], "overlay": false },
     { "kind": "context", "name": "companyA-root-context-developers-ios", "source": "github.com/companyA/root-context-developers-ios", "version": "2.4.2", "commit": "5555555555555555555555555555555555555555", "weight": 60, "required_by": ["companyA-root-context-ios-developer-umbrella"], "overlay": false },
     { "kind": "context", "name": "companyA-root-context-ios-developer-umbrella", "source": "github.com/companyA/root-context-ios-developer-umbrella", "version": "2.3.0", "commit": "6666666666666666666666666666666666666666", "weight": 100, "required_by": [], "overlay": false },
     { "kind": "context", "name": "companyA-root-context-organizational-structure", "source": "github.com/companyA/root-context-organizational-structure", "version": "1.0.4", "commit": "2222222222222222222222222222222222222222", "weight": 10, "required_by": ["companyA-root-context-core"], "overlay": false },
@@ -668,7 +689,7 @@ change, *unchanged* means not a byte:
 | §1 profiles and sources | rewritten | a profile is a root package plus lock plus overlays; the surface list gains MCP declarations; `git` carries `range`, `tag`, or `revision` (no `branch`); a `path` operand names a directory whose root is `agent-context.json`; `local` unchanged |
 | §1.1 | bytes change | ref-form row reworded; `context_range_conflict`, `context_version_mismatch`, and the Decision 4 weight diagnostics join the table |
 | §2 repository shape | rewritten | becomes the context-package shape: `agent-context.json`, `context/`, `CONTEXT.md`; `Profilefile.json` and per-profile directories withdrawn |
-| §2.1 | rewritten | `profile_index_invalid` and `profile_root_invalid` withdrawn; `context_manifest_invalid` replaces `profile_context_manifest_invalid` |
+| §2.1 | rewritten | `profile_index_invalid` and `profile_root_invalid` withdrawn; `context_manifest_invalid` replaces `profile_context_manifest_invalid`; `mcp_declaration_invalid` and `mcp_package_not_allowed` join this table |
 | §3 manifest and modules | rewritten | the entry shape (`path`, `environments`, `class`), module byte rules, and applicability rule stand verbatim, but the object moves inline into `agent-context.json`, the `version: 1` member goes, and the section title and diagnostics rename |
 | §3.1 | bytes change | diagnostic names follow §3 |
 | §4 profile store | rewritten | per-package commit- or state-keyed entries; a profile's identity is the set its lock names |
@@ -680,18 +701,19 @@ change, *unchanged* means not a byte:
 | §5.5 system prompt | bytes change | "of every profile in chain order" becomes "of every context member in emitted order"; the `.agent-context/mcp/` sibling is introduced by the new §5.8 |
 | §5.6 hash binding | bytes change | the tuple follows §5; the MCP file joins the managed-home surface set |
 | §5.7 | unchanged | — |
-| §5.8 MCP launch-channel output (new) | new | the per-adapter file, its bytes, and its managed-home-only rule (Decision 6) |
+| §5.8 MCP launch-channel output (new) | new | the per-adapter file, its bytes, its managed-home-only rule, and the tool-fixed location for `codex_cli` (Decision 6) |
 | §6 composition | rewritten | overlays are closure members with weights; the precedence direction becomes the two primitives; the skill-union paragraph is replaced by joint resolution, so `environment_composition_skill_divergence` is withdrawn (a divergence is now a conflict or a unification) |
 | §6.1 | rewritten | follows §6 |
 | §7 registry (body), §7.1, §7.2 | unchanged | — |
-| §7.3 system-prompt channels | bytes change | the descriptor grammar gains `argument` (`path`, `contents`, `name`) and `with`; the system-prompt rows stand |
+| §7.3 system-prompt channels | bytes change | the descriptor grammar gains `argument` (`path`, `contents`, `name`) and `with`, and `semantics` becomes a system-prompt-only member absent on an MCP descriptor; the system-prompt rows stand |
 | §7.4, §7.5, §7.6, §7.7 | unchanged | — |
 | §7.8 MCP launch channels (new) | new | the four adapter rows of Decision 6 |
 | §8.1 modes | bytes change | "the same store entry" becomes "the same lock's store entries" |
 | §8.2 marker | rewritten | `profile` records root, kind, and lock hash; `composition` withdrawn in favor of `members` and `precedence` (both primitives); the `mcp` surface entry |
 | §8.3, §8.4, §8.5 | unchanged | — |
 | §9.1 installation | rewritten | one root per install; `--range`/`--tag`/`--revision`; resolution, lock, and audit of every member; the detector scope becomes context modules, `agent-context.json`, `agent-mcp.json` (`args` and `url` included), and `CONTEXT.md`; `--use` takes no name |
-| §9.2, §9.3 | unchanged | — |
+| §9.2 switching | bytes change | "from the selected profile's store entry" becomes "from the store entries its lock names" |
+| §9.3 | unchanged | — |
 | §9.4 skills and migration | rewritten | the profile skill set is the lock's skills; direct machine declarations write into the lock; `default` keeps its `local` kind with a lock of migrated skills |
 | §9.5 onboarding | unchanged | — |
 | §9.6 import | rewritten | reassembly emits `agent-context.json` (version `1.0.0`, one module per adapter as before) with `requires.skills` pinned by `revision`; detection, classification, consent, and normalization stand |
