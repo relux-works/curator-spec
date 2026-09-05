@@ -683,7 +683,12 @@ mechanism. The layout is fixed:
   `.claude.json` project entry for that launch directory sets
   `hasClaudeMdExternalIncludesApproved: true`, otherwise it is dropped
   silently — the interactive dialog is what sets the key, and `-p` never
-  asks. The managed home is never the launch directory, so every reference
+  asks. The same guard skips a user-level `$CLAUDE_CONFIG_DIR/CLAUDE.md`
+  that is itself a symbolic link or a hard link (`nlink > 1`) while the
+  key is unset (**verified** from the 2.1.261 bundle), so a managed
+  `claude_code` home materializes its root-context surface as a regular
+  file — the `copied` mode of section 8.1 — never as a link, whatever the
+  form. The managed home is never the launch directory, so every reference
   above is an external include: the `referenced` form for `claude_code`
   therefore requires the project entry of section 7.4 carrying that key
   for the launch directory, and a home lacking it for the launch directory
@@ -1261,7 +1266,7 @@ configuration.
 | Environment | Channel | Evidence |
 |---|---|---|
 | `claude_code` | `flag` `--mcp-config` with `argument: path`, `with: ["--strict-mcp-config"]`. Under `--strict-mcp-config` the tool ignores every other MCP configuration, including servers recorded in the managed home's own `.claude.json`; this is intended — a managed home's MCP set is exactly the profile's | both flags **verified** on Claude Code 2.1.261 (section 7.9) |
-| `codex_cli` | `flag` `-p` with `argument: name`, `name: "curator-mcp"`: `-p <name>` layers `$CODEX_HOME/<name>.config.toml` on the base configuration, so the manager's `<home>/curator-mcp.config.toml` (section 5.8) carries the set. The layer name is fixed and reserved. `-p` accepts **exactly one** value — a second occurrence is the tool's argument error, not last-wins — so an operator `-p` after `--` fails the launch and operator profile layering is unavailable in a managed launch (recorded consequence; this closes Decision 0012 Open question 3). `-p` is accepted before and after `exec`. A **missing layer file is silently ignored** (exit 0), so the launcher MUST stat the layer file immediately before exec and fail rather than launch without the set; `env resolve` covers the same file as a marker-recorded surface | all four facts **verified** on codex 0.153.2 by direct invocation; a layer file whose only table is `mcp_servers` composes over the base and its servers are listed (**verified**) |
+| `codex_cli` | `flag` `-p` with `argument: name`, `name: "curator-mcp"`: `-p <name>` layers `$CODEX_HOME/<name>.config.toml` on the base configuration, so the manager's `<home>/curator-mcp.config.toml` (section 5.8) carries the set. The layer name is fixed and reserved. `-p` accepts **exactly one** value — a second occurrence is the tool's argument error, not last-wins — so an operator `-p` after `--` fails the launch and operator profile layering is unavailable in a managed launch (recorded consequence; this closes Decision 0012 Open question 3). `-p` is accepted before and after `exec`. A **missing layer file is silently ignored** (exit 0) — under `--strict-config` too (0.153.2, sprint evidence) — so the launcher MUST stat the layer file immediately before exec and fail rather than launch without the set; `env resolve` covers the same file as a marker-recorded surface | all four facts **verified** on codex 0.153.2 by direct invocation; a layer file whose only table is `mcp_servers` composes over the base and its servers are listed (**verified**) |
 | `opencode` | `variable` `OPENCODE_CONFIG` naming the section 5.8 file. opencode merges configuration in a documented order — remote, global, `OPENCODE_CONFIG`, project `opencode.json`, `.opencode/`, `OPENCODE_CONFIG_CONTENT`, managed — so a project-level entry with the same server name overrides the managed one; recorded, not prevented | merge order **docs-confidence** (opencode is not installed on the recording machine) |
 | `pi` | none — pi 0.84.2 has no MCP channel; no file and no `mcp` section | **verified** absent from the 0.84.2 help |
 
@@ -1291,7 +1296,7 @@ fixed by the verification sprint of 2026-09-05 (claude 2.1.261, codex
 |---|---|---|---|---|
 | `credential_scope` | `per CLAUDE_CONFIG_DIR (keychain service suffix sha256[0:8])` on macOS (**verified**); `home` on Linux | `home` | `home` | `xdg-data` |
 | `auth_write` | — (Keychain on macOS; Linux **unverified**) | `in-place` (**verified**) | `in-place (lockfile)` (**verified**) | docs-confidence |
-| `global_context_cap` | `none` recorded | `none` (**verified**) | `none` recorded | docs-confidence |
+| `global_context_cap` | `none` recorded (docs-confidence) | `none` (**verified**) | `none` recorded (docs-confidence) | docs-confidence |
 | `exec_flags` | — | `--skip-git-repo-check required outside git` (**verified**) | — | — |
 | `profile_flag` | — | `-p (single, silent-if-missing)` (**verified**) | — | — |
 
@@ -1341,8 +1346,10 @@ A profile materializes into an environment in exactly one of three modes:
 
 Mode defaults: the four adapters default to `linked` for their in-place
 surfaces; secondary fixed-home targets default to `copied`; managed homes
-always link from the store. An adapter MAY declare a different in-place
-default in the registry; profile data cannot.
+link from the store, except that the `claude_code` root-context surface of
+a managed home is `copied` (section 5.3: the tool skips a linked
+`CLAUDE.md` while the external-includes key is unset). An adapter MAY
+declare a different in-place default in the registry; profile data cannot.
 
 All three modes materialize from the same lock's store entries (section 4),
 so they cannot diverge for one lock hash.
