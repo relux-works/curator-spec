@@ -1633,6 +1633,14 @@ class EnvironmentVectorTests(unittest.TestCase):
                 "context-lock-v1.schema.json",
                 {"root": "root", "members": [dict(dep, required_by=["ghost"]), member]},
             ),
+            "lock required_by self": (
+                "context-lock-v1.schema.json",
+                {"root": "root", "members": [dict(dep, required_by=["dep", "root"]), member]},
+            ),
+            "marker copy outside its paths": (
+                "agent-environment-marker-v1.schema.json",
+                {"surfaces": {"root-context": {"paths": ["CLAUDE.md"], "copies": [{"path": "AGENTS.md", "reason": "symlink-fallback"}]}}},
+            ),
             "unsorted marker surfaces": (
                 "agent-environment-marker-v1.schema.json",
                 {"surfaces": dict([("skills", {}), ("root-context", {})])},
@@ -2066,6 +2074,32 @@ class ManagerConfigVectorTests(unittest.TestCase):
         self.schema["$defs"]["environments"]["additionalProperties"] = True
         with self.assertRaisesRegex(validate.ValidationFailure, "not closed"):
             self.run_gate()
+
+    def test_widened_enum_fails(self) -> None:
+        # the scratch mutation of item 6: a value the schema admits that the
+        # section 12.1 Values column does not state
+        self.schema["$defs"]["precedence"]["properties"]["winner"]["enum"].append("heavier")
+        with self.assertRaisesRegex(validate.ValidationFailure, "enum for precedence.winner is .*'heavier'"):
+            self.run_gate()
+
+    def test_narrowed_enum_fails(self) -> None:
+        self.schema["$defs"]["environments"]["properties"]["in_place_mode"]["additionalProperties"]["enum"] = ["linked"]
+        with self.assertRaisesRegex(validate.ValidationFailure, "enum for in_place_mode.<env-id> is \\['linked'\\]"):
+            self.run_gate()
+
+    def test_table_value_drifting_from_the_enum_fails(self) -> None:
+        text = self.text.replace("| `precedence.winner` | `higher-weight`, `lower-weight` |", "| `precedence.winner` | `higher-weight`, `lower-weight`, `heavier` |")
+        self.assertNotEqual(text, self.text)
+        with self.assertRaisesRegex(validate.ValidationFailure, "precedence.winner"):
+            self.run_gate(text=text)
+
+    def test_every_enum_knob_is_cross_checked(self) -> None:
+        values = validate.environments_knob_values(self.text)
+        closed = {knob for knob, stated in values.items() if len(stated) >= 2 and all(" " not in v for v in stated)}
+        # the knobs whose Values cell is a closed literal set are exactly the cross-checked ones
+        self.assertEqual(closed & set(validate.MANAGER_CONFIG_KNOB_ENUM_PATHS), set(validate.MANAGER_CONFIG_KNOB_ENUM_PATHS))
+        for knob in validate.MANAGER_CONFIG_KNOB_ENUM_PATHS:
+            self.assertIn(knob, values)
 
     def test_knob_without_a_default_fails(self) -> None:
         del self.schema["$defs"]["environments"]["properties"]["in_place_mode"]["default"]

@@ -42,8 +42,6 @@
     "root-context": {
       "content_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
       "copies": [],
-      "copy_fallback": true,
-      "form": "monolithic",
       "paths": [
         "CLAUDE.md"
       ]

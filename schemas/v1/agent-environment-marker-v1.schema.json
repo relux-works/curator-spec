@@ -57,8 +57,13 @@
     "mode": {"enum": ["managed-home", "linked", "copied"]},
     "surfaces": {
       "type": "object",
-      "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
-      "additionalProperties": {"$ref": "#/$defs/surfaceEntry"}
+      "properties": {
+        "mcp": {"$ref": "#/$defs/surfaceEntry"},
+        "root-context": {"$ref": "#/$defs/rootContextSurfaceEntry"},
+        "skills": {"$ref": "#/$defs/surfaceEntry"},
+        "system-prompt": {"$ref": "#/$defs/surfaceEntry"}
+      },
+      "additionalProperties": false
     },
     "passthrough": {
       "type": "array",
@@ -147,27 +152,38 @@
         {"required": ["state_sha256"], "not": {"required": ["commit"]}}
       ]
     },
+    "rootContextSurfaceEntry": {
+      "type": "object",
+      "required": ["paths", "form", "content_sha256"],
+      "properties": {
+        "paths": {"$ref": "common.schema.json#/$defs/pathSet"},
+        "form": {"enum": ["monolithic", "referenced"]},
+        "content_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+        "copies": {"$ref": "#/$defs/copies"}
+      },
+      "additionalProperties": false
+    },
     "surfaceEntry": {
       "type": "object",
       "required": ["paths", "content_sha256"],
       "properties": {
         "paths": {"$ref": "common.schema.json#/$defs/pathSet"},
-        "form": {"enum": ["monolithic", "referenced"]},
         "content_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
-        "copies": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["path", "reason"],
-            "properties": {
-              "path": {"$ref": "common.schema.json#/$defs/portablePath"},
-              "reason": {"enum": ["symlink-fallback", "claude-code-root-context"]}
-            },
-            "additionalProperties": false
-          }
-        }
+        "copies": {"$ref": "#/$defs/copies"}
       },
       "additionalProperties": false
+    },
+    "copies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "reason"],
+        "properties": {
+          "path": {"$ref": "common.schema.json#/$defs/portablePath"},
+          "reason": {"enum": ["symlink-fallback", "claude-code-root-context"]}
+        },
+        "additionalProperties": false
+      }
     }
   }
 }

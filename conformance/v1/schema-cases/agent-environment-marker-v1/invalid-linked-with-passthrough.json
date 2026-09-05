@@ -61,7 +61,9 @@
           "reason": "symlink-fallback"
         }
       ],
-      "paths": []
+      "paths": [
+        "skills/pdf"
+      ]
     },
     "system-prompt": {
       "content_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",

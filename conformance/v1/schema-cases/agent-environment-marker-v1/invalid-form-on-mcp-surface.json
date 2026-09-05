@@ -39,13 +39,12 @@
     ".claude.json"
   ],
   "surfaces": {
-    "root-context": {
-      "content_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "mcp": {
+      "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
       "copies": [],
-      "copy_fallback": true,
       "form": "monolithic",
       "paths": [
-        "CLAUDE.md"
+        ".agent-context/mcp/claude_code.json"
       ]
     }
   },

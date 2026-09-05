@@ -663,27 +663,28 @@ func writeEnvironmentVectors(dir, expected string) {
 		form        string
 		closure     environmentClosure
 		policy      precedencePolicy
+		note        string
 	}
 	inputs := []materializationInput{
-		{"monolithic-claude-code", "root-context", "claude_code", "monolithic", closure("companyA"), defaultPrecedence},
-		{"monolithic-codex-selector-excluded", "root-context", "codex_cli", "monolithic", closure("companyA"), defaultPrecedence},
-		{"monolithic-composed-no-chapter", "root-context", "claude_code", "monolithic", closure("companyA", "personal", "emptyoverlay"), defaultPrecedence},
-		{"monolithic-zero-modules", "root-context", "claude_code", "monolithic", closure("emptyoverlay"), defaultPrecedence},
-		{"monolithic-zero-modules-composed", "root-context", "claude_code", "monolithic", closure("emptyoverlay", "emptytoo"), defaultPrecedence},
-		{"referenced-claude-code-composed", "root-context", "claude_code", "referenced", closure("companyA", "personal"), defaultPrecedence},
-		{"referenced-opencode", "root-context", "opencode", "referenced", closure("companyA"), defaultPrecedence},
-		{"referenced-opencode-zero-modules", "root-context", "opencode", "referenced", closure("emptyoverlay"), defaultPrecedence},
-		{"no-context-directory", "root-context", "claude_code", "monolithic", closure("nocontext"), defaultPrecedence},
-		{"system-prompt-composed", "system-prompt", "claude_code", "", closure("companyA", "personal"), defaultPrecedence},
-		{"system-prompt-none-applicable", "system-prompt", "codex_cli", "", closure("selective"), defaultPrecedence},
-		{"weights-winner-higher-placement-last", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerHigherWeight, placementWinnerLast}},
-		{"weights-winner-lower-placement-last", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerLowerWeight, placementWinnerLast}},
-		{"weights-winner-higher-placement-first", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerHigherWeight, placementWinnerFirst}},
-		{"weights-winner-lower-placement-first", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerLowerWeight, placementWinnerFirst}},
-		{"mcp-claude-code", "mcp", "claude_code", "", mcp, defaultPrecedence},
-		{"mcp-codex-cli", "mcp", "codex_cli", "", mcp, defaultPrecedence},
-		{"mcp-opencode", "mcp", "opencode", "", mcp, defaultPrecedence},
-		{"mcp-pi-none", "mcp", "pi", "", mcp, defaultPrecedence},
+		{"monolithic-claude-code", "root-context", "claude_code", "monolithic", closure("companyA"), defaultPrecedence, ""},
+		{"monolithic-codex-selector-excluded", "root-context", "codex_cli", "monolithic", closure("companyA"), defaultPrecedence, ""},
+		{"monolithic-composed-no-chapter", "root-context", "claude_code", "monolithic", closure("companyA", "personal", "emptyoverlay"), defaultPrecedence, ""},
+		{"monolithic-zero-modules", "root-context", "claude_code", "monolithic", closure("emptyoverlay"), defaultPrecedence, ""},
+		{"monolithic-zero-modules-composed", "root-context", "claude_code", "monolithic", closure("emptyoverlay", "emptytoo"), defaultPrecedence, ""},
+		{"referenced-claude-code-composed", "root-context", "claude_code", "referenced", closure("companyA", "personal"), defaultPrecedence, ""},
+		{"referenced-opencode", "root-context", "opencode", "referenced", closure("companyA"), defaultPrecedence, ""},
+		{"referenced-opencode-zero-modules", "root-context", "opencode", "referenced", closure("emptyoverlay"), defaultPrecedence, ""},
+		{"no-context-directory", "root-context", "claude_code", "monolithic", closure("nocontext"), defaultPrecedence, ""},
+		{"system-prompt-composed", "system-prompt", "claude_code", "", closure("companyA", "personal"), defaultPrecedence, ""},
+		{"system-prompt-none-applicable", "system-prompt", "codex_cli", "", closure("selective"), defaultPrecedence, ""},
+		{"weights-winner-higher-placement-last", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerHigherWeight, placementWinnerLast}, ""},
+		{"weights-winner-lower-placement-last", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerLowerWeight, placementWinnerLast}, ""},
+		{"weights-winner-higher-placement-first", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerHigherWeight, placementWinnerFirst}, ""},
+		{"weights-winner-lower-placement-first", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerLowerWeight, placementWinnerFirst}, ""},
+		{"mcp-claude-code", "mcp", "claude_code", "", mcp, defaultPrecedence, ""},
+		{"mcp-codex-cli", "mcp", "codex_cli", "", mcp, defaultPrecedence, ""},
+		{"mcp-opencode", "mcp", "opencode", "", mcp, defaultPrecedence, ""},
+		{"mcp-pi-none", "mcp", "pi", "", mcp, defaultPrecedence, "pi declares no MCP launch channel (section 7.8), so no file is written and a pi fragment carries no mcp section; env_names is still recorded as the sorted union of the resolved set for information only — it never enters a fragment or a launch environment"},
 	}
 
 	materializationCases := make([]any, 0, len(inputs))
@@ -713,6 +714,9 @@ func writeEnvironmentVectors(dir, expected string) {
 		}
 		if input.surface == "root-context" {
 			item["form"] = input.form
+		}
+		if input.note != "" {
+			item["note"] = input.note
 		}
 		if input.surface == "mcp" {
 			item["mcp_servers"] = environmentServersJSON(input.closure)
@@ -979,6 +983,9 @@ func contextLockSchemaExamples(valid map[string]any) []schemaExample {
 			m["required_by"] = []any{"companyA-root-context-ios-developer-umbrella", "companyA-root-context-developers-core"}
 		})},
 		{name: "invalid-required-by-unknown-member", valid: false, instance: withLockMember(valid, 0, func(m map[string]any) { m["required_by"] = []any{"absent"} })},
+		{name: "invalid-required-by-self", valid: false, instance: withLockMember(valid, 0, func(m map[string]any) {
+			m["required_by"] = []any{"companyA-root-context-core", "companyA-root-context-developers-core", "companyA-root-context-ios-developer-umbrella"}
+		})},
 		{name: "invalid-root-not-a-member", valid: false, instance: withField(valid, "root", "absent")},
 		{name: "invalid-root-with-requirers", valid: false, instance: withLockMember(valid, 4, func(m map[string]any) { m["required_by"] = []any{"personal"} })},
 		{name: "invalid-root-flagged-overlay", valid: false, instance: withLockMember(valid, 4, func(m map[string]any) { m["overlay"] = true })},
@@ -1071,6 +1078,7 @@ func environmentMarkerSchemaExamples(valid map[string]any) []schemaExample {
 	gitRevision := withProfile(valid, map[string]any{"name": "companyA", "root": "companyA", "kind": "git", "lock_sha256": strings.Repeat("b", 64), "source": "github.com/example/companyA", "requirement": map[string]any{"revision": fixedCommit}})
 
 	linked := withMarkerMode(valid, "linked")
+	linked["surfaces"].(map[string]any)["skills"].(map[string]any)["paths"] = []any{"skills/pdf"}
 	linked["surfaces"].(map[string]any)["skills"].(map[string]any)["copies"] = []any{map[string]any{"path": "skills/pdf", "reason": "symlink-fallback"}}
 	copied := withMarkerMode(valid, "copied")
 
@@ -1113,12 +1121,16 @@ func environmentMarkerSchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-member-root-missing", valid: false, instance: withField(valid, "members", []any{map[string]any{"name": "personal", "version": "0.3.0", "state_sha256": strings.Repeat("ab", 32), "weight": 1000, "overlay": true}})},
 		{name: "invalid-member-duplicate", valid: false, instance: withField(valid, "members", append(append([]any{}, valid["members"].([]any)...), valid["members"].([]any)[0]))},
 		{name: "invalid-mode", valid: false, instance: withField(valid, "mode", "adopted")},
-		{name: "invalid-surface-unknown-field", valid: false, instance: withField(valid, "surfaces", map[string]any{"root-context": map[string]any{"paths": []any{"CLAUDE.md"}, "content_sha256": "sha256:" + strings.Repeat("0", 64), "copies": []any{}, "copy_fallback": true}})},
-		{name: "invalid-surface-missing-paths", valid: false, instance: withField(valid, "surfaces", map[string]any{"root-context": map[string]any{"content_sha256": "sha256:" + strings.Repeat("0", 64), "copies": []any{}}})},
+		{name: "invalid-surface-unknown-field", valid: false, instance: withField(valid, "surfaces", map[string]any{"root-context": map[string]any{"paths": []any{"CLAUDE.md"}, "form": "monolithic", "content_sha256": "sha256:" + strings.Repeat("0", 64), "copies": []any{}, "copy_fallback": true}})},
+		{name: "invalid-surface-missing-paths", valid: false, instance: withField(valid, "surfaces", map[string]any{"root-context": map[string]any{"form": "monolithic", "content_sha256": "sha256:" + strings.Repeat("0", 64), "copies": []any{}}})},
 		{name: "invalid-surface-unknown-form", valid: false, instance: withField(valid, "surfaces", map[string]any{"root-context": map[string]any{"paths": []any{"CLAUDE.md"}, "form": "linked", "content_sha256": "sha256:" + strings.Repeat("0", 64), "copies": []any{}}})},
-		{name: "invalid-copy-unknown-reason", valid: false, instance: withField(valid, "surfaces", map[string]any{"root-context": map[string]any{"paths": []any{"CLAUDE.md"}, "content_sha256": "sha256:" + strings.Repeat("0", 64), "copies": []any{map[string]any{"path": "CLAUDE.md", "reason": "operator-preference"}}}})},
-		{name: "invalid-managed-home-missing-copies", valid: false, instance: withField(valid, "surfaces", map[string]any{"root-context": map[string]any{"paths": []any{"CLAUDE.md"}, "content_sha256": "sha256:" + strings.Repeat("0", 64)}})},
-		{name: "invalid-copied-with-copies", valid: false, instance: withField(copied, "surfaces", map[string]any{"root-context": map[string]any{"paths": []any{"CLAUDE.md"}, "content_sha256": "sha256:" + strings.Repeat("0", 64), "copies": []any{}}})},
+		{name: "invalid-copy-unknown-reason", valid: false, instance: withField(valid, "surfaces", map[string]any{"root-context": map[string]any{"paths": []any{"CLAUDE.md"}, "form": "monolithic", "content_sha256": "sha256:" + strings.Repeat("0", 64), "copies": []any{map[string]any{"path": "CLAUDE.md", "reason": "operator-preference"}}}})},
+		{name: "invalid-copy-outside-paths", valid: false, instance: withField(valid, "surfaces", map[string]any{"root-context": map[string]any{"paths": []any{"CLAUDE.md"}, "form": "monolithic", "content_sha256": "sha256:" + strings.Repeat("0", 64), "copies": []any{map[string]any{"path": "AGENTS.md", "reason": "symlink-fallback"}}}})},
+		{name: "invalid-root-context-missing-form", valid: false, instance: withField(valid, "surfaces", map[string]any{"root-context": map[string]any{"paths": []any{"CLAUDE.md"}, "content_sha256": "sha256:" + strings.Repeat("0", 64), "copies": []any{}}})},
+		{name: "invalid-form-on-mcp-surface", valid: false, instance: withField(valid, "surfaces", map[string]any{"mcp": map[string]any{"paths": []any{".agent-context/mcp/claude_code.json"}, "form": "monolithic", "content_sha256": "sha256:" + strings.Repeat("2", 64), "copies": []any{}}})},
+		{name: "invalid-surface-unknown-key", valid: false, instance: withField(valid, "surfaces", withField(valid["surfaces"].(map[string]any), "zzz", map[string]any{"paths": []any{"ZZZ.md"}, "content_sha256": "sha256:" + strings.Repeat("0", 64), "copies": []any{}}))},
+		{name: "invalid-managed-home-missing-copies", valid: false, instance: withField(valid, "surfaces", map[string]any{"root-context": map[string]any{"paths": []any{"CLAUDE.md"}, "form": "monolithic", "content_sha256": "sha256:" + strings.Repeat("0", 64)}})},
+		{name: "invalid-copied-with-copies", valid: false, instance: withField(copied, "surfaces", map[string]any{"root-context": map[string]any{"paths": []any{"CLAUDE.md"}, "form": "monolithic", "content_sha256": "sha256:" + strings.Repeat("0", 64), "copies": []any{}}})},
 		{name: "invalid-surfaces-unsorted", valid: false, instance: withField(valid, "surfaces", orderedSurfaceObject([]string{"skills", "root-context", "mcp", "system-prompt"}, valid["surfaces"].(map[string]any)))},
 		{name: "invalid-managed-home-missing-passthrough", valid: false, instance: without(valid, "passthrough")},
 		{name: "invalid-managed-home-missing-seeds", valid: false, instance: without(valid, "seeds")},
@@ -1254,6 +1266,9 @@ func launchEnvFragmentSchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-mcp-on-pi", valid: false, instance: withField(launchFragmentFor("pi", true, false), "mcp", valid["mcp"])},
 		{name: "invalid-path-prepend-relative", valid: false, instance: withField(valid, "path_prepend", "environments/companyA/bin")},
 		{name: "invalid-path-prepend-outside-root", valid: false, instance: withField(valid, "path_prepend", "/usr/local/bin")},
+		{name: "invalid-path-prepend-dotdot-segment", valid: false, instance: withField(valid, "path_prepend", "/manager/environments/companyA/../bin")},
+		{name: "invalid-env-dotdot-segment", valid: false, instance: withField(valid, "env", map[string]any{"CLAUDE_CONFIG_DIR": "/manager/environments/companyA/../claude_code"})},
+		{name: "invalid-system-prompt-path-dotdot-segment", valid: false, instance: withField(valid, "system_prompt", withField(valid["system_prompt"].(map[string]any), "path", "/manager/environments/companyA/claude_code/.agent-context/../../system-prompt.md"))},
 	}
 }
 

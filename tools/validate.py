@@ -748,12 +748,23 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
                         return "required_by must be sorted and unique"
                     if not set(required_by) <= names:
                         return "required_by names a package outside the lock"
+                    if member.get("name") in required_by:
+                        return "required_by names the member itself"
     elif schema_name == "agent-environment-marker-v1.schema.json":
         surfaces = instance.get("surfaces")
         if isinstance(surfaces, dict):
             keys = list(surfaces)
             if keys != sorted(keys):
                 return "environment marker surface keys must be sorted"
+            for key, entry in surfaces.items():
+                if not isinstance(entry, dict):
+                    continue
+                paths = entry.get("paths")
+                copies = entry.get("copies")
+                if isinstance(paths, list) and isinstance(copies, list):
+                    for copy in copies:
+                        if isinstance(copy, dict) and copy.get("path") not in paths:
+                            return f"surface {key} records a copy outside its paths: {copy.get('path')!r}"
         members = instance.get("members")
         profile = instance.get("profile")
         if isinstance(members, list) and all(isinstance(member, dict) for member in members):
@@ -2994,22 +3005,52 @@ MANAGER_CONFIG_KNOB_DEFAULT_PATHS = {
 }
 
 
-def environments_knob_table(text: str) -> dict[str, str]:
-    """Parse the environments.md section 12.1 knob table into knob -> default."""
+# The knobs whose section 12.1 `Values` cell is a closed set of backticked
+# literals, with the schema location of the enum that admits them. The two
+# sets MUST be equal: a value the schema admits that the table does not
+# state (a widened enum) fails here, as does a value the table states that
+# the schema rejects.
+MANAGER_CONFIG_KNOB_ENUM_PATHS = {
+    "precedence.winner": ("$defs", "precedence", "properties", "winner", "enum"),
+    "precedence.placement": ("$defs", "precedence", "properties", "placement", "enum"),
+    "forms.<env-id>": ("$defs", "environments", "properties", "forms", "additionalProperties", "enum"),
+    "system_prompt_files.<profile>.pi": ("$defs", "systemPromptFiles", "properties", "pi", "enum"),
+    "targets.<target-id>.participation": ("$defs", "target", "properties", "participation", "enum"),
+    "isolation.<profile>.<env-id>": (
+        "$defs", "environments", "properties", "isolation", "additionalProperties", "additionalProperties", "enum"
+    ),
+    "in_place_mode.<env-id>": ("$defs", "environments", "properties", "in_place_mode", "additionalProperties", "enum"),
+}
+
+BACKTICKED = re.compile(r"`([^`]+)`")
+
+
+def environments_knob_rows(text: str) -> dict[str, tuple[str, str]]:
+    """Parse the environments.md section 12.1 knob table into knob -> (values, default)."""
     section = text.split("### 12.1 Machine configuration knobs", 1)
     if len(section) != 2:
         raise ValidationFailure("environments.md has no section 12.1 knob table")
-    knobs: dict[str, str] = {}
+    knobs: dict[str, tuple[str, str]] = {}
     for line in section[1].split("### 12.2", 1)[0].splitlines():
         if not line.startswith("| `"):
             continue
         cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
         if len(cells) < 4:
             raise ValidationFailure(f"section 12.1 knob row has too few cells: {line}")
-        knobs[cells[0].strip("`")] = cells[2]
+        knobs[cells[0].strip("`")] = (cells[1], cells[2])
     if not knobs:
         raise ValidationFailure("section 12.1 knob table is empty")
     return knobs
+
+
+def environments_knob_table(text: str) -> dict[str, str]:
+    """Parse the environments.md section 12.1 knob table into knob -> default."""
+    return {knob: default for knob, (_values, default) in environments_knob_rows(text).items()}
+
+
+def environments_knob_values(text: str) -> dict[str, list[str]]:
+    """Parse the environments.md section 12.1 knob table into knob -> backticked values."""
+    return {knob: BACKTICKED.findall(values) for knob, (values, _default) in environments_knob_rows(text).items()}
 
 
 def manager_config_semantic_error(instance: Any) -> str | None:
@@ -3093,6 +3134,24 @@ def validate_manager_config_vectors(
         raise ValidationFailure(
             f"manager-config-v2 knobs without a default: {sorted(schema_names - set(defaults))}"
         )
+    values = environments_knob_values(environments_text)
+    for knob, path in MANAGER_CONFIG_KNOB_ENUM_PATHS.items():
+        if knob not in values:
+            raise ValidationFailure(f"section 12.1 no longer states knob {knob}")
+        stated_values = values[knob]
+        if not stated_values or len(stated_values) != len(set(stated_values)):
+            raise ValidationFailure(f"section 12.1 states no closed value set for {knob}")
+        node = schema
+        for segment in path:
+            if not isinstance(node, dict) or segment not in node:
+                raise ValidationFailure(f"manager-config-v2 states no enum for {knob}")
+            node = node[segment]
+        if not isinstance(node, list) or len(node) != len(set(map(str, node))):
+            raise ValidationFailure(f"manager-config-v2 enum for {knob} is not a set of literals: {node!r}")
+        if set(node) != set(stated_values):
+            raise ValidationFailure(
+                f"manager-config-v2 enum for {knob} is {sorted(node)}; section 12.1 states {sorted(stated_values)}"
+            )
 
     families = {"manager-config.json": vector, "manager-config-v2.json": vector_v2}
     seen: set[str] = set()

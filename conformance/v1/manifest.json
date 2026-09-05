@@ -498,15 +498,23 @@
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-copied-with-copies.json",
-      "sha256": "sha256:fe58052d21e08930b18c6b7f6b239bf5cfadc87fb05da5404f6a272af6559eb1"
+      "sha256": "sha256:6a12b8c0561290f8562b1e6dcac369228d5173efa33028fac5c5cac34442cdb3"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v1/invalid-copy-outside-paths.json",
+      "sha256": "sha256:fe75808507b389f61f7974aa6f486920f434b1dbad496fb12f4212e4d1da5c86"
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-copy-unknown-reason.json",
-      "sha256": "sha256:d51cbb27846653ce56a9549e83f6e49e8ab22e10c9b90129c4732a9d532b62c0"
+      "sha256": "sha256:758f09a3da25774c8b6af369431cff4a04f04cfcb9793b2f5202683fd6d0c704"
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-empty-composition.json",
       "sha256": "sha256:da8c66c881d95be166a0ccce338809804b2c24f9a4e5076abedc806542e6ff72"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v1/invalid-form-on-mcp-surface.json",
+      "sha256": "sha256:45d789cb7710614e1e2706507008a4fc56da4a4caf745aab701a759a7e2fae74"
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-git-requirement-branch.json",
@@ -534,11 +542,11 @@
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-linked-with-passthrough.json",
-      "sha256": "sha256:84f844de48abb97601e95f163d355e2776b52e9df2402de11ea235ac717033cf"
+      "sha256": "sha256:c360f1fd0cf789385ec588a5182f942f3c31ae4de04e8a07a51644ee0f6fc4d6"
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-linked-with-seeds.json",
-      "sha256": "sha256:a0cce86ba3442e308029fdcfeecd030dcf9039411f28486d5b8dbdcf4f927367"
+      "sha256": "sha256:b6e1823208187ef97945bcba663fbe206e37c3a3f900d83b82ff9e4156ed3182"
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-local-with-ref.json",
@@ -554,7 +562,7 @@
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-managed-home-missing-copies.json",
-      "sha256": "sha256:1c6bd727f7e88e7fbc331199aabd093f6a65f93a0fa314efd3760b63fba6e76b"
+      "sha256": "sha256:5bdbcfbb58eb3e094850c03552fd3bb69b0d4e36824ffa5ec726755800ec5928"
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-managed-home-missing-passthrough.json",
@@ -649,8 +657,12 @@
       "sha256": "sha256:a86122aa2dcc7be6acf447a56e94bd6fd4dd7daf633c5df203f59d3f74a7ba18"
     },
     {
+      "path": "schema-cases/agent-environment-marker-v1/invalid-root-context-missing-form.json",
+      "sha256": "sha256:89f38041aec4b62b18d1fbbe38eb3bec5d7b1e0d3a8b1a4d0b12331390c175cf"
+    },
+    {
       "path": "schema-cases/agent-environment-marker-v1/invalid-seed-links-on-linked-home.json",
-      "sha256": "sha256:6adae1efd1ad41d9776da3173b6c1f4f921a9d35a7059a71e3c332456b174075"
+      "sha256": "sha256:33aebf9110334b693960666a73e64a45109be62972b0b0385a95458ae6454699"
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-seeded-projects-on-copied.json",
@@ -662,15 +674,19 @@
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-surface-missing-paths.json",
-      "sha256": "sha256:ce925f39fe59cc31cf84e87db9fd2d29bdfe5c77613bdc9535c8142a09a0a42d"
+      "sha256": "sha256:b100def0a9339bdaf9643bdf5a2e1ea355dc1481770fe0d97c1133831f973010"
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-surface-unknown-field.json",
-      "sha256": "sha256:563652fa5ab65b65a2135d5961ad60bb0d28a5ab0bf36287352babc85e3923cf"
+      "sha256": "sha256:ec42a88cda317254d31222c18a8b3cf68172c096d5c7b3c98b79ef19203861a4"
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-surface-unknown-form.json",
       "sha256": "sha256:e2ce4e4b91b7f0d21c5e4469300cbebed009d6294433d6fb8b4992db8c323cba"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v1/invalid-surface-unknown-key.json",
+      "sha256": "sha256:a27aa34a4dbf2586707b6f97aa911c7a52634d18c7ff7adfe97343c9e711086e"
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid-surfaces-unsorted.json",
@@ -710,7 +726,7 @@
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/valid-linked-symlink-fallback.json",
-      "sha256": "sha256:1fa6173be53828dbad750feb506ccd804c6bc4df58d0a21e88f4d760d0656758"
+      "sha256": "sha256:1588b616ee74da8d7dbd936c6cd7a79f037a36be56a8cd86c8b61a958a09d6ec"
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/valid-local-profile.json",
@@ -1993,6 +2009,10 @@
       "sha256": "sha256:b277114767d1c7e5f7a1ad597b2b87ca8f96f20f572313208a60f0e230dcacb9"
     },
     {
+      "path": "schema-cases/context-lock-v1/invalid-required-by-self.json",
+      "sha256": "sha256:f1e0c4995d8f046e9c127aff7e8d834124e83f1c73aa918370afd39ab8b2ecec"
+    },
+    {
       "path": "schema-cases/context-lock-v1/invalid-required-by-unknown-member.json",
       "sha256": "sha256:55c6c16d71fbe7f70c5956203d63e3cc7fdfedf60b439b28866fcf9d35a2cf5d"
     },
@@ -2918,7 +2938,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:c0b99fca3de20a6dd3b4171b3b6362f4adbd8eb94f7905ccd7906ecdef452073"
+      "sha256": "sha256:3706638675e936b922fa39c843c6439c11a0c23fb3c5aa024351249e6d660ba8"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -3225,6 +3245,10 @@
       "sha256": "sha256:ae78beca21311a5be60bb1261abc22e768515bcec359d6105bd6a5bf6cbab2d3"
     },
     {
+      "path": "schema-cases/launch-env-fragment-v1/invalid-env-dotdot-segment.json",
+      "sha256": "sha256:8c0fb17e176d008cc80852d02b59023ad544992e104a02eb4945b16219964345"
+    },
+    {
       "path": "schema-cases/launch-env-fragment-v1/invalid-env-empty.json",
       "sha256": "sha256:8b24f1e3eb6edc299011828ee885aab95434977e2fbd193efc2e0b006f734226"
     },
@@ -3317,6 +3341,10 @@
       "sha256": "sha256:7d2d71c38c0b8566fc9bfd96df76a4f7cc1f52ce3ca71ad173b1f629970dc327"
     },
     {
+      "path": "schema-cases/launch-env-fragment-v1/invalid-path-prepend-dotdot-segment.json",
+      "sha256": "sha256:bd6d32e2c8044ddd7a891cdbff9707a4aa63a42dbf2e8f251407e349f004c96e"
+    },
+    {
       "path": "schema-cases/launch-env-fragment-v1/invalid-path-prepend-outside-root.json",
       "sha256": "sha256:213c7ff58ce0582bed068fa2e951bea11a48812a10fd05031cf534f361d606f7"
     },
@@ -3355,6 +3383,10 @@
     {
       "path": "schema-cases/launch-env-fragment-v1/invalid-system-prompt-missing-channels.json",
       "sha256": "sha256:0d0e928e311d4987cbf4570006dfb555015ca11b2c69f9b862c8506c947e676c"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v1/invalid-system-prompt-path-dotdot-segment.json",
+      "sha256": "sha256:9bd2778259c92b4c607d71f5c094fffe5ea1c59abf4569e9ca537b25b545cb5b"
     },
     {
       "path": "schema-cases/launch-env-fragment-v1/invalid-system-prompt-unknown-field.json",
@@ -3485,6 +3517,10 @@
       "sha256": "sha256:f121fd77e8224f5f8085c0b3dd70ae4fa82e1b43f324e315efba821d35c83870"
     },
     {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-empty-source.json",
+      "sha256": "sha256:26126254298ad1ba917377fb8d42bcc24d8eed9276688ca6d4754aa4d9196378"
+    },
+    {
       "path": "schema-cases/manager-config-v2/invalid-overlay-negative-weight.json",
       "sha256": "sha256:bab61293409edb57cee71690c94041dd512e2a5383210d7f3156c63057d3ef5b"
     },
@@ -3493,8 +3529,16 @@
       "sha256": "sha256:f73f4e66734881ce688915b17f0dff841b390c6ebcb871d132423fba1d5181fd"
     },
     {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-range-grammar.json",
+      "sha256": "sha256:797d401abe9fc8d9bbb297f5798b2fbdd2214c35c4c26127e3d63687b93e0c79"
+    },
+    {
       "path": "schema-cases/manager-config-v2/invalid-overlay-revision-grammar.json",
       "sha256": "sha256:9193ed1d9ad8fdf65be51889f31a33227435320f7c7b6f1faff402dc3c88230f"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-tag-grammar.json",
+      "sha256": "sha256:ad642f707ba0732da07a5be733783ad879e31c541b37ea5b47f5ab13d115c09e"
     },
     {
       "path": "schema-cases/manager-config-v2/invalid-overlay-two-requirement-forms.json",
@@ -3854,7 +3898,7 @@
     },
     {
       "path": "vectors/environments.json",
-      "sha256": "sha256:6bedfbd21c6022503bd4fe99b5a3b40281333486e4141b56e03c1d47789d65a3"
+      "sha256": "sha256:1add03cafd6a4ec3b8bbb2a02e844e5f4edb0618eca15a41c52849c870eaaad9"
     },
     {
       "path": "vectors/external-repository-acquisition.json",
@@ -3878,7 +3922,7 @@
     },
     {
       "path": "vectors/manager-config-v2.json",
-      "sha256": "sha256:287fdaec8b002cba1e3be91ebb3c2d5dcda6396a69bd4ee2756294aba8eb8b7d"
+      "sha256": "sha256:851131d9d5306833e7cc6187b576e5a2b5fcfb049bc595fb0fff1c47ee467655"
     },
     {
       "path": "vectors/manager-config.json",

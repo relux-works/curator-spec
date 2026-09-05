@@ -47,6 +47,7 @@
           "reason": "operator-preference"
         }
       ],
+      "form": "monolithic",
       "paths": [
         "CLAUDE.md"
       ]

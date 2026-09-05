@@ -16,6 +16,56 @@ references without a document name refer to `protocol/core.md`;
 "environments §N" names `protocol/environments.md` revision 1 as landed at
 `4d55698`.
 
+## Erratum (2026-09-05)
+
+Recorded after the environments 1.1 batches landed (batch 3 producer and
+reviewer follow-ups; schemas-batch producer reading 4). Each item quotes
+the original passage verbatim, states why it is wrong or incomplete, cites
+the evidence, and gives the corrected statement. The original passages
+remain in the body, each marked `[Erratum 2026-09-05, item N]`; nothing
+else in this document was changed by the erratum.
+
+1. **Compatibility-impact row for manager §12.4.** Original row:
+   "manager §12.4 | unchanged | —". Why wrong: batch 3 of the environments
+   1.1 rewrite (`f61ee9a`) extended manager §12.4 with the
+   `isolation.<profile>.<env-id>` knob, the passthrough liveness row
+   (`environment_passthrough_detached`), and the provisioning seeds of
+   environments §7.4, so the section's bytes changed. Evidence:
+   `profiles/manager.md` §12.4 at curator-spec main `fd237ba`. Corrected
+   statement: the row reads "manager §12.4 | bytes change | the isolation
+   knob, the liveness row, and the provisioning seeds of environments
+   §7.4". The table cells are not edited; the row is annotated.
+
+2. **Diagnostic for disagreeing exact constraints (Decision 2,
+   "Resolution").** Original: "Two exact constraints on one name MUST peel
+   to one commit (§7, unchanged; different refs resolving to one commit
+   unify)." Why incomplete: the sentence names no diagnostic for the case
+   where the two exact constraints peel to different commits, and §7 of
+   the frozen core has no diagnostic for it either. Evidence: the
+   schemas-batch resolution vector `exact-constraints-disagree` in
+   `conformance/v1/vectors/context-versions.json` (`fd237ba`), cut on the
+   producer's reading 4 and accepted by its review. Corrected statement:
+   two exact constraints on one name that peel to different commits fail
+   `context_range_conflict` naming every requirer with its exact form and
+   the candidate versions considered — the effective constraint of that
+   name is empty, which is exactly the step-2 failure. The same sentence
+   in `protocol/environments.md` §1.4 is read the same way.
+
+3. **Worked-example fragment descriptors (Decision 9).** Original: the
+   `env resolve claude_code --format json` example prints the
+   system-prompt descriptors `{ "kind": "flag", "semantics": "append",
+   "flag": "--append-system-prompt-file" }` and `{ "kind": "flag",
+   "semantics": "replace", "flag": "--system-prompt-file" }`. Why
+   incomplete: the rewritten `launch-env-fragment-v1` requires `argument`
+   on every `flag` descriptor (and `name` exactly when `argument` is
+   `name`); both descriptors omit it. Evidence: `protocol/environments.md`
+   §10.2 and §13 (revision 1.1), which state that this example is read as
+   pre-revision; `schemas/v1/launch-env-fragment-v1.schema.json` and its
+   case `invalid-flag-missing-argument`. Corrected statement: the example
+   is read as pre-revision; the normative descriptors carry
+   `"argument": "path"`, as the §10.2 example does. The JSON bytes are not
+   edited; the introducing sentence is annotated.
+
 ## Context
 
 Decision 0010 shaped a profile as a directory inside one repository: an
@@ -214,7 +264,8 @@ version defined in Decision 1 (the manifest `version` for contexts and MCP
 packages; for a skill, the version of the highest version tag of its source
 that peels to that commit, or no version) — and every range on the name
 MUST admit that version. Two exact constraints on one name MUST peel to
-one commit (§7, unchanged; different refs resolving to one commit unify).
+one commit (§7, unchanged; different refs resolving to one commit unify)
+[Erratum 2026-09-05, item 2].
 The candidates of a name are the source's version tags, peeled under §6.3.
 
 The algorithm is fixed so that two managers lock identically:
@@ -578,7 +629,7 @@ notice: generated file; direct edits are unsupported and are detected as drift; 
 -->
 ```
 
-`env resolve claude_code --format json` prints:
+`env resolve claude_code --format json` prints [Erratum 2026-09-05, item 3]:
 
 ```json
 {
@@ -728,7 +779,7 @@ change, *unchanged* means not a byte:
 | manager §12.1 registry | bytes change | the MCP channel rows and the reserved codex layer name |
 | manager §12.2 modes and marker | bytes change | marker contents follow environments §8.2 |
 | manager §12.3 lifecycle | rewritten | install grammar and the single-root rule; `profile update`; skill scope writes into the lock |
-| manager §12.4 | unchanged | — |
+| manager §12.4 | unchanged | — [Erratum 2026-09-05, item 1] |
 | manager §12.5 `env resolve` | bytes change | the tuple and the `mcp` section |
 | manager §12.6 audit | bytes change | the detector scope of §9.1 |
 | manager §12.7 status and GC | bytes change | follows environments §12 |

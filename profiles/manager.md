@@ -2391,11 +2391,12 @@ environments §10.3 is this profile's package-influence boundary applied to
 environment injection: fragment variable names come only from the closed
 registry, fragment values stay below the manager-owned environments root,
 and profile bytes choose what the context says, never how a process is
-launched. `curator run` is the launcher's composition under Decision 0013
-Decision 6.4 — it always resolves with `--repair` and maps `claude_code`,
-`codex_cli`, and `pi` to `ax` provider ids, while `opencode` is the
-launcher's `env_unsupported` in revision 1 — and nothing in this profile
-launches.
+launched. `curator run` is the launcher's composition (environments
+§10.1): it always resolves with `--repair` (environments §9.2 and §10.1),
+and under Decision 0013 Decision 6.4 its provider column maps
+`claude_code`, `codex_cli`, and `pi` to `ax` provider ids, while
+`opencode` is the launcher's `env_unsupported` in revision 1 — and nothing
+in this profile launches.
 
 | Condition | Diagnostic (environments §10.4) |
 |---|---|
@@ -2424,7 +2425,9 @@ at install and update, to which `fail_on` never applies. Because profile
 installation is always strict, a member carrying a secret-material finding
 fails installation. The detector is unpinnable: a section 7 content-hash pin
 does not clear it. The only escape is the `secret_material_waivers` knob —
-entries of `{ pin, file, span: [start, end], reason }` — which clears
+entries of `{ pin, file, span: [start, end], reason }`, `pin` being the
+member's pin as bare lowercase hex (40 characters for a `commit`, 64 for
+a `state_sha256`; environments §12.1) — which clears
 exactly the finding whose file and span it names, at that pin, and is
 reported as a warning naming the waiver every time the member is audited; a
 waiver matching no finding is the warning `context_secret_waiver_unmatched`.

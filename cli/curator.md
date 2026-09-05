@@ -124,8 +124,9 @@ remaining arguments verbatim, so `curator run` dispatches to a separately
 installed `curator-run` and `curator session` to `curator-session`. A missing
 provider fails with the exact executable name and installation guidance;
 nothing is downloaded or installed implicitly. `curator run` resolves the
-fragment with `--repair` and composes the launch under Decision 0013
-Decision 6.4: its provider column maps `claude_code`, `codex_cli`, and `pi`
+fragment with `--repair` (environments §9.2 and §10.1) and composes the
+launch; under Decision 0013 Decision 6.4 its provider column maps
+`claude_code`, `codex_cli`, and `pi`
 to the `ax` provider ids `claude`, `codex`, and `pi`, and `opencode` is the
 launcher's `env_unsupported` in revision 1 — `env resolve opencode` works and
 the operator applies the fragment by hand.

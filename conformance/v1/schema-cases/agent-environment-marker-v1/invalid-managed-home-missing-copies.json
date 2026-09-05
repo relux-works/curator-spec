@@ -41,6 +41,7 @@
   "surfaces": {
     "root-context": {
       "content_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "form": "monolithic",
       "paths": [
         "CLAUDE.md"
       ]

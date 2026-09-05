@@ -5,6 +5,19 @@ Versioning for the complete specification set.
 
 ## Unreleased
 
+### Changed
+
+- `agent-environment-marker-v1`: `surfaces` is closed to the four keys
+  `mcp`, `root-context`, `skills`, and `system-prompt`; `form` is required
+  on `root-context` and admitted nowhere else; `tools/validate.py`
+  rejects a copy whose path is not one of its surface's paths.
+  `launch-env-fragment-v1`: every absolute path rejects a `..` segment.
+  `context-lock-v1` wire semantics reject a member whose `required_by`
+  names itself. `manager-config-v2` gains negative cases for the overlay
+  `range`, `tag`, and empty `source` grammars, and `tools/validate.py`
+  cross-checks every closed knob enum against the environments section
+  12.1 `Values` column. Decision 0012 carries an erratum (2026-09-05).
+
 ### Added
 
 - Added `manager-config-v2.schema.json`: schema 1 plus one closed

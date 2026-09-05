@@ -77,7 +77,8 @@
       "type": "string",
       "minLength": 2,
       "maxLength": 4096,
-      "pattern": "^/[^\\u0000]*$"
+      "pattern": "^/[^\\u0000]*$",
+      "not": {"pattern": "(?:^|/)\\.\\.(?:/|$)"}
     },
     "flagArgument": {"enum": ["path", "contents", "name"]},
     "flagDescriptorCore": {

@@ -1247,6 +1247,7 @@ identifier not declared by the registry is `environment_target_unknown`.
 | explicit operand names an unregistered environment | `environment_unknown` |
 | explicit operand names an undeclared target | `environment_target_unknown` |
 | configured form not supported by the adapter | `environment_form_unsupported` |
+| configured form unavailable at materialization; monolithic emitted (warning; section 5.7) | `environment_form_unavailable` |
 | declared shadowing path exists (non-current; current warning under `shadow_acknowledged`) | `environment_shadowing_path_present` |
 | `isolated` configured for `opencode`, or for `claude_code` on macOS below the pinned release | `environment_isolated_unsupported` |
 | `shared` configured for `claude_code` on macOS at or above the pinned release | `environment_shared_unsupported` |
@@ -1338,7 +1339,8 @@ A profile materializes into an environment in exactly one of three modes:
   home is activated only by consuming a resolved fragment (section 10);
   nothing in this document applies one to a running process.
 - **`linked`** — in-place materialization into the environment's native
-  default home as symlinks into the profile store: the manager §5
+  default home as symlinks into the profile store (except the
+  `claude_code` root-context surface, below): the manager §5
   symlink-with-copy-fallback discipline extended from skills to root
   context. Only the current profile for the applicable scope (section 9.2)
   is materialized in place.
@@ -1415,8 +1417,11 @@ beside the managed surfaces. The marker records:
   5.6, and — for a `linked` or managed home — whether any entry is a copy
   rather than a link: the manager §5 fallback, or the always-copied
   `claude_code` root-context surface of section 8.1, each recorded with its
-  reason so that section 8.4 hash drift applies to the copy. For a managed home the section
-  5.8 MCP file is the surface keyed `mcp`. Surface keys are sorted;
+  reason so that section 8.4 hash drift applies to the copy; every copy's
+  path is one of the entry's paths. The surface keys are exactly
+  `root-context`, `skills`, `system-prompt`, and, for a managed home, the
+  section 5.8 MCP file keyed `mcp`; only `root-context` carries a `form`.
+  Surface keys are sorted;
   required arrays are present even when empty;
 - for a managed home, the recorded `passthrough` entries with their section
   7.4 strategy, and the recorded provisioning `seeds` by home-relative path;
@@ -1942,7 +1947,11 @@ is **lock-free**: it reads the marker and covers exactly the surfaces the
 marker records — no more — and for a symlinked surface whose link targets an
 entry of the immutable profile store, link-target identity is sufficient
 currency (the store entry's integrity is the store's own invariant, section
-4), so a launch does not re-hash a large skills tree. A home that is
+4), so a launch does not re-hash a large skills tree. A copied surface —
+the `claude_code` root-context file in every mode, or a manager §5
+fallback copy — has no link target and is verified by the content hash
+the marker records for it (section 8.2), the same hash section 8.4 drift
+compares. A home that is
 unprovisioned, stale after `profile update`, drifted, or whose passthrough
 is detached is **stale**: without `--repair`, resolve reports
 `environment_home_stale` with the reasons and emits **no fragment** —
@@ -2042,7 +2051,9 @@ unknown kinds, and unknown semantics or argument values:
   There is no `composition` member: overlays are lock members, and the lock
   hash covers them.
 - `env` maps each registry-declared variable name for the environment to a
-  managed-home path.
+  managed-home path. Every path in the fragment — `env` values,
+  `system_prompt.path`, `mcp.path`, `path_prepend` — is absolute and
+  carries no `..` segment.
 - `system_prompt` is present exactly when the lock carries at least one
   applicable system module for the environment. It is data about a
   channel, never an applied override: `path` names the inert section 5.5
@@ -2219,6 +2230,12 @@ knob is absent.
 | `backup_retention` | non-negative integer, `0` = unlimited | `5` | 8.3 |
 | `require_current_profile` | profile name or `null` | `null` | 12.2 |
 | `in_place_mode.<env-id>` | `linked`, `copied` | adapter default | 8.1 — the `claude_code` root-context surface is always copied whatever this value says |
+
+A `secret_material_waivers.pin` is spelled as the member's pin exactly as
+the lock (section 1.3) and the marker (section 8.2) record it: bare
+lowercase hex, 40 characters for a `commit` pin or 64 for a
+`state_sha256` pin, with no `sha256:` prefix — the grammar
+`manager-config-v2` enforces.
 
 Team distribution stays **per-machine** in revision 1: an organization
 ships a bootstrap shape — a system-configuration file (manager §1) carrying

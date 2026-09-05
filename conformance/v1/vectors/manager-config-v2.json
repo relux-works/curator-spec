@@ -358,6 +358,63 @@
   {
     "input": {
       "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "range": "^1.0.0 (latest)",
+              "source": "https://github.com/example/x"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-range-grammar",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "source": "https://github.com/example/x",
+              "tag": "v1..0"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-tag-grammar",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "range": "^1",
+              "source": ""
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-empty-source",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
         "precedence": {
           "winner": "later-overrides-earlier"
         }

@@ -41,8 +41,12 @@
   "surfaces": {
     "root-context": {
       "content_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-      "copies": [],
-      "copy_fallback": true,
+      "copies": [
+        {
+          "path": "AGENTS.md",
+          "reason": "symlink-fallback"
+        }
+      ],
       "form": "monolithic",
       "paths": [
         "CLAUDE.md"

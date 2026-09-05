@@ -390,6 +390,26 @@
     "valid": false
   },
   {
+    "instance": "agent-environment-marker-v1/invalid-copy-outside-paths.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-root-context-missing-form.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-form-on-mcp-surface.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-surface-unknown-key.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
     "instance": "agent-environment-marker-v1/invalid-managed-home-missing-copies.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": false
@@ -2066,6 +2086,11 @@
   },
   {
     "instance": "context-lock-v1/invalid-required-by-unknown-member.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-required-by-self.json",
     "schema": "context-lock-v1.schema.json",
     "valid": false
   },
@@ -3750,6 +3775,21 @@
     "valid": false
   },
   {
+    "instance": "launch-env-fragment-v1/invalid-path-prepend-dotdot-segment.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-env-dotdot-segment.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-system-prompt-path-dotdot-segment.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
     "instance": "log-response-v1/valid.json",
     "schema": "log-response-v1.schema.json",
     "valid": true
@@ -3851,6 +3891,21 @@
   },
   {
     "instance": "manager-config-v2/invalid-overlay-revision-grammar.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-range-grammar.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-tag-grammar.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-empty-source.json",
     "schema": "manager-config-v2.schema.json",
     "valid": false
   },

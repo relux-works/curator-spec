@@ -2171,6 +2171,7 @@
         "figma-devmode"
       ],
       "name": "mcp-pi-none",
+      "note": "pi declares no MCP launch channel (section 7.8), so no file is written and a pi fragment carries no mcp section; env_names is still recorded as the sorted union of the resolved set for information only — it never enters a fragment or a launch environment",
       "packages": {
         "companyA": {
           "has_context": true,
