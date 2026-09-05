@@ -685,10 +685,12 @@ mechanism. The layout is fixed:
   silently — the interactive dialog is what sets the key, and `-p` never
   asks. The same guard skips a user-level `$CLAUDE_CONFIG_DIR/CLAUDE.md`
   that is itself a symbolic link or a hard link (`nlink > 1`) while the
-  key is unset (**verified** from the 2.1.261 bundle), so a managed
-  `claude_code` home materializes its root-context surface as a regular
-  file — the `copied` mode of section 8.1 — never as a link, whatever the
-  form. The managed home is never the launch directory, so every reference
+  key is unset (**verified** from the 2.1.261 bundle; the guard keys on the
+  memory type `User`, not on which directory `CLAUDE_CONFIG_DIR` names), so
+  the `claude_code` root-context surface is materialized as a regular file
+  (a copied surface in the sense of section 8.1) in every mode and every
+  home — managed, `linked` in-place, and `copied` — never as a link,
+  whatever the form. The managed home is never the launch directory, so every reference
   above is an external include: the `referenced` form for `claude_code`
   therefore requires the project entry of section 7.4 carrying that key
   for the launch directory, and a home lacking it for the launch directory
@@ -1346,10 +1348,14 @@ A profile materializes into an environment in exactly one of three modes:
 
 Mode defaults: the four adapters default to `linked` for their in-place
 surfaces; secondary fixed-home targets default to `copied`; managed homes
-link from the store, except that the `claude_code` root-context surface of
-a managed home is `copied` (section 5.3: the tool skips a linked
-`CLAUDE.md` while the external-includes key is unset). An adapter MAY
-declare a different in-place default in the registry; profile data cannot.
+link from the store. One per-surface exception holds in every mode and
+every home and is not overridable by the registry or by machine
+configuration: the `claude_code` root-context surface is always a copied
+regular file, because the tool skips a linked `CLAUDE.md` while the
+external-includes key is unset (section 5.3); the `claude_code` skills tree
+follows the home's mode as usual, and the marker's `surfaces` entry records
+the copy (section 8.2). An adapter MAY declare a different in-place default
+in the registry; profile data cannot.
 
 All three modes materialize from the same lock's store entries (section 4),
 so they cannot diverge for one lock hash.
@@ -1406,8 +1412,10 @@ beside the managed surfaces. The marker records:
 - `mode` — exactly `managed-home`, `linked`, or `copied`;
 - `surfaces` — one entry per managed surface: its home-relative file
   paths, its form where the surface has one, its content hash under section
-  5.6, and — for a `linked` home — whether any entry fell back from symlink
-  to copy under the manager §5 discipline. For a managed home the section
+  5.6, and — for a `linked` or managed home — whether any entry is a copy
+  rather than a link: the manager §5 fallback, or the always-copied
+  `claude_code` root-context surface of section 8.1, each recorded with its
+  reason so that section 8.4 hash drift applies to the copy. For a managed home the section
   5.8 MCP file is the surface keyed `mcp`. Surface keys are sorted;
   required arrays are present even when empty;
 - for a managed home, the recorded `passthrough` entries with their section
@@ -2210,7 +2218,7 @@ knob is absent.
 | `secret_material_waivers` | list of `{ pin, file, span: [start, end], reason }` | empty | 9.1 |
 | `backup_retention` | non-negative integer, `0` = unlimited | `5` | 8.3 |
 | `require_current_profile` | profile name or `null` | `null` | 12.2 |
-| `in_place_mode.<env-id>` | `linked`, `copied` | adapter default | 8.1 |
+| `in_place_mode.<env-id>` | `linked`, `copied` | adapter default | 8.1 — the `claude_code` root-context surface is always copied whatever this value says |
 
 Team distribution stays **per-machine** in revision 1: an organization
 ships a bootstrap shape — a system-configuration file (manager §1) carrying
