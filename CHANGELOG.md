@@ -20,6 +20,22 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Added `system-config-v2.schema.json`: `system-config-v1` plus one closed
+  `environments` object carrying exactly the environments section 12.2
+  lockable keys (`overlays_allowed`, `precedence`, `mcp_package_allowlist`,
+  `passable_env_names`, `require_current_profile`, `isolation`) with their
+  section 12.1 grammars by reference to `manager-config-v2`, `isolation`
+  narrowed to `shared`, and a `locked` enum extended by
+  `environments.<key>` for each of them; with
+  `schema-cases/system-config-v2` (every key present and locked; minimal,
+  empty-`environments`, and schema-1-`locked` positives; one negative per
+  closed-object rule, per value grammar, per `locked` entry outside the
+  section 12.2 set, and a schema-1 rejection). Manager section 1 names the
+  keys and the precedence between a system lock and the machine file's
+  schema-2 knob. `tools/validate.py` cross-checks the schema against
+  schema 1, `manager-config-v2`, and the section 12.2 sentence.
+  `system-config-v1` stays byte-frozen and valid; see `COMPATIBILITY.md`.
+
 - Added `manager-config-v2.schema.json`: schema 1 plus one closed
   `environments` object carrying exactly the environments section 12.1
   machine-configuration knobs with their value grammars and defaults, with

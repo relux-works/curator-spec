@@ -3199,6 +3199,114 @@ def validate_manager_config_vectors(
         raise ValidationFailure("manager-config-v2.json carries no schema-2 case")
 
 
+SYSTEM_CONFIG_SCHEMAS = {1: "system-config-v1.schema.json", 2: "system-config-v2.schema.json"}
+
+# The one section 12.2 knob whose system-file grammar is narrower than its
+# section 12.1 grammar: `isolation` is lockable only in the direction of
+# `shared`, so the system schema admits that literal alone.
+SYSTEM_CONFIG_ISOLATION_ENUM_PATH = (
+    "$defs", "environments", "properties", "isolation", "additionalProperties", "additionalProperties", "enum"
+)
+
+
+def environments_lockable_keys(text: str) -> list[str]:
+    """Parse the environments.md section 12.2 sentence that extends the
+    manager section 1 `locked` set into its ordered key list."""
+    section = text.split("### 12.2 Lockable knobs", 1)
+    if len(section) != 2:
+        raise ValidationFailure("environments.md has no section 12.2 lockable-knob text")
+    marker = "by exactly these keys under `environments`:"
+    sentence = section[1].split("## 13", 1)[0]
+    if marker not in sentence:
+        raise ValidationFailure("section 12.2 no longer enumerates the lockable keys")
+    sentence = sentence.split(marker, 1)[1].split(".", 1)[0]
+    keys = BACKTICKED.findall(sentence)
+    if not keys or len(keys) != len(set(keys)):
+        raise ValidationFailure(f"section 12.2 lockable-key list is empty or repeats a key: {keys}")
+    return keys
+
+
+def validate_system_config_v2_schema(
+    schema: Any = None, schema_v1: Any = None, manager_schema: Any = None, environments_text: str | None = None
+) -> None:
+    """`system-config-v2.schema.json` against schema 1, `manager-config-v2`, and
+    environments.md section 12.2.
+
+    Schema 2 is schema 1 plus one closed `environments` object whose members
+    are exactly the section 12.2 lockable keys, and a `locked` enum that is
+    exactly the schema-1 enum plus `environments.<key>` for each of them.
+    Every schema-1 member other than `schema_version` and `locked` keeps its
+    schema-1 node byte for byte. Every environments knob other than
+    `isolation` takes its grammar from the `manager-config-v2` environments
+    object by reference, so the two schemas cannot drift; `isolation` admits
+    `shared` alone (section 12.2: lockable only in that direction).
+    """
+    _registry, paths = schema_registry()
+    if schema is None:
+        schema = load_json(paths[SYSTEM_CONFIG_SCHEMAS[2]])
+    if schema_v1 is None:
+        schema_v1 = load_json(paths[SYSTEM_CONFIG_SCHEMAS[1]])
+    if manager_schema is None:
+        manager_schema = load_json(paths[MANAGER_CONFIG_SCHEMAS[2]])
+    if environments_text is None:
+        environments_text = (ROOT / "protocol" / "environments.md").read_text(encoding="utf-8")
+
+    if schema.get("additionalProperties") is not False:
+        raise ValidationFailure("system-config-v2 is not a closed object")
+    if schema["properties"].get("schema_version") != {"const": 2}:
+        raise ValidationFailure("system-config-v2 schema_version is not const 2")
+    inherited = set(schema_v1["properties"]) - {"schema_version", "locked"}
+    if set(schema["properties"]) != inherited | {"schema_version", "locked", "environments"}:
+        raise ValidationFailure(
+            "system-config-v2 properties are not schema 1 plus environments: "
+            f"{sorted(set(schema['properties']) ^ (inherited | {'schema_version', 'locked', 'environments'}))}"
+        )
+    for name in sorted(inherited):
+        if schema["properties"][name] != schema_v1["properties"][name]:
+            raise ValidationFailure(f"system-config-v2 changes the schema-1 shape of {name}")
+
+    keys = environments_lockable_keys(environments_text)
+    manager_knobs = manager_schema["$defs"]["environments"]["properties"]
+    unknown = [key for key in keys if key not in manager_knobs]
+    if unknown:
+        raise ValidationFailure(f"section 12.2 locks knobs section 12.1 does not carry: {unknown}")
+
+    environments = schema["$defs"]["environments"]
+    if environments.get("additionalProperties") is not False:
+        raise ValidationFailure("system-config-v2 environments object is not closed")
+    if schema["properties"].get("environments") != {"$ref": "#/$defs/environments"}:
+        raise ValidationFailure("system-config-v2 environments property does not reference $defs/environments")
+    if set(environments["properties"]) != set(keys):
+        raise ValidationFailure(
+            "system-config-v2 environments properties differ from section 12.2: "
+            f"schema-only {sorted(set(environments['properties']) - set(keys))}, "
+            f"table-only {sorted(set(keys) - set(environments['properties']))}"
+        )
+    for key in keys:
+        if key == "isolation":
+            continue
+        want = {"$ref": f"{MANAGER_CONFIG_SCHEMAS[2]}#/$defs/environments/properties/{key}"}
+        if environments["properties"][key] != want:
+            raise ValidationFailure(f"system-config-v2 {key} does not take its grammar from manager-config-v2")
+    node: Any = schema
+    for segment in SYSTEM_CONFIG_ISOLATION_ENUM_PATH:
+        if not isinstance(node, dict) or segment not in node:
+            raise ValidationFailure("system-config-v2 states no closed isolation value set")
+        node = node[segment]
+    if node != ["shared"]:
+        raise ValidationFailure(f"system-config-v2 isolation admits {node!r}; section 12.2 permits shared alone")
+
+    locked_v1 = schema_v1["properties"]["locked"]["items"]["enum"]
+    want_locked = [*locked_v1, *(f"environments.{key}" for key in keys)]
+    locked = schema["properties"].get("locked", {})
+    if locked.get("type") != "array" or locked.get("uniqueItems") is not True:
+        raise ValidationFailure("system-config-v2 locked is not a unique-item array")
+    if locked.get("items", {}).get("enum") != want_locked:
+        raise ValidationFailure(
+            f"system-config-v2 locked enum is {locked.get('items', {}).get('enum')!r}; want {want_locked!r}"
+        )
+
+
 def validate_local_links() -> None:
     for path in sorted(ROOT.rglob("*.md")):
         if ".git" in path.parts:
@@ -4500,6 +4608,7 @@ def main() -> int:
         validate_context_detector_vectors,
         validate_snapshot_acquisition_vectors,
         validate_manager_config_vectors,
+        validate_system_config_v2_schema,
         validate_local_links,
     ]
     try:

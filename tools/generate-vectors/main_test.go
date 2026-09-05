@@ -2470,6 +2470,54 @@ func TestManagerAndSystemConfigV1ExposeNoBuildPolicyOverrides(t *testing.T) {
 	}
 }
 
+func TestSystemConfigV2IsSchemaOnePlusTheLockableEnvironmentsKeys(t *testing.T) {
+	root := repositoryRoot(t)
+	system := readObject(t, filepath.Join(root, "schemas", "v1", "system-config-v2.schema.json"))
+	assertPropertySet(t, "system config v2", system, []string{
+		"schema_version", "locked", "skills_root", "default_agents", "preferred_locale", "adapter_mode",
+		"worktree_alias_pattern", "projects", "allowed_sources", "disable_builtin_registries", "audit",
+		"audit_registries", "environments",
+	})
+	if got := system["properties"].(map[string]any)["schema_version"].(map[string]any); len(got) != 1 || fmt.Sprint(got["const"]) != "2" {
+		t.Fatalf("system config v2 schema_version = %#v, want const 2", got)
+	}
+	environments := system["$defs"].(map[string]any)["environments"].(map[string]any)
+	assertPropertySet(t, "system config v2 environments", environments, systemConfigV2LockableKeys)
+	if environments["additionalProperties"] != false {
+		t.Fatal("system config v2 environments object is not closed")
+	}
+	locked := system["properties"].(map[string]any)["locked"].(map[string]any)["items"].(map[string]any)["enum"].([]any)
+	want := []any{"audit_registries", "disable_builtin_registries", "allowed_sources", "audit"}
+	for _, key := range systemConfigV2LockableKeys {
+		want = append(want, "environments."+key)
+	}
+	if !reflect.DeepEqual(locked, want) {
+		t.Fatalf("system config v2 locked enum = %#v, want %#v", locked, want)
+	}
+	assertNoDeclaredProperties(t, "system config v2", system, []string{
+		"driver", "argv", "args", "environment", "env", "toolchain", "output", "output_path", "output-path",
+		"hook", "hooks", "build", "build_policy", "build-policy", "build_policy_override",
+		"build-policy-override", "build_policy_overrides", "build-policy-overrides",
+		"build_ssh", "build_https", "current_profile", "overlays", "secret_material_waivers",
+	})
+	for _, key := range systemConfigV2LockableKeys {
+		if key == "isolation" {
+			continue
+		}
+		got := environments["properties"].(map[string]any)[key]
+		want := map[string]any{"$ref": "manager-config-v2.schema.json#/$defs/environments/properties/" + key}
+		if !reflect.DeepEqual(got, want) {
+			t.Fatalf("system config v2 %s does not reference the manager-config-v2 grammar: %#v", key, got)
+		}
+	}
+	valid := validSystemConfigV2()
+	for _, key := range systemConfigV2LockableKeys {
+		if _, ok := valid["environments"].(map[string]any)[key]; !ok {
+			t.Fatalf("the positive system-config-v2 case omits lockable key %s", key)
+		}
+	}
+}
+
 func TestRegistryAndAuditSchemasRemainSourceEvidenceOnly(t *testing.T) {
 	root := repositoryRoot(t)
 	wantProperties := map[string][]string{

@@ -2938,7 +2938,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:3706638675e936b922fa39c843c6439c11a0c23fb3c5aa024351249e6d660ba8"
+      "sha256": "sha256:675699a09e7f8c6a95d794fa9d1bfa80e0bae438778cd48e68d6daaca7e029b8"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -3855,6 +3855,102 @@
     {
       "path": "schema-cases/system-config-v1/valid.json",
       "sha256": "sha256:7449d84c9c3a3473e08211b59fea16f139205223e054a6ac428a3089fdb95ed4"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-isolation-isolated-direction.json",
+      "sha256": "sha256:780d7c9110d6dc51078ec00cd01694483db64c93619319c8b97fd1dd2bbc5106"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-isolation-profile-grammar.json",
+      "sha256": "sha256:099b3c156080b4d8f4b324873ab202bbda1a35e1de357abb2faf8b49187fc859"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-isolation-value.json",
+      "sha256": "sha256:8cb8e0045a726eebb688e43a58e7a5d7c81781c266dcc5b7d42628c5cc606ad9"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-locked-bare-environments.json",
+      "sha256": "sha256:9bd0040102c228fa993d526bad0462a014a385797715369fddb0691d0cab727f"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-locked-duplicate.json",
+      "sha256": "sha256:a38951a407fb764a34164d467554caad75a110ef6ce633c42693c624a3085d07"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-locked-unknown-environments-key.json",
+      "sha256": "sha256:9ef4fe17a7729be0334a086c2e80275c4b66efe6eeba6b9b7ce6fbc3e4b2a059"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-locked-unlockable-environments-key.json",
+      "sha256": "sha256:65aab548b5c6c9b956a9b81e2a56d39d0aad0c48113eb189952b21ad371dd039"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-locked-unprefixed-knob.json",
+      "sha256": "sha256:115443fcc4a2263d961489fdc52cebfba155565ab19839e912a8f33f36bd1a26"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-mcp-package-allowlist-duplicate.json",
+      "sha256": "sha256:4e1dc9e77f46fcad8e5d141402199cedacfb1a37b78b819daca17f6c7ecfb2c2"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-mcp-package-allowlist-empty-entry.json",
+      "sha256": "sha256:03c99318b547fbd83804dc787ae7728d9747437ee8f5fb28145fed1d64cdc580"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-overlays-allowed-type.json",
+      "sha256": "sha256:8d6fd59fb8ef87f8e47aa2dad9e24891bef5afe042a2e29a46d170b806b95e59"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-passable-env-name-grammar.json",
+      "sha256": "sha256:51d7cf901cd37d6c35238f4c2e0c7c098b785482500f23a4410c8e3156a28034"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-precedence-placement.json",
+      "sha256": "sha256:4eee175e54ca969d6c7461dd9a1aa1bd9d19e6ba3148d64015430df182d23504"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-precedence-winner.json",
+      "sha256": "sha256:da3ed1cfe6a4776a85935e26091a8c789cc5b04ea99c3254e49b569c844b49cd"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-require-current-profile-grammar.json",
+      "sha256": "sha256:fca7072e9cdf0944549e7af97f91d83acce1fd48bd285da117233c1d367201fb"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-schema-version-1.json",
+      "sha256": "sha256:9ad104389e8d6566a9900bb4897ff451b4f85183da23f5d56f97bfb16f1ae23d"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-unknown-environments-field.json",
+      "sha256": "sha256:214fec32c616830251be0c62638010a5f74cfe2974fb6e4308512257fe8e688c"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-unknown-precedence-field.json",
+      "sha256": "sha256:ca7e02eb218f3247d0efde04a4c62d868e918caed53eb2d9c8125232336762e1"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-unlockable-environments-knob.json",
+      "sha256": "sha256:5c90668011ef447b0fbcf945a32190ea602486ca9c88b4c7f40f971abf54ae10"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid.json",
+      "sha256": "sha256:8a463af8e490557f7dcacfbb90f847a78b7fdefced9b342bd06a45a93b16fd51"
+    },
+    {
+      "path": "schema-cases/system-config-v2/valid-empty-environments.json",
+      "sha256": "sha256:291d41a946ada058ae118082c113cff83e54e70a0dd294c1dd3f70996aacf578"
+    },
+    {
+      "path": "schema-cases/system-config-v2/valid-minimal.json",
+      "sha256": "sha256:45424871e24c9c98586f913bbb5949692a5a92b4c4123b64d4f273ad45c6deac"
+    },
+    {
+      "path": "schema-cases/system-config-v2/valid-schema-1-locked-set.json",
+      "sha256": "sha256:0d7c06e3af2a70c3de4f10b6ccb68d29a337f33e0b2baf51824a317b01f96d2d"
+    },
+    {
+      "path": "schema-cases/system-config-v2/valid.json",
+      "sha256": "sha256:2c2a6f969baa6be563154fdaf83c27e9e63b4c7ee36154184df3f2c6e1688f53"
     },
     {
       "path": "schema-cases/verified-provider-v1/invalid.json",

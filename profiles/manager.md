@@ -44,17 +44,35 @@ no future offset. The backend request limit defaults to 1048576 bytes and MUST
 NOT exceed 10485760 bytes.
 
 An OPTIONAL system configuration conforms to `system-config-v1.schema.json`
-and is merged before parsing the effective user configuration:
+or, for a manager implementing the agent-environments capability, to
+`system-config-v2.schema.json`, and is merged before parsing the effective
+user configuration:
 
 1. `locked` contains only `audit_registries`,
-   `disable_builtin_registries`, `allowed_sources`, and `audit`. Operator
-   credential selections — the `build_ssh` scopes among them — are never
-   lockable: section 12.2 makes credential material operator-owned, and a
-   system file MUST NOT select or constrain it;
+   `disable_builtin_registries`, `allowed_sources`, and `audit`, and under
+   schema 2 additionally the environments protocol section 12.2 keys, named
+   as `environments.overlays_allowed`, `environments.precedence`,
+   `environments.mcp_package_allowlist`, `environments.passable_env_names`,
+   `environments.require_current_profile`, and `environments.isolation`.
+   No other `environments` knob is lockable or carried by the system file.
+   Operator credential selections — the `build_ssh` scopes among them — are
+   never lockable: section 12.2 makes credential material operator-owned, and
+   a system file MUST NOT select or constrain it; `environments.isolation`
+   is lockable only in the direction of `shared`, and schema 2 admits no
+   other value there;
 2. a locked key MUST be set by the system file and overrides a user value with
-   a warning naming the system file;
-3. an unlocked system key is a default and a user value wins;
-4. malformed or unreadable enforced configuration fails closed.
+   a warning naming the system file. For an `environments.<key>` lock the
+   user value is the machine file's `manager-config` schema-2
+   `environments.<key>` knob: the system value replaces it whole — a locked
+   `precedence` replaces both primitives, a locked `isolation` replaces the
+   full profile-by-environment map — and a knob the machine file leaves
+   absent is overridden without a warning;
+3. an unlocked system key is a default and a user value wins; an unlocked
+   `environments.<key>` in the system file is the default the machine file's
+   knob replaces whole, ahead of the section 12.1 default;
+4. malformed or unreadable enforced configuration fails closed, and a
+   schema-1 reader rejects a schema-2 system file rather than ignoring its
+   `environments` object.
 
 Configuration writes MUST use a same-directory temporary file followed by
 atomic replacement. Implementations SHOULD serialize concurrent writers with a

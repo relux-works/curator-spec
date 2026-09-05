@@ -196,6 +196,22 @@ section 12.1 default — and a manager that does not implement the environments
 capability keeps reading schema 1 unchanged. Readers reject an unknown
 `schema_version` explicitly: a schema-1 reader rejects a schema-2 file rather
 than ignoring `environments`, and a schema-2 reader rejects `schema_version`
-3 or above rather than inferring newer knobs. `system-config-v1` is unchanged
-in this revision; extending its `locked` set by the section 12.2 keys is a
-separate, reviewed change.
+3 or above rather than inferring newer knobs.
+
+## System configuration schema 2
+
+`system-config-v2.schema.json` is additive in the same way: it is
+`system-config-v1` plus one closed `environments` object whose members are
+exactly the `protocol/environments.md` section 12.2 lockable keys
+(`overlays_allowed`, `precedence`, `mcp_package_allowlist`,
+`passable_env_names`, `require_current_profile`, `isolation`), each with its
+section 12.1 grammar taken from `manager-config-v2` by reference, and a
+`locked` set that may additionally name each of them as `environments.<key>`.
+`isolation` admits `shared` alone, the one direction section 12.2 makes
+lockable. Every schema-1 member keeps its schema-1 node by reference, and
+`system-config-v1` stays byte-frozen and valid: a schema-1 system file locks
+nothing under `environments`, and a manager that does not implement the
+environments capability keeps reading schema 1 unchanged. A schema-1 reader
+rejects a schema-2 system file rather than ignoring `environments` — an
+enforced configuration it cannot honour fails closed under manager section 1
+rule 4 — and a schema-2 reader rejects `schema_version` 3 or above.

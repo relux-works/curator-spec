@@ -2415,6 +2415,9 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	cases["manager-config-v2.schema.json"] = schemaCase{managerConfigV2, map[string]any{"schema_version": 2, "projects": map[string]any{}}}
 	additionalCases["manager-config-v2.schema.json"] = managerConfigV2SchemaExamples(managerConfigV2)
 	cases["system-config-v1.schema.json"] = schemaCase{map[string]any{"schema_version": 1, "locked": []any{"audit"}, "audit": map[string]any{}, "preferred_locale": "en"}, map[string]any{"schema_version": 1, "locked": []any{"skills_root"}}}
+	systemConfigV2 := validSystemConfigV2()
+	cases["system-config-v2.schema.json"] = schemaCase{systemConfigV2, map[string]any{"schema_version": 2, "locked": []any{"skills_root"}}}
+	additionalCases["system-config-v2.schema.json"] = systemConfigV2SchemaExamples(systemConfigV2)
 	cases["health-response-v1.schema.json"] = schemaCase{map[string]any{"status": "ok"}, map[string]any{"status": "degraded"}}
 	cases["registry-meta-response-v1.schema.json"] = schemaCase{
 		map[string]any{"name": "golden", "version": "1.0.0", "public_keys": []any{pinned}, "record_schema_versions": []any{1}, "policy": "test"},

@@ -147,6 +147,15 @@ The suite contains:
   defaults, and the schema-1 rejection of an `environments` object.
   `vectors/manager-config.json` stays the byte-frozen schema-1 family the
   pinned schema-1 readers consume;
+- the `system-config` schema-2 surface: `schema-cases/system-config-v2` with
+  every environments section 12.2 lockable key present and named in
+  `locked`, the minimal, empty-`environments`, and schema-1-`locked`
+  positives, one negative per closed-object rule (an unknown or unlockable
+  `environments` knob), per section 12.1 value grammar including the
+  `isolated` direction section 12.2 does not lock, per `locked` entry
+  outside the section 12.2 set (an unknown, unlockable, bare, or unprefixed
+  key and a duplicate), and a schema-1 rejection.
+  `schema-cases/system-config-v1` is byte-frozen;
 - the environments section 1.2 snapshot byte-exactness vector
   (`vectors/snapshot-acquisition.json` over `fixtures/byte-exact`): a
   committed tree with `* text=auto`, an `export-subst` entry, and LF, CRLF,

@@ -2135,5 +2135,135 @@ class ManagerConfigVectorTests(unittest.TestCase):
             self.run_gate(text="# environments without the table\n")
 
 
+class SystemConfigV2SchemaTests(unittest.TestCase):
+    """Negative shapes for the system-config-v2 schema gate: each one widens,
+    narrows, or drifts the schema or the section 12.2 sentence so that the
+    gate must fail. The unmodified inputs pass."""
+
+    ISOLATION_ENUM = validate.SYSTEM_CONFIG_ISOLATION_ENUM_PATH
+
+    def setUp(self) -> None:
+        _, paths = validate.schema_registry()
+        self.schema = validate.load_json(paths["system-config-v2.schema.json"])
+        self.schema_v1 = validate.load_json(paths["system-config-v1.schema.json"])
+        self.manager = validate.load_json(paths["manager-config-v2.schema.json"])
+        self.text = (validate.ROOT / "protocol" / "environments.md").read_text(encoding="utf-8")
+
+    def run_gate(self, schema=None, schema_v1=None, manager=None, text=None) -> None:
+        validate.validate_system_config_v2_schema(
+            schema=self.schema if schema is None else schema,
+            schema_v1=self.schema_v1 if schema_v1 is None else schema_v1,
+            manager_schema=self.manager if manager is None else manager,
+            environments_text=self.text if text is None else text,
+        )
+
+    def mutated(self, mutate) -> dict:
+        schema = copy.deepcopy(self.schema)
+        mutate(schema)
+        return schema
+
+    def test_published_inputs_pass(self) -> None:
+        self.run_gate()
+
+    def test_section_12_2_lists_the_six_keys_in_order(self) -> None:
+        self.assertEqual(
+            validate.environments_lockable_keys(self.text),
+            ["overlays_allowed", "precedence", "mcp_package_allowlist", "passable_env_names",
+             "require_current_profile", "isolation"],
+        )
+
+    def test_open_environments_object_fails(self) -> None:
+        schema = self.mutated(lambda s: s["$defs"]["environments"].pop("additionalProperties"))
+        with self.assertRaisesRegex(validate.ValidationFailure, "environments object is not closed"):
+            self.run_gate(schema=schema)
+
+    def test_open_root_object_fails(self) -> None:
+        schema = self.mutated(lambda s: s.pop("additionalProperties"))
+        with self.assertRaisesRegex(validate.ValidationFailure, "not a closed object"):
+            self.run_gate(schema=schema)
+
+    def test_extra_environments_knob_fails(self) -> None:
+        def widen(s):
+            s["$defs"]["environments"]["properties"]["current_profile"] = {"type": ["string", "null"]}
+        with self.assertRaisesRegex(validate.ValidationFailure, "schema-only \\['current_profile'\\]"):
+            self.run_gate(schema=self.mutated(widen))
+
+    def test_missing_environments_knob_fails(self) -> None:
+        schema = self.mutated(lambda s: s["$defs"]["environments"]["properties"].pop("isolation"))
+        with self.assertRaisesRegex(validate.ValidationFailure, "table-only \\['isolation'\\]"):
+            self.run_gate(schema=schema)
+
+    def test_knob_grammar_not_by_reference_fails(self) -> None:
+        def inline(s):
+            s["$defs"]["environments"]["properties"]["overlays_allowed"] = {"type": "boolean"}
+        with self.assertRaisesRegex(validate.ValidationFailure, "overlays_allowed does not take its grammar"):
+            self.run_gate(schema=self.mutated(inline))
+
+    def test_isolation_admitting_isolated_fails(self) -> None:
+        def widen(s):
+            node = s
+            for segment in self.ISOLATION_ENUM[:-1]:
+                node = node[segment]
+            node["enum"] = ["shared", "isolated"]
+        with self.assertRaisesRegex(validate.ValidationFailure, "permits shared alone"):
+            self.run_gate(schema=self.mutated(widen))
+
+    def test_isolation_without_a_closed_value_set_fails(self) -> None:
+        def open_values(s):
+            s["$defs"]["environments"]["properties"]["isolation"] = {"type": "object"}
+        with self.assertRaisesRegex(validate.ValidationFailure, "no closed isolation value set"):
+            self.run_gate(schema=self.mutated(open_values))
+
+    def test_locked_enum_missing_a_key_fails(self) -> None:
+        def drop(s):
+            s["properties"]["locked"]["items"]["enum"].remove("environments.isolation")
+        with self.assertRaisesRegex(validate.ValidationFailure, "locked enum is"):
+            self.run_gate(schema=self.mutated(drop))
+
+    def test_locked_enum_naming_an_unlockable_knob_fails(self) -> None:
+        def widen(s):
+            s["properties"]["locked"]["items"]["enum"].append("environments.current_profile")
+        with self.assertRaisesRegex(validate.ValidationFailure, "locked enum is"):
+            self.run_gate(schema=self.mutated(widen))
+
+    def test_locked_without_unique_items_fails(self) -> None:
+        schema = self.mutated(lambda s: s["properties"]["locked"].pop("uniqueItems"))
+        with self.assertRaisesRegex(validate.ValidationFailure, "not a unique-item array"):
+            self.run_gate(schema=schema)
+
+    def test_changed_schema_one_member_fails(self) -> None:
+        schema = self.mutated(lambda s: s["properties"].__setitem__("audit", {"type": "object"}))
+        with self.assertRaisesRegex(validate.ValidationFailure, "changes the schema-1 shape of audit"):
+            self.run_gate(schema=schema)
+
+    def test_dropped_schema_one_member_fails(self) -> None:
+        schema = self.mutated(lambda s: s["properties"].pop("projects"))
+        with self.assertRaisesRegex(validate.ValidationFailure, "not schema 1 plus environments"):
+            self.run_gate(schema=schema)
+
+    def test_schema_version_not_const_two_fails(self) -> None:
+        schema = self.mutated(lambda s: s["properties"].__setitem__("schema_version", {"enum": [1, 2]}))
+        with self.assertRaisesRegex(validate.ValidationFailure, "schema_version is not const 2"):
+            self.run_gate(schema=schema)
+
+    def test_section_12_2_key_absent_from_12_1_fails(self) -> None:
+        text = self.text.replace("`passable_env_names`, `require_current_profile`", "`passable_env_names`, `fleet_push`", 1)
+        with self.assertRaisesRegex(validate.ValidationFailure, "section 12.1 does not carry: \\['fleet_push'\\]"):
+            self.run_gate(text=text)
+
+    def test_section_12_2_drift_against_schema_fails(self) -> None:
+        text = self.text.replace("`require_current_profile`, and `isolation`", "and `require_current_profile`", 1)
+        with self.assertRaisesRegex(validate.ValidationFailure, "schema-only \\['isolation'\\]"):
+            self.run_gate(text=text)
+
+    def test_missing_section_12_2_fails_rather_than_passing_vacuously(self) -> None:
+        with self.assertRaisesRegex(validate.ValidationFailure, "no section 12.2"):
+            self.run_gate(text="# environments without the lockable text\n")
+
+    def test_section_12_2_without_the_enumeration_fails(self) -> None:
+        with self.assertRaisesRegex(validate.ValidationFailure, "no longer enumerates"):
+            self.run_gate(text="### 12.2 Lockable knobs\n\nNothing is lockable.\n\n## 13\n")
+
+
 if __name__ == "__main__":
     unittest.main()

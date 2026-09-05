@@ -4275,6 +4275,126 @@
     "valid": false
   },
   {
+    "instance": "system-config-v2/valid.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "system-config-v2/invalid.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/valid-minimal.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "system-config-v2/valid-empty-environments.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "system-config-v2/valid-schema-1-locked-set.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "system-config-v2/invalid-schema-version-1.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-unknown-environments-field.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-unlockable-environments-knob.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-unknown-precedence-field.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-locked-unknown-environments-key.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-locked-unlockable-environments-key.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-locked-bare-environments.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-locked-unprefixed-knob.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-locked-duplicate.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-overlays-allowed-type.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-precedence-winner.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-precedence-placement.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-mcp-package-allowlist-duplicate.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-mcp-package-allowlist-empty-entry.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-passable-env-name-grammar.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-require-current-profile-grammar.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-isolation-isolated-direction.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-isolation-value.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-isolation-profile-grammar.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
     "instance": "verified-provider-v1/valid.json",
     "schema": "verified-provider-v1.schema.json",
     "valid": true

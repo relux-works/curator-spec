@@ -1,0 +1,32 @@
+{
+  "allowed_sources": [
+    "https://github.com/example/"
+  ],
+  "audit": {},
+  "environments": {
+    "isolation": {
+      "companyA": {
+        "claude_code": "shared",
+        "codex_cli": "shared"
+      }
+    },
+    "mcp_package_allowlist": [
+      "https://github.com/example/figma-devmode-mcp"
+    ],
+    "overlays_allowed": false,
+    "passable_env_names": [
+      "FIGMA_API_KEY",
+      "GITHUB_TOKEN"
+    ],
+    "precedence": {
+      "placement": "winner-first",
+      "winner": "lower-weight"
+    },
+    "require_current_profile": "companyA"
+  },
+  "locked": [
+    "environments.overlays"
+  ],
+  "preferred_locale": "en",
+  "schema_version": 2
+}

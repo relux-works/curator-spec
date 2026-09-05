@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/v1/system-config-v2.schema.json",
+  "title": "Curator enforced system configuration schema 2",
+  "description": "Schema 1 plus one closed `environments` object carrying exactly the environments protocol section 12.2 lockable knobs with their section 12.1 value grammars, and a `locked` set that may name each of them as `environments.<key>`. Every schema-1 member keeps its schema-1 shape by reference; `isolation` admits only `shared`, the one direction section 12.2 makes lockable.",
+  "type": "object",
+  "required": ["schema_version"],
+  "properties": {
+    "schema_version": {"const": 2},
+    "locked": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "audit_registries",
+          "disable_builtin_registries",
+          "allowed_sources",
+          "audit",
+          "environments.overlays_allowed",
+          "environments.precedence",
+          "environments.mcp_package_allowlist",
+          "environments.passable_env_names",
+          "environments.require_current_profile",
+          "environments.isolation"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "skills_root": {"$ref": "manager-config-v1.schema.json#/properties/skills_root"},
+    "default_agents": {"$ref": "manager-config-v1.schema.json#/properties/default_agents"},
+    "preferred_locale": {"$ref": "manager-config-v1.schema.json#/properties/preferred_locale"},
+    "adapter_mode": {"$ref": "manager-config-v1.schema.json#/properties/adapter_mode"},
+    "worktree_alias_pattern": {"$ref": "manager-config-v1.schema.json#/properties/worktree_alias_pattern"},
+    "projects": {"$ref": "manager-config-v1.schema.json#/properties/projects"},
+    "allowed_sources": {"$ref": "manager-config-v1.schema.json#/properties/allowed_sources"},
+    "disable_builtin_registries": {"$ref": "manager-config-v1.schema.json#/properties/disable_builtin_registries"},
+    "audit": {"$ref": "manager-config-v1.schema.json#/properties/audit"},
+    "audit_registries": {"$ref": "manager-config-v1.schema.json#/properties/audit_registries"},
+    "environments": {"$ref": "#/$defs/environments"}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "environments": {
+      "type": "object",
+      "properties": {
+        "overlays_allowed": {"$ref": "manager-config-v2.schema.json#/$defs/environments/properties/overlays_allowed"},
+        "precedence": {"$ref": "manager-config-v2.schema.json#/$defs/environments/properties/precedence"},
+        "mcp_package_allowlist": {"$ref": "manager-config-v2.schema.json#/$defs/environments/properties/mcp_package_allowlist"},
+        "passable_env_names": {"$ref": "manager-config-v2.schema.json#/$defs/environments/properties/passable_env_names"},
+        "require_current_profile": {"$ref": "manager-config-v2.schema.json#/$defs/environments/properties/require_current_profile"},
+        "isolation": {
+          "type": "object",
+          "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
+          "additionalProperties": {
+            "type": "object",
+            "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
+            "additionalProperties": {"enum": ["shared"]}
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

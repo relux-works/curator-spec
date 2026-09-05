@@ -6,7 +6,9 @@ the protocol documents and conformance vectors.
 
 The unreleased environments 1.1 batch carries `manager-config-v2`: schema 1
 plus one closed `environments` object of the environments section 12.1 knobs;
-schema 1 is byte-frozen and stays valid.
+and `system-config-v2`: `system-config-v1` plus one closed `environments`
+object of exactly the section 12.2 lockable keys, which `locked` may name as
+`environments.<key>`. Both schema-1 files are byte-frozen and stay valid.
 
 Rc.9 carries `agent-skill-v8`, `csk-skill-v8`, `install-marker-v4`, and
 conformance claim v5. Rc.8 carries `assurance-policy-v1`,
