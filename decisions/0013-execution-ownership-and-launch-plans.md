@@ -232,8 +232,9 @@ path that reaches it. `launch_plan_invalid` is a new stable code; ax §15.3
 admits new codes in a compatible minor version.
 
 The record-side bound is checked at the same time: the caller's
-`extensions` together with the `ax.launch-plan-request` key (§3.4) and
-the four `works.relux.curator.*` keys the composer sets (Decision 6.4)
+`extensions` (for a composed document, the four `works.relux.curator.*`
+keys of Decision 6.4 are among them — `ax` is generic and knows no such
+class) together with the `ax.launch-plan-request` key (§3.4)
 MUST fit the ax §1.6 extensions bound (at most 64 keys, canonical object
 at most 65,536 bytes) as they will be persisted; a document that would not
 is refused here with `launch_plan_invalid`, `field: "extensions"`, so no
@@ -245,11 +246,13 @@ The Session Record's `launch_plan.argv` MUST hold the final argv — the
 plugin's base argv followed by the `argv_suffix`, or the complete `argv`
 — so that the immutable record answers "what launched" without
 re-deriving anything. Because ax §13.1 persists the record (step 2) before
-it calls `launch` (step 4), `ax start --launch-plan` with `argv_suffix`
-adds one step before persistence: `ax` calls provider `launch` with the
+it calls `launch` (step 4), `ax start --launch-plan` adds one step before
+persistence for both forms: `ax` calls provider `launch` with the
 candidate record in planning role, takes the returned `SpawnPlan.argv` as
-the resolved final argv, validates it under §3.3, and only then persists
-the record. Provider `launch` is already a plan-returning operation that
+the resolved final argv (for the `argv` form, the plugin's verbatim
+translation plus its §3.6 profile-flag check), validates it under §3.3,
+and only then persists the record — so a §3.6 refusal, like every §3.3
+refusal, fires before any Session Record exists. Provider `launch` is already a plan-returning operation that
 creates no process (ax §7.5, "the trusted terminal backend performs process
 creation"); a plugin declaring `caller_launch_plan` MUST answer that call
 deterministically, and step 4's `launch` against the persisted record MUST
@@ -596,9 +599,9 @@ the `d7075e1` diff:
 3. **ax §7.3 and §7.5.** `caller_launch_plan` and `stdin_resume_replay`
    join `capability_names`; `SpawnPlan` gains `stdin`; `resume` gains
    `launch_plan` (Decision 3.5, Decision 4).
-4. **ax §13.1.** The planning-role `launch` step of Decision 3.4 for the
-   `argv_suffix` form, and the required negative conformance cases of the
-   caller-plan path: a document whose `argv_suffix` carries the provider's
+4. **ax §13.1.** The planning-role `launch` step of Decision 3.4 for both
+   forms, and the required negative conformance cases of the
+   caller-plan path: a document whose `argv` or `argv_suffix` carries the provider's
    own ax §7.7 `yolo` flag (long form or documented alias) under
    `--profile standard` is refused with `launch_plan_invalid`,
    `reason: "profile_flag"`, before any Session Record or process exists
