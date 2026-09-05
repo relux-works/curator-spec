@@ -6,7 +6,74 @@ Proposed 2026-08-31. Draft for review; nothing in this document is normative
 yet. Acceptance authorizes authoring the normative surfaces it names — a
 `protocol/environments.md` document, manager-profile sections, JSON Schemas,
 and conformance vectors — as separately tracked work. Section numbers cited
-without a document name refer to `protocol/core.md`.
+without a document name refer to `protocol/core.md`. An erratum recorded
+2026-09-05 (next section) corrects three claims in Decisions 1, 2, 7, and 11;
+the affected passages are left in place and annotated.
+
+## Erratum (2026-09-05)
+
+Recorded after the pre-implementation review of the environments protocol
+(review v3 items N13, M5, M4; lens B finding F22). Each item quotes the
+original sentence verbatim, states why it is wrong, cites the evidence, and
+gives the corrected statement. The original passages remain in the body,
+each marked `[Erratum 2026-09-05, item N]`; nothing else in this document
+was changed by the erratum.
+
+1. **pi flag verification (Decision 2, "System prompt").** Original:
+   "`pi` takes the same flags and additionally reads agent-dir
+   `APPEND_SYSTEM.md` (append) and `SYSTEM.md` (full replacement), both
+   applied unconditionally when present (verified in 0.84.2)". Why wrong:
+   pi 0.84.2 has no `--system-prompt-file` and no
+   `--append-system-prompt-file`; both spellings are rejected with "Unknown
+   option". Its flags are `--system-prompt <text>` and
+   `--append-system-prompt <text>`, and the latter is polymorphic — it takes
+   text or file contents, so a path that does not resolve is sent as literal
+   prompt text. Evidence: `pi --help` and `pi --system-prompt-file` /
+   `pi --append-system-prompt-file` on the installed 0.84.2 binary
+   (re-verified 2026-09-05); review M5; lens B F22. The claude_code flags in
+   the same sentence hold (`--system-prompt-file` and
+   `--append-system-prompt-file` accepted by Claude Code 2.1.261). The
+   agent-dir file claim is separately verified in the 0.84.2 loader source
+   (Decision 6) and stands. Corrected statement: pi exposes no file-taking
+   replace flag; its only replace path is agent-dir `SYSTEM.md`; its append
+   channel is `--append-system-prompt` given a path that the launcher
+   verifies readable immediately before exec. The normative pi row is
+   rewritten by `protocol/environments.md` revision 1.1 (review M5); this
+   erratum corrects only the claim.
+
+2. **Superseded sequencing sentence (Decision 1, `path` bullet; Decision 11
+   phasing row).** Original: "it is delivered with the onboarding import
+   story, not in revision 1." and the Decision 11 row "Onboarding import
+   (`path` source kind, lossless/lossy, skill migration) — ✓ own story
+   between rev 1 and 2". Why wrong: the `path` source kind, the onboarding
+   import, and install ref selection were promoted into revision 1 by
+   PR #34 (`f8d7e7ab`), and `protocol/environments.md` §1 lists `path` as a
+   revision-1 source kind. Evidence: curator-spec main `b4f29cd`,
+   `protocol/environments.md` §1; review N13 (O-M9). Corrected statement:
+   the `path` source kind and the onboarding import are revision-1 scope;
+   the Decision 11 row reads "Onboarding import (`path` source kind,
+   lossless/lossy, skill migration) | ✓ | — | —". The table cells are not
+   edited; the row is annotated.
+
+3. **Credentials claim (Decision 7).** Original: "macOS Keychain entries are
+   ambient and need nothing", "opencode keeps auth in the XDG data directory,
+   which the config swap never touches", and "A profile×environment pair MAY
+   be configured `isolated` — no passthrough, the tool authenticates fresh
+   inside the profile home — which is the supported shape for genuinely
+   separate accounts". Why wrong: the Claude credential is the Keychain item
+   `Claude Code-credentials` keyed by the macOS account, so a fresh login
+   inside an `isolated` home rewrites the same item and clobbers every other
+   home's credential; a fresh `CLAUDE_CONFIG_DIR` reports "Not logged in"
+   because login state lives in `.claude.json`; and opencode `isolated` is a
+   no-op for auth because auth lives in `XDG_DATA_HOME`, outside the swapped
+   config. Evidence: review M4 (verified). Corrected statement: `isolated`
+   is unsupported in revision 1 for `claude_code` on macOS and for
+   `opencode` (`environment_isolated_unsupported`), lifted only on positive
+   evidence; the per-adapter passthrough *strategy* and the provisioning-seed
+   class are specified by `protocol/environments.md` revision 1.1 (review
+   M4). An `oauth.claude.profile.<64-hex>` Keychain account also exists and
+   is under investigation in the verification sprint; it is unverified and
+   nothing here relies on it.
 
 ## Context
 
@@ -86,7 +153,7 @@ project-relative path instead of a URL, snapshotted and keyed by the §8
 content hash of its state. `path` is the vehicle for first-run onboarding
 imports (Decision 5) and for authoring profiles before they have a
 repository; it is delivered with the onboarding import story, not in
-revision 1.
+revision 1. [Erratum 2026-09-05, item 2]
 
 ### 2. Profile repository shape
 
@@ -185,7 +252,7 @@ system-prompt override channel. The channel is adapter-declared and varies:
 arguments (verified in 2.1.251), `pi` takes the same flags and additionally
 reads agent-dir `APPEND_SYSTEM.md` (append) and `SYSTEM.md` (full
 replacement), both applied unconditionally when present (verified in
-0.84.2),
+0.84.2) [Erratum 2026-09-05, item 1],
 `codex_cli` takes a `model_instructions_file` configuration override
 (verified key in 0.151.0; full replacement), and `gemini` — a revision-2
 adapter — takes the `GEMINI_SYSTEM_MD` variable (full replacement,
@@ -546,11 +613,12 @@ home shares with the native home by symlink or seeding (`auth.json` for
 entries are ambient and need nothing, Linux keeps `.credentials.json` inside
 the home and passes it through, and Windows needs the open question 5
 verification; opencode keeps auth in the XDG data directory, which the
-config swap never touches). Default is `shared`: every profile home reuses the
-operator's existing authentication. A profile×environment pair MAY be
-configured `isolated` — no passthrough, the tool authenticates fresh inside
-the profile home — which is the supported shape for genuinely separate
-accounts (a company profile on a company account beside a personal one).
+config swap never touches) [Erratum 2026-09-05, item 3]. Default is
+`shared`: every profile home reuses the operator's existing authentication.
+A profile×environment pair MAY be configured `isolated` — no passthrough,
+the tool authenticates fresh inside the profile home — which is the
+supported shape for genuinely separate accounts (a company profile on a
+company account beside a personal one). [Erratum 2026-09-05, item 3]
 
 Environment-owned mutable state (sessions, history, caches, trust records)
 is never touched by materialization, refresh, switch, or garbage collection.
@@ -650,7 +718,7 @@ piecemeal edits; until that PR lands, nothing here constrains `ax`.
 | Umbrella subcommand discovery (`curator-<name>`) | ✓ | — | — |
 | Launcher (`curator run`) and `curator session` shim | own repositories and specification, tracked on this epic | — | — |
 | Onboarding: detect, foreign-manager stop, backup, takeover | ✓ | — | — |
-| Onboarding import (`path` source kind, lossless/lossy, skill migration) | — | ✓ own story between rev 1 and 2 | — |
+| Onboarding import (`path` source kind, lossless/lossy, skill migration) [Erratum 2026-09-05, item 2] | — | ✓ own story between rev 1 and 2 | — |
 | Secondary fixed-home targets (Xcode CodingAssistant, auto-probed) | ✓ root context + skills | commands, MCP state | — |
 | MCP server write management | read-only verification stays (manager §6) | ✓ own decision | — |
 | Settings/permissions/model fragments | — | ✓ own decision | — |
