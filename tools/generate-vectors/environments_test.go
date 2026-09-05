@@ -2,10 +2,13 @@ package main
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -188,6 +191,79 @@ func TestEnvironmentSchemaCasesCoverTheClosedSurfaces(t *testing.T) {
 		requireCase(schema, "invalid.json", false)
 		for _, example := range examples {
 			requireCase(schema, example.name+".json", example.valid)
+		}
+	}
+}
+
+// The section 1.2 byte-exactness vector: the expected hash is the core
+// section 8 content hash over the fixture's regular files, .gitattributes
+// included, and the fixture bytes themselves carry the properties the
+// acquisition contract asserts (CRLF, mixed endings, literal $Format:).
+func TestSnapshotAcquisitionVectorIsTheRawFixtureHash(t *testing.T) {
+	root := repositoryRoot(t)
+	fixture := filepath.Join(root, "conformance", "v1", "fixtures", "byte-exact")
+	scratch := t.TempDir()
+	writeSnapshotAcquisitionVectors(filepath.Join(scratch, "vectors"), fixture, filepath.Join(scratch, "expected"))
+	vector := readObject(t, filepath.Join(scratch, "vectors", "snapshot-acquisition.json"))
+	if vector["capability"] != "agent-environments" || vector["capability_revision"] != json.Number("1") || vector["protocol_version"] != protocolVersion {
+		t.Fatalf("snapshot-acquisition vector has the wrong identity: %#v", vector)
+	}
+	cases := vector["cases"].([]any)
+	if len(cases) != 1 {
+		t.Fatalf("expected exactly one acquisition case, got %d", len(cases))
+	}
+	item := cases[0].(map[string]any)
+	if item["fixture"] != "fixtures/byte-exact" || item["name"] != "byte-exact-snapshot" {
+		t.Fatalf("unexpected case identity: %#v", item)
+	}
+	expectedText, err := os.ReadFile(filepath.Join(scratch, "expected", "byte-exact-snapshot_sha256.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	files := regularFiles(fixture)
+	want := []string{".gitattributes", "crlf.txt", "lf.txt", "mixed.txt", "subst.txt"}
+	if strings.Join(files, ",") != strings.Join(want, ",") {
+		t.Fatalf("fixture inventory = %v, want %v", files, want)
+	}
+	hash := contentHash(fixture, files)
+	if item["expected_sha256"] != hash || string(expectedText) != hash+"\n" {
+		t.Fatalf("expected hash %s is not the raw fixture content hash %s", item["expected_sha256"], hash)
+	}
+	// Hashing without .gitattributes must not alias: the attribute file is a
+	// regular file of the committed tree and is part of the snapshot.
+	if contentHash(fixture, files[1:]) == hash {
+		t.Fatal("content hash ignores .gitattributes")
+	}
+	read := func(name string) []byte {
+		payload, readErr := os.ReadFile(filepath.Join(fixture, name))
+		if readErr != nil {
+			t.Fatal(readErr)
+		}
+		return payload
+	}
+	if string(read(".gitattributes")) != "* text=auto\nsubst.txt export-subst\n" {
+		t.Fatalf("fixture .gitattributes bytes drifted: %q", read(".gitattributes"))
+	}
+	if bytes.Contains(read("lf.txt"), []byte("\r")) {
+		t.Fatal("lf.txt carries a CR")
+	}
+	if crlf := read("crlf.txt"); !bytes.Contains(crlf, []byte("\r\n")) || bytes.Contains(bytes.ReplaceAll(crlf, []byte("\r\n"), nil), []byte("\n")) {
+		t.Fatalf("crlf.txt is not CRLF-only: %q", crlf)
+	}
+	if mixed := read("mixed.txt"); !bytes.Contains(mixed, []byte("\r\n")) || !bytes.Contains(bytes.ReplaceAll(mixed, []byte("\r\n"), nil), []byte("\n")) {
+		t.Fatalf("mixed.txt does not mix LF and CRLF: %q", mixed)
+	}
+	if subst := read("subst.txt"); !bytes.Contains(subst, []byte("$Format:%H$")) || !bytes.Contains(subst, []byte("$Format:%h$")) {
+		t.Fatalf("subst.txt lost its literal placeholders: %q", subst)
+	}
+	// The per-file digests in the vector must be the digests of the fixture
+	// bytes, so a checkout that normalized an ending fails here.
+	for _, entry := range item["files"].([]any) {
+		record := entry.(map[string]any)
+		payload := read(record["path"].(string))
+		sum := sha256.Sum256(payload)
+		if record["sha256"] != "sha256:"+hex.EncodeToString(sum[:]) || record["bytes"] != json.Number(strconv.Itoa(len(payload))) {
+			t.Fatalf("file record for %s does not match the fixture bytes", record["path"])
 		}
 	}
 }

@@ -7,3 +7,12 @@
 *.py text eol=lf
 *.yml text eol=lf
 Makefile text eol=lf
+
+# conformance/v1/fixtures/byte-exact/ is the environments section 1.2
+# byte-exactness vector: its committed CRLF and mixed-ending bytes ARE the
+# fixture. No rule here can protect them, because the fixture's own nested
+# `.gitattributes` (`* text=auto`) outranks this file for that directory. The
+# blobs are committed through `git hash-object -w --no-filters` and
+# `git update-index --cacheinfo`; git leaves CRLF that is already in the index
+# alone on add and checkout, and `make validate` fails on a normalized
+# checkout. Never run `git add --renormalize` over that directory.

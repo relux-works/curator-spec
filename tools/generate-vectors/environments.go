@@ -11,6 +11,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -769,4 +770,48 @@ func orderedSurfaceObject(order []string, surfaces map[string]any) *orderedObjec
 		object.values = append(object.values, surfaces[key])
 	}
 	return object
+}
+
+// writeSnapshotAcquisitionVectors emits conformance/v1/vectors/snapshot-acquisition.json
+// and expected/byte-exact-snapshot_sha256.txt: the environments.md section 1.2
+// rule that a snapshot of a commit carries exactly the committed blob bytes.
+// The hash is the core section 8 content hash over every regular file of the
+// fixture tree, .gitattributes included — it is a regular file of that tree.
+func writeSnapshotAcquisitionVectors(dir, fixture, expected string) {
+	files := regularFiles(fixture)
+	hash := contentHash(fixture, files)
+	writeText(filepath.Join(expected, "byte-exact-snapshot_sha256.txt"), hash+"\n")
+	entries := make([]any, 0, len(files))
+	for _, rel := range files {
+		payload, err := os.ReadFile(filepath.Join(fixture, filepath.FromSlash(rel)))
+		must(err)
+		sum := sha256.Sum256(payload)
+		entries = append(entries, map[string]any{
+			"path":   rel,
+			"bytes":  len(payload),
+			"sha256": "sha256:" + hex.EncodeToString(sum[:]),
+		})
+	}
+	writeJSON(filepath.Join(dir, "snapshot-acquisition.json"), map[string]any{
+		"schema_version":      1,
+		"protocol_version":    protocolVersion,
+		"capability":          "agent-environments",
+		"capability_revision": 1,
+		"rule":                "environments.md section 1.2: a snapshot produced from a commit contains, for every regular-file entry of the commit's tree, exactly the committed blob bytes; working-tree conversion and attribute-driven archive processing never alter, add, or omit an entry",
+		"cases": []any{
+			map[string]any{
+				"name":    "byte-exact-snapshot",
+				"fixture": "fixtures/byte-exact",
+				"files":   entries,
+				"acquisition_contract": []any{
+					"Commit the fixture tree in a repository so that every blob equals the fixture file bytes listed here and the tree carries the fixture's .gitattributes as a regular file (the in-tree `* text=auto` rule would normalize crlf.txt and mixed.txt on an ordinary `git add`; bypass it, for example with `git hash-object -w --no-filters` and `git update-index --add --cacheinfo`, or an `info/attributes` override of `* -text` during the commit). Verify with `git cat-file -p` before acquiring.",
+					"Acquire a snapshot of that commit with `core.autocrlf=true` in effect and again with `core.autocrlf=false`.",
+					"Both snapshots MUST contain exactly the five listed regular files, and the core section 8 content hash of each snapshot MUST equal expected_sha256.",
+					"The `subst.txt` entry MUST still contain the literal text `$Format:%H$` and `$Format:%h$`; the `crlf.txt` entry MUST contain CRLF line endings; the `mixed.txt` entry MUST contain both LF and CRLF line endings.",
+				},
+				"expected_sha256": hash,
+				"expected":        "expected/byte-exact-snapshot_sha256.txt",
+			},
+		},
+	})
 }

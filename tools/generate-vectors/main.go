@@ -194,6 +194,7 @@ func main() {
 	writeExternalRepositoryVectors(vectors)
 	writeAssuranceVectors(vectors)
 	writeEnvironmentVectors(vectors, filepath.Join(expected, "environments"))
+	writeSnapshotAcquisitionVectors(vectors, filepath.Join(suite, "fixtures", "byte-exact"), expected)
 	writeSchemaCases(suite, marker, ledger, audited, snapshot, entries[0], bundle, pinned)
 	writeExternalRepositoryExpected(expected, marker)
 	writeManifest(suite)

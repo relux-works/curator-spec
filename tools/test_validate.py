@@ -1578,3 +1578,74 @@ class EnvironmentVectorTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SnapshotAcquisitionVectorTests(unittest.TestCase):
+    """The environments.md section 1.2 byte-exactness gate must fail closed.
+
+    validate_snapshot_acquisition_vectors runs on every `make validate`. Each
+    test narrows one rule: a normalized fixture byte, a stale hash, or a
+    dropped .gitattributes entry must be rejected, not silently re-hashed.
+    """
+
+    def copy_suite(self, root: Path) -> None:
+        fixture = validate.SUITE / "fixtures" / "byte-exact"
+        for path in fixture.rglob("*"):
+            if path.is_file():
+                target = root / path.relative_to(validate.SUITE)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(path.read_bytes())
+        (root / "vectors").mkdir()
+        (root / "vectors" / "snapshot-acquisition.json").write_bytes(
+            (validate.SUITE / "vectors" / "snapshot-acquisition.json").read_bytes()
+        )
+        (root / "expected").mkdir()
+        (root / "expected" / "byte-exact-snapshot_sha256.txt").write_bytes(
+            (validate.SUITE / "expected" / "byte-exact-snapshot_sha256.txt").read_bytes()
+        )
+
+    def test_published_vector_passes(self) -> None:
+        validate.validate_snapshot_acquisition_vectors()
+
+    def test_crlf_normalized_by_a_checkout_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.copy_suite(root)
+            crlf = root / "fixtures" / "byte-exact" / "crlf.txt"
+            crlf.write_bytes(crlf.read_bytes().replace(b"\r\n", b"\n"))
+            with self.assertRaises(validate.ValidationFailure):
+                validate.validate_snapshot_acquisition_vectors(suite_root=root)
+
+    def test_expanded_export_subst_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.copy_suite(root)
+            subst = root / "fixtures" / "byte-exact" / "subst.txt"
+            subst.write_bytes(subst.read_bytes().replace(b"$Format:%H$", b"0" * 40))
+            with self.assertRaises(validate.ValidationFailure):
+                validate.validate_snapshot_acquisition_vectors(suite_root=root)
+
+    def test_hash_that_omits_gitattributes_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.copy_suite(root)
+            fixture = root / "fixtures" / "byte-exact"
+            files = {
+                p.name: p.read_bytes()
+                for p in fixture.iterdir()
+                if p.name != ".gitattributes"
+            }
+            vector = validate.load_json(root / "vectors" / "snapshot-acquisition.json")
+            vector["cases"][0]["expected_sha256"] = validate.environment_content_hash(files)
+            with self.assertRaises(validate.ValidationFailure):
+                validate.validate_snapshot_acquisition_vectors(vector, suite_root=root)
+
+    def test_stale_expected_file_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.copy_suite(root)
+            (root / "expected" / "byte-exact-snapshot_sha256.txt").write_bytes(
+                b"sha256:" + b"0" * 64 + b"\n"
+            )
+            with self.assertRaises(validate.ValidationFailure):
+                validate.validate_snapshot_acquisition_vectors(suite_root=root)

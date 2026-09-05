@@ -119,6 +119,11 @@ The suite contains:
   and no-context outputs, referenced-form layout paths, managed
   `opencode.json` CCJ-1 bytes with the trailing-LF rule, and header-free
   system-prompt output — with their section 5.6 surface hashes;
+- the environments section 1.2 snapshot byte-exactness vector
+  (`vectors/snapshot-acquisition.json` over `fixtures/byte-exact`): a
+  committed tree with `* text=auto`, an `export-subst` entry, and LF, CRLF,
+  and mixed-ending files whose snapshot MUST hash to the raw committed blob
+  bytes under `core.autocrlf=true` and `false` alike;
 - transparency chain, Merkle, bundle, pagination, caching, and deny-wins cases;
 - conjunctive registry queries, exact artifact identity, snapshot-bound pages,
   scoped idempotency, concurrent writers, transaction rollback, crash recovery,

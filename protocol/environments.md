@@ -82,6 +82,46 @@ A missing `path` operand and an unreadable one are different facts (the
 section 8.4 discipline): `profile_source_path_missing` never fires on a
 failed read, and `profile_source_path_unreadable` never fires on absence.
 
+### 1.2 Snapshot bytes
+
+A snapshot produced from a commit MUST contain, for every regular-file entry
+of the commit's tree, exactly the committed blob bytes, and no other entry.
+Working-tree conversion (`core.autocrlf`, the `text` and `eol` attributes,
+clean/smudge filters, `ident`) and attribute-driven archive processing
+(`export-subst`, `export-ignore`) MUST NOT alter, add, or omit any entry: the
+snapshot is a function of the commit object graph alone, never of the
+acquiring machine's git configuration or of the repository's attributes. This
+capability requires it for `git` profile snapshots, for the context modules
+they carry, and for the profile-scoped skill snapshots resolved through the
+core closure; it is what core §6.2 ("snapshots are immutable regular-file
+trees produced from that commit") and core §6.5 ("materialize exact blob
+bytes") already require of external-repository snapshots, stated here for the
+environments surfaces because this document may not amend core.
+
+Consequently the core §8 content hash of a snapshot, the `path` and `local`
+state hash, the effective pin, and every identity bound to one of those
+hashes are independent of platform and of git configuration; the section 5.6
+cross-platform hash equality rests on this premise.
+
+A `path` snapshot copies the directory's bytes as they are — there is no
+commit, and nothing is normalized in either direction: a working-directory
+checkout that a `text=auto` conversion left with platform line endings is
+snapshotted with those endings.
+
+No diagnostic accompanies this rule. A manager that cannot produce exact
+committed bytes has no conforming acquisition path for the commit and MUST
+NOT install a snapshot of it.
+
+> Non-normative. Extraction from the object database (`git ls-tree -r` with
+> `git cat-file --batch`, or a raw-object reader under core §6.5) satisfies
+> the rule; `git archive` does not, because it applies `core.autocrlf`,
+> `text`/`eol`, and `export-subst`/`export-ignore` to its output. A manager
+> whose skill snapshots come through the same acquisition path as its profile
+> snapshots satisfies the rule for both at once. The conformance vector in
+> `vectors/snapshot-acquisition.json` commits a tree carrying `* text=auto`,
+> an `export-subst` entry, and LF, CRLF, and mixed-ending files, and requires
+> the same content hash under `core.autocrlf=true` and `false`.
+
 ## 2. Profile repository shape
 
 A profile repository is a git snapshot whose root contains
@@ -1123,6 +1163,7 @@ negative vectors, and byte-exact determinism vectors): `Profilefile.json`
 schema 1, `context.json` schema 1, module byte validation, the section 5
 materialization bytes — generation header, part joining, chapter parts,
 zero-module output, referenced-form layout, and system-prompt output — the
-section 5.6 hash binding, `.agent-environment.json` schema 1, and
-`launch-env-fragment-v1`. A manager claiming this capability MUST pass the
+section 5.6 hash binding, the section 1.2 snapshot byte-exactness vector
+(`vectors/snapshot-acquisition.json`), `.agent-environment.json` schema 1,
+and `launch-env-fragment-v1`. A manager claiming this capability MUST pass the
 complete vector set; there is no partial claim.

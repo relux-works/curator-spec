@@ -3277,6 +3277,81 @@ def validate_environment_vectors(vector: Any = None, suite_root: Path | None = N
         )
 
 
+SNAPSHOT_ACQUISITION_FILES = {
+    ".gitattributes",
+    "crlf.txt",
+    "lf.txt",
+    "mixed.txt",
+    "subst.txt",
+}
+
+
+def validate_snapshot_acquisition_vectors(
+    vector: Any = None, suite_root: Path | None = None
+) -> None:
+    """The environments.md section 1.2 byte-exactness vector.
+
+    The expected hash is recomputed from the fixture bytes as checked out, so
+    a checkout that normalized a line ending, a fixture edit without
+    regeneration, or a hand-edited expected file all fail here.
+    """
+    root = SUITE if suite_root is None else Path(suite_root)
+    if vector is None:
+        vector = load_json(root / "vectors" / "snapshot-acquisition.json")
+    if (
+        vector.get("schema_version") != 1
+        or vector.get("protocol_version") != PROTOCOL_VERSION
+        or vector.get("capability") != "agent-environments"
+        or vector.get("capability_revision") != 1
+    ):
+        raise ValidationFailure("snapshot-acquisition vector has the wrong capability identity")
+    cases = named_cases(vector.get("cases"), "snapshot acquisition")
+    if set(cases) != {"byte-exact-snapshot"}:
+        raise ValidationFailure("snapshot acquisition case inventory is not exact")
+    case = cases["byte-exact-snapshot"]
+    if case.get("fixture") != "fixtures/byte-exact":
+        raise ValidationFailure("byte-exact-snapshot names the wrong fixture")
+    fixture = root / "fixtures" / "byte-exact"
+    files = {
+        path.relative_to(fixture).as_posix(): path.read_bytes()
+        for path in fixture.rglob("*")
+        if path.is_file()
+    }
+    if set(files) != SNAPSHOT_ACQUISITION_FILES:
+        raise ValidationFailure(
+            f"byte-exact fixture inventory is not exact: {sorted(files)}"
+        )
+    if files[".gitattributes"] != b"* text=auto\nsubst.txt export-subst\n":
+        raise ValidationFailure("byte-exact .gitattributes bytes drifted")
+    if b"\r" in files["lf.txt"]:
+        raise ValidationFailure("byte-exact lf.txt carries a CR")
+    if b"\r\n" not in files["crlf.txt"] or b"\n" in files["crlf.txt"].replace(b"\r\n", b""):
+        raise ValidationFailure("byte-exact crlf.txt is not CRLF-only (normalized checkout?)")
+    if b"\r\n" not in files["mixed.txt"] or b"\n" not in files["mixed.txt"].replace(b"\r\n", b""):
+        raise ValidationFailure("byte-exact mixed.txt does not mix LF and CRLF (normalized checkout?)")
+    if b"$Format:%H$" not in files["subst.txt"] or b"$Format:%h$" not in files["subst.txt"]:
+        raise ValidationFailure("byte-exact subst.txt lost a literal $Format: placeholder")
+    records = case.get("files")
+    if not isinstance(records, list) or [r.get("path") for r in records] != sorted(files):
+        raise ValidationFailure("byte-exact file records are not the sorted fixture inventory")
+    for record in records:
+        payload = files[record["path"]]
+        if record.get("bytes") != len(payload) or record.get("sha256") != (
+            "sha256:" + hashlib.sha256(payload).hexdigest()
+        ):
+            raise ValidationFailure(f"byte-exact file record {record['path']} is stale")
+    expected = environment_content_hash(files)
+    if case.get("expected_sha256") != expected:
+        raise ValidationFailure("byte-exact-snapshot expected_sha256 is not the raw fixture content hash")
+    if case.get("expected") != "expected/byte-exact-snapshot_sha256.txt":
+        raise ValidationFailure("byte-exact-snapshot names the wrong expected file")
+    if (root / case["expected"]).read_bytes() != expected.encode("ascii") + b"\n":
+        raise ValidationFailure("expected/byte-exact-snapshot_sha256.txt is stale")
+    contract = case.get("acquisition_contract")
+    if not isinstance(contract, list) or not any("core.autocrlf=true" in step for step in contract) or not any("$Format:%H$" in step for step in contract):
+        raise ValidationFailure("byte-exact-snapshot acquisition contract does not state the autocrlf and export-subst checks")
+
+
 def main() -> int:
     checks = [
         validate_schemas,
@@ -3287,6 +3362,7 @@ def main() -> int:
         validate_vector_semantics,
         validate_assurance_vectors,
         validate_environment_vectors,
+        validate_snapshot_acquisition_vectors,
         validate_local_links,
     ]
     try:

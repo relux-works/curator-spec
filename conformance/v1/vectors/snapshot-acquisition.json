@@ -1,0 +1,48 @@
+{
+  "capability": "agent-environments",
+  "capability_revision": 1,
+  "cases": [
+    {
+      "acquisition_contract": [
+        "Commit the fixture tree in a repository so that every blob equals the fixture file bytes listed here and the tree carries the fixture's .gitattributes as a regular file (the in-tree `* text=auto` rule would normalize crlf.txt and mixed.txt on an ordinary `git add`; bypass it, for example with `git hash-object -w --no-filters` and `git update-index --add --cacheinfo`, or an `info/attributes` override of `* -text` during the commit). Verify with `git cat-file -p` before acquiring.",
+        "Acquire a snapshot of that commit with `core.autocrlf=true` in effect and again with `core.autocrlf=false`.",
+        "Both snapshots MUST contain exactly the five listed regular files, and the core section 8 content hash of each snapshot MUST equal expected_sha256.",
+        "The `subst.txt` entry MUST still contain the literal text `$Format:%H$` and `$Format:%h$`; the `crlf.txt` entry MUST contain CRLF line endings; the `mixed.txt` entry MUST contain both LF and CRLF line endings."
+      ],
+      "expected": "expected/byte-exact-snapshot_sha256.txt",
+      "expected_sha256": "sha256:500ea934403d10a2a0b6b7e8874790e489ee002328d3dc0edbda2fe5be2bced0",
+      "files": [
+        {
+          "bytes": 35,
+          "path": ".gitattributes",
+          "sha256": "sha256:ced60fac6e9b77fd3c91dc5f72ce202e3d55f05206824fa0ce456ffbb711dc9c"
+        },
+        {
+          "bytes": 20,
+          "path": "crlf.txt",
+          "sha256": "sha256:c8dba68945249de9b4faed72b89e041e3df77ffff885122599e6c2f7c65a68b2"
+        },
+        {
+          "bytes": 17,
+          "path": "lf.txt",
+          "sha256": "sha256:4fdbc441ea7b546100e086ac1e4fc5ae6749b7314311c99db05be450eca12996"
+        },
+        {
+          "bytes": 27,
+          "path": "mixed.txt",
+          "sha256": "sha256:c76a5bc31dc90d785ff606b61890fb186b1b216635fbbc16ff9af27386dba279"
+        },
+        {
+          "bytes": 40,
+          "path": "subst.txt",
+          "sha256": "sha256:ec9a6c8c260b3977dad2f1cba09414599879ac5c3e7353c3205a40d5fbe122bc"
+        }
+      ],
+      "fixture": "fixtures/byte-exact",
+      "name": "byte-exact-snapshot"
+    }
+  ],
+  "protocol_version": "1.0.0-rc.9",
+  "rule": "environments.md section 1.2: a snapshot produced from a commit contains, for every regular-file entry of the commit's tree, exactly the committed blob bytes; working-tree conversion and attribute-driven archive processing never alter, add, or omit an entry",
+  "schema_version": 1
+}

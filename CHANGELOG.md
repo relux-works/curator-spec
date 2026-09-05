@@ -3,6 +3,27 @@
 All notable protocol changes are recorded here. Versions follow Semantic
 Versioning for the complete specification set.
 
+## Unreleased
+
+### Added
+
+- Added the environments section 1.2 snapshot byte-exactness rule: a snapshot
+  produced from a commit carries exactly the committed blob bytes, and neither
+  working-tree conversion (`core.autocrlf`, `text`/`eol`, filters, `ident`) nor
+  attribute-driven archive processing (`export-subst`, `export-ignore`) may
+  alter, add, or omit an entry. Content hashes, state hashes, effective pins,
+  and every hash-bound identity are therefore platform- and
+  configuration-independent, which the section 5.6 cross-platform equality
+  claim had assumed without stating. `git archive` violates the rule under
+  `core.autocrlf=true` and for `export-subst` entries; object-database
+  extraction satisfies it.
+- Added the `snapshot-acquisition.json` vector over the new
+  `fixtures/byte-exact` tree (`* text=auto`, an `export-subst` entry, LF, CRLF,
+  and mixed-ending files) with its expected content hash, a repository
+  `.gitattributes` rule that keeps those fixture bytes unconverted on every
+  checkout, and validator cross-checks that fail on a normalized checkout, an
+  expanded placeholder, or a hash that omits `.gitattributes`.
+
 ## 1.0.0-rc.9 - 2026-08-23
 
 ### Added

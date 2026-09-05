@@ -49,6 +49,10 @@
       "sha256": "sha256:baf7c5f3b9c3f1fae3da4c356381bf74442aa7f8f0b6fb2304c9c10833d6032e"
     },
     {
+      "path": "expected/byte-exact-snapshot_sha256.txt",
+      "sha256": "sha256:1c54047e87b4315e8edf8d9cf8818130e76c316c966a18a5b6ecaf8b9a0362f7"
+    },
+    {
       "path": "expected/context_files.json",
       "sha256": "sha256:72b219e2013df777b89265e959fa941e3e00519849910535781792b10a4262e3"
     },
@@ -183,6 +187,26 @@
     {
       "path": "expected/snapshot_sha256.txt",
       "sha256": "sha256:6c67a5b415fa432c0d6118bcc66d878da7dec90b65d6a276e200437c083f7ab4"
+    },
+    {
+      "path": "fixtures/byte-exact/.gitattributes",
+      "sha256": "sha256:ced60fac6e9b77fd3c91dc5f72ce202e3d55f05206824fa0ce456ffbb711dc9c"
+    },
+    {
+      "path": "fixtures/byte-exact/crlf.txt",
+      "sha256": "sha256:c8dba68945249de9b4faed72b89e041e3df77ffff885122599e6c2f7c65a68b2"
+    },
+    {
+      "path": "fixtures/byte-exact/lf.txt",
+      "sha256": "sha256:4fdbc441ea7b546100e086ac1e4fc5ae6749b7314311c99db05be450eca12996"
+    },
+    {
+      "path": "fixtures/byte-exact/mixed.txt",
+      "sha256": "sha256:c76a5bc31dc90d785ff606b61890fb186b1b216635fbbc16ff9af27386dba279"
+    },
+    {
+      "path": "fixtures/byte-exact/subst.txt",
+      "sha256": "sha256:ec9a6c8c260b3977dad2f1cba09414599879ac5c3e7353c3205a40d5fbe122bc"
     },
     {
       "path": "fixtures/external-repository/lfs-pointers.json",
@@ -3087,6 +3111,10 @@
     {
       "path": "vectors/skill-manifest-resolution.json",
       "sha256": "sha256:07c42987cdfcbdb0b78a0149373ad8b49ac2d1d70a5484b4e42a54e20586647c"
+    },
+    {
+      "path": "vectors/snapshot-acquisition.json",
+      "sha256": "sha256:98b2533f96e378b525c22c9c2f8be59da3c8a0de386670e99496c911d64e03ec"
     },
     {
       "path": "vectors/source-identities.json",
