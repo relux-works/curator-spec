@@ -1647,5 +1647,129 @@ class SnapshotAcquisitionVectorTests(unittest.TestCase):
                 validate.validate_snapshot_acquisition_vectors(suite_root=root)
 
 
+class ManagerConfigVectorTests(unittest.TestCase):
+    """Negative shapes for the manager-config vector gate: each one flips a
+    vector, the schema, or the section 12.1 table so that the gate must fail."""
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(validate.SUITE / "vectors" / "manager-config.json")
+        self.vector_v2 = validate.load_json(validate.SUITE / "vectors" / "manager-config-v2.json")
+        _, paths = validate.schema_registry()
+        self.schema = validate.load_json(paths["manager-config-v2.schema.json"])
+        self.text = (validate.ROOT / "protocol" / "environments.md").read_text(encoding="utf-8")
+
+    def case(self, name: str) -> dict:
+        for case in [*self.vector, *self.vector_v2]:
+            if case["name"] == name:
+                return case
+        raise AssertionError(name)
+
+    def run_gate(self, vector=None, vector_v2=None, schema=None, text=None) -> None:
+        validate.validate_manager_config_vectors(
+            vector=self.vector if vector is None else vector,
+            vector_v2=self.vector_v2 if vector_v2 is None else vector_v2,
+            schema=self.schema if schema is None else schema,
+            environments_text=self.text if text is None else text,
+        )
+
+    def test_published_vectors_pass(self) -> None:
+        self.run_gate()
+
+    def test_forged_valid_flag_on_rejected_vector_fails(self) -> None:
+        self.case("schema2-negative-backup-retention")["valid"] = True
+        with self.assertRaisesRegex(validate.ValidationFailure, "expected valid=True"):
+            self.run_gate()
+
+    def test_accepted_vector_flagged_invalid_fails(self) -> None:
+        self.case("schema2-every-knob")["valid"] = False
+        with self.assertRaisesRegex(validate.ValidationFailure, "expected valid=False"):
+            self.run_gate()
+
+    def test_schema_one_vector_carrying_environments_stays_rejected(self) -> None:
+        self.case("schema1-rejects-environments")["valid"] = True
+        with self.assertRaisesRegex(validate.ValidationFailure, "schema1-rejects-environments"):
+            self.run_gate()
+
+    def test_insecure_registry_is_a_semantic_rejection_on_both_schemas(self) -> None:
+        self.assertEqual(
+            validate.manager_config_semantic_error(
+                {"audit_registries": [{"name": "r", "url": "http://r.example"}]}
+            ),
+            "audit registry r is not https",
+        )
+        self.assertIsNone(
+            validate.manager_config_semantic_error(
+                {"audit_registries": [{"name": "r", "url": "https://r.example"}]}
+            )
+        )
+        self.case("insecure-registry")["valid"] = True
+        with self.assertRaisesRegex(validate.ValidationFailure, "insecure-registry"):
+            self.run_gate()
+
+    def test_expected_environments_must_be_defaults_plus_input(self) -> None:
+        self.case("schema2-minimal-defaults")["expected"]["environments"]["backup_retention"] = 6
+        with self.assertRaisesRegex(validate.ValidationFailure, "defaults plus input"):
+            self.run_gate()
+
+    def test_schema_default_drifting_from_the_table_fails(self) -> None:
+        self.schema["$defs"]["environments"]["properties"]["backup_retention"]["default"] = 6
+        with self.assertRaisesRegex(validate.ValidationFailure, "default for backup_retention is 6"):
+            self.run_gate()
+
+    def test_nested_default_drifting_from_the_table_fails(self) -> None:
+        self.schema["$defs"]["precedence"]["properties"]["winner"]["default"] = "lower-weight"
+        with self.assertRaisesRegex(validate.ValidationFailure, "precedence.winner"):
+            self.run_gate()
+
+    def test_schema_property_missing_from_the_table_fails(self) -> None:
+        properties = self.schema["$defs"]["environments"]["properties"]
+        properties["backup_generations"] = properties.pop("backup_retention")
+        with self.assertRaisesRegex(validate.ValidationFailure, "schema-only \\['backup_generations'\\]"):
+            self.run_gate()
+
+    def test_table_knob_missing_from_the_schema_fails(self) -> None:
+        text = self.text.replace("| `backup_retention` |", "| `backup_scrub_days` | integer | `0` | 8.3 |\n| `backup_retention` |")
+        with self.assertRaisesRegex(validate.ValidationFailure, "table-only \\['backup_scrub_days'\\]"):
+            self.run_gate(text=text)
+
+    def test_open_environments_object_fails(self) -> None:
+        self.schema["$defs"]["environments"]["additionalProperties"] = True
+        with self.assertRaisesRegex(validate.ValidationFailure, "not closed"):
+            self.run_gate()
+
+    def test_knob_without_a_default_fails(self) -> None:
+        del self.schema["$defs"]["environments"]["properties"]["in_place_mode"]["default"]
+        with self.assertRaisesRegex(validate.ValidationFailure, "without a default"):
+            self.run_gate()
+
+    def test_schema_one_family_is_byte_identical_to_the_generator_split(self) -> None:
+        self.assertEqual({case["input"]["schema_version"] for case in self.vector}, {1})
+        self.assertIn(2, {case["input"]["schema_version"] for case in self.vector_v2})
+
+    def test_schema_two_case_leaking_into_the_frozen_family_fails(self) -> None:
+        moved = self.case("schema2-minimal-defaults")
+        leaked = [*self.vector, moved]
+        rest = [case for case in self.vector_v2 if case is not moved]
+        with self.assertRaisesRegex(validate.ValidationFailure, "byte-frozen schema-1 family.*\\[1, 2\\]"):
+            self.run_gate(vector=leaked, vector_v2=rest)
+
+    def test_v2_family_without_a_schema_two_case_fails(self) -> None:
+        only_one = [case for case in self.vector_v2 if case["input"]["schema_version"] == 1]
+        with self.assertRaisesRegex(validate.ValidationFailure, "no schema-2 case"):
+            self.run_gate(vector_v2=only_one)
+
+    def test_empty_v2_family_fails(self) -> None:
+        with self.assertRaisesRegex(validate.ValidationFailure, "manager-config-v2.json is not a non-empty"):
+            self.run_gate(vector_v2=[])
+
+    def test_name_repeated_across_families_fails(self) -> None:
+        with self.assertRaisesRegex(validate.ValidationFailure, "repeated: 'minimal-defaults'"):
+            self.run_gate(vector_v2=[*self.vector_v2, self.case("minimal-defaults")])
+
+    def test_missing_table_fails_rather_than_passing_vacuously(self) -> None:
+        with self.assertRaisesRegex(validate.ValidationFailure, "no section 12.1"):
+            self.run_gate(text="# environments without the table\n")
+
+
 if __name__ == "__main__":
     unittest.main()

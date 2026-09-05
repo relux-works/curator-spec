@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/v1/manager-config-v2.schema.json",
+  "title": "Curator manager logical configuration schema 2",
+  "description": "Schema 1 plus one closed `environments` object carrying exactly the environments protocol section 12.1 machine-configuration knobs. Every schema-1 member keeps its schema-1 shape and default; `environments` is optional and every knob inside it defaults when absent.",
+  "type": "object",
+  "required": ["schema_version", "skills_root", "projects"],
+  "properties": {
+    "schema_version": {"const": 2},
+    "skills_root": {"$ref": "manager-config-v1.schema.json#/properties/skills_root"},
+    "default_agents": {"$ref": "manager-config-v1.schema.json#/properties/default_agents"},
+    "preferred_locale": {"$ref": "manager-config-v1.schema.json#/properties/preferred_locale"},
+    "adapter_mode": {"$ref": "manager-config-v1.schema.json#/properties/adapter_mode"},
+    "worktree_alias_pattern": {"$ref": "manager-config-v1.schema.json#/properties/worktree_alias_pattern"},
+    "projects": {"$ref": "manager-config-v1.schema.json#/properties/projects"},
+    "allowed_sources": {"$ref": "manager-config-v1.schema.json#/properties/allowed_sources"},
+    "audit": {"$ref": "manager-config-v1.schema.json#/properties/audit"},
+    "audit_registries": {"$ref": "manager-config-v1.schema.json#/properties/audit_registries"},
+    "disable_builtin_registries": {"$ref": "manager-config-v1.schema.json#/properties/disable_builtin_registries"},
+    "environments": {"$ref": "#/$defs/environments"}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "profileNameOrNull": {
+      "oneOf": [
+        {"$ref": "common.schema.json#/$defs/identifier"},
+        {"type": "null"}
+      ]
+    },
+    "versionRange": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^[0-9A-Za-z.*<>=^~| -]+$"
+    },
+    "overlay": {
+      "type": "object",
+      "required": ["source"],
+      "properties": {
+        "source": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "range": {"$ref": "#/$defs/versionRange"},
+        "tag": {"$ref": "common.schema.json#/$defs/gitRefName"},
+        "revision": {"$ref": "common.schema.json#/$defs/commit"},
+        "directory": {"$ref": "common.schema.json#/$defs/portablePath"},
+        "weight": {"$ref": "common.schema.json#/$defs/nonNegativeSafeInteger"}
+      },
+      "oneOf": [
+        {"required": ["range"]},
+        {"required": ["tag"]},
+        {"required": ["revision"]}
+      ],
+      "additionalProperties": false
+    },
+    "precedence": {
+      "type": "object",
+      "properties": {
+        "winner": {"enum": ["higher-weight", "lower-weight"], "default": "higher-weight"},
+        "placement": {"enum": ["winner-last", "winner-first"], "default": "winner-last"}
+      },
+      "additionalProperties": false
+    },
+    "systemPromptFiles": {
+      "type": "object",
+      "properties": {
+        "pi": {"enum": ["off", "append", "replace"], "default": "off"}
+      },
+      "additionalProperties": false
+    },
+    "target": {
+      "type": "object",
+      "properties": {
+        "participation": {"enum": ["auto", "off", "enabled"], "default": "auto"},
+        "consented": {"type": "boolean", "default": false}
+      },
+      "additionalProperties": false
+    },
+    "xdgEntryName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^[^/\\\\\\u0000-\\u001f\\u007f]+$",
+      "not": {"enum": [".", "..", "opencode"]}
+    },
+    "shadowAcknowledgement": {
+      "type": "object",
+      "required": ["env", "path"],
+      "properties": {
+        "env": {"$ref": "common.schema.json#/$defs/identifier"},
+        "path": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
+      },
+      "additionalProperties": false
+    },
+    "secretMaterialWaiver": {
+      "type": "object",
+      "required": ["pin", "file", "span", "reason"],
+      "properties": {
+        "pin": {"$ref": "common.schema.json#/$defs/commit"},
+        "file": {"$ref": "common.schema.json#/$defs/portablePath"},
+        "span": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {"$ref": "common.schema.json#/$defs/nonNegativeSafeInteger"}
+        },
+        "reason": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
+      },
+      "additionalProperties": false
+    },
+    "environments": {
+      "type": "object",
+      "properties": {
+        "current_profile": {"$ref": "#/$defs/profileNameOrNull", "default": null},
+        "scoped_current": {
+          "type": "object",
+          "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
+          "additionalProperties": {"$ref": "common.schema.json#/$defs/identifier"},
+          "default": {}
+        },
+        "overlays": {
+          "type": "object",
+          "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
+          "additionalProperties": {"type": "array", "items": {"$ref": "#/$defs/overlay"}},
+          "default": {}
+        },
+        "overlay_default_weight": {"$ref": "common.schema.json#/$defs/nonNegativeSafeInteger", "default": 1000},
+        "overlays_allowed": {"type": "boolean", "default": true},
+        "precedence": {"$ref": "#/$defs/precedence", "default": {"winner": "higher-weight", "placement": "winner-last"}},
+        "forms": {
+          "type": "object",
+          "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
+          "additionalProperties": {"enum": ["monolithic", "referenced"]},
+          "default": {}
+        },
+        "system_prompt_files": {
+          "type": "object",
+          "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
+          "additionalProperties": {"$ref": "#/$defs/systemPromptFiles"},
+          "default": {}
+        },
+        "targets": {
+          "type": "object",
+          "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
+          "additionalProperties": {"$ref": "#/$defs/target"},
+          "default": {}
+        },
+        "isolation": {
+          "type": "object",
+          "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
+          "additionalProperties": {
+            "type": "object",
+            "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
+            "additionalProperties": {"enum": ["shared", "isolated"]}
+          },
+          "default": {}
+        },
+        "xdg_seed_allowlist": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/xdgEntryName"},
+          "uniqueItems": true,
+          "default": ["git", "gh", "ssh"]
+        },
+        "passable_env_names": {
+          "oneOf": [
+            {"$ref": "common.schema.json#/$defs/identifierSet"},
+            {"type": "null"}
+          ],
+          "default": null
+        },
+        "mcp_package_allowlist": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+          "uniqueItems": true,
+          "default": []
+        },
+        "shadow_acknowledged": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/shadowAcknowledgement"},
+          "default": []
+        },
+        "secret_material_waivers": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/secretMaterialWaiver"},
+          "default": []
+        },
+        "backup_retention": {"type": "integer", "minimum": 0, "maximum": 9007199254740991, "default": 5},
+        "require_current_profile": {"$ref": "#/$defs/profileNameOrNull", "default": null},
+        "in_place_mode": {
+          "type": "object",
+          "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
+          "additionalProperties": {"enum": ["linked", "copied"]},
+          "default": {}
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

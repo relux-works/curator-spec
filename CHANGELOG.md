@@ -7,6 +7,39 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Added `manager-config-v2.schema.json`: schema 1 plus one closed
+  `environments` object carrying exactly the environments section 12.1
+  machine-configuration knobs with their value grammars and defaults, with
+  `schema-cases/manager-config-v2` (every knob present; one negative per
+  closed-object rule and per value grammar; a schema-1 rejection) and the
+  new `vectors/manager-config-v2.json` family whose schema-2 cases'
+  `expected.environments` pins the defaults a reader fills.
+  `vectors/manager-config.json` stays the byte-frozen schema-1 family.
+  Schema 1 is byte-frozen and stays valid; see `COMPATIBILITY.md`.
+  `tools/validate.py` now validates both manager-config families against
+  the schema each case's `schema_version` selects and cross-checks the schema-2 knob names and
+  literal defaults against the section 12.1 table.
+
+### Changed
+
+- Rewrote manager profile section 12 on the environments 1.1 model per the
+  Decision 0012 compatibility impact rows: the MCP channel rows and the
+  reserved `curator-mcp` codex layer name (12.1), marker contents and
+  versioned backups (12.2), the single-root install grammar, `profile
+  update`, `profile remove [--purge]`, `env unmanage`, scoped `--clear`, and
+  the lock-writing skill scope (12.3), the `isolation` knob and liveness row
+  (12.4), the lock-free `env resolve` with `--repair` and the fragment `mcp`
+  section (12.5), the widened detector scope and waivers (12.6), and the
+  environments section 12 status rows and GC roots (12.7); every section
+  12.1 knob is stated with its manager-side obligation.
+- Rewrote the `cli/curator.md` profile and env rows: install
+  `--range|--tag|--revision` with one root and a name-less `--use`, the
+  `profile list` columns, `profile update`, `profile remove [--purge]`,
+  `profile use --clear`, `env unmanage [--restore-backups]`, `env backups
+  scrub`, `env resolve --repair`, the informative `profile compose` and
+  `env config` rows, and the `curator run` provider pointer to Decision 0013
+  Decision 6.4.
+
 - Added the environments section 1.2 snapshot byte-exactness rule: a snapshot
   produced from a commit carries exactly the committed blob bytes, and neither
   working-tree conversion (`core.autocrlf`, `text`/`eol`, filters, `ident`) nor

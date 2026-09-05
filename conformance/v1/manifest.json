@@ -2402,7 +2402,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:9390843815dadbdf6a794eb533557b4161f8a30d398c62f8c653b7d54c664aa1"
+      "sha256": "sha256:461f3b6e1768cb199962ea5c7376800baf9568ead4b804cb2d2ec56e9c679eb4"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -2773,6 +2773,158 @@
       "sha256": "sha256:1490a267b8b5764b31270549c0f2466add662434d561c890c1bb5bbfb1619292"
     },
     {
+      "path": "schema-cases/manager-config-v2/invalid-backup-retention-negative.json",
+      "sha256": "sha256:917f6410f89de325239f2dd317de16619fe874e2341cd66c0a37c4112736c597"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-current-profile-grammar.json",
+      "sha256": "sha256:8483357fa9e9f7083bab5994e446780133491092644633fac55617af5c26d64e"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-form-value.json",
+      "sha256": "sha256:65fa7097d81dfc988da48f1e985305d50a5bf8d7143b25ada3a624a5b5e9b756"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-in-place-mode-value.json",
+      "sha256": "sha256:5c67287972cd0909e49373b85bedc99ea763e15279a81e4fa154b6a2778e16eb"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-isolation-value.json",
+      "sha256": "sha256:435cb1a6e39970dd3e7a0e2528889ea0073010efe74b4435b04b130eec69f597"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-mcp-package-allowlist-duplicate.json",
+      "sha256": "sha256:703c4019a69b9a8b6397515ff73b0af26d86bbb60298dce65160829feb2da08d"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-default-weight-negative.json",
+      "sha256": "sha256:cb02cc19fa08542592d547dfa4c6a21ad42d184db50952b5e5e478a4ebd4eadf"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-directory-traversal.json",
+      "sha256": "sha256:f121fd77e8224f5f8085c0b3dd70ae4fa82e1b43f324e315efba821d35c83870"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-negative-weight.json",
+      "sha256": "sha256:bab61293409edb57cee71690c94041dd512e2a5383210d7f3156c63057d3ef5b"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-no-requirement-form.json",
+      "sha256": "sha256:f73f4e66734881ce688915b17f0dff841b390c6ebcb871d132423fba1d5181fd"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-revision-grammar.json",
+      "sha256": "sha256:9193ed1d9ad8fdf65be51889f31a33227435320f7c7b6f1faff402dc3c88230f"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-two-requirement-forms.json",
+      "sha256": "sha256:014da2ef1d64958599284c58b58e352a9a6d54216eae63253161632729dedd69"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-overlays-allowed-type.json",
+      "sha256": "sha256:2272acb0f8cca24061f20daaae5a679a8141abafc42b0ee3feac031e8470a1dc"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-passable-env-name-grammar.json",
+      "sha256": "sha256:1412ea464fc22fee3ec38e7113a2d3f6ee5015eb43b030952b86cc844e9af02c"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-precedence-placement.json",
+      "sha256": "sha256:6a566968dc81d7e950d786b3bb3d58533ecfd5123590a75ec4d17fa9ea68eb46"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-precedence-winner.json",
+      "sha256": "sha256:b5c2a0b1e8cb641314d8d4dd96dc22728b196ef62542ef242d24c6da2cef2fc0"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-require-current-profile-grammar.json",
+      "sha256": "sha256:c32408b5858f6d521201a427c6e5c9ece09ea129beb6ca06216ebd8ab50d5cac"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-schema-version-1.json",
+      "sha256": "sha256:dd17905f4884eb5a1dc3730ea56f4864d532eeff391ea63abaaf7e54157add6b"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-scoped-current-value.json",
+      "sha256": "sha256:ea76c121694a01d6e2841ca20a0bfc72ec198262c6596c05df9dd1416655f224"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-shadow-acknowledged-missing-path.json",
+      "sha256": "sha256:bc77e8ed24bb6a9a9bb9275bd60d306e5b6a3eff5fe930bee11afb4f91588e28"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-system-prompt-files-value.json",
+      "sha256": "sha256:353881dbb235f1cadd5d05bd244380c27296228463b7b1a79bdfe42681b5aed1"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-target-consented-type.json",
+      "sha256": "sha256:5da0dcad9ac3078b98f13046584c930cd3d76c87945f23745b57fc6c057452c3"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-target-participation.json",
+      "sha256": "sha256:c27745a934dbefe7aa7103bc107a33cef49ce5c84590504e0fc69c6b8d9c6d6a"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-unknown-environments-field.json",
+      "sha256": "sha256:207c5b64a634e9ab27997eb41e58acdfe3a9ba1e75558c796cc242ec13b9c8aa"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-unknown-overlay-field.json",
+      "sha256": "sha256:69902dc36db2bdab670526eea009bf127112baa476a80a528625f77576bda384"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-unknown-precedence-field.json",
+      "sha256": "sha256:5c182ade51636ff93534093fd2cce73801c650598a69a29f4fd4d58efc2afb44"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-unknown-shadow-field.json",
+      "sha256": "sha256:2e27a147b20905fab1979d264b0d7cdd1c22603b38821cd86a6e271604fa40bb"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-unknown-system-prompt-environment.json",
+      "sha256": "sha256:6a1afb900d9ceda44e9008136276b17615dfb2be4b5b57a478074fd7221ce2ea"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-unknown-target-field.json",
+      "sha256": "sha256:2ee3bea5ae45a5bcfd7cc8595e1ee6c4d953cbb41e4999195eb242739453cbcb"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-unknown-waiver-field.json",
+      "sha256": "sha256:cf790f586515ffc00b2120bd30e7708994c61b0346adcd2f6e38e7792290e9df"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-waiver-pin-grammar.json",
+      "sha256": "sha256:36b393af1e5d167cc29574c97cc70a8088397f81a0772f7018f5c266070a8571"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-waiver-span-arity.json",
+      "sha256": "sha256:7fb74e0ab7266de3eecb4eb168b452f57f5ef8c10248d4e805139949635242b2"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-xdg-seed-entry-opencode.json",
+      "sha256": "sha256:eed9c246235d735c11e78cac6074cba67ea24bc16c2809c396e39cb8511d5f34"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-xdg-seed-entry-path.json",
+      "sha256": "sha256:3b6c7aef2f3babdf327809390b0e527763ce0834b06ee1e9a33fd0630831e551"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid.json",
+      "sha256": "sha256:5005ca1f8229943d0515b528c3de6a1b8b22dc83c973948dfa1333891cab0144"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/valid-empty-environments.json",
+      "sha256": "sha256:645f64f413f6a65b3cba7fb633784e5eb52d191942923fdb6e45be0b2db43dcd"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/valid-minimal.json",
+      "sha256": "sha256:3276756ca5b8f8e824c9facf3d75f42bf81c4f87f097772e9ff78ac9cc9a0f67"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/valid.json",
+      "sha256": "sha256:e95b4b2fb64c3f15d519cce7d9ab38bec488b2a88f7ba08dd1606ba0034e7fbe"
+    },
+    {
       "path": "schema-cases/profilefile-v1/invalid-duplicate-directory.json",
       "sha256": "sha256:ad79aa06b9c53d92605b2c10a7e7848bb34ba5a0fba0b220d0109d705790536b"
     },
@@ -3071,6 +3223,10 @@
     {
       "path": "vectors/locale-selectors.json",
       "sha256": "sha256:dd9299b5baf009ca31eee52744c6fdfe4c2c4595d7e6fe91b7cf547d8a393521"
+    },
+    {
+      "path": "vectors/manager-config-v2.json",
+      "sha256": "sha256:287fdaec8b002cba1e3be91ebb3c2d5dcda6396a69bd4ee2756294aba8eb8b7d"
     },
     {
       "path": "vectors/manager-config.json",

@@ -3080,6 +3080,196 @@
     "valid": false
   },
   {
+    "instance": "manager-config-v2/valid.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/invalid.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/valid-minimal.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-empty-environments.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/invalid-schema-version-1.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-unknown-environments-field.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-unknown-overlay-field.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-unknown-precedence-field.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-unknown-system-prompt-environment.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-unknown-target-field.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-unknown-shadow-field.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-unknown-waiver-field.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-current-profile-grammar.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-scoped-current-value.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-two-requirement-forms.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-no-requirement-form.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-revision-grammar.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-directory-traversal.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-negative-weight.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-default-weight-negative.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlays-allowed-type.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-precedence-winner.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-precedence-placement.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-form-value.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-system-prompt-files-value.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-target-participation.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-target-consented-type.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-isolation-value.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-xdg-seed-entry-path.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-xdg-seed-entry-opencode.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-passable-env-name-grammar.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-mcp-package-allowlist-duplicate.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-shadow-acknowledged-missing-path.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-waiver-span-arity.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-waiver-pin-grammar.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-backup-retention-negative.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-require-current-profile-grammar.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-in-place-mode-value.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
     "instance": "profilefile-v1/valid.json",
     "schema": "profilefile-v1.schema.json",
     "valid": true

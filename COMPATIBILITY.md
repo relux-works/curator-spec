@@ -184,3 +184,18 @@ published; `release/1.0.0-rc.9.json` records rc.8's metadata digest as its
 historical predecessor rather than replacing it. A consumer pinned to rc.8
 therefore keeps its qualification and advances by an explicit pin change, never
 implicitly.
+
+## Manager configuration schema 2
+
+`manager-config-v2.schema.json` is additive: it is schema 1 plus one closed
+`environments` object carrying exactly the `protocol/environments.md` section
+12.1 machine-configuration knobs, and every schema-1 member keeps its schema-1
+shape and default by reference. A schema-1 file remains valid and keeps its
+exact meaning — it declares no `environments` object, so every knob takes its
+section 12.1 default — and a manager that does not implement the environments
+capability keeps reading schema 1 unchanged. Readers reject an unknown
+`schema_version` explicitly: a schema-1 reader rejects a schema-2 file rather
+than ignoring `environments`, and a schema-2 reader rejects `schema_version`
+3 or above rather than inferring newer knobs. `system-config-v1` is unchanged
+in this revision; extending its `locked` set by the section 12.2 keys is a
+separate, reviewed change.

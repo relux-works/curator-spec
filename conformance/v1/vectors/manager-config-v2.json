@@ -1,0 +1,400 @@
+[
+  {
+    "expected": {
+      "adapter_mode": "auto",
+      "default_agents": [
+        "codex_cli"
+      ],
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {},
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-minimal-defaults",
+    "valid": true
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {},
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {},
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-empty-environments-defaults",
+    "valid": true
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 0,
+        "current_profile": "companyA",
+        "forms": {
+          "claude_code": "referenced"
+        },
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {},
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "lower-weight"
+        },
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "backup_retention": 0,
+        "current_profile": "companyA",
+        "forms": {
+          "claude_code": "referenced"
+        },
+        "precedence": {
+          "winner": "lower-weight"
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-partial-knobs-fill-defaults",
+    "valid": true
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 0,
+        "current_profile": "companyA",
+        "forms": {
+          "claude_code": "referenced",
+          "opencode": "monolithic"
+        },
+        "in_place_mode": {
+          "codex_cli": "copied"
+        },
+        "isolation": {
+          "companyA": {
+            "codex_cli": "isolated",
+            "pi": "shared"
+          }
+        },
+        "mcp_package_allowlist": [
+          "https://github.com/example/figma-devmode-mcp"
+        ],
+        "overlay_default_weight": 500,
+        "overlays": {
+          "companyA": [
+            {
+              "range": "^1.2",
+              "source": "https://github.com/example/personal-context",
+              "weight": 2000
+            },
+            {
+              "directory": "packages/team",
+              "source": "https://github.com/example/team-context",
+              "tag": "v2.0.0"
+            },
+            {
+              "revision": "abababababababababababababababababababab",
+              "source": "/Users/operator/context"
+            }
+          ]
+        },
+        "overlays_allowed": false,
+        "passable_env_names": [
+          "FIGMA_API_KEY",
+          "GITHUB_TOKEN"
+        ],
+        "precedence": {
+          "placement": "winner-first",
+          "winner": "lower-weight"
+        },
+        "require_current_profile": "companyA",
+        "scoped_current": {
+          "pi": "personal",
+          "xcode-coding-assistant": "companyA"
+        },
+        "secret_material_waivers": [
+          {
+            "file": "context/root.md",
+            "pin": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+            "reason": "documented placeholder token in the onboarding example",
+            "span": [
+              120,
+              164
+            ]
+          }
+        ],
+        "shadow_acknowledged": [
+          {
+            "env": "pi",
+            "path": "AGENTS.override.md"
+          }
+        ],
+        "system_prompt_files": {
+          "companyA": {
+            "pi": "append"
+          }
+        },
+        "targets": {
+          "xcode-coding-assistant": {
+            "consented": true,
+            "participation": "enabled"
+          }
+        },
+        "xdg_seed_allowlist": [
+          "git",
+          "gh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "backup_retention": 0,
+        "current_profile": "companyA",
+        "forms": {
+          "claude_code": "referenced",
+          "opencode": "monolithic"
+        },
+        "in_place_mode": {
+          "codex_cli": "copied"
+        },
+        "isolation": {
+          "companyA": {
+            "codex_cli": "isolated",
+            "pi": "shared"
+          }
+        },
+        "mcp_package_allowlist": [
+          "https://github.com/example/figma-devmode-mcp"
+        ],
+        "overlay_default_weight": 500,
+        "overlays": {
+          "companyA": [
+            {
+              "range": "^1.2",
+              "source": "https://github.com/example/personal-context",
+              "weight": 2000
+            },
+            {
+              "directory": "packages/team",
+              "source": "https://github.com/example/team-context",
+              "tag": "v2.0.0"
+            },
+            {
+              "revision": "abababababababababababababababababababab",
+              "source": "/Users/operator/context"
+            }
+          ]
+        },
+        "overlays_allowed": false,
+        "passable_env_names": [
+          "FIGMA_API_KEY",
+          "GITHUB_TOKEN"
+        ],
+        "precedence": {
+          "placement": "winner-first",
+          "winner": "lower-weight"
+        },
+        "require_current_profile": "companyA",
+        "scoped_current": {
+          "pi": "personal",
+          "xcode-coding-assistant": "companyA"
+        },
+        "secret_material_waivers": [
+          {
+            "file": "context/root.md",
+            "pin": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+            "reason": "documented placeholder token in the onboarding example",
+            "span": [
+              120,
+              164
+            ]
+          }
+        ],
+        "shadow_acknowledged": [
+          {
+            "env": "pi",
+            "path": "AGENTS.override.md"
+          }
+        ],
+        "system_prompt_files": {
+          "companyA": {
+            "pi": "append"
+          }
+        },
+        "targets": {
+          "xcode-coding-assistant": {
+            "consented": true,
+            "participation": "enabled"
+          }
+        },
+        "xdg_seed_allowlist": [
+          "git",
+          "gh"
+        ]
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-every-knob",
+    "valid": true
+  },
+  {
+    "input": {
+      "environments": {
+        "backup_retention": 5
+      },
+      "projects": {},
+      "schema_version": 1,
+      "skills_root": "./skills"
+    },
+    "name": "schema1-rejects-environments",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlay_weight": 1
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-unknown-environments-field",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "range": "^1",
+              "source": "https://github.com/example/x",
+              "tag": "v1.0.0"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-two-requirement-forms",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "precedence": {
+          "winner": "later-overrides-earlier"
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-precedence-winner-grammar",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "backup_retention": -1
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-negative-backup-retention",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "isolation": {
+          "companyA": {
+            "claude_code": "keychain"
+          }
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-isolation-value-grammar",
+    "valid": false
+  }
+]

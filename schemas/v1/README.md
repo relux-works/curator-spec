@@ -4,6 +4,10 @@ These Draft 2020-12 schemas are normative structural contracts. Semantic rules
 that require filesystem, graph, cryptographic, ordering, or time context are in
 the protocol documents and conformance vectors.
 
+The unreleased environments 1.1 batch carries `manager-config-v2`: schema 1
+plus one closed `environments` object of the environments section 12.1 knobs;
+schema 1 is byte-frozen and stays valid.
+
 Rc.9 carries `agent-skill-v8`, `csk-skill-v8`, `install-marker-v4`, and
 conformance claim v5. Rc.8 carries `assurance-policy-v1`,
 `verified-provider-v1`, `provider-capability-receipt-v1`,

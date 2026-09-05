@@ -27,12 +27,19 @@ identifiers.
 | `curator skill check <dir> [--locale <code>] [--json]` | Validate one package |
 | `curator global init\|add\|remove\|list\|status\|install\|update\|upgrade [--profile <name>\|--all-profiles]` | Manage global scope; under the environments capability skill operations act on the current profile unless `--profile` or `--all-profiles` selects otherwise |
 | `curator hybrid add\|remove\|list\|status` | Manage hybrid scope |
-| `curator profile install <git-url> [--use [name]]` | Install every profile the repository declares under always-strict audit; activate one only on first install or with `--use` |
-| `curator profile list` | List installed profiles: source, ref, effective pin, and per-scope current markers |
-| `curator profile use <name> [--env <env-id>] [--target <target-id>]` | Switch the machine or scoped current profile and re-materialize in-place surfaces |
-| `curator profile sync` | Re-materialize every installed profile across every registered adapter and participating target |
-| `curator env resolve <env-id> [--profile <name>] [--format json\|env\|shell]` | Verify and repair the managed home, then print a `launch-env-fragment-v1` |
-| `curator env status [--check] [--json]` | Report the profile × environment × surface matrix read-only |
+| `curator profile install <git-url\|path> [--directory <dir>] [--range <range>\|--tag <tag>\|--revision <commit>] [--as <name>] [--use]` | Install one root context package as a profile — resolve its closure, audit every member always-strict, write the lock; `--range latest` when no requirement is given; `--use` takes no name and activates the installed root; first install activates and says so |
+| `curator profile list` | List installed profiles: name, root package, source identity, declared requirement (`range`, `tag`, or `revision` as written), root version, lock hash, and per-scope current markers |
+| `curator profile use <name> [--env <env-id>] [--target <target-id>]` | Switch the machine or scoped current profile, re-materialize in-place surfaces, and re-point the command shims on a machine-scope switch; a partial scope is reported, never recorded |
+| `curator profile use --clear --env <env-id>\|--target <target-id>` | Drop a scoped current profile and re-materialize the scope from the machine default |
+| `curator profile update [<name>\|--all]` | Re-resolve the root and overlays from their declared requirements; a blocking finding on a new member leaves the old lock in place; managed homes become stale for explicit repair |
+| `curator profile remove <name> [--purge]` | Remove a profile that is current in no scope and an overlay of none; managed homes are retained as orphans unless `--purge` removes them with markers and backups |
+| `curator profile sync` | Re-materialize every installed profile across every registered adapter and participating target from its lock |
+| `curator profile compose <profile> add\|remove\|list [<source> --range\|--tag\|--revision <ref>] [--weight <n>]` | Informative: edit the machine `overlays.<profile>` list of `manager-config` schema 2; the lock moves only on `profile update` |
+| `curator env config show\|set\|unset [<knob> [<value>]]` | Informative: read or edit one environments section 12.1 knob of `manager-config` schema 2 by its table name; a locked knob refuses with the system-file warning |
+| `curator env resolve <env-id> [--profile <name>] [--repair] [--format json\|env\|shell]` | Verify the managed home lock-free and print a `launch-env-fragment-v1`; a stale home emits no fragment without `--repair`, which repairs from the store under the mutation lock |
+| `curator env status [--check] [--json]` | Report the profile × environment × surface matrix read-only, with the passthrough liveness, seed, shadowing, target consent, tool release, backup, and orphan rows |
+| `curator env unmanage [--restore-backups] [--env <env-id>] [--target <target-id>]` | Return in-place surfaces to native ownership: recorded surfaces removed, the newest backup generation restored under `--restore-backups`, the scope's current profile cleared |
+| `curator env backups scrub [--older-than <days>]` | Remove backup generations on explicit request; nothing else removes a backup |
 | `curator audit [target] [--all] [--global] [--json]` | Run source audit |
 | `curator audit --allow <hash> --reason <text>` | Create an operator pin |
 | `curator audit --publish <record> --registry <url>` | Publish an auditor-signed record |
@@ -116,29 +123,46 @@ resolves to an executable named `curator-<name>` on `PATH` and receives the
 remaining arguments verbatim, so `curator run` dispatches to a separately
 installed `curator-run` and `curator session` to `curator-session`. A missing
 provider fails with the exact executable name and installation guidance;
-nothing is downloaded or installed implicitly.
+nothing is downloaded or installed implicitly. `curator run` resolves the
+fragment with `--repair` and composes the launch under Decision 0013
+Decision 6.4: its provider column maps `claude_code`, `codex_cli`, and `pi`
+to the `ax` provider ids `claude`, `codex`, and `pi`, and `opencode` is the
+launcher's `env_unsupported` in revision 1 — `env resolve opencode` works and
+the operator applies the fragment by hand.
 
 ```bash
-# Install every profile the repository declares; profile audit is always strict.
-# One install-level ref applies to the whole repository snapshot; without a
-# ref flag the declaration tracks the remote default branch.
-curator profile install https://github.com/example/agent-profiles --use companyA
-curator profile install https://github.com/example/agent-profiles --tag v1.2.0
+# Install one root context package as a profile; profile audit is always
+# strict. One requirement applies to the root: a range over version tags
+# (default `latest`), an exact tag, or a commit. `--use` takes no name.
+curator profile install https://github.com/example/company-context --use
+curator profile install https://github.com/example/company-context --range '^1.2'
+curator profile install https://github.com/example/company-context --tag v1.2.0 --as companyA
 
-# Install an operator-local profile directory; the snapshot is copied into
+# Install an operator-local package directory; the snapshot is copied into
 # the store and pinned by its state hash.
-curator profile install ./profiles
+curator profile install ./context
 
-# Switch the whole machine, or narrow the switch to one environment.
+# Switch the whole machine, narrow the switch to one environment, or drop
+# the scoped switch again.
 curator profile use personal
 curator profile use companyA --env claude_code
+curator profile use --clear --env claude_code
+
+# Move the lock; remove a profile and its managed homes.
+curator profile update
+curator profile remove personal --purge
 
 # Read-only state: installed profiles and the surface matrix.
 curator profile list
 curator env status --check
 
-# Resolve a launch fragment; a stale managed home is repaired from the store.
+# Resolve a launch fragment. Without --repair a stale managed home emits no
+# fragment; with it the home is repaired from the store first.
 curator env resolve claude_code --profile companyA --format shell
+curator env resolve claude_code --repair --format json
+
+# Hand in-place surfaces back to native ownership, restoring the newest backup.
+curator env unmanage --restore-backups --env pi
 ```
 
 ## External repository lifecycle

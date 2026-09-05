@@ -695,7 +695,7 @@ func writeManagerConfigVectors(dir, pinned string) {
 		result[key] = value
 		return result
 	}
-	writeJSON(filepath.Join(dir, "manager-config.json"), []any{
+	vectors := []any{
 		map[string]any{
 			"name": "minimal-defaults", "input": minimal, "valid": true,
 			"expected": map[string]any{
@@ -729,7 +729,12 @@ func writeManagerConfigVectors(dir, pinned string) {
 		map[string]any{"name": "negative-cache-ttl", "input": with("audit", map[string]any{"cache_ttl_seconds": -1}), "valid": false},
 		map[string]any{"name": "oversize-backend-request", "input": with("audit", map[string]any{"max_request_bytes": 10485761}), "valid": false},
 		map[string]any{"name": "unknown-source-policy-field", "input": with("audit", map[string]any{"source_policy": map[string]any{"classification": "public"}}), "valid": false},
-	})
+	}
+	// Schema 1 is byte-frozen: the pinned Go manager's `internal/interop`
+	// suite reads this file and implements schema 1 only, so the schema-2
+	// cases live in their own family until a pin consumes schema 2.
+	writeJSON(filepath.Join(dir, "manager-config.json"), vectors)
+	writeJSON(filepath.Join(dir, "manager-config-v2.json"), managerConfigV2Vectors())
 }
 
 func writeManagerLifecycleVectors(dir string) {
@@ -2404,6 +2409,9 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 		},
 		map[string]any{"schema_version": 1, "projects": map[string]any{}},
 	}
+	managerConfigV2 := validManagerConfigV2()
+	cases["manager-config-v2.schema.json"] = schemaCase{managerConfigV2, map[string]any{"schema_version": 2, "projects": map[string]any{}}}
+	additionalCases["manager-config-v2.schema.json"] = managerConfigV2SchemaExamples(managerConfigV2)
 	cases["system-config-v1.schema.json"] = schemaCase{map[string]any{"schema_version": 1, "locked": []any{"audit"}, "audit": map[string]any{}, "preferred_locale": "en"}, map[string]any{"schema_version": 1, "locked": []any{"skills_root"}}}
 	cases["health-response-v1.schema.json"] = schemaCase{map[string]any{"status": "ok"}, map[string]any{"status": "degraded"}}
 	cases["registry-meta-response-v1.schema.json"] = schemaCase{

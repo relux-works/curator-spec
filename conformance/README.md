@@ -119,6 +119,15 @@ The suite contains:
   and no-context outputs, referenced-form layout paths, managed
   `opencode.json` CCJ-1 bytes with the trailing-LF rule, and header-free
   system-prompt output — with their section 5.6 surface hashes;
+- the `manager-config` schema-2 surface: `schema-cases/manager-config-v2`
+  with every environments section 12.1 knob present, one negative per
+  closed-object rule and per value grammar, and a schema-1 rejection, plus
+  the `vectors/manager-config-v2.json` family: the schema-2 cases, whose
+  `expected.environments` is the knob defaults with the input's knobs
+  replacing them, so a reader proves it fills exactly the section 12.1
+  defaults, and the schema-1 rejection of an `environments` object.
+  `vectors/manager-config.json` stays the byte-frozen schema-1 family the
+  pinned schema-1 readers consume;
 - the environments section 1.2 snapshot byte-exactness vector
   (`vectors/snapshot-acquisition.json` over `fixtures/byte-exact`): a
   committed tree with `* text=auto`, an `export-subst` entry, and LF, CRLF,

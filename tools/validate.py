@@ -2932,6 +2932,174 @@ def validate_vector_semantics() -> None:
 MARKDOWN_LINK = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
 
 
+MANAGER_CONFIG_SCHEMAS = {1: "manager-config-v1.schema.json", 2: "manager-config-v2.schema.json"}
+
+# environments.md section 12.1 spells a nested knob as `a.<x>.b`; the schema
+# carries the first segment as a property and the rest as its value shape.
+# The entries below name the schema location of every default the table
+# states as a literal, so that a default drifting on either side fails here.
+MANAGER_CONFIG_KNOB_DEFAULT_PATHS = {
+    "current_profile": ("$defs", "environments", "properties", "current_profile", "default"),
+    "overlay_default_weight": ("$defs", "environments", "properties", "overlay_default_weight", "default"),
+    "overlays_allowed": ("$defs", "environments", "properties", "overlays_allowed", "default"),
+    "precedence.winner": ("$defs", "precedence", "properties", "winner", "default"),
+    "precedence.placement": ("$defs", "precedence", "properties", "placement", "default"),
+    "system_prompt_files.<profile>.pi": ("$defs", "systemPromptFiles", "properties", "pi", "default"),
+    "targets.<target-id>.participation": ("$defs", "target", "properties", "participation", "default"),
+    "targets.<target-id>.consented": ("$defs", "target", "properties", "consented", "default"),
+    "xdg_seed_allowlist": ("$defs", "environments", "properties", "xdg_seed_allowlist", "default"),
+    "passable_env_names": ("$defs", "environments", "properties", "passable_env_names", "default"),
+    "backup_retention": ("$defs", "environments", "properties", "backup_retention", "default"),
+    "require_current_profile": ("$defs", "environments", "properties", "require_current_profile", "default"),
+}
+
+
+def environments_knob_table(text: str) -> dict[str, str]:
+    """Parse the environments.md section 12.1 knob table into knob -> default."""
+    section = text.split("### 12.1 Machine configuration knobs", 1)
+    if len(section) != 2:
+        raise ValidationFailure("environments.md has no section 12.1 knob table")
+    knobs: dict[str, str] = {}
+    for line in section[1].split("### 12.2", 1)[0].splitlines():
+        if not line.startswith("| `"):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) < 4:
+            raise ValidationFailure(f"section 12.1 knob row has too few cells: {line}")
+        knobs[cells[0].strip("`")] = cells[2]
+    if not knobs:
+        raise ValidationFailure("section 12.1 knob table is empty")
+    return knobs
+
+
+def manager_config_semantic_error(instance: Any) -> str | None:
+    """The manager §1 registry rules a schema cannot state: an audit registry
+    URL is https, and two registries never share one canonical identity."""
+    registries = instance.get("audit_registries", []) if isinstance(instance, dict) else []
+    canonical: set[str] = set()
+    for registry in registries:
+        if not isinstance(registry, dict) or not isinstance(registry.get("url"), str):
+            continue
+        parts = urllib.parse.urlsplit(registry["url"])
+        if parts.scheme.lower() != "https":
+            return f"audit registry {registry.get('name')} is not https"
+        host = (parts.hostname or "").lower()
+        if parts.port not in (None, 443):
+            host = f"{host}:{parts.port}"
+        identity = f"https://{host}{parts.path.rstrip('/')}"
+        if identity in canonical:
+            return f"audit registries share the canonical identity {identity}"
+        canonical.add(identity)
+    return None
+
+
+def validate_manager_config_vectors(
+    vector: Any = None, vector_v2: Any = None, schema: Any = None, environments_text: str | None = None
+) -> None:
+    """`vectors/manager-config.json` (schema 1) and `vectors/manager-config-v2.json`.
+
+    The schema-1 family is byte-frozen because the pinned Go manager reads
+    it and implements schema 1 only, so every case in it MUST carry
+    `schema_version` 1. The v2 family carries the schema-2 cases (and the
+    schema-1 rejection of the `environments` knob). Every vector is
+    validated against the schema its `schema_version` selects and MUST agree
+    with its `valid` flag; a valid vector that carries
+    `expected.environments` MUST equal the schema-2 knob defaults with the
+    input's knobs replacing them, so the defaults a reader fills are pinned
+    by the vector and the schema together. The schema-2 `environments`
+    property set and every literal default MUST match the environments.md
+    section 12.1 table byte for byte.
+    """
+    registry, paths = schema_registry()
+    if vector is None:
+        vector = load_json(SUITE / "vectors" / "manager-config.json")
+    if vector_v2 is None:
+        vector_v2 = load_json(SUITE / "vectors" / "manager-config-v2.json")
+    if schema is None:
+        schema = load_json(paths[MANAGER_CONFIG_SCHEMAS[2]])
+    if environments_text is None:
+        environments_text = (ROOT / "protocol" / "environments.md").read_text(encoding="utf-8")
+
+    environments = schema["$defs"]["environments"]
+    if environments.get("additionalProperties") is not False:
+        raise ValidationFailure("manager-config-v2 environments object is not closed")
+    knobs = environments_knob_table(environments_text)
+    table_names = {knob.split(".", 1)[0] for knob in knobs}
+    schema_names = set(environments["properties"])
+    if table_names != schema_names:
+        raise ValidationFailure(
+            "manager-config-v2 environments properties differ from section 12.1: "
+            f"schema-only {sorted(schema_names - table_names)}, table-only {sorted(table_names - schema_names)}"
+        )
+    for knob, path in MANAGER_CONFIG_KNOB_DEFAULT_PATHS.items():
+        if knob not in knobs:
+            raise ValidationFailure(f"section 12.1 no longer states knob {knob}")
+        stated = knobs[knob].strip("`")
+        try:
+            stated_value = json.loads(stated)
+        except json.JSONDecodeError:
+            stated_value = stated
+        node: Any = schema
+        for segment in path:
+            if not isinstance(node, dict) or segment not in node:
+                raise ValidationFailure(f"manager-config-v2 states no default for {knob}")
+            node = node[segment]
+        if node != stated_value:
+            raise ValidationFailure(
+                f"manager-config-v2 default for {knob} is {node!r}; section 12.1 states {stated_value!r}"
+            )
+    defaults = {name: prop["default"] for name, prop in environments["properties"].items() if "default" in prop}
+    if set(defaults) != schema_names:
+        raise ValidationFailure(
+            f"manager-config-v2 knobs without a default: {sorted(schema_names - set(defaults))}"
+        )
+
+    families = {"manager-config.json": vector, "manager-config-v2.json": vector_v2}
+    seen: set[str] = set()
+    versions_seen: dict[str, set[int]] = {family: set() for family in families}
+    for family, cases in families.items():
+        if not isinstance(cases, list) or not cases:
+            raise ValidationFailure(f"{family} is not a non-empty case list")
+        for case in cases:
+            name = case.get("name")
+            if not isinstance(name, str) or name in seen:
+                raise ValidationFailure(f"manager-config vector name missing or repeated: {name!r}")
+            seen.add(name)
+            instance = case.get("input")
+            version = instance.get("schema_version") if isinstance(instance, dict) else None
+            if version not in MANAGER_CONFIG_SCHEMAS:
+                raise ValidationFailure(f"manager-config vector {name} names no known schema_version")
+            versions_seen[family].add(version)
+            case_schema = schema if version == 2 else load_json(paths[MANAGER_CONFIG_SCHEMAS[version]])
+            errors = list(Draft202012Validator(case_schema, registry=registry).iter_errors(instance))
+            semantic_error = manager_config_semantic_error(instance) if not errors else None
+            actual = not errors and semantic_error is None
+            if actual != bool(case.get("valid")):
+                detail = "valid" if actual else (errors[0].message if errors else semantic_error)
+                raise ValidationFailure(
+                    f"manager-config vector {name}: expected valid={case.get('valid')}, got {detail}"
+                )
+            expected = case.get("expected", {})
+            if not case.get("valid") or "environments" not in expected:
+                continue
+            effective = dict(defaults)
+            for knob, value in instance.get("environments", {}).items():
+                if knob == "precedence":
+                    value = {**defaults["precedence"], **value}
+                effective[knob] = value
+            if expected["environments"] != effective:
+                raise ValidationFailure(
+                    f"manager-config vector {name}: expected.environments is not defaults plus input"
+                )
+    if versions_seen["manager-config.json"] != {1}:
+        raise ValidationFailure(
+            "manager-config.json is the byte-frozen schema-1 family; it carries schema versions "
+            f"{sorted(versions_seen['manager-config.json'])}"
+        )
+    if 2 not in versions_seen["manager-config-v2.json"]:
+        raise ValidationFailure("manager-config-v2.json carries no schema-2 case")
+
+
 def validate_local_links() -> None:
     for path in sorted(ROOT.rglob("*.md")):
         if ".git" in path.parts:
@@ -3363,6 +3531,7 @@ def main() -> int:
         validate_assurance_vectors,
         validate_environment_vectors,
         validate_snapshot_acquisition_vectors,
+        validate_manager_config_vectors,
         validate_local_links,
     ]
     try:
