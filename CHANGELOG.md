@@ -19,10 +19,12 @@ Versioning for the complete specification set.
   extraction satisfies it.
 - Added the `snapshot-acquisition.json` vector over the new
   `fixtures/byte-exact` tree (`* text=auto`, an `export-subst` entry, LF, CRLF,
-  and mixed-ending files) with its expected content hash, a repository
-  `.gitattributes` rule that keeps those fixture bytes unconverted on every
-  checkout, and validator cross-checks that fail on a normalized checkout, an
-  expanded placeholder, or a hash that omits `.gitattributes`.
+  and mixed-ending files) with its expected content hash, fixture blobs
+  committed through plumbing so they survive every checkout unconverted under
+  the repository's `eol=lf` policy (a root `.gitattributes` note explains why
+  no attribute rule can protect them against the fixture's own nested
+  `* text=auto`), and validator cross-checks that fail on a normalized
+  checkout, an expanded placeholder, or a hash that omits `.gitattributes`.
 
 ## 1.0.0-rc.9 - 2026-08-23
 

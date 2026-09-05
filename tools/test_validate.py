@@ -1576,10 +1576,6 @@ class EnvironmentVectorTests(unittest.TestCase):
                 )
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class SnapshotAcquisitionVectorTests(unittest.TestCase):
     """The environments.md section 1.2 byte-exactness gate must fail closed.
 
@@ -1649,3 +1645,7 @@ class SnapshotAcquisitionVectorTests(unittest.TestCase):
             )
             with self.assertRaises(validate.ValidationFailure):
                 validate.validate_snapshot_acquisition_vectors(suite_root=root)
+
+
+if __name__ == "__main__":
+    unittest.main()
