@@ -1,0 +1,77 @@
+{
+  "members": [
+    {
+      "commit": "0123456789abcdef0123456789abcdef01234567",
+      "name": "companyA",
+      "overlay": false,
+      "version": "2.3.0",
+      "weight": 100
+    },
+    {
+      "name": "personal",
+      "overlay": true,
+      "source_path": "/Users/operator/personal-context",
+      "state_sha256": "abababababababababababababababababababababababababababababababab",
+      "version": "0.3.0",
+      "weight": 1000
+    }
+  ],
+  "mode": "managed-home",
+  "passthrough": [],
+  "precedence": {
+    "placement": "winner-last",
+    "winner": "higher-weight"
+  },
+  "profile": {
+    "kind": "git",
+    "lock_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "name": "companyA",
+    "requirement": {
+      "range": "^2",
+      "tag": "v2.3.0"
+    },
+    "root": "companyA",
+    "source": "github.com/example/companyA"
+  },
+  "seeded_projects": [
+    "/Users/operator/projects/app"
+  ],
+  "seeds": [
+    ".claude.json"
+  ],
+  "surfaces": {
+    "mcp": {
+      "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "copies": [],
+      "paths": [
+        ".agent-context/mcp/claude_code.json"
+      ]
+    },
+    "root-context": {
+      "content_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "copies": [
+        {
+          "path": "CLAUDE.md",
+          "reason": "claude-code-root-context"
+        }
+      ],
+      "form": "monolithic",
+      "paths": [
+        "CLAUDE.md"
+      ]
+    },
+    "skills": {
+      "content_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "copies": [],
+      "paths": []
+    },
+    "system-prompt": {
+      "content_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "copies": [],
+      "paths": [
+        ".agent-context/system-prompt.md"
+      ]
+    }
+  },
+  "version": 1
+}

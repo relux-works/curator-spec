@@ -194,6 +194,8 @@ func main() {
 	writeExternalRepositoryVectors(vectors)
 	writeAssuranceVectors(vectors)
 	writeEnvironmentVectors(vectors, filepath.Join(expected, "environments"))
+	writeContextVersionVectors(vectors)
+	writeContextDetectorVectors(vectors)
 	writeSnapshotAcquisitionVectors(vectors, filepath.Join(suite, "fixtures", "byte-exact"), expected)
 	writeSchemaCases(suite, marker, ledger, audited, snapshot, entries[0], bundle, pinned)
 	writeExternalRepositoryExpected(expected, marker)
@@ -2523,19 +2525,15 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	invalidClaimV5["schema_version"] = 5
 	invalidClaimV5["protocol_version"] = protocolVersion
 	cases["conformance-claim-v5.schema.json"] = schemaCase{claimV5, invalidClaimV5}
-	profilefileValid := map[string]any{
-		"version": 1,
-		"profiles": map[string]any{
-			"companyA": "profiles/companyA", "personal": "profiles/personal",
-		},
-	}
-	cases["profilefile-v1.schema.json"] = schemaCase{
-		profilefileValid, map[string]any{"version": 1, "profiles": map[string]any{}},
-	}
-	additionalCases["profilefile-v1.schema.json"] = profilefileSchemaExamples(profilefileValid)
-	contextManifest := validContextManifestV1()
-	cases["context-manifest-v1.schema.json"] = schemaCase{contextManifest, without(contextManifest, "modules")}
-	additionalCases["context-manifest-v1.schema.json"] = contextManifestSchemaExamples(contextManifest)
+	agentContext := validAgentContextV1()
+	cases["agent-context-v1.schema.json"] = schemaCase{agentContext, without(agentContext, "name")}
+	additionalCases["agent-context-v1.schema.json"] = agentContextSchemaExamples(agentContext)
+	agentMCP := validAgentMCPV1()
+	cases["agent-mcp-v1.schema.json"] = schemaCase{agentMCP, without(agentMCP, "version")}
+	additionalCases["agent-mcp-v1.schema.json"] = agentMCPSchemaExamples(agentMCP)
+	contextLock := validContextLockV1()
+	cases["context-lock-v1.schema.json"] = schemaCase{contextLock, without(contextLock, "root")}
+	additionalCases["context-lock-v1.schema.json"] = contextLockSchemaExamples(contextLock)
 	environmentMarker := validEnvironmentMarkerV1()
 	cases["agent-environment-marker-v1.schema.json"] = schemaCase{environmentMarker, without(environmentMarker, "surfaces")}
 	additionalCases["agent-environment-marker-v1.schema.json"] = environmentMarkerSchemaExamples(environmentMarker)

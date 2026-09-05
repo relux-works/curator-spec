@@ -1,0 +1,3486 @@
+{
+  "capability": "agent-environments",
+  "capability_revision": 1,
+  "lock_cases": [
+    {
+      "byte_length": 228,
+      "ccj1_bytes": "{\"members\":[{\"commit\":\"0123456789abcdef0123456789abcdef01234567\",\"kind\":\"context\",\"name\":\"solo\",\"overlay\":false,\"required_by\":[],\"source\":\"github.com/example/solo\",\"version\":\"1.0.0\",\"weight\":0}],\"root\":\"solo\",\"schema_version\":1}",
+      "lock": {
+        "members": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "kind": "context",
+            "name": "solo",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/solo",
+            "version": "1.0.0",
+            "weight": 0
+          }
+        ],
+        "root": "solo",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:30c37a9ccbcb2110263956f41714922b517d3b653dbcf37fbeb85e399964cf8f",
+      "name": "minimal-single-root"
+    },
+    {
+      "byte_length": 414,
+      "ccj1_bytes": "{\"members\":[{\"kind\":\"context\",\"name\":\"authoring\",\"overlay\":false,\"required_by\":[],\"state_sha256\":\"cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd\",\"version\":\"0.1.0\",\"weight\":0},{\"commit\":\"8888888888888888888888888888888888888888\",\"kind\":\"skill\",\"name\":\"pdf\",\"overlay\":false,\"required_by\":[\"authoring\"],\"source\":\"github.com/relux-works/skill-pdf\",\"weight\":0}],\"root\":\"authoring\",\"schema_version\":1}",
+      "lock": {
+        "members": [
+          {
+            "kind": "context",
+            "name": "authoring",
+            "overlay": false,
+            "required_by": [],
+            "state_sha256": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+            "version": "0.1.0",
+            "weight": 0
+          },
+          {
+            "commit": "8888888888888888888888888888888888888888",
+            "kind": "skill",
+            "name": "pdf",
+            "overlay": false,
+            "required_by": [
+              "authoring"
+            ],
+            "source": "github.com/relux-works/skill-pdf",
+            "weight": 0
+          }
+        ],
+        "root": "authoring",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:1956ae0778f7079c0c40c3cf5ad1bc89230ad758fdf682d8ce422829e159b2be",
+      "name": "path-root-with-skill"
+    },
+    {
+      "byte_length": 2752,
+      "ccj1_bytes": "{\"members\":[{\"commit\":\"1111111111111111111111111111111111111111\",\"kind\":\"context\",\"name\":\"companyA-root-context-core\",\"overlay\":false,\"required_by\":[\"companyA-root-context-developers-core\",\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/companyA/root-context-core\",\"version\":\"3.2.1\",\"weight\":0},{\"commit\":\"3333333333333333333333333333333333333333\",\"kind\":\"context\",\"name\":\"companyA-root-context-developers-core\",\"overlay\":false,\"required_by\":[\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/companyA/root-context-developers-core\",\"version\":\"1.6.0\",\"weight\":20},{\"commit\":\"4444444444444444444444444444444444444444\",\"directory\":\"contexts/figma\",\"kind\":\"context\",\"name\":\"companyA-root-context-developers-figma\",\"overlay\":false,\"required_by\":[\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/companyA/root-contexts\",\"version\":\"1.1.0\",\"weight\":40},{\"commit\":\"5555555555555555555555555555555555555555\",\"kind\":\"context\",\"name\":\"companyA-root-context-developers-ios\",\"overlay\":false,\"required_by\":[\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/companyA/root-context-developers-ios\",\"version\":\"2.4.2\",\"weight\":60},{\"commit\":\"6666666666666666666666666666666666666666\",\"kind\":\"context\",\"name\":\"companyA-root-context-ios-developer-umbrella\",\"overlay\":false,\"required_by\":[],\"source\":\"github.com/companyA/root-context-ios-developer-umbrella\",\"version\":\"2.3.0\",\"weight\":100},{\"commit\":\"2222222222222222222222222222222222222222\",\"kind\":\"context\",\"name\":\"companyA-root-context-organizational-structure\",\"overlay\":false,\"required_by\":[\"companyA-root-context-core\"],\"source\":\"github.com/companyA/root-context-organizational-structure\",\"version\":\"1.0.4\",\"weight\":10},{\"kind\":\"context\",\"name\":\"personal\",\"overlay\":true,\"required_by\":[],\"state_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"version\":\"0.3.0\",\"weight\":1000},{\"commit\":\"7777777777777777777777777777777777777777\",\"kind\":\"mcp\",\"name\":\"figma-devmode\",\"overlay\":false,\"required_by\":[\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/companyA/mcp-figma-devmode\",\"version\":\"1.2.0\",\"weight\":0},{\"commit\":\"8888888888888888888888888888888888888888\",\"kind\":\"skill\",\"name\":\"pdf\",\"overlay\":false,\"required_by\":[\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/relux-works/skill-pdf\",\"version\":\"1.2.5\",\"weight\":0},{\"commit\":\"9999999999999999999999999999999999999999\",\"kind\":\"skill\",\"name\":\"swiftui\",\"overlay\":false,\"required_by\":[\"companyA-root-context-developers-ios\",\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/relux-works/skill-swiftui\",\"version\":\"4.3.0\",\"weight\":0}],\"root\":\"companyA-root-context-ios-developer-umbrella\",\"schema_version\":1}",
+      "lock": {
+        "members": [
+          {
+            "commit": "1111111111111111111111111111111111111111",
+            "kind": "context",
+            "name": "companyA-root-context-core",
+            "overlay": false,
+            "required_by": [
+              "companyA-root-context-developers-core",
+              "companyA-root-context-ios-developer-umbrella"
+            ],
+            "source": "github.com/companyA/root-context-core",
+            "version": "3.2.1",
+            "weight": 0
+          },
+          {
+            "commit": "3333333333333333333333333333333333333333",
+            "kind": "context",
+            "name": "companyA-root-context-developers-core",
+            "overlay": false,
+            "required_by": [
+              "companyA-root-context-ios-developer-umbrella"
+            ],
+            "source": "github.com/companyA/root-context-developers-core",
+            "version": "1.6.0",
+            "weight": 20
+          },
+          {
+            "commit": "4444444444444444444444444444444444444444",
+            "directory": "contexts/figma",
+            "kind": "context",
+            "name": "companyA-root-context-developers-figma",
+            "overlay": false,
+            "required_by": [
+              "companyA-root-context-ios-developer-umbrella"
+            ],
+            "source": "github.com/companyA/root-contexts",
+            "version": "1.1.0",
+            "weight": 40
+          },
+          {
+            "commit": "5555555555555555555555555555555555555555",
+            "kind": "context",
+            "name": "companyA-root-context-developers-ios",
+            "overlay": false,
+            "required_by": [
+              "companyA-root-context-ios-developer-umbrella"
+            ],
+            "source": "github.com/companyA/root-context-developers-ios",
+            "version": "2.4.2",
+            "weight": 60
+          },
+          {
+            "commit": "6666666666666666666666666666666666666666",
+            "kind": "context",
+            "name": "companyA-root-context-ios-developer-umbrella",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/companyA/root-context-ios-developer-umbrella",
+            "version": "2.3.0",
+            "weight": 100
+          },
+          {
+            "commit": "2222222222222222222222222222222222222222",
+            "kind": "context",
+            "name": "companyA-root-context-organizational-structure",
+            "overlay": false,
+            "required_by": [
+              "companyA-root-context-core"
+            ],
+            "source": "github.com/companyA/root-context-organizational-structure",
+            "version": "1.0.4",
+            "weight": 10
+          },
+          {
+            "kind": "context",
+            "name": "personal",
+            "overlay": true,
+            "required_by": [],
+            "state_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "version": "0.3.0",
+            "weight": 1000
+          },
+          {
+            "commit": "7777777777777777777777777777777777777777",
+            "kind": "mcp",
+            "name": "figma-devmode",
+            "overlay": false,
+            "required_by": [
+              "companyA-root-context-ios-developer-umbrella"
+            ],
+            "source": "github.com/companyA/mcp-figma-devmode",
+            "version": "1.2.0",
+            "weight": 0
+          },
+          {
+            "commit": "8888888888888888888888888888888888888888",
+            "kind": "skill",
+            "name": "pdf",
+            "overlay": false,
+            "required_by": [
+              "companyA-root-context-ios-developer-umbrella"
+            ],
+            "source": "github.com/relux-works/skill-pdf",
+            "version": "1.2.5",
+            "weight": 0
+          },
+          {
+            "commit": "9999999999999999999999999999999999999999",
+            "kind": "skill",
+            "name": "swiftui",
+            "overlay": false,
+            "required_by": [
+              "companyA-root-context-developers-ios",
+              "companyA-root-context-ios-developer-umbrella"
+            ],
+            "source": "github.com/relux-works/skill-swiftui",
+            "version": "4.3.0",
+            "weight": 0
+          }
+        ],
+        "root": "companyA-root-context-ios-developer-umbrella",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:f1eed19d2bd6ed2ee15da02fa0b3ef3c214208b13f5681612a42495884424b80",
+      "name": "worked-example"
+    }
+  ],
+  "ordering_cases": [
+    {
+      "expected_ascending": [
+        "0.9.9",
+        "1.0.0-alpha",
+        "1.0.0-alpha.1",
+        "1.0.0-alpha.beta",
+        "1.0.0-beta",
+        "1.0.0-beta.2",
+        "1.0.0-beta.11",
+        "1.0.0-rc.1",
+        "1.0.0",
+        "1.0.1-0",
+        "1.0.1"
+      ],
+      "input": [
+        "1.0.0",
+        "1.0.0-alpha.1",
+        "1.0.0-beta.11",
+        "1.0.0-alpha",
+        "1.0.0-rc.1",
+        "1.0.0-beta.2",
+        "1.0.0-alpha.beta",
+        "1.0.0-beta",
+        "0.9.9",
+        "1.0.1-0",
+        "1.0.1"
+      ],
+      "name": "semver-precedence"
+    }
+  ],
+  "protocol_version": "1.0.0-rc.9",
+  "range_cases": [
+    {
+      "comparator_sets": [
+        [
+          "=1.2.3"
+        ]
+      ],
+      "range": "1.2.3",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          "=1.2.3"
+        ]
+      ],
+      "range": "=1.2.3",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.2.0",
+          "<1.3.0-0"
+        ]
+      ],
+      "range": "1.2",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.2.0",
+          "<1.3.0-0"
+        ]
+      ],
+      "range": "=1.2",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.0.0",
+          "<2.0.0-0"
+        ]
+      ],
+      "range": "1",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=2.1.0"
+        ]
+      ],
+      "range": ">=2.1",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.3.0"
+        ]
+      ],
+      "range": ">1.2",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">1.2.3"
+        ]
+      ],
+      "range": ">1.2.3",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          "<3.0.0-0"
+        ]
+      ],
+      "range": "<3",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          "<1.2.0-0"
+        ]
+      ],
+      "range": "<1.2",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          "<1.2.3"
+        ]
+      ],
+      "range": "<1.2.3",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          "<1.3.0-0"
+        ]
+      ],
+      "range": "<=1.2",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          "<2.0.0-0"
+        ]
+      ],
+      "range": "<=1",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          "<=1.2.3"
+        ]
+      ],
+      "range": "<=1.2.3",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.2.3",
+          "<2.0.0-0"
+        ]
+      ],
+      "range": "^1.2.3",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=0.2.3",
+          "<0.3.0-0"
+        ]
+      ],
+      "range": "^0.2.3",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=0.0.3",
+          "<0.0.4-0"
+        ]
+      ],
+      "range": "^0.0.3",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.4.0",
+          "<2.0.0-0"
+        ]
+      ],
+      "range": "^1.4",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=0.1.0",
+          "<0.2.0-0"
+        ]
+      ],
+      "range": "^0.1",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=0.0.0",
+          "<1.0.0-0"
+        ]
+      ],
+      "range": "^0",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.2.3-beta.2",
+          "<2.0.0-0"
+        ]
+      ],
+      "range": "^1.2.3-beta.2",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.2.3",
+          "<1.3.0-0"
+        ]
+      ],
+      "range": "~1.2.3",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.2.0",
+          "<1.3.0-0"
+        ]
+      ],
+      "range": "~1.2",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.0.0",
+          "<2.0.0-0"
+        ]
+      ],
+      "range": "~1",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.2.3-beta.2",
+          "<1.3.0-0"
+        ]
+      ],
+      "range": "~1.2.3-beta.2",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.0.0",
+          "<2.0.0-0"
+        ]
+      ],
+      "range": "1.x",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.2.0",
+          "<1.3.0-0"
+        ]
+      ],
+      "range": "1.2.x",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.0.0",
+          "<2.0.0-0"
+        ]
+      ],
+      "range": "1.X",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.0.0",
+          "<2.0.0-0"
+        ]
+      ],
+      "range": "1.*",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          "*"
+        ]
+      ],
+      "range": "*",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          "*"
+        ]
+      ],
+      "range": "x",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          "*"
+        ]
+      ],
+      "range": "X",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          "*"
+        ]
+      ],
+      "range": "latest",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.0.0",
+          "<2.0.0-0"
+        ]
+      ],
+      "range": ">=1.0.0 <2",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=1.0.0",
+          "<2.0.0-0"
+        ],
+        [
+          ">=3.0.0",
+          "<4.0.0-0"
+        ]
+      ],
+      "range": "^1 || ^3",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          "=2.0.0"
+        ],
+        [
+          ">=3.1.0",
+          "<4.0.0-0"
+        ]
+      ],
+      "range": "2.0.0 || >=3.1 <4",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=2.0.0-rc.0",
+          "<3.0.0-0"
+        ]
+      ],
+      "range": "^2.0.0-rc.0",
+      "valid": true
+    },
+    {
+      "comparator_sets": [
+        [
+          ">=2.0.0-rc.0"
+        ]
+      ],
+      "range": ">=2.0.0-rc.0",
+      "valid": true
+    },
+    {
+      "error": "profile_source_invalid",
+      "range": "1.2.3 - 2.3.4",
+      "valid": false
+    },
+    {
+      "error": "profile_source_invalid",
+      "range": "v1.2.3",
+      "valid": false
+    },
+    {
+      "error": "profile_source_invalid",
+      "range": "^v1",
+      "valid": false
+    },
+    {
+      "error": "profile_source_invalid",
+      "range": ">=v1.0.0",
+      "valid": false
+    },
+    {
+      "error": "profile_source_invalid",
+      "range": "",
+      "valid": false
+    },
+    {
+      "error": "profile_source_invalid",
+      "range": "||",
+      "valid": false
+    },
+    {
+      "error": "profile_source_invalid",
+      "range": "^1 ||",
+      "valid": false
+    },
+    {
+      "error": "profile_source_invalid",
+      "range": "1.2.3.4",
+      "valid": false
+    },
+    {
+      "error": "profile_source_invalid",
+      "range": "^01.2",
+      "valid": false
+    },
+    {
+      "error": "profile_source_invalid",
+      "range": ">>1",
+      "valid": false
+    },
+    {
+      "error": "profile_source_invalid",
+      "range": "1.2.3-",
+      "valid": false
+    },
+    {
+      "error": "profile_source_invalid",
+      "range": "latest || ^1",
+      "valid": false
+    }
+  ],
+  "range_semantics": "node-semver 7.7.4 (Caret Ranges, Tilde Ranges, X-Ranges, Prerelease Tags) restricted as environments.md section 1.4 states: no hyphen ranges, no v inside a range, latest is *; the any comparator is spelled * in comparator_sets",
+  "resolution_cases": [
+    {
+      "description": "Decision 0012 section 9: joint ranges, a root weights map, an edge weight, a path overlay at the default weight, and skill and MCP members",
+      "expected": {
+        "lock": {
+          "members": [
+            {
+              "commit": "1111111111111111111111111111111111111111",
+              "kind": "context",
+              "name": "companyA-root-context-core",
+              "overlay": false,
+              "required_by": [
+                "companyA-root-context-developers-core",
+                "companyA-root-context-ios-developer-umbrella"
+              ],
+              "source": "github.com/companyA/root-context-core",
+              "version": "3.2.1",
+              "weight": 0
+            },
+            {
+              "commit": "3333333333333333333333333333333333333333",
+              "kind": "context",
+              "name": "companyA-root-context-developers-core",
+              "overlay": false,
+              "required_by": [
+                "companyA-root-context-ios-developer-umbrella"
+              ],
+              "source": "github.com/companyA/root-context-developers-core",
+              "version": "1.6.0",
+              "weight": 20
+            },
+            {
+              "commit": "4444444444444444444444444444444444444444",
+              "directory": "contexts/figma",
+              "kind": "context",
+              "name": "companyA-root-context-developers-figma",
+              "overlay": false,
+              "required_by": [
+                "companyA-root-context-ios-developer-umbrella"
+              ],
+              "source": "github.com/companyA/root-contexts",
+              "version": "1.1.0",
+              "weight": 40
+            },
+            {
+              "commit": "5555555555555555555555555555555555555555",
+              "kind": "context",
+              "name": "companyA-root-context-developers-ios",
+              "overlay": false,
+              "required_by": [
+                "companyA-root-context-ios-developer-umbrella"
+              ],
+              "source": "github.com/companyA/root-context-developers-ios",
+              "version": "2.4.2",
+              "weight": 60
+            },
+            {
+              "commit": "6666666666666666666666666666666666666666",
+              "kind": "context",
+              "name": "companyA-root-context-ios-developer-umbrella",
+              "overlay": false,
+              "required_by": [],
+              "source": "github.com/companyA/root-context-ios-developer-umbrella",
+              "version": "2.3.0",
+              "weight": 100
+            },
+            {
+              "commit": "2222222222222222222222222222222222222222",
+              "kind": "context",
+              "name": "companyA-root-context-organizational-structure",
+              "overlay": false,
+              "required_by": [
+                "companyA-root-context-core"
+              ],
+              "source": "github.com/companyA/root-context-organizational-structure",
+              "version": "1.0.4",
+              "weight": 10
+            },
+            {
+              "kind": "context",
+              "name": "personal",
+              "overlay": true,
+              "required_by": [],
+              "state_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "version": "0.3.0",
+              "weight": 1000
+            },
+            {
+              "commit": "7777777777777777777777777777777777777777",
+              "kind": "mcp",
+              "name": "figma-devmode",
+              "overlay": false,
+              "required_by": [
+                "companyA-root-context-ios-developer-umbrella"
+              ],
+              "source": "github.com/companyA/mcp-figma-devmode",
+              "version": "1.2.0",
+              "weight": 0
+            },
+            {
+              "commit": "8888888888888888888888888888888888888888",
+              "kind": "skill",
+              "name": "pdf",
+              "overlay": false,
+              "required_by": [
+                "companyA-root-context-ios-developer-umbrella"
+              ],
+              "source": "github.com/relux-works/skill-pdf",
+              "version": "1.2.5",
+              "weight": 0
+            },
+            {
+              "commit": "9999999999999999999999999999999999999999",
+              "kind": "skill",
+              "name": "swiftui",
+              "overlay": false,
+              "required_by": [
+                "companyA-root-context-developers-ios",
+                "companyA-root-context-ios-developer-umbrella"
+              ],
+              "source": "github.com/relux-works/skill-swiftui",
+              "version": "4.3.0",
+              "weight": 0
+            }
+          ],
+          "root": "companyA-root-context-ios-developer-umbrella",
+          "schema_version": 1
+        },
+        "lock_sha256": "sha256:f1eed19d2bd6ed2ee15da02fa0b3ef3c214208b13f5681612a42495884424b80",
+        "warnings": []
+      },
+      "input": {
+        "install": {
+          "name": "companyA-root-context-ios-developer-umbrella",
+          "range": "^2"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [
+          {
+            "name": "personal",
+            "path": {
+              "manifest": {
+                "requires": [],
+                "version": "0.3.0",
+                "weight": 0
+              },
+              "state_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          }
+        ],
+        "packages": {
+          "companyA-root-context-core": {
+            "commits": {
+              "09ddb54d8057de70719c11c0a9225b389bc7a798": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "companyA-root-context-organizational-structure",
+                    "range": "^1.0"
+                  }
+                ],
+                "version": "3.1.0",
+                "weight": 0
+              },
+              "1111111111111111111111111111111111111111": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "companyA-root-context-organizational-structure",
+                    "range": "^1.0"
+                  }
+                ],
+                "version": "3.2.1",
+                "weight": 0
+              },
+              "2822de6f78d3e1eabd3d836f93b36c2f141314ad": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "companyA-root-context-organizational-structure",
+                    "range": "^1.0"
+                  }
+                ],
+                "version": "4.0.0",
+                "weight": 0
+              },
+              "3aadc0383f604016d75272bf37350bfb8e5240a5": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "companyA-root-context-organizational-structure",
+                    "range": "^1.0"
+                  }
+                ],
+                "version": "3.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/companyA/root-context-core",
+            "tags": {
+              "v3.0.0": "3aadc0383f604016d75272bf37350bfb8e5240a5",
+              "v3.1.0": "09ddb54d8057de70719c11c0a9225b389bc7a798",
+              "v3.2.1": "1111111111111111111111111111111111111111",
+              "v4.0.0": "2822de6f78d3e1eabd3d836f93b36c2f141314ad"
+            }
+          },
+          "companyA-root-context-developers-core": {
+            "commits": {
+              "3333333333333333333333333333333333333333": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "companyA-root-context-core",
+                    "range": "^3.1"
+                  }
+                ],
+                "version": "1.6.0",
+                "weight": 20
+              },
+              "ca0f8cd9e1812f70872e41ab8e10776b6162ad44": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "companyA-root-context-core",
+                    "range": "^3.0"
+                  }
+                ],
+                "version": "1.4.0",
+                "weight": 20
+              }
+            },
+            "kind": "context",
+            "source": "github.com/companyA/root-context-developers-core",
+            "tags": {
+              "v1.4.0": "ca0f8cd9e1812f70872e41ab8e10776b6162ad44",
+              "v1.6.0": "3333333333333333333333333333333333333333"
+            }
+          },
+          "companyA-root-context-developers-figma": {
+            "commits": {
+              "026a8c83b8fa819e4b4841e25c338fe8e0fd5fad": {
+                "requires": [],
+                "version": "1.0.0",
+                "weight": 0
+              },
+              "4444444444444444444444444444444444444444": {
+                "requires": [],
+                "version": "1.1.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/companyA/root-contexts",
+            "tags": {
+              "v1.0.0": "026a8c83b8fa819e4b4841e25c338fe8e0fd5fad",
+              "v1.1.0": "4444444444444444444444444444444444444444"
+            }
+          },
+          "companyA-root-context-developers-ios": {
+            "commits": {
+              "5555555555555555555555555555555555555555": {
+                "requires": [
+                  {
+                    "kind": "skill",
+                    "name": "swiftui",
+                    "range": "^4.2"
+                  }
+                ],
+                "version": "2.4.2",
+                "weight": 0
+              },
+              "87e2ab00e3e0b2c6e6f99d6cd5469c26559b6db1": {
+                "requires": [
+                  {
+                    "kind": "skill",
+                    "name": "swiftui",
+                    "range": "^5"
+                  }
+                ],
+                "version": "3.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/companyA/root-context-developers-ios",
+            "tags": {
+              "v2.4.2": "5555555555555555555555555555555555555555",
+              "v3.0.0": "87e2ab00e3e0b2c6e6f99d6cd5469c26559b6db1"
+            }
+          },
+          "companyA-root-context-ios-developer-umbrella": {
+            "commits": {
+              "6666666666666666666666666666666666666666": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "companyA-root-context-core",
+                    "range": "^3.0"
+                  },
+                  {
+                    "kind": "context",
+                    "name": "companyA-root-context-developers-core",
+                    "range": "^1.4"
+                  },
+                  {
+                    "kind": "context",
+                    "name": "companyA-root-context-developers-ios",
+                    "range": ">=2.1 <3",
+                    "weight": 60
+                  },
+                  {
+                    "directory": "contexts/figma",
+                    "kind": "context",
+                    "name": "companyA-root-context-developers-figma",
+                    "range": "^1.0",
+                    "weight": 40
+                  },
+                  {
+                    "kind": "skill",
+                    "name": "swiftui",
+                    "range": "^4"
+                  },
+                  {
+                    "kind": "skill",
+                    "name": "pdf",
+                    "range": "~1.2"
+                  },
+                  {
+                    "kind": "mcp",
+                    "name": "figma-devmode",
+                    "range": "^1"
+                  }
+                ],
+                "version": "2.3.0",
+                "weight": 100,
+                "weights": {
+                  "companyA-root-context-organizational-structure": 10
+                }
+              },
+              "ae07c8571834c2fd245c1e3bc206d2a0c3d9761c": {
+                "requires": [],
+                "version": "2.2.0",
+                "weight": 100
+              }
+            },
+            "kind": "context",
+            "source": "github.com/companyA/root-context-ios-developer-umbrella",
+            "tags": {
+              "v2.2.0": "ae07c8571834c2fd245c1e3bc206d2a0c3d9761c",
+              "v2.3.0": "6666666666666666666666666666666666666666"
+            }
+          },
+          "companyA-root-context-organizational-structure": {
+            "commits": {
+              "2222222222222222222222222222222222222222": {
+                "requires": [],
+                "version": "1.0.4",
+                "weight": 0
+              },
+              "c3f8b672ac292de42409265a95d7e65d65eee3a2": {
+                "requires": [],
+                "version": "2.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/companyA/root-context-organizational-structure",
+            "tags": {
+              "v1.0.4": "2222222222222222222222222222222222222222",
+              "v2.0.0": "c3f8b672ac292de42409265a95d7e65d65eee3a2"
+            }
+          },
+          "figma-devmode": {
+            "commits": {
+              "7777777777777777777777777777777777777777": {
+                "requires": [],
+                "version": "1.2.0",
+                "weight": 0
+              }
+            },
+            "kind": "mcp",
+            "source": "github.com/companyA/mcp-figma-devmode",
+            "tags": {
+              "v1.2.0": "7777777777777777777777777777777777777777"
+            }
+          },
+          "pdf": {
+            "commits": {
+              "51cf7b8ecd468efb410aa46101640d16e4a4b7bd": null,
+              "8888888888888888888888888888888888888888": null
+            },
+            "kind": "skill",
+            "source": "github.com/relux-works/skill-pdf",
+            "tags": {
+              "v1.2.5": "8888888888888888888888888888888888888888",
+              "v1.3.0": "51cf7b8ecd468efb410aa46101640d16e4a4b7bd"
+            }
+          },
+          "swiftui": {
+            "commits": {
+              "17727b336a6759e9ff4d5d7b958fbaad5cf2c635": null,
+              "9999999999999999999999999999999999999999": null,
+              "dac58f00543a47c574a8ffdca68507567882290b": null
+            },
+            "kind": "skill",
+            "source": "github.com/relux-works/skill-swiftui",
+            "tags": {
+              "v4.1.0": "dac58f00543a47c574a8ffdca68507567882290b",
+              "v4.3.0": "9999999999999999999999999999999999999999",
+              "v5.0.0": "17727b336a6759e9ff4d5d7b958fbaad5cf2c635"
+            }
+          }
+        }
+      },
+      "name": "worked-example-default-policy"
+    },
+    {
+      "description": "two requirers whose ranges intersect in nothing fail context_range_conflict naming both",
+      "expected": {
+        "detail": {
+          "candidates": [
+            "2.5.0",
+            "3.1.0"
+          ],
+          "name": "core",
+          "requirers": [
+            {
+              "constraint": "range ^3",
+              "requirer": "root@1.0.0"
+            },
+            {
+              "constraint": "range ^2",
+              "requirer": "lib@1.0.0"
+            }
+          ]
+        },
+        "error": "context_range_conflict"
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "core": {
+            "commits": {
+              "e342079b143c77b4d9483de78ac8c2ede0449f07": {
+                "requires": [],
+                "version": "2.5.0",
+                "weight": 0
+              },
+              "ed382be0d4a68f04a92f808cef2de765e7084900": {
+                "requires": [],
+                "version": "3.1.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/core",
+            "tags": {
+              "v2.5.0": "e342079b143c77b4d9483de78ac8c2ede0449f07",
+              "v3.1.0": "ed382be0d4a68f04a92f808cef2de765e7084900"
+            }
+          },
+          "lib": {
+            "commits": {
+              "0bafc6389e70fc592ccca76053bb171b03e61fb5": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "core",
+                    "range": "^2"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/lib",
+            "tags": {
+              "v1.0.0": "0bafc6389e70fc592ccca76053bb171b03e61fb5"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "core",
+                    "range": "^3"
+                  },
+                  {
+                    "kind": "context",
+                    "name": "lib",
+                    "range": "^1"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          }
+        }
+      },
+      "name": "range-conflict-empty-intersection"
+    },
+    {
+      "description": "lib is selected at 2.0.0 first; plugin then adds <2 and lib re-selects downward to the highest remaining candidate not above its previous selection",
+      "expected": {
+        "lock": {
+          "members": [
+            {
+              "commit": "e05eda9cb52a85002e2c5f1c55fc4452c675f71c",
+              "kind": "context",
+              "name": "lib",
+              "overlay": false,
+              "required_by": [
+                "plugin",
+                "root"
+              ],
+              "source": "github.com/example/lib",
+              "version": "1.5.0",
+              "weight": 0
+            },
+            {
+              "commit": "e7f60c13eb4b27e4192fcbcb8781f54d59b78c46",
+              "kind": "context",
+              "name": "plugin",
+              "overlay": false,
+              "required_by": [
+                "root"
+              ],
+              "source": "github.com/example/plugin",
+              "version": "1.0.0",
+              "weight": 0
+            },
+            {
+              "commit": "53137eb24aaf23ca2297a4b2fa7151206ddecf01",
+              "kind": "context",
+              "name": "root",
+              "overlay": false,
+              "required_by": [],
+              "source": "github.com/example/root",
+              "version": "1.0.0",
+              "weight": 0
+            }
+          ],
+          "root": "root",
+          "schema_version": 1
+        },
+        "lock_sha256": "sha256:867bfb27412bb2219e4a03a61e9d00e3713a674278e2ace93d39eaaade0b952c",
+        "warnings": []
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "lib": {
+            "commits": {
+              "164ae8f81250dbf84b5a8c4581443fc5144f02c8": {
+                "requires": [],
+                "version": "1.4.0",
+                "weight": 0
+              },
+              "e05eda9cb52a85002e2c5f1c55fc4452c675f71c": {
+                "requires": [],
+                "version": "1.5.0",
+                "weight": 0
+              },
+              "f62f0273e73aa3937a06aac8aa8e64da768c5168": {
+                "requires": [],
+                "version": "2.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/lib",
+            "tags": {
+              "v1.4.0": "164ae8f81250dbf84b5a8c4581443fc5144f02c8",
+              "v1.5.0": "e05eda9cb52a85002e2c5f1c55fc4452c675f71c",
+              "v2.0.0": "f62f0273e73aa3937a06aac8aa8e64da768c5168"
+            }
+          },
+          "plugin": {
+            "commits": {
+              "e7f60c13eb4b27e4192fcbcb8781f54d59b78c46": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "lib",
+                    "range": "<2"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/plugin",
+            "tags": {
+              "v1.0.0": "e7f60c13eb4b27e4192fcbcb8781f54d59b78c46"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "lib",
+                    "range": "*"
+                  },
+                  {
+                    "kind": "context",
+                    "name": "plugin",
+                    "range": "^1"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          }
+        }
+      },
+      "name": "downward-reselection"
+    },
+    {
+      "description": "helper lowers app to 1.0.0 and then leaves the closure when app@1.1.0's requirement on it is dropped; app keeps the lowered selection although the constraint that lowered it is gone",
+      "expected": {
+        "lock": {
+          "members": [
+            {
+              "commit": "1af44d7a355574a647ec5bd7df8fc37cd7f4c872",
+              "kind": "context",
+              "name": "app",
+              "overlay": false,
+              "required_by": [
+                "root"
+              ],
+              "source": "github.com/example/app",
+              "version": "1.0.0",
+              "weight": 0
+            },
+            {
+              "commit": "f62f0273e73aa3937a06aac8aa8e64da768c5168",
+              "kind": "context",
+              "name": "lib",
+              "overlay": false,
+              "required_by": [
+                "root"
+              ],
+              "source": "github.com/example/lib",
+              "version": "2.0.0",
+              "weight": 0
+            },
+            {
+              "commit": "53137eb24aaf23ca2297a4b2fa7151206ddecf01",
+              "kind": "context",
+              "name": "root",
+              "overlay": false,
+              "required_by": [],
+              "source": "github.com/example/root",
+              "version": "1.0.0",
+              "weight": 0
+            }
+          ],
+          "root": "root",
+          "schema_version": 1
+        },
+        "lock_sha256": "sha256:ef000ab867ed858efe05673a8dac3ea00402629410a79cd40423301bfb7dc062",
+        "warnings": []
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "app": {
+            "commits": {
+              "1841ed6072c603718a9f24714ce85a0d336d7cc3": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "helper",
+                    "range": "^1"
+                  }
+                ],
+                "version": "1.1.0",
+                "weight": 0
+              },
+              "1af44d7a355574a647ec5bd7df8fc37cd7f4c872": {
+                "requires": [],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/app",
+            "tags": {
+              "v1.0.0": "1af44d7a355574a647ec5bd7df8fc37cd7f4c872",
+              "v1.1.0": "1841ed6072c603718a9f24714ce85a0d336d7cc3"
+            }
+          },
+          "helper": {
+            "commits": {
+              "b8a5f10082d6605bdd29aa2dff8d919cbcf9803f": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "lib",
+                    "range": "<2"
+                  },
+                  {
+                    "kind": "context",
+                    "name": "app",
+                    "range": "<1.1"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/helper",
+            "tags": {
+              "v1.0.0": "b8a5f10082d6605bdd29aa2dff8d919cbcf9803f"
+            }
+          },
+          "lib": {
+            "commits": {
+              "e05eda9cb52a85002e2c5f1c55fc4452c675f71c": {
+                "requires": [],
+                "version": "1.5.0",
+                "weight": 0
+              },
+              "f62f0273e73aa3937a06aac8aa8e64da768c5168": {
+                "requires": [],
+                "version": "2.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/lib",
+            "tags": {
+              "v1.5.0": "e05eda9cb52a85002e2c5f1c55fc4452c675f71c",
+              "v2.0.0": "f62f0273e73aa3937a06aac8aa8e64da768c5168"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "app",
+                    "range": "^1"
+                  },
+                  {
+                    "kind": "context",
+                    "name": "lib",
+                    "range": "*"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          }
+        }
+      },
+      "name": "selection-never-increases"
+    },
+    {
+      "description": "a prerelease satisfies a range only when a primitive names a prerelease on the same major.minor.patch",
+      "expected": {
+        "lock": {
+          "members": [
+            {
+              "commit": "5ff8d1b26ba5f83dde66dd501f9fabc766ef8ea1",
+              "kind": "context",
+              "name": "core",
+              "overlay": false,
+              "required_by": [
+                "root"
+              ],
+              "source": "github.com/example/core",
+              "version": "2.0.0-rc.1",
+              "weight": 0
+            },
+            {
+              "commit": "53137eb24aaf23ca2297a4b2fa7151206ddecf01",
+              "kind": "context",
+              "name": "root",
+              "overlay": false,
+              "required_by": [],
+              "source": "github.com/example/root",
+              "version": "1.0.0",
+              "weight": 0
+            }
+          ],
+          "root": "root",
+          "schema_version": 1
+        },
+        "lock_sha256": "sha256:347fb0294ffd66e3353e835e5ee2cc1b8e3fa963bb142d9a5307fe74ed10f5d9",
+        "warnings": []
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "core": {
+            "commits": {
+              "5ff8d1b26ba5f83dde66dd501f9fabc766ef8ea1": {
+                "requires": [],
+                "version": "2.0.0-rc.1",
+                "weight": 0
+              },
+              "77cafc3cc3cfba75dd848a42494a74887a54fc43": {
+                "requires": [],
+                "version": "2.1.0-rc.1",
+                "weight": 0
+              },
+              "fada4ee3c5411a6c95ed04b06839e5339cdce917": {
+                "requires": [],
+                "version": "1.9.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/core",
+            "tags": {
+              "v1.9.0": "fada4ee3c5411a6c95ed04b06839e5339cdce917",
+              "v2.0.0-rc.1": "5ff8d1b26ba5f83dde66dd501f9fabc766ef8ea1",
+              "v2.1.0-rc.1": "77cafc3cc3cfba75dd848a42494a74887a54fc43"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "core",
+                    "range": "^2.0.0-rc.0"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          }
+        }
+      },
+      "name": "prerelease-admission"
+    },
+    {
+      "description": "latest is * and selects the highest stable version, never a prerelease of the bound",
+      "expected": {
+        "lock": {
+          "members": [
+            {
+              "commit": "53137eb24aaf23ca2297a4b2fa7151206ddecf01",
+              "kind": "context",
+              "name": "root",
+              "overlay": false,
+              "required_by": [],
+              "source": "github.com/example/root",
+              "version": "1.0.0",
+              "weight": 0
+            }
+          ],
+          "root": "root",
+          "schema_version": 1
+        },
+        "lock_sha256": "sha256:cebef03dfa72df1f3901a74b83361ed092db0fca8258fe4e9d0fff4df6a2c9e5",
+        "warnings": []
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "latest"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [],
+                "version": "1.0.0",
+                "weight": 0
+              },
+              "656181a13a81024163d4aa5af25072c97f65cac5": {
+                "requires": [],
+                "version": "2.0.0-rc.1",
+                "weight": 0
+              },
+              "b38f6f7fda52e7c7f23652f2e3811516cd92dc33": {
+                "requires": [],
+                "version": "3.0.0-rc.1",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01",
+              "v2.0.0-rc.1": "656181a13a81024163d4aa5af25072c97f65cac5",
+              "v3.0.0-rc.1": "b38f6f7fda52e7c7f23652f2e3811516cd92dc33"
+            }
+          }
+        }
+      },
+      "name": "prerelease-excluded-by-latest"
+    },
+    {
+      "description": "a tag, a revision peeling to the same commit, and a range that admits its version unify on one commit",
+      "expected": {
+        "lock": {
+          "members": [
+            {
+              "commit": "d0d44043b0c3a8f48821779854a87e237e629c93",
+              "kind": "context",
+              "name": "a",
+              "overlay": false,
+              "required_by": [
+                "root"
+              ],
+              "source": "github.com/example/a",
+              "version": "1.0.0",
+              "weight": 0
+            },
+            {
+              "commit": "ff7edbecd69c9bde64a8da0561cb6d6f3d7711ef",
+              "kind": "context",
+              "name": "b",
+              "overlay": false,
+              "required_by": [
+                "root"
+              ],
+              "source": "github.com/example/b",
+              "version": "1.0.0",
+              "weight": 0
+            },
+            {
+              "commit": "ca7a59765a46007c1d75ca934e3f629596466bd4",
+              "kind": "context",
+              "name": "core",
+              "overlay": false,
+              "required_by": [
+                "a",
+                "b",
+                "root"
+              ],
+              "source": "github.com/example/core",
+              "version": "3.2.1",
+              "weight": 0
+            },
+            {
+              "commit": "53137eb24aaf23ca2297a4b2fa7151206ddecf01",
+              "kind": "context",
+              "name": "root",
+              "overlay": false,
+              "required_by": [],
+              "source": "github.com/example/root",
+              "version": "1.0.0",
+              "weight": 0
+            }
+          ],
+          "root": "root",
+          "schema_version": 1
+        },
+        "lock_sha256": "sha256:6a11167ad0d06243e13c9cddb7312b504eb9bfc71a1e94ac503dacc3c12f1180",
+        "warnings": []
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "a": {
+            "commits": {
+              "d0d44043b0c3a8f48821779854a87e237e629c93": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "core",
+                    "revision": "ca7a59765a46007c1d75ca934e3f629596466bd4"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/a",
+            "tags": {
+              "v1.0.0": "d0d44043b0c3a8f48821779854a87e237e629c93"
+            }
+          },
+          "b": {
+            "commits": {
+              "ff7edbecd69c9bde64a8da0561cb6d6f3d7711ef": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "core",
+                    "range": "^3"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/b",
+            "tags": {
+              "v1.0.0": "ff7edbecd69c9bde64a8da0561cb6d6f3d7711ef"
+            }
+          },
+          "core": {
+            "commits": {
+              "ca7a59765a46007c1d75ca934e3f629596466bd4": {
+                "requires": [],
+                "version": "3.2.1",
+                "weight": 0
+              },
+              "f84edaa9ae623798ee8ec32060852b9463b805cb": {
+                "requires": [],
+                "version": "3.3.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/core",
+            "tags": {
+              "v3.2.1": "ca7a59765a46007c1d75ca934e3f629596466bd4",
+              "v3.3.0": "f84edaa9ae623798ee8ec32060852b9463b805cb"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "core",
+                    "tag": "v3.2.1"
+                  },
+                  {
+                    "kind": "context",
+                    "name": "a",
+                    "range": "^1"
+                  },
+                  {
+                    "kind": "context",
+                    "name": "b",
+                    "range": "^1"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          }
+        }
+      },
+      "name": "exact-constraint-unification"
+    },
+    {
+      "description": "two exact constraints that peel to different commits fail context_range_conflict",
+      "expected": {
+        "detail": {
+          "candidates": [],
+          "name": "core",
+          "requirers": [
+            {
+              "constraint": "tag v3.2.1",
+              "requirer": "root@1.0.0"
+            },
+            {
+              "constraint": "revision f84edaa9ae623798ee8ec32060852b9463b805cb",
+              "requirer": "a@1.0.0"
+            }
+          ]
+        },
+        "error": "context_range_conflict"
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "a": {
+            "commits": {
+              "d0d44043b0c3a8f48821779854a87e237e629c93": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "core",
+                    "revision": "f84edaa9ae623798ee8ec32060852b9463b805cb"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/a",
+            "tags": {
+              "v1.0.0": "d0d44043b0c3a8f48821779854a87e237e629c93"
+            }
+          },
+          "core": {
+            "commits": {
+              "ca7a59765a46007c1d75ca934e3f629596466bd4": {
+                "requires": [],
+                "version": "3.2.1",
+                "weight": 0
+              },
+              "f84edaa9ae623798ee8ec32060852b9463b805cb": {
+                "requires": [],
+                "version": "3.3.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/core",
+            "tags": {
+              "v3.2.1": "ca7a59765a46007c1d75ca934e3f629596466bd4",
+              "v3.3.0": "f84edaa9ae623798ee8ec32060852b9463b805cb"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "core",
+                    "tag": "v3.2.1"
+                  },
+                  {
+                    "kind": "context",
+                    "name": "a",
+                    "range": "^1"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          }
+        }
+      },
+      "name": "exact-constraints-disagree"
+    },
+    {
+      "description": "an exact constraint fixes the only candidate, and a range that does not admit its version fails context_range_conflict",
+      "expected": {
+        "detail": {
+          "candidates": [
+            "3.2.1"
+          ],
+          "name": "core",
+          "requirers": [
+            {
+              "constraint": "tag v3.2.1",
+              "requirer": "root@1.0.0"
+            },
+            {
+              "constraint": "range ^2",
+              "requirer": "a@1.0.0"
+            }
+          ]
+        },
+        "error": "context_range_conflict"
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "a": {
+            "commits": {
+              "d0d44043b0c3a8f48821779854a87e237e629c93": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "core",
+                    "range": "^2"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/a",
+            "tags": {
+              "v1.0.0": "d0d44043b0c3a8f48821779854a87e237e629c93"
+            }
+          },
+          "core": {
+            "commits": {
+              "20c30172184f051f376488e619625963fa5246cd": {
+                "requires": [],
+                "version": "2.9.0",
+                "weight": 0
+              },
+              "ca7a59765a46007c1d75ca934e3f629596466bd4": {
+                "requires": [],
+                "version": "3.2.1",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/core",
+            "tags": {
+              "v2.9.0": "20c30172184f051f376488e619625963fa5246cd",
+              "v3.2.1": "ca7a59765a46007c1d75ca934e3f629596466bd4"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "core",
+                    "tag": "v3.2.1"
+                  },
+                  {
+                    "kind": "context",
+                    "name": "a",
+                    "range": "^1"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          }
+        }
+      },
+      "name": "exact-outside-range"
+    },
+    {
+      "description": "a || disjunction selects the highest candidate satisfying any member",
+      "expected": {
+        "lock": {
+          "members": [
+            {
+              "commit": "ed382be0d4a68f04a92f808cef2de765e7084900",
+              "kind": "context",
+              "name": "core",
+              "overlay": false,
+              "required_by": [
+                "root"
+              ],
+              "source": "github.com/example/core",
+              "version": "3.1.0",
+              "weight": 0
+            },
+            {
+              "commit": "53137eb24aaf23ca2297a4b2fa7151206ddecf01",
+              "kind": "context",
+              "name": "root",
+              "overlay": false,
+              "required_by": [],
+              "source": "github.com/example/root",
+              "version": "1.0.0",
+              "weight": 0
+            }
+          ],
+          "root": "root",
+          "schema_version": 1
+        },
+        "lock_sha256": "sha256:82057a550c953e8b10da8f29e738941bcfb2fea6a6755fcd795bb5bcfb7fc331",
+        "warnings": []
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "core": {
+            "commits": {
+              "4f32f2862f507e6e3c7cc49f0b04aedb4f7727e0": {
+                "requires": [],
+                "version": "4.0.0",
+                "weight": 0
+              },
+              "7ce89523f0f77f8984d996998816c73c3120cfd2": {
+                "requires": [],
+                "version": "2.0.0",
+                "weight": 0
+              },
+              "a8fee7aa366b617a38c37d5c83970b8e377bec01": {
+                "requires": [],
+                "version": "3.0.0",
+                "weight": 0
+              },
+              "ed382be0d4a68f04a92f808cef2de765e7084900": {
+                "requires": [],
+                "version": "3.1.0",
+                "weight": 0
+              },
+              "fada4ee3c5411a6c95ed04b06839e5339cdce917": {
+                "requires": [],
+                "version": "1.9.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/core",
+            "tags": {
+              "v1.9.0": "fada4ee3c5411a6c95ed04b06839e5339cdce917",
+              "v2.0.0": "7ce89523f0f77f8984d996998816c73c3120cfd2",
+              "v3.0.0": "a8fee7aa366b617a38c37d5c83970b8e377bec01",
+              "v3.1.0": "ed382be0d4a68f04a92f808cef2de765e7084900",
+              "v4.0.0": "4f32f2862f507e6e3c7cc49f0b04aedb4f7727e0"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "core",
+                    "range": "^1 || ^3"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          }
+        }
+      },
+      "name": "or-highest-member"
+    },
+    {
+      "description": "an install with no requirement flag applies --range latest, which is *",
+      "expected": {
+        "lock": {
+          "members": [
+            {
+              "commit": "f9cb2b0db429c348ffcc6df308d97798f089734b",
+              "kind": "context",
+              "name": "root",
+              "overlay": false,
+              "required_by": [],
+              "source": "github.com/example/root",
+              "version": "1.2.0",
+              "weight": 0
+            }
+          ],
+          "root": "root",
+          "schema_version": 1
+        },
+        "lock_sha256": "sha256:69ebf74625925c3dff75255a544defa4f5b294642fec3776327707253a637493",
+        "warnings": []
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "latest"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [],
+                "version": "1.0.0",
+                "weight": 0
+              },
+              "a6429f7868a179af63f9063c201630ad8248cc29": {
+                "requires": [],
+                "version": "2.0.0-beta.1",
+                "weight": 0
+              },
+              "f9cb2b0db429c348ffcc6df308d97798f089734b": {
+                "requires": [],
+                "version": "1.2.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01",
+              "v1.2.0": "f9cb2b0db429c348ffcc6df308d97798f089734b",
+              "v2.0.0-beta.1": "a6429f7868a179af63f9063c201630ad8248cc29"
+            }
+          }
+        }
+      },
+      "name": "latest-is-star"
+    },
+    {
+      "description": "a source with no version tags satisfies no range; latest finds no candidate",
+      "expected": {
+        "detail": {
+          "candidates": [],
+          "name": "root",
+          "requirers": [
+            {
+              "constraint": "range latest",
+              "requirer": "machine"
+            }
+          ]
+        },
+        "error": "context_range_conflict"
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "latest"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "root": {
+            "commits": {
+              "f75cd473a430f069238f4a506538fc870eb7ec1d": {
+                "requires": [],
+                "version": "0.9.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "stable": "f75cd473a430f069238f4a506538fc870eb7ec1d"
+            }
+          }
+        }
+      },
+      "name": "no-version-tags"
+    },
+    {
+      "description": "a root pinned by a tag that is not a version takes the manifest version at that commit",
+      "expected": {
+        "lock": {
+          "members": [
+            {
+              "commit": "f75cd473a430f069238f4a506538fc870eb7ec1d",
+              "kind": "context",
+              "name": "root",
+              "overlay": false,
+              "required_by": [],
+              "source": "github.com/example/root",
+              "version": "0.9.0",
+              "weight": 0
+            }
+          ],
+          "root": "root",
+          "schema_version": 1
+        },
+        "lock_sha256": "sha256:547ff72167cc2c9fcdfbdd5b9adcb4aaf1e1b0bc9fbc828056ba3cc5a6028176",
+        "warnings": []
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "tag": "stable"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "root": {
+            "commits": {
+              "a8c733417c26248eb82342d8b202c43b926cc834": {
+                "requires": [],
+                "version": "0.8.0",
+                "weight": 0
+              },
+              "f75cd473a430f069238f4a506538fc870eb7ec1d": {
+                "requires": [],
+                "version": "0.9.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "stable": "f75cd473a430f069238f4a506538fc870eb7ec1d",
+              "v0.8.0": "a8c733417c26248eb82342d8b202c43b926cc834"
+            }
+          }
+        }
+      },
+      "name": "non-version-tag-exact"
+    },
+    {
+      "description": "a manifest whose version differs from the version tag it resolved from fails context_version_mismatch",
+      "expected": {
+        "detail": {
+          "manifest_version": "1.1.0",
+          "name": "core",
+          "tag": "v1.2.0"
+        },
+        "error": "context_version_mismatch"
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "core": {
+            "commits": {
+              "faf95fb7349d804d52374f2cecbbe4fb1289b4dc": {
+                "requires": [],
+                "version": "1.1.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/core",
+            "tags": {
+              "v1.2.0": "faf95fb7349d804d52374f2cecbbe4fb1289b4dc"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "core",
+                    "range": "^1"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          }
+        }
+      },
+      "name": "version-mismatch"
+    },
+    {
+      "description": "a skill manifest's own exact dependencies enter as fixed candidates; the skill version is the highest version tag peeling to the pinned commit",
+      "expected": {
+        "lock": {
+          "members": [
+            {
+              "commit": "53137eb24aaf23ca2297a4b2fa7151206ddecf01",
+              "kind": "context",
+              "name": "root",
+              "overlay": false,
+              "required_by": [],
+              "source": "github.com/example/root",
+              "version": "1.0.0",
+              "weight": 0
+            },
+            {
+              "commit": "d26b7da50a8bae23c55edb17b9e3b68eb28230ab",
+              "kind": "skill",
+              "name": "fonts",
+              "overlay": false,
+              "required_by": [
+                "render",
+                "root"
+              ],
+              "source": "github.com/example/skill-fonts",
+              "version": "1.1.0",
+              "weight": 0
+            },
+            {
+              "commit": "7d01d46d756206431487af6a2cddecc61317f34a",
+              "kind": "skill",
+              "name": "render",
+              "overlay": false,
+              "required_by": [
+                "root"
+              ],
+              "source": "github.com/example/skill-render",
+              "version": "2.0.0",
+              "weight": 0
+            }
+          ],
+          "root": "root",
+          "schema_version": 1
+        },
+        "lock_sha256": "sha256:7af7f22f94a6f044c035d4fc465ffd5c5665bac2465b421225de462b1bc6c2de",
+        "warnings": []
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "fonts": {
+            "commits": {},
+            "kind": "skill",
+            "source": "github.com/example/skill-fonts",
+            "tags": {
+              "release-1.1": "d26b7da50a8bae23c55edb17b9e3b68eb28230ab",
+              "v1.0.0": "8667f0d423cc583d28d2610fd6514d5a5c69ac77",
+              "v1.1.0": "d26b7da50a8bae23c55edb17b9e3b68eb28230ab",
+              "v1.2.0": "74dec23b990e70442cca4e5a0bc43f4d1973bd51"
+            }
+          },
+          "render": {
+            "commits": {
+              "7d01d46d756206431487af6a2cddecc61317f34a": {
+                "requires": [
+                  {
+                    "kind": "skill",
+                    "name": "fonts",
+                    "revision": "d26b7da50a8bae23c55edb17b9e3b68eb28230ab"
+                  }
+                ],
+                "version": "",
+                "weight": 0
+              }
+            },
+            "kind": "skill",
+            "source": "github.com/example/skill-render",
+            "tags": {
+              "v2.0.0": "7d01d46d756206431487af6a2cddecc61317f34a"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "skill",
+                    "name": "render",
+                    "range": "^2"
+                  },
+                  {
+                    "kind": "skill",
+                    "name": "fonts",
+                    "range": ">=1"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          }
+        }
+      },
+      "name": "skill-exact-dependency"
+    },
+    {
+      "description": "two direct requirers disagree on a member's edge weight and the root's weights map does not name it: context_weight_conflict",
+      "expected": {
+        "detail": {
+          "name": "shared",
+          "requirers": [
+            {
+              "requirer": "a@1.0.0",
+              "weight": 30
+            },
+            {
+              "requirer": "b@1.0.0",
+              "weight": 50
+            }
+          ]
+        },
+        "error": "context_weight_conflict"
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "a": {
+            "commits": {
+              "d0d44043b0c3a8f48821779854a87e237e629c93": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "shared",
+                    "range": "^1",
+                    "weight": 30
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/a",
+            "tags": {
+              "v1.0.0": "d0d44043b0c3a8f48821779854a87e237e629c93"
+            }
+          },
+          "b": {
+            "commits": {
+              "ff7edbecd69c9bde64a8da0561cb6d6f3d7711ef": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "shared",
+                    "range": "^1",
+                    "weight": 50
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/b",
+            "tags": {
+              "v1.0.0": "ff7edbecd69c9bde64a8da0561cb6d6f3d7711ef"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "a",
+                    "range": "^1"
+                  },
+                  {
+                    "kind": "context",
+                    "name": "b",
+                    "range": "^1"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          },
+          "shared": {
+            "commits": {
+              "1da9449f1afe20aab886bf5246ce78be71168401": {
+                "requires": [],
+                "version": "1.0.0",
+                "weight": 5
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/shared",
+            "tags": {
+              "v1.0.0": "1da9449f1afe20aab886bf5246ce78be71168401"
+            }
+          }
+        }
+      },
+      "name": "weight-conflict"
+    },
+    {
+      "description": "the same disagreement is a warning when the root's weights map names the member; the root has the final word",
+      "expected": {
+        "lock": {
+          "members": [
+            {
+              "commit": "d0d44043b0c3a8f48821779854a87e237e629c93",
+              "kind": "context",
+              "name": "a",
+              "overlay": false,
+              "required_by": [
+                "root"
+              ],
+              "source": "github.com/example/a",
+              "version": "1.0.0",
+              "weight": 0
+            },
+            {
+              "commit": "ff7edbecd69c9bde64a8da0561cb6d6f3d7711ef",
+              "kind": "context",
+              "name": "b",
+              "overlay": false,
+              "required_by": [
+                "root"
+              ],
+              "source": "github.com/example/b",
+              "version": "1.0.0",
+              "weight": 0
+            },
+            {
+              "commit": "53137eb24aaf23ca2297a4b2fa7151206ddecf01",
+              "kind": "context",
+              "name": "root",
+              "overlay": false,
+              "required_by": [],
+              "source": "github.com/example/root",
+              "version": "1.0.0",
+              "weight": 0
+            },
+            {
+              "commit": "1da9449f1afe20aab886bf5246ce78be71168401",
+              "kind": "context",
+              "name": "shared",
+              "overlay": false,
+              "required_by": [
+                "a",
+                "b"
+              ],
+              "source": "github.com/example/shared",
+              "version": "1.0.0",
+              "weight": 70
+            }
+          ],
+          "root": "root",
+          "schema_version": 1
+        },
+        "lock_sha256": "sha256:56124665abfbd7434b943581e69164b2826dea245a57db7461de3a917701d49b",
+        "warnings": [
+          {
+            "diagnostic": "context_weight_conflict",
+            "name": "shared",
+            "requirers": [
+              {
+                "requirer": "a@1.0.0",
+                "weight": 30
+              },
+              {
+                "requirer": "b@1.0.0",
+                "weight": 50
+              }
+            ]
+          }
+        ]
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "a": {
+            "commits": {
+              "d0d44043b0c3a8f48821779854a87e237e629c93": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "shared",
+                    "range": "^1",
+                    "weight": 30
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/a",
+            "tags": {
+              "v1.0.0": "d0d44043b0c3a8f48821779854a87e237e629c93"
+            }
+          },
+          "b": {
+            "commits": {
+              "ff7edbecd69c9bde64a8da0561cb6d6f3d7711ef": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "shared",
+                    "range": "^1",
+                    "weight": 50
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/b",
+            "tags": {
+              "v1.0.0": "ff7edbecd69c9bde64a8da0561cb6d6f3d7711ef"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "a",
+                    "range": "^1"
+                  },
+                  {
+                    "kind": "context",
+                    "name": "b",
+                    "range": "^1"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0,
+                "weights": {
+                  "shared": 70
+                }
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          },
+          "shared": {
+            "commits": {
+              "1da9449f1afe20aab886bf5246ce78be71168401": {
+                "requires": [],
+                "version": "1.0.0",
+                "weight": 5
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/shared",
+            "tags": {
+              "v1.0.0": "1da9449f1afe20aab886bf5246ce78be71168401"
+            }
+          }
+        }
+      },
+      "name": "weight-conflict-root-map-wins"
+    },
+    {
+      "description": "a non-root member carrying a non-empty weights map fails context_weights_not_root at resolution",
+      "expected": {
+        "detail": {
+          "name": "a"
+        },
+        "error": "context_weights_not_root"
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "a": {
+            "commits": {
+              "d0d44043b0c3a8f48821779854a87e237e629c93": {
+                "requires": [],
+                "version": "1.0.0",
+                "weight": 0,
+                "weights": {
+                  "root": 1
+                }
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/a",
+            "tags": {
+              "v1.0.0": "d0d44043b0c3a8f48821779854a87e237e629c93"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "a",
+                    "range": "^1"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          }
+        }
+      },
+      "name": "weights-not-root"
+    },
+    {
+      "description": "a package named both on a root edge with a weight and in the root's weights map fails context_weights_duplicate",
+      "expected": {
+        "detail": {
+          "name": "a"
+        },
+        "error": "context_weights_duplicate"
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "a": {
+            "commits": {
+              "d0d44043b0c3a8f48821779854a87e237e629c93": {
+                "requires": [],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/a",
+            "tags": {
+              "v1.0.0": "d0d44043b0c3a8f48821779854a87e237e629c93"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "a",
+                    "range": "^1",
+                    "weight": 20
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0,
+                "weights": {
+                  "a": 10
+                }
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          }
+        }
+      },
+      "name": "weights-duplicate"
+    },
+    {
+      "description": "a root weights entry naming a package outside the closure fails context_weight_unknown",
+      "expected": {
+        "detail": {
+          "name": "absent"
+        },
+        "error": "context_weight_unknown"
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [],
+        "packages": {
+          "a": {
+            "commits": {
+              "d0d44043b0c3a8f48821779854a87e237e629c93": {
+                "requires": [],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/a",
+            "tags": {
+              "v1.0.0": "d0d44043b0c3a8f48821779854a87e237e629c93"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "a",
+                    "range": "^1"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0,
+                "weights": {
+                  "absent": 10
+                }
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          }
+        }
+      },
+      "name": "weight-unknown"
+    },
+    {
+      "description": "an overlay that needs a skill version the root forbids is a reported context_range_conflict, never a silent second copy",
+      "expected": {
+        "detail": {
+          "candidates": [
+            "4.3.0",
+            "5.0.0"
+          ],
+          "name": "swiftui",
+          "requirers": [
+            {
+              "constraint": "range ^5",
+              "requirer": "personal@0.3.0"
+            },
+            {
+              "constraint": "range ^4",
+              "requirer": "root@1.0.0"
+            }
+          ]
+        },
+        "error": "context_range_conflict"
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [
+          {
+            "name": "personal",
+            "range": "*"
+          }
+        ],
+        "packages": {
+          "personal": {
+            "commits": {
+              "79bb53601bd57ed5bd18a8d25f9a6e10deab2834": {
+                "requires": [
+                  {
+                    "kind": "skill",
+                    "name": "swiftui",
+                    "range": "^5"
+                  }
+                ],
+                "version": "0.3.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/personal",
+            "tags": {
+              "v0.3.0": "79bb53601bd57ed5bd18a8d25f9a6e10deab2834"
+            }
+          },
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "skill",
+                    "name": "swiftui",
+                    "range": "^4"
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          },
+          "swiftui": {
+            "commits": {
+              "17727b336a6759e9ff4d5d7b958fbaad5cf2c635": null,
+              "18e703e935b493d39dd42f07fedf32d673abb1fc": null
+            },
+            "kind": "skill",
+            "source": "github.com/example/skill-swiftui",
+            "tags": {
+              "v4.3.0": "18e703e935b493d39dd42f07fedf32d673abb1fc",
+              "v5.0.0": "17727b336a6759e9ff4d5d7b958fbaad5cf2c635"
+            }
+          }
+        }
+      },
+      "name": "overlay-joint-resolution-conflict"
+    },
+    {
+      "description": "a git overlay joins the closure with its declared weight; a member that is both an overlay and a requirement takes the overlay's weight",
+      "expected": {
+        "lock": {
+          "members": [
+            {
+              "commit": "53137eb24aaf23ca2297a4b2fa7151206ddecf01",
+              "kind": "context",
+              "name": "root",
+              "overlay": false,
+              "required_by": [],
+              "source": "github.com/example/root",
+              "version": "1.0.0",
+              "weight": 100
+            },
+            {
+              "commit": "35c65a114d5fb9b480d313676fe216d7ed3a0ea3",
+              "kind": "context",
+              "name": "team",
+              "overlay": true,
+              "required_by": [
+                "root"
+              ],
+              "source": "github.com/example/team",
+              "version": "1.1.0",
+              "weight": 250
+            }
+          ],
+          "root": "root",
+          "schema_version": 1
+        },
+        "lock_sha256": "sha256:11c12641b8f6c0cf2d4b7557cfa3c14b3ba5bc971d9d1dda74b48beef2b1bde4",
+        "warnings": []
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [
+          {
+            "name": "team",
+            "range": "^1",
+            "weight": 250
+          }
+        ],
+        "packages": {
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [
+                  {
+                    "kind": "context",
+                    "name": "team",
+                    "range": "^1",
+                    "weight": 40
+                  }
+                ],
+                "version": "1.0.0",
+                "weight": 100
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          },
+          "team": {
+            "commits": {
+              "35c65a114d5fb9b480d313676fe216d7ed3a0ea3": {
+                "requires": [],
+                "version": "1.1.0",
+                "weight": 10
+              },
+              "a866fd496f243dfd818778b67663e737c70cd003": {
+                "requires": [],
+                "version": "1.0.0",
+                "weight": 10
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/team",
+            "tags": {
+              "v1.0.0": "a866fd496f243dfd818778b67663e737c70cd003",
+              "v1.1.0": "35c65a114d5fb9b480d313676fe216d7ed3a0ea3"
+            }
+          }
+        }
+      },
+      "name": "overlay-git-explicit-weight"
+    },
+    {
+      "description": "an overlay declaration that repeats a name already declared is environment_composition_invalid",
+      "expected": {
+        "detail": {
+          "name": "root"
+        },
+        "error": "environment_composition_invalid"
+      },
+      "input": {
+        "install": {
+          "name": "root",
+          "range": "*"
+        },
+        "overlay_default_weight": 1000,
+        "overlays": [
+          {
+            "name": "root",
+            "range": "*"
+          }
+        ],
+        "packages": {
+          "root": {
+            "commits": {
+              "53137eb24aaf23ca2297a4b2fa7151206ddecf01": {
+                "requires": [],
+                "version": "1.0.0",
+                "weight": 0
+              }
+            },
+            "kind": "context",
+            "source": "github.com/example/root",
+            "tags": {
+              "v1.0.0": "53137eb24aaf23ca2297a4b2fa7151206ddecf01"
+            }
+          }
+        }
+      },
+      "name": "overlay-duplicate-name"
+    }
+  ],
+  "satisfies_cases": [
+    {
+      "range": "1.2",
+      "satisfies": true,
+      "version": "1.2.0"
+    },
+    {
+      "range": "1.2",
+      "satisfies": true,
+      "version": "1.2.9"
+    },
+    {
+      "range": "1.2",
+      "satisfies": false,
+      "version": "1.3.0"
+    },
+    {
+      "range": "1.2",
+      "satisfies": false,
+      "version": "1.3.0-0"
+    },
+    {
+      "range": ">=2.1",
+      "satisfies": true,
+      "version": "2.1.0"
+    },
+    {
+      "range": ">=2.1",
+      "satisfies": false,
+      "version": "2.0.9"
+    },
+    {
+      "range": ">=2.1",
+      "satisfies": true,
+      "version": "3.0.0"
+    },
+    {
+      "range": ">1.2",
+      "satisfies": false,
+      "version": "1.2.9"
+    },
+    {
+      "range": ">1.2",
+      "satisfies": true,
+      "version": "1.3.0"
+    },
+    {
+      "range": "<3",
+      "satisfies": true,
+      "version": "2.9.9"
+    },
+    {
+      "range": "<3",
+      "satisfies": false,
+      "version": "3.0.0"
+    },
+    {
+      "range": "<3",
+      "satisfies": false,
+      "version": "3.0.0-rc.1"
+    },
+    {
+      "range": "<=1.2",
+      "satisfies": true,
+      "version": "1.2.9"
+    },
+    {
+      "range": "<=1.2",
+      "satisfies": false,
+      "version": "1.3.0"
+    },
+    {
+      "range": "^1.2.3",
+      "satisfies": true,
+      "version": "1.2.3"
+    },
+    {
+      "range": "^1.2.3",
+      "satisfies": true,
+      "version": "1.9.0"
+    },
+    {
+      "range": "^1.2.3",
+      "satisfies": false,
+      "version": "2.0.0"
+    },
+    {
+      "range": "^1.2.3",
+      "satisfies": false,
+      "version": "2.0.0-0"
+    },
+    {
+      "range": "^1.2.3",
+      "satisfies": false,
+      "version": "1.2.2"
+    },
+    {
+      "range": "^0.2.3",
+      "satisfies": true,
+      "version": "0.2.9"
+    },
+    {
+      "range": "^0.2.3",
+      "satisfies": false,
+      "version": "0.3.0"
+    },
+    {
+      "range": "^0.0.3",
+      "satisfies": true,
+      "version": "0.0.3"
+    },
+    {
+      "range": "^0.0.3",
+      "satisfies": false,
+      "version": "0.0.4"
+    },
+    {
+      "range": "^1.4",
+      "satisfies": true,
+      "version": "1.4.0"
+    },
+    {
+      "range": "^1.4",
+      "satisfies": false,
+      "version": "1.3.9"
+    },
+    {
+      "range": "^1.4",
+      "satisfies": false,
+      "version": "2.0.0"
+    },
+    {
+      "range": "^0.1",
+      "satisfies": true,
+      "version": "0.1.5"
+    },
+    {
+      "range": "^0.1",
+      "satisfies": false,
+      "version": "0.2.0"
+    },
+    {
+      "range": "^0",
+      "satisfies": true,
+      "version": "0.9.9"
+    },
+    {
+      "range": "^0",
+      "satisfies": false,
+      "version": "1.0.0"
+    },
+    {
+      "range": "~1.2.3",
+      "satisfies": true,
+      "version": "1.2.9"
+    },
+    {
+      "range": "~1.2.3",
+      "satisfies": false,
+      "version": "1.3.0"
+    },
+    {
+      "range": "~1.2",
+      "satisfies": true,
+      "version": "1.2.0"
+    },
+    {
+      "range": "~1.2",
+      "satisfies": false,
+      "version": "1.3.0"
+    },
+    {
+      "range": "~1",
+      "satisfies": true,
+      "version": "1.9.9"
+    },
+    {
+      "range": "~1",
+      "satisfies": false,
+      "version": "2.0.0"
+    },
+    {
+      "range": "*",
+      "satisfies": true,
+      "version": "1.0.0"
+    },
+    {
+      "range": "*",
+      "satisfies": false,
+      "version": "2.0.0-rc.1"
+    },
+    {
+      "range": "latest",
+      "satisfies": true,
+      "version": "1.0.0"
+    },
+    {
+      "range": "latest",
+      "satisfies": false,
+      "version": "2.0.0-rc.1"
+    },
+    {
+      "range": "x",
+      "satisfies": true,
+      "version": "0.0.0"
+    },
+    {
+      "range": "X",
+      "satisfies": false,
+      "version": "9.9.9-beta"
+    },
+    {
+      "range": ">=1.0.0",
+      "satisfies": false,
+      "version": "2.0.0-rc.1"
+    },
+    {
+      "range": "<3",
+      "satisfies": false,
+      "version": "2.0.0-rc.1"
+    },
+    {
+      "range": "^2.0.0-rc.0",
+      "satisfies": true,
+      "version": "2.0.0-rc.1"
+    },
+    {
+      "range": "^2.0.0-rc.0",
+      "satisfies": false,
+      "version": "2.1.0-rc.1"
+    },
+    {
+      "range": "^2.0.0-rc.0",
+      "satisfies": true,
+      "version": "2.1.0"
+    },
+    {
+      "range": "^2.0.0-rc.0",
+      "satisfies": true,
+      "version": "2.0.0-rc.0"
+    },
+    {
+      "range": "^2.0.0-rc.0",
+      "satisfies": true,
+      "version": "2.0.0"
+    },
+    {
+      "range": ">=2.0.0-rc.0",
+      "satisfies": true,
+      "version": "2.0.0-rc.1"
+    },
+    {
+      "range": ">=2.0.0-rc.0",
+      "satisfies": false,
+      "version": "2.1.0-rc.1"
+    },
+    {
+      "range": ">=2.0.0-rc.0",
+      "satisfies": true,
+      "version": "3.0.0"
+    },
+    {
+      "range": "^1 || ^3",
+      "satisfies": true,
+      "version": "3.1.0"
+    },
+    {
+      "range": "^1 || ^3",
+      "satisfies": false,
+      "version": "2.0.0"
+    },
+    {
+      "range": "^1 || ^3",
+      "satisfies": true,
+      "version": "1.9.0"
+    },
+    {
+      "range": ">=1.0.0 <2",
+      "satisfies": true,
+      "version": "1.5.0"
+    },
+    {
+      "range": ">=1.0.0 <2",
+      "satisfies": false,
+      "version": "2.0.0"
+    },
+    {
+      "range": ">=1.0.0 <2",
+      "satisfies": false,
+      "version": "2.0.0-0"
+    },
+    {
+      "range": "1.2.3",
+      "satisfies": true,
+      "version": "1.2.3"
+    },
+    {
+      "range": "1.2.3",
+      "satisfies": false,
+      "version": "1.2.4"
+    },
+    {
+      "range": "~1.2.3-beta.2",
+      "satisfies": true,
+      "version": "1.2.3-beta.4"
+    },
+    {
+      "range": "~1.2.3-beta.2",
+      "satisfies": false,
+      "version": "1.2.4-beta.2"
+    },
+    {
+      "range": "~1.2.3-beta.2",
+      "satisfies": true,
+      "version": "1.2.4"
+    }
+  ],
+  "schema_version": 1,
+  "version_cases": [
+    {
+      "candidate": true,
+      "major": 1,
+      "minor": 2,
+      "patch": 3,
+      "prerelease": [],
+      "tag": "v1.2.3",
+      "version": "1.2.3"
+    },
+    {
+      "candidate": true,
+      "major": 0,
+      "minor": 0,
+      "patch": 0,
+      "prerelease": [],
+      "tag": "v0.0.0",
+      "version": "0.0.0"
+    },
+    {
+      "candidate": true,
+      "major": 2,
+      "minor": 0,
+      "patch": 0,
+      "prerelease": [
+        "rc",
+        "1"
+      ],
+      "tag": "v2.0.0-rc.1",
+      "version": "2.0.0-rc.1"
+    },
+    {
+      "candidate": true,
+      "major": 1,
+      "minor": 0,
+      "patch": 0,
+      "prerelease": [
+        "alpha",
+        "beta"
+      ],
+      "tag": "v1.0.0-alpha.beta",
+      "version": "1.0.0-alpha.beta"
+    },
+    {
+      "candidate": true,
+      "major": 10,
+      "minor": 20,
+      "patch": 30,
+      "prerelease": [
+        "0",
+        "3",
+        "7"
+      ],
+      "tag": "v10.20.30-0.3.7",
+      "version": "10.20.30-0.3.7"
+    },
+    {
+      "candidate": false,
+      "tag": "1.2.3"
+    },
+    {
+      "candidate": false,
+      "tag": "v1.2"
+    },
+    {
+      "candidate": false,
+      "tag": "v1.2.3+build.5"
+    },
+    {
+      "candidate": false,
+      "tag": "v01.2.3"
+    },
+    {
+      "candidate": false,
+      "tag": "v1.2.3-01"
+    },
+    {
+      "candidate": false,
+      "tag": "v1.2.3-rc..1"
+    },
+    {
+      "candidate": false,
+      "tag": "V1.2.3"
+    },
+    {
+      "candidate": false,
+      "tag": "v1.2.3.4"
+    },
+    {
+      "candidate": false,
+      "tag": "stable"
+    },
+    {
+      "candidate": false,
+      "tag": "v1.2.3-rc_1"
+    }
+  ]
+}

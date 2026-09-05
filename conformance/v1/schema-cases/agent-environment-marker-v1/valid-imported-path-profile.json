@@ -1,15 +1,50 @@
 {
+  "members": [
+    {
+      "name": "authoring",
+      "overlay": false,
+      "source_path": "/Users/operator/profiles",
+      "state_sha256": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+      "version": "0.1.0",
+      "weight": 0
+    }
+  ],
   "mode": "managed-home",
+  "passthrough": [],
+  "precedence": {
+    "placement": "winner-last",
+    "winner": "higher-weight"
+  },
   "profile": {
     "imported_from_native": true,
+    "kind": "path",
+    "lock_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
     "name": "imported",
-    "source_kind": "path",
-    "source_path": "/Users/operator/profiles",
-    "state_sha256": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+    "root": "authoring",
+    "source_path": "/Users/operator/profiles"
   },
+  "seeded_projects": [
+    "/Users/operator/projects/app"
+  ],
+  "seeds": [
+    ".claude.json"
+  ],
   "surfaces": {
+    "mcp": {
+      "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "copies": [],
+      "paths": [
+        ".agent-context/mcp/claude_code.json"
+      ]
+    },
     "root-context": {
       "content_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "copies": [
+        {
+          "path": "CLAUDE.md",
+          "reason": "claude-code-root-context"
+        }
+      ],
       "form": "monolithic",
       "paths": [
         "CLAUDE.md"
@@ -17,7 +52,15 @@
     },
     "skills": {
       "content_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "copies": [],
       "paths": []
+    },
+    "system-prompt": {
+      "content_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "copies": [],
+      "paths": [
+        ".agent-context/system-prompt.md"
+      ]
     }
   },
   "version": 1

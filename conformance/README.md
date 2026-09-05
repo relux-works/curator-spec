@@ -111,14 +111,33 @@ The suite contains:
   mutations for every provider/capability/nonce/operation/permit/input/artifact/
   freshness/checkpoint binding, provider packaging denial, and zero released
   verified claims;
-- the agent-environments revision-1 surfaces: valid and invalid
-  `Profilefile.json`, `context.json`, `.agent-environment.json`, and
-  `launch-env-fragment-v1` examples; module byte validation; the byte-exact
-  section 5 materialization vectors — generation-header grammar, monolithic
-  part joining, chapter composition including the empty chapter, zero-module
-  and no-context outputs, referenced-form layout paths, managed
-  `opencode.json` CCJ-1 bytes with the trailing-LF rule, and header-free
-  system-prompt output — with their section 5.6 surface hashes;
+- the agent-environments revision-1 surfaces under the Decision 0012 model:
+  valid and invalid `agent-context.json`, `agent-mcp.json`, `context-lock-v1`,
+  `.agent-environment.json`, and `launch-env-fragment-v1` examples (one
+  violated rule per negative case, unknown-member rejection for every closed
+  object); the section 1.4 version and range family
+  (`vectors/context-versions.json`: the v-prefixed tag grammar with build
+  metadata excluded, SemVer precedence, the coercion table and the excluded
+  hyphen and `v` forms, `latest` as `*`, prerelease admission, the fixed
+  resolution algorithm with conflict, downward re-selection, selections that
+  never increase, exact-constraint unification, `||` highest member, the
+  section 6 weight rules and diagnostics, overlays under joint resolution, and
+  lock canonicalization with `lock_sha256`, the Decision 0012 section 9 worked
+  example among them); module byte validation; the byte-exact section 5
+  materialization vectors — the `curator-root-context-v2` header with its
+  `root:`, `member:`, `precedence:`, and `lock:` lines, monolithic part
+  joining, `## Context:` chapters with the no-chapter member, zero-module and
+  no-context outputs, referenced-form layout grouped per package, managed
+  `opencode.json` CCJ-1 bytes with the trailing-LF rule, header-free
+  system-prompt output, the emitted order under both `winner` and both
+  `placement` primitives with ties never inverted, and the section 5.8 MCP
+  launch-channel bytes per adapter (`claude_code` and `opencode` CCJ-1 files,
+  the `codex_cli` layer TOML, none for `pi`) — with their section 5.6 surface
+  hashes; and the section 9.1 detector classes
+  (`vectors/context-detectors.json`: positive and negative cases per closed
+  pattern class, MCP `args` and `url` in scope, the scoped waiver that clears
+  only its own span at its pin, the unpinnable case, and the
+  `context-system-module-present` warning);
 - the `manager-config` schema-2 surface: `schema-cases/manager-config-v2`
   with every environments section 12.1 knob present, one negative per
   closed-object rule and per value grammar, and a schema-1 rejection, plus

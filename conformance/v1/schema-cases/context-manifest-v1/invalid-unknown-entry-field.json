@@ -1,9 +1,0 @@
-{
-  "modules": [
-    {
-      "chapter": "Base",
-      "path": "00-base.md"
-    }
-  ],
-  "version": 1
-}

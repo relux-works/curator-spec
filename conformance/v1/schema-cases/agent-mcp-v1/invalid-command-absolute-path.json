@@ -1,0 +1,10 @@
+{
+  "name": "figma-devmode",
+  "schema_version": 1,
+  "server": {
+    "args": [],
+    "command": "/usr/local/bin/npx",
+    "transport": "stdio"
+  },
+  "version": "1.2.0"
+}

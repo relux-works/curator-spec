@@ -1,0 +1,31 @@
+{
+  "context": {
+    "modules": [
+      {
+        "path": "00-ios-umbrella.md"
+      },
+      {
+        "class": "system",
+        "environments": [
+          "claude_code"
+        ],
+        "path": "90-ios-system.md"
+      }
+    ]
+  },
+  "name": "companyA-root-context-ios-developer-umbrella",
+  "requires": {
+    "mcp": {
+      "dependency": {
+        "git": "https://github.com/example/mcp.git",
+        "revision": "0123456789abcdef0123456789abcdef01234567"
+      }
+    }
+  },
+  "schema_version": 1,
+  "version": "2.3.0",
+  "weight": 100,
+  "weights": {
+    "companyA-root-context-organizational-structure": 10
+  }
+}

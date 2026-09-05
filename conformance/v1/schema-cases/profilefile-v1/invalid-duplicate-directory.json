@@ -1,7 +1,0 @@
-{
-  "profiles": {
-    "companyA": "profiles/shared",
-    "personal": "profiles/shared"
-  },
-  "version": 1
-}

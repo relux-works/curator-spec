@@ -1,0 +1,15 @@
+{
+  "members": [
+    {
+      "kind": "context",
+      "name": "authoring",
+      "overlay": false,
+      "required_by": [],
+      "state_sha256": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+      "version": "0.1.0",
+      "weight": 0
+    }
+  ],
+  "root": "authoring",
+  "schema_version": 1
+}

@@ -1,0 +1,14 @@
+{
+  "name": "figma-devmode",
+  "schema_version": 1,
+  "server": {
+    "args": [],
+    "command": "npx",
+    "env_names": [
+      "FIGMA_API_KEY",
+      "FIGMA_API_KEY"
+    ],
+    "transport": "stdio"
+  },
+  "version": "1.2.0"
+}

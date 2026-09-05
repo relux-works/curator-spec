@@ -1,121 +1,249 @@
 {
   "capability": "agent-environments",
   "capability_revision": 1,
+  "emitted_order_rule": "context members in core section 7 Kahn order (smallest ready name first), stably sorted by effective weight: ascending under winner=higher-weight placement=winner-last, descending under winner=lower-weight placement=winner-last, and reversed under placement=winner-first; ties keep the topological order",
   "header_cases": [
     {
-      "chain": [
-        {
-          "name": "companyA",
-          "pin": "commit 0123456789abcdef0123456789abcdef01234567"
-        }
+      "emitted_order": [
+        "companyA"
       ],
-      "expected_bytes": "<!--\ncurator-root-context-v1\nprofile: companyA commit 0123456789abcdef0123456789abcdef01234567\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
-      "line_count": 6,
-      "name": "single-profile",
-      "precedence": null,
-      "sha256": "sha256:5276d55b245e30445e7ffc839b04a0d98801429a8148ca54e41667ea745712d8"
-    },
-    {
-      "chain": [
-        {
-          "name": "companyA",
-          "pin": "commit 0123456789abcdef0123456789abcdef01234567"
-        },
-        {
-          "name": "personal",
-          "pin": "commit fedcba9876543210fedcba9876543210fedcba98"
-        },
-        {
-          "name": "emptyoverlay",
-          "pin": "commit 1111111111111111111111111111111111111111"
-        }
-      ],
-      "expected_bytes": "<!--\ncurator-root-context-v1\nprofile: companyA commit 0123456789abcdef0123456789abcdef01234567\ncompose: personal commit fedcba9876543210fedcba9876543210fedcba98\ncompose: emptyoverlay commit 1111111111111111111111111111111111111111\nprecedence: later-overrides-earlier\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
+      "expected_bytes": "<!--\ncurator-root-context-v2\nroot: companyA 2.3.0 commit 0123456789abcdef0123456789abcdef01234567\nmember: companyA 2.3.0 commit 0123456789abcdef0123456789abcdef01234567 weight 100\nprecedence: winner=higher-weight placement=winner-last\nlock: sha256:597e3f01c2c943a72ae1263fe9bc6d9c018fb057d08cc1a278f3f3e89514ba02\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
       "line_count": 9,
-      "name": "composed-default-precedence",
-      "precedence": "later-overrides-earlier",
-      "sha256": "sha256:177dac1b8c88d795d3bb27cf56759128e223e027932896182769313ecabf4cea"
+      "lock": {
+        "members": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "kind": "context",
+            "name": "companyA",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/companyA",
+            "version": "2.3.0",
+            "weight": 100
+          }
+        ],
+        "root": "companyA",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:597e3f01c2c943a72ae1263fe9bc6d9c018fb057d08cc1a278f3f3e89514ba02",
+      "name": "single-root",
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "sha256": "sha256:9357a01c45af56d04916d3068820cc636c10eb0f99e8c6866da15608a70f9808"
     },
     {
-      "chain": [
-        {
-          "name": "companyA",
-          "pin": "commit 0123456789abcdef0123456789abcdef01234567"
-        },
-        {
-          "name": "personal",
-          "pin": "commit fedcba9876543210fedcba9876543210fedcba98"
-        }
+      "emitted_order": [
+        "companyA",
+        "emptyoverlay",
+        "personal"
       ],
-      "expected_bytes": "<!--\ncurator-root-context-v1\nprofile: companyA commit 0123456789abcdef0123456789abcdef01234567\ncompose: personal commit fedcba9876543210fedcba9876543210fedcba98\nprecedence: earlier-overrides-later\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
-      "line_count": 8,
-      "name": "composed-earlier-overrides-later",
-      "precedence": "earlier-overrides-later",
-      "sha256": "sha256:8011725cc7bf6b9ef8c13f2ccfd54e0d454c4eef0f51122984eff0d577335a86"
+      "expected_bytes": "<!--\ncurator-root-context-v2\nroot: companyA 2.3.0 commit 0123456789abcdef0123456789abcdef01234567\nmember: companyA 2.3.0 commit 0123456789abcdef0123456789abcdef01234567 weight 100\nmember: emptyoverlay 0.1.0 commit 1111111111111111111111111111111111111111 weight 1000 overlay\nmember: personal 0.3.0 state sha256:abababababababababababababababababababababababababababababababab weight 1000 overlay\nprecedence: winner=higher-weight placement=winner-last\nlock: sha256:0fe12b40d26c79ba3e2d2b80a0a55772ff7b53f09df0e007174d7d662a6c4230\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
+      "line_count": 11,
+      "lock": {
+        "members": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "kind": "context",
+            "name": "companyA",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/companyA",
+            "version": "2.3.0",
+            "weight": 100
+          },
+          {
+            "commit": "1111111111111111111111111111111111111111",
+            "kind": "context",
+            "name": "emptyoverlay",
+            "overlay": true,
+            "required_by": [],
+            "source": "github.com/example/emptyoverlay",
+            "version": "0.1.0",
+            "weight": 1000
+          },
+          {
+            "kind": "context",
+            "name": "personal",
+            "overlay": true,
+            "required_by": [],
+            "state_sha256": "abababababababababababababababababababababababababababababababab",
+            "version": "0.3.0",
+            "weight": 1000
+          }
+        ],
+        "root": "companyA",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:0fe12b40d26c79ba3e2d2b80a0a55772ff7b53f09df0e007174d7d662a6c4230",
+      "name": "composed-overlays-default",
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "sha256": "sha256:00a0bd713c3b04fa8409764ba2b9354ad131a8e627db81a553594ee92d5ac817"
     },
     {
-      "chain": [
-        {
-          "name": "default",
-          "pin": "state sha256:abababababababababababababababababababababababababababababababab"
-        }
+      "emitted_order": [
+        "core",
+        "org",
+        "figma",
+        "ios",
+        "umbrella",
+        "personal"
       ],
-      "expected_bytes": "<!--\ncurator-root-context-v1\nprofile: default state sha256:abababababababababababababababababababababababababababababababab\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
-      "line_count": 6,
+      "expected_bytes": "<!--\ncurator-root-context-v2\nroot: umbrella 2.3.0 commit 6666666666666666666666666666666666666666\nmember: core 3.2.1 commit 1111111111111111111111111111111111111111 weight 0\nmember: org 1.0.4 commit 2222222222222222222222222222222222222222 weight 10\nmember: figma 1.1.0 commit 4444444444444444444444444444444444444444 weight 60\nmember: ios 2.4.2 commit 5555555555555555555555555555555555555555 weight 60\nmember: umbrella 2.3.0 commit 6666666666666666666666666666666666666666 weight 100\nmember: personal 0.3.0 state sha256:abababababababababababababababababababababababababababababababab weight 1000 overlay\nprecedence: winner=lower-weight placement=winner-first\nlock: sha256:b8448aa1a92c5f1993616900ce51335bc88cc1c960ea7f5c8cc71f229840de06\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
+      "line_count": 14,
+      "lock": {
+        "members": [
+          {
+            "commit": "1111111111111111111111111111111111111111",
+            "kind": "context",
+            "name": "core",
+            "overlay": false,
+            "required_by": [
+              "umbrella"
+            ],
+            "source": "github.com/companyA/root-context-core",
+            "version": "3.2.1",
+            "weight": 0
+          },
+          {
+            "commit": "4444444444444444444444444444444444444444",
+            "directory": "contexts/figma",
+            "kind": "context",
+            "name": "figma",
+            "overlay": false,
+            "required_by": [
+              "umbrella"
+            ],
+            "source": "github.com/companyA/root-contexts",
+            "version": "1.1.0",
+            "weight": 60
+          },
+          {
+            "commit": "5555555555555555555555555555555555555555",
+            "kind": "context",
+            "name": "ios",
+            "overlay": false,
+            "required_by": [
+              "umbrella"
+            ],
+            "source": "github.com/companyA/root-context-developers-ios",
+            "version": "2.4.2",
+            "weight": 60
+          },
+          {
+            "commit": "2222222222222222222222222222222222222222",
+            "kind": "context",
+            "name": "org",
+            "overlay": false,
+            "required_by": [
+              "core"
+            ],
+            "source": "github.com/companyA/root-context-organizational-structure",
+            "version": "1.0.4",
+            "weight": 10
+          },
+          {
+            "kind": "context",
+            "name": "personal",
+            "overlay": true,
+            "required_by": [],
+            "state_sha256": "abababababababababababababababababababababababababababababababab",
+            "version": "0.3.0",
+            "weight": 1000
+          },
+          {
+            "commit": "6666666666666666666666666666666666666666",
+            "kind": "context",
+            "name": "umbrella",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/companyA/root-context-ios-developer-umbrella",
+            "version": "2.3.0",
+            "weight": 100
+          }
+        ],
+        "root": "umbrella",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:b8448aa1a92c5f1993616900ce51335bc88cc1c960ea7f5c8cc71f229840de06",
+      "name": "composed-winner-lower-placement-first",
+      "precedence": {
+        "placement": "winner-first",
+        "winner": "lower-weight"
+      },
+      "sha256": "sha256:b5e91e543d765e3480b9b1fb142f640d8dfa85c1533c4906713d69a209ce8788"
+    },
+    {
+      "emitted_order": [
+        "default"
+      ],
+      "expected_bytes": "<!--\ncurator-root-context-v2\nroot: default 0.0.0 state sha256:abababababababababababababababababababababababababababababababab\nmember: default 0.0.0 state sha256:abababababababababababababababababababababababababababababababab weight 0\nprecedence: winner=higher-weight placement=winner-last\nlock: sha256:caacb56869e330648fccce796b951be982e157cbcd58ba8e46fe3e8c178bbd38\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
+      "line_count": 9,
+      "lock": {
+        "members": [
+          {
+            "kind": "context",
+            "name": "default",
+            "overlay": false,
+            "required_by": [],
+            "state_sha256": "abababababababababababababababababababababababababababababababab",
+            "version": "0.0.0",
+            "weight": 0
+          }
+        ],
+        "root": "default",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:caacb56869e330648fccce796b951be982e157cbcd58ba8e46fe3e8c178bbd38",
       "name": "local-state-pin",
-      "precedence": null,
-      "sha256": "sha256:0b16fcb3534915afcd83d4e8000b053b2893e1abc80833cb723c3d7d8d67b5ce"
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "sha256": "sha256:14514addc545bb423801a2c1bb0ad149d8a899b6ec7697ab33c39542a818bbe3"
     }
   ],
+  "header_type_line": "curator-root-context-v2",
   "materialization_cases": [
     {
-      "chain": [
-        {
-          "has_context": true,
-          "modules": [
-            {
-              "content": "# Base\n\nShared engineering context.\n",
-              "path": "00-base.md"
-            },
-            {
-              "content": "# Style\n\nWrite tersely.\n",
-              "path": "10-style.md"
-            },
-            {
-              "content": "# Claude\n\nClaude-only guidance.\n",
-              "environments": [
-                "claude_code"
-              ],
-              "path": "20-claude.md"
-            },
-            {
-              "class": "system",
-              "content": "You are the companyA reviewer.\n",
-              "path": "90-system.md"
-            }
-          ],
-          "name": "companyA",
-          "pin": "commit 0123456789abcdef0123456789abcdef01234567"
-        }
+      "emitted_order": [
+        "companyA"
       ],
       "environment": "claude_code",
       "file_written": true,
       "files": [
         {
+          "bytes": 693,
           "expected": "expected/environments/monolithic-claude-code/CLAUDE.md",
           "path": "CLAUDE.md",
-          "sha256": "sha256:38bcea5fa38ddf962e28c33de8c054233f9dc8f0d1e40f92369f08c840df9c51"
+          "sha256": "sha256:46867545f46551c96bc191154943cb63ea2a18bab3d4b5d3a4a36acc13bcf8c9"
         }
       ],
       "form": "monolithic",
+      "lock": {
+        "members": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "kind": "context",
+            "name": "companyA",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/companyA",
+            "version": "2.3.0",
+            "weight": 100
+          }
+        ],
+        "root": "companyA",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:597e3f01c2c943a72ae1263fe9bc6d9c018fb057d08cc1a278f3f3e89514ba02",
       "name": "monolithic-claude-code",
-      "precedence": null,
-      "surface": "root-context",
-      "surface_sha256": "sha256:ea8df4598df4659d6dbb34d2e9fb4d46ab62ff6cdefcee161ea219188c672e02"
-    },
-    {
-      "chain": [
-        {
+      "packages": {
+        "companyA": {
           "has_context": true,
           "modules": [
             {
@@ -138,29 +266,51 @@
               "content": "You are the companyA reviewer.\n",
               "path": "90-system.md"
             }
-          ],
-          "name": "companyA",
-          "pin": "commit 0123456789abcdef0123456789abcdef01234567"
+          ]
         }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "root-context",
+      "surface_sha256": "sha256:1630dc07115a62631435e42ecd2173cf84a370840494333de60f2725888bb0fe"
+    },
+    {
+      "emitted_order": [
+        "companyA"
       ],
       "environment": "codex_cli",
       "file_written": true,
       "files": [
         {
+          "bytes": 660,
           "expected": "expected/environments/monolithic-codex-selector-excluded/AGENTS.md",
           "path": "AGENTS.md",
-          "sha256": "sha256:193630a194c831eab37383f447f72af713471d11be3ba90fd359e028df823ffe"
+          "sha256": "sha256:adf3710ece4480a4cba731416e0372849de6c3ae6deaa82c9c73d20885e03110"
         }
       ],
       "form": "monolithic",
+      "lock": {
+        "members": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "kind": "context",
+            "name": "companyA",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/companyA",
+            "version": "2.3.0",
+            "weight": 100
+          }
+        ],
+        "root": "companyA",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:597e3f01c2c943a72ae1263fe9bc6d9c018fb057d08cc1a278f3f3e89514ba02",
       "name": "monolithic-codex-selector-excluded",
-      "precedence": null,
-      "surface": "root-context",
-      "surface_sha256": "sha256:d4138446a1c1655a6d905634565de8721d4fd7de2eebd4b332eb9b0fddbd7e9c"
-    },
-    {
-      "chain": [
-        {
+      "packages": {
+        "companyA": {
           "has_context": true,
           "modules": [
             {
@@ -183,11 +333,101 @@
               "content": "You are the companyA reviewer.\n",
               "path": "90-system.md"
             }
-          ],
-          "name": "companyA",
-          "pin": "commit 0123456789abcdef0123456789abcdef01234567"
-        },
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "root-context",
+      "surface_sha256": "sha256:a65fb8b20eb4c071a6e43ab7aae9d9d1dff2bf844293624a5630f63d21f0d3cf"
+    },
+    {
+      "emitted_order": [
+        "companyA",
+        "emptyoverlay",
+        "personal"
+      ],
+      "environment": "claude_code",
+      "file_written": true,
+      "files": [
         {
+          "bytes": 981,
+          "expected": "expected/environments/monolithic-composed-no-chapter/CLAUDE.md",
+          "path": "CLAUDE.md",
+          "sha256": "sha256:c08300351715917c8783eea1653ef588710842f6b5d459930fcd3fa76b3b9d7f"
+        }
+      ],
+      "form": "monolithic",
+      "lock": {
+        "members": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "kind": "context",
+            "name": "companyA",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/companyA",
+            "version": "2.3.0",
+            "weight": 100
+          },
+          {
+            "commit": "1111111111111111111111111111111111111111",
+            "kind": "context",
+            "name": "emptyoverlay",
+            "overlay": true,
+            "required_by": [],
+            "source": "github.com/example/emptyoverlay",
+            "version": "0.1.0",
+            "weight": 1000
+          },
+          {
+            "kind": "context",
+            "name": "personal",
+            "overlay": true,
+            "required_by": [],
+            "state_sha256": "abababababababababababababababababababababababababababababababab",
+            "version": "0.3.0",
+            "weight": 1000
+          }
+        ],
+        "root": "companyA",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:0fe12b40d26c79ba3e2d2b80a0a55772ff7b53f09df0e007174d7d662a6c4230",
+      "name": "monolithic-composed-no-chapter",
+      "packages": {
+        "companyA": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Base\n\nShared engineering context.\n",
+              "path": "00-base.md"
+            },
+            {
+              "content": "# Style\n\nWrite tersely.\n",
+              "path": "10-style.md"
+            },
+            {
+              "content": "# Claude\n\nClaude-only guidance.\n",
+              "environments": [
+                "claude_code"
+              ],
+              "path": "20-claude.md"
+            },
+            {
+              "class": "system",
+              "content": "You are the companyA reviewer.\n",
+              "path": "90-system.md"
+            }
+          ]
+        },
+        "emptyoverlay": {
+          "has_context": true,
+          "modules": []
+        },
+        "personal": {
           "has_context": true,
           "modules": [
             {
@@ -199,170 +439,192 @@
               "content": "Prefer short answers.\n",
               "path": "90-system.md"
             }
-          ],
-          "name": "personal",
-          "pin": "commit fedcba9876543210fedcba9876543210fedcba98"
-        },
-        {
-          "has_context": true,
-          "modules": [],
-          "name": "emptyoverlay",
-          "pin": "commit 1111111111111111111111111111111111111111"
+          ]
         }
-      ],
-      "environment": "claude_code",
-      "file_written": true,
-      "files": [
-        {
-          "expected": "expected/environments/monolithic-composed-empty-chapter/CLAUDE.md",
-          "path": "CLAUDE.md",
-          "sha256": "sha256:e6a05716251705284c4a7a255f086d295a544df00dcc1ff8204dea74a143e693"
-        }
-      ],
-      "form": "monolithic",
-      "name": "monolithic-composed-empty-chapter",
-      "precedence": "later-overrides-earlier",
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
       "surface": "root-context",
-      "surface_sha256": "sha256:282235a15f3f52a42ab115493788e400764d662c1e234bd3ec0847ee6870a7cb"
+      "surface_sha256": "sha256:718de2b77294605c56c64f2142e46463c3ba3636b071ef04d7a0a67c6739c9f1"
     },
     {
-      "chain": [
-        {
-          "has_context": true,
-          "modules": [],
-          "name": "emptyoverlay",
-          "pin": "commit 1111111111111111111111111111111111111111"
-        }
+      "emitted_order": [
+        "emptyoverlay"
       ],
       "environment": "claude_code",
       "file_written": true,
       "files": [
         {
+          "bytes": 574,
           "expected": "expected/environments/monolithic-zero-modules/CLAUDE.md",
           "path": "CLAUDE.md",
-          "sha256": "sha256:07275ab7caeb2146bc455ad4d7ad25b85107618e941828d7713acde10ef0434c"
+          "sha256": "sha256:13476bc7b8578fde1bcdde8491be51314d33a518ace295e76db922d0ae9a005d"
         }
       ],
       "form": "monolithic",
+      "lock": {
+        "members": [
+          {
+            "commit": "1111111111111111111111111111111111111111",
+            "kind": "context",
+            "name": "emptyoverlay",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/emptyoverlay",
+            "version": "0.1.0",
+            "weight": 1000
+          }
+        ],
+        "root": "emptyoverlay",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:f4b1cbe58b3250c5d0526e2af9b7e22efcc428f407e94069acc9656c33bdcaa7",
       "name": "monolithic-zero-modules",
-      "precedence": null,
+      "packages": {
+        "emptyoverlay": {
+          "has_context": true,
+          "modules": []
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
       "surface": "root-context",
-      "surface_sha256": "sha256:cc60742381d8983cffe7a5b29f0dca0c67b1db6fdc0d347a3a5b4d25ab1ba22f"
+      "surface_sha256": "sha256:b2321e7e28a115aaef26720fe2c01c9805aeb30bf00f83d1f74536cd154d5710"
     },
     {
-      "chain": [
-        {
-          "has_context": true,
-          "modules": [],
-          "name": "emptyoverlay",
-          "pin": "commit 1111111111111111111111111111111111111111"
-        },
-        {
-          "has_context": true,
-          "modules": [],
-          "name": "emptytoo",
-          "pin": "commit 2222222222222222222222222222222222222222"
-        }
+      "emitted_order": [
+        "emptyoverlay",
+        "emptytoo"
       ],
       "environment": "claude_code",
       "file_written": true,
       "files": [
         {
+          "bytes": 665,
           "expected": "expected/environments/monolithic-zero-modules-composed/CLAUDE.md",
           "path": "CLAUDE.md",
-          "sha256": "sha256:4ef14783df03410e6380cedf6babaa9fde698205a924b8818ddda75f79cc3aa9"
+          "sha256": "sha256:495a60c6384ea9f1e451a9b00ea2cdbde00543264bf98fcec6091c7511bb8d5f"
         }
       ],
       "form": "monolithic",
+      "lock": {
+        "members": [
+          {
+            "commit": "1111111111111111111111111111111111111111",
+            "kind": "context",
+            "name": "emptyoverlay",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/emptyoverlay",
+            "version": "0.1.0",
+            "weight": 1000
+          },
+          {
+            "commit": "2222222222222222222222222222222222222222",
+            "kind": "context",
+            "name": "emptytoo",
+            "overlay": true,
+            "required_by": [],
+            "source": "github.com/example/emptytoo",
+            "version": "0.1.0",
+            "weight": 1000
+          }
+        ],
+        "root": "emptyoverlay",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:379d1d76f13d8489cbea9bc8db768bd57faa183e505ce1f9a67d9bb70068d19f",
       "name": "monolithic-zero-modules-composed",
-      "precedence": "later-overrides-earlier",
+      "packages": {
+        "emptyoverlay": {
+          "has_context": true,
+          "modules": []
+        },
+        "emptytoo": {
+          "has_context": true,
+          "modules": []
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
       "surface": "root-context",
-      "surface_sha256": "sha256:676a13091320886e799826dfe8c6692d5d77444bb4e966285bc0f988351377d4"
+      "surface_sha256": "sha256:b3bbf2c1d6295d7d40906ce3e55fd636e6243e13d5c9ec9779e181172d5f97a9"
     },
     {
-      "chain": [
-        {
-          "has_context": true,
-          "modules": [
-            {
-              "content": "# Base\n\nShared engineering context.\n",
-              "path": "00-base.md"
-            },
-            {
-              "content": "# Style\n\nWrite tersely.\n",
-              "path": "10-style.md"
-            },
-            {
-              "content": "# Claude\n\nClaude-only guidance.\n",
-              "environments": [
-                "claude_code"
-              ],
-              "path": "20-claude.md"
-            },
-            {
-              "class": "system",
-              "content": "You are the companyA reviewer.\n",
-              "path": "90-system.md"
-            }
-          ],
-          "name": "companyA",
-          "pin": "commit 0123456789abcdef0123456789abcdef01234567"
-        },
-        {
-          "has_context": true,
-          "modules": [
-            {
-              "content": "# Personal\n\nPersonal overlay context.\n",
-              "path": "00-base.md"
-            },
-            {
-              "class": "system",
-              "content": "Prefer short answers.\n",
-              "path": "90-system.md"
-            }
-          ],
-          "name": "personal",
-          "pin": "commit fedcba9876543210fedcba9876543210fedcba98"
-        }
+      "emitted_order": [
+        "companyA",
+        "personal"
       ],
       "environment": "claude_code",
       "file_written": true,
       "files": [
         {
+          "bytes": 36,
           "expected": "expected/environments/referenced-claude-code-composed/.agent-context/modules/companyA/00-base.md",
           "path": ".agent-context/modules/companyA/00-base.md",
           "sha256": "sha256:25a270d26d57c581ab4801a10b180c5dee9cea69e5b661fb03f9081a001ba968"
         },
         {
+          "bytes": 24,
           "expected": "expected/environments/referenced-claude-code-composed/.agent-context/modules/companyA/10-style.md",
           "path": ".agent-context/modules/companyA/10-style.md",
           "sha256": "sha256:f845f964c4d16fc6f393d583f546f19eae4b519ed2d182c32d6e450b2dbe5474"
         },
         {
+          "bytes": 32,
           "expected": "expected/environments/referenced-claude-code-composed/.agent-context/modules/companyA/20-claude.md",
           "path": ".agent-context/modules/companyA/20-claude.md",
           "sha256": "sha256:1390197432a6161f86317d4f7ff0f1f72d93200cf608b5ae353969c5e5ef9e44"
         },
         {
+          "bytes": 38,
           "expected": "expected/environments/referenced-claude-code-composed/.agent-context/modules/personal/00-base.md",
           "path": ".agent-context/modules/personal/00-base.md",
           "sha256": "sha256:976ec64846a0217ff23b4e07385b959ceaa001f0cd092c0793efdbad4664e2e1"
         },
         {
+          "bytes": 935,
           "expected": "expected/environments/referenced-claude-code-composed/CLAUDE.md",
           "path": "CLAUDE.md",
-          "sha256": "sha256:455c24b7ca188e4dfa149d0484e81a7e77177fd6c7f5f080aff1ad951ba309b5"
+          "sha256": "sha256:9678bad8e1f5cd51524682accb9a0e5881b2ea40b92431db9ae9396e01831185"
         }
       ],
       "form": "referenced",
+      "lock": {
+        "members": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "kind": "context",
+            "name": "companyA",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/companyA",
+            "version": "2.3.0",
+            "weight": 100
+          },
+          {
+            "kind": "context",
+            "name": "personal",
+            "overlay": true,
+            "required_by": [],
+            "state_sha256": "abababababababababababababababababababababababababababababababab",
+            "version": "0.3.0",
+            "weight": 1000
+          }
+        ],
+        "root": "companyA",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:0305581b4f24d74ce271f9809d24f77b794b5ef9ad004bcc5c398fa2ea2e54ab",
       "name": "referenced-claude-code-composed",
-      "precedence": "later-overrides-earlier",
-      "surface": "root-context",
-      "surface_sha256": "sha256:601c8322410d24eaddd890c5a8f0965e116a8f342a562138c2c75717fa23a8eb"
-    },
-    {
-      "chain": [
-        {
+      "packages": {
+        "companyA": {
           "has_context": true,
           "modules": [
             {
@@ -385,89 +647,83 @@
               "content": "You are the companyA reviewer.\n",
               "path": "90-system.md"
             }
-          ],
-          "name": "companyA",
-          "pin": "commit 0123456789abcdef0123456789abcdef01234567"
+          ]
+        },
+        "personal": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Personal\n\nPersonal overlay context.\n",
+              "path": "00-base.md"
+            },
+            {
+              "class": "system",
+              "content": "Prefer short answers.\n",
+              "path": "90-system.md"
+            }
+          ]
         }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "root-context",
+      "surface_sha256": "sha256:abc4451ef4b0970349df4fff2d8f3f0ee03a94581ddcd543ca3d0df4ce212ba6"
+    },
+    {
+      "emitted_order": [
+        "companyA"
       ],
       "environment": "opencode",
       "file_written": true,
       "files": [
         {
+          "bytes": 36,
           "expected": "expected/environments/referenced-opencode/.agent-context/modules/companyA/00-base.md",
           "path": ".agent-context/modules/companyA/00-base.md",
           "sha256": "sha256:25a270d26d57c581ab4801a10b180c5dee9cea69e5b661fb03f9081a001ba968"
         },
         {
+          "bytes": 24,
           "expected": "expected/environments/referenced-opencode/.agent-context/modules/companyA/10-style.md",
           "path": ".agent-context/modules/companyA/10-style.md",
           "sha256": "sha256:f845f964c4d16fc6f393d583f546f19eae4b519ed2d182c32d6e450b2dbe5474"
         },
         {
+          "bytes": 565,
           "expected": "expected/environments/referenced-opencode/AGENTS.md",
           "path": "AGENTS.md",
-          "sha256": "sha256:5276d55b245e30445e7ffc839b04a0d98801429a8148ca54e41667ea745712d8"
+          "sha256": "sha256:9357a01c45af56d04916d3068820cc636c10eb0f99e8c6866da15608a70f9808"
         },
         {
+          "bytes": 110,
           "expected": "expected/environments/referenced-opencode/opencode.json",
           "path": "opencode.json",
           "sha256": "sha256:10d7609f271ca05670efb997f93bbf77fc1828b7beaa3779dcf29317bf46d42d"
         }
       ],
       "form": "referenced",
+      "lock": {
+        "members": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "kind": "context",
+            "name": "companyA",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/companyA",
+            "version": "2.3.0",
+            "weight": 100
+          }
+        ],
+        "root": "companyA",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:597e3f01c2c943a72ae1263fe9bc6d9c018fb057d08cc1a278f3f3e89514ba02",
       "name": "referenced-opencode",
-      "precedence": null,
-      "surface": "root-context",
-      "surface_sha256": "sha256:3a35fb595d3b875af928736191de71f2119c9377a7e8e9363cbada6e6ec7de32"
-    },
-    {
-      "chain": [
-        {
-          "has_context": true,
-          "modules": [],
-          "name": "emptyoverlay",
-          "pin": "commit 1111111111111111111111111111111111111111"
-        }
-      ],
-      "environment": "opencode",
-      "file_written": true,
-      "files": [
-        {
-          "expected": "expected/environments/referenced-opencode-zero-modules/AGENTS.md",
-          "path": "AGENTS.md",
-          "sha256": "sha256:07275ab7caeb2146bc455ad4d7ad25b85107618e941828d7713acde10ef0434c"
-        },
-        {
-          "expected": "expected/environments/referenced-opencode-zero-modules/opencode.json",
-          "path": "opencode.json",
-          "sha256": "sha256:b402c44e66c02d949366a3d4dc38af867f0866e91508bd182cb8d023d7f83fbe"
-        }
-      ],
-      "form": "referenced",
-      "name": "referenced-opencode-zero-modules",
-      "precedence": null,
-      "surface": "root-context",
-      "surface_sha256": "sha256:6ee4dcdfa043c525db9839852296e75f2b0f31ea5f91532f48c661ff0834ffd7"
-    },
-    {
-      "chain": [
-        {
-          "has_context": false,
-          "name": "nocontext",
-          "pin": "commit 4444444444444444444444444444444444444444"
-        }
-      ],
-      "environment": "claude_code",
-      "file_written": false,
-      "files": [],
-      "form": "monolithic",
-      "name": "no-context-directory",
-      "precedence": null,
-      "surface": "root-context"
-    },
-    {
-      "chain": [
-        {
+      "packages": {
+        "companyA": {
           "has_context": true,
           "modules": [
             {
@@ -490,11 +746,174 @@
               "content": "You are the companyA reviewer.\n",
               "path": "90-system.md"
             }
-          ],
-          "name": "companyA",
-          "pin": "commit 0123456789abcdef0123456789abcdef01234567"
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "root-context",
+      "surface_sha256": "sha256:1584040fac129921bb6b829b7cdf1c24d28d68a57394dabb7332bc19c3efd86d"
+    },
+    {
+      "emitted_order": [
+        "emptyoverlay"
+      ],
+      "environment": "opencode",
+      "file_written": true,
+      "files": [
+        {
+          "bytes": 574,
+          "expected": "expected/environments/referenced-opencode-zero-modules/AGENTS.md",
+          "path": "AGENTS.md",
+          "sha256": "sha256:13476bc7b8578fde1bcdde8491be51314d33a518ace295e76db922d0ae9a005d"
         },
         {
+          "bytes": 20,
+          "expected": "expected/environments/referenced-opencode-zero-modules/opencode.json",
+          "path": "opencode.json",
+          "sha256": "sha256:b402c44e66c02d949366a3d4dc38af867f0866e91508bd182cb8d023d7f83fbe"
+        }
+      ],
+      "form": "referenced",
+      "lock": {
+        "members": [
+          {
+            "commit": "1111111111111111111111111111111111111111",
+            "kind": "context",
+            "name": "emptyoverlay",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/emptyoverlay",
+            "version": "0.1.0",
+            "weight": 1000
+          }
+        ],
+        "root": "emptyoverlay",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:f4b1cbe58b3250c5d0526e2af9b7e22efcc428f407e94069acc9656c33bdcaa7",
+      "name": "referenced-opencode-zero-modules",
+      "packages": {
+        "emptyoverlay": {
+          "has_context": true,
+          "modules": []
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "root-context",
+      "surface_sha256": "sha256:932ac2905c18ad8f450784afe216943f1789415ced08f335a2a4731cb966c526"
+    },
+    {
+      "emitted_order": [
+        "nocontext"
+      ],
+      "environment": "claude_code",
+      "file_written": false,
+      "files": [],
+      "form": "monolithic",
+      "lock": {
+        "members": [
+          {
+            "commit": "4444444444444444444444444444444444444444",
+            "kind": "context",
+            "name": "nocontext",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/nocontext",
+            "version": "1.0.0",
+            "weight": 0
+          }
+        ],
+        "root": "nocontext",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:ffc964fe7695cd6a3a69b9d4a54c81c7fa425054e89929945eec16e9c54b3460",
+      "name": "no-context-directory",
+      "packages": {
+        "nocontext": {
+          "has_context": false
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "root-context"
+    },
+    {
+      "emitted_order": [
+        "companyA",
+        "personal"
+      ],
+      "environment": "claude_code",
+      "file_written": true,
+      "files": [
+        {
+          "bytes": 54,
+          "expected": "expected/environments/system-prompt-composed/.agent-context/system-prompt.md",
+          "path": ".agent-context/system-prompt.md",
+          "sha256": "sha256:3c2d95408a1fb2ecd0a8317ce6f95f60d5828164d83a8a98eb94bfff01f84a00"
+        }
+      ],
+      "lock": {
+        "members": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "kind": "context",
+            "name": "companyA",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/companyA",
+            "version": "2.3.0",
+            "weight": 100
+          },
+          {
+            "kind": "context",
+            "name": "personal",
+            "overlay": true,
+            "required_by": [],
+            "state_sha256": "abababababababababababababababababababababababababababababababab",
+            "version": "0.3.0",
+            "weight": 1000
+          }
+        ],
+        "root": "companyA",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:0305581b4f24d74ce271f9809d24f77b794b5ef9ad004bcc5c398fa2ea2e54ab",
+      "name": "system-prompt-composed",
+      "packages": {
+        "companyA": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Base\n\nShared engineering context.\n",
+              "path": "00-base.md"
+            },
+            {
+              "content": "# Style\n\nWrite tersely.\n",
+              "path": "10-style.md"
+            },
+            {
+              "content": "# Claude\n\nClaude-only guidance.\n",
+              "environments": [
+                "claude_code"
+              ],
+              "path": "20-claude.md"
+            },
+            {
+              "class": "system",
+              "content": "You are the companyA reviewer.\n",
+              "path": "90-system.md"
+            }
+          ]
+        },
+        "personal": {
           "has_context": true,
           "modules": [
             {
@@ -506,28 +925,43 @@
               "content": "Prefer short answers.\n",
               "path": "90-system.md"
             }
-          ],
-          "name": "personal",
-          "pin": "commit fedcba9876543210fedcba9876543210fedcba98"
+          ]
         }
-      ],
-      "environment": "claude_code",
-      "file_written": true,
-      "files": [
-        {
-          "expected": "expected/environments/system-prompt-composed/.agent-context/system-prompt.md",
-          "path": ".agent-context/system-prompt.md",
-          "sha256": "sha256:3c2d95408a1fb2ecd0a8317ce6f95f60d5828164d83a8a98eb94bfff01f84a00"
-        }
-      ],
-      "name": "system-prompt-composed",
-      "precedence": "later-overrides-earlier",
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
       "surface": "system-prompt",
       "surface_sha256": "sha256:89b93eb04b83fe8737f804aab3326e7d4cf2b51ba95d95c4e2d288562f0e2407"
     },
     {
-      "chain": [
-        {
+      "emitted_order": [
+        "selective"
+      ],
+      "environment": "codex_cli",
+      "file_written": false,
+      "files": [],
+      "lock": {
+        "members": [
+          {
+            "commit": "3333333333333333333333333333333333333333",
+            "kind": "context",
+            "name": "selective",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/selective",
+            "version": "1.0.0",
+            "weight": 0
+          }
+        ],
+        "root": "selective",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:55375161b381d5a50903a004d938e1c989d7e4889c88eb523f6210bf1304abe9",
+      "name": "system-prompt-none-applicable",
+      "packages": {
+        "selective": {
           "has_context": true,
           "modules": [
             {
@@ -538,17 +972,1237 @@
               ],
               "path": "90-system.md"
             }
-          ],
-          "name": "selective",
-          "pin": "commit 3333333333333333333333333333333333333333"
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "system-prompt"
+    },
+    {
+      "emitted_order": [
+        "core",
+        "org",
+        "figma",
+        "ios",
+        "umbrella",
+        "personal"
+      ],
+      "environment": "claude_code",
+      "file_written": true,
+      "files": [
+        {
+          "bytes": 1333,
+          "expected": "expected/environments/weights-winner-higher-placement-last/CLAUDE.md",
+          "path": "CLAUDE.md",
+          "sha256": "sha256:c2703d8b0e827e2ab3cab9d2bc8485096c27e6eb103a589387f75a2aab8839d1"
         }
       ],
+      "form": "monolithic",
+      "lock": {
+        "members": [
+          {
+            "commit": "1111111111111111111111111111111111111111",
+            "kind": "context",
+            "name": "core",
+            "overlay": false,
+            "required_by": [
+              "umbrella"
+            ],
+            "source": "github.com/companyA/root-context-core",
+            "version": "3.2.1",
+            "weight": 0
+          },
+          {
+            "commit": "4444444444444444444444444444444444444444",
+            "directory": "contexts/figma",
+            "kind": "context",
+            "name": "figma",
+            "overlay": false,
+            "required_by": [
+              "umbrella"
+            ],
+            "source": "github.com/companyA/root-contexts",
+            "version": "1.1.0",
+            "weight": 60
+          },
+          {
+            "commit": "5555555555555555555555555555555555555555",
+            "kind": "context",
+            "name": "ios",
+            "overlay": false,
+            "required_by": [
+              "umbrella"
+            ],
+            "source": "github.com/companyA/root-context-developers-ios",
+            "version": "2.4.2",
+            "weight": 60
+          },
+          {
+            "commit": "2222222222222222222222222222222222222222",
+            "kind": "context",
+            "name": "org",
+            "overlay": false,
+            "required_by": [
+              "core"
+            ],
+            "source": "github.com/companyA/root-context-organizational-structure",
+            "version": "1.0.4",
+            "weight": 10
+          },
+          {
+            "kind": "context",
+            "name": "personal",
+            "overlay": true,
+            "required_by": [],
+            "state_sha256": "abababababababababababababababababababababababababababababababab",
+            "version": "0.3.0",
+            "weight": 1000
+          },
+          {
+            "commit": "6666666666666666666666666666666666666666",
+            "kind": "context",
+            "name": "umbrella",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/companyA/root-context-ios-developer-umbrella",
+            "version": "2.3.0",
+            "weight": 100
+          }
+        ],
+        "root": "umbrella",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:b8448aa1a92c5f1993616900ce51335bc88cc1c960ea7f5c8cc71f229840de06",
+      "name": "weights-winner-higher-placement-last",
+      "packages": {
+        "core": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Core\n\ncore context.\n",
+              "path": "00-core.md"
+            }
+          ]
+        },
+        "figma": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Figma\n\nfigma context.\n",
+              "path": "00-figma.md"
+            }
+          ]
+        },
+        "ios": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Ios\n\nios context.\n",
+              "path": "00-ios.md"
+            }
+          ]
+        },
+        "org": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Org\n\norg context.\n",
+              "path": "00-org.md"
+            }
+          ]
+        },
+        "personal": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Personal\n\nPersonal overlay context.\n",
+              "path": "00-base.md"
+            },
+            {
+              "class": "system",
+              "content": "Prefer short answers.\n",
+              "path": "90-system.md"
+            }
+          ]
+        },
+        "umbrella": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Umbrella\n\numbrella context.\n",
+              "path": "00-umbrella.md"
+            }
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "root-context",
+      "surface_sha256": "sha256:3875ed87c1889813574acaa156be5a323d4f0bebc46ba6ae8adad19a21699c69"
+    },
+    {
+      "emitted_order": [
+        "personal",
+        "umbrella",
+        "figma",
+        "ios",
+        "org",
+        "core"
+      ],
+      "environment": "claude_code",
+      "file_written": true,
+      "files": [
+        {
+          "bytes": 1332,
+          "expected": "expected/environments/weights-winner-lower-placement-last/CLAUDE.md",
+          "path": "CLAUDE.md",
+          "sha256": "sha256:ba74b7fd122864f54bd5a30777cb89c75f14df80aae398811c54203bf545c4a4"
+        }
+      ],
+      "form": "monolithic",
+      "lock": {
+        "members": [
+          {
+            "commit": "1111111111111111111111111111111111111111",
+            "kind": "context",
+            "name": "core",
+            "overlay": false,
+            "required_by": [
+              "umbrella"
+            ],
+            "source": "github.com/companyA/root-context-core",
+            "version": "3.2.1",
+            "weight": 0
+          },
+          {
+            "commit": "4444444444444444444444444444444444444444",
+            "directory": "contexts/figma",
+            "kind": "context",
+            "name": "figma",
+            "overlay": false,
+            "required_by": [
+              "umbrella"
+            ],
+            "source": "github.com/companyA/root-contexts",
+            "version": "1.1.0",
+            "weight": 60
+          },
+          {
+            "commit": "5555555555555555555555555555555555555555",
+            "kind": "context",
+            "name": "ios",
+            "overlay": false,
+            "required_by": [
+              "umbrella"
+            ],
+            "source": "github.com/companyA/root-context-developers-ios",
+            "version": "2.4.2",
+            "weight": 60
+          },
+          {
+            "commit": "2222222222222222222222222222222222222222",
+            "kind": "context",
+            "name": "org",
+            "overlay": false,
+            "required_by": [
+              "core"
+            ],
+            "source": "github.com/companyA/root-context-organizational-structure",
+            "version": "1.0.4",
+            "weight": 10
+          },
+          {
+            "kind": "context",
+            "name": "personal",
+            "overlay": true,
+            "required_by": [],
+            "state_sha256": "abababababababababababababababababababababababababababababababab",
+            "version": "0.3.0",
+            "weight": 1000
+          },
+          {
+            "commit": "6666666666666666666666666666666666666666",
+            "kind": "context",
+            "name": "umbrella",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/companyA/root-context-ios-developer-umbrella",
+            "version": "2.3.0",
+            "weight": 100
+          }
+        ],
+        "root": "umbrella",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:b8448aa1a92c5f1993616900ce51335bc88cc1c960ea7f5c8cc71f229840de06",
+      "name": "weights-winner-lower-placement-last",
+      "packages": {
+        "core": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Core\n\ncore context.\n",
+              "path": "00-core.md"
+            }
+          ]
+        },
+        "figma": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Figma\n\nfigma context.\n",
+              "path": "00-figma.md"
+            }
+          ]
+        },
+        "ios": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Ios\n\nios context.\n",
+              "path": "00-ios.md"
+            }
+          ]
+        },
+        "org": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Org\n\norg context.\n",
+              "path": "00-org.md"
+            }
+          ]
+        },
+        "personal": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Personal\n\nPersonal overlay context.\n",
+              "path": "00-base.md"
+            },
+            {
+              "class": "system",
+              "content": "Prefer short answers.\n",
+              "path": "90-system.md"
+            }
+          ]
+        },
+        "umbrella": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Umbrella\n\numbrella context.\n",
+              "path": "00-umbrella.md"
+            }
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "lower-weight"
+      },
+      "surface": "root-context",
+      "surface_sha256": "sha256:979baa3206c285efa6e7d85fe9be5694061395fbdc5e1958d3ebd083fdd26782"
+    },
+    {
+      "emitted_order": [
+        "personal",
+        "umbrella",
+        "figma",
+        "ios",
+        "org",
+        "core"
+      ],
+      "environment": "claude_code",
+      "file_written": true,
+      "files": [
+        {
+          "bytes": 1334,
+          "expected": "expected/environments/weights-winner-higher-placement-first/CLAUDE.md",
+          "path": "CLAUDE.md",
+          "sha256": "sha256:f5f3322bfa22be7e1e696d7bde765cffda004e82e288dc988846f60d70b3342b"
+        }
+      ],
+      "form": "monolithic",
+      "lock": {
+        "members": [
+          {
+            "commit": "1111111111111111111111111111111111111111",
+            "kind": "context",
+            "name": "core",
+            "overlay": false,
+            "required_by": [
+              "umbrella"
+            ],
+            "source": "github.com/companyA/root-context-core",
+            "version": "3.2.1",
+            "weight": 0
+          },
+          {
+            "commit": "4444444444444444444444444444444444444444",
+            "directory": "contexts/figma",
+            "kind": "context",
+            "name": "figma",
+            "overlay": false,
+            "required_by": [
+              "umbrella"
+            ],
+            "source": "github.com/companyA/root-contexts",
+            "version": "1.1.0",
+            "weight": 60
+          },
+          {
+            "commit": "5555555555555555555555555555555555555555",
+            "kind": "context",
+            "name": "ios",
+            "overlay": false,
+            "required_by": [
+              "umbrella"
+            ],
+            "source": "github.com/companyA/root-context-developers-ios",
+            "version": "2.4.2",
+            "weight": 60
+          },
+          {
+            "commit": "2222222222222222222222222222222222222222",
+            "kind": "context",
+            "name": "org",
+            "overlay": false,
+            "required_by": [
+              "core"
+            ],
+            "source": "github.com/companyA/root-context-organizational-structure",
+            "version": "1.0.4",
+            "weight": 10
+          },
+          {
+            "kind": "context",
+            "name": "personal",
+            "overlay": true,
+            "required_by": [],
+            "state_sha256": "abababababababababababababababababababababababababababababababab",
+            "version": "0.3.0",
+            "weight": 1000
+          },
+          {
+            "commit": "6666666666666666666666666666666666666666",
+            "kind": "context",
+            "name": "umbrella",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/companyA/root-context-ios-developer-umbrella",
+            "version": "2.3.0",
+            "weight": 100
+          }
+        ],
+        "root": "umbrella",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:b8448aa1a92c5f1993616900ce51335bc88cc1c960ea7f5c8cc71f229840de06",
+      "name": "weights-winner-higher-placement-first",
+      "packages": {
+        "core": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Core\n\ncore context.\n",
+              "path": "00-core.md"
+            }
+          ]
+        },
+        "figma": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Figma\n\nfigma context.\n",
+              "path": "00-figma.md"
+            }
+          ]
+        },
+        "ios": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Ios\n\nios context.\n",
+              "path": "00-ios.md"
+            }
+          ]
+        },
+        "org": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Org\n\norg context.\n",
+              "path": "00-org.md"
+            }
+          ]
+        },
+        "personal": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Personal\n\nPersonal overlay context.\n",
+              "path": "00-base.md"
+            },
+            {
+              "class": "system",
+              "content": "Prefer short answers.\n",
+              "path": "90-system.md"
+            }
+          ]
+        },
+        "umbrella": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Umbrella\n\numbrella context.\n",
+              "path": "00-umbrella.md"
+            }
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-first",
+        "winner": "higher-weight"
+      },
+      "surface": "root-context",
+      "surface_sha256": "sha256:c4bcb9f3149c68df7913a65e0be028c8cd3bea6d869c22f981807b0a6fe0d5f8"
+    },
+    {
+      "emitted_order": [
+        "core",
+        "org",
+        "figma",
+        "ios",
+        "umbrella",
+        "personal"
+      ],
+      "environment": "claude_code",
+      "file_written": true,
+      "files": [
+        {
+          "bytes": 1333,
+          "expected": "expected/environments/weights-winner-lower-placement-first/CLAUDE.md",
+          "path": "CLAUDE.md",
+          "sha256": "sha256:92ff20ed5a6c3b56b3868ff42fa1b30a9f9709a8b357bc82aa89ef6c2729c060"
+        }
+      ],
+      "form": "monolithic",
+      "lock": {
+        "members": [
+          {
+            "commit": "1111111111111111111111111111111111111111",
+            "kind": "context",
+            "name": "core",
+            "overlay": false,
+            "required_by": [
+              "umbrella"
+            ],
+            "source": "github.com/companyA/root-context-core",
+            "version": "3.2.1",
+            "weight": 0
+          },
+          {
+            "commit": "4444444444444444444444444444444444444444",
+            "directory": "contexts/figma",
+            "kind": "context",
+            "name": "figma",
+            "overlay": false,
+            "required_by": [
+              "umbrella"
+            ],
+            "source": "github.com/companyA/root-contexts",
+            "version": "1.1.0",
+            "weight": 60
+          },
+          {
+            "commit": "5555555555555555555555555555555555555555",
+            "kind": "context",
+            "name": "ios",
+            "overlay": false,
+            "required_by": [
+              "umbrella"
+            ],
+            "source": "github.com/companyA/root-context-developers-ios",
+            "version": "2.4.2",
+            "weight": 60
+          },
+          {
+            "commit": "2222222222222222222222222222222222222222",
+            "kind": "context",
+            "name": "org",
+            "overlay": false,
+            "required_by": [
+              "core"
+            ],
+            "source": "github.com/companyA/root-context-organizational-structure",
+            "version": "1.0.4",
+            "weight": 10
+          },
+          {
+            "kind": "context",
+            "name": "personal",
+            "overlay": true,
+            "required_by": [],
+            "state_sha256": "abababababababababababababababababababababababababababababababab",
+            "version": "0.3.0",
+            "weight": 1000
+          },
+          {
+            "commit": "6666666666666666666666666666666666666666",
+            "kind": "context",
+            "name": "umbrella",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/companyA/root-context-ios-developer-umbrella",
+            "version": "2.3.0",
+            "weight": 100
+          }
+        ],
+        "root": "umbrella",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:b8448aa1a92c5f1993616900ce51335bc88cc1c960ea7f5c8cc71f229840de06",
+      "name": "weights-winner-lower-placement-first",
+      "packages": {
+        "core": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Core\n\ncore context.\n",
+              "path": "00-core.md"
+            }
+          ]
+        },
+        "figma": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Figma\n\nfigma context.\n",
+              "path": "00-figma.md"
+            }
+          ]
+        },
+        "ios": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Ios\n\nios context.\n",
+              "path": "00-ios.md"
+            }
+          ]
+        },
+        "org": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Org\n\norg context.\n",
+              "path": "00-org.md"
+            }
+          ]
+        },
+        "personal": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Personal\n\nPersonal overlay context.\n",
+              "path": "00-base.md"
+            },
+            {
+              "class": "system",
+              "content": "Prefer short answers.\n",
+              "path": "90-system.md"
+            }
+          ]
+        },
+        "umbrella": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Umbrella\n\numbrella context.\n",
+              "path": "00-umbrella.md"
+            }
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-first",
+        "winner": "lower-weight"
+      },
+      "surface": "root-context",
+      "surface_sha256": "sha256:4d2e1389c63e30d46b6a8142be69372d0da6324bbb0f09f3a4cbf86cd95153be"
+    },
+    {
+      "emitted_order": [
+        "companyA"
+      ],
+      "env_names": [
+        "DOCS_ORG",
+        "DOCS_TOKEN",
+        "FIGMA_API_KEY"
+      ],
+      "environment": "claude_code",
+      "file_written": true,
+      "files": [
+        {
+          "bytes": 179,
+          "expected": "expected/environments/mcp-claude-code/.agent-context/mcp/claude_code.json",
+          "path": ".agent-context/mcp/claude_code.json",
+          "sha256": "sha256:6401d3c58c6aaf2af44cbf66360f72d73b29b6f80bc604c0b13e97dfdbc477d9"
+        }
+      ],
+      "lock": {
+        "members": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "kind": "context",
+            "name": "companyA",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/companyA",
+            "version": "2.3.0",
+            "weight": 100
+          },
+          {
+            "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "kind": "mcp",
+            "name": "codex-only",
+            "overlay": false,
+            "required_by": [
+              "companyA"
+            ],
+            "source": "github.com/example/mcp-codex-only",
+            "version": "1.0.0",
+            "weight": 0
+          },
+          {
+            "commit": "dddddddddddddddddddddddddddddddddddddddd",
+            "kind": "mcp",
+            "name": "docs-remote",
+            "overlay": false,
+            "required_by": [
+              "companyA"
+            ],
+            "source": "github.com/example/mcp-docs-remote",
+            "version": "0.5.0",
+            "weight": 0
+          },
+          {
+            "commit": "7777777777777777777777777777777777777777",
+            "kind": "mcp",
+            "name": "figma-devmode",
+            "overlay": false,
+            "required_by": [
+              "companyA"
+            ],
+            "source": "github.com/companyA/mcp-figma-devmode",
+            "version": "1.2.0",
+            "weight": 0
+          }
+        ],
+        "root": "companyA",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:ec2e330ca2a8fb8aa7c7856f0fd0b8614e0f912f41e67de5f5a696e441d79bfb",
+      "mcp_servers": {
+        "codex-only": {
+          "args": [],
+          "command": "uvx",
+          "environments": [
+            "codex_cli"
+          ],
+          "transport": "stdio"
+        },
+        "docs-remote": {
+          "env_names": [
+            "DOCS_TOKEN",
+            "DOCS_ORG"
+          ],
+          "environments": [
+            "claude_code",
+            "opencode"
+          ],
+          "transport": "http",
+          "url": "https://mcp.example.com/docs"
+        },
+        "figma-devmode": {
+          "args": [
+            "-y",
+            "figma-developer-mcp",
+            "--stdio"
+          ],
+          "command": "npx",
+          "env_names": [
+            "FIGMA_API_KEY"
+          ],
+          "transport": "stdio"
+        }
+      },
+      "mcp_set": [
+        "docs-remote",
+        "figma-devmode"
+      ],
+      "name": "mcp-claude-code",
+      "packages": {
+        "companyA": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Base\n\nShared engineering context.\n",
+              "path": "00-base.md"
+            },
+            {
+              "content": "# Style\n\nWrite tersely.\n",
+              "path": "10-style.md"
+            },
+            {
+              "content": "# Claude\n\nClaude-only guidance.\n",
+              "environments": [
+                "claude_code"
+              ],
+              "path": "20-claude.md"
+            },
+            {
+              "class": "system",
+              "content": "You are the companyA reviewer.\n",
+              "path": "90-system.md"
+            }
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "mcp",
+      "surface_sha256": "sha256:21a9d2680dde8801971bfb815615be5407da4ebb57f0fe90904217c3e09d4553"
+    },
+    {
+      "emitted_order": [
+        "companyA"
+      ],
+      "env_names": [
+        "FIGMA_API_KEY"
+      ],
       "environment": "codex_cli",
+      "file_written": true,
+      "files": [
+        {
+          "bytes": 143,
+          "expected": "expected/environments/mcp-codex-cli/curator-mcp.config.toml",
+          "path": "curator-mcp.config.toml",
+          "sha256": "sha256:8b13a79851ad680d269094733e75ca0c439748dfbf9368392e53b5ff02dc55c1"
+        }
+      ],
+      "lock": {
+        "members": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "kind": "context",
+            "name": "companyA",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/companyA",
+            "version": "2.3.0",
+            "weight": 100
+          },
+          {
+            "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "kind": "mcp",
+            "name": "codex-only",
+            "overlay": false,
+            "required_by": [
+              "companyA"
+            ],
+            "source": "github.com/example/mcp-codex-only",
+            "version": "1.0.0",
+            "weight": 0
+          },
+          {
+            "commit": "dddddddddddddddddddddddddddddddddddddddd",
+            "kind": "mcp",
+            "name": "docs-remote",
+            "overlay": false,
+            "required_by": [
+              "companyA"
+            ],
+            "source": "github.com/example/mcp-docs-remote",
+            "version": "0.5.0",
+            "weight": 0
+          },
+          {
+            "commit": "7777777777777777777777777777777777777777",
+            "kind": "mcp",
+            "name": "figma-devmode",
+            "overlay": false,
+            "required_by": [
+              "companyA"
+            ],
+            "source": "github.com/companyA/mcp-figma-devmode",
+            "version": "1.2.0",
+            "weight": 0
+          }
+        ],
+        "root": "companyA",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:ec2e330ca2a8fb8aa7c7856f0fd0b8614e0f912f41e67de5f5a696e441d79bfb",
+      "mcp_servers": {
+        "codex-only": {
+          "args": [],
+          "command": "uvx",
+          "environments": [
+            "codex_cli"
+          ],
+          "transport": "stdio"
+        },
+        "docs-remote": {
+          "env_names": [
+            "DOCS_TOKEN",
+            "DOCS_ORG"
+          ],
+          "environments": [
+            "claude_code",
+            "opencode"
+          ],
+          "transport": "http",
+          "url": "https://mcp.example.com/docs"
+        },
+        "figma-devmode": {
+          "args": [
+            "-y",
+            "figma-developer-mcp",
+            "--stdio"
+          ],
+          "command": "npx",
+          "env_names": [
+            "FIGMA_API_KEY"
+          ],
+          "transport": "stdio"
+        }
+      },
+      "mcp_set": [
+        "codex-only",
+        "figma-devmode"
+      ],
+      "name": "mcp-codex-cli",
+      "packages": {
+        "companyA": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Base\n\nShared engineering context.\n",
+              "path": "00-base.md"
+            },
+            {
+              "content": "# Style\n\nWrite tersely.\n",
+              "path": "10-style.md"
+            },
+            {
+              "content": "# Claude\n\nClaude-only guidance.\n",
+              "environments": [
+                "claude_code"
+              ],
+              "path": "20-claude.md"
+            },
+            {
+              "class": "system",
+              "content": "You are the companyA reviewer.\n",
+              "path": "90-system.md"
+            }
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "mcp",
+      "surface_sha256": "sha256:3406a9175de60bfae427b368f5f7c53113ba5ce60a0b6dd4c241ba53242794dc"
+    },
+    {
+      "emitted_order": [
+        "companyA"
+      ],
+      "env_names": [
+        "DOCS_ORG",
+        "DOCS_TOKEN",
+        "FIGMA_API_KEY"
+      ],
+      "environment": "opencode",
+      "file_written": true,
+      "files": [
+        {
+          "bytes": 167,
+          "expected": "expected/environments/mcp-opencode/.agent-context/mcp/opencode.json",
+          "path": ".agent-context/mcp/opencode.json",
+          "sha256": "sha256:130939f20e4cde2999c011ba6e3cdd7f0b9e5e675c9418a103a146717f7aaed6"
+        }
+      ],
+      "lock": {
+        "members": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "kind": "context",
+            "name": "companyA",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/companyA",
+            "version": "2.3.0",
+            "weight": 100
+          },
+          {
+            "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "kind": "mcp",
+            "name": "codex-only",
+            "overlay": false,
+            "required_by": [
+              "companyA"
+            ],
+            "source": "github.com/example/mcp-codex-only",
+            "version": "1.0.0",
+            "weight": 0
+          },
+          {
+            "commit": "dddddddddddddddddddddddddddddddddddddddd",
+            "kind": "mcp",
+            "name": "docs-remote",
+            "overlay": false,
+            "required_by": [
+              "companyA"
+            ],
+            "source": "github.com/example/mcp-docs-remote",
+            "version": "0.5.0",
+            "weight": 0
+          },
+          {
+            "commit": "7777777777777777777777777777777777777777",
+            "kind": "mcp",
+            "name": "figma-devmode",
+            "overlay": false,
+            "required_by": [
+              "companyA"
+            ],
+            "source": "github.com/companyA/mcp-figma-devmode",
+            "version": "1.2.0",
+            "weight": 0
+          }
+        ],
+        "root": "companyA",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:ec2e330ca2a8fb8aa7c7856f0fd0b8614e0f912f41e67de5f5a696e441d79bfb",
+      "mcp_servers": {
+        "codex-only": {
+          "args": [],
+          "command": "uvx",
+          "environments": [
+            "codex_cli"
+          ],
+          "transport": "stdio"
+        },
+        "docs-remote": {
+          "env_names": [
+            "DOCS_TOKEN",
+            "DOCS_ORG"
+          ],
+          "environments": [
+            "claude_code",
+            "opencode"
+          ],
+          "transport": "http",
+          "url": "https://mcp.example.com/docs"
+        },
+        "figma-devmode": {
+          "args": [
+            "-y",
+            "figma-developer-mcp",
+            "--stdio"
+          ],
+          "command": "npx",
+          "env_names": [
+            "FIGMA_API_KEY"
+          ],
+          "transport": "stdio"
+        }
+      },
+      "mcp_set": [
+        "docs-remote",
+        "figma-devmode"
+      ],
+      "name": "mcp-opencode",
+      "packages": {
+        "companyA": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Base\n\nShared engineering context.\n",
+              "path": "00-base.md"
+            },
+            {
+              "content": "# Style\n\nWrite tersely.\n",
+              "path": "10-style.md"
+            },
+            {
+              "content": "# Claude\n\nClaude-only guidance.\n",
+              "environments": [
+                "claude_code"
+              ],
+              "path": "20-claude.md"
+            },
+            {
+              "class": "system",
+              "content": "You are the companyA reviewer.\n",
+              "path": "90-system.md"
+            }
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "mcp",
+      "surface_sha256": "sha256:e647f1a13a1ab9083bc200f2d1a7ef8bfb129a67d096cb9abcc37f0f3fc33a63"
+    },
+    {
+      "emitted_order": [
+        "companyA"
+      ],
+      "env_names": [
+        "FIGMA_API_KEY"
+      ],
+      "environment": "pi",
       "file_written": false,
       "files": [],
-      "name": "system-prompt-none-applicable",
-      "precedence": null,
-      "surface": "system-prompt"
+      "lock": {
+        "members": [
+          {
+            "commit": "0123456789abcdef0123456789abcdef01234567",
+            "kind": "context",
+            "name": "companyA",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/companyA",
+            "version": "2.3.0",
+            "weight": 100
+          },
+          {
+            "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+            "kind": "mcp",
+            "name": "codex-only",
+            "overlay": false,
+            "required_by": [
+              "companyA"
+            ],
+            "source": "github.com/example/mcp-codex-only",
+            "version": "1.0.0",
+            "weight": 0
+          },
+          {
+            "commit": "dddddddddddddddddddddddddddddddddddddddd",
+            "kind": "mcp",
+            "name": "docs-remote",
+            "overlay": false,
+            "required_by": [
+              "companyA"
+            ],
+            "source": "github.com/example/mcp-docs-remote",
+            "version": "0.5.0",
+            "weight": 0
+          },
+          {
+            "commit": "7777777777777777777777777777777777777777",
+            "kind": "mcp",
+            "name": "figma-devmode",
+            "overlay": false,
+            "required_by": [
+              "companyA"
+            ],
+            "source": "github.com/companyA/mcp-figma-devmode",
+            "version": "1.2.0",
+            "weight": 0
+          }
+        ],
+        "root": "companyA",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:ec2e330ca2a8fb8aa7c7856f0fd0b8614e0f912f41e67de5f5a696e441d79bfb",
+      "mcp_servers": {
+        "codex-only": {
+          "args": [],
+          "command": "uvx",
+          "environments": [
+            "codex_cli"
+          ],
+          "transport": "stdio"
+        },
+        "docs-remote": {
+          "env_names": [
+            "DOCS_TOKEN",
+            "DOCS_ORG"
+          ],
+          "environments": [
+            "claude_code",
+            "opencode"
+          ],
+          "transport": "http",
+          "url": "https://mcp.example.com/docs"
+        },
+        "figma-devmode": {
+          "args": [
+            "-y",
+            "figma-developer-mcp",
+            "--stdio"
+          ],
+          "command": "npx",
+          "env_names": [
+            "FIGMA_API_KEY"
+          ],
+          "transport": "stdio"
+        }
+      },
+      "mcp_set": [
+        "figma-devmode"
+      ],
+      "name": "mcp-pi-none",
+      "packages": {
+        "companyA": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Base\n\nShared engineering context.\n",
+              "path": "00-base.md"
+            },
+            {
+              "content": "# Style\n\nWrite tersely.\n",
+              "path": "10-style.md"
+            },
+            {
+              "content": "# Claude\n\nClaude-only guidance.\n",
+              "environments": [
+                "claude_code"
+              ],
+              "path": "20-claude.md"
+            },
+            {
+              "class": "system",
+              "content": "You are the companyA reviewer.\n",
+              "path": "90-system.md"
+            }
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "mcp"
     }
   ],
   "part_rule": "every part ends with exactly one LF; the document is the parts joined with exactly one additional LF between adjacent parts",

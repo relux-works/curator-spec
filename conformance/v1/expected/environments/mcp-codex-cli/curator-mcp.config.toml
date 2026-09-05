@@ -1,0 +1,6 @@
+[mcp_servers.codex-only]
+command = "uvx"
+args = []
+[mcp_servers.figma-devmode]
+command = "npx"
+args = ["-y", "figma-developer-mcp", "--stdio"]

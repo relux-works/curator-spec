@@ -15,19 +15,31 @@ conformance claim v5. Rc.8 carries `assurance-policy-v1`,
 conformance claim v4. These are new closed objects; no prior schema is widened
 or reinterpreted.
 
-The agent-environments capability of `protocol/environments.md` (revision 1)
-carries four closed objects: `profilefile-v1` for the repository index,
-`context-manifest-v1` for `context/context.json` module manifests,
-`agent-environment-marker-v1` for the per-home `.agent-environment.json`
-ledger, and `launch-env-fragment-v1` for the `env resolve` output. Cross-field
-rules that Draft 2020-12 cannot express — profile roots that alias or nest,
-duplicate module manifest paths, and sorted marker surface keys — are enforced
-by `tools/validate.py`, exactly as the manifest-schema semantic rules are. The
-byte-exact section 5 materialization rules (generation header, part joining,
-chapter parts, zero-module output, referenced layout, managed `opencode.json`
-CCJ-1 bytes, system-prompt output, and section 5.6 surface hashes) live in
-`conformance/v1/vectors/environments.json` with expected bytes under
-`conformance/v1/expected/environments/`.
+The agent-environments capability of `protocol/environments.md` (revision 1,
+the Decision 0012 model) carries five closed objects: `agent-context-v1` for
+the package manifest `agent-context.json` (section 2, with the section 1.4
+range grammar as a pattern), `agent-mcp-v1` for the MCP declaration
+`agent-mcp.json` (section 2.2), `context-lock-v1` for the profile lock
+(section 1.3), `agent-environment-marker-v1` for the per-home
+`.agent-environment.json` ledger (section 8.2), and `launch-env-fragment-v1`
+for the `env resolve` output (section 10.2, which requires `argument` on every
+`flag` descriptor and `name` exactly when `argument` is `name`).
+`profilefile-v1` and `context-manifest-v1` are withdrawn with the shapes they
+described. Cross-field rules that Draft 2020-12 cannot express — duplicate
+module manifest paths, lock members sorted by (`kind`, `name`) with a root that
+has no requirer, sorted `required_by` lists naming lock members, sorted marker
+surface keys and members that include the root, and fragment channel lists
+that reproduce the closed adapter registry — are enforced by
+`tools/validate.py`, exactly as the manifest-schema semantic rules are. The
+byte-exact rules live in `conformance/v1/vectors/`: `context-versions.json`
+(version and range parsing, resolution, lock canonicalization and
+`lock_sha256`), `environments.json` (the `curator-root-context-v2` header,
+part joining, `## Context:` chapters, the no-chapter member, zero-module
+output, referenced layout, managed `opencode.json`, system-prompt output,
+emitted order under both precedence primitives, MCP bytes per adapter, and
+section 5.6 surface hashes) with expected bytes under
+`conformance/v1/expected/environments/`, and `context-detectors.json`
+(the section 9.1 detector classes).
 
 All `$id` values are stable identifiers. Relative `$ref` values resolve from
 the containing schema. `common.schema.json` is a definition library and is not

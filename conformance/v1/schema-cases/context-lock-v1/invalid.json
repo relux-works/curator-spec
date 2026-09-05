@@ -1,0 +1,123 @@
+{
+  "members": [
+    {
+      "commit": "1111111111111111111111111111111111111111",
+      "kind": "context",
+      "name": "companyA-root-context-core",
+      "overlay": false,
+      "required_by": [
+        "companyA-root-context-developers-core",
+        "companyA-root-context-ios-developer-umbrella"
+      ],
+      "source": "github.com/companyA/root-context-core",
+      "version": "3.2.1",
+      "weight": 0
+    },
+    {
+      "commit": "3333333333333333333333333333333333333333",
+      "kind": "context",
+      "name": "companyA-root-context-developers-core",
+      "overlay": false,
+      "required_by": [
+        "companyA-root-context-ios-developer-umbrella"
+      ],
+      "source": "github.com/companyA/root-context-developers-core",
+      "version": "1.6.0",
+      "weight": 20
+    },
+    {
+      "commit": "4444444444444444444444444444444444444444",
+      "directory": "contexts/figma",
+      "kind": "context",
+      "name": "companyA-root-context-developers-figma",
+      "overlay": false,
+      "required_by": [
+        "companyA-root-context-ios-developer-umbrella"
+      ],
+      "source": "github.com/companyA/root-contexts",
+      "version": "1.1.0",
+      "weight": 40
+    },
+    {
+      "commit": "5555555555555555555555555555555555555555",
+      "kind": "context",
+      "name": "companyA-root-context-developers-ios",
+      "overlay": false,
+      "required_by": [
+        "companyA-root-context-ios-developer-umbrella"
+      ],
+      "source": "github.com/companyA/root-context-developers-ios",
+      "version": "2.4.2",
+      "weight": 60
+    },
+    {
+      "commit": "6666666666666666666666666666666666666666",
+      "kind": "context",
+      "name": "companyA-root-context-ios-developer-umbrella",
+      "overlay": false,
+      "required_by": [],
+      "source": "github.com/companyA/root-context-ios-developer-umbrella",
+      "version": "2.3.0",
+      "weight": 100
+    },
+    {
+      "commit": "2222222222222222222222222222222222222222",
+      "kind": "context",
+      "name": "companyA-root-context-organizational-structure",
+      "overlay": false,
+      "required_by": [
+        "companyA-root-context-core"
+      ],
+      "source": "github.com/companyA/root-context-organizational-structure",
+      "version": "1.0.4",
+      "weight": 10
+    },
+    {
+      "kind": "context",
+      "name": "personal",
+      "overlay": true,
+      "required_by": [],
+      "state_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.3.0",
+      "weight": 1000
+    },
+    {
+      "commit": "7777777777777777777777777777777777777777",
+      "kind": "mcp",
+      "name": "figma-devmode",
+      "overlay": false,
+      "required_by": [
+        "companyA-root-context-ios-developer-umbrella"
+      ],
+      "source": "github.com/companyA/mcp-figma-devmode",
+      "version": "1.2.0",
+      "weight": 0
+    },
+    {
+      "commit": "8888888888888888888888888888888888888888",
+      "kind": "skill",
+      "name": "pdf",
+      "overlay": false,
+      "required_by": [
+        "companyA-root-context-ios-developer-umbrella"
+      ],
+      "source": "github.com/relux-works/skill-pdf",
+      "version": "1.2.5",
+      "weight": 0
+    },
+    {
+      "commit": "9999999999999999999999999999999999999999",
+      "kind": "skill",
+      "name": "swiftui",
+      "overlay": false,
+      "required_by": [
+        "companyA-root-context-developers-ios",
+        "companyA-root-context-ios-developer-umbrella"
+      ],
+      "source": "github.com/relux-works/skill-swiftui",
+      "version": "4.3.0",
+      "weight": 0
+    }
+  ],
+  "schema_version": 1
+}

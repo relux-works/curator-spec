@@ -1,24 +1,42 @@
 {
-  "composition": [
+  "members": [
     {
-      "commit": "fedcba9876543210fedcba9876543210fedcba98",
-      "name": "personal"
+      "commit": "0123456789abcdef0123456789abcdef01234567",
+      "name": "companyA",
+      "overlay": false,
+      "version": "2.3.0",
+      "weight": 100
+    },
+    {
+      "name": "personal",
+      "overlay": true,
+      "source_path": "/Users/operator/personal-context",
+      "state_sha256": "abababababababababababababababababababababababababababababababab",
+      "version": "0.3.0",
+      "weight": 1000
     }
   ],
   "mode": "managed-home",
-  "precedence": "later-overrides-earlier",
-  "profile": {
-    "commit": "0123456789abcdef0123456789abcdef01234567",
-    "name": "companyA",
-    "ref": {
-      "kind": "tag",
-      "value": "v1.2.0"
-    },
-    "source_identity": {
-      "kind": "network-git",
-      "value": "github.com/example/profiles"
-    },
-    "source_kind": "git"
+  "passthrough": [],
+  "precedence": {
+    "placement": "winner-last",
+    "winner": "higher-weight"
   },
+  "profile": {
+    "kind": "git",
+    "lock_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "name": "companyA",
+    "requirement": {
+      "range": "^2"
+    },
+    "root": "companyA",
+    "source": "github.com/example/companyA"
+  },
+  "seeded_projects": [
+    "/Users/operator/projects/app"
+  ],
+  "seeds": [
+    ".claude.json"
+  ],
   "version": 1
 }

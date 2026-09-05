@@ -719,18 +719,8 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
             return "permit-issued checkpoint must have a null predecessor"
         if phase in {"execution-started", "execution-succeeded"} and previous is None:
             return f"{phase} checkpoint must have a digest predecessor"
-    elif schema_name == "profilefile-v1.schema.json":
-        profiles = instance.get("profiles")
-        if isinstance(profiles, dict):
-            roots = [value for value in profiles.values() if isinstance(value, str)]
-            if len(roots) != len(set(roots)):
-                return "two profile members must not name the same directory"
-            for outer in roots:
-                for inner in roots:
-                    if inner != outer and inner.startswith(outer + "/"):
-                        return "a declared profile root must not contain another declared profile root"
-    elif schema_name == "context-manifest-v1.schema.json":
-        modules = instance.get("modules")
+    elif schema_name == "agent-context-v1.schema.json":
+        modules = instance.get("context", {}).get("modules") if isinstance(instance.get("context"), dict) else None
         if isinstance(modules, list):
             paths = [
                 module.get("path")
@@ -739,12 +729,62 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
             ]
             if len(paths) != len(set(paths)):
                 return "module paths must be unique across the manifest"
+    elif schema_name == "context-lock-v1.schema.json":
+        members = instance.get("members")
+        if isinstance(members, list) and all(isinstance(member, dict) for member in members):
+            keys = [(member.get("kind"), member.get("name")) for member in members]
+            if keys != sorted(keys) or len(keys) != len(set(keys)):
+                return "lock members must be sorted by (kind, name) without duplicates"
+            names = {member.get("name") for member in members}
+            root = next((member for member in members if member.get("kind") == "context" and member.get("name") == instance.get("root")), None)
+            if root is None:
+                return "the lock root must be a context member"
+            if root.get("required_by") != [] or root.get("overlay") is not False:
+                return "the lock root has no requirers and is not an overlay"
+            for member in members:
+                required_by = member.get("required_by")
+                if isinstance(required_by, list):
+                    if required_by != sorted(required_by) or len(required_by) != len(set(required_by)):
+                        return "required_by must be sorted and unique"
+                    if not set(required_by) <= names:
+                        return "required_by names a package outside the lock"
     elif schema_name == "agent-environment-marker-v1.schema.json":
         surfaces = instance.get("surfaces")
         if isinstance(surfaces, dict):
             keys = list(surfaces)
             if keys != sorted(keys):
                 return "environment marker surface keys must be sorted"
+        members = instance.get("members")
+        profile = instance.get("profile")
+        if isinstance(members, list) and all(isinstance(member, dict) for member in members):
+            names = [member.get("name") for member in members]
+            if len(names) != len(set(names)):
+                return "environment marker members must be unique"
+            if isinstance(profile, dict):
+                root = next((member for member in members if member.get("name") == profile.get("root")), None)
+                if root is None:
+                    return "environment marker members must include the root"
+                if root.get("overlay") is not False:
+                    return "the root member is not an overlay"
+        seeded = instance.get("seeded_projects")
+        if isinstance(seeded, list) and seeded != sorted(seeded):
+            return "seeded_projects must be sorted"
+    elif schema_name == "launch-env-fragment-v1.schema.json":
+        environment = instance.get("environment")
+        system_prompt = instance.get("system_prompt")
+        if isinstance(system_prompt, dict) and environment in ENVIRONMENT_SYSTEM_PROMPT_CHANNELS:
+            if system_prompt.get("channels") != ENVIRONMENT_SYSTEM_PROMPT_CHANNELS[environment]:
+                return "system_prompt.channels must reproduce the adapter's section 7.3 descriptors"
+        mcp = instance.get("mcp")
+        if isinstance(mcp, dict) and environment in ENVIRONMENT_MCP_CHANNELS:
+            if mcp.get("channels") != ENVIRONMENT_MCP_CHANNELS[environment]:
+                return "mcp.channels must reproduce the adapter's section 7.8 descriptor"
+            names = mcp.get("env_names")
+            if isinstance(names, list) and (names != sorted(names) or len(names) != len(set(names))):
+                return "mcp.env_names must be the sorted union"
+        prepend = instance.get("path_prepend")
+        if isinstance(prepend, str) and not prepend.startswith("/manager/environments/"):
+            return "path_prepend must stay below the manager-owned environments root"
     elif schema_name == "conformance-claim-v3.schema.json":
         systems = set(instance.get("operating_systems", []))
         if "linux" in systems:
@@ -3207,13 +3247,18 @@ def validate_assurance_vectors(vector: Any = None) -> None:
             )
 
 
-# The agent-environments revision-1 determinism surfaces of
-# protocol/environments.md section 5. This is an independent implementation of
-# the generation-header grammar, part joining, chapter parts, the referenced
-# layout, the managed opencode.json CCJ-1 bytes, the system-prompt output, and
-# the section 5.6 surface hash, cross-checked byte-for-byte against the Go
-# generator's expected files.
-ENVIRONMENT_HEADER_MARKER = "curator-root-context-v1"
+# The agent-environments revision-1 surfaces of protocol/environments.md
+# under the Decision 0012 model. This is an independent implementation of the
+# section 1.4 version and range grammar and the resolution algorithm, the
+# section 1.3 lock hash, the section 5 emitted order, the
+# curator-root-context-v2 generation header, part joining, chapter parts, the
+# referenced layout, the managed opencode.json CCJ-1 bytes, the system-prompt
+# output, the section 5.8 MCP bytes per adapter, the section 5.6 surface hash,
+# and the section 9.1 detector classes, cross-checked byte-for-byte against
+# the Go generator's expected files and vectors.
+import functools
+
+ENVIRONMENT_HEADER_MARKER = "curator-root-context-v2"
 ENVIRONMENT_GENERATED_LINE = (
     "generated: Curator Protocol environments revision 1 "
     "(https://github.com/relux-works/curator-spec)"
@@ -3228,21 +3273,48 @@ ENVIRONMENT_ROOT_TARGETS = {
     "opencode": "AGENTS.md",
     "pi": "AGENTS.md",
 }
-ENVIRONMENT_PRECEDENCE_DIRECTIONS = {
-    "later-overrides-earlier",
-    "earlier-overrides-later",
+ENVIRONMENT_MCP_TARGETS = {
+    "claude_code": ".agent-context/mcp/claude_code.json",
+    "codex_cli": "curator-mcp.config.toml",
+    "opencode": ".agent-context/mcp/opencode.json",
+}
+ENVIRONMENT_HOME_VARIABLES = {
+    "claude_code": "CLAUDE_CONFIG_DIR",
+    "codex_cli": "CODEX_HOME",
+    "opencode": "XDG_CONFIG_HOME",
+    "pi": "PI_CODING_AGENT_DIR",
+}
+ENVIRONMENT_SYSTEM_PROMPT_CHANNELS = {
+    "claude_code": [
+        {"kind": "flag", "semantics": "append", "flag": "--append-system-prompt-file", "argument": "path"},
+        {"kind": "flag", "semantics": "replace", "flag": "--system-prompt-file", "argument": "path"},
+    ],
+    "codex_cli": [{"kind": "config-key", "semantics": "replace", "key": "model_instructions_file"}],
+    "opencode": [],
+    "pi": [
+        {"kind": "flag", "semantics": "append", "flag": "--append-system-prompt", "argument": "path"},
+        {"kind": "file", "semantics": "append", "filename": "APPEND_SYSTEM.md"},
+        {"kind": "file", "semantics": "replace", "filename": "SYSTEM.md"},
+    ],
+}
+ENVIRONMENT_MCP_CHANNELS = {
+    "claude_code": [{"kind": "flag", "flag": "--mcp-config", "argument": "path", "with": ["--strict-mcp-config"]}],
+    "codex_cli": [{"kind": "flag", "flag": "-p", "argument": "name", "name": "curator-mcp"}],
+    "opencode": [{"kind": "variable", "variable": "OPENCODE_CONFIG"}],
 }
 ENVIRONMENT_SYSTEM_PROMPT_PATH = ".agent-context/system-prompt.md"
+ENVIRONMENT_WINNERS = {"higher-weight", "lower-weight"}
+ENVIRONMENT_PLACEMENTS = {"winner-last", "winner-first"}
 ENVIRONMENT_HEADER_CASES = {
-    "single-profile",
-    "composed-default-precedence",
-    "composed-earlier-overrides-later",
+    "single-root",
+    "composed-overlays-default",
+    "composed-winner-lower-placement-first",
     "local-state-pin",
 }
 ENVIRONMENT_MATERIALIZATION_CASES = {
     "monolithic-claude-code",
     "monolithic-codex-selector-excluded",
-    "monolithic-composed-empty-chapter",
+    "monolithic-composed-no-chapter",
     "monolithic-zero-modules",
     "monolithic-zero-modules-composed",
     "referenced-claude-code-composed",
@@ -3251,7 +3323,605 @@ ENVIRONMENT_MATERIALIZATION_CASES = {
     "no-context-directory",
     "system-prompt-composed",
     "system-prompt-none-applicable",
+    "weights-winner-higher-placement-last",
+    "weights-winner-lower-placement-last",
+    "weights-winner-higher-placement-first",
+    "weights-winner-lower-placement-first",
+    "mcp-claude-code",
+    "mcp-codex-cli",
+    "mcp-opencode",
+    "mcp-pi-none",
 }
+
+
+# ---------------------------------------------------------------------------
+# Section 1.4: versions and ranges
+
+
+_NUMERIC = re.compile(r"^(?:0|[1-9][0-9]*)$")
+_PRERELEASE_PART = re.compile(r"^[0-9A-Za-z-]+$")
+
+
+class RangeInvalid(Exception):
+    pass
+
+
+def semver_parse(text: str) -> tuple | None:
+    """Parse a strict SemVer 2.0 version without build metadata."""
+    if not isinstance(text, str):
+        return None
+    core, _, pre = text.partition("-")
+    parts = core.split(".")
+    if len(parts) != 3 or not all(_NUMERIC.match(part) for part in parts):
+        return None
+    prerelease: tuple[str, ...] = ()
+    if "-" in text:
+        if not pre:
+            return None
+        ids = pre.split(".")
+        for part in ids:
+            if not _PRERELEASE_PART.match(part):
+                return None
+            if part.isdigit() and len(part) > 1 and part[0] == "0":
+                return None
+        prerelease = tuple(ids)
+    return (int(parts[0]), int(parts[1]), int(parts[2]), prerelease)
+
+
+def semver_parse_tag(tag: str) -> tuple | None:
+    if not isinstance(tag, str) or not tag.startswith("v"):
+        return None
+    return semver_parse(tag[1:])
+
+
+def semver_text(version: tuple) -> str:
+    text = f"{version[0]}.{version[1]}.{version[2]}"
+    if version[3]:
+        text += "-" + ".".join(version[3])
+    return text
+
+
+def _compare_prerelease(a: tuple[str, ...], b: tuple[str, ...]) -> int:
+    if not a and not b:
+        return 0
+    if not a:
+        return 1
+    if not b:
+        return -1
+    for left, right in zip(a, b):
+        ln, rn = left.isdigit(), right.isdigit()
+        if ln and rn:
+            if int(left) != int(right):
+                return -1 if int(left) < int(right) else 1
+        elif ln:
+            return -1
+        elif rn:
+            return 1
+        elif left != right:
+            return -1 if left < right else 1
+    if len(a) != len(b):
+        return -1 if len(a) < len(b) else 1
+    return 0
+
+
+def semver_compare(a: tuple, b: tuple) -> int:
+    for x, y in zip(a[:3], b[:3]):
+        if x != y:
+            return -1 if x < y else 1
+    return _compare_prerelease(a[3], b[3])
+
+
+_semver_key = functools.cmp_to_key(semver_compare)
+
+
+def _parse_partial(text: str) -> tuple[list[int], list[bool], tuple[str, ...]]:
+    if not text:
+        raise RangeInvalid(text)
+    core, _, pre = text.partition("-")
+    parts = core.split(".")
+    if len(parts) > 3:
+        raise RangeInvalid(text)
+    values, present = [0, 0, 0], [False, False, False]
+    for index, part in enumerate(parts):
+        if part in {"x", "X", "*"}:
+            break
+        if not _NUMERIC.match(part):
+            raise RangeInvalid(text)
+        values[index] = int(part)
+        present[index] = True
+    prerelease: tuple[str, ...] = ()
+    if "-" in text:
+        if not present[2] or not pre:
+            raise RangeInvalid(text)
+        parsed = semver_parse(f"{values[0]}.{values[1]}.{values[2]}-{pre}")
+        if parsed is None:
+            raise RangeInvalid(text)
+        prerelease = parsed[3]
+    return values, present, prerelease
+
+
+def _lowest(major: int, minor: int, patch: int) -> tuple:
+    return (major, minor, patch, ("0",))
+
+
+def _desugar(primitive: str) -> list[tuple]:
+    """Return comparators as (op, version) tuples; ("*", None) is the any comparator."""
+    op = ""
+    for candidate in (">=", "<=", ">", "<", "=", "^", "~"):
+        if primitive.startswith(candidate):
+            op = candidate
+            primitive = primitive[len(candidate):]
+            break
+    values, present, prerelease = _parse_partial(primitive)
+    M, m, p = values
+    full = (M, m, p, prerelease)
+    any_ = [("*", None)]
+    if op in {"", "="}:
+        if not present[0]:
+            return any_
+        if not present[1]:
+            return [(">=", (M, 0, 0, ())), ("<", _lowest(M + 1, 0, 0))]
+        if not present[2]:
+            return [(">=", (M, m, 0, ())), ("<", _lowest(M, m + 1, 0))]
+        return [("=", full)]
+    if op == ">=":
+        return any_ if not present[0] else [(">=", full)]
+    if op == ">":
+        if not present[0]:
+            return [("<", _lowest(0, 0, 0))]
+        if not present[1]:
+            return [(">=", (M + 1, 0, 0, ()))]
+        if not present[2]:
+            return [(">=", (M, m + 1, 0, ()))]
+        return [(">", full)]
+    if op == "<":
+        if not present[0]:
+            return [("<", _lowest(0, 0, 0))]
+        if not present[1]:
+            return [("<", _lowest(M, 0, 0))]
+        if not present[2]:
+            return [("<", _lowest(M, m, 0))]
+        return [("<", full)]
+    if op == "<=":
+        if not present[0]:
+            return any_
+        if not present[1]:
+            return [("<", _lowest(M + 1, 0, 0))]
+        if not present[2]:
+            return [("<", _lowest(M, m + 1, 0))]
+        return [("<=", full)]
+    if op == "^":
+        if not present[0]:
+            return any_
+        if not present[1]:
+            return [(">=", (M, 0, 0, ())), ("<", _lowest(M + 1, 0, 0))]
+        if not present[2]:
+            if M == 0:
+                return [(">=", (0, m, 0, ())), ("<", _lowest(0, m + 1, 0))]
+            return [(">=", (M, m, 0, ())), ("<", _lowest(M + 1, 0, 0))]
+        if M > 0:
+            return [(">=", full), ("<", _lowest(M + 1, 0, 0))]
+        if m > 0:
+            return [(">=", full), ("<", _lowest(0, m + 1, 0))]
+        return [(">=", full), ("<", _lowest(0, 0, p + 1))]
+    if op == "~":
+        if not present[0]:
+            return any_
+        if not present[1]:
+            return [(">=", (M, 0, 0, ())), ("<", _lowest(M + 1, 0, 0))]
+        if not present[2]:
+            return [(">=", (M, m, 0, ())), ("<", _lowest(M, m + 1, 0))]
+        return [(">=", full), ("<", _lowest(M, m + 1, 0))]
+    raise RangeInvalid(primitive)
+
+
+def range_parse(text: str) -> list[list[tuple]]:
+    if not isinstance(text, str):
+        raise RangeInvalid(text)
+    if text == "latest":
+        text = "*"
+    sets = []
+    for set_text in text.split("||"):
+        set_text = set_text.strip()
+        if not set_text:
+            raise RangeInvalid(text)
+        comparators: list[tuple] = []
+        for primitive in set_text.split():
+            comparators.extend(_desugar(primitive))
+        sets.append(comparators)
+    return sets
+
+
+def comparator_text(comparator: tuple) -> str:
+    op, version = comparator
+    return "*" if op == "*" else op + semver_text(version)
+
+
+def _comparator_matches(comparator: tuple, version: tuple) -> bool:
+    op, bound = comparator
+    if op == "*":
+        return True
+    cmp = semver_compare(version, bound)
+    return {"=": cmp == 0, ">": cmp > 0, ">=": cmp >= 0, "<": cmp < 0, "<=": cmp <= 0}[op]
+
+
+def range_satisfies(sets: list[list[tuple]], version: tuple) -> bool:
+    for comparators in sets:
+        if not all(_comparator_matches(c, version) for c in comparators):
+            continue
+        if not version[3]:
+            return True
+        if any(
+            op != "*" and bound[3] and bound[:3] == version[:3]
+            for op, bound in comparators
+        ):
+            return True
+    return False
+
+
+# ---------------------------------------------------------------------------
+# Section 1.4: resolution
+
+
+class ResolutionError(Exception):
+    def __init__(self, diagnostic: str, detail: dict[str, Any]) -> None:
+        super().__init__(diagnostic)
+        self.diagnostic = diagnostic
+        self.detail = detail
+
+
+def _requirement_form(entry: dict[str, Any]) -> tuple[str, Any]:
+    for form in ("range", "tag", "revision", "path"):
+        if form in entry:
+            return form, entry[form]
+    raise ValidationFailure(f"requirement has no form: {entry}")
+
+
+def resolve_closure(case_input: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Run the environments.md section 1.4 algorithm and section 6 weights."""
+    install = case_input["install"]
+    packages = case_input["packages"]
+    overlays = case_input.get("overlays", [])
+    default_overlay_weight = case_input.get("overlay_default_weight", 1000)
+    root = install["name"]
+
+    constraints: list[dict[str, Any]] = []
+    selected: dict[str, dict[str, Any]] = {}
+    ceiling: dict[str, tuple] = {}
+    pending: set[str] = set()
+    warnings: list[dict[str, Any]] = []
+
+    def add(name: str, kind: str, requirer: str, requirer_of: str, form: str, value: Any, weight: Any = None, directory: Any = None, overlay: Any = None) -> None:
+        constraints.append({
+            "name": name, "kind": kind, "requirer": requirer, "requirer_of": requirer_of,
+            "form": form, "value": value, "weight": weight, "directory": directory, "overlay": overlay,
+        })
+        pending.add(name)
+
+    form, value = _requirement_form(install)
+    add(root, "context", "machine", "", form, value, directory=install.get("directory"))
+    seen = {root}
+    for overlay in overlays:
+        if overlay["name"] in seen:
+            raise ResolutionError("environment_composition_invalid", {"name": overlay["name"]})
+        seen.add(overlay["name"])
+        form, value = _requirement_form(overlay)
+        add(overlay["name"], "context", "machine", "", form, value, directory=overlay.get("directory"), overlay=overlay)
+
+    def spelling(c: dict[str, Any]) -> str:
+        return "path" if c["form"] == "path" else f"{c['form']} {c['value']}"
+
+    def constraints_on(name: str) -> list[dict[str, Any]]:
+        return [c for c in constraints if c["name"] == name]
+
+    def drop_attributed(requirer: str) -> None:
+        kept = []
+        for c in constraints:
+            if c["requirer"] == requirer:
+                pending.add(c["name"])
+            else:
+                kept.append(c)
+        constraints[:] = kept
+
+    def conflict(name: str, cs: list[dict[str, Any]], candidates: list[str]) -> ResolutionError:
+        return ResolutionError("context_range_conflict", {
+            "name": name,
+            "requirers": [{"requirer": c["requirer"], "constraint": spelling(c)} for c in cs],
+            "candidates": candidates,
+        })
+
+    def label(name: str, version: tuple | None) -> str:
+        return name if version is None else f"{name}@{semver_text(version)}"
+
+    while pending:
+        name = min(pending)
+        pending.discard(name)
+        cs = constraints_on(name)
+        if not cs:
+            current = selected.pop(name, None)
+            if current is not None:
+                drop_attributed(label(name, current["version"]))
+            continue
+        kind = cs[0]["kind"]
+        path_decl = None
+        exact: list[str] = []
+        ranges = []
+        for c in cs:
+            if c["form"] == "path":
+                path_decl = c["overlay"]
+            elif c["form"] == "range":
+                try:
+                    ranges.append(range_parse(c["value"]))
+                except RangeInvalid:
+                    raise ResolutionError("profile_source_invalid", {"name": name, "range": c["value"]})
+            elif c["form"] == "tag":
+                tags = packages[name]["tags"]
+                if c["value"] not in tags:
+                    raise ResolutionError("profile_source_invalid", {"name": name, "tag": c["value"]})
+                exact.append(tags[c["value"]])
+            else:
+                exact.append(c["value"])
+        if path_decl is not None:
+            manifest = path_decl["path"]["manifest"]
+            nxt = {"kind": kind, "version": semver_parse(manifest["version"]), "commit": None, "state": path_decl["path"]["state_sha256"], "source": None, "directory": None, "manifest": manifest, "overlay": path_decl}
+        elif exact:
+            if any(commit != exact[0] for commit in exact[1:]):
+                raise conflict(name, cs, [])
+            package = packages[name]
+            commit = exact[0]
+            manifest = package["commits"].get(commit)
+            version = None
+            if kind == "skill":
+                for tag, tag_commit in package["tags"].items():
+                    if tag_commit != commit:
+                        continue
+                    parsed = semver_parse_tag(tag)
+                    if parsed is not None and (version is None or semver_compare(parsed, version) > 0):
+                        version = parsed
+            else:
+                version = semver_parse(manifest["version"]) if manifest else None
+                if version is None:
+                    raise ResolutionError("context_manifest_invalid", {"name": name})
+            for parsed_range in ranges:
+                if version is None or not range_satisfies(parsed_range, version):
+                    raise conflict(name, cs, [] if version is None else [semver_text(version)])
+            nxt = {"kind": kind, "version": version, "commit": commit, "state": None, "source": package["source"], "directory": cs[0]["directory"], "manifest": manifest, "overlay": None}
+        else:
+            package = packages[name]
+            candidates = []
+            for tag, commit in package["tags"].items():
+                parsed = semver_parse_tag(tag)
+                if parsed is not None:
+                    candidates.append((parsed, commit, tag))
+            candidates.sort(key=lambda item: _semver_key(item[0]))
+            considered = [semver_text(item[0]) for item in candidates]
+            chosen = None
+            for parsed, commit, tag in reversed(candidates):
+                if name in ceiling and semver_compare(parsed, ceiling[name]) > 0:
+                    continue
+                if all(range_satisfies(r, parsed) for r in ranges):
+                    chosen = (parsed, commit, tag)
+                    break
+            if chosen is None:
+                raise conflict(name, cs, considered)
+            parsed, commit, tag = chosen
+            manifest = package["commits"].get(commit)
+            if kind != "skill" and (manifest is None or manifest.get("version") != semver_text(parsed)):
+                raise ResolutionError("context_version_mismatch", {"name": name, "tag": tag, "manifest_version": "" if manifest is None else manifest.get("version", "")})
+            nxt = {"kind": kind, "version": parsed, "commit": commit, "state": None, "source": package["source"], "directory": cs[0]["directory"], "manifest": manifest, "overlay": None}
+        for c in cs:
+            if c["overlay"] is not None:
+                nxt["overlay"] = c["overlay"]
+        current = selected.get(name)
+        if current is not None:
+            if current["commit"] == nxt["commit"] and current["state"] == nxt["state"]:
+                continue
+            drop_attributed(label(name, current["version"]))
+        selected[name] = nxt
+        if nxt["version"] is not None:
+            ceiling[name] = nxt["version"]
+        if nxt["manifest"] is not None:
+            requirer = label(name, nxt["version"])
+            for requirement in nxt["manifest"].get("requires", []):
+                form, value = _requirement_form(requirement)
+                add(requirement["name"], requirement["kind"], requirer, name, form, value, weight=requirement.get("weight"), directory=requirement.get("directory"))
+
+    for c in constraints:
+        sel = selected.get(c["name"])
+        if sel is None:
+            raise conflict(c["name"], constraints_on(c["name"]), [])
+        if c["form"] == "range" and (sel["version"] is None or not range_satisfies(range_parse(c["value"]), sel["version"])):
+            raise conflict(c["name"], constraints_on(c["name"]), [])
+
+    root_sel = selected[root]
+    root_weights = dict(root_sel["manifest"].get("weights", {}))
+    root_map = dict(root_weights)
+    names = sorted(selected)
+    for name in names:
+        sel = selected[name]
+        if name != root and sel["kind"] == "context" and sel["manifest"] is not None and sel["manifest"].get("weights"):
+            raise ResolutionError("context_weights_not_root", {"name": name})
+    for c in constraints:
+        if c["requirer_of"] == root and c["weight"] is not None:
+            if c["name"] in root_weights:
+                raise ResolutionError("context_weights_duplicate", {"name": c["name"]})
+            root_map[c["name"]] = c["weight"]
+    for key in sorted(root_weights):
+        sel = selected.get(key)
+        if sel is None or sel["kind"] != "context":
+            raise ResolutionError("context_weight_unknown", {"name": key})
+    weights: dict[str, int] = {}
+    for name in names:
+        sel = selected[name]
+        if sel["kind"] != "context":
+            weights[name] = 0
+            continue
+        weight = sel["manifest"].get("weight", 0) if sel["manifest"] is not None else 0
+        edges = [c for c in constraints if c["name"] == name and c["weight"] is not None and c["requirer_of"] not in {"", root}]
+        if edges:
+            if any(edge["weight"] != edges[0]["weight"] for edge in edges[1:]):
+                detail = {"name": name, "requirers": [{"requirer": edge["requirer"], "weight": edge["weight"]} for edge in edges]}
+                if name not in root_map:
+                    raise ResolutionError("context_weight_conflict", detail)
+                detail["diagnostic"] = "context_weight_conflict"
+                warnings.append(detail)
+            else:
+                weight = edges[0]["weight"]
+        if name in root_map:
+            weight = root_map[name]
+        if sel["overlay"] is not None:
+            weight = sel["overlay"].get("weight", default_overlay_weight)
+        weights[name] = weight
+
+    members = []
+    for name in names:
+        sel = selected[name]
+        required_by = sorted({c["requirer_of"] for c in constraints if c["name"] == name and c["requirer_of"]})
+        member: dict[str, Any] = {
+            "kind": sel["kind"], "name": name, "weight": weights[name],
+            "required_by": required_by, "overlay": sel["overlay"] is not None,
+        }
+        if sel["state"] is not None:
+            member["state_sha256"] = sel["state"]
+        else:
+            member["source"] = sel["source"]
+            member["commit"] = sel["commit"]
+            if sel["directory"]:
+                member["directory"] = sel["directory"]
+        if sel["version"] is not None:
+            member["version"] = semver_text(sel["version"])
+        members.append(member)
+    members.sort(key=lambda member: (member["kind"], member["name"]))
+    return {"schema_version": 1, "root": root, "members": members}, warnings
+
+
+def validate_context_version_vectors(vector: Any = None, suite_root: Path | None = None) -> None:
+    """Recompute every section 1.3/1.4 expectation of context-versions.json."""
+    root = SUITE if suite_root is None else Path(suite_root)
+    if vector is None:
+        vector = load_json(root / "vectors" / "context-versions.json")
+    if (
+        vector.get("schema_version") != 1
+        or vector.get("protocol_version") != PROTOCOL_VERSION
+        or vector.get("capability") != "agent-environments"
+        or vector.get("capability_revision") != 1
+    ):
+        raise ValidationFailure("context-versions vector has the wrong capability identity")
+
+    version_cases = vector.get("version_cases")
+    if not isinstance(version_cases, list) or len(version_cases) < 10:
+        raise ValidationFailure("context-versions version_cases must list the tag grammar cases")
+    for case in version_cases:
+        parsed = semver_parse_tag(case.get("tag"))
+        if case.get("candidate") != (parsed is not None):
+            raise ValidationFailure(f"version case {case.get('tag')!r} candidate flag is false")
+        if parsed is not None and (
+            case.get("version") != semver_text(parsed)
+            or (case.get("major"), case.get("minor"), case.get("patch")) != parsed[:3]
+            or case.get("prerelease") != list(parsed[3])
+        ):
+            raise ValidationFailure(f"version case {case.get('tag')!r} parse is stale")
+    required_tags = {"v1.2.3+build.5", "1.2.3", "v01.2.3", "v2.0.0-rc.1"}
+    if required_tags - {case.get("tag") for case in version_cases}:
+        raise ValidationFailure("context-versions version_cases lost a required tag case")
+
+    for case in named_cases(vector.get("ordering_cases"), "version ordering").values():
+        parsed = [semver_parse(text) for text in case["input"]]
+        if any(item is None for item in parsed):
+            raise ValidationFailure(f"ordering case {case['name']} has an unparsable version")
+        expected = [semver_text(item) for item in sorted(parsed, key=_semver_key)]
+        if case.get("expected_ascending") != expected:
+            raise ValidationFailure(f"ordering case {case['name']} is stale")
+
+    range_cases = vector.get("range_cases")
+    if not isinstance(range_cases, list):
+        raise ValidationFailure("context-versions range_cases must be an array")
+    seen_ranges = set()
+    for case in range_cases:
+        text = case.get("range")
+        seen_ranges.add(text)
+        try:
+            sets = range_parse(text)
+        except RangeInvalid:
+            if case.get("valid") is not False or case.get("error") != "profile_source_invalid":
+                raise ValidationFailure(f"range case {text!r} must be rejected as profile_source_invalid")
+            continue
+        if case.get("valid") is not True:
+            raise ValidationFailure(f"range case {text!r} parses but is declared invalid")
+        expected = [[comparator_text(c) for c in comparators] for comparators in sets]
+        if case.get("comparator_sets") != expected:
+            raise ValidationFailure(f"range case {text!r} comparator sets are stale: {case.get('comparator_sets')} != {expected}")
+    coercion_table = {"1.2", "=1.2", ">=2.1", ">1.2", "<3", "<=1.2", "^1.2.3", "^0.2.3", "^0.0.3", "^1.4", "^0.1", "^0", "~1.2.3", "~1.2", "~1", "latest", "1.2.3 - 2.3.4", "v1.2.3"}
+    if coercion_table - seen_ranges:
+        raise ValidationFailure("context-versions range_cases lost a coercion-table or excluded-form row")
+
+    satisfies_cases = vector.get("satisfies_cases")
+    if not isinstance(satisfies_cases, list) or len(satisfies_cases) < 40:
+        raise ValidationFailure("context-versions satisfies_cases must list the admission cases")
+    for case in satisfies_cases:
+        version = semver_parse(case.get("version"))
+        if version is None:
+            raise ValidationFailure(f"satisfies case version {case.get('version')!r} does not parse")
+        if case.get("satisfies") != range_satisfies(range_parse(case.get("range")), version):
+            raise ValidationFailure(f"satisfies case ({case.get('range')!r}, {case.get('version')!r}) is stale")
+    required_pairs = {("^2.0.0-rc.0", "2.0.0-rc.1"), ("^2.0.0-rc.0", "2.1.0-rc.1"), ("*", "2.0.0-rc.1"), ("<3", "3.0.0-rc.1")}
+    if required_pairs - {(case.get("range"), case.get("version")) for case in satisfies_cases}:
+        raise ValidationFailure("context-versions satisfies_cases lost a prerelease rule case")
+
+    lock_schema = load_json(SCHEMAS / "context-lock-v1.schema.json")
+    registry, _ = schema_registry()
+    lock_validator = Draft202012Validator(lock_schema, registry=registry)
+
+    def check_lock(lock: Any, label: str) -> None:
+        errors = list(lock_validator.iter_errors(lock))
+        if errors:
+            raise ValidationFailure(f"{label}: lock is not a valid context-lock-v1: {errors[0].message}")
+        semantic = validate_wire_semantics("context-lock-v1.schema.json", lock)
+        if semantic is not None:
+            raise ValidationFailure(f"{label}: {semantic}")
+
+    for case in named_cases(vector.get("lock_cases"), "lock canonicalization").values():
+        lock = case.get("lock")
+        check_lock(lock, f"lock case {case['name']}")
+        payload = ccj1_bytes(lock)
+        if case.get("ccj1_bytes") != payload.decode("utf-8") or case.get("byte_length") != len(payload):
+            raise ValidationFailure(f"lock case {case['name']} CCJ-1 bytes are stale")
+        if case.get("lock_sha256") != ccj1_sha256(lock):
+            raise ValidationFailure(f"lock case {case['name']} lock_sha256 is stale")
+
+    resolution_cases = named_cases(vector.get("resolution_cases"), "resolution")
+    required_resolution = {
+        "worked-example-default-policy", "range-conflict-empty-intersection", "downward-reselection",
+        "prerelease-admission", "exact-constraint-unification", "or-highest-member", "latest-is-star",
+        "version-mismatch", "weight-conflict", "weights-not-root", "overlay-joint-resolution-conflict",
+    }
+    if required_resolution - set(resolution_cases):
+        raise ValidationFailure("context-versions resolution_cases lost a required case")
+    for name, case in resolution_cases.items():
+        expected = case.get("expected")
+        if not isinstance(expected, dict):
+            raise ValidationFailure(f"resolution case {name} has no expected outcome")
+        try:
+            lock, warnings = resolve_closure(case["input"])
+        except ResolutionError as error:
+            if expected.get("error") != error.diagnostic or expected.get("detail") != error.detail:
+                raise ValidationFailure(
+                    f"resolution case {name}: recomputed {error.diagnostic} {error.detail} does not match the expected outcome"
+                )
+            continue
+        if "error" in expected:
+            raise ValidationFailure(f"resolution case {name}: resolves but expects {expected['error']}")
+        if expected.get("lock") != lock:
+            raise ValidationFailure(f"resolution case {name}: expected lock is stale")
+        if expected.get("warnings") != warnings:
+            raise ValidationFailure(f"resolution case {name}: expected warnings are stale")
+        check_lock(lock, f"resolution case {name}")
+        if expected.get("lock_sha256") != ccj1_sha256(lock):
+            raise ValidationFailure(f"resolution case {name}: lock_sha256 is stale")
+
+
+# ---------------------------------------------------------------------------
+# Section 5: materialization
 
 
 def environment_module_error(content: Any) -> str | None:
@@ -3264,23 +3934,60 @@ def environment_module_error(content: Any) -> str | None:
     return None
 
 
-def environment_header_bytes(chain: list[dict[str, Any]], precedence: Any) -> bytes:
-    lines = ["<!--", ENVIRONMENT_HEADER_MARKER, f"profile: {chain[0]['name']} {chain[0]['pin']}"]
-    if len(chain) > 1:
-        for member in chain[1:]:
-            lines.append(f"compose: {member['name']} {member['pin']}")
-        if precedence not in ENVIRONMENT_PRECEDENCE_DIRECTIONS:
-            raise ValidationFailure("composed environment case has no valid precedence direction")
-        lines.append(f"precedence: {precedence}")
-    elif precedence is not None:
-        raise ValidationFailure("uncomposed environment case declares a precedence direction")
+def environment_member_pin(member: dict[str, Any]) -> str:
+    if "state_sha256" in member:
+        return f"state sha256:{member['state_sha256']}"
+    return f"commit {member['commit']}"
+
+
+def environment_precedence(precedence: Any) -> tuple[str, str]:
+    if (
+        not isinstance(precedence, dict)
+        or set(precedence) != {"winner", "placement"}
+        or precedence["winner"] not in ENVIRONMENT_WINNERS
+        or precedence["placement"] not in ENVIRONMENT_PLACEMENTS
+    ):
+        raise ValidationFailure(f"environment case declares an invalid precedence policy: {precedence!r}")
+    return precedence["winner"], precedence["placement"]
+
+
+def environment_emitted_order(lock: dict[str, Any], precedence: Any) -> list[dict[str, Any]]:
+    """Section 5 emitted order: Kahn order over context members, stably sorted by weight."""
+    winner, placement = environment_precedence(precedence)
+    contexts = {member["name"]: member for member in lock["members"] if member["kind"] == "context"}
+    requires: dict[str, set[str]] = {name: set() for name in contexts}
+    for name, member in contexts.items():
+        for requirer in member["required_by"]:
+            if requirer in contexts:
+                requires[requirer].add(name)
+    emitted: list[str] = []
+    while len(emitted) < len(contexts):
+        ready = sorted(name for name in contexts if name not in emitted and requires[name] <= set(emitted))
+        if not ready:
+            raise ValidationFailure("environment lock has a context cycle")
+        emitted.append(ready[0])
+    ascending = (winner == "higher-weight") == (placement == "winner-last")
+    ordered = [contexts[name] for name in emitted]
+    return sorted(ordered, key=lambda member: member["weight"] if ascending else -member["weight"])
+
+
+def environment_header_bytes(lock: dict[str, Any], precedence: Any) -> bytes:
+    root = next(member for member in lock["members"] if member["name"] == lock["root"])
+    lines = ["<!--", ENVIRONMENT_HEADER_MARKER, f"root: {root['name']} {root['version']} {environment_member_pin(root)}"]
+    for member in environment_emitted_order(lock, precedence):
+        line = f"member: {member['name']} {member['version']} {environment_member_pin(member)} weight {member['weight']}"
+        if member["overlay"]:
+            line += " overlay"
+        lines.append(line)
+    lines.append(f"precedence: winner={precedence['winner']} placement={precedence['placement']}")
+    lines.append(f"lock: {ccj1_sha256(lock)}")
     lines.extend([ENVIRONMENT_GENERATED_LINE, ENVIRONMENT_NOTICE_LINE, "-->"])
     return ("\n".join(lines) + "\n").encode("utf-8")
 
 
-def environment_applicable(member: dict[str, Any], environment: str, module_class: str) -> list[dict[str, Any]]:
+def environment_applicable(package: dict[str, Any], environment: str, module_class: str) -> list[dict[str, Any]]:
     applicable = []
-    for module in member.get("modules", []):
+    for module in package.get("modules", []):
         if module.get("class", "root") != module_class:
             continue
         selector = module.get("environments")
@@ -3290,58 +3997,128 @@ def environment_applicable(member: dict[str, Any], environment: str, module_clas
     return applicable
 
 
+def environment_mcp_set(case: dict[str, Any]) -> list[str]:
+    environment = case["environment"]
+    servers = case.get("mcp_servers", {})
+    names = []
+    for member in case["lock"]["members"]:
+        if member["kind"] != "mcp":
+            continue
+        server = servers[member["name"]]
+        selector = server.get("environments")
+        if selector is not None and environment not in selector:
+            continue
+        names.append(member["name"])
+    return sorted(names)
+
+
+def toml_basic_string(value: str) -> str:
+    out = ['"']
+    for char in value:
+        if char == '"':
+            out.append('\\"')
+        elif char == "\\":
+            out.append("\\\\")
+        elif char == "\n":
+            out.append("\\n")
+        elif char == "\r":
+            out.append("\\r")
+        elif char == "\t":
+            out.append("\\t")
+        elif ord(char) < 0x20 or ord(char) == 0x7F:
+            out.append("\\u%04X" % ord(char))
+        else:
+            out.append(char)
+    out.append('"')
+    return "".join(out)
+
+
+def environment_mcp_files(case: dict[str, Any]) -> dict[str, bytes]:
+    environment = case["environment"]
+    target = ENVIRONMENT_MCP_TARGETS.get(environment)
+    names = environment_mcp_set(case)
+    if target is None or not names:
+        return {}
+    servers = case["mcp_servers"]
+    if environment == "claude_code":
+        body = {}
+        for name in names:
+            server = servers[name]
+            if server["transport"] == "stdio":
+                body[name] = {"args": list(server["args"]), "command": server["command"], "type": "stdio"}
+            else:
+                body[name] = {"type": "http", "url": server["url"]}
+        return {target: ccj1_bytes({"mcpServers": body}) + b"\n"}
+    if environment == "opencode":
+        body = {}
+        for name in names:
+            server = servers[name]
+            if server["transport"] == "stdio":
+                body[name] = {"command": [server["command"], *server["args"]], "type": "local"}
+            else:
+                body[name] = {"type": "remote", "url": server["url"]}
+        return {target: ccj1_bytes({"mcp": body}) + b"\n"}
+    lines = []
+    for name in names:
+        server = servers[name]
+        lines.append(f"[mcp_servers.{name}]")
+        if server["transport"] == "stdio":
+            lines.append(f"command = {toml_basic_string(server['command'])}")
+            lines.append("args = [" + ", ".join(toml_basic_string(arg) for arg in server["args"]) + "]")
+        else:
+            lines.append(f"url = {toml_basic_string(server['url'])}")
+    return {target: ("\n".join(lines) + "\n").encode("utf-8")}
+
+
 def environment_case_files(case: dict[str, Any]) -> dict[str, bytes]:
     name = case.get("name", "<unnamed>")
-    chain = case["chain"]
+    lock = case["lock"]
+    packages = case.get("packages", {})
     environment = case["environment"]
     precedence = case.get("precedence")
-    for member in chain:
-        if not member.get("has_context"):
+    if case["surface"] == "mcp":
+        return environment_mcp_files(case)
+    for package in packages.values():
+        if not package.get("has_context"):
             continue
-        for module in member.get("modules", []):
+        for module in package.get("modules", []):
             error = environment_module_error(module.get("content"))
             if error is not None:
-                raise ValidationFailure(
-                    f"environment case {name}: module {module.get('path')}: {error}"
-                )
+                raise ValidationFailure(f"environment case {name}: module {module.get('path')}: {error}")
+    order = environment_emitted_order(lock, precedence)
     if case["surface"] == "system-prompt":
         parts = [
             module["content"]
-            for member in chain
-            for module in environment_applicable(member, environment, "system")
+            for member in order
+            for module in environment_applicable(packages[member["name"]], environment, "system")
         ]
         if not parts:
             return {}
         return {ENVIRONMENT_SYSTEM_PROMPT_PATH: "\n".join(parts).encode("utf-8")}
-    if not chain[0].get("has_context"):
+    if not packages[lock["root"]].get("has_context"):
         return {}
     form = case["form"]
-    header = environment_header_bytes(chain, precedence).decode("utf-8")
+    header = environment_header_bytes(lock, precedence).decode("utf-8")
     files: dict[str, bytes] = {}
     instructions: list[str] = []
     parts = [header]
-
-    def emit(member: dict[str, Any], module: dict[str, Any]) -> None:
-        if form == "monolithic":
-            parts.append(module["content"])
-            return
-        if form != "referenced":
-            raise ValidationFailure(f"environment case {name}: unsupported form {form!r}")
-        reference = f".agent-context/modules/{member['name']}/{module['path']}"
-        files[reference] = module["content"].encode("utf-8")
-        instructions.append(reference)
-        if environment != "opencode":
-            parts.append("@" + reference + "\n")
-
-    if len(chain) == 1:
-        for module in environment_applicable(chain[0], environment, "root"):
-            emit(chain[0], module)
-    else:
-        for member in chain:
-            if not (environment == "opencode" and form == "referenced"):
-                parts.append(f"---\n\n## Profile: {member['name']}\n")
-            for module in environment_applicable(member, environment, "root"):
-                emit(member, module)
+    for member in order:
+        modules = environment_applicable(packages[member["name"]], environment, "root")
+        if not modules:
+            continue
+        if not (environment == "opencode" and form == "referenced"):
+            parts.append(f"---\n\n## Context: {member['name']} {member['version']}\n")
+        for module in modules:
+            if form == "monolithic":
+                parts.append(module["content"])
+            elif form == "referenced":
+                reference = f".agent-context/modules/{member['name']}/{module['path']}"
+                files[reference] = module["content"].encode("utf-8")
+                instructions.append(reference)
+                if environment != "opencode":
+                    parts.append("@" + reference + "\n")
+            else:
+                raise ValidationFailure(f"environment case {name}: unsupported form {form!r}")
     target = ENVIRONMENT_ROOT_TARGETS[environment]
     if environment == "opencode" and form == "referenced":
         files[target] = header.encode("utf-8")
@@ -3365,14 +4142,34 @@ def validate_environment_vectors(vector: Any = None, suite_root: Path | None = N
         or vector.get("protocol_version") != PROTOCOL_VERSION
         or vector.get("capability") != "agent-environments"
         or vector.get("capability_revision") != 1
+        or vector.get("header_type_line") != ENVIRONMENT_HEADER_MARKER
     ):
         raise ValidationFailure("environments vector has the wrong capability identity")
+
+    registry, _ = schema_registry()
+    lock_validator = Draft202012Validator(load_json(SCHEMAS / "context-lock-v1.schema.json"), registry=registry)
+
+    def check_lock(case: dict[str, Any], label: str) -> dict[str, Any]:
+        lock = case.get("lock")
+        errors = list(lock_validator.iter_errors(lock))
+        if errors:
+            raise ValidationFailure(f"{label}: lock is not a valid context-lock-v1: {errors[0].message}")
+        semantic = validate_wire_semantics("context-lock-v1.schema.json", lock)
+        if semantic is not None:
+            raise ValidationFailure(f"{label}: {semantic}")
+        if case.get("lock_sha256") != ccj1_sha256(lock):
+            raise ValidationFailure(f"{label}: lock_sha256 is stale")
+        expected_order = [member["name"] for member in environment_emitted_order(lock, case.get("precedence"))]
+        if case.get("emitted_order") != expected_order:
+            raise ValidationFailure(f"{label}: emitted_order is not the section 5 order {expected_order}")
+        return lock
 
     header_cases = named_cases(vector.get("header_cases"), "environment header")
     if set(header_cases) != ENVIRONMENT_HEADER_CASES:
         raise ValidationFailure("environment header case inventory is not exact")
     for name, case in header_cases.items():
-        expected = environment_header_bytes(case["chain"], case.get("precedence"))
+        lock = check_lock(case, f"environment header case {name}")
+        expected = environment_header_bytes(lock, case.get("precedence"))
         declared = case.get("expected_bytes")
         if not isinstance(declared, str) or declared.encode("utf-8") != expected:
             raise ValidationFailure(f"environment header case {name} bytes are stale")
@@ -3381,57 +4178,49 @@ def validate_environment_vectors(vector: Any = None, suite_root: Path | None = N
         if case.get("line_count") != expected.count(b"\n"):
             raise ValidationFailure(f"environment header case {name} line count is false")
 
-    cases = named_cases(
-        vector.get("materialization_cases"), "environment materialization"
-    )
+    cases = named_cases(vector.get("materialization_cases"), "environment materialization")
     if set(cases) != ENVIRONMENT_MATERIALIZATION_CASES:
         raise ValidationFailure("environment materialization case inventory is not exact")
     referenced_expected: set[str] = set()
     for name, case in cases.items():
+        check_lock(case, f"environment case {name}")
+        if case["surface"] == "mcp":
+            if case.get("mcp_set") != environment_mcp_set(case):
+                raise ValidationFailure(f"environment case {name}: mcp_set is not the sorted applicable set")
+            union = sorted({env for server_name in environment_mcp_set(case) for env in case["mcp_servers"][server_name].get("env_names", [])})
+            if case.get("env_names") != union:
+                raise ValidationFailure(f"environment case {name}: env_names is not the sorted union")
         files = environment_case_files(case)
         if case.get("file_written") is not bool(files):
-            raise ValidationFailure(
-                f"environment case {name}: file_written contradicts the section 5 rules"
-            )
+            raise ValidationFailure(f"environment case {name}: file_written contradicts the section 5 rules")
         entries = case.get("files")
         if not isinstance(entries, list):
             raise ValidationFailure(f"environment case {name}: files must be an array")
-        declared_paths = [
-            entry.get("path") for entry in entries if isinstance(entry, dict)
-        ]
+        declared_paths = [entry.get("path") for entry in entries if isinstance(entry, dict)]
         if declared_paths != sorted(files):
             raise ValidationFailure(f"environment case {name}: file inventory mismatch")
         if not files:
             if "surface_sha256" in case:
-                raise ValidationFailure(
-                    f"environment case {name}: an absent surface must not bind a hash"
-                )
+                raise ValidationFailure(f"environment case {name}: an absent surface must not bind a hash")
             continue
         for entry in entries:
             path = entry["path"]
             payload = files[path]
             if entry.get("sha256") != "sha256:" + hashlib.sha256(payload).hexdigest():
-                raise ValidationFailure(
-                    f"environment case {name}: digest for {path} is stale"
-                )
+                raise ValidationFailure(f"environment case {name}: digest for {path} is stale")
+            if entry.get("bytes") != len(payload):
+                raise ValidationFailure(f"environment case {name}: byte length for {path} is stale")
             expected_name = entry.get("expected")
-            if (
-                not isinstance(expected_name, str)
-                or not expected_name.startswith("expected/environments/")
-            ):
-                raise ValidationFailure(
-                    f"environment case {name}: {path} has no expected byte file"
-                )
+            if not isinstance(expected_name, str) or not expected_name.startswith("expected/environments/"):
+                raise ValidationFailure(f"environment case {name}: {path} has no expected byte file")
             referenced_expected.add(expected_name)
             expected_path = root / expected_name
             if not expected_path.is_file() or expected_path.read_bytes() != payload:
-                raise ValidationFailure(
-                    f"environment case {name}: expected bytes for {path} differ"
-                )
+                raise ValidationFailure(f"environment case {name}: expected bytes for {path} differ")
+            if payload.endswith(b"\n\n") or not payload.endswith(b"\n") or b"\r" in payload:
+                raise ValidationFailure(f"environment case {name}: {path} violates the LF discipline")
         if case.get("surface_sha256") != environment_content_hash(files):
-            raise ValidationFailure(
-                f"environment case {name}: surface hash is not the core section 8 content hash"
-            )
+            raise ValidationFailure(f"environment case {name}: surface hash is not the core section 8 content hash")
 
     expected_root = root / "expected" / "environments"
     on_disk = {
@@ -3440,9 +4229,127 @@ def validate_environment_vectors(vector: Any = None, suite_root: Path | None = N
         if path.is_file()
     } if expected_root.is_dir() else set()
     if on_disk != referenced_expected:
-        raise ValidationFailure(
-            "expected/environments inventory does not match the vector's referenced files"
-        )
+        raise ValidationFailure("expected/environments inventory does not match the vector's referenced files")
+
+
+# ---------------------------------------------------------------------------
+# Section 9.1: detector classes
+
+
+DETECTOR_SCOPE_PREFIX = "context/"
+DETECTOR_SCOPE_FILES = {"agent-context.json", "agent-mcp.json", "CONTEXT.md"}
+DETECTOR_REQUIRED_CASES = {
+    "secret-aws-access-key", "secret-private-key-block", "secret-bearer-token",
+    "secret-in-mcp-args", "secret-in-mcp-url", "placeholder-example-key",
+    "content-hash-not-secret", "waived-span-clears-only-itself",
+    "pin-does-not-clear-finding", "system-module-present",
+}
+
+
+def detector_in_scope(path: str) -> bool:
+    return path.startswith(DETECTOR_SCOPE_PREFIX) or path in DETECTOR_SCOPE_FILES
+
+
+def detector_is_placeholder(body: str) -> bool:
+    return body.endswith("EXAMPLE") or len(set(body)) <= 1
+
+
+def detector_findings(pattern_classes: list[dict[str, Any]], pin: str, files: dict[str, str], waivers: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    compiled = [(item["pattern"], re.compile(item["regexp"]), item["group"], item.get("placeholder_prefix", "")) for item in pattern_classes]
+    findings: list[dict[str, Any]] = []
+    matched: set[int] = set()
+    for path in sorted(files):
+        if not detector_in_scope(path):
+            continue
+        content = files[path]
+        file_findings = []
+        for pattern_name, expression, group, prefix in compiled:
+            for match in expression.finditer(content):
+                start, end = match.span(group)
+                body = content[start:end]
+                if body.startswith(prefix):
+                    body = body[len(prefix):]
+                if detector_is_placeholder(body):
+                    continue
+                file_findings.append({"class": "context-secret-material", "pattern": pattern_name, "file": path, "span": [start, end], "severity": "blocking", "waived": False})
+        file_findings.sort(key=lambda item: (item["span"][0], item["pattern"]))
+        for finding in file_findings:
+            for index, waiver in enumerate(waivers):
+                if waiver["pin"] == pin and waiver["file"] == finding["file"] and list(waiver["span"]) == finding["span"]:
+                    finding["waived"] = True
+                    finding["waiver_reason"] = waiver["reason"]
+                    matched.add(index)
+            findings.append(finding)
+    unmatched = [waiver for index, waiver in enumerate(waivers) if index not in matched]
+    return findings, unmatched
+
+
+def detector_system_module_warnings(files: dict[str, str]) -> list[dict[str, Any]]:
+    if "agent-context.json" not in files:
+        return []
+    manifest = json.loads(files["agent-context.json"])
+    warnings = []
+    for module in manifest.get("context", {}).get("modules", []):
+        if module.get("class") != "system":
+            continue
+        warnings.append({"class": "context-system-module-present", "package": manifest["name"], "path": module["path"], "selector": module.get("environments")})
+    return warnings
+
+
+def validate_context_detector_vectors(vector: Any = None, suite_root: Path | None = None) -> None:
+    """Recompute every finding of context-detectors.json from the case bytes."""
+    root = SUITE if suite_root is None else Path(suite_root)
+    if vector is None:
+        vector = load_json(root / "vectors" / "context-detectors.json")
+    if (
+        vector.get("schema_version") != 1
+        or vector.get("protocol_version") != PROTOCOL_VERSION
+        or vector.get("capability") != "agent-environments"
+        or vector.get("capability_revision") != 1
+    ):
+        raise ValidationFailure("context-detectors vector has the wrong capability identity")
+    pattern_classes = vector.get("pattern_classes")
+    if not isinstance(pattern_classes, list) or {item.get("pattern") for item in pattern_classes} != {"aws-access-key-id", "private-key-block", "bearer-token"}:
+        raise ValidationFailure("context-detectors pattern classes are not the closed set")
+    cases = named_cases(vector.get("cases"), "context detector")
+    if DETECTOR_REQUIRED_CASES - set(cases):
+        raise ValidationFailure("context-detectors lost a required case")
+    registry, _ = schema_registry()
+    validators = {
+        "context": Draft202012Validator(load_json(SCHEMAS / "agent-context-v1.schema.json"), registry=registry),
+        "mcp": Draft202012Validator(load_json(SCHEMAS / "agent-mcp-v1.schema.json"), registry=registry),
+    }
+    for name, case in cases.items():
+        files = case.get("files")
+        if not isinstance(files, dict) or not all(isinstance(content, str) for content in files.values()):
+            raise ValidationFailure(f"detector case {name}: files must map paths to text")
+        kind = case.get("package_kind")
+        manifest_name = "agent-context.json" if kind == "context" else "agent-mcp.json"
+        if kind not in validators or manifest_name not in files:
+            raise ValidationFailure(f"detector case {name}: package kind {kind!r} needs its manifest")
+        manifest = json.loads(files[manifest_name])
+        # A manifest that fails its schema would never reach the audit, so a
+        # detector case over an invalid manifest asserts nothing.
+        if list(validators[kind].iter_errors(manifest)):
+            raise ValidationFailure(f"detector case {name}: {manifest_name} is not schema-valid")
+        findings, unmatched = detector_findings(pattern_classes, case.get("pin"), files, case.get("waivers", []))
+        expected = case.get("expected", {})
+        if expected.get("findings") != findings:
+            raise ValidationFailure(f"detector case {name}: expected findings are stale: {expected.get('findings')} != {findings}")
+        warnings = []
+        for finding in findings:
+            if finding["waived"]:
+                warnings.append({"diagnostic": "context_secret_waiver_applied", "file": finding["file"], "span": finding["span"], "reason": finding["waiver_reason"]})
+        for waiver in unmatched:
+            warnings.append({"diagnostic": "context_secret_waiver_unmatched", "pin": waiver["pin"], "file": waiver["file"], "span": list(waiver["span"])})
+        warnings.extend(detector_system_module_warnings(files))
+        if expected.get("warnings") != warnings:
+            raise ValidationFailure(f"detector case {name}: expected warnings are stale")
+        blocking = any(not finding["waived"] for finding in findings)
+        if expected.get("installs") is not (not blocking):
+            raise ValidationFailure(f"detector case {name}: installs contradicts the blocking findings")
+        if case.get("content_hash_pin") and blocking is False and name == "pin-does-not-clear-finding":
+            raise ValidationFailure("pin-does-not-clear-finding must keep its finding blocking")
 
 
 SNAPSHOT_ACQUISITION_FILES = {
@@ -3530,6 +4437,8 @@ def main() -> int:
         validate_vector_semantics,
         validate_assurance_vectors,
         validate_environment_vectors,
+        validate_context_version_vectors,
+        validate_context_detector_vectors,
         validate_snapshot_acquisition_vectors,
         validate_manager_config_vectors,
         validate_local_links,

@@ -1,9 +1,0 @@
-{
-  "modules": [
-    {
-      "class": "global",
-      "path": "00-base.md"
-    }
-  ],
-  "version": 1
-}

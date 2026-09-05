@@ -1,0 +1,15 @@
+{
+  "name": "figma-devmode",
+  "schema_version": 1,
+  "server": {
+    "env_names": [
+      "DOCS_TOKEN"
+    ],
+    "environments": [
+      "opencode"
+    ],
+    "transport": "http",
+    "url": "https://mcp.example.com:8443/docs/sse"
+  },
+  "version": "1.2.0"
+}

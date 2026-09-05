@@ -20,6 +20,43 @@ Versioning for the complete specification set.
   the schema each case's `schema_version` selects and cross-checks the schema-2 knob names and
   literal defaults against the section 12.1 table.
 
+- Delivered the environments.md revision 1.1 conformance surfaces of section
+  13. Schemas: new `agent-context-v1`, `agent-mcp-v1`, and `context-lock-v1`;
+  `agent-environment-marker-v1` and `launch-env-fragment-v1` rewritten in
+  place on the lock model (`argument` required on every `flag` descriptor,
+  `name` exactly when `argument` is `name`, `precedence` as the two closed
+  primitives); every schema with positive cases per optional-member
+  combination, one violated rule per negative case, and unknown-member
+  rejection. Vectors: `context-versions.json` (tag grammar, precedence, the
+  section 1.4 coercion table and excluded forms, prerelease admission, the
+  resolution algorithm with its diagnostics, lock canonicalization and
+  `lock_sha256`), `context-detectors.json` (section 9.1 classes, waiver,
+  unpinnable, system-module warning), and `environments.json` regenerated
+  under `curator-root-context-v2` with the retired empty-chapter set re-cut as
+  the no-chapter set, emitted-order sets under both `winner` and both
+  `placement` primitives, and MCP byte sets per adapter. `tools/validate.py`
+  recomputes every hash, byte length, order, lock, finding, and materialized
+  byte independently of the generator and fails on a hand-edited expected
+  file.
+- Added the environments section 1.2 snapshot byte-exactness rule: a snapshot
+  produced from a commit carries exactly the committed blob bytes, and neither
+  working-tree conversion (`core.autocrlf`, `text`/`eol`, filters, `ident`) nor
+  attribute-driven archive processing (`export-subst`, `export-ignore`) may
+  alter, add, or omit an entry. Content hashes, state hashes, effective pins,
+  and every hash-bound identity are therefore platform- and
+  configuration-independent, which the section 5.6 cross-platform equality
+  claim had assumed without stating. `git archive` violates the rule under
+  `core.autocrlf=true` and for `export-subst` entries; object-database
+  extraction satisfies it.
+- Added the `snapshot-acquisition.json` vector over the new
+  `fixtures/byte-exact` tree (`* text=auto`, an `export-subst` entry, LF, CRLF,
+  and mixed-ending files) with its expected content hash, fixture blobs
+  committed through plumbing so they survive every checkout unconverted under
+  the repository's `eol=lf` policy (a root `.gitattributes` note explains why
+  no attribute rule can protect them against the fixture's own nested
+  `* text=auto`), and validator cross-checks that fail on a normalized
+  checkout, an expanded placeholder, or a hash that omits `.gitattributes`.
+
 ### Changed
 
 - Rewrote manager profile section 12 on the environments 1.1 model per the
@@ -40,24 +77,11 @@ Versioning for the complete specification set.
   `env config` rows, and the `curator run` provider pointer to Decision 0013
   Decision 6.4.
 
-- Added the environments section 1.2 snapshot byte-exactness rule: a snapshot
-  produced from a commit carries exactly the committed blob bytes, and neither
-  working-tree conversion (`core.autocrlf`, `text`/`eol`, filters, `ident`) nor
-  attribute-driven archive processing (`export-subst`, `export-ignore`) may
-  alter, add, or omit an entry. Content hashes, state hashes, effective pins,
-  and every hash-bound identity are therefore platform- and
-  configuration-independent, which the section 5.6 cross-platform equality
-  claim had assumed without stating. `git archive` violates the rule under
-  `core.autocrlf=true` and for `export-subst` entries; object-database
-  extraction satisfies it.
-- Added the `snapshot-acquisition.json` vector over the new
-  `fixtures/byte-exact` tree (`* text=auto`, an `export-subst` entry, LF, CRLF,
-  and mixed-ending files) with its expected content hash, fixture blobs
-  committed through plumbing so they survive every checkout unconverted under
-  the repository's `eol=lf` policy (a root `.gitattributes` note explains why
-  no attribute rule can protect them against the fixture's own nested
-  `* text=auto`), and validator cross-checks that fail on a normalized
-  checkout, an expanded placeholder, or a hash that omits `.gitattributes`.
+### Removed
+
+- Withdrew `profilefile-v1` and `context-manifest-v1` with their schema cases
+  and the `monolithic-composed-empty-chapter` expected set, replaced under
+  section 13 by the lock model.
 
 ## 1.0.0-rc.9 - 2026-08-23
 

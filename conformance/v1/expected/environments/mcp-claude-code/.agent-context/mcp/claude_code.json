@@ -1,0 +1,1 @@
+{"mcpServers":{"docs-remote":{"type":"http","url":"https://mcp.example.com/docs"},"figma-devmode":{"args":["-y","figma-developer-mcp","--stdio"],"command":"npx","type":"stdio"}}}

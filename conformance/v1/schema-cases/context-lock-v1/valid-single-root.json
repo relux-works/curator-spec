@@ -1,0 +1,16 @@
+{
+  "members": [
+    {
+      "commit": "0123456789abcdef0123456789abcdef01234567",
+      "kind": "context",
+      "name": "solo",
+      "overlay": false,
+      "required_by": [],
+      "source": "github.com/example/solo",
+      "version": "1.0.0",
+      "weight": 0
+    }
+  ],
+  "root": "solo",
+  "schema_version": 1
+}

@@ -1,0 +1,9 @@
+{
+  "name": "figma-devmode",
+  "schema_version": 1,
+  "server": {
+    "transport": "http",
+    "url": "https://mcp.exämple.com/docs"
+  },
+  "version": "1.2.0"
+}

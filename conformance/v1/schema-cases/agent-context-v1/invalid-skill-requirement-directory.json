@@ -1,0 +1,32 @@
+{
+  "context": {
+    "modules": [
+      {
+        "path": "00-ios-umbrella.md"
+      },
+      {
+        "class": "system",
+        "environments": [
+          "claude_code"
+        ],
+        "path": "90-ios-system.md"
+      }
+    ]
+  },
+  "name": "companyA-root-context-ios-developer-umbrella",
+  "requires": {
+    "skills": {
+      "dependency": {
+        "directory": "skills/x",
+        "git": "https://github.com/example/skill.git",
+        "range": "^1"
+      }
+    }
+  },
+  "schema_version": 1,
+  "version": "2.3.0",
+  "weight": 100,
+  "weights": {
+    "companyA-root-context-organizational-structure": 10
+  }
+}

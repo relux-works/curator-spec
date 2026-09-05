@@ -1,8 +1,0 @@
-{
-  "notes": "informative",
-  "profiles": {
-    "companyA": "profiles/companyA",
-    "personal": "profiles/personal"
-  },
-  "version": 1
-}

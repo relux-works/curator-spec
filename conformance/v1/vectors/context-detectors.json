@@ -1,0 +1,405 @@
+{
+  "capability": "agent-environments",
+  "capability_revision": 1,
+  "cases": [
+    {
+      "content_hash_pin": false,
+      "description": "an AWS access key id in a context module is a blocking finding naming the file and the byte span",
+      "expected": {
+        "findings": [
+          {
+            "class": "context-secret-material",
+            "file": "context/00-base.md",
+            "pattern": "aws-access-key-id",
+            "severity": "blocking",
+            "span": [
+              29,
+              49
+            ],
+            "waived": false
+          }
+        ],
+        "installs": false,
+        "warnings": []
+      },
+      "files": {
+        "agent-context.json": "{\"context\":{\"modules\":[{\"path\":\"00-base.md\"}]},\"name\":\"companyA\",\"schema_version\":1,\"version\":\"1.0.0\"}\n",
+        "context/00-base.md": "# Base\n\nUse the deploy role: AKIAJ7Q3ZX9PLM2RT5WQ when publishing.\n"
+      },
+      "name": "secret-aws-access-key",
+      "package_kind": "context",
+      "pin": "commit 0123456789abcdef0123456789abcdef01234567",
+      "waivers": []
+    },
+    {
+      "content_hash_pin": false,
+      "description": "a PEM private-key block header in CONTEXT.md is a blocking finding",
+      "expected": {
+        "findings": [
+          {
+            "class": "context-secret-material",
+            "file": "CONTEXT.md",
+            "pattern": "private-key-block",
+            "severity": "blocking",
+            "span": [
+              9,
+              44
+            ],
+            "waived": false
+          }
+        ],
+        "installs": false,
+        "warnings": []
+      },
+      "files": {
+        "CONTEXT.md": "# About\n\n-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAA\n-----END OPENSSH PRIVATE KEY-----\n",
+        "agent-context.json": "{\"context\":{\"modules\":[{\"path\":\"00-base.md\"}]},\"name\":\"companyA\",\"schema_version\":1,\"version\":\"1.0.0\"}\n",
+        "context/00-base.md": "# Base\n"
+      },
+      "name": "secret-private-key-block",
+      "package_kind": "context",
+      "pin": "commit 0123456789abcdef0123456789abcdef01234567",
+      "waivers": []
+    },
+    {
+      "content_hash_pin": false,
+      "description": "a bearer token in a context module is a blocking finding",
+      "expected": {
+        "findings": [
+          {
+            "class": "context-secret-material",
+            "file": "context/00-base.md",
+            "pattern": "bearer-token",
+            "severity": "blocking",
+            "span": [
+              30,
+              106
+            ],
+            "waived": false
+          }
+        ],
+        "installs": false,
+        "warnings": []
+      },
+      "files": {
+        "agent-context.json": "{\"context\":{\"modules\":[{\"path\":\"00-base.md\"}]},\"name\":\"companyA\",\"schema_version\":1,\"version\":\"1.0.0\"}\n",
+        "context/00-base.md": "# Base\n\nAuthorization: Bearer eyJhbGciOiJIUzI1NiJ9.c2VjcmV0LXBheWxvYWQtZm9yLXZlY3Rvcg.QmFkSWRlYVRvQ29tbWl0\n"
+      },
+      "name": "secret-bearer-token",
+      "package_kind": "context",
+      "pin": "commit 0123456789abcdef0123456789abcdef01234567",
+      "waivers": []
+    },
+    {
+      "content_hash_pin": false,
+      "description": "agent-mcp.json args are inside the detector scope: a token in an argument is a blocking finding like a token in a module",
+      "expected": {
+        "findings": [
+          {
+            "class": "context-secret-material",
+            "file": "agent-mcp.json",
+            "pattern": "aws-access-key-id",
+            "severity": "blocking",
+            "span": [
+              109,
+              129
+            ],
+            "waived": false
+          }
+        ],
+        "installs": false,
+        "warnings": []
+      },
+      "files": {
+        "agent-mcp.json": "{\"name\":\"figma-devmode\",\"schema_version\":1,\"server\":{\"args\":[\"-y\",\"figma-developer-mcp\",\"--stdio\",\"--token\",\"AKIAJ7Q3ZX9PLM2RT5WQ\"],\"command\":\"npx\",\"transport\":\"stdio\"},\"version\":\"1.2.0\"}\n"
+      },
+      "name": "secret-in-mcp-args",
+      "package_kind": "mcp",
+      "pin": "commit 0123456789abcdef0123456789abcdef01234567",
+      "waivers": []
+    },
+    {
+      "content_hash_pin": false,
+      "description": "agent-mcp.json url is inside the detector scope: a token embedded in the URL path is a blocking finding",
+      "expected": {
+        "findings": [
+          {
+            "class": "context-secret-material",
+            "file": "agent-mcp.json",
+            "pattern": "aws-access-key-id",
+            "severity": "blocking",
+            "span": [
+              106,
+              126
+            ],
+            "waived": false
+          }
+        ],
+        "installs": false,
+        "warnings": []
+      },
+      "files": {
+        "agent-mcp.json": "{\"name\":\"figma-devmode\",\"schema_version\":1,\"server\":{\"transport\":\"http\",\"url\":\"https://mcp.example.com/v1/AKIAJ7Q3ZX9PLM2RT5WQ/sse\"},\"version\":\"1.2.0\"}\n"
+      },
+      "name": "secret-in-mcp-url",
+      "package_kind": "mcp",
+      "pin": "commit 0123456789abcdef0123456789abcdef01234567",
+      "waivers": []
+    },
+    {
+      "content_hash_pin": false,
+      "description": "a placeholder body — the documented EXAMPLE suffix or one repeated character — is not a finding",
+      "expected": {
+        "findings": [],
+        "installs": true,
+        "warnings": []
+      },
+      "files": {
+        "agent-context.json": "{\"context\":{\"modules\":[{\"path\":\"00-base.md\"}]},\"name\":\"companyA\",\"schema_version\":1,\"version\":\"1.0.0\"}\n",
+        "context/00-base.md": "# Base\n\nFormat: AKIAIOSFODNN7EXAMPLE or AKIAXXXXXXXXXXXXXXXX; never a real key.\nToken: Bearer <token>\n"
+      },
+      "name": "placeholder-example-key",
+      "package_kind": "context",
+      "pin": "commit 0123456789abcdef0123456789abcdef01234567",
+      "waivers": []
+    },
+    {
+      "content_hash_pin": false,
+      "description": "a content hash, a commit id, and a lock hash are not secret material under any closed class",
+      "expected": {
+        "findings": [],
+        "installs": true,
+        "warnings": []
+      },
+      "files": {
+        "agent-context.json": "{\"context\":{\"modules\":[{\"path\":\"00-base.md\"}]},\"name\":\"companyA\",\"schema_version\":1,\"version\":\"1.0.0\"}\n",
+        "context/00-base.md": "# Base\n\nPinned at sha256:abababababababababababababababababababababababababababababababab and commit 0123456789abcdef0123456789abcdef01234567.\n"
+      },
+      "name": "content-hash-not-secret",
+      "package_kind": "context",
+      "pin": "commit 0123456789abcdef0123456789abcdef01234567",
+      "waivers": []
+    },
+    {
+      "content_hash_pin": false,
+      "description": "a file the manifest does not name and the detector scope does not list is inert",
+      "expected": {
+        "findings": [],
+        "installs": true,
+        "warnings": []
+      },
+      "files": {
+        "agent-context.json": "{\"context\":{\"modules\":[{\"path\":\"00-base.md\"}]},\"name\":\"companyA\",\"schema_version\":1,\"version\":\"1.0.0\"}\n",
+        "context/00-base.md": "# Base\n",
+        "notes/scratch.txt": "AKIAJ7Q3ZX9PLM2RT5WQ\n"
+      },
+      "name": "file-outside-scope-ignored",
+      "package_kind": "context",
+      "pin": "commit 0123456789abcdef0123456789abcdef01234567",
+      "waivers": []
+    },
+    {
+      "content_hash_pin": false,
+      "description": "a scoped waiver clears exactly the finding whose file and span it names at that pin, reported as a warning; the second finding stays blocking",
+      "expected": {
+        "findings": [
+          {
+            "class": "context-secret-material",
+            "file": "context/00-base.md",
+            "pattern": "aws-access-key-id",
+            "severity": "blocking",
+            "span": [
+              16,
+              36
+            ],
+            "waived": true,
+            "waiver_reason": "rotated 2026-08-01; documented for history"
+          },
+          {
+            "class": "context-secret-material",
+            "file": "context/00-base.md",
+            "pattern": "aws-access-key-id",
+            "severity": "blocking",
+            "span": [
+              46,
+              66
+            ],
+            "waived": false
+          }
+        ],
+        "installs": false,
+        "warnings": [
+          {
+            "diagnostic": "context_secret_waiver_applied",
+            "file": "context/00-base.md",
+            "reason": "rotated 2026-08-01; documented for history",
+            "span": [
+              16,
+              36
+            ]
+          }
+        ]
+      },
+      "files": {
+        "agent-context.json": "{\"context\":{\"modules\":[{\"path\":\"00-base.md\"}]},\"name\":\"companyA\",\"schema_version\":1,\"version\":\"1.0.0\"}\n",
+        "context/00-base.md": "# Base\n\nLegacy: AKIAJ7Q3ZX9PLM2RT5WQ\nCurrent: AKIAQ2W8E7R6T5Y4U3I2\n"
+      },
+      "name": "waived-span-clears-only-itself",
+      "package_kind": "context",
+      "pin": "commit 0123456789abcdef0123456789abcdef01234567",
+      "waivers": [
+        {
+          "file": "context/00-base.md",
+          "pin": "commit 0123456789abcdef0123456789abcdef01234567",
+          "reason": "rotated 2026-08-01; documented for history",
+          "span": [
+            16,
+            36
+          ]
+        }
+      ]
+    },
+    {
+      "content_hash_pin": false,
+      "description": "a waiver recorded for another pin matches nothing: the finding blocks and the waiver is context_secret_waiver_unmatched",
+      "expected": {
+        "findings": [
+          {
+            "class": "context-secret-material",
+            "file": "context/00-base.md",
+            "pattern": "aws-access-key-id",
+            "severity": "blocking",
+            "span": [
+              16,
+              36
+            ],
+            "waived": false
+          }
+        ],
+        "installs": false,
+        "warnings": [
+          {
+            "diagnostic": "context_secret_waiver_unmatched",
+            "file": "context/00-base.md",
+            "pin": "commit ffffffffffffffffffffffffffffffffffffffff",
+            "span": [
+              16,
+              36
+            ]
+          }
+        ]
+      },
+      "files": {
+        "agent-context.json": "{\"context\":{\"modules\":[{\"path\":\"00-base.md\"}]},\"name\":\"companyA\",\"schema_version\":1,\"version\":\"1.0.0\"}\n",
+        "context/00-base.md": "# Base\n\nLegacy: AKIAJ7Q3ZX9PLM2RT5WQ\n"
+      },
+      "name": "waiver-at-other-pin-does-not-apply",
+      "package_kind": "context",
+      "pin": "commit 0123456789abcdef0123456789abcdef01234567",
+      "waivers": [
+        {
+          "file": "context/00-base.md",
+          "pin": "commit ffffffffffffffffffffffffffffffffffffffff",
+          "reason": "waived at the previous pin",
+          "span": [
+            16,
+            36
+          ]
+        }
+      ]
+    },
+    {
+      "content_hash_pin": true,
+      "description": "the detector is unpinnable: a manager section 7 content-hash pin on the snapshot leaves the finding blocking",
+      "expected": {
+        "findings": [
+          {
+            "class": "context-secret-material",
+            "file": "context/00-base.md",
+            "pattern": "aws-access-key-id",
+            "severity": "blocking",
+            "span": [
+              16,
+              36
+            ],
+            "waived": false
+          }
+        ],
+        "installs": false,
+        "warnings": []
+      },
+      "files": {
+        "agent-context.json": "{\"context\":{\"modules\":[{\"path\":\"00-base.md\"}]},\"name\":\"companyA\",\"schema_version\":1,\"version\":\"1.0.0\"}\n",
+        "context/00-base.md": "# Base\n\nLegacy: AKIAJ7Q3ZX9PLM2RT5WQ\n"
+      },
+      "name": "pin-does-not-clear-finding",
+      "package_kind": "context",
+      "pin": "commit 0123456789abcdef0123456789abcdef01234567",
+      "waivers": []
+    },
+    {
+      "content_hash_pin": false,
+      "description": "every class: system module is reported with its package, path, and selector as a warning that never blocks",
+      "expected": {
+        "findings": [],
+        "installs": true,
+        "warnings": [
+          {
+            "class": "context-system-module-present",
+            "package": "companyA",
+            "path": "90-system.md",
+            "selector": [
+              "claude_code"
+            ]
+          },
+          {
+            "class": "context-system-module-present",
+            "package": "companyA",
+            "path": "95-review.md",
+            "selector": null
+          }
+        ]
+      },
+      "files": {
+        "agent-context.json": "{\"context\":{\"modules\":[{\"path\":\"00-base.md\"},{\"class\":\"system\",\"environments\":[\"claude_code\"],\"path\":\"90-system.md\"},{\"class\":\"system\",\"path\":\"95-review.md\"}]},\"name\":\"companyA\",\"schema_version\":1,\"version\":\"1.0.0\"}\n",
+        "context/00-base.md": "# Base\n",
+        "context/90-system.md": "You are the companyA reviewer.\n",
+        "context/95-review.md": "Prefer short answers.\n"
+      },
+      "name": "system-module-present",
+      "package_kind": "context",
+      "pin": "commit 0123456789abcdef0123456789abcdef01234567",
+      "waivers": []
+    }
+  ],
+  "pattern_classes": [
+    {
+      "group": 1,
+      "pattern": "aws-access-key-id",
+      "placeholder_prefix": "AKIA",
+      "regexp": "(?:^|[^A-Z0-9])(AKIA[0-9A-Z]{16})(?:[^A-Z0-9]|$)"
+    },
+    {
+      "group": 1,
+      "pattern": "private-key-block",
+      "placeholder_prefix": "",
+      "regexp": "(-----BEGIN (?:RSA |EC |DSA |OPENSSH |PGP )?PRIVATE KEY(?: BLOCK)?-----)"
+    },
+    {
+      "group": 1,
+      "pattern": "bearer-token",
+      "placeholder_prefix": "",
+      "regexp": "(?:^|[^A-Za-z0-9])Bearer[ \\t]+([A-Za-z0-9._~+/-]{20,}=*)"
+    }
+  ],
+  "placeholder_rule": "a match whose body, after the class's placeholder_prefix, is one repeated character or ends in EXAMPLE is a placeholder and is not reported",
+  "protocol_version": "1.0.0-rc.9",
+  "schema_version": 1,
+  "scope": [
+    "context/**",
+    "agent-context.json",
+    "agent-mcp.json",
+    "CONTEXT.md"
+  ],
+  "span_rule": "byte offsets into the file, start inclusive and end exclusive, over the reported pattern group"
+}

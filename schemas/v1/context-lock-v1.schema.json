@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/v1/context-lock-v1.schema.json",
+  "title": "context-lock-v1",
+  "type": "object",
+  "required": ["schema_version", "root", "members"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "root": {"$ref": "common.schema.json#/$defs/identifier"},
+    "members": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/member"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sourceIdentity": {"$ref": "common.schema.json#/$defs/networkSourceIdentity/properties/value"},
+    "member": {
+      "type": "object",
+      "required": ["kind", "name", "weight", "required_by", "overlay"],
+      "properties": {
+        "kind": {"enum": ["context", "mcp", "skill"]},
+        "name": {"$ref": "common.schema.json#/$defs/identifier"},
+        "source": {"$ref": "#/$defs/sourceIdentity"},
+        "directory": {"$ref": "common.schema.json#/$defs/portablePath"},
+        "version": {"$ref": "agent-context-v1.schema.json#/$defs/packageVersion"},
+        "commit": {"$ref": "common.schema.json#/$defs/commit"},
+        "state_sha256": {"$ref": "common.schema.json#/$defs/hex256"},
+        "weight": {"$ref": "agent-context-v1.schema.json#/$defs/weight"},
+        "required_by": {"$ref": "common.schema.json#/$defs/identifierSet"},
+        "overlay": {"type": "boolean"}
+      },
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": ["source", "commit"],
+          "not": {"required": ["state_sha256"]}
+        },
+        {
+          "required": ["state_sha256"],
+          "properties": {"kind": {"const": "context"}},
+          "not": {"anyOf": [{"required": ["source"]}, {"required": ["commit"]}, {"required": ["directory"]}]}
+        }
+      ],
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "skill"}}},
+          "then": {"not": {"required": ["directory"]}},
+          "else": {"required": ["version"]}
+        },
+        {
+          "if": {"properties": {"overlay": {"const": true}}},
+          "then": {"properties": {"kind": {"const": "context"}}}
+        }
+      ]
+    }
+  }
+}

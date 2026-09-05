@@ -1394,34 +1394,108 @@ class EnvironmentVectorTests(unittest.TestCase):
 
     def test_header_precedence_mutation_is_rejected(self) -> None:
         changed = copy.deepcopy(self.vector)
-        self.header_case("composed-default-precedence", changed)[
-            "precedence"
-        ] = "earlier-overrides-later"
+        self.header_case("composed-overlays-default", changed)["precedence"] = {
+            "winner": "lower-weight",
+            "placement": "winner-last",
+        }
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_header_legacy_precedence_string_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.header_case("composed-overlays-default", changed)["precedence"] = (
+            "later-overrides-earlier"
+        )
         with self.assertRaises(validate.ValidationFailure):
             validate.validate_environment_vectors(changed)
 
     def test_header_pin_mutation_is_rejected(self) -> None:
         changed = copy.deepcopy(self.vector)
-        self.header_case("single-profile", changed)["chain"][0]["pin"] = (
-            "commit " + "f" * 40
-        )
+        member = self.header_case("single-root", changed)["lock"]["members"][0]
+        member["commit"] = "f" * 40
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_header_lock_hash_is_recomputed(self) -> None:
+        # The lock: line binds the CCJ-1 hash of the case's lock; a stale
+        # lock_sha256 or a lock edit that leaves expected_bytes alone fails.
+        changed = copy.deepcopy(self.vector)
+        self.header_case("single-root", changed)["lock_sha256"] = "sha256:" + "0" * 64
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+        changed = copy.deepcopy(self.vector)
+        self.header_case("single-root", changed)["lock"]["members"][0]["weight"] = 7
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_emitted_order_mutation_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("weights-winner-higher-placement-last", changed)
+        case["emitted_order"] = list(reversed(case["emitted_order"]))
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_weight_edit_changes_the_expected_bytes(self) -> None:
+        # Raising core above umbrella moves its chapter: the expected file no
+        # longer matches under winner=higher-weight placement=winner-last.
+        changed = copy.deepcopy(self.vector)
+        case = self.case("weights-winner-higher-placement-last", changed)
+        for member in case["lock"]["members"]:
+            if member["name"] == "core":
+                member["weight"] = 500
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_no_chapter_member_cannot_gain_a_chapter(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("monolithic-composed-no-chapter", changed)
+        case["packages"]["emptyoverlay"]["modules"] = [
+            {"path": "00-extra.md", "content": "# Extra\n"}
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_schema_invalid_lock_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("monolithic-claude-code", changed)
+        case["lock"]["members"][0]["overlay"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_mcp_env_names_union_is_recomputed(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("mcp-claude-code", changed)
+        case["env_names"] = list(reversed(case["env_names"]))
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_mcp_selector_widening_changes_codex_bytes(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("mcp-codex-cli", changed)
+        case["mcp_servers"]["docs-remote"].pop("environments")
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_pi_cannot_claim_an_mcp_file(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("mcp-pi-none", changed)["file_written"] = True
         with self.assertRaises(validate.ValidationFailure):
             validate.validate_environment_vectors(changed)
 
     def test_crlf_module_bytes_are_rejected(self) -> None:
         changed = copy.deepcopy(self.vector)
-        module = self.case("monolithic-claude-code", changed)["chain"][0][
-            "modules"
-        ][0]
+        module = self.case("monolithic-claude-code", changed)["packages"][
+            "companyA"
+        ]["modules"][0]
         module["content"] = module["content"].replace("\n", "\r\n")
         with self.assertRaises(validate.ValidationFailure):
             validate.validate_environment_vectors(changed)
 
     def test_missing_trailing_lf_module_is_rejected(self) -> None:
         changed = copy.deepcopy(self.vector)
-        module = self.case("monolithic-claude-code", changed)["chain"][0][
-            "modules"
-        ][0]
+        module = self.case("monolithic-claude-code", changed)["packages"][
+            "companyA"
+        ]["modules"][0]
         module["content"] = module["content"].rstrip("\n")
         with self.assertRaises(validate.ValidationFailure):
             validate.validate_environment_vectors(changed)
@@ -1430,10 +1504,10 @@ class EnvironmentVectorTests(unittest.TestCase):
         # Removing the claude_code selector makes the module applicable to
         # codex_cli, so the codex expected bytes must stop matching.
         changed = copy.deepcopy(self.vector)
-        for member in self.case("monolithic-codex-selector-excluded", changed)[
-            "chain"
-        ]:
-            for module in member.get("modules", []):
+        for package in self.case("monolithic-codex-selector-excluded", changed)[
+            "packages"
+        ].values():
+            for module in package.get("modules", []):
                 module.pop("environments", None)
         with self.assertRaises(validate.ValidationFailure):
             validate.validate_environment_vectors(changed)
@@ -1484,6 +1558,30 @@ class EnvironmentVectorTests(unittest.TestCase):
             with self.assertRaises(validate.ValidationFailure):
                 validate.validate_environment_vectors(suite_root=root)
 
+    def test_hand_edited_codex_toml_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            source = validate.SUITE / "expected" / "environments"
+            for path in source.rglob("*"):
+                if not path.is_file():
+                    continue
+                relative = path.relative_to(validate.SUITE)
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(path.read_bytes())
+            (root / "vectors").mkdir()
+            (root / "vectors" / "environments.json").write_bytes(
+                (validate.SUITE / "vectors" / "environments.json").read_bytes()
+            )
+            tampered = root / "expected" / "environments" / "mcp-codex-cli" / "curator-mcp.config.toml"
+            # A blank separator line between tables is a plausible hand edit
+            # that the byte rule forbids.
+            tampered.write_bytes(
+                tampered.read_bytes().replace(b"\n[mcp_servers.figma-devmode]", b"\n\n[mcp_servers.figma-devmode]")
+            )
+            with self.assertRaises(validate.ValidationFailure):
+                validate.validate_environment_vectors(suite_root=root)
+
     def test_stale_expected_file_fails_the_inventory(self) -> None:
         with tempfile.TemporaryDirectory() as scratch:
             root = Path(scratch)
@@ -1506,38 +1604,62 @@ class EnvironmentVectorTests(unittest.TestCase):
                 validate.validate_environment_vectors(suite_root=root)
 
     def test_environment_schema_semantics_fail_closed(self) -> None:
+        commit = "0" * 40
+        member = {"kind": "context", "name": "root", "source": "github.com/x/root", "version": "1.0.0", "commit": commit, "weight": 0, "required_by": [], "overlay": False}
+        dep = {"kind": "context", "name": "dep", "source": "github.com/x/dep", "version": "1.0.0", "commit": commit, "weight": 0, "required_by": ["root"], "overlay": False}
+        fragment_channels = validate.ENVIRONMENT_SYSTEM_PROMPT_CHANNELS["claude_code"]
         rejected = {
-            "duplicate profile directory": (
-                "profilefile-v1.schema.json",
-                {
-                    "version": 1,
-                    "profiles": {"a": "profiles/shared", "b": "profiles/shared"},
-                },
-            ),
-            "nested profile root": (
-                "profilefile-v1.schema.json",
-                {
-                    "version": 1,
-                    "profiles": {"a": "profiles/a", "b": "profiles/a/inner"},
-                },
-            ),
             "duplicate module path": (
-                "context-manifest-v1.schema.json",
-                {
-                    "version": 1,
-                    "modules": [
-                        {"path": "00-base.md"},
-                        {"path": "00-base.md", "class": "system"},
-                    ],
-                },
+                "agent-context-v1.schema.json",
+                {"context": {"modules": [{"path": "00-base.md"}, {"path": "00-base.md", "class": "system"}]}},
+            ),
+            "lock members unsorted": (
+                "context-lock-v1.schema.json",
+                {"root": "root", "members": [member, dep]},
+            ),
+            "lock root missing": (
+                "context-lock-v1.schema.json",
+                {"root": "absent", "members": [dep, member]},
+            ),
+            "lock root with requirers": (
+                "context-lock-v1.schema.json",
+                {"root": "root", "members": [dep, dict(member, required_by=["dep"])]},
+            ),
+            "lock required_by unsorted": (
+                "context-lock-v1.schema.json",
+                {"root": "root", "members": [dict(dep, required_by=["root", "dep"]), member]},
+            ),
+            "lock required_by unknown": (
+                "context-lock-v1.schema.json",
+                {"root": "root", "members": [dict(dep, required_by=["ghost"]), member]},
             ),
             "unsorted marker surfaces": (
                 "agent-environment-marker-v1.schema.json",
-                {
-                    "surfaces": dict(
-                        [("skills", {}), ("root-context", {})]
-                    )
-                },
+                {"surfaces": dict([("skills", {}), ("root-context", {})])},
+            ),
+            "marker root not a member": (
+                "agent-environment-marker-v1.schema.json",
+                {"profile": {"root": "root"}, "members": [{"name": "other", "overlay": True}]},
+            ),
+            "marker seeded_projects unsorted": (
+                "agent-environment-marker-v1.schema.json",
+                {"seeded_projects": ["/b", "/a"]},
+            ),
+            "fragment channels not the registry": (
+                "launch-env-fragment-v1.schema.json",
+                {"environment": "claude_code", "system_prompt": {"channels": fragment_channels[:1]}},
+            ),
+            "fragment mcp channel not the registry": (
+                "launch-env-fragment-v1.schema.json",
+                {"environment": "codex_cli", "mcp": {"channels": [{"kind": "flag", "flag": "-p", "argument": "name", "name": "other"}], "env_names": []}},
+            ),
+            "fragment env_names unsorted": (
+                "launch-env-fragment-v1.schema.json",
+                {"environment": "claude_code", "mcp": {"channels": validate.ENVIRONMENT_MCP_CHANNELS["claude_code"], "env_names": ["B", "A"]}},
+            ),
+            "fragment path_prepend outside root": (
+                "launch-env-fragment-v1.schema.json",
+                {"environment": "claude_code", "path_prepend": "/usr/local/bin"},
             ),
         }
         for label, (schema_name, instance) in rejected.items():
@@ -1546,27 +1668,21 @@ class EnvironmentVectorTests(unittest.TestCase):
                     validate.validate_wire_semantics(schema_name, instance)
                 )
         accepted = {
-            "distinct profile roots": (
-                "profilefile-v1.schema.json",
-                {
-                    "version": 1,
-                    "profiles": {"a": "profiles/a", "b": "profiles/ab"},
-                },
-            ),
             "unique module paths": (
-                "context-manifest-v1.schema.json",
-                {
-                    "version": 1,
-                    "modules": [{"path": "00-base.md"}, {"path": "10-style.md"}],
-                },
+                "agent-context-v1.schema.json",
+                {"context": {"modules": [{"path": "00-base.md"}, {"path": "10-style.md"}]}},
             ),
-            "sorted marker surfaces": (
+            "sorted lock": (
+                "context-lock-v1.schema.json",
+                {"root": "root", "members": [dep, member]},
+            ),
+            "sorted marker surfaces and members": (
                 "agent-environment-marker-v1.schema.json",
-                {
-                    "surfaces": dict(
-                        [("root-context", {}), ("skills", {})]
-                    )
-                },
+                {"profile": {"root": "root"}, "members": [{"name": "root", "overlay": False}], "surfaces": dict([("root-context", {}), ("skills", {})]), "seeded_projects": ["/a", "/b"]},
+            ),
+            "fragment registry channels": (
+                "launch-env-fragment-v1.schema.json",
+                {"environment": "claude_code", "system_prompt": {"channels": fragment_channels}, "mcp": {"channels": validate.ENVIRONMENT_MCP_CHANNELS["claude_code"], "env_names": ["A", "B"]}, "path_prepend": "/manager/environments/x/bin"},
             ),
         }
         for label, (schema_name, instance) in accepted.items():
@@ -1574,6 +1690,220 @@ class EnvironmentVectorTests(unittest.TestCase):
                 self.assertIsNone(
                     validate.validate_wire_semantics(schema_name, instance)
                 )
+        for withdrawn in ("profilefile-v1.schema.json", "context-manifest-v1.schema.json"):
+            self.assertFalse((validate.SCHEMAS / withdrawn).exists(), withdrawn)
+
+
+class ContextVersionVectorTests(unittest.TestCase):
+    """The environments.md section 1.3/1.4 gate must fail closed.
+
+    validate_context_version_vectors runs on every `make validate`. The
+    Python semver, range, and resolution implementation is independent of
+    the Go generator; each test mutates one expectation and proves the gate
+    rejects it instead of trusting the file.
+    """
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.SUITE / "vectors" / "context-versions.json"
+        )
+
+    def resolution(self, name: str, vector: dict) -> dict:
+        return next(item for item in vector["resolution_cases"] if item["name"] == name)
+
+    def test_generated_vector_passes(self) -> None:
+        validate.validate_context_version_vectors(self.vector)
+
+    def test_coercion_table_is_exact(self) -> None:
+        expected = {
+            "1.2": [[">=1.2.0", "<1.3.0-0"]], ">1.2": [[">=1.3.0"]], "<3": [["<3.0.0-0"]],
+            "<=1.2": [["<1.3.0-0"]], "^0.0.3": [[">=0.0.3", "<0.0.4-0"]], "^0": [[">=0.0.0", "<1.0.0-0"]],
+            "~1": [[">=1.0.0", "<2.0.0-0"]], "latest": [["*"]],
+        }
+        for text, sets in expected.items():
+            parsed = validate.range_parse(text)
+            self.assertEqual([[validate.comparator_text(c) for c in s] for s in parsed], sets, text)
+        for text in ("1.2.3 - 2.3.4", "v1.2.3", "", "^1 ||", "1.2.3+build"):
+            with self.assertRaises(validate.RangeInvalid):
+                validate.range_parse(text)
+
+    def test_prerelease_rule(self) -> None:
+        sat = lambda r, v: validate.range_satisfies(validate.range_parse(r), validate.semver_parse(v))
+        self.assertTrue(sat("^2.0.0-rc.0", "2.0.0-rc.1"))
+        self.assertFalse(sat("^2.0.0-rc.0", "2.1.0-rc.1"))
+        self.assertFalse(sat("*", "2.0.0-rc.1"))
+        self.assertFalse(sat("<3", "3.0.0-rc.1"))
+        self.assertTrue(sat("<3", "2.9.9"))
+
+    def test_flipped_satisfies_case_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["satisfies_cases"][0]["satisfies"] = not changed["satisfies_cases"][0]["satisfies"]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_version_vectors(changed)
+
+    def test_stale_comparator_set_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = next(item for item in changed["range_cases"] if item["range"] == "^1.2.3")
+        case["comparator_sets"] = [[">=1.2.3", "<2.0.0"]]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_version_vectors(changed)
+
+    def test_excluded_form_cannot_be_declared_valid(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = next(item for item in changed["range_cases"] if item["range"] == "1.2.3 - 2.3.4")
+        case["valid"] = True
+        case["comparator_sets"] = [[">=1.2.3", "<=2.3.4"]]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_version_vectors(changed)
+
+    def test_build_metadata_tag_cannot_be_a_candidate(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = next(item for item in changed["version_cases"] if item["tag"] == "v1.2.3+build.5")
+        case.update({"candidate": True, "version": "1.2.3", "major": 1, "minor": 2, "patch": 3, "prerelease": []})
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_version_vectors(changed)
+
+    def test_stale_lock_hash_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["lock_cases"][0]["lock_sha256"] = "sha256:" + "0" * 64
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_version_vectors(changed)
+        changed = copy.deepcopy(self.vector)
+        self.resolution("worked-example-default-policy", changed)["expected"]["lock_sha256"] = "sha256:" + "0" * 64
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_version_vectors(changed)
+
+    def test_hand_edited_lock_bytes_are_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = changed["lock_cases"][0]
+        case["ccj1_bytes"] = case["ccj1_bytes"].replace(",", ", ", 1)
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_version_vectors(changed)
+
+    def test_expected_lock_version_mutation_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        lock = self.resolution("downward-reselection", changed)["expected"]["lock"]
+        for member in lock["members"]:
+            if member["name"] == "lib":
+                member["version"] = "2.0.0"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_version_vectors(changed)
+
+    def test_conflict_cannot_be_declared_resolved(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.resolution("range-conflict-empty-intersection", changed)
+        good = self.resolution("worked-example-default-policy", changed)["expected"]
+        case["expected"] = copy.deepcopy(good)
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_version_vectors(changed)
+
+    def test_conflict_detail_is_recomputed(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.resolution("range-conflict-empty-intersection", changed)
+        case["expected"]["detail"]["candidates"] = []
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_version_vectors(changed)
+
+    def test_weight_warning_cannot_be_dropped(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.resolution("weight-conflict-root-map-wins", changed)["expected"]["warnings"] = []
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_version_vectors(changed)
+
+    def test_prerelease_input_narrowing_changes_the_lock(self) -> None:
+        # Dropping the prerelease from the requirement makes 2.0.0-rc.1
+        # inadmissible: the resolver must select 1.9.0 and the stale lock fails.
+        changed = copy.deepcopy(self.vector)
+        case = self.resolution("prerelease-admission", changed)
+        packages = case["input"]["packages"]
+        for manifest in packages["root"]["commits"].values():
+            manifest["requires"][0]["range"] = "^1"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_version_vectors(changed)
+        lock, _ = validate.resolve_closure(case["input"])
+        self.assertEqual(next(m for m in lock["members"] if m["name"] == "core")["version"], "1.9.0")
+
+    def test_dropped_required_case_fails_closed(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["resolution_cases"] = [item for item in changed["resolution_cases"] if item["name"] != "downward-reselection"]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_version_vectors(changed)
+
+
+class ContextDetectorVectorTests(unittest.TestCase):
+    """The environments.md section 9.1 detector gate must fail closed."""
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.SUITE / "vectors" / "context-detectors.json"
+        )
+
+    def case(self, name: str, vector: dict) -> dict:
+        return next(item for item in vector["cases"] if item["name"] == name)
+
+    def test_generated_vector_passes(self) -> None:
+        validate.validate_context_detector_vectors(self.vector)
+
+    def test_shifted_span_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        finding = self.case("secret-aws-access-key", changed)["expected"]["findings"][0]
+        finding["span"] = [finding["span"][0] + 1, finding["span"][1] + 1]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_detector_vectors(changed)
+
+    def test_dropped_finding_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("secret-in-mcp-args", changed)
+        case["expected"]["findings"] = []
+        case["expected"]["installs"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_detector_vectors(changed)
+
+    def test_pin_cannot_clear_a_finding(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("pin-does-not-clear-finding", changed)
+        case["expected"]["installs"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_detector_vectors(changed)
+
+    def test_waiver_cannot_widen_beyond_its_span(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("waived-span-clears-only-itself", changed)
+        for finding in case["expected"]["findings"]:
+            finding["waived"] = True
+            finding["waiver_reason"] = case["waivers"][0]["reason"]
+        case["expected"]["installs"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_detector_vectors(changed)
+
+    def test_placeholder_cannot_be_reported(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("placeholder-example-key", changed)
+        case["expected"]["findings"] = [{"class": "context-secret-material", "pattern": "aws-access-key-id", "file": "context/00-base.md", "span": [16, 36], "severity": "blocking", "waived": False}]
+        case["expected"]["installs"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_detector_vectors(changed)
+
+    def test_system_module_warning_cannot_be_dropped(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("system-module-present", changed)["expected"]["warnings"] = []
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_detector_vectors(changed)
+
+    def test_pattern_class_cannot_be_widened(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["pattern_classes"].append({"pattern": "sha256-digest", "regexp": "(sha256:[0-9a-f]{64})", "group": 1, "placeholder_prefix": ""})
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_detector_vectors(changed)
+
+    def test_invalid_manifest_case_asserts_nothing(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("secret-aws-access-key", changed)
+        case["files"]["agent-context.json"] = '{"schema_version":1,"name":"companyA"}\n'
+        # A valid manifest without context still validates; make it invalid.
+        case["files"]["agent-context.json"] = '{"schema_version":2,"name":"companyA","version":"1.0.0"}\n'
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_context_detector_vectors(changed)
 
 
 class SnapshotAcquisitionVectorTests(unittest.TestCase):

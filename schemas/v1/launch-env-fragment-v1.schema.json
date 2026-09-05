@@ -3,75 +3,119 @@
   "$id": "https://relux-works.github.io/curator-spec/schemas/v1/launch-env-fragment-v1.schema.json",
   "title": "launch-env-fragment-v1",
   "type": "object",
-  "required": ["fragment", "environment", "profile", "env"],
+  "required": ["fragment", "environment", "profile", "precedence", "env"],
   "properties": {
     "fragment": {"const": "launch-env-fragment-v1"},
     "environment": {"enum": ["claude_code", "codex_cli", "opencode", "pi"]},
-    "profile": {"$ref": "#/$defs/pinnedProfile"},
-    "composition": {
-      "type": "array",
-      "minItems": 1,
-      "items": {"$ref": "#/$defs/pinnedProfile"}
+    "profile": {
+      "type": "object",
+      "required": ["name", "lock_sha256"],
+      "properties": {
+        "name": {"$ref": "common.schema.json#/$defs/identifier"},
+        "lock_sha256": {"$ref": "common.schema.json#/$defs/hex256"}
+      },
+      "additionalProperties": false
     },
-    "precedence": {"enum": ["later-overrides-earlier", "earlier-overrides-later"]},
+    "precedence": {"$ref": "agent-environment-marker-v1.schema.json#/$defs/precedence"},
     "env": {
       "type": "object",
       "minProperties": 1,
+      "maxProperties": 1,
       "propertyNames": {"enum": ["CLAUDE_CONFIG_DIR", "CODEX_HOME", "XDG_CONFIG_HOME", "PI_CODING_AGENT_DIR"]},
-      "additionalProperties": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
+      "additionalProperties": {"$ref": "#/$defs/absolutePath"}
     },
     "system_prompt": {
       "type": "object",
       "required": ["path", "channels"],
       "properties": {
-        "path": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "path": {"$ref": "#/$defs/absolutePath"},
         "channels": {
           "type": "array",
-          "items": {"$ref": "#/$defs/channelDescriptor"}
+          "items": {"$ref": "#/$defs/systemPromptDescriptor"}
         }
       },
       "additionalProperties": false
+    },
+    "mcp": {
+      "type": "object",
+      "required": ["path", "env_names", "channels"],
+      "properties": {
+        "path": {"$ref": "#/$defs/absolutePath"},
+        "env_names": {"$ref": "agent-mcp-v1.schema.json#/$defs/envNames"},
+        "channels": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": {"$ref": "#/$defs/mcpDescriptor"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "path_prepend": {"$ref": "#/$defs/absolutePath"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"environment": {"const": "claude_code"}}},
+      "then": {"properties": {"env": {"required": ["CLAUDE_CONFIG_DIR"]}}}
+    },
+    {
+      "if": {"properties": {"environment": {"const": "codex_cli"}}},
+      "then": {"properties": {"env": {"required": ["CODEX_HOME"]}}}
+    },
+    {
+      "if": {"properties": {"environment": {"const": "opencode"}}},
+      "then": {"properties": {"env": {"required": ["XDG_CONFIG_HOME"]}}}
+    },
+    {
+      "if": {"properties": {"environment": {"const": "pi"}}},
+      "then": {"properties": {"env": {"required": ["PI_CODING_AGENT_DIR"]}, "mcp": false}}
     }
-  },
-  "dependentRequired": {
-    "composition": ["precedence"],
-    "precedence": ["composition"]
-  },
+  ],
   "additionalProperties": false,
   "$defs": {
-    "pinnedProfile": {
-      "oneOf": [
+    "absolutePath": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 4096,
+      "pattern": "^/[^\\u0000]*$"
+    },
+    "flagArgument": {"enum": ["path", "contents", "name"]},
+    "flagDescriptorCore": {
+      "properties": {
+        "kind": {"const": "flag"},
+        "flag": {"type": "string", "minLength": 2, "maxLength": 128, "pattern": "^-[^\\s]+$"},
+        "argument": {"$ref": "#/$defs/flagArgument"},
+        "name": {"$ref": "common.schema.json#/$defs/identifier"},
+        "with": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 2, "maxLength": 128, "pattern": "^-[^\\s]+$"}
+        }
+      },
+      "allOf": [
         {
-          "type": "object",
-          "required": ["name", "commit"],
-          "properties": {
-            "name": {"$ref": "common.schema.json#/$defs/identifier"},
-            "commit": {"$ref": "common.schema.json#/$defs/commit"}
-          },
-          "additionalProperties": false
-        },
-        {
-          "type": "object",
-          "required": ["name", "state_sha256"],
-          "properties": {
-            "name": {"$ref": "common.schema.json#/$defs/identifier"},
-            "state_sha256": {"$ref": "common.schema.json#/$defs/hex256"}
-          },
-          "additionalProperties": false
+          "if": {"properties": {"argument": {"const": "name"}}},
+          "then": {"required": ["name"]},
+          "else": {"not": {"required": ["name"]}}
         }
       ]
     },
-    "channelDescriptor": {
+    "systemPromptDescriptor": {
       "oneOf": [
         {
           "type": "object",
-          "required": ["kind", "semantics", "flag"],
+          "required": ["kind", "semantics", "flag", "argument"],
           "properties": {
             "kind": {"const": "flag"},
             "semantics": {"enum": ["append", "replace"]},
-            "flag": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
+            "flag": true,
+            "argument": true,
+            "name": true,
+            "with": true
           },
-          "additionalProperties": false
+          "additionalProperties": false,
+          "allOf": [{"$ref": "#/$defs/flagDescriptorCore"}]
         },
         {
           "type": "object",
@@ -89,7 +133,7 @@
           "properties": {
             "kind": {"const": "variable"},
             "semantics": {"enum": ["append", "replace"]},
-            "variable": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
+            "variable": {"$ref": "common.schema.json#/$defs/identifier"}
           },
           "additionalProperties": false
         },
@@ -99,6 +143,50 @@
           "properties": {
             "kind": {"const": "file"},
             "semantics": {"enum": ["append", "replace"]},
+            "filename": {"$ref": "common.schema.json#/$defs/portablePath"}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "mcpDescriptor": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["kind", "flag", "argument"],
+          "properties": {
+            "kind": {"const": "flag"},
+            "flag": true,
+            "argument": true,
+            "name": true,
+            "with": true
+          },
+          "additionalProperties": false,
+          "allOf": [{"$ref": "#/$defs/flagDescriptorCore"}]
+        },
+        {
+          "type": "object",
+          "required": ["kind", "key"],
+          "properties": {
+            "kind": {"const": "config-key"},
+            "key": {"$ref": "common.schema.json#/$defs/identifier"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["kind", "variable"],
+          "properties": {
+            "kind": {"const": "variable"},
+            "variable": {"$ref": "common.schema.json#/$defs/identifier"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["kind", "filename"],
+          "properties": {
+            "kind": {"const": "file"},
             "filename": {"$ref": "common.schema.json#/$defs/portablePath"}
           },
           "additionalProperties": false

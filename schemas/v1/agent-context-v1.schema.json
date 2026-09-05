@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/v1/agent-context-v1.schema.json",
+  "title": "agent-context.json schema 1",
+  "type": "object",
+  "required": ["schema_version", "name", "version"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "name": {"$ref": "common.schema.json#/$defs/identifier"},
+    "version": {"$ref": "#/$defs/packageVersion"},
+    "weight": {"$ref": "#/$defs/weight"},
+    "weights": {
+      "type": "object",
+      "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
+      "additionalProperties": {"$ref": "#/$defs/weight"}
+    },
+    "context": {
+      "type": "object",
+      "required": ["modules"],
+      "properties": {
+        "modules": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/module"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "requires": {
+      "type": "object",
+      "properties": {
+        "contexts": {
+          "type": "object",
+          "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
+          "additionalProperties": {"$ref": "#/$defs/contextRequirement"}
+        },
+        "skills": {
+          "type": "object",
+          "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
+          "additionalProperties": {"$ref": "#/$defs/skillRequirement"}
+        },
+        "mcp": {
+          "type": "object",
+          "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
+          "additionalProperties": {"$ref": "#/$defs/mcpRequirement"}
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "packageVersion": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?$"
+    },
+    "weight": {"type": "integer", "minimum": 0, "maximum": 2147483647},
+    "range": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^(?:latest|(?:(?:>=|<=|>|<|=|\\^|~)?(?:\\*|x|X|0|[1-9][0-9]*)(?:\\.(?:\\*|x|X|0|[1-9][0-9]*)(?:\\.(?:\\*|x|X|0|[1-9][0-9]*)(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?)?)?)(?: +(?:>=|<=|>|<|=|\\^|~)?(?:\\*|x|X|0|[1-9][0-9]*)(?:\\.(?:\\*|x|X|0|[1-9][0-9]*)(?:\\.(?:\\*|x|X|0|[1-9][0-9]*)(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?)?)?)*(?: *\\|\\| *(?:(?:>=|<=|>|<|=|\\^|~)?(?:\\*|x|X|0|[1-9][0-9]*)(?:\\.(?:\\*|x|X|0|[1-9][0-9]*)(?:\\.(?:\\*|x|X|0|[1-9][0-9]*)(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?)?)?)(?: +(?:>=|<=|>|<|=|\\^|~)?(?:\\*|x|X|0|[1-9][0-9]*)(?:\\.(?:\\*|x|X|0|[1-9][0-9]*)(?:\\.(?:\\*|x|X|0|[1-9][0-9]*)(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?)?)?)*)*)$"
+    },
+    "module": {
+      "type": "object",
+      "required": ["path"],
+      "properties": {
+        "path": {"$ref": "common.schema.json#/$defs/portablePath"},
+        "environments": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "common.schema.json#/$defs/identifier"}
+        },
+        "class": {"enum": ["root", "system"]}
+      },
+      "additionalProperties": false
+    },
+    "requirementForm": {
+      "oneOf": [
+        {"required": ["range"], "not": {"anyOf": [{"required": ["tag"]}, {"required": ["revision"]}]}},
+        {"required": ["tag"], "not": {"anyOf": [{"required": ["range"]}, {"required": ["revision"]}]}},
+        {"required": ["revision"], "not": {"anyOf": [{"required": ["range"]}, {"required": ["tag"]}]}}
+      ]
+    },
+    "contextRequirement": {
+      "type": "object",
+      "required": ["git"],
+      "properties": {
+        "git": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "range": {"$ref": "#/$defs/range"},
+        "tag": {"$ref": "common.schema.json#/$defs/gitRefName"},
+        "revision": {"$ref": "common.schema.json#/$defs/commit"},
+        "directory": {"$ref": "common.schema.json#/$defs/portablePath"},
+        "weight": {"$ref": "#/$defs/weight"}
+      },
+      "additionalProperties": false,
+      "allOf": [{"$ref": "#/$defs/requirementForm"}]
+    },
+    "skillRequirement": {
+      "type": "object",
+      "required": ["git"],
+      "properties": {
+        "git": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "range": {"$ref": "#/$defs/range"},
+        "tag": {"$ref": "common.schema.json#/$defs/gitRefName"},
+        "revision": {"$ref": "common.schema.json#/$defs/commit"},
+        "mode": {"enum": ["full", "runtime", "context"]},
+        "commands": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "common.schema.json#/$defs/identifier"}
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {"$ref": "#/$defs/requirementForm"},
+        {
+          "if": {"required": ["commands"]},
+          "then": {"properties": {"mode": {"const": "runtime"}}, "required": ["mode"]}
+        }
+      ]
+    },
+    "mcpRequirement": {
+      "type": "object",
+      "required": ["git"],
+      "properties": {
+        "git": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "range": {"$ref": "#/$defs/range"},
+        "tag": {"$ref": "common.schema.json#/$defs/gitRefName"},
+        "revision": {"$ref": "common.schema.json#/$defs/commit"},
+        "directory": {"$ref": "common.schema.json#/$defs/portablePath"}
+      },
+      "additionalProperties": false,
+      "allOf": [{"$ref": "#/$defs/requirementForm"}]
+    }
+  }
+}

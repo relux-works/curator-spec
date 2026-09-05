@@ -10,6 +10,196 @@
     "valid": false
   },
   {
+    "instance": "agent-context-v1/valid.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-context-v1/invalid.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/valid-minimal.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-context-v1/valid-pure-umbrella.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-context-v1/valid-empty-modules.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-context-v1/valid-revision-requirement.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-context-v1/valid-prerelease-version.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-context-v1/valid-empty-weights.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-context-v1/invalid-schema-version.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-unknown-field.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-missing-version.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-version-v-prefix.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-version-build-metadata.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-version-leading-zero.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-weight-negative.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-weight-above-int32.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-weights-value-string.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-weights-bad-name.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-context-unknown-field.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-context-missing-modules.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-module-unknown-field.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-module-empty-environments.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-module-duplicate-environments.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-module-unknown-class.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-module-parent-path.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-module-duplicate-path.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-requires-unknown-kind.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-requirement-two-forms.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-requirement-no-form.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-requirement-branch.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-requirement-unknown-field.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-range-hyphen.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-range-v-prefix.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-range-empty.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-revision-short.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-skill-requirement-directory.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-skill-commands-without-runtime-mode.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-context-v1/invalid-mcp-requirement-weight.json",
+    "schema": "agent-context-v1.schema.json",
+    "valid": false
+  },
+  {
     "instance": "agent-environment-marker-v1/valid.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": true
@@ -35,17 +225,32 @@
     "valid": true
   },
   {
-    "instance": "agent-environment-marker-v1/valid-linked-copy-fallback.json",
+    "instance": "agent-environment-marker-v1/valid-git-tag-with-directory.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": true
   },
   {
-    "instance": "agent-environment-marker-v1/valid-no-composition.json",
+    "instance": "agent-environment-marker-v1/valid-git-revision.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v1/valid-linked-symlink-fallback.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v1/valid-copied.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": true
   },
   {
     "instance": "agent-environment-marker-v1/valid-seeded-opencode-parent.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v1/valid-passthrough-file-link.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": true
   },
@@ -60,7 +265,52 @@
     "valid": false
   },
   {
-    "instance": "agent-environment-marker-v1/invalid-git-with-state-pin.json",
+    "instance": "agent-environment-marker-v1/invalid-missing-precedence.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-precedence-string.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-precedence-unknown-winner.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-precedence-unknown-field.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-profile-unknown-field.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-profile-missing-lock.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-profile-lock-prefixed.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-git-without-requirement.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-git-requirement-branch.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-git-requirement-two-forms.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": false
   },
@@ -70,17 +320,7 @@
     "valid": false
   },
   {
-    "instance": "agent-environment-marker-v1/invalid-local-with-ref.json",
-    "schema": "agent-environment-marker-v1.schema.json",
-    "valid": false
-  },
-  {
-    "instance": "agent-environment-marker-v1/invalid-path-with-commit.json",
-    "schema": "agent-environment-marker-v1.schema.json",
-    "valid": false
-  },
-  {
-    "instance": "agent-environment-marker-v1/invalid-path-with-ref.json",
+    "instance": "agent-environment-marker-v1/invalid-local-with-source.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": false
   },
@@ -95,37 +335,67 @@
     "valid": false
   },
   {
+    "instance": "agent-environment-marker-v1/invalid-members-empty.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-member-unknown-field.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-member-both-pins.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-member-commit-with-source-path.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-member-root-missing.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-member-duplicate.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
     "instance": "agent-environment-marker-v1/invalid-mode.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "agent-environment-marker-v1/invalid-composition-without-precedence.json",
+    "instance": "agent-environment-marker-v1/invalid-surface-unknown-field.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "agent-environment-marker-v1/invalid-precedence-without-composition.json",
+    "instance": "agent-environment-marker-v1/invalid-surface-missing-paths.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "agent-environment-marker-v1/invalid-empty-composition.json",
+    "instance": "agent-environment-marker-v1/invalid-surface-unknown-form.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "agent-environment-marker-v1/invalid-managed-home-copy-fallback.json",
+    "instance": "agent-environment-marker-v1/invalid-copy-unknown-reason.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "agent-environment-marker-v1/invalid-linked-missing-copy-fallback.json",
+    "instance": "agent-environment-marker-v1/invalid-managed-home-missing-copies.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "agent-environment-marker-v1/invalid-seed-links-on-linked-home.json",
+    "instance": "agent-environment-marker-v1/invalid-copied-with-copies.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": false
   },
@@ -135,8 +405,193 @@
     "valid": false
   },
   {
-    "instance": "agent-environment-marker-v1/invalid-missing-surface-paths.json",
+    "instance": "agent-environment-marker-v1/invalid-managed-home-missing-passthrough.json",
     "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-managed-home-missing-seeds.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-passthrough-unknown-strategy.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-linked-with-passthrough.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-linked-with-seeds.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-seed-links-on-linked-home.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-seeded-projects-on-copied.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-seeded-projects-unsorted.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/valid.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-mcp-v1/invalid.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/valid-stdio-minimal.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-mcp-v1/valid-http.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-mcp-v1/valid-http-with-env-names-and-selector.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-mcp-v1/valid-empty-env-names.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-schema-version.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-unknown-field.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-missing-server.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-version-v-prefix.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-transport.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-server-unknown-field.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-stdio-missing-args.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-stdio-with-url.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-command-absolute-path.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-command-relative-path.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-command-backslash-path.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-http-missing-url.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-http-with-command.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-url-http-scheme.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-url-userinfo.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-url-query.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-url-fragment.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-url-non-ascii-host.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-env-name-reserved-path.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-env-name-reserved-prefix.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-env-name-grammar.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-env-names-duplicate.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-environments-empty.json",
+    "schema": "agent-mcp-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-mcp-v1/invalid-environments-duplicate.json",
+    "schema": "agent-mcp-v1.schema.json",
     "valid": false
   },
   {
@@ -1495,58 +1950,153 @@
     "valid": false
   },
   {
-    "instance": "context-manifest-v1/valid.json",
-    "schema": "context-manifest-v1.schema.json",
+    "instance": "context-lock-v1/valid.json",
+    "schema": "context-lock-v1.schema.json",
     "valid": true
   },
   {
-    "instance": "context-manifest-v1/invalid.json",
-    "schema": "context-manifest-v1.schema.json",
+    "instance": "context-lock-v1/invalid.json",
+    "schema": "context-lock-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "context-manifest-v1/valid-empty-modules.json",
-    "schema": "context-manifest-v1.schema.json",
+    "instance": "context-lock-v1/valid-single-root.json",
+    "schema": "context-lock-v1.schema.json",
     "valid": true
   },
   {
-    "instance": "context-manifest-v1/valid-system-selector.json",
-    "schema": "context-manifest-v1.schema.json",
+    "instance": "context-lock-v1/valid-path-root.json",
+    "schema": "context-lock-v1.schema.json",
     "valid": true
   },
   {
-    "instance": "context-manifest-v1/invalid-version.json",
-    "schema": "context-manifest-v1.schema.json",
+    "instance": "context-lock-v1/valid-unversioned-skill.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "context-lock-v1/invalid-schema-version.json",
+    "schema": "context-lock-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "context-manifest-v1/invalid-unknown-entry-field.json",
-    "schema": "context-manifest-v1.schema.json",
+    "instance": "context-lock-v1/invalid-unknown-field.json",
+    "schema": "context-lock-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "context-manifest-v1/invalid-empty-environments.json",
-    "schema": "context-manifest-v1.schema.json",
+    "instance": "context-lock-v1/invalid-empty-members.json",
+    "schema": "context-lock-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "context-manifest-v1/invalid-duplicate-environments.json",
-    "schema": "context-manifest-v1.schema.json",
+    "instance": "context-lock-v1/invalid-member-unknown-field.json",
+    "schema": "context-lock-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "context-manifest-v1/invalid-unknown-class.json",
-    "schema": "context-manifest-v1.schema.json",
+    "instance": "context-lock-v1/invalid-member-unknown-kind.json",
+    "schema": "context-lock-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "context-manifest-v1/invalid-parent-path.json",
-    "schema": "context-manifest-v1.schema.json",
+    "instance": "context-lock-v1/invalid-member-both-pins.json",
+    "schema": "context-lock-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "context-manifest-v1/invalid-duplicate-path.json",
-    "schema": "context-manifest-v1.schema.json",
+    "instance": "context-lock-v1/invalid-member-no-pin.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-path-member-with-source.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-path-member-with-directory.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-path-member-skill-kind.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-context-without-version.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-skill-with-directory.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-skill-overlay.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-source-with-git-suffix.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-source-uppercase-host.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-weight-negative.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-required-by-duplicate.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-required-by-unsorted.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-required-by-unknown-member.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-root-not-a-member.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-root-with-requirers.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-root-flagged-overlay.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-members-unsorted-by-kind.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-members-unsorted-by-name.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-members-duplicate.json",
+    "schema": "context-lock-v1.schema.json",
     "valid": false
   },
   {
@@ -2980,27 +3530,42 @@
     "valid": false
   },
   {
-    "instance": "launch-env-fragment-v1/valid-local-state-pin.json",
+    "instance": "launch-env-fragment-v1/valid-minimal.json",
     "schema": "launch-env-fragment-v1.schema.json",
     "valid": true
   },
   {
-    "instance": "launch-env-fragment-v1/valid-no-composition.json",
+    "instance": "launch-env-fragment-v1/valid-system-prompt-only.json",
     "schema": "launch-env-fragment-v1.schema.json",
     "valid": true
   },
   {
-    "instance": "launch-env-fragment-v1/valid-config-key-channel.json",
+    "instance": "launch-env-fragment-v1/valid-mcp-only.json",
     "schema": "launch-env-fragment-v1.schema.json",
     "valid": true
   },
   {
-    "instance": "launch-env-fragment-v1/valid-empty-channels.json",
+    "instance": "launch-env-fragment-v1/valid-codex-config-key-and-name-channel.json",
     "schema": "launch-env-fragment-v1.schema.json",
     "valid": true
   },
   {
-    "instance": "launch-env-fragment-v1/valid-file-channels.json",
+    "instance": "launch-env-fragment-v1/valid-opencode-empty-channels-and-variable.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v1/valid-pi-file-channels.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v1/valid-winner-first.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v1/valid-path-prepend.json",
     "schema": "launch-env-fragment-v1.schema.json",
     "valid": true
   },
@@ -3020,42 +3585,167 @@
     "valid": false
   },
   {
-    "instance": "launch-env-fragment-v1/invalid-profile-both-pins.json",
+    "instance": "launch-env-fragment-v1/invalid-missing-precedence.json",
     "schema": "launch-env-fragment-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "launch-env-fragment-v1/invalid-composition-without-precedence.json",
+    "instance": "launch-env-fragment-v1/invalid-precedence-string.json",
     "schema": "launch-env-fragment-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "launch-env-fragment-v1/invalid-precedence-without-composition.json",
+    "instance": "launch-env-fragment-v1/invalid-profile-commit-pin.json",
     "schema": "launch-env-fragment-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "launch-env-fragment-v1/invalid-unknown-channel-kind.json",
+    "instance": "launch-env-fragment-v1/invalid-profile-lock-prefixed.json",
     "schema": "launch-env-fragment-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "launch-env-fragment-v1/invalid-unknown-semantics.json",
+    "instance": "launch-env-fragment-v1/invalid-profile-unknown-field.json",
     "schema": "launch-env-fragment-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "launch-env-fragment-v1/invalid-flag-channel-with-filename.json",
+    "instance": "launch-env-fragment-v1/invalid-env-empty.json",
     "schema": "launch-env-fragment-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "launch-env-fragment-v1/invalid-lowercase-variable-name.json",
+    "instance": "launch-env-fragment-v1/invalid-env-lowercase-variable.json",
     "schema": "launch-env-fragment-v1.schema.json",
     "valid": false
   },
   {
-    "instance": "launch-env-fragment-v1/invalid-empty-env.json",
+    "instance": "launch-env-fragment-v1/invalid-env-wrong-adapter-variable.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-env-two-variables.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-env-relative-path.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-system-prompt-unknown-field.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-system-prompt-missing-channels.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-system-prompt-channels-not-registry.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-channel-unknown-kind.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-channel-unknown-semantics.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-channel-missing-semantics.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-flag-missing-argument.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-flag-unknown-argument.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-flag-name-without-name-argument.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-flag-name-argument-without-name.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-flag-with-filename.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-flag-empty-with.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-channel-unknown-field.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-mcp-channel-with-semantics.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-mcp-channel-not-registry.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-mcp-unknown-field.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-mcp-missing-env-names.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-mcp-env-names-unsorted.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-mcp-env-names-reserved.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-mcp-two-channels.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-mcp-on-pi.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-path-prepend-relative.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v1/invalid-path-prepend-outside-root.json",
     "schema": "launch-env-fragment-v1.schema.json",
     "valid": false
   },
@@ -3267,51 +3957,6 @@
   {
     "instance": "manager-config-v2/invalid-in-place-mode-value.json",
     "schema": "manager-config-v2.schema.json",
-    "valid": false
-  },
-  {
-    "instance": "profilefile-v1/valid.json",
-    "schema": "profilefile-v1.schema.json",
-    "valid": true
-  },
-  {
-    "instance": "profilefile-v1/invalid.json",
-    "schema": "profilefile-v1.schema.json",
-    "valid": false
-  },
-  {
-    "instance": "profilefile-v1/valid-single-profile.json",
-    "schema": "profilefile-v1.schema.json",
-    "valid": true
-  },
-  {
-    "instance": "profilefile-v1/invalid-version.json",
-    "schema": "profilefile-v1.schema.json",
-    "valid": false
-  },
-  {
-    "instance": "profilefile-v1/invalid-unknown-field.json",
-    "schema": "profilefile-v1.schema.json",
-    "valid": false
-  },
-  {
-    "instance": "profilefile-v1/invalid-profile-name.json",
-    "schema": "profilefile-v1.schema.json",
-    "valid": false
-  },
-  {
-    "instance": "profilefile-v1/invalid-traversal-path.json",
-    "schema": "profilefile-v1.schema.json",
-    "valid": false
-  },
-  {
-    "instance": "profilefile-v1/invalid-duplicate-directory.json",
-    "schema": "profilefile-v1.schema.json",
-    "valid": false
-  },
-  {
-    "instance": "profilefile-v1/invalid-nested-root.json",
-    "schema": "profilefile-v1.schema.json",
     "valid": false
   },
   {
