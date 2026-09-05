@@ -30,7 +30,9 @@ revision 1 as landed at `b4f29cd`; "ax §N" names
 names its diff at `d7075e1`; "launcher §N" names
 `curator-agent-launcher/SPEC.md` `0.1.2-draft` (`6de42d8`);
 "registry §N" names `protocol/registry.md`; Go identifiers name
-`skill-agents-management` at `944c7b4`.
+`skill-agents-management` at `91bf945` (main; the one commit past `944c7b4`
+resolves a declared model alias before argv and changes no `LaunchMode`,
+`Lineup`, `StdinPayload`, or `EffortTransport` identifier).
 
 ## Context
 
@@ -219,9 +221,23 @@ lease, terminal entry, or process exists, with the Structured Error (ax
 §15.1) code `launch_plan_invalid`, exit class 2 alongside
 `invalid_arguments`, and a `details` map carrying `field` — the JSON
 member name at fault (`argv_suffix`, `env_literals`, `stdin`,
-`extensions`, …) — and, when the secret rule fired, `reason: "secret"`.
-`launch_plan_invalid` is a new stable code; ax §15.3 admits new codes in a
-compatible minor version.
+`extensions`, …). `launch_plan_invalid` covers shape, limits, `argv` /
+`argv_suffix` exclusivity, unknown members, and extension-key collisions
+only. A secret-rule violation in a caller document (an `env_literals`
+value or a `stdin` payload that the ax §5.1 rule or the ax §16.2
+exclusions classify as a secret) refuses with the existing ax §15.3 code
+`secret_policy_violation`, exit class 16, with `details.field` naming the
+member — one condition keeps one code and one exit class across every
+path that reaches it. `launch_plan_invalid` is a new stable code; ax §15.3
+admits new codes in a compatible minor version.
+
+The record-side bound is checked at the same time: the caller's
+`extensions` together with the `ax.launch-plan-request` key (§3.4) and
+the four `works.relux.curator.*` keys the composer sets (Decision 6.4)
+MUST fit the ax §1.6 extensions bound (at most 64 keys, canonical object
+at most 65,536 bytes) as they will be persisted; a document that would not
+is refused here with `launch_plan_invalid`, `field: "extensions"`, so no
+document that passes §3.3 can yield a record `ax` cannot persist.
 
 #### 3.4 What the record stores
 
@@ -241,16 +257,22 @@ return an argv equal to the recorded one, else `provider_protocol_error`.
 
 The caller document is recorded under the ax-generic top-level extension
 key `ax.launch-plan-request`, an object `{ form: "argv" | "argv_suffix",
-base_argv_length: <n>, argv_suffix: [...] | null, request_digest:
-"sha256:<hex>" }`. The `ax` label mirrors the `urn:ax` authority of every
+base_argv_length: <n>, request_digest: "sha256:<hex>" }`. The `ax` label mirrors the `urn:ax` authority of every
 ax schema identifier; `dev.ax` or `works.relux.*` would assert a domain
 this key does not belong to. The document itself is not stored: the ax §1.6
 extension bound is 65,536 canonical bytes, and a document may carry 65,536
-bytes of argv plus 65,536 bytes of stdin. `base_argv_length` and
-`argv_suffix` let resume replay the suffix (§3.5) and let a reader split the
-recorded final argv into its two owners; `request_digest` is the ax §1.6
-digest of the canonical request bytes and lets an operator prove which
-document produced the record.
+bytes of argv plus 65,536 bytes of stdin. For the same reason the extension
+value carries no copy of the suffix: the record's own `launch_plan.argv`
+already holds it, and the suffix is defined as
+`launch_plan.argv[base_argv_length:]` (for the `argv` form
+`base_argv_length` is 0 and the suffix is the whole argv). That definition
+is what resume replays (§3.5) and what lets a reader split the recorded
+final argv into its two owners; the extension value is a few dozen bytes
+regardless of the plan's size. `request_digest` is the ax §1.6 digest of
+the canonical request bytes and lets an operator prove which document
+produced the record. What remains bounded by ax §1.6 is the caller's own
+`extensions` plus this key plus the Curator keys, and §3.3 refuses a
+document that would not fit before any record exists.
 
 #### 3.5 Plugin contract and resume
 
@@ -266,14 +288,15 @@ MUST translate the record's plan onto its `SpawnPlan` verbatim: `argv` as
 recorded, `env_names` and `env_literals` as recorded, `stdin` as recorded
 (Decision 4); it MUST NOT reorder, deduplicate, or rewrite a caller element,
 and it MUST NOT emit a second spelling of a flag the caller supplied. A
-caller element that collides with the plugin's base flags is the plugin's to
-refuse (`capability_unavailable` with `details.argv_index`) or to pass
-through; which is Open question 2.
+caller element that collides with the plugin's base flags other than a
+profile flag (§3.6) is the plugin's to refuse (`capability_unavailable`
+with `details.argv_index`) or to pass through; which is Open question 2.
 
 The ax §7.5 `resume` request gains a `launch_plan: Launch Plan` member —
 the record's — so the plugin has what it must replay. Resume argv stays
 plugin-owned: the plugin builds its native resume argv as today and appends
-the recorded `argv_suffix` from `ax.launch-plan-request` (for the `argv`
+the recorded suffix `launch_plan.argv[base_argv_length:]`, with
+`base_argv_length` read from `ax.launch-plan-request` (for the `argv`
 form, nothing is appended and the record's `argv` is informative to resume);
 `env_names` and `env_literals` are replayed from the record on every resume;
 `stdin` is replayed only under Decision 4's rule. A plugin without
@@ -286,10 +309,21 @@ resume as to launch).
 mapping is the only source of a permission-bypass or unrestricted-mode
 spelling in the final argv. A caller plan MUST NOT carry one; the composer
 never emits one (Decision 5 forbids it in the interactive plan, and native
-arguments after `--` are the operator's own typing). `ax` MAY refuse a
-known bypass spelling in a caller-supplied element with `launch_plan_invalid`,
-`reason: "profile_flag"`; this decision lists no spelling normatively — the
-list is the plugin's, because the vocabulary is the vendor's.
+arguments after `--` are the operator's own typing). A `caller_launch_plan`
+plugin MUST refuse, before process creation, any caller-supplied element —
+in `argv` or in `argv_suffix` — that equals a flag of its own ax §7.7
+`yolo` profile mapping, in the long form or a documented alias (ax §7.7
+names `--yolo` as the accepted Codex alias), with `launch_plan_invalid`,
+`reason: "profile_flag"`, and `details.argv_index` the element's index in
+the final argv. This decision lists no spelling: the rule keys on the ax
+§7.7 mapping the plugin already emits under `--profile yolo`, so the
+information needed to refuse is inside the plugin, and a new provider's
+spelling is covered the day its mapping is. The refusal is required, not
+optional, because a bypass flag that arrives through the caller plan
+would launch an unrestricted process under a record that says
+`execution_profile: standard`, skipping the ax §2.4 confirmation — the
+immutable record would misstate the one fact Option A relies on it for.
+Decision 7 makes the negative case part of the PR's required conformance.
 
 ### 4. `stdin` on the Launch Plan and on `SpawnPlan`
 
@@ -300,10 +334,12 @@ Both the ax §5.1 Launch Plan and the ax §7.5 `SpawnPlan` gain an OPTIONAL
 "stdin": { "encoding": "utf-8", "bytes": "<string>" }
 ```
 
-- `encoding` is exactly `utf-8` or `base64`; `bytes` is the payload in that
-  encoding. Two encodings, one object: a `utf-8` payload stays readable in
-  the record (the common case is a short JSON control stream), and `base64`
-  admits bytes that are not valid UTF-8 without a second member shape.
+- `encoding` is exactly `utf-8` or `base64url`; `bytes` is the payload in
+  that encoding, `base64url` being the unpadded RFC 4648 URL-safe form ax
+  §1.6 prescribes for bytes in every ax schema object. Two encodings, one
+  object: a `utf-8` payload stays readable in the record (the common case
+  is a short JSON control stream), and `base64url` admits bytes that are
+  not valid UTF-8 without a second member shape.
 - The decoded payload is at most 65,536 bytes — the same bound as the total
   encoded argv, because stdin and argv are the two launch-time inputs of the
   same size class, and the ax §1.6 extension object carries the same figure;
@@ -325,12 +361,12 @@ Both the ax §5.1 Launch Plan and the ax §7.5 `SpawnPlan` gain an OPTIONAL
 
 Mapping from `agents-management`: the composer sets `stdin` exactly when the
 interactive plan's `StdinPayload.Attached` is true, with `Bytes` as the
-payload (`utf-8` when the bytes are valid UTF-8, else `base64`); `Attached`
+payload (`utf-8` when the bytes are valid UTF-8, else `base64url`); `Attached`
 false is `null` — the "no stdin" versus "empty attached stream" distinction
 `StdinPayload` exists to make (`pkg/agentic/system.go`) is preserved as
 "terminal" versus "present with zero bytes". Under Decision 5, interactive
 mode attaches stdin only for a system whose effort transport is stdin. At
-`944c7b4` the only such system is `qwen` (`EffortTransportStdin`,
+`91bf945` the only such system is `qwen` (`EffortTransportStdin`,
 `pkg/agentic/systems/qwen/qwen.go`; its stdin is the two-frame stream-json
 control stream whose first frame carries `effort`); `pi` declares
 `EffortTransportNone` and attaches nothing (`pkg/agentic/systems/pi/pi.go`,
@@ -452,7 +488,16 @@ The composed launch is one plan. Its members, closed:
   a displaced plan name).
 - **env_names** = the fragment's `mcp.env_names` union, bounded by the
   reserved set and the lockable passable-names list (environments §10.3
-  as rewritten by Decision 0012).
+  as rewritten by Decision 0012), minus every name that also appears in
+  the composed `env_literals` (plan `Env` ⊕ fragment `env` ⊕ variable-kind
+  channel). A literal the composer set is an explicit intent and wins over
+  a destination-local lookup; the composer drops the name from `env_names`
+  and prints a warning on stderr naming the variable. The reserved-name
+  exclusion of Decision 0012 Decision 6 keeps registry adapter names out of
+  `env_names`, but a system plugin's plan `Env` is not bounded by it, so
+  this rule is what makes the composed document disjoint by construction:
+  ax §5.1 disjointness never fires for a composed document, and a
+  collision is never an `ax_handoff_failed`.
 - **stdin** = the interactive plan's `Stdin` under the Decision 4 mapping.
 
 #### 6.4 Tracked mode delegates; untracked mode execs
@@ -471,8 +516,9 @@ composed plan: `argv_suffix` = the composed argv without its element 0
 0); `env_names` as composed; `env_literals` = plan `Env` ⊕ fragment `env`
 ⊕ variable-kind channel — the composer's own names only, never a copy of
 its inherited environment, because the inherited layer of a tracked launch
-is whatever `ax`'s terminal backend gives the child on the destination;
-`stdin` as composed; `extensions` = the four `works.relux.curator.*` keys
+is whatever `ax`'s terminal backend gives the child on the destination —
+with the Decision 6.3 collision rule already applied, so `env_names` and
+`env_literals` are disjoint before `ax` sees them; `stdin` as composed; `extensions` = the four `works.relux.curator.*` keys
 below. The provider id comes from a second column of the launcher §4.2
 mapping (`claude_code` → `claude`, `codex_cli` → `codex`, `pi` → `pi`,
 the ax §7.1 built-in ids). The launcher never passes `--profile yolo`
@@ -480,13 +526,20 @@ unless the operator asked for it by a launcher flag the `0.2` specification
 introduces for exactly that; absent the flag, `ax`'s default profile
 applies.
 
-The session name is `<env-id>-<profile-name>-<utc-stamp>` with the stamp
+The session name is `<env-id>-<utc-stamp>` with the stamp
 `YYYYMMDDTHHMMSSZ`, overridden by a `--name <name>` launcher flag. The
-derived name MUST satisfy the ax session-name grammar
-(`[A-Za-z0-9][A-Za-z0-9._-]{0,63}`, ax §2.1) — the env-id and the
-profile-name identifier grammar both fall inside it — and a name that would
-exceed 64 characters is a `usage` error naming `--name`, never a silent
-truncation (Open question 1).
+profile name is not part of it: it already travels in
+`works.relux.curator.profile-name`, and a name carrying it would exceed the
+ax §2.1 limit for ordinary profile names (the Decision 6.2 example profile
+name alone is 44 characters). The derived name MUST satisfy the ax
+session-name grammar (`[A-Za-z0-9][A-Za-z0-9._-]{0,63}`, 1–64 characters,
+ax §2.1); the env-id identifier grammar falls inside it, and the default
+always fits: the launcher §4.2 mapping is a closed table whose longest
+env-id (`claude_code`) is 11 characters, and any env-id of up to 47
+characters would still fit beside the 16-character stamp and the
+separator. An operator `--name` that violates the
+grammar or exceeds 64 characters is a `usage` error naming `--name`, never
+a silent truncation (Open question 1).
 
 The extension keys of PR #1 are set by the composer:
 
@@ -544,7 +597,17 @@ the `d7075e1` diff:
    join `capability_names`; `SpawnPlan` gains `stdin`; `resume` gains
    `launch_plan` (Decision 3.5, Decision 4).
 4. **ax §13.1.** The planning-role `launch` step of Decision 3.4 for the
-   `argv_suffix` form.
+   `argv_suffix` form, and the required negative conformance cases of the
+   caller-plan path: a document whose `argv_suffix` carries the provider's
+   own ax §7.7 `yolo` flag (long form or documented alias) under
+   `--profile standard` is refused with `launch_plan_invalid`,
+   `reason: "profile_flag"`, before any Session Record or process exists
+   (Decision 3.6); a document whose `env_literals` carries a value the
+   secret rule classifies is refused with `secret_policy_violation`
+   (Decision 3.3); a document whose `extensions` would not fit ax §1.6
+   together with the ax and Curator keys is refused with
+   `launch_plan_invalid`, `field: "extensions"` (Decision 3.3). Each case
+   is proven by a test that fails when the gate admits the input.
 5. **ax §13.10 drift.** When the Session Record carries
    `works.relux.curator.system-modules: true`, a resolved
    `profile.lock_sha256` that differs from the recorded `profile-pin`
@@ -680,7 +743,7 @@ construction and is reported as such.
 
 ## Open questions
 
-1. **Session-name derivation.** Whether `<env-id>-<profile-name>-<utc-stamp>`
+1. **Session-name derivation.** Whether `<env-id>-<utc-stamp>`
    should carry a shorter stamp or a counter to avoid same-second
    collisions, and whether `--name` should be the only derivation on a
    machine that locks names. Recommendation: keep the stamp, add the
