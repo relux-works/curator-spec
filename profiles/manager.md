@@ -2194,13 +2194,13 @@ source and no requirement form on a `path` source, which carries only
 form under the section 1 rules; each entry joins the closure with the
 weight it declares, else the `overlay_default_weight` knob (default
 `1000`), and machine configuration outranks repository content for a
-package that is both an overlay and a requirement. A declaration repeating a name already in the closure is
-`environment_composition_invalid`. `overlays_allowed: false` empties every
-overlay list, with the section 1 warning when the key is locked. The
-precedence policy is the pair `precedence.winner` and
-`precedence.placement`, each independently changeable; the manager records
-both primitives in every lock, marker, generation header, and fragment and
-never resolves precedence silently.
+package that is both an overlay and a requirement. A declaration repeating
+a name already in the closure is `environment_composition_invalid`.
+`overlays_allowed: false` empties every overlay list, with the section 1
+warning when the key is locked. The precedence policy is the pair
+`precedence.winner` and `precedence.placement`, each independently
+changeable; the manager records both primitives in every lock, marker,
+generation header, and fragment and never resolves precedence silently.
 
 **`profile use <name>`** re-materializes every in-place surface of every
 registered adapter — native default homes and every participating secondary

@@ -3850,6 +3850,11 @@
     "valid": true
   },
   {
+    "instance": "manager-config-v2/valid-overlay-path-colon-later-segment.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
     "instance": "manager-config-v2/valid-overlay-path-windows-double-slash.json",
     "schema": "manager-config-v2.schema.json",
     "valid": true
@@ -3996,6 +4001,11 @@
   },
   {
     "instance": "manager-config-v2/invalid-overlay-scp-host-grammar.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-scp-backslash-path.json",
     "schema": "manager-config-v2.schema.json",
     "valid": false
   },

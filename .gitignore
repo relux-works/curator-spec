@@ -7,3 +7,6 @@
 # Python bytecode from tools/
 __pycache__/
 *.py[cod]
+
+# Compiled tool binaries built at the repository root
+/generate-vectors

@@ -2938,7 +2938,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:662f39c16e384b2de6e0024edaafd23b393e9aa67b36ef8663dd4c9ecff20a4b"
+      "sha256": "sha256:14b7dd73b93522b83f8009eef50eb78a6826ff6d7cb8f6a57c87fe7894f90a17"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -3573,6 +3573,10 @@
       "sha256": "sha256:9193ed1d9ad8fdf65be51889f31a33227435320f7c7b6f1faff402dc3c88230f"
     },
     {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-scp-backslash-path.json",
+      "sha256": "sha256:1ac368e4b9eecb23adef1a0f70002d288e93bcca6791fcce18fe1b5e5d106a1f"
+    },
+    {
       "path": "schema-cases/manager-config-v2/invalid-overlay-scp-host-grammar-no-user.json",
       "sha256": "sha256:fb272b0539c8f25b938b2c401b1c8334b9e61d49a6a939df476ef71c221febfb"
     },
@@ -3727,6 +3731,10 @@
     {
       "path": "schema-cases/manager-config-v2/valid-overlay-git-ssh-uppercase.json",
       "sha256": "sha256:48f18a8d8137f20a2349925dd45d4d18799e94fe084d6268198e594b27028929"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/valid-overlay-path-colon-later-segment.json",
+      "sha256": "sha256:a9942870188a4d15535449c918a0a02480410f915220c82aba62b75ee8d2765b"
     },
     {
       "path": "schema-cases/manager-config-v2/valid-overlay-path-relative.json",
@@ -4122,7 +4130,7 @@
     },
     {
       "path": "vectors/manager-config-v2.json",
-      "sha256": "sha256:73e723534b26d0ab6e5ab4f2fcafe109b26bfe2d380960d8248ede22c8dbabde"
+      "sha256": "sha256:620755ac686af55cfcc31b52155376f29fb0066ebe184167ddda11d15d744113"
     },
     {
       "path": "vectors/manager-config.json",
