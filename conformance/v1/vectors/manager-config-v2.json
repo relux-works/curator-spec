@@ -597,7 +597,7 @@
         "overlays": {
           "companyA": [
             {
-              "source": "file:///Users/operator/context"
+              "source": "C://Users/operator/context"
             }
           ]
         },
@@ -625,7 +625,7 @@
         "overlays": {
           "companyA": [
             {
-              "source": "file:///Users/operator/context"
+              "source": "C://Users/operator/context"
             }
           ]
         }
@@ -634,7 +634,62 @@
       "schema_version": 2,
       "skills_root": "./skills"
     },
-    "name": "schema2-overlay-path-file-url",
+    "name": "schema2-overlay-path-windows-double-slash",
+    "valid": true
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {
+          "companyA": [
+            {
+              "range": "^1.2",
+              "source": "c:example/team-context"
+            }
+          ]
+        },
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "range": "^1.2",
+              "source": "c:example/team-context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-git-single-letter-host",
     "valid": true
   },
   {
@@ -973,6 +1028,80 @@
         "overlays": {
           "companyA": [
             {
+              "source": "file:///Users/operator/context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-file-url",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "source": "git@my_host:example/x"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-scp-host-grammar",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "range": "^1.2",
+              "source": "git@my_host:example/x"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-scp-host-grammar-with-form",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "directory": "packages/team",
+              "source": "/Users/operator/context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-path-directory",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
               "revision": "abababababababababababababababababababab",
               "source": "C:\\Users\\operator\\context"
             }
@@ -1040,7 +1169,7 @@
       "schema_version": 2,
       "skills_root": "./skills"
     },
-    "name": "schema2-overlay-path-file-requirement-form",
+    "name": "schema2-overlay-file-url-with-form",
     "valid": false
   },
   {

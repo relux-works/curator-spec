@@ -2938,7 +2938,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:fe6b41395f8d7533928c5597054a4ff34f811c400401b4bf6dbd704fe7ef8488"
+      "sha256": "sha256:662f39c16e384b2de6e0024edaafd23b393e9aa67b36ef8663dd4c9ecff20a4b"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -3521,6 +3521,14 @@
       "sha256": "sha256:26126254298ad1ba917377fb8d42bcc24d8eed9276688ca6d4754aa4d9196378"
     },
     {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-file-url-with-form.json",
+      "sha256": "sha256:9128b39ccb9a59e3771f0b42763a2b715ecec24004954229e020566b3aad8119"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-file-url.json",
+      "sha256": "sha256:0caf5d98c23f930edbba8ab6f93615f9dd5f94089681a6be4d3ccee8cbe96247"
+    },
+    {
       "path": "schema-cases/manager-config-v2/invalid-overlay-git-scp-no-requirement-form.json",
       "sha256": "sha256:31c5197e4eed3b216f9dc8d5afabe00d211bcc5cac37f8a691cf7fb24c5e2f0d"
     },
@@ -3537,8 +3545,8 @@
       "sha256": "sha256:f73f4e66734881ce688915b17f0dff841b390c6ebcb871d132423fba1d5181fd"
     },
     {
-      "path": "schema-cases/manager-config-v2/invalid-overlay-path-file-requirement-form.json",
-      "sha256": "sha256:9128b39ccb9a59e3771f0b42763a2b715ecec24004954229e020566b3aad8119"
+      "path": "schema-cases/manager-config-v2/invalid-overlay-path-directory.json",
+      "sha256": "sha256:ace0cab3eac3c06a8b85ad78c217f8ae52a7d22b38e6423f3998263998015f3a"
     },
     {
       "path": "schema-cases/manager-config-v2/invalid-overlay-path-relative-requirement-form.json",
@@ -3563,6 +3571,18 @@
     {
       "path": "schema-cases/manager-config-v2/invalid-overlay-revision-grammar.json",
       "sha256": "sha256:9193ed1d9ad8fdf65be51889f31a33227435320f7c7b6f1faff402dc3c88230f"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-scp-host-grammar-no-user.json",
+      "sha256": "sha256:fb272b0539c8f25b938b2c401b1c8334b9e61d49a6a939df476ef71c221febfb"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-scp-host-grammar-with-form.json",
+      "sha256": "sha256:efbc6274bd57c7d3a7c84c33c37c02bdbff8b980f6e1b3d60c76b255eec9b208"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-scp-host-grammar.json",
+      "sha256": "sha256:865c7a378867869590e5cf8a645c500919e798409da64ebdb7394518e6627596"
     },
     {
       "path": "schema-cases/manager-config-v2/invalid-overlay-tag-grammar.json",
@@ -3701,12 +3721,12 @@
       "sha256": "sha256:b7852330a1903f06044878ad7ab436d37a7026120b0746fcaece606c5d351379"
     },
     {
-      "path": "schema-cases/manager-config-v2/valid-overlay-git-ssh-uppercase.json",
-      "sha256": "sha256:48f18a8d8137f20a2349925dd45d4d18799e94fe084d6268198e594b27028929"
+      "path": "schema-cases/manager-config-v2/valid-overlay-git-single-letter-host.json",
+      "sha256": "sha256:9e8bbfc05b7eec8b433be58b304942f7d8248914ec45b0fad568b835040a7557"
     },
     {
-      "path": "schema-cases/manager-config-v2/valid-overlay-path-file-url.json",
-      "sha256": "sha256:0caf5d98c23f930edbba8ab6f93615f9dd5f94089681a6be4d3ccee8cbe96247"
+      "path": "schema-cases/manager-config-v2/valid-overlay-git-ssh-uppercase.json",
+      "sha256": "sha256:48f18a8d8137f20a2349925dd45d4d18799e94fe084d6268198e594b27028929"
     },
     {
       "path": "schema-cases/manager-config-v2/valid-overlay-path-relative.json",
@@ -3719,6 +3739,10 @@
     {
       "path": "schema-cases/manager-config-v2/valid-overlay-path-windows-backslash.json",
       "sha256": "sha256:9f9f07b98edb9dad409424527151cec6c39c117f51b701c8ac88851078279557"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/valid-overlay-path-windows-double-slash.json",
+      "sha256": "sha256:779e06fd0b3558b7fd989d660a3a16110c671724b07e6af4b11bc57ab2e260ca"
     },
     {
       "path": "schema-cases/manager-config-v2/valid-overlay-path-windows-slash.json",
@@ -4098,7 +4122,7 @@
     },
     {
       "path": "vectors/manager-config-v2.json",
-      "sha256": "sha256:f04976078379c68991ab6f51ed0a63f589b1a1ab1b34df1e3b23511b1ad29a85"
+      "sha256": "sha256:73e723534b26d0ab6e5ab4f2fcafe109b26bfe2d380960d8248ede22c8dbabde"
     },
     {
       "path": "vectors/manager-config.json",

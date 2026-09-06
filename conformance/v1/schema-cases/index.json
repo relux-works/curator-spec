@@ -3850,7 +3850,12 @@
     "valid": true
   },
   {
-    "instance": "manager-config-v2/valid-overlay-path-file-url.json",
+    "instance": "manager-config-v2/valid-overlay-path-windows-double-slash.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-overlay-git-single-letter-host.json",
     "schema": "manager-config-v2.schema.json",
     "valid": true
   },
@@ -3965,7 +3970,7 @@
     "valid": false
   },
   {
-    "instance": "manager-config-v2/invalid-overlay-path-file-requirement-form.json",
+    "instance": "manager-config-v2/invalid-overlay-file-url-with-form.json",
     "schema": "manager-config-v2.schema.json",
     "valid": false
   },
@@ -3981,6 +3986,31 @@
   },
   {
     "instance": "manager-config-v2/invalid-overlay-unknown-scheme.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-file-url.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-scp-host-grammar.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-scp-host-grammar-no-user.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-scp-host-grammar-with-form.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-path-directory.json",
     "schema": "manager-config-v2.schema.json",
     "valid": false
   },
