@@ -27,16 +27,17 @@ identifiers.
 | `curator skill check <dir> [--locale <code>] [--json]` | Validate one package |
 | `curator global init\|add\|remove\|list\|status\|install\|update\|upgrade [--profile <name>\|--all-profiles]` | Manage global scope; under the environments capability skill operations act on the current profile unless `--profile` or `--all-profiles` selects otherwise |
 | `curator hybrid add\|remove\|list\|status` | Manage hybrid scope |
-| `curator profile install <git-url\|path> [--directory <dir>] [--range <range>\|--tag <tag>\|--revision <commit>] [--as <name>] [--use]` | Install one root context package as a profile — resolve its closure, audit every member always-strict, write the lock; `--range latest` when no requirement is given; `--use` takes no name and activates the installed root; first install activates and says so |
+| `curator profile install <git-url\|path> [--directory <dir>] [--range <range>\|--tag <tag>\|--revision <commit>] [--as <name>] [--use] [--takeover]` | Install one root context package as a profile — resolve its closure, audit every member always-strict, write the lock; `--range latest` when no requirement is given; `--use` takes no name and activates the installed root; first install activates and says so; `[--takeover]` takes over the unmanaged files the install would write (section 9.5 notice, section 8.3 backup); without it the write fails with `environment_surface_unmanaged_conflict` |
+| `curator profile import [--as <name>] [--allow-lossy] [--use]` | Reassemble the section 9.5 inventory into a context-package-shaped directory and install it through the ordinary `path` pipeline; the profile is named `imported` unless `--as` supplies a name; a lossy import stops with `environment_import_lossy` and the loss list unless the per-operation consent flag re-reports the list as warnings, and machine configuration never pre-records consent; activation follows the section 9.1 rules — `--use` takes no name, and a first install activates and says so |
 | `curator profile list` | List installed profiles: name, root package, source identity, declared requirement (`range`, `tag`, or `revision` as written), root version, lock hash, and per-scope current markers |
-| `curator profile use <name> [--env <env-id>] [--target <target-id>]` | Switch the machine or scoped current profile, re-materialize in-place surfaces, and re-point the command shims on a machine-scope switch; a partial scope is reported, never recorded |
-| `curator profile use --clear --env <env-id>\|--target <target-id>` | Drop a scoped current profile and re-materialize the scope from the machine default |
-| `curator profile update [<name>\|--all]` | Re-resolve the root and overlays from their declared requirements; a blocking finding on a new member leaves the old lock in place; managed homes become stale for explicit repair |
+| `curator profile use <name> [--env <env-id>] [--target <target-id>] [--takeover]` | Switch the machine or scoped current profile, re-materialize in-place surfaces, and re-point the command shims on a machine-scope switch; a partial scope is reported, never recorded; `[--takeover]` takes over the unmanaged files the switch would write (section 9.5 notice, section 8.3 backup); without it the write fails with `environment_surface_unmanaged_conflict` |
+| `curator profile use --clear --env <env-id>\|--target <target-id> [--takeover]` | Drop a scoped current profile and re-materialize the scope from the machine default; `[--takeover]` takes over the unmanaged files the re-materialization would write (section 9.5 notice, section 8.3 backup); without it the write fails with `environment_surface_unmanaged_conflict` |
+| `curator profile update [<name>\|--all] [--takeover]` | Re-resolve the root and overlays from their declared requirements; a blocking finding on a new member leaves the old lock in place; managed homes become stale for explicit repair; `[--takeover]` takes over the unmanaged files the update would write (section 9.5 notice, section 8.3 backup); without it the write fails with `environment_surface_unmanaged_conflict` |
 | `curator profile remove <name> [--purge]` | Remove a profile that is current in no scope and an overlay of none; managed homes are retained as orphans unless `--purge` removes them with markers and backups |
-| `curator profile sync` | Re-materialize every installed profile across every registered adapter and participating target from its lock |
+| `curator profile sync [--takeover]` | Re-materialize every installed profile across every registered adapter and participating target from its lock; `[--takeover]` takes over the unmanaged files the sync would write (section 9.5 notice, section 8.3 backup); without it the write fails with `environment_surface_unmanaged_conflict` |
 | `curator profile compose <profile> add\|remove\|list [<source> --range\|--tag\|--revision <ref>] [--weight <n>]` | Informative: edit the machine `overlays.<profile>` list of `manager-config` schema 2; the lock moves only on `profile update` |
 | `curator env config show\|set\|unset [<knob> [<value>]]` | Informative: read or edit one environments section 12.1 knob of `manager-config` schema 2 by its table name; a locked knob refuses with the system-file warning |
-| `curator env resolve <env-id> [--profile <name>] [--repair] [--format json\|env\|shell]` | Verify the managed home lock-free and print a `launch-env-fragment-v1`; a stale home emits no fragment without `--repair`, which repairs from the store under the mutation lock |
+| `curator env resolve <env-id> [--profile <name>] [--repair] [--takeover] [--format json\|env\|shell]` | Verify the managed home lock-free and print a `launch-env-fragment-v1`; a stale home emits no fragment without `--repair`, which repairs from the store under the mutation lock; `[--takeover]` applies only with `--repair`, taking over the unmanaged files the repair would write (section 9.5 notice, section 8.3 backup); without it the write fails with `environment_surface_unmanaged_conflict` |
 | `curator env status [--check] [--json]` | Report the profile × environment × surface matrix read-only, with the passthrough liveness, seed, shadowing, target consent, tool release, backup, and orphan rows |
 | `curator env unmanage [--restore-backups] [--env <env-id>] [--target <target-id>]` | Return in-place surfaces to native ownership: recorded surfaces removed, the newest backup generation restored under `--restore-backups`, the scope's current profile cleared |
 | `curator env backups scrub [--older-than <days>]` | Remove backup generations on explicit request; nothing else removes a backup |
@@ -143,6 +144,11 @@ curator profile install https://github.com/example/company-context --tag v1.2.0 
 # the store and pinned by its state hash.
 curator profile install ./context
 
+# Reassemble detected native context into an installed profile named
+# `imported` unless --as supplies a name; a lossy import proceeds only
+# under the per-operation consent flag.
+curator profile import --as legacy --allow-lossy
+
 # Switch the whole machine, narrow the switch to one environment, or drop
 # the scoped switch again.
 curator profile use personal
@@ -164,6 +170,11 @@ curator env resolve claude_code --repair --format json
 
 # Hand in-place surfaces back to native ownership, restoring the newest backup.
 curator env unmanage --restore-backups --env pi
+
+# Where unmanaged files block the switch, --takeover takes over the files
+# the operation would write, with the onboarding notice and backup;
+# without it the write fails.
+curator profile use companyA --env claude_code --takeover
 ```
 
 ## External repository lifecycle

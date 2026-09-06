@@ -17,6 +17,16 @@ Versioning for the complete specification set.
   `range`, `tag`, and empty `source` grammars, and `tools/validate.py`
   cross-checks every closed knob enum against the environments section
   12.1 `Values` column. Decision 0012 carries an erratum (2026-09-05).
+- Closed the environments section 9.5 takeover shape gap: the explicit
+  takeover is now stated as a flag carried by exactly the mutating
+  onboarding triggers (`profile install`, `profile use`, `profile sync`,
+  `profile update`, `env resolve --repair`) covering only the unmanaged
+  files the carrying operation would write, never an operation of its own;
+  the manager profile states the matching manager-side obligation; and
+  `cli/curator.md` publishes `[--takeover]` on those rows (with the
+  section 9.5 notice, section 8.3 backup, and refusal clauses) instead of
+  a standalone command. No diagnostic is added or renamed, and the
+  document stays revision 1.
 
 ### Added
 
@@ -85,6 +95,12 @@ Versioning for the complete specification set.
   no attribute rule can protect them against the fixture's own nested
   `* text=auto`), and validator cross-checks that fail on a normalized
   checkout, an expanded placeholder, or a hash that omits `.gitattributes`.
+- Documented the previously unsurfaced section 9.6 onboarding import in
+  `cli/curator.md`: `curator profile import [--as <name>]
+  [--allow-lossy] [--use]` (the optional profile name defaulting to
+  `imported`, the per-operation lossy-import consent flag, and the
+  section 9.1 activation control), with one example line. No normative
+  rule is added or changed.
 
 ### Changed
 

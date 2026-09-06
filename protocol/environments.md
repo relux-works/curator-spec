@@ -1770,11 +1770,12 @@ foreign-manager stop, the replace notice, backup, takeover, and the
 section 9.6 import.
 
 Onboarding is triggered only by a **mutating** profile operation that meets
-unmanaged state — `profile install`, `profile use`, `profile sync`, `profile
-update`, `env resolve --repair`, and an explicit takeover. Read-only
-commands — `profile list`, `env status`, `env resolve` without `--repair` —
-report unmanaged state and never begin onboarding, never write a backup,
-and never prompt. On such a trigger the manager:
+unmanaged state — `profile install`, `profile use`, `profile sync`,
+`profile update`, `env resolve --repair`. Read-only commands — `profile
+list`, `env status`, `env resolve` without `--repair` — report unmanaged
+state and never begin onboarding, never write a backup, and never prompt. On
+such a trigger the manager:
+
 
 1. **Inventories**, per registered adapter and participating target:
    existing unmanaged root-context files; existing global skills; and
@@ -1802,9 +1803,16 @@ and never prompt. On such a trigger the manager:
    section 9.6 consent rules. Onboarding without an import ends after
    step 3 and the takeover writes the operator chose.
 
-Takeover of a specific unmanaged file outside onboarding requires the
-explicit takeover flag and performs the same notice and backup; without the
-flag, section 8.3 applies and the operation fails rather than overwrite.
+Takeover is not an operation of its own: the explicit takeover flag is
+carried by a mutating operation and covers only the specific unmanaged
+files that carrying operation would write — it never selects a scope of
+its own. The flag is accepted on exactly the mutating operations named
+above as onboarding triggers — `profile install`, `profile use`, `profile
+sync`, `profile update`, and `env resolve --repair` — and on no other
+operation. A carrying operation that meets unmanaged files outside
+onboarding performs the same notice and backup as onboarding when the flag
+is given; without the flag, section 8.3 applies and the operation fails
+with `environment_surface_unmanaged_conflict` rather than overwrite.
 Authentication is never part of onboarding, takeover, or import: credential
 files stay where the section 7.4 passthrough expects them, untouched.
 

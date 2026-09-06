@@ -2282,21 +2282,23 @@ machine that never installs another profile observes no behavior change.
 
 Onboarding runs only on a mutating profile operation that meets unmanaged
 state — `profile install`, `profile use`, `profile sync`, `profile update`,
-`env resolve --repair`, and an explicit takeover — never on a read-only
-command, and follows environments §9.5 in order: inventory per registered
-adapter and participating target, with an outside-store symlink stopping
-the operation with `environment_foreign_manager_detected` and an explicit
-choice, and a well-known dotfile-manager state location elevating the
-notice to the warning `environment_foreign_manager_suspected`; the replace
-notice before any write; backup of every file the operation will replace
-into the next generation, always; and classification of the detected state
-under environments §9.6 with the import offered, never begun, on that
-operation. Takeover of a specific unmanaged file outside onboarding
-requires the explicit takeover flag and performs the same notice and
-backup; without the flag the section 12.2 ledger discipline fails the
-operation rather than overwrite. A manager SHOULD report a surface repaired
-repeatedly within an implementation-defined window as a suspected external
-writer under `environment_foreign_manager_suspected`.
+`env resolve --repair` — never on a read-only command, and follows
+environments §9.5 in order: inventory per registered adapter and
+participating target, with an outside-store symlink stopping the operation
+with `environment_foreign_manager_detected` and an explicit choice, and a
+well-known dotfile-manager state location elevating the notice to the
+warning `environment_foreign_manager_suspected`; the replace notice before
+any write; backup of every file the operation will replace into the next
+generation, always; and classification of the detected state under
+environments §9.6 with the import offered, never begun, on that operation.
+Takeover of a specific unmanaged file outside onboarding is a flag carried
+by the mutating operation performing it, never an operation of its own: the
+manager takes over only the files the carrying operation would write, under
+the environments section 9.5 notice and backup; without the flag the
+section 12.2 ledger discipline fails the operation rather than overwrite. A
+manager SHOULD report a surface repaired repeatedly within an
+implementation-defined window as a suspected external writer under
+`environment_foreign_manager_suspected`.
 
 The onboarding import — the closed detected-surface list, lossless/lossy
 classification with its named loss list, the per-operation lossy consent
