@@ -3,3 +3,7 @@
 
 # OS noise
 .DS_Store
+
+# Python bytecode from tools/
+__pycache__/
+*.py[cod]
