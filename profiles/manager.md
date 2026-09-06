@@ -2187,11 +2187,14 @@ Re-installing an installed source with the same requirement re-resolves
 exactly as `profile update` does and is reported as an update.
 
 Overlays are machine configuration only. `overlays.<profile>` is an ordered
-list of `{ source, range | tag | revision, directory?, weight? }`; each
-entry joins the closure with the weight it declares, else the
-`overlay_default_weight` knob (default `1000`), and machine configuration
-outranks repository content for a package that is both an overlay and a
-requirement. A declaration repeating a name already in the closure is
+list in the environments §12.1 shape — the manager requires the
+`range | tag | revision` form (with optional `directory?`) on a `git`
+source and no requirement form on a `path` source, which carries only
+`source` and optional `weight?`, refusing a `path` overlay that carries a
+form under the section 1 rules; each entry joins the closure with the
+weight it declares, else the `overlay_default_weight` knob (default
+`1000`), and machine configuration outranks repository content for a
+package that is both an overlay and a requirement. A declaration repeating a name already in the closure is
 `environment_composition_invalid`. `overlays_allowed: false` empties every
 overlay list, with the section 1 warning when the key is locked. The
 precedence policy is the pair `precedence.winner` and

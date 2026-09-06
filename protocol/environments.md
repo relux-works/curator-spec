@@ -2220,7 +2220,7 @@ knob is absent.
 |---|---|---|---|
 | `current_profile` | profile name or `null` | `null` | 9.2 |
 | `scoped_current` | map env-id or target-id → profile name | empty | 9.3 |
-| `overlays.<profile>` | ordered list of `{ source, range \| tag \| revision, directory?, weight? }` | empty | 6 |
+| `overlays.<profile>` | ordered list of `{ source, range \| tag \| revision, directory?, weight? }` for a `git` source, `{ source, weight? }` for a `path` source | empty | 6 |
 | `overlay_default_weight` | non-negative integer | `1000` | 6 |
 | `overlays_allowed` | boolean | `true` | 6, 12.2 |
 | `precedence.winner` | `higher-weight`, `lower-weight` | `higher-weight` | 6 |

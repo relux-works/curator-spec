@@ -32,17 +32,7 @@
     "overlays": {
       "companyA": [
         {
-          "range": "^1.2",
-          "source": "https://github.com/example/personal-context",
-          "weight": 2000
-        },
-        {
-          "directory": "packages/team",
-          "source": "https://github.com/example/team-context",
-          "tag": "v2.0.0"
-        },
-        {
-          "source": "/Users/operator/context"
+          "source": "C:\\Users\\operator\\context"
         }
       ]
     },
@@ -55,7 +45,7 @@
       "placement": "winner-first",
       "winner": "lower-weight"
     },
-    "require_current_profile": "",
+    "require_current_profile": "companyA",
     "scoped_current": {
       "pi": "personal",
       "xcode-coding-assistant": "companyA"

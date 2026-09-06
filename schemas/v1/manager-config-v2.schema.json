@@ -44,10 +44,42 @@
         "directory": {"$ref": "common.schema.json#/$defs/portablePath"},
         "weight": {"$ref": "common.schema.json#/$defs/nonNegativeSafeInteger"}
       },
-      "oneOf": [
-        {"required": ["range"]},
-        {"required": ["tag"]},
-        {"required": ["revision"]}
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "source": {
+                "pattern": "^(?:(?:[Ss][Ss][Hh]|[Gg][Ii][Tt]|[Hh][Tt][Tt][Pp][Ss]?)://|(?:[^/:\\s@]+@)?[A-Za-z0-9][A-Za-z0-9.-]*:[^/\\s\\\\])"
+              }
+            }
+          },
+          "then": {
+            "oneOf": [
+              {"required": ["range"]},
+              {"required": ["tag"]},
+              {"required": ["revision"]}
+            ]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {"required": ["range"]},
+                {"required": ["tag"]},
+                {"required": ["revision"]},
+                {"required": ["directory"]}
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "allOf": [
+              {"properties": {"source": {"pattern": "^[A-Za-z][A-Za-z0-9+.-]*://"}}},
+              {"not": {"properties": {"source": {"pattern": "^([Ss][Ss][Hh]|[Gg][Ii][Tt]|[Hh][Tt][Tt][Pp][Ss]?|[Ff][Ii][Ll][Ee])://"}}}}
+            ]
+          },
+          "then": false
+        }
       ],
       "additionalProperties": false
     },

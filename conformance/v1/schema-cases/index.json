@@ -3830,6 +3830,61 @@
     "valid": true
   },
   {
+    "instance": "manager-config-v2/valid-overlay-path-source.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-overlay-path-windows-backslash.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-overlay-path-windows-slash.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-overlay-path-relative.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-overlay-path-file-url.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-overlay-git-scp.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-overlay-git-scp-no-user.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-overlay-git-ssh-uppercase.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-overlay-git-git-uppercase.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-overlay-git-http-uppercase.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-overlay-git-https-uppercase.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
     "instance": "manager-config-v2/invalid-schema-version-1.json",
     "schema": "manager-config-v2.schema.json",
     "valid": false
@@ -3886,6 +3941,51 @@
   },
   {
     "instance": "manager-config-v2/invalid-overlay-no-requirement-form.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-path-requirement-form.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-path-windows-requirement-form.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-path-windows-slash-requirement-form.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-path-relative-requirement-form.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-path-file-requirement-form.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-git-scp-no-requirement-form.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-git-uppercase-no-requirement-form.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-unknown-scheme.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-overlay-unknown-scheme-with-form.json",
     "schema": "manager-config-v2.schema.json",
     "valid": false
   },

@@ -165,7 +165,6 @@
               "tag": "v2.0.0"
             },
             {
-              "revision": "abababababababababababababababababababab",
               "source": "/Users/operator/context"
             }
           ]
@@ -252,7 +251,6 @@
               "tag": "v2.0.0"
             },
             {
-              "revision": "abababababababababababababababababababab",
               "source": "/Users/operator/context"
             }
           ]
@@ -353,6 +351,769 @@
       "skills_root": "./skills"
     },
     "name": "schema2-overlay-two-requirement-forms",
+    "valid": false
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {
+          "companyA": [
+            {
+              "source": "/Users/operator/context"
+            }
+          ]
+        },
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "source": "/Users/operator/context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-path-source",
+    "valid": true
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "revision": "abababababababababababababababababababab",
+              "source": "/Users/operator/context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-path-requirement-form",
+    "valid": false
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {
+          "companyA": [
+            {
+              "source": "C:\\Users\\operator\\context"
+            }
+          ]
+        },
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "source": "C:\\Users\\operator\\context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-path-windows-backslash",
+    "valid": true
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {
+          "companyA": [
+            {
+              "source": "C:/Users/operator/context"
+            }
+          ]
+        },
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "source": "C:/Users/operator/context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-path-windows-slash",
+    "valid": true
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {
+          "companyA": [
+            {
+              "source": "packages/team-context"
+            }
+          ]
+        },
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "source": "packages/team-context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-path-relative",
+    "valid": true
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {
+          "companyA": [
+            {
+              "source": "file:///Users/operator/context"
+            }
+          ]
+        },
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "source": "file:///Users/operator/context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-path-file-url",
+    "valid": true
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {
+          "companyA": [
+            {
+              "range": "^1.2",
+              "source": "git@github.com:example/team-context"
+            }
+          ]
+        },
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "range": "^1.2",
+              "source": "git@github.com:example/team-context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-git-scp",
+    "valid": true
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {
+          "companyA": [
+            {
+              "source": "github.com:example/team-context",
+              "tag": "v2.0.0"
+            }
+          ]
+        },
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "source": "github.com:example/team-context",
+              "tag": "v2.0.0"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-git-scp-no-user",
+    "valid": true
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {
+          "companyA": [
+            {
+              "range": "^1.2",
+              "source": "SSH://github.com/example/personal-context"
+            }
+          ]
+        },
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "range": "^1.2",
+              "source": "SSH://github.com/example/personal-context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-git-ssh-uppercase",
+    "valid": true
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {
+          "companyA": [
+            {
+              "source": "GIT://github.com/example/team-context",
+              "tag": "v2.0.0"
+            }
+          ]
+        },
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "source": "GIT://github.com/example/team-context",
+              "tag": "v2.0.0"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-git-git-uppercase",
+    "valid": true
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {
+          "companyA": [
+            {
+              "range": "^2.0",
+              "source": "HTTP://github.com/example/extra-context"
+            }
+          ]
+        },
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "range": "^2.0",
+              "source": "HTTP://github.com/example/extra-context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-git-http-uppercase",
+    "valid": true
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {
+          "companyA": [
+            {
+              "revision": "abababababababababababababababababababab",
+              "source": "HTTPS://github.com/example/x"
+            }
+          ]
+        },
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "revision": "abababababababababababababababababababab",
+              "source": "HTTPS://github.com/example/x"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-git-https-uppercase",
+    "valid": true
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "revision": "abababababababababababababababababababab",
+              "source": "C:\\Users\\operator\\context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-path-windows-requirement-form",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "range": "^1.2",
+              "source": "C:/Users/operator/context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-path-windows-slash-requirement-form",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "source": "packages/team-context",
+              "tag": "v2.0.0"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-path-relative-requirement-form",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "revision": "abababababababababababababababababababab",
+              "source": "file:///Users/operator/context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-path-file-requirement-form",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "source": "git@github.com:example/team-context"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-git-scp-no-requirement-form",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "source": "HTTPS://github.com/example/x"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-git-uppercase-no-requirement-form",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "source": "svn://github.com/example/x"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-unknown-scheme",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
+              "revision": "abababababababababababababababababababab",
+              "source": "svn://github.com/example/x"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-unknown-scheme-with-form",
     "valid": false
   },
   {
