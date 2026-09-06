@@ -16,9 +16,12 @@ Versioning for the complete specification set.
   `directory`, with `branch` rejected by the closed object as before).
   The git spelling follows the core section 6.1 canonical identity (the
   four schemes in any letter case, SCP `[user@]host:path` with the section
-  6.1 host grammar, and no backslash), so a Windows absolute path such as
-  `C:\Users\operator\context` classifies as a `path` source. A `://` URL
-  outside the `ssh`/`git`/`http`/`https` schemes is refused outright, and so
+  6.1 host grammar, and no backslash immediately after the SCP colon), so a
+  Windows absolute path such as `C:\Users\operator\context` classifies as a
+  `path` source. A `://` URL whose scheme is two or more characters and is
+  outside the `ssh`/`git`/`http`/`https` set is refused outright — a
+  one-character prefix before `://` is a drive path, so `C://Users/…` stays
+  a `path` — and so
   is an SCP-shaped spelling whose host is not a section 6.1 host, because
   core section 6.1 requires an invalid network form to be rejected rather
   than treated as local. A `file:` URL is neither section 1 kind — core

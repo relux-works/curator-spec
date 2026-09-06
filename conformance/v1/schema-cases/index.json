@@ -3845,6 +3845,11 @@
     "valid": true
   },
   {
+    "instance": "manager-config-v2/valid-overlay-path-windows-lowercase-drive.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
     "instance": "manager-config-v2/valid-overlay-path-relative.json",
     "schema": "manager-config-v2.schema.json",
     "valid": true

@@ -104,6 +104,7 @@ func managerConfigV2SchemaExamples(valid map[string]any) []schemaExample {
 		{name: "valid-overlay-path-source", valid: true, instance: withOverlay(map[string]any{"source": "/Users/operator/context"})},
 		{name: "valid-overlay-path-windows-backslash", valid: true, instance: withOverlay(map[string]any{"source": "C:\\Users\\operator\\context"})},
 		{name: "valid-overlay-path-windows-slash", valid: true, instance: withOverlay(map[string]any{"source": "C:/Users/operator/context"})},
+		{name: "valid-overlay-path-windows-lowercase-drive", valid: true, instance: withOverlay(map[string]any{"source": "c:\\users\\operator\\context"})},
 		{name: "valid-overlay-path-relative", valid: true, instance: withOverlay(map[string]any{"source": "packages/team-context"})},
 		{name: "valid-overlay-path-colon-later-segment", valid: true, instance: withOverlay(map[string]any{"source": "packages/team:context"})},
 		{name: "valid-overlay-path-windows-double-slash", valid: true, instance: withOverlay(map[string]any{"source": "C://Users/operator/context"})},
@@ -252,6 +253,10 @@ func managerConfigV2Vectors() []any {
 		map[string]any{
 			"name": "schema2-overlay-path-colon-later-segment", "input": withEnvironments(map[string]any{"overlays": map[string]any{"companyA": []any{map[string]any{"source": "packages/team:context"}}}}), "valid": true,
 			"expected": map[string]any{"environments": expectedWith(map[string]any{"overlays": map[string]any{"companyA": []any{map[string]any{"source": "packages/team:context"}}}})},
+		},
+		map[string]any{
+			"name": "schema2-overlay-path-windows-lowercase-drive", "input": withEnvironments(map[string]any{"overlays": map[string]any{"companyA": []any{map[string]any{"source": "c:\\users\\operator\\context"}}}}), "valid": true,
+			"expected": map[string]any{"environments": expectedWith(map[string]any{"overlays": map[string]any{"companyA": []any{map[string]any{"source": "c:\\users\\operator\\context"}}}})},
 		},
 		map[string]any{
 			"name": "schema2-overlay-path-windows-double-slash", "input": withEnvironments(map[string]any{"overlays": map[string]any{"companyA": []any{map[string]any{"source": "C://Users/operator/context"}}}}), "valid": true,

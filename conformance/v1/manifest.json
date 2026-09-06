@@ -2938,7 +2938,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:cdb86c5279f0dcd5107f200f328c5cb67774353805bf9163acf8ffcaa3323e85"
+      "sha256": "sha256:ddcdaf600ac1796a66116b799ef736627697294fbb7b12a64bcae04656f1ff16"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -3757,6 +3757,10 @@
       "sha256": "sha256:779e06fd0b3558b7fd989d660a3a16110c671724b07e6af4b11bc57ab2e260ca"
     },
     {
+      "path": "schema-cases/manager-config-v2/valid-overlay-path-windows-lowercase-drive.json",
+      "sha256": "sha256:60723e28ca5923c3abd850cf99f517a3ebabdf540010a906f1eaa7cf52dfa4d2"
+    },
+    {
       "path": "schema-cases/manager-config-v2/valid-overlay-path-windows-slash.json",
       "sha256": "sha256:8e543189cbb45d204d9f9c61ce321f372e6722abdc088e6f2ff42985ce92bdee"
     },
@@ -4134,7 +4138,7 @@
     },
     {
       "path": "vectors/manager-config-v2.json",
-      "sha256": "sha256:46560c999abc350f77826fd5f631c9d5338636b731a4c940212e372fae6fe88a"
+      "sha256": "sha256:c3eb7e6e685bcb37277c27f6a575e7c03ef4890af91a109f5cc4c98e66ea55f0"
     },
     {
       "path": "vectors/manager-config.json",
