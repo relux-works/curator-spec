@@ -2938,7 +2938,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:14b7dd73b93522b83f8009eef50eb78a6826ff6d7cb8f6a57c87fe7894f90a17"
+      "sha256": "sha256:cdb86c5279f0dcd5107f200f328c5cb67774353805bf9163acf8ffcaa3323e85"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -3507,6 +3507,10 @@
     {
       "path": "schema-cases/manager-config-v2/invalid-mcp-package-allowlist-duplicate.json",
       "sha256": "sha256:b4eb3169f4d651b76143fddd9c9c5f3eb65b3def27802fb6d367532ba836426e"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-overlay-bare-drive-letter.json",
+      "sha256": "sha256:5d6284494406382ecdb31ea4286a0512f2039aef0560d329cb72cd12854b955a"
     },
     {
       "path": "schema-cases/manager-config-v2/invalid-overlay-default-weight-negative.json",
@@ -4130,7 +4134,7 @@
     },
     {
       "path": "vectors/manager-config-v2.json",
-      "sha256": "sha256:620755ac686af55cfcc31b52155376f29fb0066ebe184167ddda11d15d744113"
+      "sha256": "sha256:46560c999abc350f77826fd5f631c9d5338636b731a4c940212e372fae6fe88a"
     },
     {
       "path": "vectors/manager-config.json",

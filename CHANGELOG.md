@@ -17,16 +17,23 @@ Versioning for the complete specification set.
   The git spelling follows the core section 6.1 canonical identity (the
   four schemes in any letter case, SCP `[user@]host:path` with the section
   6.1 host grammar, and no backslash), so a Windows absolute path such as
-  `C:\Users\operator\context` classifies as a `path` source; a `://` URL
-  outside the `ssh`/`git`/`http`/`https`/`file` schemes is refused outright.
+  `C:\Users\operator\context` classifies as a `path` source. A `://` URL
+  outside the `ssh`/`git`/`http`/`https` schemes is refused outright, and so
+  is an SCP-shaped spelling whose host is not a section 6.1 host, because
+  core section 6.1 requires an invalid network form to be rejected rather
+  than treated as local. A `file:` URL is neither section 1 kind — core
+  section 6.1 gives it no network identity and the section 1 path operand
+  names a directory, not a URL — so it is refused too.
   Sections 1 and 6 are unchanged, and the manager profile states the same
   shape as a manager-side obligation citing section 12.1. The published
   `manager-config-v2` cases and vectors stop giving the
   `/Users/operator/context` overlay a `revision` and gain positives and
   negatives pinning every classification arm: Windows spellings
-  (`C:\…`, `C:/…`), project-relative paths, `file:` URLs, SCP forms with
-  and without a user, each scheme in uppercase, and the refused
-  unknown-scheme shape. `vectors/manager-config.json` is untouched.
+  (`C:\…`, `C:/…`, `C://…`), project-relative paths, a colon in a later
+  path segment, SCP forms with and without a user, a single-character host,
+  each scheme in uppercase, and the refused shapes: an unknown scheme, a
+  `file:` URL, an SCP host outside the grammar, and a backslash after the
+  SCP colon. `vectors/manager-config.json` is untouched.
 - `agent-environment-marker-v1`: `surfaces` is closed to the four keys
   `mcp`, `root-context`, `skills`, and `system-prompt`; `form` is required
   on `root-context` and admitted nowhere else; `tools/validate.py`

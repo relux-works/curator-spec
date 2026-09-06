@@ -1117,6 +1117,24 @@
         "overlays": {
           "companyA": [
             {
+              "source": "C:"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-overlay-bare-drive-letter",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "overlays": {
+          "companyA": [
+            {
               "source": "git@my_host:example/x"
             }
           ]
