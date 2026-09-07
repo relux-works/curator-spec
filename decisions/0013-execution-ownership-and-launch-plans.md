@@ -470,6 +470,14 @@ recommendation, which the launcher completes with `--effort` (launcher §3).
 
 #### 6.3 Composition rule
 
+The launcher supplies its process environment as `LaunchRequest.Env` in
+both modes. The resulting `Plan.Env` is the plugin's complete filtered
+child environment, not a literal overlay. The plan's **own names** and
+values are those returned by `System.ChildEnv(nil, req)`, with the same
+request over an empty parent; they MUST NOT be derived by diffing
+`Plan.Env` against the inherited environment or by a second
+`BuildPlan` with a nil environment (binary resolution requires `PATH`).
+
 The composed launch is one plan. Its members, closed:
 
 - **argv** = interactive plan `Argv` ++ system-prompt channel flags
@@ -484,20 +492,26 @@ The composed launch is one plan. Its members, closed:
   arguments would become prompt text. The general rule is fixed here;
   per-tool verification of the boundary is the launcher specification's
   under the environments §7.3 pinned-release discipline.
-- **environment** = inherited ⊕ plan `Env` ⊕ fragment `env` ⊕ the
+- **environment** (untracked child) = `Plan.Env` ⊕ fragment `env` ⊕ the
   `variable`-kind channel of an engaged descriptor (`OPENCODE_CONFIG`),
-  later overriding earlier per name; the fragment wins on exactly its own
-  registry-declared names (launcher §4.4, unchanged, with the SHOULD-warn on
-  a displaced plan name).
+  later overriding earlier per name. Starting at `Plan.Env` preserves
+  plugin removals and sanitized `PATH`; the inherited environment MUST NOT
+  be overlaid beneath it again. The fragment wins on exactly its own
+  registry-declared names. The composer SHOULD warn when fragment or channel
+  values displace one of the plan's own names, not merely an inherited name.
+- **env_literals** (tracked document) = the plan's own names and values
+  (`System.ChildEnv(nil, req)`) ⊕ fragment `env` ⊕ the engaged
+  variable-kind channel. Never serialize `Plan.Env`: inherited `HOME`,
+  `PATH`, and secrets MUST NOT enter the document.
 - **env_names** = the fragment's `mcp.env_names` union, bounded by the
   reserved set and the lockable passable-names list (environments §10.3
   as rewritten by Decision 0012), minus every name that also appears in
-  the composed `env_literals` (plan `Env` ⊕ fragment `env` ⊕ variable-kind
-  channel). A literal the composer set is an explicit intent and wins over
-  a destination-local lookup; the composer drops the name from `env_names`
+  the composed `env_literals` (the plan's own names ⊕ fragment `env` ⊕
+  variable-kind channel). A literal the composer set is an explicit intent
+  and wins over a destination-local lookup; the composer drops the name from `env_names`
   and prints a warning on stderr naming the variable. The reserved-name
   exclusion of Decision 0012 Decision 6 keeps registry adapter names out of
-  `env_names`, but a system plugin's plan `Env` is not bounded by it, so
+  `env_names`, but a system plugin's own names are not bounded by it, so
   this rule is what makes the composed document disjoint by construction:
   ax §5.1 disjointness never fires for a composed document, and a
   collision is never an `ax_handoff_failed`.
@@ -513,11 +527,12 @@ ax start <name> --provider <id> --launch-plan - [--profile <ax-profile>] --works
 ```
 
 writing the document to `ax`'s stdin. The document's members, from the
-composed plan: `argv_suffix` = the composed argv without its element 0
-(the interactive plan's `Argv` is already the tail after the executable;
-`Binary` is the plugin's to resolve, so the composer never sends element
-0); `env_names` as composed; `env_literals` = plan `Env` ⊕ fragment `env`
-⊕ variable-kind channel — the composer's own names only, never a copy of
+composed plan: `argv_suffix` = the complete composed `Argv`, verbatim
+(the interactive plan's `Argv` already excludes `Binary`; the composer
+never sends `Binary` and MUST NOT drop any argument, including the first
+plugin argument); `env_names` as composed; `env_literals` = the plan's own
+names and values (`System.ChildEnv(nil, req)`) ⊕ fragment `env`
+⊕ variable-kind channel — never `Plan.Env` or a copy of
 its inherited environment, because the inherited layer of a tracked launch
 is whatever `ax`'s terminal backend gives the child on the destination —
 with the Decision 6.3 collision rule already applied, so `env_names` and
@@ -768,3 +783,13 @@ construction and is reported as such.
    may double-resume. Whether the composer marks the native tail as
    non-replayable (a split of `argv_suffix` into replayed and one-shot
    parts) belongs to the launcher `0.2` review together with question 2.
+6. **Tracked destination environment filtering (recorded residual).** The
+   Decision 3.2 document has no destination environment-unset or
+   `PATH`-transform member. Plugin strips (including nesting markers,
+   runtime/token-pointer names, and run-context keys) and `PATH`
+   sanitization in `Plan.Env` are preserved for untracked execution but
+   cannot be transported by the tracked literals-only document. A
+   destination that supplies `CLAUDECODE=1`, for example, can still cause
+   Claude's nested-session refusal. Whether ax's provider independently
+   filters these values is unknown here. This records a limit, not a new
+   ax field, implementation, or bypass.

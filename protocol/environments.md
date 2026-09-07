@@ -768,9 +768,10 @@ For `pi` only, machine configuration MAY additionally set, per
 profile × environment, `system_prompt_files` to exactly `off` (default),
 `append`, or `replace`. `append` materializes the system output additionally
 at `<home>/APPEND_SYSTEM.md`; `replace` materializes it at
-`<home>/SYSTEM.md`. Both are live channels the tool applies unconditionally
-when present (section 7.3), so under `off` neither file is written and a
-plain launch of a managed home carries no active system prompt. System
+`<home>/SYSTEM.md`. These are native discovery channels subject to the
+flag and trusted-project precedence in section 7.3. Under `off` neither
+file is written: Curator materializes no active system-prompt file, but
+native flags or trusted project-local files can still supply a prompt. System
 modules MUST NOT materialize into a native in-place home in any mode, and
 secondary fixed-home targets (section 7.6) never receive system modules in
 revision 1.
@@ -1023,10 +1024,11 @@ beside it.
 The `claude_code` flags are **verified** on Claude Code 2.1.261 (section
 7.9). The `pi` row is written from evidence: pi 0.84.2 has no
 `--system-prompt-file` and no `--append-system-prompt-file` — both are
-rejected as unknown options — and its `--system-prompt <text>` takes text
-only, so pi exposes **no file-taking replace flag** and its only replace
-path is the agent-dir `SYSTEM.md` file. Its `--append-system-prompt <text>`
-is **polymorphic**: it takes text or file contents, and a path that does not
+rejected as unknown options. Its native `--system-prompt` value suppresses
+`SYSTEM.md` discovery.
+The registry above exposes replacement through its `SYSTEM.md` file
+descriptor; it does not add a native replace-flag descriptor. Its
+`--append-system-prompt <text>` is **polymorphic**: it takes text or file contents, and a path that does not
 resolve is sent as literal prompt text. The descriptor therefore records
 `argument: path` with the polymorphism, and the launcher MUST verify that
 the path is a readable regular file immediately before exec and fail rather
@@ -1039,11 +1041,23 @@ override applies it is docs-confidence.
 **Admission rule.** A `flag` descriptor with `argument: path` is admitted to
 the registry only when the pinned release is verified to accept a file path
 in that position; a flag that accepts only text is recorded with
-`argument: contents` or not at all. `pi`'s two `file` channels are applied
-by the tool unconditionally when the file exists in the agent home
-(**verified** in the 0.84.2 loader source); section 5.5 therefore keeps both
-absent unless machine configuration explicitly materializes one. Channel
-descriptors are data about a channel: nothing in this document applies one.
+`argument: contents` or not at all. In pi 0.84.2, a native
+`--system-prompt` value suppresses `SYSTEM.md` discovery, and native
+`--append-system-prompt` values suppress `APPEND_SYSTEM.md` discovery:
+a flag and a discovered file of the same semantics are alternatives, not
+additive. When discovery applies, an existing trusted project's
+`<cwd>/.pi/SYSTEM.md` or `<cwd>/.pi/APPEND_SYSTEM.md` takes precedence
+over the corresponding agent-home file. This is **verified** in
+`dist/core/resource-loader.js` (0.84.2, source selection at lines 380/386,
+discovery at lines 808–829). Section 5.5 keeps the managed-home files absent
+unless machine configuration explicitly materializes one.
+
+**Recorded residual.** The launcher's managed-home probe does not probe
+trusted project-local `.pi` files or establish the tool's trust decision.
+Managed-home absence therefore does not prove that Pi will discover no
+system prompt; materialization remains managed-home-only and default off.
+
+Channel descriptors are data about a channel: nothing in this document applies one.
 Application is the launcher's surface, behind its explicit opt-in and
 warnings, under Decision 0013 Decision 6.3 and the launcher specification.
 
@@ -2012,8 +2026,18 @@ launch under Decision 0013 (Option A): it resolves the fragment first with
 `--repair`, builds the interactive plan against the fragment's managed-home
 path, composes argv as plan ++ system-prompt channel flags (under its
 opt-in) ++ MCP channel flags ++ native arguments after `--`, composes the
-environment as inherited ⊕ plan ⊕ fragment `env` ⊕ the engaged
-`variable`-kind channel, bounds `env_names` under section 10.3, and either
+untracked environment as `Plan.Env` ⊕ fragment `env` ⊕ the engaged
+`variable`-kind channel. In both modes the plan request takes the launcher's
+process environment as `LaunchRequest.Env`; `Plan.Env` is the complete
+filtered child environment, preserving plugin strips and sanitized `PATH`,
+not an overlay on the inherited environment. Tracked `env_literals` start
+only from the plugin's own names and values (`System.ChildEnv(nil, req)`
+over an empty parent with the same request), then fragment `env` and the
+engaged variable channel; inherited `HOME`, `PATH`, and secrets MUST NOT
+be serialized from `Plan.Env`. The SHOULD-warn for displaced plugin values
+applies only to those own names. The launcher bounds `env_names` under
+section 10.3 and subtracts only names in the composed `env_literals`,
+warning on each collision. It either
 delegates to `ax start --launch-plan -` or execs directly (Decision 0013
 Decisions 6.3 and 6.4). Its provider mapping covers `claude_code`,
 `codex_cli`, and `pi`; **`opencode` is `env_unsupported` for `curator run`**
@@ -2021,6 +2045,12 @@ in revision 1 — no agents-management system plugin exists for it — while
 `env resolve opencode` and its managed homes are fully specified here and
 an operator applies the fragment by hand. `env_unsupported` is the
 launcher's diagnostic, not this document's.
+
+**Tracked residual.** Decision 0013's document has no destination
+environment-unset or `PATH`-transform member. Its own-literals-only
+composition cannot transport the plugin's inherited-name removals or
+`PATH` sanitization to ax's destination environment. Destination filtering
+by ax is unknown here; no ax field or implementation change is specified.
 
 ### 10.2 `launch-env-fragment-v1`
 
