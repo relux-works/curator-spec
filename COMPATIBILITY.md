@@ -215,3 +215,26 @@ environments capability keeps reading schema 1 unchanged. A schema-1 reader
 rejects a schema-2 system file rather than ignoring `environments` — an
 enforced configuration it cannot honour fails closed under manager section 1
 rule 4 — and a schema-2 reader rejects `schema_version` 3 or above.
+
+## Unreleased Skillfile source extension
+
+Skillfile schema 2 is opt-in and retains schema-1 entries and project options
+unchanged. Legacy `source` still selects below the manager source root. New
+`path` sources, selectors and collections use the disjoint source-extension
+shapes; old readers reject schema 2 explicitly. No skill manifest rewrite,
+automatic migration or implementation support is implied.
+
+The [normative extension](protocol/skillfile-sources.md) defines lock schema 1,
+local inventory schema 1, marker schema 5, build receipt schema 3 and local
+audit binding schema 1 in a separate draft namespace. Local digests never
+masquerade as Git commits; context-only hashes and older markers/receipts cannot
+attest new-lane currency. Registry audit-record-v1 and assurance wire shapes
+remain unchanged; unsatisfied attestation or input-binding requirements fail
+closed. Existing rc.9 and earlier schemas, generated fixtures, release pins
+and claims remain byte-frozen.
+
+The separate [transport amendment](protocol/repository-transport.md) keeps
+repository identity and pinned commit stable across authorized SSH/HTTPS
+choices. Existing external build transport fields may still change receipt
+identity; their security semantics are preserved. Advanced mappings remain
+unsupported. This draft is not a published protocol release.

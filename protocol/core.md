@@ -73,6 +73,10 @@ two protocol paths that map to one platform path and fail before writing.
 
 ## 3. Skill packages
 
+The unreleased opt-in [source extension](skillfile-sources.md) additionally
+admits frozen local filesystem packages for Skillfile schema 2. The definition
+below remains the legacy acquisition contract.
+
 A skill package is a git snapshot or a directory within one. Its root MUST
 contain `SKILL.md` with YAML frontmatter containing non-empty `name` and
 `description` strings. The frontmatter `name` MUST equal the declared skill
@@ -1124,6 +1128,10 @@ Writers MUST NOT create this legacy form.
 
 ## 5. Project manifests
 
+The unreleased opt-in [Skillfile sources revision 1](skillfile-sources.md)
+adds project schema 2 and package snapshot identities. The rules below remain
+the unchanged legacy lane; do not infer the extension from a schema-1 file.
+
 `Skillfile.json` conforms to `skillfile-v1.schema.json`. It contains unique
 skill declarations and exactly one of `tag`, `branch`, or `revision` for each
 skill. `source` is a portable relative path below the manager's configured
@@ -1164,6 +1172,10 @@ MUST make the installation non-current.
 ## 6. Sources and snapshots
 
 ### 6.1 Canonical source identity
+
+The separately scoped unreleased [repository transport amendment](repository-transport.md)
+uses this identity foundation with admitted machine endpoint policy. It does
+not broaden the endpoint grammar of any existing acquisition lane.
 
 Network git sources use a canonical identity. Local paths and `file:` URLs have
 no network identity. Protocol 1.0 network URLs:
@@ -1512,6 +1524,10 @@ child exit. The logical identity also records normalized `go_version` and
 
 ## 9. Compiled-artifact cache and receipts
 
+For the unreleased Skillfile schema-2 lane, [source extension section 4](skillfile-sources.md)
+wraps these unchanged driver inputs in receipt schema 3 with package identity.
+The legacy lane continues to use the receipt versions below.
+
 ### 9.1 Local `go-v1` receipt schema 1
 
 For each active local `go-v1` command, the manager MUST construct a logical
@@ -1691,6 +1707,10 @@ Physical snapshot, artifact, receipt, lock, journal, quarantine, and
 garbage-collection paths remain implementation-specific.
 
 ## 10. Install markers
+
+The following writer-version rules describe legacy installations. The opt-in
+[source extension](skillfile-sources.md) requires marker schema 5 for every
+Skillfile schema-2 installation and preserves these legacy read meanings.
 
 Every installed closure node has `.csk-install.json`. Managers supporting
 schema 7 MUST read marker schemas 1, 2, and 3, and managers supporting schema 8

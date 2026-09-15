@@ -1,0 +1,344 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/draft-sources-v1/install-marker-v5.schema.json",
+  "type": "object",
+  "properties": {
+    "name": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/name"
+    },
+    "content_sha256": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/content_sha256"
+    },
+    "build_source": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/build_source"
+    },
+    "locale": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/locale"
+    },
+    "agents": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/agents"
+    },
+    "commands": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/commands"
+    },
+    "dependencies": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/dependencies"
+    },
+    "runtime_roots": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/runtime_roots"
+    },
+    "build_roots": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/build_roots"
+    },
+    "installed_at": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/installed_at"
+    },
+    "files": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/files"
+    },
+    "requirements": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/requirements"
+    },
+    "mcp_servers": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/mcp_servers"
+    },
+    "activation": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/activation"
+    },
+    "requirers": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/requirers"
+    },
+    "schema_version": {
+      "const": 5
+    },
+    "skill_schema_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8
+    },
+    "package": {
+      "$ref": "source-types-v1.schema.json#/$defs/package"
+    },
+    "lock_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    },
+    "builds": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "../v1/common.schema.json#/$defs/identifier"
+      },
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": [
+              "driver",
+              "receipt_schema_version",
+              "execution_policy",
+              "cache_key",
+              "receipt_sha256",
+              "artifact_sha256",
+              "artifact_path"
+            ],
+            "properties": {
+              "driver": {
+                "const": "go-v1"
+              },
+              "receipt_schema_version": {
+                "const": 3
+              },
+              "execution_policy": {
+                "$ref": "../v1/common.schema.json#/$defs/goExecutionPolicyV1"
+              },
+              "cache_key": {
+                "$ref": "../v1/common.schema.json#/$defs/sha256"
+              },
+              "receipt_sha256": {
+                "$ref": "../v1/common.schema.json#/$defs/sha256"
+              },
+              "artifact_sha256": {
+                "$ref": "../v1/common.schema.json#/$defs/sha256"
+              },
+              "artifact_path": {
+                "$ref": "../v1/common.schema.json#/$defs/portablePath"
+              }
+            },
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "required": [
+              "driver",
+              "receipt_schema_version",
+              "execution_policy",
+              "repository",
+              "declared_identity",
+              "declared_locked_commit",
+              "effective_identity",
+              "object_format",
+              "commit",
+              "substituted",
+              "build_source",
+              "descriptor_target",
+              "cache_key",
+              "receipt_sha256",
+              "artifact_sha256",
+              "artifact_path"
+            ],
+            "properties": {
+              "driver": {
+                "const": "go-repository-v1"
+              },
+              "receipt_schema_version": {
+                "const": 3
+              },
+              "execution_policy": {
+                "$ref": "../v1/common.schema.json#/$defs/goExecutionPolicyV1"
+              },
+              "repository": {
+                "$ref": "../v1/common.schema.json#/$defs/identifier"
+              },
+              "declared_identity": {
+                "$ref": "../v1/common.schema.json#/$defs/networkSourceIdentity"
+              },
+              "declared_locked_commit": {
+                "$ref": "../v1/common.schema.json#/$defs/lockedCommit"
+              },
+              "declared_tag": {
+                "$ref": "../v1/common.schema.json#/$defs/gitRefName"
+              },
+              "effective_identity": {
+                "oneOf": [
+                  {
+                    "$ref": "../v1/common.schema.json#/$defs/networkSourceIdentity"
+                  },
+                  {
+                    "$ref": "../v1/common.schema.json#/$defs/localSourceIdentity"
+                  }
+                ]
+              },
+              "object_format": {
+                "enum": [
+                  "sha1",
+                  "sha256"
+                ]
+              },
+              "commit": {
+                "$ref": "../v1/common.schema.json#/$defs/commit"
+              },
+              "substituted": {
+                "type": "boolean"
+              },
+              "substitution": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "required": [
+                      "type"
+                    ],
+                    "properties": {
+                      "type": {
+                        "const": "local-path"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "required": [
+                      "type",
+                      "ref"
+                    ],
+                    "properties": {
+                      "type": {
+                        "const": "network-git"
+                      },
+                      "ref": {
+                        "$ref": "../v1/common.schema.json#/$defs/repositoryStructuredRef"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "build_source": {
+                "$ref": "../v1/common.schema.json#/$defs/buildSourceIdentity"
+              },
+              "descriptor_target": {
+                "$ref": "../v1/common.schema.json#/$defs/identifier"
+              },
+              "cache_key": {
+                "$ref": "../v1/common.schema.json#/$defs/sha256"
+              },
+              "receipt_sha256": {
+                "$ref": "../v1/common.schema.json#/$defs/sha256"
+              },
+              "artifact_sha256": {
+                "$ref": "../v1/common.schema.json#/$defs/sha256"
+              },
+              "artifact_path": {
+                "$ref": "../v1/common.schema.json#/$defs/portablePath"
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "object_format": {
+                      "const": "sha1"
+                    }
+                  },
+                  "required": [
+                    "object_format"
+                  ]
+                },
+                "then": {
+                  "properties": {
+                    "commit": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{40}$"
+                    }
+                  }
+                },
+                "else": {
+                  "properties": {
+                    "commit": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  }
+                }
+              },
+              {
+                "if": {
+                  "properties": {
+                    "substituted": {
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "substituted"
+                  ]
+                },
+                "then": {
+                  "required": [
+                    "substitution"
+                  ]
+                },
+                "else": {
+                  "not": {
+                    "required": [
+                      "substitution"
+                    ]
+                  }
+                }
+              }
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "attestation": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/attestation"
+    },
+    "substituted": {
+      "$ref": "../v1/install-marker-v4.schema.json#/properties/substituted"
+    }
+  },
+  "required": [
+    "name",
+    "content_sha256",
+    "locale",
+    "agents",
+    "commands",
+    "dependencies",
+    "runtime_roots",
+    "build_roots",
+    "installed_at",
+    "files",
+    "schema_version",
+    "skill_schema_version",
+    "package",
+    "lock_sha256",
+    "builds"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "package": {
+            "properties": {
+              "kind": {
+                "const": "local-snapshot"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        },
+        "required": [
+          "package"
+        ]
+      },
+      "then": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "attestation"
+              ]
+            },
+            {
+              "required": [
+                "substituted"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

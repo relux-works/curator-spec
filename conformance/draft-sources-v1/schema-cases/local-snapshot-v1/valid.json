@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "algorithm": "curator-local-snapshot-v1",
+  "files": [
+    {
+      "path": "SKILL.md",
+      "sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "executable": false
+    }
+  ],
+  "snapshot": "sha256:4fba5f1e387c398b0f46f028de12112ce4f73eb02c46f50dccc8818844877afd"
+}

@@ -251,3 +251,12 @@ A protocol release candidate may be published only when:
 For a stable version, `python tools/release_gate.py --version <version>` also
 requires two schema-valid independent reports, no open critical or high
 findings, and no normative diff after either reviewed commit.
+
+## 7. Unreleased source extension
+
+The separate [draft source corpus](draft-sources-v1/README.md) contains schema
+positives/negatives, byte-exact local inventories and downstream semantic
+requirements for the unreleased source and transport amendments. It is not
+part of `conformance/v1/manifest.json` or any rc.9 claim. Run its documented
+specification check separately; report manager execution as unverified until
+a real implementation entrypoint consumes the semantic cases.

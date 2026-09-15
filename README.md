@@ -57,6 +57,30 @@ behavior not expressible in a schema. Conformance vectors define exact bytes
 and required outcomes. If these sources disagree, the release is defective;
 an implementation is never the normative oracle.
 
+## Unreleased source extension
+
+[Skillfile sources revision 1](protocol/skillfile-sources.md) specifies local
+and Git acquisition, individual/collection selection and frozen package identity.
+The [transport amendment](protocol/repository-transport.md) separately defines
+machine endpoint policy. See the [author/operator guide](docs/skillfile-sources.md),
+[draft schemas](schemas/draft-sources-v1/README.md) and
+[draft conformance checks](conformance/draft-sources-v1/README.md). These working
+contracts do not change rc.9 release metadata or claim implementation support.
+
+## Tools
+
+- Python 3 with `python3 -m pip install -r requirements-dev.txt`: run
+  `python3 tools/validate.py` and
+  `python3 -B -m unittest discover -s tools -p "test_*.py"` for the existing
+  schema/vector/link checks. Draft source validation has a standalone command
+  in the draft conformance README linked above. Store local logs in `.temp/`.
+- Go: `go test ./tools/...` tests specification tooling;
+  `go run ./tools/generate-vectors -root .` regenerates the released corpus
+  under `conformance/v1/` and its release metadata. Do not use regeneration
+  to fold unreleased source-extension vectors into frozen release evidence.
+- Make: `make validate` runs the existing Python/Go checks;
+  `make regenerate-check` checks generator reproducibility against Git.
+
 ## Implementations
 
 - [Curator](https://github.com/relux-works/curator) is the Go reference

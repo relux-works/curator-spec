@@ -1,0 +1,512 @@
+[
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/valid-mixed.json",
+    "valid": true
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/valid-relative.json",
+    "valid": true
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/valid-absolute.json",
+    "valid": true
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/valid-ssh.json",
+    "valid": true
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/valid-https.json",
+    "valid": true
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/valid-legacy-only.json",
+    "valid": true
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-mixed-ref.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-mixed-source.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-mixed-git.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-mixed-collection.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-unknown.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-directory-0.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-directory-1.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-directory-2.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-directory-3.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-directory-4.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-directory-5.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-directory-6.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-directory-7.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-directory-8.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-directory-9.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-directory-10.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-directory-11.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-directory-12.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-directory-13.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-recursive.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-partial.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-path.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-empty.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-duplicate.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-wildcard-exclude.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-source-0.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-source-1.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-source-2.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-source-3.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-source-4.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-source-5.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-source-6.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-source-7.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-source-8.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-v2.schema.json",
+    "instance": "schema-cases/skillfile-v2/invalid-source-9.json",
+    "valid": false
+  },
+  {
+    "schema": "source-policy-v1.schema.json",
+    "instance": "schema-cases/source-policy-v1/valid.json",
+    "valid": true
+  },
+  {
+    "schema": "source-policy-v1.schema.json",
+    "instance": "schema-cases/source-policy-v1/invalid-fallback.json",
+    "valid": false
+  },
+  {
+    "schema": "source-policy-v1.schema.json",
+    "instance": "schema-cases/source-policy-v1/invalid-too-many.json",
+    "valid": false
+  },
+  {
+    "schema": "source-policy-v1.schema.json",
+    "instance": "schema-cases/source-policy-v1/invalid-helper.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-lock-v1.schema.json",
+    "instance": "schema-cases/skillfile-lock-v1/valid.json",
+    "valid": true
+  },
+  {
+    "schema": "skillfile-lock-v1.schema.json",
+    "instance": "schema-cases/skillfile-lock-v1/invalid-fake-commit.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-lock-v1.schema.json",
+    "instance": "schema-cases/skillfile-lock-v1/valid-git.json",
+    "valid": true
+  },
+  {
+    "schema": "skillfile-lock-v1.schema.json",
+    "instance": "schema-cases/skillfile-lock-v1/invalid-commit-format.json",
+    "valid": false
+  },
+  {
+    "schema": "local-snapshot-v1.schema.json",
+    "instance": "schema-cases/local-snapshot-v1/valid.json",
+    "valid": true
+  },
+  {
+    "schema": "local-snapshot-v1.schema.json",
+    "instance": "schema-cases/local-snapshot-v1/invalid-algorithm.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/valid.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-fake-commit.json",
+    "valid": false
+  },
+  {
+    "schema": "build-receipt-v3.schema.json",
+    "instance": "schema-cases/build-receipt-v3/valid.json",
+    "valid": true
+  },
+  {
+    "schema": "build-receipt-v3.schema.json",
+    "instance": "schema-cases/build-receipt-v3/invalid-kind.json",
+    "valid": false
+  },
+  {
+    "schema": "build-receipt-v3.schema.json",
+    "instance": "schema-cases/build-receipt-v3/invalid-policy.json",
+    "valid": false
+  },
+  {
+    "schema": "source-audit-v1.schema.json",
+    "instance": "schema-cases/source-audit-v1/valid.json",
+    "valid": true
+  },
+  {
+    "schema": "source-audit-v1.schema.json",
+    "instance": "schema-cases/source-audit-v1/invalid-no-evidence.json",
+    "valid": false
+  },
+  {
+    "schema": "source-audit-v1.schema.json",
+    "instance": "schema-cases/source-audit-v1/invalid-decision.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-lock-v1.schema.json",
+    "instance": "schema-cases/skillfile-lock-v1/valid-configured-git.json",
+    "valid": true
+  },
+  {
+    "schema": "skillfile-lock-v1.schema.json",
+    "instance": "schema-cases/skillfile-lock-v1/invalid-configured-escape.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-lock-v1.schema.json",
+    "instance": "schema-cases/skillfile-lock-v1/invalid-unknown-top-level.json",
+    "valid": false
+  },
+  {
+    "schema": "local-snapshot-v1.schema.json",
+    "instance": "schema-cases/local-snapshot-v1/invalid-unknown-top-level.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-unknown-top-level.json",
+    "valid": false
+  },
+  {
+    "schema": "build-receipt-v3.schema.json",
+    "instance": "schema-cases/build-receipt-v3/invalid-unknown-top-level.json",
+    "valid": false
+  },
+  {
+    "schema": "source-audit-v1.schema.json",
+    "instance": "schema-cases/source-audit-v1/invalid-unknown-top-level.json",
+    "valid": false
+  },
+  {
+    "schema": "source-policy-v1.schema.json",
+    "instance": "schema-cases/source-policy-v1/invalid-unknown-top-level.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/valid-attested-network.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/valid-legacy-substitution.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/valid-local-mixed-builds.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/valid-external-substitution.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-local-attestation.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-local-substituted.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-attestation-missing-status.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-attestation-unknown-status.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-attestation-key.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-attestation-empty-registry.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-attestation-extra.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-substitution-empty.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-substitution-boolean.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-driver.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-receipt_schema_version.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-execution_policy.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-repository.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-declared_identity.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-declared_locked_commit.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-effective_identity.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-object_format.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-commit.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-substituted.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-build_source.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-descriptor_target.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-cache_key.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-receipt_sha256.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-artifact_sha256.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-artifact_path.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-missing-substitution.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-bad-commit.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-legacy-receipt.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-unexpected-substitution.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/valid-attested-configured.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/valid-deprecated-network.json",
+    "valid": true
+  }
+]

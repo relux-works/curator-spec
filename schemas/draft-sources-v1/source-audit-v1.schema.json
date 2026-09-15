@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/draft-sources-v1/source-audit-v1.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "package": {
+      "$ref": "source-types-v1.schema.json#/$defs/package"
+    },
+    "content_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    },
+    "decision": {
+      "enum": [
+        "allow",
+        "warn",
+        "block",
+        "require_pin"
+      ]
+    },
+    "policy_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    },
+    "evidence_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    },
+    "created_at": {
+      "$ref": "../v1/common.schema.json#/$defs/timestamp"
+    }
+  },
+  "required": [
+    "schema_version",
+    "package",
+    "content_sha256",
+    "decision",
+    "policy_sha256",
+    "evidence_sha256",
+    "created_at"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "sources": {
+    "local": {
+      "git": "https://example.org/kit",
+      "tag": "v1",
+      "branch": "main"
+    },
+    "team": {
+      "repository": "example.org/kit",
+      "tag": "v1.0.0"
+    }
+  },
+  "skills": [
+    {
+      "name": "review",
+      "from": "local",
+      "directory": "agents/skills/review"
+    },
+    {
+      "from": "team",
+      "directory": "skills",
+      "include": [
+        "*"
+      ],
+      "exclude": [
+        "release"
+      ]
+    },
+    {
+      "name": "legacy",
+      "source": "team/legacy",
+      "tag": "v1"
+    }
+  ]
+}

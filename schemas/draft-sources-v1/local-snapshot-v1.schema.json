@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/draft-sources-v1/local-snapshot-v1.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "algorithm": {
+      "const": "curator-local-snapshot-v1"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "$ref": "../v1/common.schema.json#/$defs/portablePath"
+          },
+          "sha256": {
+            "$ref": "../v1/common.schema.json#/$defs/sha256"
+          },
+          "executable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "path",
+          "sha256",
+          "executable"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "snapshot": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    }
+  },
+  "required": [
+    "schema_version",
+    "algorithm",
+    "files",
+    "snapshot"
+  ],
+  "additionalProperties": false
+}

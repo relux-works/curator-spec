@@ -5,6 +5,16 @@ Versioning for the complete specification set.
 
 ## Unreleased
 
+### Added
+
+- Opt-in Skillfile sources revision 1: backwards-compatible project schema 2,
+  local/Git acquisition, individual and collection selection, frozen package
+  identities, physical input/output guards and full runtime/build contracts.
+- Separately scoped repository transport revision 1 with stable identity and
+  bounded operator-owned endpoint/authentication policy. Draft schemas and
+  conformance vectors are isolated from rc.9 release artifacts; no manager
+  implementation or release qualification is claimed.
+
 ### Changed
 
 - Made the section 6 `path` overlay declarable: the environments section

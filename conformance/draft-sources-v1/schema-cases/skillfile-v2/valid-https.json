@@ -1,0 +1,20 @@
+{
+  "schema_version": 2,
+  "sources": {
+    "local": {
+      "git": "https://example.org/kit.git",
+      "revision": "0000000000000000000000000000000000000000"
+    },
+    "team": {
+      "repository": "example.org/kit",
+      "tag": "v1.0.0"
+    }
+  },
+  "skills": [
+    {
+      "name": "review",
+      "from": "local",
+      "directory": "."
+    }
+  ]
+}

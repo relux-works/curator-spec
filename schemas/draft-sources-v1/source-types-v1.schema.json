@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/draft-sources-v1/source-types-v1.schema.json",
+  "$defs": {
+    "directory": {
+      "oneOf": [
+        {
+          "const": "."
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "../v1/common.schema.json#/$defs/portablePath"
+            },
+            {
+              "not": {
+                "pattern": "(?:^|/)[^/]*[ .](?:/|$)|[*?\\[\\]]"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "repository": {
+      "type": "string",
+      "maxLength": 4096,
+      "pattern": "^[a-z0-9][a-z0-9.-]*/(?!.*(?:^|/)\\.{1,2}(?:/|$))[^\\s\\\\:%?#/]+(?:/[^\\s\\\\:%?#/]+)*$"
+    },
+    "package": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "local-snapshot"
+            },
+            "snapshot": {
+              "$ref": "../v1/common.schema.json#/$defs/sha256"
+            }
+          },
+          "required": [
+            "kind",
+            "snapshot"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "network-git"
+            },
+            "repository": {
+              "type": "string",
+              "maxLength": 4096,
+              "pattern": "^[a-z0-9][a-z0-9.-]*/(?!.*(?:^|/)\\.{1,2}(?:/|$))[^\\s\\\\:%?#/]+(?:/[^\\s\\\\:%?#/]+)*$"
+            },
+            "commit": {
+              "$ref": "../v1/common.schema.json#/$defs/lockedCommit"
+            },
+            "directory": {
+              "oneOf": [
+                {
+                  "const": "."
+                },
+                {
+                  "allOf": [
+                    {
+                      "$ref": "../v1/common.schema.json#/$defs/portablePath"
+                    },
+                    {
+                      "not": {
+                        "pattern": "(?:^|/)[^/]*[ .](?:/|$)|[*?\\[\\]]"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "repository",
+            "commit",
+            "directory"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "source",
+            "commit",
+            "directory"
+          ],
+          "properties": {
+            "kind": {
+              "const": "configured-git"
+            },
+            "source": {
+              "$ref": "../v1/common.schema.json#/$defs/portablePath"
+            },
+            "commit": {
+              "$ref": "../v1/common.schema.json#/$defs/lockedCommit"
+            },
+            "directory": {
+              "const": "."
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "file": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "$ref": "../v1/common.schema.json#/$defs/portablePath"
+        },
+        "sha256": {
+          "$ref": "../v1/common.schema.json#/$defs/sha256"
+        },
+        "executable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "executable"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

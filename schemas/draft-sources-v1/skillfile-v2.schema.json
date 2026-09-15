@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/draft-sources-v1/skillfile-v2.schema.json",
+  "type": "object",
+  "properties": {
+    "project": {
+      "$ref": "../v1/skillfile-v1.schema.json#/properties/project"
+    },
+    "agents": {
+      "$ref": "../v1/skillfile-v1.schema.json#/properties/agents"
+    },
+    "locale": {
+      "$ref": "../v1/skillfile-v1.schema.json#/properties/locale"
+    },
+    "schema_version": {
+      "const": 2
+    },
+    "sources": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "../v1/common.schema.json#/$defs/identifier"
+      },
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096,
+                "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+$"
+              }
+            },
+            "required": [
+              "path"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "git": {
+                "$ref": "../v1/common.schema.json#/$defs/repositoryGit"
+              },
+              "repository": {
+                "type": "string",
+                "maxLength": 4096,
+                "pattern": "^[a-z0-9][a-z0-9.-]*/(?!.*(?:^|/)\\.{1,2}(?:/|$))[^\\s\\\\:%?#/]+(?:/[^\\s\\\\:%?#/]+)*$"
+              },
+              "tag": {
+                "$ref": "../v1/common.schema.json#/$defs/gitRefName"
+              },
+              "branch": {
+                "$ref": "../v1/common.schema.json#/$defs/gitRefName"
+              },
+              "revision": {
+                "$ref": "../v1/common.schema.json#/$defs/commit"
+              }
+            },
+            "required": [],
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "oneOf": [
+                  {
+                    "required": [
+                      "git"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "repository"
+                    ]
+                  }
+                ]
+              },
+              {
+                "oneOf": [
+                  {
+                    "required": [
+                      "tag"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "branch"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "revision"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "../v1/skillfile-v1.schema.json#/properties/skills/items"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "$ref": "../v1/common.schema.json#/$defs/identifier"
+              },
+              "from": {
+                "$ref": "../v1/common.schema.json#/$defs/identifier"
+              },
+              "directory": {
+                "oneOf": [
+                  {
+                    "const": "."
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "$ref": "../v1/common.schema.json#/$defs/portablePath"
+                      },
+                      {
+                        "not": {
+                          "pattern": "(?:^|/)[^/]*[ .](?:/|$)|[*?\\[\\]]"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "required": [
+              "name",
+              "from",
+              "directory"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "from": {
+                "$ref": "../v1/common.schema.json#/$defs/identifier"
+              },
+              "directory": {
+                "oneOf": [
+                  {
+                    "const": "."
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "$ref": "../v1/common.schema.json#/$defs/portablePath"
+                      },
+                      {
+                        "not": {
+                          "pattern": "(?:^|/)[^/]*[ .](?:/|$)|[*?\\[\\]]"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              "include": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "const": "*"
+                    },
+                    {
+                      "allOf": [
+                        {
+                          "$ref": "../v1/common.schema.json#/$defs/identifier"
+                        },
+                        {
+                          "not": {
+                            "pattern": "[/\\\\*?\\[\\]]"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "exclude": {
+                "type": "array",
+                "items": {
+                  "allOf": [
+                    {
+                      "$ref": "../v1/common.schema.json#/$defs/identifier"
+                    },
+                    {
+                      "not": {
+                        "pattern": "[/\\\\*?\\[\\]]"
+                      }
+                    }
+                  ]
+                },
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "from",
+              "directory",
+              "include"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "skills"
+  ],
+  "additionalProperties": false
+}

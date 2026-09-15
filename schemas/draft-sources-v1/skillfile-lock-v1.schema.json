@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/draft-sources-v1/skillfile-lock-v1.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "manifest_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "../v1/common.schema.json#/$defs/identifier"
+          },
+          "selection": {
+            "oneOf": [
+              {
+                "$ref": "../v1/common.schema.json#/$defs/nonNegativeSafeInteger"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "directory": {
+            "oneOf": [
+              {
+                "const": "."
+              },
+              {
+                "allOf": [
+                  {
+                    "$ref": "../v1/common.schema.json#/$defs/portablePath"
+                  },
+                  {
+                    "not": {
+                      "pattern": "(?:^|/)[^/]*[ .](?:/|$)|[*?\\[\\]]"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "package": {
+            "$ref": "source-types-v1.schema.json#/$defs/package"
+          },
+          "content_sha256": {
+            "$ref": "../v1/common.schema.json#/$defs/sha256"
+          }
+        },
+        "required": [
+          "name",
+          "selection",
+          "directory",
+          "package",
+          "content_sha256"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "lock_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    }
+  },
+  "required": [
+    "schema_version",
+    "manifest_sha256",
+    "members",
+    "lock_sha256"
+  ],
+  "additionalProperties": false
+}

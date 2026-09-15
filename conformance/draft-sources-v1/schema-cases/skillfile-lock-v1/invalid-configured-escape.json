@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "manifest_sha256": "sha256:b9b161ebadcac2d76b211fcfb38b74da89f62fc5b605e614588732555784f989",
+  "members": [
+    {
+      "name": "review",
+      "selection": 0,
+      "directory": "agents/skills/review",
+      "package": {
+        "kind": "configured-git",
+        "source": "../review",
+        "commit": {
+          "object_format": "sha1",
+          "hex": "0000000000000000000000000000000000000000"
+        },
+        "directory": "."
+      },
+      "content_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    }
+  ],
+  "lock_sha256": "sha256:04c57a18c2e1ccae26695420aa586ded8d15d7aace16d198bc5fbe4fbb060d81"
+}

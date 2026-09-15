@@ -570,6 +570,12 @@ depends on the generated paths being ignored, not on comment spelling.
 
 ## 3. Runtime and project environment
 
+For the unreleased opt-in Skillfile schema-2 lane,
+[source revision 1](../protocol/skillfile-sources.md) supplies the physical
+input/output guards and versioned local runtime, marker, audit and build-cache
+identities. The complete lifecycle and security gates here still apply.
+Legacy commit-keyed statements below remain literal for legacy acquisitions.
+
 Runtime files are machine-local and keyed by skill name and resolved commit.
 Context installs under `.agents/skills/<name>/`; command shims install under
 `.agents/bin/`. Runtime-only nodes receive a marker-only directory and are not
@@ -1118,6 +1124,11 @@ conservatively quarantined according to documented local policy and the
 uncertainty is reported. GC MUST NOT execute or adopt entry content.
 
 ## 11. External repository manager profile
+
+The optional unreleased [transport amendment](../protocol/repository-transport.md)
+may select an operator-permitted endpoint before this lane runs. Every selected
+endpoint remains subject to this section’s closed executor, SSH wrapper, broker
+and failure boundaries; no arbitrary Git/SSH configuration is inherited.
 
 This section is the rc.5 manager profile for schema-7
 `go-repository-v1` commands. It extends, but does not reinterpret, sections 1

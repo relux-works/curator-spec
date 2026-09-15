@@ -209,3 +209,9 @@ mixed-marker top-level `build_source` presence, and the requirement that a
 receipt cache key is the CCJ-1 digest of the input that carries its execution
 policy, are enforced by `tools/validate.py` and covered by deterministic
 generated cases.
+
+## Unreleased source-extension namespace
+
+The [draft source schemas](../draft-sources-v1/README.md) add Skillfile schema 2
+and new identity-bearing records without changing the published schemas here.
+They remain an opt-in working contract, outside the rc.9 release corpus.

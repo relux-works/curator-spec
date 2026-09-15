@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/draft-sources-v1/build-receipt-v3.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 3
+    },
+    "cache_key": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    },
+    "input": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": 3
+        },
+        "package": {
+          "$ref": "source-types-v1.schema.json#/$defs/package"
+        },
+        "build": {
+          "oneOf": [
+            {
+              "$ref": "../v1/common.schema.json#/$defs/goBuildInputV1"
+            },
+            {
+              "$ref": "../v1/common.schema.json#/$defs/goRepositoryBuildInputV1"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "package",
+        "build"
+      ],
+      "additionalProperties": false
+    },
+    "artifact": {
+      "$ref": "../v1/common.schema.json#/$defs/buildArtifactV1"
+    }
+  },
+  "required": [
+    "schema_version",
+    "cache_key",
+    "input",
+    "artifact"
+  ],
+  "additionalProperties": false
+}

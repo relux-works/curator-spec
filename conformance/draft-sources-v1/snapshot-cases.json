@@ -1,0 +1,92 @@
+[
+  {
+    "id": "base",
+    "utf8_files": {
+      "SKILL.md": "name: review\n",
+      "scripts/run.sh": "echo one\n",
+      "build/main.go": "package main\n"
+    },
+    "inventory": {
+      "schema_version": 1,
+      "algorithm": "curator-local-snapshot-v1",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "sha256:06142a8fcd46ff59b5ddcd13ab902f20a5b9e2a51ce3a40b65fe735ce0371b95",
+          "executable": false
+        },
+        {
+          "path": "build/main.go",
+          "sha256": "sha256:df1d036cbbf3df46e2045071e082245ece204c7f53ecf0a4e022bff9bb228f47",
+          "executable": false
+        },
+        {
+          "path": "scripts/run.sh",
+          "sha256": "sha256:0cb42bbdf016ecafd6c21ac6c4b1760bf5b346c70c4f96ba890ef3d74883c8c2",
+          "executable": true
+        }
+      ],
+      "snapshot": "sha256:481f362d0c82cdf8c32ed854edfc125d21a7c470c0128086f7eebb1956d832a9"
+    }
+  },
+  {
+    "id": "runtime-edit",
+    "utf8_files": {
+      "SKILL.md": "name: review\n",
+      "scripts/run.sh": "echo two\n",
+      "build/main.go": "package main\n"
+    },
+    "inventory": {
+      "schema_version": 1,
+      "algorithm": "curator-local-snapshot-v1",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "sha256:06142a8fcd46ff59b5ddcd13ab902f20a5b9e2a51ce3a40b65fe735ce0371b95",
+          "executable": false
+        },
+        {
+          "path": "build/main.go",
+          "sha256": "sha256:df1d036cbbf3df46e2045071e082245ece204c7f53ecf0a4e022bff9bb228f47",
+          "executable": false
+        },
+        {
+          "path": "scripts/run.sh",
+          "sha256": "sha256:7d97a50c9b1eb3b6a49320a5238fd08280240d28befc12465e493d17d8bc8d56",
+          "executable": true
+        }
+      ],
+      "snapshot": "sha256:15ac234d51e71847165d42e2695df3d91ca49314bd5e5811eb17cad6ce8cea80"
+    }
+  },
+  {
+    "id": "build-edit",
+    "utf8_files": {
+      "SKILL.md": "name: review\n",
+      "scripts/run.sh": "echo one\n",
+      "build/main.go": "package changed\n"
+    },
+    "inventory": {
+      "schema_version": 1,
+      "algorithm": "curator-local-snapshot-v1",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "sha256:06142a8fcd46ff59b5ddcd13ab902f20a5b9e2a51ce3a40b65fe735ce0371b95",
+          "executable": false
+        },
+        {
+          "path": "build/main.go",
+          "sha256": "sha256:fbe06aa700c70a568bef3585095a668af24c85c11553f83818009eba13070f60",
+          "executable": false
+        },
+        {
+          "path": "scripts/run.sh",
+          "sha256": "sha256:0cb42bbdf016ecafd6c21ac6c4b1760bf5b346c70c4f96ba890ef3d74883c8c2",
+          "executable": true
+        }
+      ],
+      "snapshot": "sha256:2aa1bc2a835d6fd931de8f032761c17288bfefeaba492fe229158c602b8750ac"
+    }
+  }
+]

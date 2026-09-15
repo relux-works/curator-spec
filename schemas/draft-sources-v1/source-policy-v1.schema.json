@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/draft-sources-v1/source-policy-v1.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "repositories": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "maxLength": 4096,
+        "pattern": "^[a-z0-9][a-z0-9.-]*/(?!.*(?:^|/)\\.{1,2}(?:/|$))[^\\s\\\\:%?#/]+(?:/[^\\s\\\\:%?#/]+)*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "endpoints": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "$ref": "../v1/common.schema.json#/$defs/repositoryGit"
+                },
+                "authentication": {
+                  "$ref": "../v1/common.schema.json#/$defs/identifier"
+                }
+              },
+              "required": [
+                "url",
+                "authentication"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 2,
+            "uniqueItems": true
+          },
+          "pin": {
+            "$ref": "../v1/common.schema.json#/$defs/repositoryGit"
+          },
+          "fallback": {
+            "enum": [
+              "none",
+              "availability-auth"
+            ]
+          }
+        },
+        "required": [
+          "endpoints",
+          "fallback"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "root_inputs": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "../v1/common.schema.json#/$defs/identifier"
+      },
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "$ref": "../v1/common.schema.json#/$defs/portablePath"
+        }
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "repositories"
+  ],
+  "additionalProperties": false
+}
