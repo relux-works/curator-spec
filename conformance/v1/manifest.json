@@ -4177,6 +4177,10 @@
       "sha256": "sha256:35a58adc2df68bca8c89a042cbd617d76121a58601237de19013a62c5976617d"
     },
     {
+      "path": "vectors/shell-hook-trust.json",
+      "sha256": "sha256:ce0d3c593aa52973c21834222e2d85ad101ad5f070e1978e1e015badd0b41fcd"
+    },
+    {
       "path": "vectors/skill-manifest-resolution.json",
       "sha256": "sha256:07c42987cdfcbdb0b78a0149373ad8b49ac2d1d70a5484b4e42a54e20586647c"
     },

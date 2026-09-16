@@ -7,6 +7,31 @@ Versioning for the complete specification set.
 
 ### Added
 
+- S6: shell-hook project env trust gate (manager profile section 8):
+  the cached hook sources only `.agents/env.sh` / `.agents/env.ps1`
+  bytes whose digest the manager recorded (`manager`) or the operator
+  approved once (`curator hook approve <path>`); an unknown file, or a
+  recorded file whose digest changed, warns once per shell session with
+  `shell_hook_env_unapproved` / `shell_hook_env_changed`, naming the path
+  and the approval command, and continues. Approval records
+  `{ path, sha256, approved_by: manager | operator, approved_at }` live
+  in manager-home shell-hook approval state below `<manager-home>`,
+  outside every profile/package/project surface and never read from
+  package, project, or profile data; `sha256` is lowercase hex SHA-256
+  over the exact bytes sourced; re-approval is required after a change.
+  `curator hook approvals` lists records read-only and
+  `curator hook revoke <path>` removes one; `curator status` and
+  `curator env status` report each known file as approved, unapproved, or
+  changed. Warn-first rollout in two labelled revisions: Revision A
+  (`A-warning`, warning release, old sourcing kept with the warning and a
+  migration hint naming the approval command, shipped first), then
+  Revision B (`B-enforcing`, flip release, unapproved/changed files are
+  not sourced). Vectors:
+  `conformance/v1/vectors/shell-hook-trust.json` (approved, unapproved,
+  and changed files under both rollout profiles for both env files, with
+  byte fixtures, exact manager-state records, a forged project-supplied
+  record the hook must ignore, and the §8.7 downstream execution
+  binding).
 - Opt-in Skillfile sources revision 1: backwards-compatible project schema 2,
   local/Git acquisition, individual and collection selection, frozen package
   identities, physical input/output guards and full runtime/build contracts.

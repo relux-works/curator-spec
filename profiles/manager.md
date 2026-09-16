@@ -1086,6 +1086,160 @@ Global activation is OPTIONAL and enabled by default by conforming CLI
 profiles. It is sourced once per global environment version and has lower PATH
 precedence than a project environment.
 
+### 8.1 Project env file trust gate (S6)
+
+The project env files in scope are closed: exactly `.agents/env.sh`
+(POSIX hook) and `.agents/env.ps1` (PowerShell hook). No other project
+file is sourced by the hook. The same trust rule applies identically to
+both files.
+
+Under the enforcing rollout profile (Revision B, §8.5), a hook MUST
+source a candidate project env file ONLY when its exact bytes are
+trusted. Bytes are trusted ONLY when the manager's shell-hook approval
+state holds a record for that absolute file path whose recorded digest
+equals the digest of the bytes that would be sourced. Revision A (§8.5)
+is the labelled warning exception: it sources with the warning during
+the migration window. The two admitted trust sources are closed:
+
+- `manager` — the manager itself generated or installed the project env
+  file and recorded its digest at that time; or
+- `operator` — the operator approved the file once through the approval
+  command (`curator hook approve <path>`).
+
+An unknown file (no record for its absolute path), or a recorded file
+whose current digest differs from the recorded digest, MUST NOT be
+treated as trusted (under Revision A the hook still sources it but MUST
+warn; see §8.5). Re-approval is REQUIRED after the file changes: the
+operator MUST run `curator hook approve <path>` again to record the new
+digest; the old record MUST NOT authorize the changed bytes.
+
+When the hook selects an untrusted candidate it MUST warn once per shell
+session, naming the absolute file path and the approval command
+(`curator hook approve <path>`), and MUST continue without failing
+activation or the prompt. The warning MUST NOT be repeated for the same
+path within the same shell session.
+
+### 8.2 Approval record shape
+
+The shell-hook approval state is manager state below `<manager-home>`,
+in the sense of section 1 (caches, runtime store, audit state, and
+global/hybrid state below that home). It is kept outside every
+profile, package, and project surface. The manager MUST NOT read an
+approval record from package data, project data, or profile data, and
+package, project, or profile data MUST NOT influence the trust decision.
+
+The record set holds one record per absolute project env file path. Each
+record is a closed object with exactly these four members:
+
+- `path` — the absolute project env file path the record authorizes;
+- `sha256` — the lowercase hex SHA-256 digest (64 characters, no prefix)
+  computed over the exact bytes that would be sourced;
+- `approved_by` — exactly `manager` or `operator` (closed);
+- `approved_at` — the RFC 3339 timestamp at which the digest was recorded.
+
+No schema under `schemas/v1/` governs this manager-home state; the
+closed shape above is normative in text only. The `path` key is the
+absolute path; two spellings of the same file MUST resolve to one record
+before comparison. The digest is SHA-256 over the exact bytes sourced,
+hex-encoded lowercase.
+
+### 8.3 Approval commands
+
+The approval command surface is closed to exactly these three commands:
+
+- `curator hook approve <path>` — record (or re-record after a change)
+  the absolute path with the digest of its current bytes as
+  `approved_by: operator`;
+- `curator hook approvals` — list every approval record read-only;
+- `curator hook revoke <path>` — remove the record for the absolute path.
+
+`curator hook approve <path>` MUST fail without recording when the file
+is absent or unreadable, and MUST NOT trust a path with no readable
+bytes. `curator hook revoke <path>` on a path with no record MUST leave
+state unchanged and report that there was nothing to revoke. Listing
+MUST NOT mutate state.
+
+### 8.4 Diagnostics
+
+The shell-hook trust diagnostics are closed to exactly these two
+snake_case codes:
+
+| Condition | Diagnostic |
+|---|---|
+| candidate project env file has no approval record (warning) | `shell_hook_env_unapproved` |
+| candidate project env file digest differs from the recorded digest; re-approval required (warning) | `shell_hook_env_changed` |
+
+No other shell-hook diagnostic exists. Both codes are warnings: they
+never fail activation by themselves, and they use the identical spelling
+in text, tables, and conformance vectors.
+
+### 8.5 Warn-first rollout
+
+The trust gate ships in two explicitly labelled rollout profiles. The
+closed profile set is exactly `A-warning` and `B-enforcing`:
+
+- **Revision A (`A-warning`, warning release)** — the hook keeps the old
+  sourcing behavior (it sources unapproved and changed files) but MUST
+  emit the corresponding diagnostic (`shell_hook_env_unapproved` or
+  `shell_hook_env_changed`) with a migration hint naming
+  `curator hook approve <path>`. The manager ships this revision first.
+- **Revision B (`B-enforcing`, flip release)** — the hook MUST NOT source
+  an unapproved file or a changed file. It MUST emit the corresponding
+  diagnostic (`shell_hook_env_unapproved` or `shell_hook_env_changed`)
+  once per shell session, naming the path and
+  `curator hook approve <path>`, and continue.
+
+A release MUST NOT flip the default and add the refusal at once: the
+warning release (A) and the flip release (B) are separate revisions.
+
+### 8.6 Status posture
+
+Read-only status MUST report the shell-hook trust posture. `curator
+status` and, where the environments capability is implemented,
+`curator env status` list each known project env file with its trust
+state — approved, unapproved (`shell_hook_env_unapproved`), or changed
+(`shell_hook_env_changed`) — naming the absolute path and, for recorded
+files, the recorded `approved_by` value. `--check` treats a changed file
+as non-current; an unapproved file is reported as a warning row.
+
+### 8.7 Conformance surface and execution binding
+
+The emitted hook code is a conformance-vector surface. The POSIX hook
+(for `.agents/env.sh`) and the PowerShell hook (for `.agents/env.ps1`)
+emitted by the manager MUST satisfy every case of
+`conformance/v1/vectors/shell-hook-trust.json`: each case supplies the
+candidate file bytes as a fixture, the exact manager-home approval
+record present (or its absence), the selected rollout profile
+(`A-warning` or `B-enforcing`), and the expected outcome (sourced or
+not, diagnostic id, warning on the first activation only). One case
+family additionally supplies a project-local forged approval record
+whose digest matches the candidate bytes; the hook MUST ignore it and
+treat the candidate as unapproved.
+
+A checker runs each case with this execution recipe: materialize the
+case's fixture bytes at the case's absolute candidate path; seed the
+manager-home shell-hook approval state with exactly the case's
+`manager_approval_record` (or leave it absent when the case carries
+none), placing the forged record — if the case carries one — only in
+project data; select the case's rollout profile; run hook activation
+twice in the same shell session; and observe, per activation, whether
+the candidate was sourced, which diagnostic was emitted, and how many
+warnings named the path and `curator hook approve <path>` across both
+activations (exactly one for an untrusted candidate, zero for a trusted
+one). The observed values MUST equal the case's expected values.
+
+Downstream execution binding (labelled): the specification
+repository's gates do NOT execute hooks. `tools/validate.py`
+(`validate_shell_hook_trust_vectors`) performs structural validation
+only — it recomputes every fixture digest from the fixture bytes,
+checks each approval record against the closed §8.2 shape, and derives
+the expected `sourced`, diagnostic, and warning values from the trust
+state and the rollout profile — but it never runs the emitted hook.
+Executing these vectors against the emitted hook is owned downstream
+by the manager implementation tasks `TASK-260910-1952mz`
+(manager-hook-digest-pin, the hook trust gate) and `TASK-260910-3ungjy`
+(hook-approval-command, the approval command).
+
 ## 9. Idempotent machine bootstrap
 
 A manager SHOULD expose a non-interactive operation that creates its machine

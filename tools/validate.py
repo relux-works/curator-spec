@@ -4594,6 +4594,193 @@ def validate_snapshot_acquisition_vectors(
         raise ValidationFailure("byte-exact-snapshot acquisition contract does not state the autocrlf and export-subst checks")
 
 
+SHELL_HOOK_TRUST_FILES = (".agents/env.sh", ".agents/env.ps1")
+SHELL_HOOK_TRUST_DIAGNOSTICS = ("shell_hook_env_unapproved", "shell_hook_env_changed")
+SHELL_HOOK_TRUST_PROFILES = ("A-warning", "B-enforcing")
+SHELL_HOOK_TRUST_APPROVERS = ("manager", "operator")
+SHELL_HOOK_TRUST_FIXTURES = (
+    "env-sh-v1",
+    "env-sh-v2-changed",
+    "env-ps1-v1",
+    "env-ps1-v2-changed",
+)
+SHELL_HOOK_TRUST_CASES = frozenset(
+    {
+        "approved-env-sh-A-warning-sourced",
+        "approved-env-sh-B-enforcing-sourced",
+        "unapproved-env-sh-A-warning-sourced-with-warning",
+        "unapproved-env-sh-B-enforcing-not-sourced",
+        "changed-env-sh-A-warning-sourced-with-warning",
+        "changed-env-sh-B-enforcing-not-sourced",
+        "approved-env-ps1-A-warning-sourced",
+        "approved-env-ps1-B-enforcing-sourced",
+        "unapproved-env-ps1-A-warning-sourced-with-warning",
+        "unapproved-env-ps1-B-enforcing-not-sourced",
+        "changed-env-ps1-A-warning-sourced-with-warning",
+        "changed-env-ps1-B-enforcing-not-sourced",
+        "forged-project-record-env-sh-A-warning-sourced-with-warning",
+        "forged-project-record-env-sh-B-enforcing-not-sourced",
+    }
+)
+SHELL_HOOK_TRUST_DOWNSTREAM_OWNERS = ("TASK-260910-1952mz", "TASK-260910-3ungjy")
+SHELL_HOOK_SHA256 = re.compile(r"[0-9a-f]{64}", re.ASCII)
+SHELL_HOOK_RFC3339 = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", re.ASCII)
+
+
+def check_shell_hook_approval_record(record: Any, label: str) -> None:
+    if not isinstance(record, dict) or set(record) != {
+        "path",
+        "sha256",
+        "approved_by",
+        "approved_at",
+    }:
+        raise ValidationFailure(f"{label} is not the closed four-member approval record")
+    if not isinstance(record["path"], str) or not record["path"].startswith("/"):
+        raise ValidationFailure(f"{label} path is not absolute")
+    if not isinstance(record["sha256"], str) or SHELL_HOOK_SHA256.fullmatch(record["sha256"]) is None:
+        raise ValidationFailure(f"{label} sha256 is not lowercase hex without prefix")
+    if record["approved_by"] not in SHELL_HOOK_TRUST_APPROVERS:
+        raise ValidationFailure(f"{label} approved_by is not manager or operator")
+    if not isinstance(record["approved_at"], str) or SHELL_HOOK_RFC3339.fullmatch(record["approved_at"]) is None:
+        raise ValidationFailure(f"{label} approved_at is not an RFC 3339 timestamp")
+
+
+def validate_shell_hook_trust_vectors(vector: Any = None) -> None:
+    """The manager-profile section 8 trust-gate vector.
+
+    Structural validation only: fixture digests are recomputed from the
+    fixture bytes, and each case's sourced, diagnostic, and warning values
+    are derived from its trust state and rollout profile. This gate never
+    executes the emitted hook; downstream execution is owned by
+    TASK-260910-1952mz and TASK-260910-3ungjy (profile section 8.7).
+    """
+    if vector is None:
+        vector = load_json(SUITE / "vectors" / "shell-hook-trust.json")
+    if (
+        vector.get("schema_version") != 1
+        or vector.get("protocol_version") != PROTOCOL_VERSION
+        or vector.get("capability") != "shell-hook-trust"
+        or vector.get("finding") != "S6"
+    ):
+        raise ValidationFailure("shell-hook-trust vector has the wrong capability identity")
+    if vector.get("files") != list(SHELL_HOOK_TRUST_FILES):
+        raise ValidationFailure("shell-hook-trust files are not the closed two-file set")
+    if vector.get("diagnostics") != list(SHELL_HOOK_TRUST_DIAGNOSTICS):
+        raise ValidationFailure("shell-hook-trust diagnostics are not the closed two-code set")
+    profiles = {entry.get("name"): entry for entry in vector.get("rollout_profiles", [])}
+    if set(profiles) != set(SHELL_HOOK_TRUST_PROFILES):
+        raise ValidationFailure("shell-hook-trust rollout profiles are not exactly A-warning and B-enforcing")
+    if profiles["A-warning"].get("sources_unapproved") is not True or profiles["A-warning"].get("sources_changed") is not True:
+        raise ValidationFailure("shell-hook-trust Revision A must keep sourcing unapproved and changed files")
+    if profiles["B-enforcing"].get("sources_unapproved") is not False or profiles["B-enforcing"].get("sources_changed") is not False:
+        raise ValidationFailure("shell-hook-trust Revision B must not source unapproved or changed files")
+    shape = vector.get("approval_record_shape", {})
+    if shape.get("members") != ["path", "sha256", "approved_by", "approved_at"] or shape.get("approved_by") != list(SHELL_HOOK_TRUST_APPROVERS):
+        raise ValidationFailure("shell-hook-trust approval record shape is not the closed four-member shape")
+    check_shell_hook_approval_record(vector.get("example_record"), "shell-hook-trust example_record")
+
+    fixtures = vector.get("fixtures", {})
+    if set(fixtures) != set(SHELL_HOOK_TRUST_FIXTURES):
+        raise ValidationFailure("shell-hook-trust fixture inventory is not exact")
+    for fixture_id, fixture in fixtures.items():
+        if fixture.get("file") not in SHELL_HOOK_TRUST_FILES:
+            raise ValidationFailure(f"shell-hook-trust fixture {fixture_id} names a file outside the closed set")
+        try:
+            raw = base64.b64decode(fixture.get("bytes_base64", ""), validate=True)
+        except ValueError as exc:
+            raise ValidationFailure(f"shell-hook-trust fixture {fixture_id} bytes are not valid base64") from exc
+        if hashlib.sha256(raw).hexdigest() != fixture.get("sha256"):
+            raise ValidationFailure(f"shell-hook-trust fixture {fixture_id} sha256 does not match its bytes")
+
+    binding = vector.get("execution_binding", {})
+    if binding.get("downstream_owner_tasks") != list(SHELL_HOOK_TRUST_DOWNSTREAM_OWNERS):
+        raise ValidationFailure("shell-hook-trust execution binding does not name the downstream owner tasks")
+    recipe = vector.get("execution_recipe")
+    if not isinstance(recipe, list) or not recipe or any(not isinstance(step, str) or not step for step in recipe):
+        raise ValidationFailure("shell-hook-trust execution recipe is not a non-empty step list")
+    sequence = vector.get("activation_sequence", {})
+    if sequence.get("activations") != [
+        "first activation in a fresh shell session",
+        "second activation in the same shell session",
+    ]:
+        raise ValidationFailure("shell-hook-trust activation sequence is not the two-activation session pair")
+
+    cases = named_cases(vector.get("cases"), "shell-hook trust")
+    if set(cases) != SHELL_HOOK_TRUST_CASES:
+        raise ValidationFailure("shell-hook-trust case inventory is not exact")
+    for name, case in cases.items():
+        fixture_id = case.get("candidate_fixture")
+        if fixture_id not in fixtures:
+            raise ValidationFailure(f"shell-hook-trust case {name} names an unknown fixture")
+        fixture = fixtures[fixture_id]
+        if case.get("file") != fixture["file"]:
+            raise ValidationFailure(f"shell-hook-trust case {name} file does not match its fixture")
+        if not isinstance(case.get("candidate_path"), str) or not case["candidate_path"].endswith("/" + case["file"]):
+            raise ValidationFailure(f"shell-hook-trust case {name} candidate path does not name the fixture file")
+        observed = case.get("observed_sha256")
+        if observed != fixture["sha256"]:
+            raise ValidationFailure(f"shell-hook-trust case {name} observed digest is not its fixture digest")
+        if case.get("rollout_profile") not in SHELL_HOOK_TRUST_PROFILES:
+            raise ValidationFailure(f"shell-hook-trust case {name} names an unknown rollout profile")
+
+        approval = case.get("approval")
+        record = case.get("manager_approval_record")
+        if approval == "absent":
+            if record is not None or case.get("recorded_sha256") is not None:
+                raise ValidationFailure(f"shell-hook-trust case {name} is absent yet carries a record")
+            if "approved_by" in case:
+                raise ValidationFailure(f"shell-hook-trust case {name} is absent yet names an approver")
+        elif approval in ("present-match", "present-mismatch"):
+            check_shell_hook_approval_record(record, f"shell-hook-trust case {name} manager record")
+            if record["path"] != case["candidate_path"]:
+                raise ValidationFailure(f"shell-hook-trust case {name} record path is not the candidate path")
+            if case.get("recorded_sha256") != record["sha256"]:
+                raise ValidationFailure(f"shell-hook-trust case {name} recorded digest is not its record digest")
+            if case.get("approved_by") != record["approved_by"]:
+                raise ValidationFailure(f"shell-hook-trust case {name} approver is not its record approver")
+            match = record["sha256"] == observed
+            if (approval == "present-match") != match:
+                raise ValidationFailure(f"shell-hook-trust case {name} approval state contradicts its digests")
+        else:
+            raise ValidationFailure(f"shell-hook-trust case {name} has an unknown approval state")
+
+        forged = case.get("project_supplied_record")
+        if name.startswith("forged-project-record-"):
+            if not isinstance(forged, dict) or not str(forged.get("source", "")).startswith("project:"):
+                raise ValidationFailure(f"shell-hook-trust case {name} must carry a project-sourced forged record")
+            check_shell_hook_approval_record(forged.get("record"), f"shell-hook-trust case {name} forged record")
+            if forged["record"]["sha256"] != observed:
+                raise ValidationFailure(f"shell-hook-trust case {name} forged record must match the observed bytes")
+        elif forged is not None:
+            raise ValidationFailure(f"shell-hook-trust case {name} carries a forged record outside the forged family")
+
+        trusted = record is not None and record["sha256"] == observed
+        if trusted:
+            expected_diagnostic = None
+        elif record is None:
+            expected_diagnostic = "shell_hook_env_unapproved"
+        else:
+            expected_diagnostic = "shell_hook_env_changed"
+        if case.get("diagnostic") != expected_diagnostic:
+            raise ValidationFailure(f"shell-hook-trust case {name} diagnostic does not follow its trust state")
+        expected_sourced = trusted or case["rollout_profile"] == "A-warning"
+        if case.get("sourced") is not expected_sourced:
+            raise ValidationFailure(f"shell-hook-trust case {name} sourcing does not follow its trust state and profile")
+        warned = not trusted
+        warning_checks = {
+            "warns_once_per_shell_session": warned,
+            "warning_first_activation": warned,
+            "warning_second_activation_same_session": False,
+            "warnings_total_across_two_activations": 1 if warned else 0,
+            "warning_names_path": warned,
+            "warning_names_approval_command": warned,
+            "migration_hint_names_approval_command": warned,
+        }
+        for field, expected in warning_checks.items():
+            if case.get(field) is not expected:
+                raise ValidationFailure(f"shell-hook-trust case {name} field {field} does not follow its trust state")
+
+
 def main() -> int:
     checks = [
         validate_schemas,
@@ -4607,6 +4794,7 @@ def main() -> int:
         validate_context_version_vectors,
         validate_context_detector_vectors,
         validate_snapshot_acquisition_vectors,
+        validate_shell_hook_trust_vectors,
         validate_manager_config_vectors,
         validate_system_config_v2_schema,
         validate_local_links,

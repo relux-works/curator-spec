@@ -47,6 +47,9 @@ identifiers.
 | `curator repair [target] [--all] [--audit [advisory\|strict]]` | rc.5 command contract: reacquire, audit, and restore non-current managed state |
 | `curator gc` | Collect unreferenced machine state |
 | `curator shell-init [auto\|zsh\|bash\|powershell] [--install] [--no-global]` | Print or cache optional shell integration |
+| `curator hook approve <path>` | Record approval for one project env file (`.agents/env.sh` or `.agents/env.ps1`): stores the absolute path with the digest of its current bytes as `approved_by: operator`; re-run after the file changes |
+| `curator hook approvals` | List every shell-hook approval record read-only (path, digest, approver, time) |
+| `curator hook revoke <path>` | Remove the shell-hook approval record for one absolute path |
 
 Exit code 0 is success, including a syntax-only check that emitted only
 warnings. Exit code 1 is an operation failure, security-policy block, partial
@@ -93,6 +96,21 @@ curator shell-init --install
 The cached hook is sourced without starting Curator on each shell launch.
 `CURATOR_AUTO_ENV=0` disables project-directory scanning while retaining
 global activation. Curator never edits a shell profile automatically.
+
+The hook's trust behavior follows the shipped rollout revision of
+manager-profile section 8. Under Revision A (`A-warning`, the warning
+release, shipped first) the hook keeps sourcing an unknown file, or a
+recorded file whose digest changed, but warns once per shell session
+with `shell_hook_env_unapproved` or `shell_hook_env_changed`, naming
+the path and the approval command (`curator hook approve <path>`) as a
+migration hint. Under Revision B (`B-enforcing`, the flip release) the
+hook sources a project `.agents/env.sh` or `.agents/env.ps1` only when
+its bytes are trusted (a manager-recorded digest or an operator approval
+via `curator hook approve <path>`); an unknown file, or a recorded file
+whose digest changed, is not sourced, warns once per shell session
+naming the path and the approval command, and continues. Re-approval is
+required after a change under both revisions. See
+`curator hook approvals` for the recorded set.
 
 ## CI example
 

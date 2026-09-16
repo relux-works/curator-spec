@@ -1,0 +1,467 @@
+{
+  "approval_record_shape": {
+    "approved_at": "RFC 3339 timestamp at which the digest was recorded",
+    "approved_by": [
+      "manager",
+      "operator"
+    ],
+    "members": [
+      "path",
+      "sha256",
+      "approved_by",
+      "approved_at"
+    ],
+    "path": "absolute project env file path the record authorizes",
+    "sha256": "lowercase hex SHA-256 over the exact bytes sourced, 64 characters, no prefix",
+    "storage": "manager-home shell-hook approval state below <manager-home>, outside every profile, package, and project surface; never read from package, project, or profile data"
+  },
+  "capability": "shell-hook-trust",
+  "commands": [
+    "curator hook approve <path>",
+    "curator hook approvals",
+    "curator hook revoke <path>"
+  ],
+  "diagnostics": [
+    "shell_hook_env_unapproved",
+    "shell_hook_env_changed"
+  ],
+  "example_record": {
+    "path": "/project/.agents/env.sh",
+    "sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+    "approved_by": "manager",
+    "approved_at": "2026-09-16T00:00:00Z"
+  },
+  "files": [
+    ".agents/env.sh",
+    ".agents/env.ps1"
+  ],
+  "finding": "S6",
+  "protocol_version": "1.0.0-rc.9",
+  "rollout_profiles": [
+    {
+      "description": "Revision A warning release: sources unapproved and changed files but emits the diagnostic with a migration hint naming curator hook approve <path>; shipped first",
+      "name": "A-warning",
+      "sources_changed": true,
+      "sources_unapproved": true
+    },
+    {
+      "description": "Revision B flip release: does not source unapproved or changed files; warns once per shell session naming the path and curator hook approve <path>, then continues",
+      "name": "B-enforcing",
+      "sources_changed": false,
+      "sources_unapproved": false
+    }
+  ],
+  "fixtures": {
+    "env-sh-v1": {
+      "file": ".agents/env.sh",
+      "bytes_base64": "IyBDdXJhdG9yIHByb2plY3QgZW52aXJvbm1lbnQgKG1hbmFnZWQpCmV4cG9ydCBDVVJBVE9SX1BST0pFQ1RfRU5WPTEK",
+      "sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2"
+    },
+    "env-sh-v2-changed": {
+      "file": ".agents/env.sh",
+      "bytes_base64": "IyBDdXJhdG9yIHByb2plY3QgZW52aXJvbm1lbnQgKG1hbmFnZWQpCmV4cG9ydCBDVVJBVE9SX1BST0pFQ1RfRU5WPTEKZXhwb3J0IENVUkFUT1JfUFJPSkVDVF9FTlZfRVhUUkE9MQo=",
+      "sha256": "746b7447b7459f3f5c3d23a6cf223c6c09f74be717868e951801eca0998110c2"
+    },
+    "env-ps1-v1": {
+      "file": ".agents/env.ps1",
+      "bytes_base64": "IyBDdXJhdG9yIHByb2plY3QgZW52aXJvbm1lbnQgKG1hbmFnZWQpCiRlbnY6Q1VSQVRPUl9QUk9KRUNUX0VOViA9ICIxIgo=",
+      "sha256": "180121271b6be22cb2717d88c1171a30a920f5e06b90a74e5a8b3e2be8f994d3"
+    },
+    "env-ps1-v2-changed": {
+      "file": ".agents/env.ps1",
+      "bytes_base64": "IyBDdXJhdG9yIHByb2plY3QgZW52aXJvbm1lbnQgKG1hbmFnZWQpCiRlbnY6Q1VSQVRPUl9QUk9KRUNUX0VOViA9ICIxIgokZW52OkNVUkFUT1JfUFJPSkVDVF9FTlZfRVhUUkEgPSAiMSIK",
+      "sha256": "f08c1411ec53a23faa633788c92c159cf4a14a5a7e02985f39ccd80065e95dce"
+    }
+  },
+  "activation_sequence": {
+    "description": "Each case runs hook activation twice in the same shell session so the once-per-session warning count is observable",
+    "activations": [
+      "first activation in a fresh shell session",
+      "second activation in the same shell session"
+    ],
+    "observable": [
+      "sourced",
+      "diagnostic",
+      "warnings_total_across_two_activations"
+    ]
+  },
+  "execution_recipe": [
+    "materialize the case candidate_fixture bytes at the case candidate_path",
+    "seed the manager-home shell-hook approval state with exactly the case manager_approval_record, or leave it absent when null",
+    "place the case project_supplied_record, if any, only in project data, never in manager state",
+    "select the case rollout_profile",
+    "run hook activation twice in the same shell session",
+    "observe per activation whether the candidate was sourced, which diagnostic was emitted, and the warning count across both activations",
+    "the observed values must equal the case expected values"
+  ],
+  "execution_binding": {
+    "surface": "emitted hook code: the POSIX hook for .agents/env.sh and the PowerShell hook for .agents/env.ps1",
+    "spec_gate": "structural only: tools/validate.py validate_shell_hook_trust_vectors recomputes fixture digests, checks record shapes, and derives sourced, diagnostic, and warning values; it does not execute hooks",
+    "downstream_owner_tasks": [
+      "TASK-260910-1952mz",
+      "TASK-260910-3ungjy"
+    ],
+    "downstream_contract": "the manager implementation runs each case activation sequence against the emitted hook and the observed values must equal the case expected values"
+  },
+  "cases": [
+    {
+      "name": "approved-env-sh-A-warning-sourced",
+      "file": ".agents/env.sh",
+      "candidate_path": "/project/.agents/env.sh",
+      "candidate_fixture": "env-sh-v1",
+      "observed_sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+      "rollout_profile": "A-warning",
+      "approval": "present-match",
+      "recorded_sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+      "manager_approval_record": {
+        "path": "/project/.agents/env.sh",
+        "sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+        "approved_by": "manager",
+        "approved_at": "2026-09-16T00:00:00Z"
+      },
+      "project_supplied_record": null,
+      "diagnostic": null,
+      "sourced": true,
+      "warns_once_per_shell_session": false,
+      "warning_first_activation": false,
+      "warning_second_activation_same_session": false,
+      "warnings_total_across_two_activations": 0,
+      "warning_names_path": false,
+      "warning_names_approval_command": false,
+      "migration_hint_names_approval_command": false,
+      "approved_by": "manager"
+    },
+    {
+      "name": "approved-env-sh-B-enforcing-sourced",
+      "file": ".agents/env.sh",
+      "candidate_path": "/project/.agents/env.sh",
+      "candidate_fixture": "env-sh-v1",
+      "observed_sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+      "rollout_profile": "B-enforcing",
+      "approval": "present-match",
+      "recorded_sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+      "manager_approval_record": {
+        "path": "/project/.agents/env.sh",
+        "sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+        "approved_by": "manager",
+        "approved_at": "2026-09-16T00:00:00Z"
+      },
+      "project_supplied_record": null,
+      "diagnostic": null,
+      "sourced": true,
+      "warns_once_per_shell_session": false,
+      "warning_first_activation": false,
+      "warning_second_activation_same_session": false,
+      "warnings_total_across_two_activations": 0,
+      "warning_names_path": false,
+      "warning_names_approval_command": false,
+      "migration_hint_names_approval_command": false,
+      "approved_by": "manager"
+    },
+    {
+      "name": "unapproved-env-sh-A-warning-sourced-with-warning",
+      "file": ".agents/env.sh",
+      "candidate_path": "/project/.agents/env.sh",
+      "candidate_fixture": "env-sh-v1",
+      "observed_sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+      "rollout_profile": "A-warning",
+      "approval": "absent",
+      "recorded_sha256": null,
+      "manager_approval_record": null,
+      "project_supplied_record": null,
+      "diagnostic": "shell_hook_env_unapproved",
+      "sourced": true,
+      "warns_once_per_shell_session": true,
+      "warning_first_activation": true,
+      "warning_second_activation_same_session": false,
+      "warnings_total_across_two_activations": 1,
+      "warning_names_path": true,
+      "warning_names_approval_command": true,
+      "migration_hint_names_approval_command": true
+    },
+    {
+      "name": "unapproved-env-sh-B-enforcing-not-sourced",
+      "file": ".agents/env.sh",
+      "candidate_path": "/project/.agents/env.sh",
+      "candidate_fixture": "env-sh-v1",
+      "observed_sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+      "rollout_profile": "B-enforcing",
+      "approval": "absent",
+      "recorded_sha256": null,
+      "manager_approval_record": null,
+      "project_supplied_record": null,
+      "diagnostic": "shell_hook_env_unapproved",
+      "sourced": false,
+      "warns_once_per_shell_session": true,
+      "warning_first_activation": true,
+      "warning_second_activation_same_session": false,
+      "warnings_total_across_two_activations": 1,
+      "warning_names_path": true,
+      "warning_names_approval_command": true,
+      "migration_hint_names_approval_command": true
+    },
+    {
+      "name": "changed-env-sh-A-warning-sourced-with-warning",
+      "file": ".agents/env.sh",
+      "candidate_path": "/project/.agents/env.sh",
+      "candidate_fixture": "env-sh-v2-changed",
+      "observed_sha256": "746b7447b7459f3f5c3d23a6cf223c6c09f74be717868e951801eca0998110c2",
+      "rollout_profile": "A-warning",
+      "approval": "present-mismatch",
+      "recorded_sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+      "manager_approval_record": {
+        "path": "/project/.agents/env.sh",
+        "sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+        "approved_by": "operator",
+        "approved_at": "2026-09-16T00:00:00Z"
+      },
+      "project_supplied_record": null,
+      "diagnostic": "shell_hook_env_changed",
+      "sourced": true,
+      "warns_once_per_shell_session": true,
+      "warning_first_activation": true,
+      "warning_second_activation_same_session": false,
+      "warnings_total_across_two_activations": 1,
+      "warning_names_path": true,
+      "warning_names_approval_command": true,
+      "migration_hint_names_approval_command": true,
+      "approved_by": "operator"
+    },
+    {
+      "name": "changed-env-sh-B-enforcing-not-sourced",
+      "file": ".agents/env.sh",
+      "candidate_path": "/project/.agents/env.sh",
+      "candidate_fixture": "env-sh-v2-changed",
+      "observed_sha256": "746b7447b7459f3f5c3d23a6cf223c6c09f74be717868e951801eca0998110c2",
+      "rollout_profile": "B-enforcing",
+      "approval": "present-mismatch",
+      "recorded_sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+      "manager_approval_record": {
+        "path": "/project/.agents/env.sh",
+        "sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+        "approved_by": "operator",
+        "approved_at": "2026-09-16T00:00:00Z"
+      },
+      "project_supplied_record": null,
+      "diagnostic": "shell_hook_env_changed",
+      "sourced": false,
+      "warns_once_per_shell_session": true,
+      "warning_first_activation": true,
+      "warning_second_activation_same_session": false,
+      "warnings_total_across_two_activations": 1,
+      "warning_names_path": true,
+      "warning_names_approval_command": true,
+      "migration_hint_names_approval_command": true,
+      "approved_by": "operator"
+    },
+    {
+      "name": "approved-env-ps1-A-warning-sourced",
+      "file": ".agents/env.ps1",
+      "candidate_path": "/project/.agents/env.ps1",
+      "candidate_fixture": "env-ps1-v1",
+      "observed_sha256": "180121271b6be22cb2717d88c1171a30a920f5e06b90a74e5a8b3e2be8f994d3",
+      "rollout_profile": "A-warning",
+      "approval": "present-match",
+      "recorded_sha256": "180121271b6be22cb2717d88c1171a30a920f5e06b90a74e5a8b3e2be8f994d3",
+      "manager_approval_record": {
+        "path": "/project/.agents/env.ps1",
+        "sha256": "180121271b6be22cb2717d88c1171a30a920f5e06b90a74e5a8b3e2be8f994d3",
+        "approved_by": "operator",
+        "approved_at": "2026-09-16T00:00:00Z"
+      },
+      "project_supplied_record": null,
+      "diagnostic": null,
+      "sourced": true,
+      "warns_once_per_shell_session": false,
+      "warning_first_activation": false,
+      "warning_second_activation_same_session": false,
+      "warnings_total_across_two_activations": 0,
+      "warning_names_path": false,
+      "warning_names_approval_command": false,
+      "migration_hint_names_approval_command": false,
+      "approved_by": "operator"
+    },
+    {
+      "name": "approved-env-ps1-B-enforcing-sourced",
+      "file": ".agents/env.ps1",
+      "candidate_path": "/project/.agents/env.ps1",
+      "candidate_fixture": "env-ps1-v1",
+      "observed_sha256": "180121271b6be22cb2717d88c1171a30a920f5e06b90a74e5a8b3e2be8f994d3",
+      "rollout_profile": "B-enforcing",
+      "approval": "present-match",
+      "recorded_sha256": "180121271b6be22cb2717d88c1171a30a920f5e06b90a74e5a8b3e2be8f994d3",
+      "manager_approval_record": {
+        "path": "/project/.agents/env.ps1",
+        "sha256": "180121271b6be22cb2717d88c1171a30a920f5e06b90a74e5a8b3e2be8f994d3",
+        "approved_by": "operator",
+        "approved_at": "2026-09-16T00:00:00Z"
+      },
+      "project_supplied_record": null,
+      "diagnostic": null,
+      "sourced": true,
+      "warns_once_per_shell_session": false,
+      "warning_first_activation": false,
+      "warning_second_activation_same_session": false,
+      "warnings_total_across_two_activations": 0,
+      "warning_names_path": false,
+      "warning_names_approval_command": false,
+      "migration_hint_names_approval_command": false,
+      "approved_by": "operator"
+    },
+    {
+      "name": "unapproved-env-ps1-A-warning-sourced-with-warning",
+      "file": ".agents/env.ps1",
+      "candidate_path": "/project/.agents/env.ps1",
+      "candidate_fixture": "env-ps1-v1",
+      "observed_sha256": "180121271b6be22cb2717d88c1171a30a920f5e06b90a74e5a8b3e2be8f994d3",
+      "rollout_profile": "A-warning",
+      "approval": "absent",
+      "recorded_sha256": null,
+      "manager_approval_record": null,
+      "project_supplied_record": null,
+      "diagnostic": "shell_hook_env_unapproved",
+      "sourced": true,
+      "warns_once_per_shell_session": true,
+      "warning_first_activation": true,
+      "warning_second_activation_same_session": false,
+      "warnings_total_across_two_activations": 1,
+      "warning_names_path": true,
+      "warning_names_approval_command": true,
+      "migration_hint_names_approval_command": true
+    },
+    {
+      "name": "unapproved-env-ps1-B-enforcing-not-sourced",
+      "file": ".agents/env.ps1",
+      "candidate_path": "/project/.agents/env.ps1",
+      "candidate_fixture": "env-ps1-v1",
+      "observed_sha256": "180121271b6be22cb2717d88c1171a30a920f5e06b90a74e5a8b3e2be8f994d3",
+      "rollout_profile": "B-enforcing",
+      "approval": "absent",
+      "recorded_sha256": null,
+      "manager_approval_record": null,
+      "project_supplied_record": null,
+      "diagnostic": "shell_hook_env_unapproved",
+      "sourced": false,
+      "warns_once_per_shell_session": true,
+      "warning_first_activation": true,
+      "warning_second_activation_same_session": false,
+      "warnings_total_across_two_activations": 1,
+      "warning_names_path": true,
+      "warning_names_approval_command": true,
+      "migration_hint_names_approval_command": true
+    },
+    {
+      "name": "changed-env-ps1-A-warning-sourced-with-warning",
+      "file": ".agents/env.ps1",
+      "candidate_path": "/project/.agents/env.ps1",
+      "candidate_fixture": "env-ps1-v2-changed",
+      "observed_sha256": "f08c1411ec53a23faa633788c92c159cf4a14a5a7e02985f39ccd80065e95dce",
+      "rollout_profile": "A-warning",
+      "approval": "present-mismatch",
+      "recorded_sha256": "180121271b6be22cb2717d88c1171a30a920f5e06b90a74e5a8b3e2be8f994d3",
+      "manager_approval_record": {
+        "path": "/project/.agents/env.ps1",
+        "sha256": "180121271b6be22cb2717d88c1171a30a920f5e06b90a74e5a8b3e2be8f994d3",
+        "approved_by": "manager",
+        "approved_at": "2026-09-16T00:00:00Z"
+      },
+      "project_supplied_record": null,
+      "diagnostic": "shell_hook_env_changed",
+      "sourced": true,
+      "warns_once_per_shell_session": true,
+      "warning_first_activation": true,
+      "warning_second_activation_same_session": false,
+      "warnings_total_across_two_activations": 1,
+      "warning_names_path": true,
+      "warning_names_approval_command": true,
+      "migration_hint_names_approval_command": true,
+      "approved_by": "manager"
+    },
+    {
+      "name": "changed-env-ps1-B-enforcing-not-sourced",
+      "file": ".agents/env.ps1",
+      "candidate_path": "/project/.agents/env.ps1",
+      "candidate_fixture": "env-ps1-v2-changed",
+      "observed_sha256": "f08c1411ec53a23faa633788c92c159cf4a14a5a7e02985f39ccd80065e95dce",
+      "rollout_profile": "B-enforcing",
+      "approval": "present-mismatch",
+      "recorded_sha256": "180121271b6be22cb2717d88c1171a30a920f5e06b90a74e5a8b3e2be8f994d3",
+      "manager_approval_record": {
+        "path": "/project/.agents/env.ps1",
+        "sha256": "180121271b6be22cb2717d88c1171a30a920f5e06b90a74e5a8b3e2be8f994d3",
+        "approved_by": "manager",
+        "approved_at": "2026-09-16T00:00:00Z"
+      },
+      "project_supplied_record": null,
+      "diagnostic": "shell_hook_env_changed",
+      "sourced": false,
+      "warns_once_per_shell_session": true,
+      "warning_first_activation": true,
+      "warning_second_activation_same_session": false,
+      "warnings_total_across_two_activations": 1,
+      "warning_names_path": true,
+      "warning_names_approval_command": true,
+      "migration_hint_names_approval_command": true,
+      "approved_by": "manager"
+    },
+    {
+      "name": "forged-project-record-env-sh-A-warning-sourced-with-warning",
+      "file": ".agents/env.sh",
+      "candidate_path": "/project/.agents/env.sh",
+      "candidate_fixture": "env-sh-v1",
+      "observed_sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+      "rollout_profile": "A-warning",
+      "approval": "absent",
+      "recorded_sha256": null,
+      "manager_approval_record": null,
+      "project_supplied_record": {
+        "source": "project:/project/.agents/hook-approvals.json",
+        "record": {
+          "path": "/project/.agents/env.sh",
+          "sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+          "approved_by": "operator",
+          "approved_at": "2026-09-16T00:00:00Z"
+        }
+      },
+      "diagnostic": "shell_hook_env_unapproved",
+      "sourced": true,
+      "warns_once_per_shell_session": true,
+      "warning_first_activation": true,
+      "warning_second_activation_same_session": false,
+      "warnings_total_across_two_activations": 1,
+      "warning_names_path": true,
+      "warning_names_approval_command": true,
+      "migration_hint_names_approval_command": true
+    },
+    {
+      "name": "forged-project-record-env-sh-B-enforcing-not-sourced",
+      "file": ".agents/env.sh",
+      "candidate_path": "/project/.agents/env.sh",
+      "candidate_fixture": "env-sh-v1",
+      "observed_sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+      "rollout_profile": "B-enforcing",
+      "approval": "absent",
+      "recorded_sha256": null,
+      "manager_approval_record": null,
+      "project_supplied_record": {
+        "source": "project:/project/.agents/hook-approvals.json",
+        "record": {
+          "path": "/project/.agents/env.sh",
+          "sha256": "c04713665fc7836f926146528327d2decab0860c65f1a38390c4e4dbc832feb2",
+          "approved_by": "operator",
+          "approved_at": "2026-09-16T00:00:00Z"
+        }
+      },
+      "diagnostic": "shell_hook_env_unapproved",
+      "sourced": false,
+      "warns_once_per_shell_session": true,
+      "warning_first_activation": true,
+      "warning_second_activation_same_session": false,
+      "warnings_total_across_two_activations": 1,
+      "warning_names_path": true,
+      "warning_names_approval_command": true,
+      "migration_hint_names_approval_command": true
+    }
+  ],
+  "schema_version": 1
+}

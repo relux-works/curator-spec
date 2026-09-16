@@ -1985,6 +1985,88 @@ class SnapshotAcquisitionVectorTests(unittest.TestCase):
                 validate.validate_snapshot_acquisition_vectors(suite_root=root)
 
 
+class ShellHookTrustVectorTests(unittest.TestCase):
+    """Negative shapes for the section 8 trust-gate vector: each one narrows
+    one rule (sourcing outcome, fixture digest, record shape, forged-record
+    rejection, warning count) so that the gate must fail."""
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.SUITE / "vectors" / "shell-hook-trust.json"
+        )
+
+    def case(self, name: str, vector=None) -> dict:
+        for item in (vector or self.vector)["cases"]:
+            if item["name"] == name:
+                return item
+        raise AssertionError(f"shell-hook-trust case {name} is missing")
+
+    def test_published_vector_passes(self) -> None:
+        validate.validate_shell_hook_trust_vectors()
+
+    def test_flipped_sourcing_outcome_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("changed-env-sh-B-enforcing-not-sourced", changed)["sourced"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_shell_hook_trust_vectors(changed)
+
+    def test_stale_fixture_digest_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["fixtures"]["env-sh-v1"]["sha256"] = "0" * 64
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_shell_hook_trust_vectors(changed)
+
+    def test_observed_digest_detached_from_fixture_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("approved-env-sh-A-warning-sourced", changed)["observed_sha256"] = (
+            changed["fixtures"]["env-sh-v2-changed"]["sha256"]
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_shell_hook_trust_vectors(changed)
+
+    def test_forged_record_authorizing_bytes_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        forged = self.case(
+            "forged-project-record-env-sh-B-enforcing-not-sourced", changed
+        )
+        forged["diagnostic"] = None
+        forged["sourced"] = True
+        forged["warns_once_per_shell_session"] = False
+        forged["warning_first_activation"] = False
+        forged["warnings_total_across_two_activations"] = 0
+        forged["warning_names_path"] = False
+        forged["warning_names_approval_command"] = False
+        forged["migration_hint_names_approval_command"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_shell_hook_trust_vectors(changed)
+
+    def test_repeated_warning_in_same_session_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        repeated = self.case("unapproved-env-sh-B-enforcing-not-sourced", changed)
+        repeated["warning_second_activation_same_session"] = True
+        repeated["warnings_total_across_two_activations"] = 2
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_shell_hook_trust_vectors(changed)
+
+    def test_record_with_extra_member_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("approved-env-sh-A-warning-sourced", changed)[
+            "manager_approval_record"
+        ]["source"] = "manager"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_shell_hook_trust_vectors(changed)
+
+    def test_dropped_case_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["cases"] = [
+            item
+            for item in changed["cases"]
+            if item["name"] != "forged-project-record-env-sh-A-warning-sourced-with-warning"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_shell_hook_trust_vectors(changed)
+
+
 class ManagerConfigVectorTests(unittest.TestCase):
     """Negative shapes for the manager-config vector gate: each one flips a
     vector, the schema, or the section 12.1 table so that the gate must fail."""
