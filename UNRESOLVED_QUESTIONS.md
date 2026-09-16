@@ -31,3 +31,11 @@ authorize implementation, normative changes, workarounds, or draft landing.
 - [Decision 0014: tool-configuration surfaces](decisions/0014-tool-configuration-surfaces.md)
 - [Decision 0015: per-project policy and profile selection](decisions/0015-per-project-policy.md)
 - [Decision 0016: skill command roots in managed homes](decisions/0016-managed-home-command-roots.md)
+
+These credential/permission decision drafts are likewise **proposed —
+not adopted** (TASK-260916-vht714, STORY-260916-1on1d2, from the
+Fable-reviewed TASK-260916-2timlf design). Filing does not authorize
+implementation, normative changes, workarounds, or draft landing.
+
+- [Decision 0017: environment credential modes](decisions/0017-environment-credential-modes.md)
+- [Decision 0018: curator run permission interface](decisions/0018-curator-run-permission-interface.md)
