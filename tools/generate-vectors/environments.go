@@ -125,7 +125,14 @@ func environmentFixtureMembers() map[string]environmentMember {
 		"emptytoo":     {kind: "context", name: "emptytoo", source: "github.com/example/emptytoo", version: "0.1.0", commit: strings.Repeat("2", 40), weight: 1000, overlay: true},
 		"selective":    {kind: "context", name: "selective", source: "github.com/example/selective", version: "1.0.0", commit: strings.Repeat("3", 40)},
 		"nocontext":    {kind: "context", name: "nocontext", source: "github.com/example/nocontext", version: "1.0.0", commit: strings.Repeat("4", 40)},
-		"default":      {kind: "context", name: "default", version: "0.0.0", state: strings.Repeat("ab", 32)},
+		// The system-module admission chain of environments section 3: the
+		// root names sysmid directly, sysmid reaches sysleaf only through
+		// its own requires, and the sysovl overlay names sysleaf directly.
+		"sysroot": {kind: "context", name: "sysroot", source: "github.com/example/sysroot", version: "1.0.0", commit: strings.Repeat("8", 40), requires: []string{"sysmid"}},
+		"sysmid":  {kind: "context", name: "sysmid", source: "github.com/example/sysmid", version: "1.0.0", commit: strings.Repeat("9", 40), requires: []string{"sysleaf"}},
+		"sysleaf": {kind: "context", name: "sysleaf", source: "github.com/example/sysleaf", version: "1.0.0", commit: strings.Repeat("a", 40)},
+		"sysovl":  {kind: "context", name: "sysovl", source: "github.com/example/sysovl", version: "1.0.0", commit: strings.Repeat("b", 40), weight: 1000, overlay: true, requires: []string{"sysleaf"}},
+		"default": {kind: "context", name: "default", version: "0.0.0", state: strings.Repeat("ab", 32)},
 		// The weights closure: Decision 0012 section 9 shapes with short names.
 		"umbrella": {kind: "context", name: "umbrella", source: "github.com/companyA/root-context-ios-developer-umbrella", version: "2.3.0", commit: strings.Repeat("6", 40), weight: 100, requires: []string{"core", "figma", "ios"}},
 		"core":     {kind: "context", name: "core", source: "github.com/companyA/root-context-core", version: "3.2.1", commit: strings.Repeat("1", 40), weight: 0, requires: []string{"org"}},
@@ -158,6 +165,20 @@ func environmentFixturePackages() map[string]environmentPackage {
 		"emptytoo":     {hasContext: true},
 		"selective": {hasContext: true, modules: []environmentModule{
 			{path: "90-system.md", content: "Claude-only system prompt.\n", class: "system", environments: []string{"claude_code"}},
+		}},
+		"sysroot": {hasContext: true, modules: []environmentModule{
+			{path: "00-root.md", content: "# Sysroot\n\nRoot context.\n"},
+			{path: "90-system.md", content: "Root system prompt.\n", class: "system"},
+		}},
+		"sysmid": {hasContext: true, modules: []environmentModule{
+			{path: "00-mid.md", content: "# Mid\n\nMid context.\n"},
+			{path: "90-system.md", content: "Mid system prompt.\n", class: "system"},
+		}},
+		"sysleaf": {hasContext: true, modules: []environmentModule{
+			{path: "90-system.md", content: "Leaf system prompt.\n", class: "system"},
+		}},
+		"sysovl": {hasContext: true, modules: []environmentModule{
+			{path: "00-overlay.md", content: "# Overlay\n\nOverlay context.\n"},
 		}},
 		"nocontext": {hasContext: false},
 		"default": {hasContext: true, modules: []environmentModule{
@@ -411,20 +432,116 @@ func environmentRootContextFiles(closure environmentClosure, environment, form s
 	return true, files
 }
 
+// systemModulePolicy is the section 12.1 transitive_system_modules machine
+// policy with the section 12.1 system_module_waivers admission list, in
+// waiver order.
+type systemModulePolicy struct {
+	mode    string // exactly "drop" or "error"
+	waivers []systemModuleWaiver
+}
+
+// systemModuleWaiver is one section 12.1 system_module_waivers entry.
+type systemModuleWaiver struct {
+	packageName string
+	reason      string
+}
+
+func defaultSystemModulePolicy() systemModulePolicy {
+	return systemModulePolicy{mode: "drop"}
+}
+
+// admittedSystemModule is one applicable system module with its section 3
+// admission outcome.
+type admittedSystemModule struct {
+	packageName string
+	path        string
+	content     string
+}
+
+// environmentDirectPackages reports the section 3 direct set of a closure:
+// the root, every active overlay, and every package the root or an active
+// overlay names in requires. Every other context member is transitive.
+func environmentDirectPackages(closure environmentClosure) map[string]bool {
+	byName := map[string]environmentMember{}
+	for _, member := range closure.members {
+		if member.kind == "context" {
+			byName[member.name] = member
+		}
+	}
+	overlays := map[string]bool{}
+	for name, member := range byName {
+		if member.overlay {
+			overlays[name] = true
+		}
+	}
+	requiredBy := map[string][]string{}
+	for _, member := range closure.members {
+		for _, required := range member.requires {
+			requiredBy[required] = append(requiredBy[required], member.name)
+		}
+	}
+	direct := map[string]bool{closure.root: true}
+	for name := range byName {
+		if overlays[name] {
+			direct[name] = true
+		}
+		for _, requirer := range requiredBy[name] {
+			if requirer == closure.root || overlays[requirer] {
+				direct[name] = true
+			}
+		}
+	}
+	return direct
+}
+
+// environmentAdmitSystemModules splits a closure's applicable system modules
+// for one environment into admitted and dropped under a section 12.1
+// policy, both in emitted order with manifest order within a package.
+func environmentAdmitSystemModules(closure environmentClosure, environment string, policy systemModulePolicy, order []environmentMember) (admitted, dropped []admittedSystemModule) {
+	direct := environmentDirectPackages(closure)
+	waived := map[string]bool{}
+	for _, waiver := range policy.waivers {
+		waived[waiver.packageName] = true
+	}
+	for _, member := range order {
+		for _, module := range environmentApplicable(closure.packages[member.name], environment, "system") {
+			entry := admittedSystemModule{packageName: member.name, path: module.path, content: module.content}
+			if direct[member.name] || waived[member.name] {
+				admitted = append(admitted, entry)
+			} else {
+				dropped = append(dropped, entry)
+			}
+		}
+	}
+	return admitted, dropped
+}
+
 // environmentSystemPromptFiles materializes the section 5.5 system-prompt
 // surface. A false first result means no applicable system module exists and
 // the file is absent.
 func environmentSystemPromptFiles(closure environmentClosure, environment string, policy precedencePolicy) (bool, map[string]string) {
+	written, files, _, _, _ := environmentSystemPromptFilesWithPolicy(closure, environment, policy, defaultSystemModulePolicy())
+	return written, files
+}
+
+// environmentSystemPromptFilesWithPolicy materializes the section 5.5
+// system-prompt surface under a section 12.1 admission policy. Under
+// `error` a dropped module refuses the surface: the last result reports
+// the refusal and no file is written.
+func environmentSystemPromptFilesWithPolicy(closure environmentClosure, environment string, policy precedencePolicy, sysPolicy systemModulePolicy) (written bool, files map[string]string, admitted, dropped []admittedSystemModule, refused bool) {
+	order := environmentEmittedOrder(closure, policy)
+	admitted, dropped = environmentAdmitSystemModules(closure, environment, sysPolicy, order)
+	if sysPolicy.mode == "error" && len(dropped) > 0 {
+		return false, nil, admitted, dropped, true
+	}
+	if len(admitted) == 0 {
+		return false, nil, admitted, dropped, false
+	}
 	var parts []string
-	for _, member := range environmentEmittedOrder(closure, policy) {
-		for _, module := range environmentApplicable(closure.packages[member.name], environment, "system") {
-			parts = append(parts, module.content)
-		}
+	for _, module := range admitted {
+		parts = append(parts, module.content)
 	}
-	if len(parts) == 0 {
-		return false, nil
-	}
-	return true, map[string]string{environmentSystemPromptPath: environmentJoin(parts)}
+	return true, map[string]string{environmentSystemPromptPath: environmentJoin(parts)}, admitted, dropped, false
 }
 
 // environmentMCPSet is the lock's mcp members whose selector applies to the
@@ -617,6 +734,14 @@ func environmentServersJSON(closure environmentClosure) map[string]any {
 	return servers
 }
 
+func admittedSystemModulesJSON(modules []admittedSystemModule) []any {
+	out := make([]any, 0, len(modules))
+	for _, module := range modules {
+		out = append(out, map[string]any{"package": module.packageName, "path": module.path})
+	}
+	return out
+}
+
 func environmentEmittedNames(closure environmentClosure, policy precedencePolicy) []any {
 	order := environmentEmittedOrder(closure, policy)
 	names := make([]any, 0, len(order))
@@ -663,37 +788,54 @@ func writeEnvironmentVectors(dir, expected string) {
 		form        string
 		closure     environmentClosure
 		policy      precedencePolicy
+		sysPolicy   systemModulePolicy
 		note        string
 	}
+	// systemModuleDrop is the section 12.1 default admission policy: a
+	// transitive system module no waiver admits is skipped with a warning.
+	systemModuleDrop := defaultSystemModulePolicy()
+	systemModuleError := systemModulePolicy{mode: "error"}
+	systemModuleWaived := systemModulePolicy{mode: "drop", waivers: []systemModuleWaiver{{packageName: "sysleaf", reason: "reviewed leaf system prompt; admitted for this profile"}}}
 	inputs := []materializationInput{
-		{"monolithic-claude-code", "root-context", "claude_code", "monolithic", closure("companyA"), defaultPrecedence, ""},
-		{"monolithic-codex-selector-excluded", "root-context", "codex_cli", "monolithic", closure("companyA"), defaultPrecedence, ""},
-		{"monolithic-composed-no-chapter", "root-context", "claude_code", "monolithic", closure("companyA", "personal", "emptyoverlay"), defaultPrecedence, ""},
-		{"monolithic-zero-modules", "root-context", "claude_code", "monolithic", closure("emptyoverlay"), defaultPrecedence, ""},
-		{"monolithic-zero-modules-composed", "root-context", "claude_code", "monolithic", closure("emptyoverlay", "emptytoo"), defaultPrecedence, ""},
-		{"referenced-claude-code-composed", "root-context", "claude_code", "referenced", closure("companyA", "personal"), defaultPrecedence, ""},
-		{"referenced-opencode", "root-context", "opencode", "referenced", closure("companyA"), defaultPrecedence, ""},
-		{"referenced-opencode-zero-modules", "root-context", "opencode", "referenced", closure("emptyoverlay"), defaultPrecedence, ""},
-		{"no-context-directory", "root-context", "claude_code", "monolithic", closure("nocontext"), defaultPrecedence, ""},
-		{"system-prompt-composed", "system-prompt", "claude_code", "", closure("companyA", "personal"), defaultPrecedence, ""},
-		{"system-prompt-none-applicable", "system-prompt", "codex_cli", "", closure("selective"), defaultPrecedence, ""},
-		{"weights-winner-higher-placement-last", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerHigherWeight, placementWinnerLast}, ""},
-		{"weights-winner-lower-placement-last", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerLowerWeight, placementWinnerLast}, ""},
-		{"weights-winner-higher-placement-first", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerHigherWeight, placementWinnerFirst}, ""},
-		{"weights-winner-lower-placement-first", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerLowerWeight, placementWinnerFirst}, ""},
-		{"mcp-claude-code", "mcp", "claude_code", "", mcp, defaultPrecedence, ""},
-		{"mcp-codex-cli", "mcp", "codex_cli", "", mcp, defaultPrecedence, ""},
-		{"mcp-opencode", "mcp", "opencode", "", mcp, defaultPrecedence, ""},
-		{"mcp-pi-none", "mcp", "pi", "", mcp, defaultPrecedence, "pi declares no MCP launch channel (section 7.8), so no file is written and a pi fragment carries no mcp section; env_names is still recorded as the sorted union of the resolved set for information only — it never enters a fragment or a launch environment"},
+		{"monolithic-claude-code", "root-context", "claude_code", "monolithic", closure("companyA"), defaultPrecedence, systemModulePolicy{}, ""},
+		{"monolithic-codex-selector-excluded", "root-context", "codex_cli", "monolithic", closure("companyA"), defaultPrecedence, systemModulePolicy{}, ""},
+		{"monolithic-composed-no-chapter", "root-context", "claude_code", "monolithic", closure("companyA", "personal", "emptyoverlay"), defaultPrecedence, systemModulePolicy{}, ""},
+		{"monolithic-zero-modules", "root-context", "claude_code", "monolithic", closure("emptyoverlay"), defaultPrecedence, systemModulePolicy{}, ""},
+		{"monolithic-zero-modules-composed", "root-context", "claude_code", "monolithic", closure("emptyoverlay", "emptytoo"), defaultPrecedence, systemModulePolicy{}, ""},
+		{"referenced-claude-code-composed", "root-context", "claude_code", "referenced", closure("companyA", "personal"), defaultPrecedence, systemModulePolicy{}, ""},
+		{"referenced-opencode", "root-context", "opencode", "referenced", closure("companyA"), defaultPrecedence, systemModulePolicy{}, ""},
+		{"referenced-opencode-zero-modules", "root-context", "opencode", "referenced", closure("emptyoverlay"), defaultPrecedence, systemModulePolicy{}, ""},
+		{"no-context-directory", "root-context", "claude_code", "monolithic", closure("nocontext"), defaultPrecedence, systemModulePolicy{}, ""},
+		{"system-prompt-composed", "system-prompt", "claude_code", "", closure("companyA", "personal"), defaultPrecedence, systemModuleDrop, ""},
+		{"system-prompt-none-applicable", "system-prompt", "codex_cli", "", closure("selective"), defaultPrecedence, systemModuleDrop, ""},
+		{"system-module-direct", "system-prompt", "claude_code", "", closure("sysroot", "sysmid"), defaultPrecedence, systemModuleDrop, ""},
+		{"system-module-transitive-drop", "system-prompt", "claude_code", "", closure("sysroot", "sysmid", "sysleaf"), defaultPrecedence, systemModuleDrop, ""},
+		{"system-module-transitive-error", "system-prompt", "claude_code", "", closure("sysroot", "sysmid", "sysleaf"), defaultPrecedence, systemModuleError, ""},
+		{"system-module-transitive-waived", "system-prompt", "claude_code", "", closure("sysroot", "sysmid", "sysleaf"), defaultPrecedence, systemModuleWaived, ""},
+		{"system-module-overlay-direct", "system-prompt", "claude_code", "", closure("sysroot", "sysmid", "sysleaf", "sysovl"), defaultPrecedence, systemModuleDrop, ""},
+		{"weights-winner-higher-placement-last", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerHigherWeight, placementWinnerLast}, systemModulePolicy{}, ""},
+		{"weights-winner-lower-placement-last", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerLowerWeight, placementWinnerLast}, systemModulePolicy{}, ""},
+		{"weights-winner-higher-placement-first", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerHigherWeight, placementWinnerFirst}, systemModulePolicy{}, ""},
+		{"weights-winner-lower-placement-first", "root-context", "claude_code", "monolithic", weights, precedencePolicy{winnerLowerWeight, placementWinnerFirst}, systemModulePolicy{}, ""},
+		{"mcp-claude-code", "mcp", "claude_code", "", mcp, defaultPrecedence, systemModulePolicy{}, ""},
+		{"mcp-codex-cli", "mcp", "codex_cli", "", mcp, defaultPrecedence, systemModulePolicy{}, ""},
+		{"mcp-opencode", "mcp", "opencode", "", mcp, defaultPrecedence, systemModulePolicy{}, ""},
+		{"mcp-pi-none", "mcp", "pi", "", mcp, defaultPrecedence, systemModulePolicy{}, "pi declares no MCP launch channel (section 7.8), so no file is written and a pi fragment carries no mcp section; env_names is still recorded as the sorted union of the resolved set for information only — it never enters a fragment or a launch environment"},
 	}
 
 	materializationCases := make([]any, 0, len(inputs))
 	for _, input := range inputs {
 		var written bool
 		var files map[string]string
+		var admitted, dropped []admittedSystemModule
+		var refused bool
+		sysPolicy := input.sysPolicy
+		if sysPolicy.mode == "" {
+			sysPolicy.mode = "drop"
+		}
 		switch input.surface {
 		case "system-prompt":
-			written, files = environmentSystemPromptFiles(input.closure, input.environment, input.policy)
+			written, files, admitted, dropped, refused = environmentSystemPromptFilesWithPolicy(input.closure, input.environment, input.policy, sysPolicy)
 		case "mcp":
 			written, files = environmentMCPFiles(input.closure, input.environment)
 		default:
@@ -722,6 +864,34 @@ func writeEnvironmentVectors(dir, expected string) {
 			item["mcp_servers"] = environmentServersJSON(input.closure)
 			item["mcp_set"] = stringsToAny(environmentMCPSet(input.closure, input.environment))
 			item["env_names"] = stringsToAny(environmentEnvNames(input.closure, input.environment))
+		}
+		if input.surface == "system-prompt" {
+			waivers := make([]any, 0, len(sysPolicy.waivers))
+			for _, waiver := range sysPolicy.waivers {
+				waivers = append(waivers, map[string]any{"package": waiver.packageName, "reason": waiver.reason})
+			}
+			item["machine_policy"] = map[string]any{
+				"transitive_system_modules": sysPolicy.mode,
+				"system_module_waivers":     waivers,
+			}
+			item["admitted"] = admittedSystemModulesJSON(admitted)
+			item["dropped"] = admittedSystemModulesJSON(dropped)
+			if refused {
+				item["error"] = "context_system_module_transitive"
+				item["error_package"] = dropped[0].packageName
+				item["error_module"] = dropped[0].path
+				item["warnings"] = []any{}
+			} else {
+				warnings := make([]any, 0, len(dropped))
+				for _, module := range dropped {
+					warnings = append(warnings, map[string]any{
+						"diagnostic": "context_system_module_dropped",
+						"package":    module.packageName,
+						"path":       module.path,
+					})
+				}
+				item["warnings"] = warnings
+			}
 		}
 		if written {
 			paths := make([]string, 0, len(files))

@@ -4,20 +4,23 @@ package main
 // the `locked` array of system-config schema 2 spells it.
 var systemConfigV2LockableKeys = []string{
 	"overlays_allowed", "precedence", "mcp_package_allowlist",
-	"passable_env_names", "require_current_profile", "isolation",
+	"passable_env_names", "require_current_profile", "transitive_system_modules",
+	"isolation",
 }
 
 // systemConfigV2EveryKey sets every §12.2 lockable knob to a non-default value
 // so that the positive case exercises every grammar the schema encodes.
-// `isolation` is `shared` only: §12.2 makes it lockable in that direction alone.
+// `isolation` is `shared` only and `transitive_system_modules` is `error`
+// only: §12.2 makes each lockable in that direction alone.
 func systemConfigV2EveryKey() map[string]any {
 	return map[string]any{
-		"overlays_allowed":        false,
-		"precedence":              map[string]any{"winner": "lower-weight", "placement": "winner-first"},
-		"mcp_package_allowlist":   []any{"https://github.com/example/figma-devmode-mcp"},
-		"passable_env_names":      []any{"FIGMA_API_KEY", "GITHUB_TOKEN"},
-		"require_current_profile": "companyA",
-		"isolation":               map[string]any{"companyA": map[string]any{"claude_code": "shared", "codex_cli": "shared"}},
+		"overlays_allowed":          false,
+		"precedence":                map[string]any{"winner": "lower-weight", "placement": "winner-first"},
+		"mcp_package_allowlist":     []any{"https://github.com/example/figma-devmode-mcp"},
+		"passable_env_names":        []any{"FIGMA_API_KEY", "GITHUB_TOKEN"},
+		"require_current_profile":   "companyA",
+		"transitive_system_modules": "error",
+		"isolation":                 map[string]any{"companyA": map[string]any{"claude_code": "shared", "codex_cli": "shared"}},
 	}
 }
 
@@ -80,6 +83,8 @@ func systemConfigV2SchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-mcp-package-allowlist-empty-entry", instance: withKnob("mcp_package_allowlist", []any{""})},
 		{name: "invalid-passable-env-name-grammar", instance: withKnob("passable_env_names", []any{"FIGMA API KEY"})},
 		{name: "invalid-require-current-profile-grammar", instance: withKnob("require_current_profile", "")},
+		{name: "invalid-transitive-system-modules-drop-direction", instance: withKnob("transitive_system_modules", "drop")},
+		{name: "invalid-transitive-system-modules-value", instance: withKnob("transitive_system_modules", "quarantine")},
 		{name: "invalid-isolation-isolated-direction", instance: withKnob("isolation", map[string]any{"companyA": map[string]any{"claude_code": "isolated"}})},
 		{name: "invalid-isolation-value", instance: withKnob("isolation", map[string]any{"companyA": map[string]any{"codex_cli": "private"}})},
 		{name: "invalid-isolation-profile-grammar", instance: withKnob("isolation", map[string]any{"Company A": map[string]any{"codex_cli": "shared"}})},

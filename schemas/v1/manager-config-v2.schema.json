@@ -304,6 +304,22 @@
       },
       "additionalProperties": false
     },
+    "systemModuleWaiver": {
+      "type": "object",
+      "required": [
+        "package",
+        "reason"
+      ],
+      "properties": {
+        "package": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "reason": {
+          "$ref": "common.schema.json#/$defs/nonEmptyString"
+        }
+      },
+      "additionalProperties": false
+    },
     "secretMaterialWaiver": {
       "type": "object",
       "required": [
@@ -472,6 +488,20 @@
           "type": "array",
           "items": {
             "$ref": "#/$defs/secretMaterialWaiver"
+          },
+          "default": []
+        },
+        "transitive_system_modules": {
+          "enum": [
+            "drop",
+            "error"
+          ],
+          "default": "drop"
+        },
+        "system_module_waivers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/systemModuleWaiver"
           },
           "default": []
         },

@@ -2499,9 +2499,10 @@ func TestSystemConfigV2IsSchemaOnePlusTheLockableEnvironmentsKeys(t *testing.T) 
 		"hook", "hooks", "build", "build_policy", "build-policy", "build_policy_override",
 		"build-policy-override", "build_policy_overrides", "build-policy-overrides",
 		"build_ssh", "build_https", "current_profile", "overlays", "secret_material_waivers",
+		"system_module_waivers",
 	})
 	for _, key := range systemConfigV2LockableKeys {
-		if key == "isolation" {
+		if key == "isolation" || key == "transitive_system_modules" {
 			continue
 		}
 		got := environments["properties"].(map[string]any)[key]
@@ -2509,6 +2510,9 @@ func TestSystemConfigV2IsSchemaOnePlusTheLockableEnvironmentsKeys(t *testing.T) 
 		if !reflect.DeepEqual(got, want) {
 			t.Fatalf("system config v2 %s does not reference the manager-config-v2 grammar: %#v", key, got)
 		}
+	}
+	if got := environments["properties"].(map[string]any)["transitive_system_modules"]; !reflect.DeepEqual(got, map[string]any{"enum": []any{"error"}}) {
+		t.Fatalf("system config v2 transitive_system_modules must admit error alone, got %#v", got)
 	}
 	valid := validSystemConfigV2()
 	for _, key := range systemConfigV2LockableKeys {

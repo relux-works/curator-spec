@@ -3000,6 +3000,7 @@ MANAGER_CONFIG_KNOB_DEFAULT_PATHS = {
     "targets.<target-id>.consented": ("$defs", "target", "properties", "consented", "default"),
     "xdg_seed_allowlist": ("$defs", "environments", "properties", "xdg_seed_allowlist", "default"),
     "passable_env_names": ("$defs", "environments", "properties", "passable_env_names", "default"),
+    "transitive_system_modules": ("$defs", "environments", "properties", "transitive_system_modules", "default"),
     "backup_retention": ("$defs", "environments", "properties", "backup_retention", "default"),
     "require_current_profile": ("$defs", "environments", "properties", "require_current_profile", "default"),
 }
@@ -3019,6 +3020,7 @@ MANAGER_CONFIG_KNOB_ENUM_PATHS = {
     "isolation.<profile>.<env-id>": (
         "$defs", "environments", "properties", "isolation", "additionalProperties", "additionalProperties", "enum"
     ),
+    "transitive_system_modules": ("$defs", "environments", "properties", "transitive_system_modules", "enum"),
     "in_place_mode.<env-id>": ("$defs", "environments", "properties", "in_place_mode", "additionalProperties", "enum"),
 }
 
@@ -3201,11 +3203,15 @@ def validate_manager_config_vectors(
 
 SYSTEM_CONFIG_SCHEMAS = {1: "system-config-v1.schema.json", 2: "system-config-v2.schema.json"}
 
-# The one section 12.2 knob whose system-file grammar is narrower than its
+# The section 12.2 knobs whose system-file grammar is narrower than their
 # section 12.1 grammar: `isolation` is lockable only in the direction of
-# `shared`, so the system schema admits that literal alone.
+# `shared` and `transitive_system_modules` only in the direction of `error`,
+# so the system schema admits that literal alone in each case.
 SYSTEM_CONFIG_ISOLATION_ENUM_PATH = (
     "$defs", "environments", "properties", "isolation", "additionalProperties", "additionalProperties", "enum"
+)
+SYSTEM_CONFIG_TRANSITIVE_ENUM_PATH = (
+    "$defs", "environments", "properties", "transitive_system_modules", "enum"
 )
 
 
@@ -3237,9 +3243,11 @@ def validate_system_config_v2_schema(
     exactly the schema-1 enum plus `environments.<key>` for each of them.
     Every schema-1 member other than `schema_version` and `locked` keeps its
     schema-1 node byte for byte. Every environments knob other than
-    `isolation` takes its grammar from the `manager-config-v2` environments
-    object by reference, so the two schemas cannot drift; `isolation` admits
-    `shared` alone (section 12.2: lockable only in that direction).
+    `isolation` and `transitive_system_modules` takes its grammar from the
+    `manager-config-v2` environments object by reference, so the two schemas
+    cannot drift; `isolation` admits `shared` alone and
+    `transitive_system_modules` admits `error` alone (section 12.2: each
+    lockable only in that direction).
     """
     _registry, paths = schema_registry()
     if schema is None:
@@ -3283,7 +3291,7 @@ def validate_system_config_v2_schema(
             f"table-only {sorted(set(keys) - set(environments['properties']))}"
         )
     for key in keys:
-        if key == "isolation":
+        if key in ("isolation", "transitive_system_modules"):
             continue
         want = {"$ref": f"{MANAGER_CONFIG_SCHEMAS[2]}#/$defs/environments/properties/{key}"}
         if environments["properties"][key] != want:
@@ -3295,6 +3303,13 @@ def validate_system_config_v2_schema(
         node = node[segment]
     if node != ["shared"]:
         raise ValidationFailure(f"system-config-v2 isolation admits {node!r}; section 12.2 permits shared alone")
+    node = schema
+    for segment in SYSTEM_CONFIG_TRANSITIVE_ENUM_PATH:
+        if not isinstance(node, dict) or segment not in node:
+            raise ValidationFailure("system-config-v2 states no closed transitive_system_modules value set")
+        node = node[segment]
+    if node != ["error"]:
+        raise ValidationFailure(f"system-config-v2 transitive_system_modules admits {node!r}; section 12.2 permits error alone")
 
     locked_v1 = schema_v1["properties"]["locked"]["items"]["enum"]
     want_locked = [*locked_v1, *(f"environments.{key}" for key in keys)]
@@ -3490,6 +3505,11 @@ ENVIRONMENT_MATERIALIZATION_CASES = {
     "no-context-directory",
     "system-prompt-composed",
     "system-prompt-none-applicable",
+    "system-module-direct",
+    "system-module-transitive-drop",
+    "system-module-transitive-error",
+    "system-module-transitive-waived",
+    "system-module-overlay-direct",
     "weights-winner-higher-placement-last",
     "weights-winner-lower-placement-last",
     "weights-winner-higher-placement-first",
@@ -4237,6 +4257,59 @@ def environment_mcp_files(case: dict[str, Any]) -> dict[str, bytes]:
     return {target: ("\n".join(lines) + "\n").encode("utf-8")}
 
 
+def environment_machine_policy(case: dict[str, Any]) -> tuple[str, set[str]]:
+    """The section 12.1 admission policy of a materialization case: the
+    `transitive_system_modules` mode (`drop` when the case states none) and
+    the waived package names."""
+    policy = case.get("machine_policy", {})
+    mode = policy.get("transitive_system_modules", "drop")
+    if mode not in ("drop", "error"):
+        raise ValidationFailure(f"environment case {case.get('name', '<unnamed>')}: unknown admission mode {mode!r}")
+    waivers = policy.get("system_module_waivers", [])
+    if not isinstance(waivers, list) or any(
+        not isinstance(entry, dict) or not entry.get("package") or not entry.get("reason")
+        for entry in waivers
+    ):
+        raise ValidationFailure(f"environment case {case.get('name', '<unnamed>')}: malformed system_module_waivers")
+    return mode, {entry["package"] for entry in waivers}
+
+
+def environment_direct_packages(lock: dict[str, Any]) -> set[str]:
+    """The section 3 direct set: the root, every active overlay, and every
+    package the root or an active overlay names in requires."""
+    members = {member["name"]: member for member in lock["members"] if member["kind"] == "context"}
+    overlays = {name for name, member in members.items() if member.get("overlay")}
+    root = lock["root"]
+    direct = {root} | set(overlays)
+    for name, member in members.items():
+        for requirer in member.get("required_by", []):
+            if requirer == root or requirer in overlays:
+                direct.add(name)
+    return direct
+
+
+def environment_system_prompt_admission(case: dict[str, Any]) -> tuple[str, list[dict[str, str]], list[dict[str, str]]]:
+    """Split a system-prompt case's applicable system modules into admitted
+    and dropped `{"package", "path"}` records under its machine policy, in
+    emitted order with manifest order within a package."""
+    mode, waived = environment_machine_policy(case)
+    lock = case["lock"]
+    packages = case.get("packages", {})
+    environment = case["environment"]
+    order = environment_emitted_order(lock, case.get("precedence"))
+    direct = environment_direct_packages(lock)
+    admitted: list[dict[str, str]] = []
+    dropped: list[dict[str, str]] = []
+    for member in order:
+        for module in environment_applicable(packages[member["name"]], environment, "system"):
+            entry = {"package": member["name"], "path": module["path"]}
+            if member["name"] in direct or member["name"] in waived:
+                admitted.append(entry)
+            else:
+                dropped.append(entry)
+    return mode, admitted, dropped
+
+
 def environment_case_files(case: dict[str, Any]) -> dict[str, bytes]:
     name = case.get("name", "<unnamed>")
     lock = case["lock"]
@@ -4254,14 +4327,19 @@ def environment_case_files(case: dict[str, Any]) -> dict[str, bytes]:
                 raise ValidationFailure(f"environment case {name}: module {module.get('path')}: {error}")
     order = environment_emitted_order(lock, precedence)
     if case["surface"] == "system-prompt":
-        parts = [
+        mode, admitted, dropped = environment_system_prompt_admission(case)
+        if mode == "error" and dropped:
+            return {}
+        admitted_keys = {(entry["package"], entry["path"]) for entry in admitted}
+        admitted_contents = [
             module["content"]
             for member in order
             for module in environment_applicable(packages[member["name"]], environment, "system")
+            if (member["name"], module["path"]) in admitted_keys
         ]
-        if not parts:
+        if not admitted_contents:
             return {}
-        return {ENVIRONMENT_SYSTEM_PROMPT_PATH: "\n".join(parts).encode("utf-8")}
+        return {ENVIRONMENT_SYSTEM_PROMPT_PATH: "\n".join(admitted_contents).encode("utf-8")}
     if not packages[lock["root"]].get("has_context"):
         return {}
     form = case["form"]
@@ -4358,6 +4436,28 @@ def validate_environment_vectors(vector: Any = None, suite_root: Path | None = N
             if case.get("env_names") != union:
                 raise ValidationFailure(f"environment case {name}: env_names is not the sorted union")
         files = environment_case_files(case)
+        if case["surface"] == "system-prompt":
+            mode, admitted, dropped = environment_system_prompt_admission(case)
+            if case.get("admitted") != admitted:
+                raise ValidationFailure(f"environment case {name}: admitted record is stale")
+            if case.get("dropped") != dropped:
+                raise ValidationFailure(f"environment case {name}: dropped record is stale")
+            if mode == "error" and dropped:
+                if case.get("error") != "context_system_module_transitive":
+                    raise ValidationFailure(f"environment case {name}: refusal is not context_system_module_transitive")
+                if case.get("error_package") != dropped[0]["package"] or case.get("error_module") != dropped[0]["path"]:
+                    raise ValidationFailure(f"environment case {name}: refusal names the wrong module")
+                if case.get("warnings") != []:
+                    raise ValidationFailure(f"environment case {name}: a refusal carries no materialization warnings")
+            else:
+                if "error" in case or "error_package" in case or "error_module" in case:
+                    raise ValidationFailure(f"environment case {name}: no refusal without the error policy and a dropped module")
+                want_warnings = [
+                    {"diagnostic": "context_system_module_dropped", "package": entry["package"], "path": entry["path"]}
+                    for entry in dropped
+                ]
+                if case.get("warnings") != want_warnings:
+                    raise ValidationFailure(f"environment case {name}: drop warnings are stale")
         if case.get("file_written") is not bool(files):
             raise ValidationFailure(f"environment case {name}: file_written contradicts the section 5 rules")
         entries = case.get("files")

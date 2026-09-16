@@ -22,7 +22,8 @@
       "placement": "winner-first",
       "winner": "lower-weight"
     },
-    "require_current_profile": "companyA"
+    "require_current_profile": "companyA",
+    "transitive_system_modules": "error"
   },
   "locked": [
     "overlays_allowed"

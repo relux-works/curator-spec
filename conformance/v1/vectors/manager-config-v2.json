@@ -24,8 +24,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -62,8 +64,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -103,8 +107,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -200,6 +206,12 @@
             "path": "AGENTS.override.md"
           }
         ],
+        "system_module_waivers": [
+          {
+            "package": "sysleaf",
+            "reason": "reviewed leaf system prompt; admitted for this profile"
+          }
+        ],
         "system_prompt_files": {
           "companyA": {
             "pi": "append"
@@ -211,6 +223,7 @@
             "participation": "enabled"
           }
         },
+        "transitive_system_modules": "error",
         "xdg_seed_allowlist": [
           "git",
           "gh"
@@ -286,6 +299,12 @@
             "path": "AGENTS.override.md"
           }
         ],
+        "system_module_waivers": [
+          {
+            "package": "sysleaf",
+            "reason": "reviewed leaf system prompt; admitted for this profile"
+          }
+        ],
         "system_prompt_files": {
           "companyA": {
             "pi": "append"
@@ -297,6 +316,7 @@
             "participation": "enabled"
           }
         },
+        "transitive_system_modules": "error",
         "xdg_seed_allowlist": [
           "git",
           "gh"
@@ -380,8 +400,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -452,8 +474,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -505,8 +529,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -558,8 +584,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -611,8 +639,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -664,8 +694,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -717,8 +749,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -771,8 +805,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -826,8 +862,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -881,8 +919,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -936,8 +976,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -991,8 +1033,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -1046,8 +1090,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",
@@ -1101,8 +1147,10 @@
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
+        "transitive_system_modules": "drop",
         "xdg_seed_allowlist": [
           "git",
           "gh",

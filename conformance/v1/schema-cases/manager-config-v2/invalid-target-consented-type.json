@@ -77,6 +77,12 @@
         "path": "AGENTS.override.md"
       }
     ],
+    "system_module_waivers": [
+      {
+        "package": "sysleaf",
+        "reason": "reviewed leaf system prompt; admitted for this profile"
+      }
+    ],
     "system_prompt_files": {
       "companyA": {
         "pi": "append"
@@ -87,6 +93,7 @@
         "consented": "yes"
       }
     },
+    "transitive_system_modules": "error",
     "xdg_seed_allowlist": [
       "git",
       "gh"

@@ -507,6 +507,33 @@ package for an environment are its `class: root` modules that apply, in
 manifest order; the **applicable system modules** are its `class: system`
 modules that apply, in manifest order.
 
+**System-module admission.** A package is **direct** when it is the root
+itself, when it is an active overlay (section 6), or when it is named by
+the root's or an active overlay's `requires.contexts` entry; every other
+`context` member — reached only through another package's `requires` — is
+**transitive**. Only the system modules of direct packages, and of
+transitive packages admitted by a `system_module_waivers` entry (section
+12.1) naming the package, are **admitted**. The section 5.5 system-prompt
+output and the section 10.2 fragment `system_prompt` section MUST contain
+only admitted system modules. The machine policy `transitive_system_modules`
+(section 12.1) is exactly `drop` (default) or `error`:
+
+- Under `drop`, a non-admitted applicable system module MUST be skipped at
+  materialization, and the manager MUST emit the warning
+  `context_system_module_dropped` naming the package and the module path;
+  the materialized bytes MUST be exactly the admitted modules' bytes.
+  Resolution, installation, and update MUST NOT fail for admission.
+- Under `error`, resolution of the same module MUST fail with the resolution
+  error `context_system_module_transitive` naming the package and the module
+  path — the first such module in emitted order, manifest order within a
+  package — and the manager MUST NOT write or change the lock: `profile
+  install` MUST fail, and `profile update` MUST leave the old lock in place.
+
+The `context-system-module-present` finding class (section 9.1) is
+unaffected by admission: it MUST report every `class: system` module of every
+member at install and update, admitted or not, so system-prompt provenance
+never depends on the machine policy.
+
 ### 3.1 Diagnostics
 
 | Condition | Diagnostic |
@@ -515,6 +542,7 @@ modules that apply, in manifest order.
 | declared module file absent or not a regular file | `profile_module_missing` |
 | module not UTF-8, non-LF line ending, or trailing-LF violation | `profile_module_bytes_invalid` |
 | selector names an unregistered environment (warning) | `profile_selector_unknown_environment` |
+| transitive system module under the `error` policy | `context_system_module_transitive` |
 
 ## 4. Profile store
 
@@ -745,12 +773,12 @@ which no root-context surface exists and no file is written.
 
 ### 5.5 System-prompt output
 
-The applicable system modules — of every `context` member in emitted order
-— materialize as one file assembled by the part-joining rule with **no
-generation header and no chapter parts**: system-prompt bytes reach the
-model verbatim, so no generated text is injected. Provenance and drift
-detection for this surface come from the environment marker's recorded
-content hash, not from an in-file header.
+The admitted applicable system modules (section 3) — of every `context`
+member in emitted order — materialize as one file assembled by the
+part-joining rule with **no generation header and no chapter parts**:
+system-prompt bytes reach the model verbatim, so no generated text is
+injected. Provenance and drift detection for this surface come from the
+environment marker's recorded content hash, not from an in-file header.
 
 The system output materializes only into managed homes (section 8.1), at:
 
@@ -760,9 +788,23 @@ The system output materializes only into managed homes (section 8.1), at:
 
 This file is inert: no revision-1 tool reads that path natively. It exists
 so the launch fragment (section 10.2) can name it. When the lock carries no
-applicable system modules, the file is absent and the fragment carries no
-system-prompt section. The `.agent-context/` directory also carries the
-`mcp/` sibling of section 5.8.
+admitted applicable system modules, the file is absent and the fragment
+carries no system-prompt section. The `.agent-context/` directory also
+carries the `mcp/` sibling of section 5.8.
+
+Under the default `drop` policy (section 3), a non-admitted applicable
+system module is skipped: the file holds exactly the admitted modules'
+bytes, and materialization warns `context_system_module_dropped` naming
+the package and the module path. The fragment's `system_prompt` presence
+(section 10.2) follows the same admitted set, and it continues to drive
+the Decision 0013 `works.relux.curator.system-modules` extension key, so
+`ax` resume still refuses on drift.
+
+Rollout (E2): the default `drop` policy is non-breaking — resolution,
+installation, and update never fail for admission; only the materialized
+system-prompt bytes omit non-admitted modules — so no warn-first split
+applies; `error` is opt-in strictness selected in machine configuration
+or locked to `error` by system configuration (section 12.2).
 
 For `pi` only, machine configuration MAY additionally set, per
 profile × environment, `system_prompt_files` to exactly `off` (default),
@@ -798,6 +840,8 @@ conformance-vector surface.
 | two protocol paths to be written map to one platform path | `environment_path_collision` |
 | assembled root-context document exceeds the adapter's size advisory (warning) | `environment_context_size_exceeded` |
 | a `stdio` MCP server's `command` does not resolve on the operator's `PATH` (warning; reported at resolution and audit, section 9.1, not at materialization) | `mcp_command_unresolved` |
+| transitive system module skipped under the `drop` policy (warning; section 5.5) | `context_system_module_dropped` |
+| transitive system module under the `error` policy (section 3) | `context_system_module_transitive` |
 
 ### 5.8 MCP launch-channel output
 
@@ -2093,7 +2137,7 @@ unknown kinds, and unknown semantics or argument values:
   `system_prompt.path`, `mcp.path`, `path_prepend` — is absolute and
   carries no `..` segment.
 - `system_prompt` is present exactly when the lock carries at least one
-  applicable system module for the environment. It is data about a
+  admitted (section 3) applicable system module for the environment. It is data about a
   channel, never an applied override: `path` names the inert section 5.5
   file and `channels` reproduces the adapter's section 7.3 descriptors
   (`flag` with `flag`, `argument`, `name` when `argument` is `name`, and
@@ -2210,8 +2254,10 @@ with any `environment_seed_shadowed` entry, the standing `opencode`
 split-brain note of section 7.1, the recorded and detected tool release per
 adapter (section 7.9), both homes of the current profile per scope and
 their provisioning state (section 8.1), backup generation counts and ages
-per home (section 8.3), orphaned managed homes (section 9.2), and
-`environment_context_size_exceeded` where it applies. Both commands follow
+per home (section 8.3), orphaned managed homes (section 9.2),
+`environment_context_size_exceeded` where it applies, and the effective
+`transitive_system_modules` value with every dropped system module by
+package and path where the `drop` policy skipped any (section 3). Both commands follow
 the manager §10 discipline exactly: recompute and report, never mutate — no
 fetch, no repair, no adoption, no channel application, no onboarding.
 `--check` returns non-zero when any row is non-current.
@@ -2224,7 +2270,8 @@ every recorded passthrough entry is live. A drifted, missing, shadow-inert
 switched, stale, or unreadable state is non-current; unreadable evidence is
 reported as unreadable, never as absence (section 8.4). Warnings —
 `environment_context_size_exceeded`, `environment_tool_version_unverified`,
-`environment_seed_shadowed`, `environment_foreign_manager_suspected`, an
+`environment_seed_shadowed`, `environment_foreign_manager_suspected`,
+`context_system_module_dropped`, an
 acknowledged shadowing path — never make a row non-current.
 
 Garbage collection extends the manager §10 and core §9.4 rules: it runs
@@ -2265,6 +2312,8 @@ knob is absent.
 | `mcp_package_allowlist` | list of canonical source identities | empty (permits all) | 2.2 |
 | `shadow_acknowledged` | list of `{ env, path }` | empty | 7.5, 12 |
 | `secret_material_waivers` | list of `{ pin, file, span: [start, end], reason }` | empty | 9.1 |
+| `transitive_system_modules` | `drop`, `error` | `drop` | 3, 5.5 |
+| `system_module_waivers` | list of `{ package, reason }` | empty | 3, 5.5 |
 | `backup_retention` | non-negative integer, `0` = unlimited | `5` | 8.3 |
 | `require_current_profile` | profile name or `null` | `null` | 12.2 |
 | `in_place_mode.<env-id>` | `linked`, `copied` | adapter default | 8.1 — the `claude_code` root-context surface is always copied whatever this value says |
@@ -2274,6 +2323,11 @@ the lock (section 1.3) and the marker (section 8.2) record it: bare
 lowercase hex, 40 characters for a `commit` pin or 64 for a
 `state_sha256` pin, with no `sha256:` prefix — the grammar
 `manager-config-v2` enforces.
+
+A `system_module_waivers` entry carries `package`, a portable identifier
+(core §2) naming a `context` member of the lock, and `reason`, free text
+recording why the operator admits that package's system modules. An entry
+naming no member of the lock has no effect.
 
 Team distribution stays **per-machine** in revision 1: an organization
 ships a bootstrap shape — a system-configuration file (manager §1) carrying
@@ -2287,14 +2341,19 @@ config`) that edit these knobs are the next batch's `cli/curator.md` work.
 The manager §1 `locked` set is extended, for managers implementing this
 capability, by exactly these keys under `environments`:
 `overlays_allowed`, `precedence`, `mcp_package_allowlist`,
-`passable_env_names`, `require_current_profile`, and `isolation`. A system
+`passable_env_names`, `require_current_profile`, `transitive_system_modules`,
+and `isolation`. A system
 file that locks `require_current_profile` to a profile name makes `profile
 use` of any other profile in the machine scope a configuration error under
 the manager §1 locked-key rules, and `env status` reports the requirement;
 a locked `overlays_allowed: false` empties every overlay list with the
 manager §1 warning. The manager §1 credential rule stands: no key that
 selects or constrains credential material is lockable, and `isolation` is
-lockable only in the direction of `shared`.
+lockable only in the direction of `shared`. `transitive_system_modules`
+is lockable only in the direction of `error`: a system file MUST lock
+`transitive_system_modules` only to `error`, and `system_module_waivers`
+MUST NOT be lockable — a lock MUST NOT admit a transitive package's system
+modules.
 
 A **non-overridable skill class** — a skill the root requires that no
 overlay may re-require at another version — is not needed under joint
@@ -2327,7 +2386,15 @@ chapter parts, the no-chapter case for a member without applicable modules
 (replacing the retired empty-chapter vector), zero-module output,
 referenced-form layout, and system-prompt output — under both `winner` and
 both `placement` primitives; the section 5.6 hash binding; MCP
-materialization bytes per adapter (section 5.8); the detector classes of
+materialization bytes per adapter (section 5.8); the section 3
+system-module admission cases — a direct package materializes, a
+transitive module under `drop` is skipped with its warning and the
+materialized bytes are exactly the admitted modules' bytes, the same
+module under `error` refuses with `context_system_module_transitive`, a
+waiver admits it, and a package named by an active overlay's `requires`
+is direct — with the `transitive_system_modules` and
+`system_module_waivers` machine-config schema cases and the system-config
+error-direction case; the detector classes of
 section 9.1 (`vectors/context-detectors.json`, positive and negative, the
 waiver and unpinnable cases included); and the section 1.2 snapshot
 byte-exactness vector (`vectors/snapshot-acquisition.json`). The nine

@@ -21,7 +21,8 @@
       "placement": "winner-first",
       "winner": "lower-weight"
     },
-    "require_current_profile": "companyA"
+    "require_current_profile": "companyA",
+    "transitive_system_modules": "error"
   },
   "locked": [
     "audit",
@@ -31,6 +32,7 @@
     "environments.mcp_package_allowlist",
     "environments.passable_env_names",
     "environments.require_current_profile",
+    "environments.transitive_system_modules",
     "environments.isolation"
   ],
   "preferred_locale": "en",

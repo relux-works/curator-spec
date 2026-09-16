@@ -58,6 +58,26 @@ Versioning for the complete specification set.
   and fail-closed legacy policy/lock transport
   (`permission_policy_unsupported`); mapping, refusals, and the
   tracked-mode outcome are unchanged.
+- E2 direct-only `class: system` modules (environments §3/§5.5/§12.1/§12.2):
+  only the system modules of direct packages — the root itself, an active
+  overlay, or a package named by the root's or an active overlay's
+  `requires.contexts` entry — plus transitive packages admitted by the new
+  closed machine knob `system_module_waivers` (list of `{ package, reason }`,
+  default empty, not lockable) enter the system-prompt output and the
+  launch-fragment `system_prompt` section. The new closed knob
+  `transitive_system_modules` (`drop` default, `error` opt-in; lockable to
+  `error` only) selects the refusal shape: `drop` skips a transitive module
+  at materialization with the warning `context_system_module_dropped`
+  naming package and module, while `error` fails resolution with
+  `context_system_module_transitive` naming package and module. The default
+  `drop` policy is non-breaking — resolution, installation, and update never
+  fail for admission — so no warn-first split applies. `env status` gains
+  the posture row reporting the effective policy with every dropped module,
+  `context-system-module-present` stays the always-warn finding over every
+  member, and the Decision 0013 `works.relux.curator.system-modules` key
+  keeps refusing `ax` resume on drift. Conformance vectors cover direct,
+  transitive-drop (byte-exact), transitive-error, waiver, and overlay-edge
+  cases, with schema cases for both knobs.
 - Manager CLI environment operands accept `claude` and `codex` as aliases of
   the canonical `claude_code` and `codex_cli` ids (manager profile §12.1):
   `env resolve`, `profile use --env`, and `env unmanage --env` normalize an

@@ -257,6 +257,59 @@ func TestEnvironmentSystemPromptOutputHasNoHeader(t *testing.T) {
 	}
 }
 
+func TestEnvironmentSystemModuleAdmission(t *testing.T) {
+	admittedPaths := func(modules []admittedSystemModule) []string {
+		var out []string
+		for _, module := range modules {
+			out = append(out, module.packageName+"/"+module.path)
+		}
+		return out
+	}
+	chain := environmentFixtureClosure("sysroot", "sysmid", "sysleaf")
+	drop := defaultSystemModulePolicy()
+	if got := environmentDirectPackages(chain); got["sysleaf"] {
+		t.Fatal("sysleaf is reached only through sysmid requires and must be transitive")
+	}
+	if direct := environmentDirectPackages(environmentFixtureClosure("sysroot", "sysmid", "sysleaf", "sysovl")); !direct["sysleaf"] {
+		t.Fatal("a package named by an active overlay requires entry must be direct")
+	}
+	written, files, admitted, dropped, refused := environmentSystemPromptFilesWithPolicy(chain, "claude_code", defaultPrecedence, drop)
+	if refused {
+		t.Fatal("the drop policy must not refuse")
+	}
+	if !written {
+		t.Fatal("the root and direct modules must still materialize under drop")
+	}
+	if !reflect.DeepEqual(admittedPaths(admitted), []string{"sysmid/90-system.md", "sysroot/90-system.md"}) {
+		t.Fatalf("drop must admit exactly the direct modules, got %v", admittedPaths(admitted))
+	}
+	if !reflect.DeepEqual(admittedPaths(dropped), []string{"sysleaf/90-system.md"}) {
+		t.Fatalf("drop must skip exactly the transitive module, got %v", admittedPaths(dropped))
+	}
+	_, directFiles := environmentSystemPromptFiles(environmentFixtureClosure("sysroot", "sysmid"), "claude_code", defaultPrecedence)
+	if files[environmentSystemPromptPath] != directFiles[environmentSystemPromptPath] {
+		t.Fatal("the dropped module must leave the materialized bytes unchanged")
+	}
+	_, _, _, dropped, refused = environmentSystemPromptFilesWithPolicy(chain, "claude_code", defaultPrecedence, systemModulePolicy{mode: "error"})
+	if !refused {
+		t.Fatal("the error policy must refuse a transitive system module")
+	}
+	if !reflect.DeepEqual(admittedPaths(dropped), []string{"sysleaf/90-system.md"}) {
+		t.Fatalf("the refusal must name the transitive module, got %v", admittedPaths(dropped))
+	}
+	waived := systemModulePolicy{mode: "drop", waivers: []systemModuleWaiver{{packageName: "sysleaf", reason: "test"}}}
+	written, files, admitted, dropped, refused = environmentSystemPromptFilesWithPolicy(chain, "claude_code", defaultPrecedence, waived)
+	if refused || !written || len(dropped) != 0 {
+		t.Fatal("a waiver must admit the transitive package under drop")
+	}
+	if !reflect.DeepEqual(admittedPaths(admitted), []string{"sysleaf/90-system.md", "sysmid/90-system.md", "sysroot/90-system.md"}) {
+		t.Fatalf("waived output must carry every module in emitted order, got %v", admittedPaths(admitted))
+	}
+	if !strings.Contains(files[environmentSystemPromptPath], "Leaf system prompt.\n") {
+		t.Fatal("waived output must contain the leaf module bytes")
+	}
+}
+
 func TestEnvironmentMCPBytesPerAdapter(t *testing.T) {
 	closure := environmentFixtureClosure("companyA", "figma-devmode", "docs-remote", "codex-only")
 	written, files := environmentMCPFiles(closure, "claude_code")

@@ -1392,6 +1392,32 @@ class EnvironmentVectorTests(unittest.TestCase):
         with self.assertRaises(validate.ValidationFailure):
             validate.validate_environment_vectors(changed)
 
+    def test_transitive_drop_omission_is_byte_exact(self) -> None:
+        direct = self.case("system-module-direct")
+        dropped = self.case("system-module-transitive-drop")
+        direct_file = next(entry for entry in direct["files"] if entry["path"] == ".agent-context/system-prompt.md")
+        drop_file = next(entry for entry in dropped["files"] if entry["path"] == ".agent-context/system-prompt.md")
+        self.assertEqual(drop_file["sha256"], direct_file["sha256"])
+        self.assertEqual(drop_file["bytes"], direct_file["bytes"])
+
+    def test_dropped_record_cannot_be_emptied(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("system-module-transitive-drop", changed)["dropped"] = []
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_error_policy_without_refusal_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        del self.case("system-module-transitive-error", changed)["error"]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
+    def test_drop_policy_with_refusal_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("system-module-transitive-drop", changed)["error"] = "context_system_module_transitive"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environment_vectors(changed)
+
     def test_header_precedence_mutation_is_rejected(self) -> None:
         changed = copy.deepcopy(self.vector)
         self.header_case("composed-overlays-default", changed)["precedence"] = {
@@ -2169,6 +2195,16 @@ class ManagerConfigVectorTests(unittest.TestCase):
         with self.assertRaisesRegex(validate.ValidationFailure, "enum for in_place_mode.<env-id> is \\['linked'\\]"):
             self.run_gate()
 
+    def test_widened_transitive_enum_fails(self) -> None:
+        self.schema["$defs"]["environments"]["properties"]["transitive_system_modules"]["enum"].append("quarantine")
+        with self.assertRaisesRegex(validate.ValidationFailure, "enum for transitive_system_modules is .*'quarantine'"):
+            self.run_gate()
+
+    def test_transitive_default_drifting_from_the_table_fails(self) -> None:
+        self.schema["$defs"]["environments"]["properties"]["transitive_system_modules"]["default"] = "error"
+        with self.assertRaisesRegex(validate.ValidationFailure, "default for transitive_system_modules is 'error'"):
+            self.run_gate()
+
     def test_table_value_drifting_from_the_enum_fails(self) -> None:
         text = self.text.replace("| `precedence.winner` | `higher-weight`, `lower-weight` |", "| `precedence.winner` | `higher-weight`, `lower-weight`, `heavier` |")
         self.assertNotEqual(text, self.text)
@@ -2223,6 +2259,7 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
     gate must fail. The unmodified inputs pass."""
 
     ISOLATION_ENUM = validate.SYSTEM_CONFIG_ISOLATION_ENUM_PATH
+    TRANSITIVE_ENUM = validate.SYSTEM_CONFIG_TRANSITIVE_ENUM_PATH
 
     def setUp(self) -> None:
         _, paths = validate.schema_registry()
@@ -2247,11 +2284,11 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
     def test_published_inputs_pass(self) -> None:
         self.run_gate()
 
-    def test_section_12_2_lists_the_six_keys_in_order(self) -> None:
+    def test_section_12_2_lists_the_seven_keys_in_order(self) -> None:
         self.assertEqual(
             validate.environments_lockable_keys(self.text),
             ["overlays_allowed", "precedence", "mcp_package_allowlist", "passable_env_names",
-             "require_current_profile", "isolation"],
+             "require_current_profile", "transitive_system_modules", "isolation"],
         )
 
     def test_open_environments_object_fails(self) -> None:
@@ -2289,6 +2326,21 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
             node["enum"] = ["shared", "isolated"]
         with self.assertRaisesRegex(validate.ValidationFailure, "permits shared alone"):
             self.run_gate(schema=self.mutated(widen))
+
+    def test_transitive_system_modules_admitting_drop_fails(self) -> None:
+        def widen(s):
+            node = s
+            for segment in self.TRANSITIVE_ENUM[:-1]:
+                node = node[segment]
+            node["enum"] = ["drop", "error"]
+        with self.assertRaisesRegex(validate.ValidationFailure, "permits error alone"):
+            self.run_gate(schema=self.mutated(widen))
+
+    def test_transitive_system_modules_without_a_closed_value_set_fails(self) -> None:
+        def open_values(s):
+            s["$defs"]["environments"]["properties"]["transitive_system_modules"] = {"type": "string"}
+        with self.assertRaisesRegex(validate.ValidationFailure, "no closed transitive_system_modules value set"):
+            self.run_gate(schema=self.mutated(open_values))
 
     def test_isolation_without_a_closed_value_set_fails(self) -> None:
         def open_values(s):
@@ -2334,7 +2386,8 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
             self.run_gate(text=text)
 
     def test_section_12_2_drift_against_schema_fails(self) -> None:
-        text = self.text.replace("`require_current_profile`, and `isolation`", "and `require_current_profile`", 1)
+        text = self.text.replace("`transitive_system_modules`,\nand `isolation`", "`transitive_system_modules`", 1)
+        self.assertNotEqual(text, self.text)
         with self.assertRaisesRegex(validate.ValidationFailure, "schema-only \\['isolation'\\]"):
             self.run_gate(text=text)
 

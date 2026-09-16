@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://relux-works.github.io/curator-spec/schemas/v1/system-config-v2.schema.json",
   "title": "Curator enforced system configuration schema 2",
-  "description": "Schema 1 plus one closed `environments` object carrying exactly the environments protocol section 12.2 lockable knobs with their section 12.1 value grammars, and a `locked` set that may name each of them as `environments.<key>`. Every schema-1 member keeps its schema-1 shape by reference; `isolation` admits only `shared`, the one direction section 12.2 makes lockable.",
+  "description": "Schema 1 plus one closed `environments` object carrying exactly the environments protocol section 12.2 lockable knobs with their section 12.1 value grammars, and a `locked` set that may name each of them as `environments.<key>`. Every schema-1 member keeps its schema-1 shape by reference; `isolation` admits only `shared` and `transitive_system_modules` admits only `error`, the one direction section 12.2 makes lockable in each case.",
   "type": "object",
   "required": ["schema_version"],
   "properties": {
@@ -20,6 +20,7 @@
           "environments.mcp_package_allowlist",
           "environments.passable_env_names",
           "environments.require_current_profile",
+          "environments.transitive_system_modules",
           "environments.isolation"
         ]
       },
@@ -47,6 +48,9 @@
         "mcp_package_allowlist": {"$ref": "manager-config-v2.schema.json#/$defs/environments/properties/mcp_package_allowlist"},
         "passable_env_names": {"$ref": "manager-config-v2.schema.json#/$defs/environments/properties/passable_env_names"},
         "require_current_profile": {"$ref": "manager-config-v2.schema.json#/$defs/environments/properties/require_current_profile"},
+        "transitive_system_modules": {
+          "enum": ["error"]
+        },
         "isolation": {
           "type": "object",
           "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},

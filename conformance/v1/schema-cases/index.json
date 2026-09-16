@@ -4150,6 +4150,31 @@
     "valid": false
   },
   {
+    "instance": "manager-config-v2/valid-system-module-waiver.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/invalid-transitive-system-modules-value.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-system-module-waiver-package-grammar.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-system-module-waiver-missing-reason.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-system-module-waiver-unknown-field.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
     "instance": "manager-config-v2/invalid-backup-retention-negative.json",
     "schema": "manager-config-v2.schema.json",
     "valid": false
@@ -4526,6 +4551,16 @@
   },
   {
     "instance": "system-config-v2/invalid-require-current-profile-grammar.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-transitive-system-modules-drop-direction.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-transitive-system-modules-value.json",
     "schema": "system-config-v2.schema.json",
     "valid": false
   },

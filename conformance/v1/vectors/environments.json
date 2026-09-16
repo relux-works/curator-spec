@@ -846,6 +846,17 @@
       "surface": "root-context"
     },
     {
+      "admitted": [
+        {
+          "package": "companyA",
+          "path": "90-system.md"
+        },
+        {
+          "package": "personal",
+          "path": "90-system.md"
+        }
+      ],
+      "dropped": [],
       "emitted_order": [
         "companyA",
         "personal"
@@ -886,6 +897,10 @@
         "schema_version": 1
       },
       "lock_sha256": "sha256:0305581b4f24d74ce271f9809d24f77b794b5ef9ad004bcc5c398fa2ea2e54ab",
+      "machine_policy": {
+        "system_module_waivers": [],
+        "transitive_system_modules": "drop"
+      },
       "name": "system-prompt-composed",
       "packages": {
         "companyA": {
@@ -933,9 +948,12 @@
         "winner": "higher-weight"
       },
       "surface": "system-prompt",
-      "surface_sha256": "sha256:89b93eb04b83fe8737f804aab3326e7d4cf2b51ba95d95c4e2d288562f0e2407"
+      "surface_sha256": "sha256:89b93eb04b83fe8737f804aab3326e7d4cf2b51ba95d95c4e2d288562f0e2407",
+      "warnings": []
     },
     {
+      "admitted": [],
+      "dropped": [],
       "emitted_order": [
         "selective"
       ],
@@ -959,6 +977,10 @@
         "schema_version": 1
       },
       "lock_sha256": "sha256:55375161b381d5a50903a004d938e1c989d7e4889c88eb523f6210bf1304abe9",
+      "machine_policy": {
+        "system_module_waivers": [],
+        "transitive_system_modules": "drop"
+      },
       "name": "system-prompt-none-applicable",
       "packages": {
         "selective": {
@@ -979,7 +1001,635 @@
         "placement": "winner-last",
         "winner": "higher-weight"
       },
-      "surface": "system-prompt"
+      "surface": "system-prompt",
+      "warnings": []
+    },
+    {
+      "admitted": [
+        {
+          "package": "sysmid",
+          "path": "90-system.md"
+        },
+        {
+          "package": "sysroot",
+          "path": "90-system.md"
+        }
+      ],
+      "dropped": [],
+      "emitted_order": [
+        "sysmid",
+        "sysroot"
+      ],
+      "environment": "claude_code",
+      "file_written": true,
+      "files": [
+        {
+          "bytes": 40,
+          "expected": "expected/environments/system-module-direct/.agent-context/system-prompt.md",
+          "path": ".agent-context/system-prompt.md",
+          "sha256": "sha256:537ebd5eed3dcaa2dec64e79ccbbdc325cdb35e49652250494ea873ba46d4a3a"
+        }
+      ],
+      "lock": {
+        "members": [
+          {
+            "commit": "9999999999999999999999999999999999999999",
+            "kind": "context",
+            "name": "sysmid",
+            "overlay": false,
+            "required_by": [
+              "sysroot"
+            ],
+            "source": "github.com/example/sysmid",
+            "version": "1.0.0",
+            "weight": 0
+          },
+          {
+            "commit": "8888888888888888888888888888888888888888",
+            "kind": "context",
+            "name": "sysroot",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/sysroot",
+            "version": "1.0.0",
+            "weight": 0
+          }
+        ],
+        "root": "sysroot",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:af4de85c692abfb471d37cc313854a4045a7f0f429df857d8dac66426f3e3d9b",
+      "machine_policy": {
+        "system_module_waivers": [],
+        "transitive_system_modules": "drop"
+      },
+      "name": "system-module-direct",
+      "packages": {
+        "sysmid": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Mid\n\nMid context.\n",
+              "path": "00-mid.md"
+            },
+            {
+              "class": "system",
+              "content": "Mid system prompt.\n",
+              "path": "90-system.md"
+            }
+          ]
+        },
+        "sysroot": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Sysroot\n\nRoot context.\n",
+              "path": "00-root.md"
+            },
+            {
+              "class": "system",
+              "content": "Root system prompt.\n",
+              "path": "90-system.md"
+            }
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "system-prompt",
+      "surface_sha256": "sha256:a48ba73f90d5c05517029ea285d80bd4e01a3554b890df8e82dab0e9bc3df547",
+      "warnings": []
+    },
+    {
+      "admitted": [
+        {
+          "package": "sysmid",
+          "path": "90-system.md"
+        },
+        {
+          "package": "sysroot",
+          "path": "90-system.md"
+        }
+      ],
+      "dropped": [
+        {
+          "package": "sysleaf",
+          "path": "90-system.md"
+        }
+      ],
+      "emitted_order": [
+        "sysleaf",
+        "sysmid",
+        "sysroot"
+      ],
+      "environment": "claude_code",
+      "file_written": true,
+      "files": [
+        {
+          "bytes": 40,
+          "expected": "expected/environments/system-module-transitive-drop/.agent-context/system-prompt.md",
+          "path": ".agent-context/system-prompt.md",
+          "sha256": "sha256:537ebd5eed3dcaa2dec64e79ccbbdc325cdb35e49652250494ea873ba46d4a3a"
+        }
+      ],
+      "lock": {
+        "members": [
+          {
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "context",
+            "name": "sysleaf",
+            "overlay": false,
+            "required_by": [
+              "sysmid"
+            ],
+            "source": "github.com/example/sysleaf",
+            "version": "1.0.0",
+            "weight": 0
+          },
+          {
+            "commit": "9999999999999999999999999999999999999999",
+            "kind": "context",
+            "name": "sysmid",
+            "overlay": false,
+            "required_by": [
+              "sysroot"
+            ],
+            "source": "github.com/example/sysmid",
+            "version": "1.0.0",
+            "weight": 0
+          },
+          {
+            "commit": "8888888888888888888888888888888888888888",
+            "kind": "context",
+            "name": "sysroot",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/sysroot",
+            "version": "1.0.0",
+            "weight": 0
+          }
+        ],
+        "root": "sysroot",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:0e037aa6091690c15e04a0179e0836d112b0fe0ecdc53866db5c151f4ffa011a",
+      "machine_policy": {
+        "system_module_waivers": [],
+        "transitive_system_modules": "drop"
+      },
+      "name": "system-module-transitive-drop",
+      "packages": {
+        "sysleaf": {
+          "has_context": true,
+          "modules": [
+            {
+              "class": "system",
+              "content": "Leaf system prompt.\n",
+              "path": "90-system.md"
+            }
+          ]
+        },
+        "sysmid": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Mid\n\nMid context.\n",
+              "path": "00-mid.md"
+            },
+            {
+              "class": "system",
+              "content": "Mid system prompt.\n",
+              "path": "90-system.md"
+            }
+          ]
+        },
+        "sysroot": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Sysroot\n\nRoot context.\n",
+              "path": "00-root.md"
+            },
+            {
+              "class": "system",
+              "content": "Root system prompt.\n",
+              "path": "90-system.md"
+            }
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "system-prompt",
+      "surface_sha256": "sha256:a48ba73f90d5c05517029ea285d80bd4e01a3554b890df8e82dab0e9bc3df547",
+      "warnings": [
+        {
+          "diagnostic": "context_system_module_dropped",
+          "package": "sysleaf",
+          "path": "90-system.md"
+        }
+      ]
+    },
+    {
+      "admitted": [
+        {
+          "package": "sysmid",
+          "path": "90-system.md"
+        },
+        {
+          "package": "sysroot",
+          "path": "90-system.md"
+        }
+      ],
+      "dropped": [
+        {
+          "package": "sysleaf",
+          "path": "90-system.md"
+        }
+      ],
+      "emitted_order": [
+        "sysleaf",
+        "sysmid",
+        "sysroot"
+      ],
+      "environment": "claude_code",
+      "error": "context_system_module_transitive",
+      "error_module": "90-system.md",
+      "error_package": "sysleaf",
+      "file_written": false,
+      "files": [],
+      "lock": {
+        "members": [
+          {
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "context",
+            "name": "sysleaf",
+            "overlay": false,
+            "required_by": [
+              "sysmid"
+            ],
+            "source": "github.com/example/sysleaf",
+            "version": "1.0.0",
+            "weight": 0
+          },
+          {
+            "commit": "9999999999999999999999999999999999999999",
+            "kind": "context",
+            "name": "sysmid",
+            "overlay": false,
+            "required_by": [
+              "sysroot"
+            ],
+            "source": "github.com/example/sysmid",
+            "version": "1.0.0",
+            "weight": 0
+          },
+          {
+            "commit": "8888888888888888888888888888888888888888",
+            "kind": "context",
+            "name": "sysroot",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/sysroot",
+            "version": "1.0.0",
+            "weight": 0
+          }
+        ],
+        "root": "sysroot",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:0e037aa6091690c15e04a0179e0836d112b0fe0ecdc53866db5c151f4ffa011a",
+      "machine_policy": {
+        "system_module_waivers": [],
+        "transitive_system_modules": "error"
+      },
+      "name": "system-module-transitive-error",
+      "packages": {
+        "sysleaf": {
+          "has_context": true,
+          "modules": [
+            {
+              "class": "system",
+              "content": "Leaf system prompt.\n",
+              "path": "90-system.md"
+            }
+          ]
+        },
+        "sysmid": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Mid\n\nMid context.\n",
+              "path": "00-mid.md"
+            },
+            {
+              "class": "system",
+              "content": "Mid system prompt.\n",
+              "path": "90-system.md"
+            }
+          ]
+        },
+        "sysroot": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Sysroot\n\nRoot context.\n",
+              "path": "00-root.md"
+            },
+            {
+              "class": "system",
+              "content": "Root system prompt.\n",
+              "path": "90-system.md"
+            }
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "system-prompt",
+      "warnings": []
+    },
+    {
+      "admitted": [
+        {
+          "package": "sysleaf",
+          "path": "90-system.md"
+        },
+        {
+          "package": "sysmid",
+          "path": "90-system.md"
+        },
+        {
+          "package": "sysroot",
+          "path": "90-system.md"
+        }
+      ],
+      "dropped": [],
+      "emitted_order": [
+        "sysleaf",
+        "sysmid",
+        "sysroot"
+      ],
+      "environment": "claude_code",
+      "file_written": true,
+      "files": [
+        {
+          "bytes": 61,
+          "expected": "expected/environments/system-module-transitive-waived/.agent-context/system-prompt.md",
+          "path": ".agent-context/system-prompt.md",
+          "sha256": "sha256:056590e92faa33f9c9b4b24513b5e1e79bc57c66a37ac282ee6fdf06bf797449"
+        }
+      ],
+      "lock": {
+        "members": [
+          {
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "context",
+            "name": "sysleaf",
+            "overlay": false,
+            "required_by": [
+              "sysmid"
+            ],
+            "source": "github.com/example/sysleaf",
+            "version": "1.0.0",
+            "weight": 0
+          },
+          {
+            "commit": "9999999999999999999999999999999999999999",
+            "kind": "context",
+            "name": "sysmid",
+            "overlay": false,
+            "required_by": [
+              "sysroot"
+            ],
+            "source": "github.com/example/sysmid",
+            "version": "1.0.0",
+            "weight": 0
+          },
+          {
+            "commit": "8888888888888888888888888888888888888888",
+            "kind": "context",
+            "name": "sysroot",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/sysroot",
+            "version": "1.0.0",
+            "weight": 0
+          }
+        ],
+        "root": "sysroot",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:0e037aa6091690c15e04a0179e0836d112b0fe0ecdc53866db5c151f4ffa011a",
+      "machine_policy": {
+        "system_module_waivers": [
+          {
+            "package": "sysleaf",
+            "reason": "reviewed leaf system prompt; admitted for this profile"
+          }
+        ],
+        "transitive_system_modules": "drop"
+      },
+      "name": "system-module-transitive-waived",
+      "packages": {
+        "sysleaf": {
+          "has_context": true,
+          "modules": [
+            {
+              "class": "system",
+              "content": "Leaf system prompt.\n",
+              "path": "90-system.md"
+            }
+          ]
+        },
+        "sysmid": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Mid\n\nMid context.\n",
+              "path": "00-mid.md"
+            },
+            {
+              "class": "system",
+              "content": "Mid system prompt.\n",
+              "path": "90-system.md"
+            }
+          ]
+        },
+        "sysroot": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Sysroot\n\nRoot context.\n",
+              "path": "00-root.md"
+            },
+            {
+              "class": "system",
+              "content": "Root system prompt.\n",
+              "path": "90-system.md"
+            }
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "system-prompt",
+      "surface_sha256": "sha256:1c4b33439ebd588ff375e1f97532de2a3ff3ff748eaa021ff2267cbfed96f795",
+      "warnings": []
+    },
+    {
+      "admitted": [
+        {
+          "package": "sysleaf",
+          "path": "90-system.md"
+        },
+        {
+          "package": "sysmid",
+          "path": "90-system.md"
+        },
+        {
+          "package": "sysroot",
+          "path": "90-system.md"
+        }
+      ],
+      "dropped": [],
+      "emitted_order": [
+        "sysleaf",
+        "sysmid",
+        "sysroot",
+        "sysovl"
+      ],
+      "environment": "claude_code",
+      "file_written": true,
+      "files": [
+        {
+          "bytes": 61,
+          "expected": "expected/environments/system-module-overlay-direct/.agent-context/system-prompt.md",
+          "path": ".agent-context/system-prompt.md",
+          "sha256": "sha256:056590e92faa33f9c9b4b24513b5e1e79bc57c66a37ac282ee6fdf06bf797449"
+        }
+      ],
+      "lock": {
+        "members": [
+          {
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "kind": "context",
+            "name": "sysleaf",
+            "overlay": false,
+            "required_by": [
+              "sysmid",
+              "sysovl"
+            ],
+            "source": "github.com/example/sysleaf",
+            "version": "1.0.0",
+            "weight": 0
+          },
+          {
+            "commit": "9999999999999999999999999999999999999999",
+            "kind": "context",
+            "name": "sysmid",
+            "overlay": false,
+            "required_by": [
+              "sysroot"
+            ],
+            "source": "github.com/example/sysmid",
+            "version": "1.0.0",
+            "weight": 0
+          },
+          {
+            "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "kind": "context",
+            "name": "sysovl",
+            "overlay": true,
+            "required_by": [],
+            "source": "github.com/example/sysovl",
+            "version": "1.0.0",
+            "weight": 1000
+          },
+          {
+            "commit": "8888888888888888888888888888888888888888",
+            "kind": "context",
+            "name": "sysroot",
+            "overlay": false,
+            "required_by": [],
+            "source": "github.com/example/sysroot",
+            "version": "1.0.0",
+            "weight": 0
+          }
+        ],
+        "root": "sysroot",
+        "schema_version": 1
+      },
+      "lock_sha256": "sha256:8ac1e5570204426f10a643f4a058777aef542a0c9ec1ae2e2e912294c6b03aa0",
+      "machine_policy": {
+        "system_module_waivers": [],
+        "transitive_system_modules": "drop"
+      },
+      "name": "system-module-overlay-direct",
+      "packages": {
+        "sysleaf": {
+          "has_context": true,
+          "modules": [
+            {
+              "class": "system",
+              "content": "Leaf system prompt.\n",
+              "path": "90-system.md"
+            }
+          ]
+        },
+        "sysmid": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Mid\n\nMid context.\n",
+              "path": "00-mid.md"
+            },
+            {
+              "class": "system",
+              "content": "Mid system prompt.\n",
+              "path": "90-system.md"
+            }
+          ]
+        },
+        "sysovl": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Overlay\n\nOverlay context.\n",
+              "path": "00-overlay.md"
+            }
+          ]
+        },
+        "sysroot": {
+          "has_context": true,
+          "modules": [
+            {
+              "content": "# Sysroot\n\nRoot context.\n",
+              "path": "00-root.md"
+            },
+            {
+              "class": "system",
+              "content": "Root system prompt.\n",
+              "path": "90-system.md"
+            }
+          ]
+        }
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "surface": "system-prompt",
+      "surface_sha256": "sha256:1c4b33439ebd588ff375e1f97532de2a3ff3ff748eaa021ff2267cbfed96f795",
+      "warnings": []
     },
     {
       "emitted_order": [

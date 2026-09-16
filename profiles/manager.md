@@ -53,13 +53,16 @@ user configuration:
    schema 2 additionally the environments protocol section 12.2 keys, named
    as `environments.overlays_allowed`, `environments.precedence`,
    `environments.mcp_package_allowlist`, `environments.passable_env_names`,
-   `environments.require_current_profile`, and `environments.isolation`.
+   `environments.require_current_profile`, `environments.isolation`, and
+   `environments.transitive_system_modules`.
    No other `environments` knob is lockable or carried by the system file.
    Operator credential selections — the `build_ssh` scopes among them — are
    never lockable: section 12.2 makes credential material operator-owned, and
    a system file MUST NOT select or constrain it; `environments.isolation`
    is lockable only in the direction of `shared`, and schema 2 admits no
-   other value there;
+   other value there; `environments.transitive_system_modules` is lockable
+   only in the direction of `error`, and schema 2 admits no other value
+   there;
 2. a locked key MUST be set by the system file and overrides a user value with
    a warning naming the system file. For an `environments.<key>` lock the
    user value is the machine file's `manager-config` schema-2
@@ -2667,8 +2670,11 @@ recorded seeds per managed home, the XDG seed state per managed `opencode`
 parent, the standing `opencode` split-brain note, the recorded and detected
 tool release per adapter, both homes of the current profile per scope with
 their provisioning state, backup generation counts and ages per home,
-orphaned managed homes, a locked `require_current_profile`, and
-`environment_context_size_exceeded` where it applies. `--check` returns
+orphaned managed homes, a locked `require_current_profile`,
+`environment_context_size_exceeded` where it applies, and the effective
+`transitive_system_modules` value with every dropped system module by
+package and path where the `drop` policy skipped any (environments §12).
+`--check` returns
 non-zero when any row is non-current.
 
 An installation row is current only when its marker is valid and
@@ -2679,7 +2685,8 @@ shadow-inert (unless acknowledged), detached, partially switched, stale, or
 unreadable state is non-current, and unreadable evidence is reported as
 unreadable, never as absence (environments §8.4). The warnings
 `environment_context_size_exceeded`, `environment_tool_version_unverified`,
-`environment_seed_shadowed`, `environment_foreign_manager_suspected`, and
+`environment_seed_shadowed`, `environment_foreign_manager_suspected`,
+`context_system_module_dropped`, and
 an acknowledged shadowing path never make a row non-current.
 
 Garbage collection extends section 10: it runs under the manager-home
