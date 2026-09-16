@@ -410,3 +410,20 @@ The E-series supplement text is attached to `EPIC-260910-2hw1xb` as
 | `STORY-260910-3rvvxh` records-boundary-in-response | R1 | (paired with `TASK-260910-1b1ens`) |
 | `STORY-260910-35tbgb` serve-time-checkpoint-gate | R3+P2 | `TASK-260910-33j1hu` spec-restore-enforcement-point |
 | other stories | service-side | see the registry audit document |
+
+## Appendix B. Implementation verification of E1–E7 (2026-09-16)
+
+Static, read-only review of `relux-works/curator` `main` @ `80483355` and
+`relux-works/curator-agent-launcher` `main` @ `b34e1e27` (no tests run, no
+dynamic reproduction). The full evidence table is the outcome resource
+`verify-e-findings.md` on `TASK-260916-dv7xv5`.
+
+| Finding | Verdict | Where in the code |
+|---|---|---|
+| E1 | **confirmed** | no signer verification anywhere; `profile update` prints only `updated profile <name> (lock <hash>)` (`cmd/curator/profile.go:81`); `latest` is `*` (`internal/pkgversion/pkgversion.go:286`) |
+| E2 | **confirmed** as specified | every closure package's system modules are applied (`internal/contextmaterialize/contextmaterialize.go:259`); only the always-warn `context-system-module-present` exists (`internal/contextaudit/contextaudit.go:22`) |
+| E3 | **confirmed** | codex seeds `config.toml` whole (`internal/envregistry/envregistry.go:219`; `gatherSeeds`, `internal/envprofile/managed.go:565`), nothing strips `mcp_servers` |
+| E4 | **confirmed** | `exec.LookPath("curator-"+name)` on the ambient `PATH`; only manager-published directories are refused (`cmd/curator/umbrella.go:30-63`) |
+| E5 | **mitigated in code**, rule absent from the text | remove-then-create on every managed-surface write (`internal/envprofile/switch.go:520-545`, `replaceLink` `:694`); not atomic, not `O_NOFOLLOW` |
+| E6 | **partially confirmed** | dependencies are git-only (`internal/contextpkg/contextpkg.go:289-302`), so a `path`-kind MCP package cannot enter a closure — not applicable; a `path`-kind root or overlay still carries `class: system` modules with no directory boundary — confirmed |
+| E7 | **confirmed** | both launcher loaders follow a symlinked configuration file instead of refusing it (`internal/axconfig/config.go:58-75`, `internal/defaults/defaults.go:100-118`); no ownership or permission check; provider path absent from the stderr line-group |
