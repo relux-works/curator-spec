@@ -1,7 +1,8 @@
 # Unreleased source extension schemas
 
 These Draft 2020-12 schemas belong to `skillfile-sources-v1` and the separately
-scoped `repository-transport-v1` amendment. The directory is a draft namespace,
+scoped `repository-transport-v1` and `repository-transport-v2` amendments.
+The directory is a draft namespace,
 not a new protocol release. It keeps the rc.9 schema corpus and generated
 release identities byte-frozen. The `v1` in this directory versions the
 extension namespace; each wire object's filename and `schema_version` identify
@@ -14,6 +15,7 @@ its own revision. Existing core definitions are reused by relative references.
 | `source-types-v1` | Shared selector and disjoint package identity definitions |
 | `local-snapshot-v1` | Deterministic admitted-file inventory |
 | `source-policy-v1` | Operator endpoint/auth policy and explicit root inputs |
+| `source-policy-v2` | Revision 2 policy: explicit ports, `mirror_of` mirrors, operator host aliases |
 | `install-marker-v5` | Installed package/lock identity and runtime/build references |
 | `build-receipt-v3` | Package-bound wrapper around existing closed build inputs |
 | `source-audit-v1` | Machine audit report binding, not a registry attestation |

@@ -508,5 +508,70 @@
     "schema": "install-marker-v5.schema.json",
     "instance": "schema-cases/install-marker-v5/valid-deprecated-network.json",
     "valid": true
+  },
+  {
+    "schema": "source-policy-v2.schema.json",
+    "instance": "schema-cases/source-policy-v2/valid-port.json",
+    "valid": true
+  },
+  {
+    "schema": "source-policy-v2.schema.json",
+    "instance": "schema-cases/source-policy-v2/valid-mirror.json",
+    "valid": true
+  },
+  {
+    "schema": "source-policy-v2.schema.json",
+    "instance": "schema-cases/source-policy-v2/valid-alias.json",
+    "valid": true
+  },
+  {
+    "schema": "source-policy-v2.schema.json",
+    "instance": "schema-cases/source-policy-v2/valid-v1-shape.json",
+    "valid": true
+  },
+  {
+    "schema": "source-policy-v2.schema.json",
+    "instance": "schema-cases/source-policy-v2/invalid-unknown-top-level.json",
+    "valid": false
+  },
+  {
+    "schema": "source-policy-v2.schema.json",
+    "instance": "schema-cases/source-policy-v2/invalid-port-range.json",
+    "valid": false
+  },
+  {
+    "schema": "source-policy-v2.schema.json",
+    "instance": "schema-cases/source-policy-v2/invalid-port-leading-zero.json",
+    "valid": false
+  },
+  {
+    "schema": "source-policy-v2.schema.json",
+    "instance": "schema-cases/source-policy-v2/invalid-mirror-of-pattern.json",
+    "valid": false
+  },
+  {
+    "schema": "source-policy-v2.schema.json",
+    "instance": "schema-cases/source-policy-v2/invalid-alias-name.json",
+    "valid": false
+  },
+  {
+    "schema": "source-policy-v2.schema.json",
+    "instance": "schema-cases/source-policy-v2/invalid-alias-missing-auth.json",
+    "valid": false
+  },
+  {
+    "schema": "source-policy-v2.schema.json",
+    "instance": "schema-cases/source-policy-v2/invalid-alias-port-string.json",
+    "valid": false
+  },
+  {
+    "schema": "source-policy-v2.schema.json",
+    "instance": "schema-cases/source-policy-v2/invalid-endpoint-extra.json",
+    "valid": false
+  },
+  {
+    "schema": "source-policy-v2.schema.json",
+    "instance": "schema-cases/source-policy-v2/invalid-port-range-ssh.json",
+    "valid": false
   }
 ]

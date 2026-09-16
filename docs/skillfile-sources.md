@@ -115,6 +115,37 @@ and locked commit stay identical. Configure the named authentication providers
 through the manager's existing operator mechanism. Never put secrets in these
 objects. TLS, host-key, integrity, ref and audit failures forbid fallback.
 
+Revision 2 (`schema_version: 2`, only on a manager that explicitly supports
+it) adds non-default ports, declared mirrors and host aliases as
+machine-policy endpoint properties. The canonical identity, declaration and
+lock stay identical:
+
+```json
+{
+  "schema_version": 2,
+  "repositories": {
+    "example.org/kit": {
+      "endpoints": [
+        {"url": "ssh://git@example.org:2222/kit.git", "authentication": "team-ssh"},
+        {"url": "https://example.org/kit.git", "authentication": "team-https",
+         "alias": "corp-mirror", "mirror_of": "example.org/kit"}
+      ],
+      "fallback": "availability-auth"
+    }
+  },
+  "aliases": {
+    "corp-mirror": {"host": "mirror.corp.example", "port": 8443,
+                    "authentication": "team-https"}
+  }
+}
+```
+
+Ports are stripped before identity comparison. A mirror host needs
+`mirror_of` naming the entry key. An alias is named via the `alias` field
+(never embedded in the URL) and its authentication must equal the endpoint's.
+Package declarations never name aliases; user ssh/git configuration is never
+imported.
+
 For a package at the project root, explicitly admit its disjoint inputs through
 `root_inputs`, for example `{"project":["SKILL.md","agent-skill.json",
 "references","scripts","build"]}` in source-policy.json. Listed files and

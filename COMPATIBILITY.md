@@ -236,5 +236,7 @@ and claims remain byte-frozen.
 The separate [transport amendment](protocol/repository-transport.md) keeps
 repository identity and pinned commit stable across authorized SSH/HTTPS
 choices. Existing external build transport fields may still change receipt
-identity; their security semantics are preserved. Advanced mappings remain
+identity; their security semantics are preserved. Revision 2 admits non-default
+ports, declared mirrors and operator host aliases as machine-policy endpoint
+properties; reusable alias registries and user-configuration import remain
 unsupported. This draft is not a published protocol release.

@@ -6,7 +6,9 @@ and [transport amendment](../../protocol/repository-transport.md) define its
 required outcomes. `index.json` lists structural positives and negatives;
 `snapshot-cases.json` contains concrete byte inventories and expected hashes;
 `semantic-cases.json` records required downstream resolver/filesystem/security
-outcomes. These hand-authored draft files are not generator-owned rc.9 outputs.
+outcomes (`v2-*` cases cover transport revision 2: port, mirror and alias
+positives plus undeclared-mirror, unknown-alias and policy-misuse refusals).
+These hand-authored draft files are not generator-owned rc.9 outputs.
 
 ## Specification checks
 

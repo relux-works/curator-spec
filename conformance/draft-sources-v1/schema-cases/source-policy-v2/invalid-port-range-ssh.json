@@ -1,0 +1,18 @@
+{
+  "schema_version": 2,
+  "repositories": {
+    "example.org/kit": {
+      "endpoints": [
+        {
+          "url": "ssh://git@example.org:65536/kit.git",
+          "authentication": "team-ssh"
+        },
+        {
+          "url": "ssh://git@example.org:65539/kit.git",
+          "authentication": "team-ssh"
+        }
+      ],
+      "fallback": "none"
+    }
+  }
+}

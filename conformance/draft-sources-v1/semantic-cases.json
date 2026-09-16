@@ -812,5 +812,275 @@
       "package": "local-snapshot"
     },
     "expected": "status-noncurrent-nonzero;repair-revalidate-exact-source-rebuild-not-adopt"
+  },
+  {
+    "id": "v2-port-endpoint",
+    "input": {
+      "transport_revision": 2,
+      "repository": "example.org/kit",
+      "endpoint": "https://example.org:8443/kit.git",
+      "lock_identity": "example.org/kit"
+    },
+    "expected": "attempt-listed-endpoint-once;port-stripped-for-identity;lock-records-canonical-identity-only"
+  },
+  {
+    "id": "v2-declared-mirror",
+    "input": {
+      "transport_revision": 2,
+      "repository": "example.org/kit",
+      "endpoint": "https://mirror.example.net/kit.git",
+      "mirror_of": "example.org/kit"
+    },
+    "expected": "attempt-listed-mirror-once;verify-locked-commit-tag-objects-identically-to-revision-1"
+  },
+  {
+    "id": "v2-mirror-first",
+    "input": {
+      "transport_revision": 2,
+      "repository": "example.org/kit",
+      "endpoints": [
+        "https://mirror.example.net/kit.git",
+        "https://example.org/kit.git"
+      ],
+      "mirror_of": "example.org/kit",
+      "fallback": "availability-auth",
+      "first_failure": "dns"
+    },
+    "expected": "mirror-first-allowed;ordinary-revision-1-fallback-applies;attempt-second"
+  },
+  {
+    "id": "v2-alias-resolution",
+    "input": {
+      "transport_revision": 2,
+      "repository": "example.org/kit",
+      "endpoint": "https://example.org/kit.git",
+      "alias": "corp-mirror",
+      "aliases": {
+        "corp-mirror": {
+          "host": "mirror.corp.example",
+          "port": 8443,
+          "authentication": "team-https"
+        }
+      },
+      "mirror_of": "example.org/kit"
+    },
+    "expected": "substitute-alias-once;connect-to-mirror.corp.example:8443;identity-stays-example.org/kit"
+  },
+  {
+    "id": "v2-reader-accepts-v1-policy",
+    "input": {
+      "transport_revision": 2,
+      "policy_schema_version": 1,
+      "policy": "valid-source-policy-v1-shape"
+    },
+    "expected": "accept-with-revision-1-semantics"
+  },
+  {
+    "id": "v2-undeclared-mirror",
+    "input": {
+      "transport_revision": 2,
+      "repository": "example.org/kit",
+      "endpoint": "https://evil.example.net/kit.git",
+      "mirror_of": null
+    },
+    "expected": "repository_mirror_undeclared;zero-attempts;no-fallback"
+  },
+  {
+    "id": "v2-pin-port-mismatch",
+    "input": {
+      "transport_revision": 2,
+      "repository": "example.org/kit",
+      "endpoints": [
+        "https://example.org/kit.git"
+      ],
+      "pin": "https://example.org:8443/kit.git"
+    },
+    "expected": "repository_policy_invalid;pin-must-equal-listed-url-exactly-including-port;zero-attempts"
+  },
+  {
+    "id": "v2-alias-unknown",
+    "input": {
+      "transport_revision": 2,
+      "repository": "example.org/kit",
+      "endpoint": "https://example.org/kit.git",
+      "alias": "absent-alias",
+      "aliases": {}
+    },
+    "expected": "repository_alias_unknown;zero-attempts;no-fallback"
+  },
+  {
+    "id": "v2-alias-mirror-undeclared",
+    "input": {
+      "transport_revision": 2,
+      "repository": "example.org/kit",
+      "endpoint": "https://example.org/kit.git",
+      "alias": "corp-mirror",
+      "aliases": {
+        "corp-mirror": {
+          "host": "mirror.corp.example",
+          "authentication": "team-https"
+        }
+      },
+      "mirror_of": null
+    },
+    "expected": "repository_mirror_undeclared;alias-target-host-differs-without-attestation;zero-attempts"
+  },
+  {
+    "id": "v2-user-ssh-alias-ignored",
+    "input": {
+      "transport_revision": 2,
+      "repository": "example.org/kit",
+      "declaration": "logical",
+      "policy_entry": null,
+      "user_ssh_config": "Host example.org; HostName real.example.net"
+    },
+    "expected": "user-config-never-consulted;repository_endpoint_unavailable"
+  },
+  {
+    "id": "v2-user-insteadof-ignored",
+    "input": {
+      "transport_revision": 2,
+      "declaration": "https://example.org/kit.git",
+      "policy_entry": null,
+      "user_git_config": "url.insteadOf rewrites example.org to evil.example.net"
+    },
+    "expected": "attempt-declared-url-once-literally;insteadOf-never-applied"
+  },
+  {
+    "id": "v2-embedded-alias-host",
+    "input": {
+      "transport_revision": 2,
+      "repository": "example.org/kit",
+      "endpoint": "ssh://git@corp-mirror/kit.git",
+      "aliases": {
+        "corp-mirror": {
+          "host": "mirror.corp.example",
+          "authentication": "team-ssh"
+        }
+      }
+    },
+    "expected": "repository_policy_invalid;alias-named-only-via-alias-field-never-as-url-host;zero-attempts"
+  },
+  {
+    "id": "v2-alias-auth-mismatch",
+    "input": {
+      "transport_revision": 2,
+      "repository": "example.org/kit",
+      "endpoint": "https://example.org/kit.git",
+      "endpoint_authentication": "team-https",
+      "alias": "corp-mirror",
+      "aliases": {
+        "corp-mirror": {
+          "host": "example.org",
+          "authentication": "other-provider"
+        }
+      }
+    },
+    "expected": "repository_policy_invalid;alias-authentication-must-equal-endpoint-authentication;zero-attempts"
+  },
+  {
+    "id": "v2-alias-chain",
+    "input": {
+      "transport_revision": 2,
+      "repository": "example.org/kit",
+      "endpoint": "https://example.org/kit.git",
+      "alias": "first",
+      "aliases": {
+        "first": {
+          "host": "second",
+          "authentication": "team-https"
+        },
+        "second": {
+          "host": "example.org",
+          "authentication": "team-https"
+        }
+      }
+    },
+    "expected": "repository_policy_invalid;alias-target-must-be-concrete-never-another-alias;zero-attempts"
+  },
+  {
+    "id": "v2-double-port",
+    "input": {
+      "transport_revision": 2,
+      "repository": "example.org/kit",
+      "endpoint": "https://example.org:8443/kit.git",
+      "alias": "corp-mirror",
+      "aliases": {
+        "corp-mirror": {
+          "host": "example.org",
+          "port": 9443,
+          "authentication": "team-https"
+        }
+      }
+    },
+    "expected": "repository_policy_invalid;url-port-and-alias-port-must-not-both-be-present;zero-attempts"
+  },
+  {
+    "id": "v2-spurious-mirror-of",
+    "input": {
+      "transport_revision": 2,
+      "repository": "example.org/kit",
+      "endpoint": "https://example.org/kit.git",
+      "mirror_of": "example.org/kit"
+    },
+    "expected": "repository_policy_invalid;mirror_of-forbidden-when-host-equals-key-host;zero-attempts"
+  },
+  {
+    "id": "v2-mirror-of-mismatch",
+    "input": {
+      "transport_revision": 2,
+      "repository": "example.org/kit",
+      "endpoint": "https://mirror.example.net/kit.git",
+      "mirror_of": "other.example/kit"
+    },
+    "expected": "repository_policy_invalid;mirror_of-must-equal-entry-key-exactly;zero-attempts"
+  },
+  {
+    "id": "v2-v1-reader-rejects-v2-policy",
+    "input": {
+      "transport_revision": 1,
+      "policy_schema_version": 2,
+      "policy": "valid-source-policy-v2-shape"
+    },
+    "expected": "repository_policy_invalid;no-silent-field-ignoring;zero-attempts"
+  },
+  {
+    "id": "v2-external-build-mirror-admitted",
+    "input": {
+      "transport_revision": 2,
+      "lane": "external-build (manager section 11)",
+      "repository": "example.org/kit",
+      "endpoint": "https://mirror.example.net/kit.git",
+      "mirror_of": "example.org/kit"
+    },
+    "expected": "attempt-listed-mirror-once;section-11.2-url-grammar-satisfied;verify-locked-commit-tag-objects-identically-to-revision-1"
+  },
+  {
+    "id": "v2-external-build-port-refused",
+    "input": {
+      "transport_revision": 2,
+      "lane": "external-build (manager section 11)",
+      "repository": "example.org/kit",
+      "endpoint": "ssh://git@example.org:2222/kit.git"
+    },
+    "expected": "build_repository_identity_invalid;explicit-port-outside-section-11.2-grammar;zero-attempts;no-port-stripping-to-force-admission"
+  },
+  {
+    "id": "v2-external-build-alias-refused",
+    "input": {
+      "transport_revision": 2,
+      "lane": "external-build (manager section 11)",
+      "repository": "example.org/kit",
+      "endpoint": "https://example.org/kit.git",
+      "alias": "corp-mirror",
+      "aliases": {
+        "corp-mirror": {
+          "host": "mirror.corp.example",
+          "authentication": "team-https"
+        }
+      },
+      "mirror_of": "example.org/kit"
+    },
+    "expected": "build_repository_identity_invalid;alias-rewriting-has-no-resolved-host-input-in-strict-lane;zero-attempts"
   }
 ]

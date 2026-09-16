@@ -14,6 +14,14 @@ Versioning for the complete specification set.
   bounded operator-owned endpoint/authentication policy. Draft schemas and
   conformance vectors are isolated from rc.9 release artifacts; no manager
   implementation or release qualification is claimed.
+- Repository transport revision 2 (unreleased, opt-in): non-default endpoint
+  ports, operator-declared mirrors with exact-key `mirror_of` attestation and
+  operator-declared host aliases via source-policy schema 2, an additive
+  superset of unchanged schema 1. Canonical `host/path` stays the only portable
+  identity; new fail-closed classes `repository_mirror_undeclared` and
+  `repository_alias_unknown`; draft schemas and conformance vectors are
+  isolated from rc.9 release artifacts; no manager implementation or release
+  qualification is claimed.
 
 ### Changed
 

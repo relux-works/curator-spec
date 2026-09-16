@@ -1,0 +1,24 @@
+{
+  "schema_version": 2,
+  "repositories": {
+    "example.org/kit": {
+      "endpoints": [
+        {
+          "url": "git@example.org:kit.git",
+          "authentication": "team-ssh"
+        },
+        {
+          "url": "https://example.org/kit.git",
+          "authentication": "team-https"
+        }
+      ],
+      "fallback": "availability-auth"
+    }
+  },
+  "root_inputs": {
+    "local": [
+      "SKILL.md",
+      "scripts"
+    ]
+  }
+}

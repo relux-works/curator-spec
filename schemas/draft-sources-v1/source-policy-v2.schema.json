@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/draft-sources-v1/source-policy-v2.schema.json",
+  "type": "object",
+  "$defs": {
+    "canonicalIdentity": {
+      "type": "string",
+      "maxLength": 4096,
+      "pattern": "^[a-z0-9][a-z0-9.-]*/(?!.*(?:^|/)\\.{1,2}(?:/|$))[^\\s\\\\:%?#/]+(?:/[^\\s\\\\:%?#/]+)*$"
+    },
+    "aliasName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 253,
+      "pattern": "^[a-z0-9][a-z0-9.-]*$"
+    },
+    "aliasHost": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 253,
+      "pattern": "^[a-z0-9][a-z0-9.-]*$"
+    },
+    "port": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "endpointUrlV2": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "^(?:https://[A-Za-z0-9][A-Za-z0-9.-]*(?::(?:[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?/(?!(?:\\.{1,2})(?:/|$))[^\\s%?#\\\\/:\\u0000-\\u001f\\u007f-\\u009f]+(?:/(?!(?:\\.{1,2})(?:/|$))[^\\s%?#\\\\/:\\u0000-\\u001f\\u007f-\\u009f]+)*|ssh://(?:[A-Za-z0-9][A-Za-z0-9._-]{0,63}@)?[A-Za-z0-9][A-Za-z0-9.-]*(?::(?:[1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5]))?/(?!(?:\\.{1,2})(?:/|$))[A-Za-z0-9._-]+(?:/(?!(?:\\.{1,2})(?:/|$))[A-Za-z0-9._-]+)*|(?:[A-Za-z0-9][A-Za-z0-9._-]{0,63}@)?[A-Za-z0-9][A-Za-z0-9.-]*:(?!(?:\\.{1,2})(?:/|$))[A-Za-z0-9._-]+(?:/(?!(?:\\.{1,2})(?:/|$))[A-Za-z0-9._-]+)*)$"
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "repositories": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/canonicalIdentity"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "endpoints": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "$ref": "#/$defs/endpointUrlV2"
+                },
+                "authentication": {
+                  "$ref": "../v1/common.schema.json#/$defs/identifier"
+                },
+                "mirror_of": {
+                  "$ref": "#/$defs/canonicalIdentity"
+                },
+                "alias": {
+                  "$ref": "#/$defs/aliasName"
+                }
+              },
+              "required": [
+                "url",
+                "authentication"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 2,
+            "uniqueItems": true
+          },
+          "pin": {
+            "$ref": "#/$defs/endpointUrlV2"
+          },
+          "fallback": {
+            "enum": [
+              "none",
+              "availability-auth"
+            ]
+          }
+        },
+        "required": [
+          "endpoints",
+          "fallback"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "aliases": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/aliasName"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "$ref": "#/$defs/aliasHost"
+          },
+          "port": {
+            "$ref": "#/$defs/port"
+          },
+          "authentication": {
+            "$ref": "../v1/common.schema.json#/$defs/identifier"
+          }
+        },
+        "required": [
+          "host",
+          "authentication"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "root_inputs": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "../v1/common.schema.json#/$defs/identifier"
+      },
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "$ref": "../v1/common.schema.json#/$defs/portablePath"
+        }
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "repositories"
+  ],
+  "additionalProperties": false
+}

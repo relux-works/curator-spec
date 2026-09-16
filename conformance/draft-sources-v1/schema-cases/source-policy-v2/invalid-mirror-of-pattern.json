@@ -1,0 +1,15 @@
+{
+  "schema_version": 2,
+  "repositories": {
+    "example.org/kit": {
+      "endpoints": [
+        {
+          "url": "https://mirror.example.net/kit.git",
+          "authentication": "mirror-https",
+          "mirror_of": "Example.org/kit"
+        }
+      ],
+      "fallback": "none"
+    }
+  }
+}

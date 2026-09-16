@@ -1,0 +1,15 @@
+{
+  "schema_version": 2,
+  "repositories": {
+    "example.org/kit": {
+      "endpoints": [
+        {
+          "url": "https://example.org/kit.git",
+          "authentication": "team-https",
+          "helper": "evil"
+        }
+      ],
+      "fallback": "none"
+    }
+  }
+}

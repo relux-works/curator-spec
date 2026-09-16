@@ -1,11 +1,21 @@
 # Unresolved questions
 
-## Advanced repository mappings (outside transport revision 1)
+## Advanced repository mappings decided by transport revision 2
 
-Custom ports, mirrors, SSH host aliases, reusable logical alias registries and
-safe translation of user `insteadOf`/SSH configuration require a separate
-identity and authorization design. Revision 1 rejects these forms; matching
-content alone does not authorize identity equivalence.
+Non-default endpoint ports, operator-declared mirrors and operator-declared
+host aliases are now decided normatively by [repository transport revision
+2](protocol/repository-transport.md) (source-policy schema 2, additive over
+schema 1). Ports are machine-policy endpoint properties stripped before
+canonicalization; mirrors require an exact-key `mirror_of` attestation;
+aliases resolve only from operator source-policy, never from user ssh/git
+configuration.
+
+## Still open: reusable alias registries and user-configuration import
+
+Reusable cross-machine logical alias registries and safe translation of user
+`insteadOf`/SSH configuration remain undecided and are rejected. Matching
+content alone does not authorize identity equivalence, and user configuration
+is usable only through explicit operator admission, unchanged from revision 1.
 
 No source extension implementation or release qualification is claimed. A
 future release must assign publication metadata and qualify implementations

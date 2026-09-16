@@ -62,7 +62,8 @@ an implementation is never the normative oracle.
 [Skillfile sources revision 1](protocol/skillfile-sources.md) specifies local
 and Git acquisition, individual/collection selection and frozen package identity.
 The [transport amendment](protocol/repository-transport.md) separately defines
-machine endpoint policy. See the [author/operator guide](docs/skillfile-sources.md),
+machine endpoint policy (revision 1 endpoints; revision 2 adds ports, declared
+mirrors and host aliases). See the [author/operator guide](docs/skillfile-sources.md),
 [draft schemas](schemas/draft-sources-v1/README.md) and
 [draft conformance checks](conformance/draft-sources-v1/README.md). These working
 contracts do not change rc.9 release metadata or claim implementation support.

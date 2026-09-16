@@ -1,0 +1,21 @@
+{
+  "schema_version": 2,
+  "repositories": {
+    "example.org/kit": {
+      "endpoints": [
+        {
+          "url": "https://example.org/kit.git",
+          "authentication": "team-https",
+          "alias": "corp-mirror"
+        }
+      ],
+      "fallback": "none"
+    }
+  },
+  "aliases": {
+    "Corp-Mirror": {
+      "host": "mirror.corp.example",
+      "authentication": "team-https"
+    }
+  }
+}

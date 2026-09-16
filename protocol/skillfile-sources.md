@@ -4,7 +4,7 @@ This is the normative, opt-in `skillfile-sources-v1` extension. It is an
 unreleased working specification, not part of the rc.9 release or a claim that
 any manager implements it. It extends core sections 3, 5–6 and 8–10 and manager sections
 2–3 and 7 only for Skillfile schema 2. The separately scoped transport amendment is
-[repository transport revision 1](repository-transport.md).
+[repository transport revisions 1 and 2](repository-transport.md).
 Schemas live in [the draft source namespace](../schemas/draft-sources-v1/README.md).
 A reader MUST explicitly support the extension before accepting schema 2.
 All other core, registry, audit, assurance and manager requirements remain in
