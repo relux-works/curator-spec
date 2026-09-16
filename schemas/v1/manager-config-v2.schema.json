@@ -527,6 +527,20 @@
             ]
           },
           "default": {}
+        },
+        "provider_directories": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "anyOf": [
+              {"pattern": "^/"},
+              {"pattern": "^[A-Za-z]:[\\\\/]"}
+            ]
+          },
+          "uniqueItems": true,
+          "default": []
         }
       },
       "additionalProperties": false

@@ -20,6 +20,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -60,6 +61,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -103,6 +105,7 @@
           "placement": "winner-last",
           "winner": "lower-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -184,6 +187,10 @@
           "placement": "winner-first",
           "winner": "lower-weight"
         },
+        "provider_directories": [
+          "/usr/local/lib/curator/providers",
+          "/opt/curator/bin"
+        ],
         "require_current_profile": "companyA",
         "scoped_current": {
           "pi": "personal",
@@ -277,6 +284,10 @@
           "placement": "winner-first",
           "winner": "lower-weight"
         },
+        "provider_directories": [
+          "/usr/local/lib/curator/providers",
+          "/opt/curator/bin"
+        ],
         "require_current_profile": "companyA",
         "scoped_current": {
           "pi": "personal",
@@ -396,6 +407,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -470,6 +482,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -525,6 +538,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -580,6 +594,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -635,6 +650,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -690,6 +706,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -745,6 +762,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -801,6 +819,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -858,6 +877,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -915,6 +935,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -972,6 +993,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -1029,6 +1051,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -1086,6 +1109,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -1143,6 +1167,7 @@
           "placement": "winner-last",
           "winner": "higher-weight"
         },
+        "provider_directories": [],
         "require_current_profile": null,
         "scoped_current": {},
         "secret_material_waivers": [],
@@ -1532,6 +1557,68 @@
       "skills_root": "./skills"
     },
     "name": "schema2-isolation-value-grammar",
+    "valid": false
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {},
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "provider_directories": [
+          "/usr/local/lib/curator/providers"
+        ],
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_module_waivers": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "transitive_system_modules": "drop",
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "provider_directories": [
+          "/usr/local/lib/curator/providers"
+        ]
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-provider-directories",
+    "valid": true
+  },
+  {
+    "input": {
+      "environments": {
+        "provider_directories": [
+          "rel/providers"
+        ]
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-provider-directories-relative",
     "valid": false
   }
 ]

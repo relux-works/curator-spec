@@ -5,7 +5,7 @@ package main
 var systemConfigV2LockableKeys = []string{
 	"overlays_allowed", "precedence", "mcp_package_allowlist",
 	"passable_env_names", "require_current_profile", "transitive_system_modules",
-	"isolation",
+	"isolation", "provider_directories",
 }
 
 // systemConfigV2EveryKey sets every §12.2 lockable knob to a non-default value
@@ -21,6 +21,7 @@ func systemConfigV2EveryKey() map[string]any {
 		"require_current_profile":   "companyA",
 		"transitive_system_modules": "error",
 		"isolation":                 map[string]any{"companyA": map[string]any{"claude_code": "shared", "codex_cli": "shared"}},
+		"provider_directories":      []any{"/usr/local/lib/curator/providers"},
 	}
 }
 
@@ -88,5 +89,7 @@ func systemConfigV2SchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-isolation-isolated-direction", instance: withKnob("isolation", map[string]any{"companyA": map[string]any{"claude_code": "isolated"}})},
 		{name: "invalid-isolation-value", instance: withKnob("isolation", map[string]any{"companyA": map[string]any{"codex_cli": "private"}})},
 		{name: "invalid-isolation-profile-grammar", instance: withKnob("isolation", map[string]any{"Company A": map[string]any{"codex_cli": "shared"}})},
+		{name: "invalid-provider-directories-relative", instance: withKnob("provider_directories", []any{"rel/providers"})},
+		{name: "invalid-provider-directories-duplicate", instance: withKnob("provider_directories", []any{"/opt/curator/bin", "/opt/curator/bin"})},
 	}
 }

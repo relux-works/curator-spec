@@ -1,0 +1,598 @@
+{
+  "capability": "agent-environments",
+  "capability_revision": 1,
+  "cases": [
+    {
+      "executable_name": "curator-run",
+      "install_dir": "/opt/curator/bin",
+      "managed_dirs": [
+        "/home/operator/.curator/environments"
+      ],
+      "name": "install-dir-provider-missing-then-resolved",
+      "path_entries": [
+        "/usr/local/bin",
+        "/usr/bin",
+        "/bin"
+      ],
+      "present": [
+        {
+          "executable": true,
+          "path": "/opt/curator/bin/curator-run"
+        }
+      ],
+      "provider_directories": [],
+      "published_dirs": [
+        "/home/operator/.curator/bin"
+      ],
+      "revision_a": {
+        "diagnostic": "subcommand_provider_missing",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin"
+        ]
+      },
+      "revision_b": {
+        "diagnostic": null,
+        "resolved": "/opt/curator/bin/curator-run"
+      },
+      "subcommand": "run",
+      "unreadable_dirs": []
+    },
+    {
+      "executable_name": "curator-run",
+      "install_dir": "/opt/curator/bin",
+      "managed_dirs": [
+        "/home/operator/.curator/environments"
+      ],
+      "name": "install-dir-beats-listed-directory",
+      "path_entries": [
+        "/usr/local/bin",
+        "/usr/bin",
+        "/bin"
+      ],
+      "present": [
+        {
+          "executable": true,
+          "path": "/opt/curator/bin/curator-run"
+        },
+        {
+          "executable": true,
+          "path": "/opt/curator/providers/curator-run"
+        }
+      ],
+      "provider_directories": [
+        "/opt/curator/providers"
+      ],
+      "published_dirs": [
+        "/home/operator/.curator/bin"
+      ],
+      "revision_a": {
+        "diagnostic": "subcommand_provider_missing",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin",
+          "/opt/curator/providers"
+        ]
+      },
+      "revision_b": {
+        "diagnostic": null,
+        "resolved": "/opt/curator/bin/curator-run"
+      },
+      "subcommand": "run",
+      "unreadable_dirs": []
+    },
+    {
+      "executable_name": "curator-run",
+      "install_dir": "/opt/curator/bin",
+      "managed_dirs": [
+        "/home/operator/.curator/environments"
+      ],
+      "name": "listed-directory-provider-resolved",
+      "path_entries": [
+        "/usr/local/bin",
+        "/usr/bin",
+        "/bin"
+      ],
+      "present": [
+        {
+          "executable": true,
+          "path": "/opt/curator/providers/curator-run"
+        },
+        {
+          "executable": true,
+          "path": "/usr/local/bin/curator-run"
+        }
+      ],
+      "provider_directories": [
+        "/opt/curator/providers"
+      ],
+      "published_dirs": [
+        "/home/operator/.curator/bin"
+      ],
+      "revision_a": {
+        "diagnostic": "subcommand_provider_outside_trust_roots",
+        "migration_hint_directory": "/usr/local/bin",
+        "resolved": "/usr/local/bin/curator-run",
+        "trust_roots_consulted": [
+          "/opt/curator/bin",
+          "/opt/curator/providers"
+        ]
+      },
+      "revision_b": {
+        "diagnostic": null,
+        "resolved": "/opt/curator/providers/curator-run"
+      },
+      "subcommand": "run",
+      "unreadable_dirs": []
+    },
+    {
+      "executable_name": "curator-run",
+      "install_dir": "/opt/curator/bin",
+      "managed_dirs": [
+        "/home/operator/.curator/environments"
+      ],
+      "name": "listed-order-first-match-wins",
+      "path_entries": [
+        "/usr/local/bin",
+        "/usr/bin",
+        "/bin"
+      ],
+      "present": [
+        {
+          "executable": true,
+          "path": "/opt/curator/providers/curator-run"
+        },
+        {
+          "executable": true,
+          "path": "/srv/team/curator-providers/curator-run"
+        }
+      ],
+      "provider_directories": [
+        "/opt/curator/providers",
+        "/srv/team/curator-providers"
+      ],
+      "published_dirs": [
+        "/home/operator/.curator/bin"
+      ],
+      "revision_a": {
+        "diagnostic": "subcommand_provider_missing",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin",
+          "/opt/curator/providers",
+          "/srv/team/curator-providers"
+        ]
+      },
+      "revision_b": {
+        "diagnostic": null,
+        "resolved": "/opt/curator/providers/curator-run"
+      },
+      "subcommand": "run",
+      "unreadable_dirs": []
+    },
+    {
+      "executable_name": "curator-run",
+      "install_dir": "/opt/curator/bin",
+      "managed_dirs": [
+        "/home/operator/.curator/environments"
+      ],
+      "name": "s6-planted-path-provider-warns-then-refuses",
+      "path_entries": [
+        "/home/operator/work/acme/.bin",
+        "/usr/local/bin",
+        "/usr/bin",
+        "/bin"
+      ],
+      "present": [
+        {
+          "executable": true,
+          "path": "/home/operator/work/acme/.bin/curator-run"
+        }
+      ],
+      "provider_directories": [],
+      "published_dirs": [
+        "/home/operator/.curator/bin"
+      ],
+      "revision_a": {
+        "diagnostic": "subcommand_provider_outside_trust_roots",
+        "migration_hint_directory": "/home/operator/work/acme/.bin",
+        "resolved": "/home/operator/work/acme/.bin/curator-run",
+        "trust_roots_consulted": [
+          "/opt/curator/bin"
+        ]
+      },
+      "revision_b": {
+        "diagnostic": "subcommand_provider_untrusted",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin"
+        ],
+        "untrusted_path": "/home/operator/work/acme/.bin/curator-run"
+      },
+      "subcommand": "run",
+      "threat": "finding S6: a project .agents/env.sh sourced on directory change prepends /home/operator/work/acme/.bin to PATH, planting curator-run; finding E4 is that dispatch executing it",
+      "unreadable_dirs": []
+    },
+    {
+      "executable_name": "curator-run",
+      "install_dir": "/opt/curator/bin",
+      "managed_dirs": [
+        "/home/operator/.curator/environments"
+      ],
+      "name": "non-executable-in-trust-root-skipped",
+      "path_entries": [
+        "/usr/local/bin",
+        "/usr/bin",
+        "/bin"
+      ],
+      "present": [
+        {
+          "executable": false,
+          "path": "/opt/curator/providers/curator-run"
+        },
+        {
+          "executable": true,
+          "path": "/usr/local/bin/curator-run"
+        }
+      ],
+      "provider_directories": [
+        "/opt/curator/providers"
+      ],
+      "published_dirs": [
+        "/home/operator/.curator/bin"
+      ],
+      "revision_a": {
+        "diagnostic": "subcommand_provider_outside_trust_roots",
+        "migration_hint_directory": "/usr/local/bin",
+        "resolved": "/usr/local/bin/curator-run",
+        "trust_roots_consulted": [
+          "/opt/curator/bin",
+          "/opt/curator/providers"
+        ]
+      },
+      "revision_b": {
+        "diagnostic": "subcommand_provider_untrusted",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin",
+          "/opt/curator/providers"
+        ],
+        "untrusted_path": "/usr/local/bin/curator-run"
+      },
+      "subcommand": "run",
+      "unreadable_dirs": []
+    },
+    {
+      "executable_name": "curator-run",
+      "install_dir": "/opt/curator/bin",
+      "managed_dirs": [
+        "/home/operator/.curator/environments"
+      ],
+      "name": "manager-published-directory-refused",
+      "path_entries": [
+        "/home/operator/.curator/bin",
+        "/usr/bin",
+        "/bin"
+      ],
+      "present": [
+        {
+          "executable": true,
+          "path": "/home/operator/.curator/bin/curator-run"
+        }
+      ],
+      "provider_directories": [],
+      "published_dirs": [
+        "/home/operator/.curator/bin"
+      ],
+      "revision_a": {
+        "diagnostic": "subcommand_provider_untrusted",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin"
+        ],
+        "untrusted_path": "/home/operator/.curator/bin/curator-run"
+      },
+      "revision_b": {
+        "diagnostic": "subcommand_provider_untrusted",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin"
+        ],
+        "untrusted_path": "/home/operator/.curator/bin/curator-run"
+      },
+      "subcommand": "run",
+      "unreadable_dirs": []
+    },
+    {
+      "executable_name": "curator-run",
+      "install_dir": "/opt/curator/bin",
+      "managed_dirs": [
+        "/home/operator/.curator/environments"
+      ],
+      "name": "listed-but-published-directory-still-refused",
+      "path_entries": [
+        "/home/operator/.curator/bin",
+        "/usr/bin",
+        "/bin"
+      ],
+      "present": [
+        {
+          "executable": true,
+          "path": "/home/operator/.curator/bin/curator-run"
+        }
+      ],
+      "provider_directories": [
+        "/home/operator/.curator/bin"
+      ],
+      "published_dirs": [
+        "/home/operator/.curator/bin"
+      ],
+      "revision_a": {
+        "diagnostic": "subcommand_provider_untrusted",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin",
+          "/home/operator/.curator/bin"
+        ],
+        "untrusted_path": "/home/operator/.curator/bin/curator-run"
+      },
+      "revision_b": {
+        "diagnostic": "subcommand_provider_untrusted",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin",
+          "/home/operator/.curator/bin"
+        ],
+        "untrusted_path": "/home/operator/.curator/bin/curator-run"
+      },
+      "subcommand": "run",
+      "unreadable_dirs": []
+    },
+    {
+      "executable_name": "curator-run",
+      "install_dir": "/opt/curator/bin",
+      "managed_dirs": [
+        "/home/operator/.curator/environments"
+      ],
+      "name": "managed-directory-refused",
+      "path_entries": [
+        "/home/operator/.curator/environments",
+        "/usr/bin",
+        "/bin"
+      ],
+      "present": [
+        {
+          "executable": true,
+          "path": "/home/operator/.curator/environments/curator-run"
+        }
+      ],
+      "provider_directories": [],
+      "published_dirs": [
+        "/home/operator/.curator/bin"
+      ],
+      "revision_a": {
+        "diagnostic": "subcommand_provider_untrusted",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin"
+        ],
+        "untrusted_path": "/home/operator/.curator/environments/curator-run"
+      },
+      "revision_b": {
+        "diagnostic": "subcommand_provider_untrusted",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin"
+        ],
+        "untrusted_path": "/home/operator/.curator/environments/curator-run"
+      },
+      "subcommand": "run",
+      "unreadable_dirs": []
+    },
+    {
+      "executable_name": "curator-run",
+      "install_dir": "/opt/curator/bin",
+      "managed_dirs": [
+        "/home/operator/.curator/environments"
+      ],
+      "name": "unreadable-listed-directory-fails",
+      "path_entries": [
+        "/usr/local/bin",
+        "/usr/bin",
+        "/bin"
+      ],
+      "present": [
+        {
+          "executable": true,
+          "path": "/usr/local/bin/curator-run"
+        }
+      ],
+      "provider_directories": [
+        "/opt/gone"
+      ],
+      "published_dirs": [
+        "/home/operator/.curator/bin"
+      ],
+      "revision_a": {
+        "diagnostic": "subcommand_provider_root_unreadable",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin",
+          "/opt/gone"
+        ],
+        "unreadable_directory": "/opt/gone"
+      },
+      "revision_b": {
+        "diagnostic": "subcommand_provider_root_unreadable",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin",
+          "/opt/gone"
+        ],
+        "unreadable_directory": "/opt/gone"
+      },
+      "subcommand": "run",
+      "unreadable_dirs": [
+        "/opt/gone"
+      ]
+    },
+    {
+      "executable_name": "curator-run",
+      "install_dir": "/opt/curator/bin",
+      "managed_dirs": [
+        "/home/operator/.curator/environments"
+      ],
+      "name": "unreadable-install-directory-fails",
+      "path_entries": [
+        "/usr/local/bin",
+        "/usr/bin",
+        "/bin"
+      ],
+      "present": [
+        {
+          "executable": true,
+          "path": "/usr/local/bin/curator-run"
+        }
+      ],
+      "provider_directories": [],
+      "published_dirs": [
+        "/home/operator/.curator/bin"
+      ],
+      "revision_a": {
+        "diagnostic": "subcommand_provider_root_unreadable",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin"
+        ],
+        "unreadable_directory": "/opt/curator/bin"
+      },
+      "revision_b": {
+        "diagnostic": "subcommand_provider_root_unreadable",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin"
+        ],
+        "unreadable_directory": "/opt/curator/bin"
+      },
+      "subcommand": "run",
+      "unreadable_dirs": [
+        "/opt/curator/bin"
+      ]
+    },
+    {
+      "executable_name": "curator-run",
+      "install_dir": "/opt/curator/bin",
+      "managed_dirs": [
+        "/home/operator/.curator/environments"
+      ],
+      "name": "path-selects-different-provider-while-trusted-exists",
+      "path_entries": [
+        "/usr/local/bin",
+        "/usr/bin",
+        "/bin"
+      ],
+      "present": [
+        {
+          "executable": true,
+          "path": "/opt/curator/bin/curator-run"
+        },
+        {
+          "executable": true,
+          "path": "/usr/local/bin/curator-run"
+        }
+      ],
+      "provider_directories": [],
+      "published_dirs": [
+        "/home/operator/.curator/bin"
+      ],
+      "revision_a": {
+        "diagnostic": "subcommand_provider_outside_trust_roots",
+        "migration_hint_directory": "/usr/local/bin",
+        "resolved": "/usr/local/bin/curator-run",
+        "trust_roots_consulted": [
+          "/opt/curator/bin"
+        ]
+      },
+      "revision_b": {
+        "diagnostic": null,
+        "resolved": "/opt/curator/bin/curator-run"
+      },
+      "subcommand": "run",
+      "unreadable_dirs": []
+    },
+    {
+      "executable_name": "curator-run",
+      "install_dir": "/opt/curator/bin",
+      "managed_dirs": [
+        "/home/operator/.curator/environments"
+      ],
+      "name": "trusted-provider-on-path-resolves-silently",
+      "path_entries": [
+        "/opt/curator/providers",
+        "/usr/bin",
+        "/bin"
+      ],
+      "present": [
+        {
+          "executable": true,
+          "path": "/opt/curator/providers/curator-run"
+        }
+      ],
+      "provider_directories": [
+        "/opt/curator/providers"
+      ],
+      "published_dirs": [
+        "/home/operator/.curator/bin"
+      ],
+      "revision_a": {
+        "diagnostic": null,
+        "resolved": "/opt/curator/providers/curator-run"
+      },
+      "revision_b": {
+        "diagnostic": null,
+        "resolved": "/opt/curator/providers/curator-run"
+      },
+      "subcommand": "run",
+      "unreadable_dirs": []
+    },
+    {
+      "executable_name": "curator-run",
+      "install_dir": "/opt/curator/bin",
+      "managed_dirs": [
+        "/home/operator/.curator/environments"
+      ],
+      "name": "provider-missing",
+      "path_entries": [
+        "/usr/local/bin",
+        "/usr/bin",
+        "/bin"
+      ],
+      "present": [],
+      "provider_directories": [],
+      "published_dirs": [
+        "/home/operator/.curator/bin"
+      ],
+      "revision_a": {
+        "diagnostic": "subcommand_provider_missing",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin"
+        ]
+      },
+      "revision_b": {
+        "diagnostic": "subcommand_provider_missing",
+        "resolved": null,
+        "trust_roots_consulted": [
+          "/opt/curator/bin"
+        ]
+      },
+      "subcommand": "run",
+      "unreadable_dirs": []
+    }
+  ],
+  "protocol_version": "1.0.0-rc.9",
+  "revision_a_profile": "warning release: PATH selects, outside trust roots warns with subcommand_provider_outside_trust_roots",
+  "revision_b_profile": "flip release: trust roots only, PATH probe diagnostic, refused with subcommand_provider_untrusted",
+  "rule": "umbrella provider trust roots (section 11)",
+  "schema_version": 1
+}

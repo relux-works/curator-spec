@@ -2192,9 +2192,10 @@ the composed document is disjoint by construction.
 ## 11. Umbrella subcommand discovery
 
 A CLI subcommand the manager does not implement resolves to an executable
-named `curator-<name>` on `PATH` and is executed with the remaining
-arguments verbatim — the established git/kubectl/docker external-subcommand
-convention. The rules are closed:
+named `curator-<name>` searched as the rollout profiles below state and is
+executed with the remaining arguments verbatim — the established
+git/kubectl/docker external-subcommand convention, closed to the search
+each profile names. The rules are closed:
 
 - `<name>` is the operator's typed subcommand and MUST match the core §2
   identifier grammar; anything else is a usage error, not a lookup.
@@ -2206,27 +2207,119 @@ convention. The rules are closed:
   guidance; nothing is downloaded or installed implicitly.
 - Profile data, marker data, and fragment data MUST NOT influence the
   dispatched name, the resolved path, or the argument vector. Dispatch input
-  is operator argv and `PATH` alone.
+  is operator argv, the trust roots, and machine configuration alone.
+- The provider trust roots, in search order, are exactly:
+  1. the **install directory** — the directory holding the running manager
+     executable, resolved after symlinks; then
+  2. the machine-configuration `provider_directories` list (section 12.1),
+     in listed order.
+  The first executable regular file named `curator-<name>` directly inside
+  a root wins; a non-executable file of that name is skipped, and search
+  never descends into subdirectories. Every
+  `provider_directories` entry MUST be an absolute path — POSIX-absolute
+  or Windows drive-absolute, the two spellings the schema admits — and
+  SHOULD name a directory only the operator administers: listing a
+  directory a project can write re-opens the attack this section closes.
+- A trust root the manager cannot read — the install directory or a
+  `provider_directories` entry — is a read failure, never absence: lookup
+  MUST fail with `subcommand_provider_root_unreadable`, naming the first
+  unreadable root in search order, and MUST NOT fall through to a later
+  root, to `PATH`, or to `subcommand_provider_missing`. An unreadable root
+  is reported as unreadable, never as absence (section 8.4).
+- The ambient `PATH` is not a trust root. Under revision A the ambient
+  `PATH` still selects the provider (the pre-change behavior) and a
+  selection outside the trust roots warns; under revision B the ambient
+  `PATH` never selects — a `curator-<name>` found only by searching `PATH`
+  is refused — and a `PATH` search under revision B is a diagnostic-only
+  probe that names the refused path, never a dispatch. A `PATH`-only
+  provider is never resolved silently under either profile.
 - The resolved executable MUST NOT reside in a directory the manager itself
   publishes onto `PATH` — the user-bin shim directory, a managed skill bin
   directory, or any directory below the environments root — and a provider
   found there is refused with `subcommand_provider_untrusted`, naming the
-  path. Together with the section 9.4 `curator-*` name reservation, this
-  keeps profile-materialized files from poisoning the `PATH` the dispatch
-  trusts; profile bytes were already excluded.
+  refused path and the trust roots consulted, wherever else the path was
+  found: under revision A the refusal applies to the `PATH`-selected
+  candidate, and under revision B it applies to a trust-root match and to
+  a `PATH`-probe match alike, outranking dispatch in both. Together with
+  the section 9.4 `curator-*` name reservation, this keeps
+  profile-materialized files from poisoning dispatch; profile bytes were
+  already excluded.
+- Every dispatch reports the resolved absolute provider path: a warning
+  names the resolved path, the trust roots consulted, and the migration
+  hint; a `subcommand_provider_untrusted` refusal names the refused path
+  and the trust roots consulted; `subcommand_provider_missing` names the
+  trust roots consulted; `subcommand_provider_root_unreadable` names the
+  unreadable directory; and `env status` names the same per provider
+  under section 12.
+
+The attack this rule closes is the S6-injected `PATH` (finding E4): a
+project-controlled shell hook (finding S6 — a project `.agents/env.sh`
+sourced on directory change) prepends a project directory to `PATH`,
+planting a `curator-run` there, so that `curator run <env-id>` executes
+the project's binary as the launcher with the operator's environment.
+Under the trust-root rule that binary is outside the trust roots: under
+revision A the planted binary still runs (the `PATH` selection is
+unchanged) but warns, and under revision B it is refused.
 
 This is the one place the manager executes an executable it does not ship;
-the trust model is exactly the host plugin convention named above. The
-first providers, informative here, are `curator-run` (the launcher, its own
+under revision B the trust model is the two configured roots above, not
+the ambient host plugin convention, while under revision A the roots are
+the trust verdict and the ambient `PATH` still selects. The first providers, informative here, are `curator-run` (the launcher, its own
 specification, Decision 0013) and `curator-session` (a shim to the agent
 session manager).
+
+**Rollout.** The change of trust is warn-first, in two explicitly labelled
+conformance profiles:
+
+- **Revision A (warning release).** Resolution is exactly the pre-change
+  behavior: the manager searches the ambient `PATH` in order for the first
+  executable regular file named `curator-<name>` directly inside a `PATH`
+  entry, skipping non-executables and never descending. A `PATH` match
+  inside a manager-published or managed directory is refused with
+  `subcommand_provider_untrusted`, naming the refused path and the trust
+  roots consulted. A trust root that cannot be read fails with
+  `subcommand_provider_root_unreadable` instead of resolving. Otherwise,
+  when the `PATH`-selected executable lies directly inside a trust root it
+  resolves silently; when it lies outside the trust roots it still
+  resolves but warns `subcommand_provider_outside_trust_roots`, naming the
+  resolved path, the trust roots consulted, and the migration hint — list
+  the provider's directory in `provider_directories` (for example, a
+  `curator-run` in `/usr/local/bin`). When no `PATH` entry holds the
+  provider the outcome is `subcommand_provider_missing`, naming the trust
+  roots consulted, even when a trust root holds it: revision A never
+  consults the trust roots for selection. Old behavior is otherwise kept.
+- **Revision B (flip release).** The ambient `PATH` never selects. The
+  manager searches the trust roots in order — the install directory
+  first, then `provider_directories` in listed order — for the first
+  executable regular file named `curator-<name>` directly inside a root,
+  skipping non-executables and never descending. The five outcomes are
+  mutually exclusive: (1) a trusted match — a candidate directly inside a
+  trust root and outside every manager-published and managed directory —
+  resolves silently; (2) a match inside a manager-published or managed
+  directory is refused with `subcommand_provider_untrusted`, naming the
+  refused path and the trust roots consulted; (3) when no trust root
+  holds the provider, the manager performs a diagnostic-only `PATH` probe
+  — the same ordered search revision A uses for selection, but its match
+  is never dispatched — and a probe match is refused with
+  `subcommand_provider_untrusted`, naming the probed path and the trust
+  roots consulted; (4) when neither the trust roots nor the probe hold
+  the provider, the outcome is `subcommand_provider_missing`, naming the
+  trust roots consulted — a `PATH`-only match never reports missing;
+  (5) a trust root that cannot be read fails with
+  `subcommand_provider_root_unreadable`, naming the first unreadable root
+  in search order, and no later root, probe, or absence outcome fires.
+  No release both warns and refuses at once: revision A adds the warning
+  and keeps `PATH` selection; revision B removes `PATH` selection and
+  refuses.
 
 ### 11.1 Diagnostics
 
 | Condition | Diagnostic |
 | --- | --- |
-| unknown subcommand with no `curator-<name>` on `PATH` | `subcommand_provider_missing` |
-| `curator-<name>` resolved inside a manager-published or managed directory | `subcommand_provider_untrusted` |
+| unknown subcommand with no `curator-<name>` executable in the consulted search domain — revision A: no `PATH` match; revision B: no trust-root match and no `PATH`-probe match — and every trust root readable; names the trust roots consulted | `subcommand_provider_missing` |
+| `curator-<name>` candidate inside a manager-published or managed directory (revision A: the `PATH`-selected candidate; revision B: a trust-root match or a `PATH`-probe match); or, under revision B only, a `PATH`-probe match outside the trust roots; names the refused path and the trust roots consulted | `subcommand_provider_untrusted` |
+| revision A only (warning): `curator-<name>` `PATH`-selected outside the trust roots; names the resolved path, the trust roots consulted, and the `provider_directories` migration hint | `subcommand_provider_outside_trust_roots` |
+| a trust root that cannot be read — the install directory or a `provider_directories` entry — under either revision; names the first unreadable root in search order; never absence, never a fallback | `subcommand_provider_root_unreadable` |
 
 ## 12. Status, machine configuration, and garbage collection
 
@@ -2255,9 +2348,16 @@ split-brain note of section 7.1, the recorded and detected tool release per
 adapter (section 7.9), both homes of the current profile per scope and
 their provisioning state (section 8.1), backup generation counts and ages
 per home (section 8.3), orphaned managed homes (section 9.2),
-`environment_context_size_exceeded` where it applies, and the effective
+`environment_context_size_exceeded` where it applies, the effective
 `transitive_system_modules` value with every dropped system module by
-package and path where the `drop` policy skipped any (section 3). Both commands follow
+package and path where the `drop` policy skipped any (section 3), and the resolved
+absolute provider path and trust verdict for every `curator-<name>`
+executable discovered by the active revision's search — revision A: the
+`PATH`-selected executable with its trust verdict; revision B: the
+trust-root match or the diagnostic-only `PATH`-probe match — and always
+for `curator-run` and `curator-session`, reported missing when absent and
+reported unreadable with the directory when a trust root cannot be read
+(section 11). Both commands follow
 the manager §10 discipline exactly: recompute and report, never mutate — no
 fetch, no repair, no adoption, no channel application, no onboarding.
 `--check` returns non-zero when any row is non-current.
@@ -2267,8 +2367,17 @@ profile identity, lock hash, member list, precedence, mode, and form match
 the effective machine state; every recorded surface hash verifies; and
 every recorded passthrough entry is live. A drifted, missing, shadow-inert
 (unless acknowledged under `shadow_acknowledged`), detached, partially
-switched, stale, or unreadable state is non-current; unreadable evidence is
-reported as unreadable, never as absence (section 8.4). Warnings —
+switched, stale, refused-provider (section 11), or
+unreadable state is non-current; unreadable evidence is
+reported as unreadable, never as absence (section 8.4). A section 11
+provider row is non-current when the active revision refuses or fails
+that provider — a manager-published or managed directory match under
+either revision, an outside-trust-roots `PATH` match refused under
+revision B, or an unreadable trust root failed under either revision with
+currency unknown; a `PATH`-absent row under revision A is missing
+(non-current) even when a trust root holds the provider. Under revision A
+the `subcommand_provider_outside_trust_roots` warning row stays current.
+Warnings —
 `environment_context_size_exceeded`, `environment_tool_version_unverified`,
 `environment_seed_shadowed`, `environment_foreign_manager_suspected`,
 `context_system_module_dropped`, an
@@ -2317,6 +2426,7 @@ knob is absent.
 | `backup_retention` | non-negative integer, `0` = unlimited | `5` | 8.3 |
 | `require_current_profile` | profile name or `null` | `null` | 12.2 |
 | `in_place_mode.<env-id>` | `linked`, `copied` | adapter default | 8.1 — the `claude_code` root-context surface is always copied whatever this value says |
+| `provider_directories` | list of absolute paths | `[]` | 11 |
 
 A `secret_material_waivers.pin` is spelled as the member's pin exactly as
 the lock (section 1.3) and the marker (section 8.2) record it: bare
@@ -2342,7 +2452,8 @@ The manager §1 `locked` set is extended, for managers implementing this
 capability, by exactly these keys under `environments`:
 `overlays_allowed`, `precedence`, `mcp_package_allowlist`,
 `passable_env_names`, `require_current_profile`, `transitive_system_modules`,
-and `isolation`. A system
+`isolation`, and `provider_directories` — a locked provider list is fleet
+policy for which provider directories every machine trusts. A system
 file that locks `require_current_profile` to a profile name makes `profile
 use` of any other profile in the machine scope a configuration error under
 the manager §1 locked-key rules, and `env status` reports the requirement;
@@ -2396,8 +2507,22 @@ is direct — with the `transitive_system_modules` and
 `system_module_waivers` machine-config schema cases and the system-config
 error-direction case; the detector classes of
 section 9.1 (`vectors/context-detectors.json`, positive and negative, the
-waiver and unpinnable cases included); and the section 1.2 snapshot
-byte-exactness vector (`vectors/snapshot-acquisition.json`). The nine
+waiver and unpinnable cases included); the section 1.2 snapshot
+byte-exactness vector (`vectors/snapshot-acquisition.json`); and the
+section 11 umbrella provider trust-root vectors
+(`vectors/umbrella-provider-resolution.json`): the install-directory and
+listed-directory positives, the listed-order first-match-wins case, the
+revision-A `PATH`-selection cases (trusted-on-`PATH` silent,
+`PATH`-selects-different warning, install-only missing), the revision-A
+warning and revision-B refusal of a `PATH`-only provider including the
+S6-planted `curator-run`, the manager-published and managed directory
+refusals under both revisions, the unreadable-root failures under both
+revisions, and the missing case — with the
+`provider_directories` grammar pinned by the `manager-config-v2` and
+`system-config-v2` schema cases. The nine
 retired `expected/environments/*` sets are regenerated under the v2 type
 line. A manager claiming this capability MUST pass the complete vector set;
-there is no partial claim.
+there is no partial claim. A manager conforms to revision A by warning
+where the vectors warn and failing where they fail, and to revision B by
+refusing or failing where the vectors refuse or fail; it MUST NOT claim
+revision B while still resolving on `PATH`.

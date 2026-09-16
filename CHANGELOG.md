@@ -141,6 +141,32 @@ Versioning for the complete specification set.
   section 9.5 notice, section 8.3 backup, and refusal clauses) instead of
   a standalone command. No diagnostic is added or renamed, and the
   document stays revision 1.
+- E4: umbrella provider resolution no longer trusts the ambient `PATH`
+  (environments §11). The trust roots are the manager install directory
+  (resolved after symlinks) and the new closed §12.1 knob
+  `provider_directories` (list of absolute paths, default `[]`, §12.2
+  lockable), searched in that order with first match winning; the
+  manager-published and managed directory refusal keeps applying wherever
+  the match is found, and an unreadable root fails with the new
+  `subcommand_provider_root_unreadable` (never absence, never a fallback).
+  This closes the S6-injected `PATH` attack in which a project
+  `.agents/env.sh` plants a `curator-run` that dispatch would execute as
+  the launcher. Warn-first rollout in two labelled revisions: revision A
+  keeps ambient-`PATH` selection exactly and only warns
+  `subcommand_provider_outside_trust_roots` with the migration hint to
+  list the provider's directory (e.g. a `curator-run` in `/usr/local/bin`);
+  revision B searches only the trust roots, never `PATH` (a diagnostic-only
+  `PATH` probe names the refused path), and refuses a `PATH`-only provider
+  with `subcommand_provider_untrusted`, naming the refused path and the
+  trust roots consulted. `env status` names the resolved provider path and
+  trust verdict per discovered `curator-<name>`, and an unreadable root
+  with its directory. Conformance:
+  `vectors/umbrella-provider-resolution.json` (install/listed positives,
+  ordering, revision-A `PATH`-selection cases, revision-A warning vs
+  revision-B refusal including the S6-planted case, published/managed
+  refusals, unreadable failures, missing) and new `provider_directories`
+  schema cases and vectors for `manager-config-v2` and `system-config-v2`.
+  Blocks proposal 0016 / `path_prepend` (`STORY-260916-2otjbn`).
 
 ### Added
 

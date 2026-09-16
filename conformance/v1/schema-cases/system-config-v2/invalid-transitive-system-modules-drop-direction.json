@@ -22,6 +22,9 @@
       "placement": "winner-first",
       "winner": "lower-weight"
     },
+    "provider_directories": [
+      "/usr/local/lib/curator/providers"
+    ],
     "require_current_profile": "companyA",
     "transitive_system_modules": "drop"
   },
@@ -34,7 +37,8 @@
     "environments.passable_env_names",
     "environments.require_current_profile",
     "environments.transitive_system_modules",
-    "environments.isolation"
+    "environments.isolation",
+    "environments.provider_directories"
   ],
   "preferred_locale": "en",
   "schema_version": 2

@@ -138,7 +138,10 @@ The agent-environments capability of
 and `env` command families; manager behavior is
 [manager-profile section 12](../profiles/manager.md#12-agent-environments-manager-profile).
 `curator run` and `curator session` are not builtins: an unknown subcommand
-resolves to an executable named `curator-<name>` on `PATH` and receives the
+resolves to an executable named `curator-<name>` as environments §11 states —
+revision A selects on the ambient `PATH` (warning outside the trust roots),
+revision B searches only the manager install directory and
+`provider_directories` and never `PATH` — and receives the
 remaining arguments verbatim, so `curator run` dispatches to a separately
 installed `curator-run` and `curator session` to `curator-session`. A missing
 provider fails with the exact executable name and installation guidance;

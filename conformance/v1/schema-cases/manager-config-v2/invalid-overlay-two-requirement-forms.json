@@ -47,6 +47,10 @@
       "placement": "winner-first",
       "winner": "lower-weight"
     },
+    "provider_directories": [
+      "/usr/local/lib/curator/providers",
+      "/opt/curator/bin"
+    ],
     "require_current_profile": "companyA",
     "scoped_current": {
       "pi": "personal",

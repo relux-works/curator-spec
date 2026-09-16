@@ -28,6 +28,7 @@ func managerConfigV2EnvironmentDefaults() map[string]any {
 		"backup_retention":          5,
 		"require_current_profile":   nil,
 		"in_place_mode":             map[string]any{},
+		"provider_directories":      []any{},
 	}
 }
 
@@ -72,6 +73,7 @@ func managerConfigV2EveryKnob() map[string]any {
 		"backup_retention":        0,
 		"require_current_profile": "companyA",
 		"in_place_mode":           map[string]any{"codex_cli": "copied"},
+		"provider_directories":    []any{"/usr/local/lib/curator/providers", "/opt/curator/bin"},
 	}
 }
 
@@ -183,6 +185,10 @@ func managerConfigV2SchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-backup-retention-negative", instance: withKnob("backup_retention", -1)},
 		{name: "invalid-require-current-profile-grammar", instance: withKnob("require_current_profile", "")},
 		{name: "invalid-in-place-mode-value", instance: withKnob("in_place_mode", map[string]any{"codex_cli": "managed-home"})},
+		{name: "valid-provider-directories", valid: true, instance: withKnob("provider_directories", []any{"/usr/local/lib/curator/providers", "/opt/curator/bin"})},
+		{name: "valid-provider-directories-windows-drive", valid: true, instance: withKnob("provider_directories", []any{"C:\\\\Program Files\\\\curator\\\\providers"})},
+		{name: "invalid-provider-directories-relative", instance: withKnob("provider_directories", []any{"rel/providers"})},
+		{name: "invalid-provider-directories-duplicate", instance: withKnob("provider_directories", []any{"/opt/curator/bin", "/opt/curator/bin"})},
 	}
 }
 
@@ -323,5 +329,10 @@ func managerConfigV2Vectors() []any {
 		map[string]any{"name": "schema2-precedence-winner-grammar", "input": withEnvironments(map[string]any{"precedence": map[string]any{"winner": "later-overrides-earlier"}}), "valid": false},
 		map[string]any{"name": "schema2-negative-backup-retention", "input": withEnvironments(map[string]any{"backup_retention": -1}), "valid": false},
 		map[string]any{"name": "schema2-isolation-value-grammar", "input": withEnvironments(map[string]any{"isolation": map[string]any{"companyA": map[string]any{"claude_code": "keychain"}}}), "valid": false},
+		map[string]any{
+			"name": "schema2-provider-directories", "input": withEnvironments(map[string]any{"provider_directories": []any{"/usr/local/lib/curator/providers"}}), "valid": true,
+			"expected": map[string]any{"environments": expectedWith(map[string]any{"provider_directories": []any{"/usr/local/lib/curator/providers"}})},
+		},
+		map[string]any{"name": "schema2-provider-directories-relative", "input": withEnvironments(map[string]any{"provider_directories": []any{"rel/providers"}}), "valid": false},
 	}
 }

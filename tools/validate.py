@@ -3003,6 +3003,7 @@ MANAGER_CONFIG_KNOB_DEFAULT_PATHS = {
     "transitive_system_modules": ("$defs", "environments", "properties", "transitive_system_modules", "default"),
     "backup_retention": ("$defs", "environments", "properties", "backup_retention", "default"),
     "require_current_profile": ("$defs", "environments", "properties", "require_current_profile", "default"),
+    "provider_directories": ("$defs", "environments", "properties", "provider_directories", "default"),
 }
 
 
@@ -4879,6 +4880,355 @@ def validate_shell_hook_trust_vectors(vector: Any = None) -> None:
         for field, expected in warning_checks.items():
             if case.get(field) is not expected:
                 raise ValidationFailure(f"shell-hook-trust case {name} field {field} does not follow its trust state")
+UMBRELLA_PROVIDER_DIAGNOSTICS = {
+    "subcommand_provider_missing",
+    "subcommand_provider_untrusted",
+    "subcommand_provider_outside_trust_roots",
+    "subcommand_provider_root_unreadable",
+}
+
+UMBRELLA_PROVIDER_CASES = {
+    "install-dir-provider-missing-then-resolved",
+    "install-dir-beats-listed-directory",
+    "listed-directory-provider-resolved",
+    "listed-order-first-match-wins",
+    "s6-planted-path-provider-warns-then-refuses",
+    "non-executable-in-trust-root-skipped",
+    "manager-published-directory-refused",
+    "listed-but-published-directory-still-refused",
+    "managed-directory-refused",
+    "unreadable-listed-directory-fails",
+    "unreadable-install-directory-fails",
+    "path-selects-different-provider-while-trusted-exists",
+    "trusted-provider-on-path-resolves-silently",
+    "provider-missing",
+}
+
+
+def _umbrella_dirname(path: str) -> str:
+    """POSIX dirname for a vector absolute path (vectors use POSIX spellings)."""
+    if "/" not in path:
+        return "."
+    head = path.rsplit("/", 1)[0]
+    return head if head else "/"
+
+
+def _umbrella_inside_forbidden(path: str, forbidden: list[str]) -> bool:
+    """True when path resides directly inside or below a forbidden directory."""
+    for entry in forbidden:
+        prefix = entry.rstrip("/") + "/"
+        if path.startswith(prefix):
+            return True
+    return False
+
+
+def _umbrella_executables(case: dict[str, Any]) -> set[str]:
+    """Paths present as executable regular files of the provider name."""
+    executable_name = case.get("executable_name")
+    found: set[str] = set()
+    present = case.get("present")
+    if not isinstance(present, list):
+        return found
+    for item in present:
+        if not isinstance(item, dict):
+            continue
+        path = item.get("path")
+        if (
+            isinstance(path, str)
+            and item.get("executable") is True
+            and path.rsplit("/", 1)[-1] == executable_name
+        ):
+            found.add(path)
+    return found
+
+
+def _umbrella_path_search(case: dict[str, Any], executables: set[str]) -> str | None:
+    """First executable directly inside the PATH entries, in order, or None."""
+    executable_name = case.get("executable_name")
+    entries = case.get("path_entries")
+    if not isinstance(entries, list):
+        return None
+    for entry in entries:
+        if not isinstance(entry, str):
+            continue
+        candidate = entry.rstrip("/") + "/" + str(executable_name)
+        if candidate in executables:
+            return candidate
+    return None
+
+
+def _umbrella_trust_roots(case: dict[str, Any]) -> list[str]:
+    """Install directory first, then provider_directories in listed order."""
+    roots = [case.get("install_dir")]
+    listed = case.get("provider_directories")
+    if isinstance(listed, list):
+        roots.extend(entry for entry in listed if isinstance(entry, str))
+    return [entry for entry in roots if isinstance(entry, str)]
+
+
+def _umbrella_expected(case: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Derive the required revision_a/revision_b outcomes from the case inputs.
+
+    Implements environments §11: revision A keeps ambient-PATH selection and
+    only warns outside the trust roots; revision B searches the trust roots
+    only, with a diagnostic-only PATH probe; published/managed refusal
+    outranks dispatch; an unreadable root fails instead of resolving or
+    reporting absence.
+    """
+    name = case.get("name", "<unnamed>")
+    roots = _umbrella_trust_roots(case)
+    unreadable = case.get("unreadable_dirs")
+    unreadable_set = set(unreadable) if isinstance(unreadable, list) else set()
+    for entry in unreadable_set:
+        if entry not in roots:
+            raise ValidationFailure(
+                f"umbrella provider case {name} marks non-root {entry!r} unreadable"
+            )
+    first_unreadable = next((entry for entry in roots if entry in unreadable_set), None)
+    executables = _umbrella_executables(case)
+    forbidden = list(case.get("published_dirs", [])) + list(case.get("managed_dirs", []))
+    path_match = _umbrella_path_search(case, executables)
+
+    # Revision A: PATH selects; forbidden refuses; unreadable fails; inside
+    # roots resolves silently; outside resolves with the warning; no PATH
+    # match is missing even when a trust root holds the provider.
+    if path_match is not None and _umbrella_inside_forbidden(path_match, forbidden):
+        revision_a: dict[str, Any] = {
+            "resolved": None,
+            "diagnostic": "subcommand_provider_untrusted",
+            "untrusted_path": path_match,
+            "trust_roots_consulted": roots,
+        }
+    elif first_unreadable is not None:
+        revision_a = {
+            "resolved": None,
+            "diagnostic": "subcommand_provider_root_unreadable",
+            "unreadable_directory": first_unreadable,
+            "trust_roots_consulted": roots,
+        }
+    elif path_match is None:
+        revision_a = {
+            "resolved": None,
+            "diagnostic": "subcommand_provider_missing",
+            "trust_roots_consulted": roots,
+        }
+    elif _umbrella_dirname(path_match) in roots:
+        revision_a = {"resolved": path_match, "diagnostic": None}
+    else:
+        revision_a = {
+            "resolved": path_match,
+            "diagnostic": "subcommand_provider_outside_trust_roots",
+            "migration_hint_directory": _umbrella_dirname(path_match),
+            "trust_roots_consulted": roots,
+        }
+
+    # Revision B: trust roots in order, stopping at the first unreadable
+    # before any match; a later unreadable past a match is not consulted.
+    trusted: str | None = None
+    failed: str | None = None
+    executable_name = case.get("executable_name")
+    for root in roots:
+        if root in unreadable_set:
+            failed = root
+            break
+        candidate = root.rstrip("/") + "/" + str(executable_name)
+        if candidate in executables:
+            trusted = candidate
+            break
+    if failed is not None:
+        revision_b: dict[str, Any] = {
+            "resolved": None,
+            "diagnostic": "subcommand_provider_root_unreadable",
+            "unreadable_directory": failed,
+            "trust_roots_consulted": roots,
+        }
+    elif trusted is not None and _umbrella_inside_forbidden(trusted, forbidden):
+        revision_b = {
+            "resolved": None,
+            "diagnostic": "subcommand_provider_untrusted",
+            "untrusted_path": trusted,
+            "trust_roots_consulted": roots,
+        }
+    elif trusted is not None:
+        revision_b = {"resolved": trusted, "diagnostic": None}
+    elif path_match is not None:
+        revision_b = {
+            "resolved": None,
+            "diagnostic": "subcommand_provider_untrusted",
+            "untrusted_path": path_match,
+            "trust_roots_consulted": roots,
+        }
+    else:
+        revision_b = {
+            "resolved": None,
+            "diagnostic": "subcommand_provider_missing",
+            "trust_roots_consulted": roots,
+        }
+    return {"revision_a": revision_a, "revision_b": revision_b}
+
+
+def validate_umbrella_provider_vectors(root: Path | None = None) -> None:
+    """`vectors/umbrella-provider-resolution.json` (environments §11, finding E4).
+
+    The case inventory is exact, every case states both rollout profiles,
+    every diagnostic is one of the closed §11.1 set, the revision-A warning
+    never appears under revision B, every outcome carries exactly the
+    details its diagnostic requires (migration hint, refused path, consulted
+    roots, unreadable directory), and every declared outcome equals the
+    resolver model derived from the case inputs (precedence, executable
+    filtering, published/managed refusal, missing/untrusted/unreadable
+    distinction).
+    """
+    if root is None:
+        root = SUITE
+    vector = load_json(root / "vectors" / "umbrella-provider-resolution.json")
+    if (
+        vector.get("schema_version") != 1
+        or vector.get("protocol_version") != PROTOCOL_VERSION
+        or vector.get("capability") != "agent-environments"
+        or vector.get("capability_revision") != 1
+    ):
+        raise ValidationFailure("umbrella-provider-resolution vector has the wrong capability identity")
+    cases = named_cases(vector.get("cases"), "umbrella provider resolution")
+    if set(cases) != UMBRELLA_PROVIDER_CASES:
+        raise ValidationFailure(
+            "umbrella provider case inventory is not exact: "
+            f"missing={sorted(UMBRELLA_PROVIDER_CASES - set(cases))}, "
+            f"extra={sorted(set(cases) - UMBRELLA_PROVIDER_CASES)}"
+        )
+    warned = refused = failed_unreadable = 0
+    for name, case in cases.items():
+        for member in (
+            "subcommand", "executable_name", "install_dir", "provider_directories",
+            "path_entries", "published_dirs", "managed_dirs", "present",
+            "unreadable_dirs", "revision_a", "revision_b",
+        ):
+            if member not in case:
+                raise ValidationFailure(f"umbrella provider case {name} lacks {member}")
+        if case.get("executable_name") != f"curator-{case.get('subcommand')}":
+            raise ValidationFailure(f"umbrella provider case {name} misnames its executable")
+        for member in (
+            "provider_directories", "path_entries", "published_dirs",
+            "managed_dirs", "present", "unreadable_dirs",
+        ):
+            if not isinstance(case.get(member), list):
+                raise ValidationFailure(f"umbrella provider case {name} has non-list {member}")
+        for profile in ("revision_a", "revision_b"):
+            outcome = case.get(profile)
+            if not isinstance(outcome, dict):
+                raise ValidationFailure(f"umbrella provider case {name} lacks {profile}")
+            diagnostic = outcome.get("diagnostic")
+            resolved = outcome.get("resolved")
+            if diagnostic is not None and diagnostic not in UMBRELLA_PROVIDER_DIAGNOSTICS:
+                raise ValidationFailure(
+                    f"umbrella provider case {name} {profile} uses unknown diagnostic {diagnostic!r}"
+                )
+            if diagnostic is None and resolved is None:
+                raise ValidationFailure(
+                    f"umbrella provider case {name} {profile} neither resolves nor diagnoses"
+                )
+            if diagnostic is not None and diagnostic != "subcommand_provider_outside_trust_roots" and resolved is not None:
+                raise ValidationFailure(
+                    f"umbrella provider case {name} {profile} both resolves and refuses"
+                )
+            hint = outcome.get("migration_hint_directory")
+            untrusted_path = outcome.get("untrusted_path")
+            unreadable_directory = outcome.get("unreadable_directory")
+            roots_consulted = outcome.get("trust_roots_consulted")
+            if diagnostic == "subcommand_provider_outside_trust_roots":
+                if profile != "revision_a":
+                    raise ValidationFailure(
+                        f"umbrella provider case {name} warns outside revision A"
+                    )
+                if not isinstance(hint, str) or not hint:
+                    raise ValidationFailure(
+                        f"umbrella provider case {name} warning names no migration-hint directory"
+                    )
+                if not isinstance(roots_consulted, list) or not roots_consulted:
+                    raise ValidationFailure(
+                        f"umbrella provider case {name} warning names no trust-roots-consulted list"
+                    )
+                if untrusted_path is not None or unreadable_directory is not None:
+                    raise ValidationFailure(
+                        f"umbrella provider case {name} warning carries a refusal detail"
+                    )
+                warned += 1
+            elif diagnostic == "subcommand_provider_untrusted":
+                if not isinstance(untrusted_path, str) or not untrusted_path:
+                    raise ValidationFailure(
+                        f"umbrella provider case {name} {profile} names no untrusted_path"
+                    )
+                if not isinstance(roots_consulted, list) or not roots_consulted:
+                    raise ValidationFailure(
+                        f"umbrella provider case {name} {profile} names no trust-roots-consulted list"
+                    )
+                if hint is not None or unreadable_directory is not None:
+                    raise ValidationFailure(
+                        f"umbrella provider case {name} {profile} refusal carries a foreign detail"
+                    )
+                refused += 1
+            elif diagnostic == "subcommand_provider_missing":
+                if not isinstance(roots_consulted, list) or not roots_consulted:
+                    raise ValidationFailure(
+                        f"umbrella provider case {name} {profile} names no trust-roots-consulted list"
+                    )
+                if hint is not None or untrusted_path is not None or unreadable_directory is not None:
+                    raise ValidationFailure(
+                        f"umbrella provider case {name} {profile} missing outcome carries a refusal detail"
+                    )
+                refused += 1
+            elif diagnostic == "subcommand_provider_root_unreadable":
+                if not isinstance(unreadable_directory, str) or not unreadable_directory:
+                    raise ValidationFailure(
+                        f"umbrella provider case {name} {profile} names no unreadable_directory"
+                    )
+                if not isinstance(roots_consulted, list) or not roots_consulted:
+                    raise ValidationFailure(
+                        f"umbrella provider case {name} {profile} names no trust-roots-consulted list"
+                    )
+                if hint is not None or untrusted_path is not None:
+                    raise ValidationFailure(
+                        f"umbrella provider case {name} {profile} unreadable failure carries a foreign detail"
+                    )
+                failed_unreadable += 1
+            else:
+                if hint is not None or untrusted_path is not None or unreadable_directory is not None or roots_consulted is not None:
+                    raise ValidationFailure(
+                        f"umbrella provider case {name} {profile} success carries a diagnostic detail"
+                    )
+            if hint is not None and diagnostic != "subcommand_provider_outside_trust_roots":
+                raise ValidationFailure(
+                    f"umbrella provider case {name} {profile} carries a hint without the warning"
+                )
+        expected = _umbrella_expected(case)
+        for profile in ("revision_a", "revision_b"):
+            outcome = case.get(profile)
+            want = expected[profile]
+            if outcome.get("resolved") != want.get("resolved"):
+                raise ValidationFailure(
+                    f"umbrella provider case {name} {profile} resolves "
+                    f"{outcome.get('resolved')!r} but the §11 model expects {want.get('resolved')!r}"
+                )
+            if outcome.get("diagnostic") != want.get("diagnostic"):
+                raise ValidationFailure(
+                    f"umbrella provider case {name} {profile} diagnoses "
+                    f"{outcome.get('diagnostic')!r} but the §11 model expects {want.get('diagnostic')!r}"
+                )
+            for detail in (
+                "migration_hint_directory", "untrusted_path",
+                "unreadable_directory", "trust_roots_consulted",
+            ):
+                if want.get(detail) is not None and outcome.get(detail) != want.get(detail):
+                    raise ValidationFailure(
+                        f"umbrella provider case {name} {profile} {detail} "
+                        f"{outcome.get(detail)!r} mismatches the §11 model {want.get(detail)!r}"
+                    )
+    if not warned:
+        raise ValidationFailure("umbrella provider vectors warn under no revision-A case")
+    if not refused:
+        raise ValidationFailure("umbrella provider vectors refuse under no case")
+    if not failed_unreadable:
+        raise ValidationFailure("umbrella provider vectors fail unreadable under no case")
 
 
 def main() -> int:
@@ -4897,6 +5247,7 @@ def main() -> int:
         validate_shell_hook_trust_vectors,
         validate_manager_config_vectors,
         validate_system_config_v2_schema,
+        validate_umbrella_provider_vectors,
         validate_local_links,
     ]
     try:

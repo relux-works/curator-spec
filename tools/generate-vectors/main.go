@@ -197,6 +197,7 @@ func main() {
 	writeContextVersionVectors(vectors)
 	writeContextDetectorVectors(vectors)
 	writeSnapshotAcquisitionVectors(vectors, filepath.Join(suite, "fixtures", "byte-exact"), expected)
+	writeUmbrellaProviderResolutionVectors(vectors)
 	writeSchemaCases(suite, marker, ledger, audited, snapshot, entries[0], bundle, pinned)
 	writeExternalRepositoryExpected(expected, marker)
 	writeManifest(suite)

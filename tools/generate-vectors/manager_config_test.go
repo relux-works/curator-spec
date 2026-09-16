@@ -16,7 +16,7 @@ var managerConfigV2Knobs = []string{
 	"precedence", "forms", "system_prompt_files", "targets", "isolation", "xdg_seed_allowlist",
 	"passable_env_names", "mcp_package_allowlist", "shadow_acknowledged", "secret_material_waivers",
 	"transitive_system_modules", "system_module_waivers",
-	"backup_retention", "require_current_profile", "in_place_mode",
+	"backup_retention", "require_current_profile", "in_place_mode", "provider_directories",
 }
 
 func TestManagerConfigV2IsSchemaOnePlusOneClosedEnvironmentsObject(t *testing.T) {

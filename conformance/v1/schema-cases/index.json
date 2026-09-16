@@ -4190,6 +4190,26 @@
     "valid": false
   },
   {
+    "instance": "manager-config-v2/valid-provider-directories.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-provider-directories-windows-drive.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/invalid-provider-directories-relative.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-provider-directories-duplicate.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
     "instance": "provider-capability-receipt-v1/valid.json",
     "schema": "provider-capability-receipt-v1.schema.json",
     "valid": true
@@ -4576,6 +4596,16 @@
   },
   {
     "instance": "system-config-v2/invalid-isolation-profile-grammar.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-provider-directories-relative.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-provider-directories-duplicate.json",
     "schema": "system-config-v2.schema.json",
     "valid": false
   },

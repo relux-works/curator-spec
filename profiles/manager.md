@@ -53,8 +53,9 @@ user configuration:
    schema 2 additionally the environments protocol section 12.2 keys, named
    as `environments.overlays_allowed`, `environments.precedence`,
    `environments.mcp_package_allowlist`, `environments.passable_env_names`,
-   `environments.require_current_profile`, `environments.isolation`, and
-   `environments.transitive_system_modules`.
+   `environments.require_current_profile`, `environments.isolation`,
+   `environments.transitive_system_modules`, and
+   `environments.provider_directories`.
    No other `environments` knob is lockable or carried by the system file.
    Operator credential selections — the `build_ssh` scopes among them — are
    never lockable: section 12.2 makes credential material operator-owned, and

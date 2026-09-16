@@ -2091,6 +2091,275 @@ class ShellHookTrustVectorTests(unittest.TestCase):
         ]
         with self.assertRaises(validate.ValidationFailure):
             validate.validate_shell_hook_trust_vectors(changed)
+class UmbrellaProviderVectorTests(unittest.TestCase):
+    """The environments §11 trust-root gate must fail closed.
+
+    Each test narrows one rule of validate_umbrella_provider_vectors: an
+    unknown diagnostic, a warning claimed under revision B, a warning with
+    no migration-hint directory, a resolve-and-refuse outcome, a dropped
+    case, or a semantic mismatch against the §11 resolver model (PATH
+    selection, precedence, executable filtering, published/managed refusal,
+    missing/untrusted/unreadable distinction, hint and path details) must
+    be rejected.
+    """
+
+    def mutated_vector(self, root: Path, mutate) -> None:
+        vector = validate.load_json(
+            validate.SUITE / "vectors" / "umbrella-provider-resolution.json"
+        )
+        mutate(vector)
+        vectors = root / "vectors"
+        vectors.mkdir(parents=True, exist_ok=True)
+        (vectors / "umbrella-provider-resolution.json").write_text(
+            json.dumps(vector), encoding="utf-8"
+        )
+
+    def case(self, vector, name: str) -> dict:
+        for item in vector["cases"]:
+            if item["name"] == name:
+                return item
+        raise AssertionError(f"no umbrella provider case {name}")
+
+    def test_published_vector_passes(self) -> None:
+        validate.validate_umbrella_provider_vectors()
+
+    def test_unknown_diagnostic_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(
+                root,
+                lambda v: self.case(v, "provider-missing").__setitem__(
+                    "revision_a",
+                    {"resolved": None, "diagnostic": "subcommand_provider_evil"},
+                ),
+            )
+            with self.assertRaisesRegex(validate.ValidationFailure, "unknown diagnostic"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_warning_under_revision_b_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(
+                root,
+                lambda v: self.case(v, "s6-planted-path-provider-warns-then-refuses").__setitem__(
+                    "revision_b",
+                    {
+                        "resolved": "/home/operator/work/acme/.bin/curator-run",
+                        "diagnostic": "subcommand_provider_outside_trust_roots",
+                        "migration_hint_directory": "/home/operator/work/acme/.bin",
+                    },
+                ),
+            )
+            with self.assertRaisesRegex(validate.ValidationFailure, "outside revision A"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_warning_without_hint_directory_fails(self) -> None:
+        def drop_hint(vector) -> None:
+            outcome = self.case(vector, "s6-planted-path-provider-warns-then-refuses")["revision_a"]
+            del outcome["migration_hint_directory"]
+
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(root, drop_hint)
+            with self.assertRaisesRegex(validate.ValidationFailure, "migration-hint directory"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_resolve_and_refuse_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(
+                root,
+                lambda v: self.case(v, "provider-missing").__setitem__(
+                    "revision_a",
+                    {"resolved": "/usr/local/bin/curator-run", "diagnostic": "subcommand_provider_untrusted"},
+                ),
+            )
+            with self.assertRaisesRegex(validate.ValidationFailure, "both resolves and refuses"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_dropped_case_fails(self) -> None:
+        def drop(vector) -> None:
+            vector["cases"] = [c for c in vector["cases"] if c["name"] != "provider-missing"]
+
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(root, drop)
+            with self.assertRaisesRegex(validate.ValidationFailure, "inventory is not exact"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_s6_revision_b_silent_resolution_mutant_fails(self) -> None:
+        """The reviewer's mutant: a PATH-only provider resolving under B."""
+
+        def resolve(vector) -> None:
+            self.case(vector, "s6-planted-path-provider-warns-then-refuses")["revision_b"] = {
+                "resolved": "/home/operator/work/acme/.bin/curator-run",
+                "diagnostic": None,
+            }
+
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(root, resolve)
+            with self.assertRaisesRegex(validate.ValidationFailure, "§11 model expects"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_revision_a_trust_selection_mutant_fails(self) -> None:
+        """Revision A must keep PATH selection, not resolve the trusted copy."""
+
+        def resolve_trusted(vector) -> None:
+            self.case(vector, "listed-directory-provider-resolved")["revision_a"] = {
+                "resolved": "/opt/curator/providers/curator-run",
+                "diagnostic": None,
+            }
+
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(root, resolve_trusted)
+            with self.assertRaisesRegex(validate.ValidationFailure, "§11 model expects"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_listed_order_second_match_mutant_fails(self) -> None:
+        """First listed match wins: resolving the second entry must fail."""
+
+        def resolve_second(vector) -> None:
+            self.case(vector, "listed-order-first-match-wins")["revision_b"] = {
+                "resolved": "/srv/team/curator-providers/curator-run",
+                "diagnostic": None,
+            }
+
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(root, resolve_second)
+            with self.assertRaisesRegex(validate.ValidationFailure, "§11 model expects"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_non_executable_resolves_mutant_fails(self) -> None:
+        """A non-executable trust-root file is skipped, never resolved."""
+
+        def resolve_non_executable(vector) -> None:
+            self.case(vector, "non-executable-in-trust-root-skipped")["revision_b"] = {
+                "resolved": "/opt/curator/providers/curator-run",
+                "diagnostic": None,
+            }
+
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(root, resolve_non_executable)
+            with self.assertRaisesRegex(validate.ValidationFailure, "§11 model expects"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_published_dispatch_mutant_fails(self) -> None:
+        """A manager-published candidate is refused, never dispatched."""
+
+        def dispatch(vector) -> None:
+            self.case(vector, "manager-published-directory-refused")["revision_b"] = {
+                "resolved": "/home/operator/.curator/bin/curator-run",
+                "diagnostic": None,
+            }
+
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(root, dispatch)
+            with self.assertRaisesRegex(validate.ValidationFailure, "§11 model expects"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_untrusted_path_narrowing_fails(self) -> None:
+        """A refusal naming the wrong path is rejected, not just a delete."""
+
+        def wrong_path(vector) -> None:
+            outcome = self.case(vector, "s6-planted-path-provider-warns-then-refuses")["revision_b"]
+            outcome["untrusted_path"] = "/usr/local/bin/curator-run"
+
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(root, wrong_path)
+            with self.assertRaisesRegex(validate.ValidationFailure, "untrusted_path"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_trust_roots_consulted_narrowing_fails(self) -> None:
+        """A warning naming the wrong consulted roots is rejected."""
+
+        def wrong_roots(vector) -> None:
+            outcome = self.case(vector, "s6-planted-path-provider-warns-then-refuses")["revision_a"]
+            outcome["trust_roots_consulted"] = ["/opt/curator/bin", "/wrong"]
+
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(root, wrong_roots)
+            with self.assertRaisesRegex(validate.ValidationFailure, "trust_roots_consulted"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_path_only_reports_missing_mutant_fails(self) -> None:
+        """A PATH-only provider is untrusted under B, never missing."""
+
+        def report_missing(vector) -> None:
+            self.case(vector, "s6-planted-path-provider-warns-then-refuses")["revision_b"] = {
+                "resolved": None,
+                "diagnostic": "subcommand_provider_missing",
+                "trust_roots_consulted": ["/opt/curator/bin"],
+            }
+
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(root, report_missing)
+            with self.assertRaisesRegex(validate.ValidationFailure, "§11 model expects"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_unreadable_reports_absence_mutant_fails(self) -> None:
+        """An unreadable root is a failure, never absence or a fallback."""
+
+        def report_missing(vector) -> None:
+            self.case(vector, "unreadable-listed-directory-fails")["revision_b"] = {
+                "resolved": None,
+                "diagnostic": "subcommand_provider_missing",
+                "trust_roots_consulted": ["/opt/curator/bin", "/opt/gone"],
+            }
+
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(root, report_missing)
+            with self.assertRaisesRegex(validate.ValidationFailure, "§11 model expects"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_unreadable_directory_narrowing_fails(self) -> None:
+        """An unreadable failure naming the wrong directory is rejected."""
+
+        def wrong_directory(vector) -> None:
+            outcome = self.case(vector, "unreadable-listed-directory-fails")["revision_b"]
+            outcome["unreadable_directory"] = "/opt/curator/bin"
+
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(root, wrong_directory)
+            with self.assertRaisesRegex(validate.ValidationFailure, "unreadable_directory"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_migration_hint_narrowing_fails(self) -> None:
+        """A warning hint naming the wrong directory is rejected."""
+
+        def wrong_hint(vector) -> None:
+            outcome = self.case(vector, "s6-planted-path-provider-warns-then-refuses")["revision_a"]
+            outcome["migration_hint_directory"] = "/usr/local/bin"
+
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(root, wrong_hint)
+            with self.assertRaisesRegex(validate.ValidationFailure, "migration_hint_directory"):
+                validate.validate_umbrella_provider_vectors(root=root)
+
+    def test_warning_silenced_mutant_fails(self) -> None:
+        """An outside-roots PATH selection must warn, never resolve silently."""
+
+        def silence(vector) -> None:
+            self.case(vector, "s6-planted-path-provider-warns-then-refuses")["revision_a"] = {
+                "resolved": "/home/operator/work/acme/.bin/curator-run",
+                "diagnostic": None,
+            }
+
+        with tempfile.TemporaryDirectory() as scratch:
+            root = Path(scratch)
+            self.mutated_vector(root, silence)
+            with self.assertRaisesRegex(validate.ValidationFailure, "§11 model expects"):
+                validate.validate_umbrella_provider_vectors(root=root)
 
 
 class ManagerConfigVectorTests(unittest.TestCase):
@@ -2288,7 +2557,7 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
         self.assertEqual(
             validate.environments_lockable_keys(self.text),
             ["overlays_allowed", "precedence", "mcp_package_allowlist", "passable_env_names",
-             "require_current_profile", "transitive_system_modules", "isolation"],
+             "require_current_profile", "transitive_system_modules", "isolation", "provider_directories"],
         )
 
     def test_open_environments_object_fails(self) -> None:
@@ -2386,9 +2655,9 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
             self.run_gate(text=text)
 
     def test_section_12_2_drift_against_schema_fails(self) -> None:
-        text = self.text.replace("`transitive_system_modules`,\nand `isolation`", "`transitive_system_modules`", 1)
+        text = self.text.replace("`isolation`, and `provider_directories`", "and `isolation`", 1)
         self.assertNotEqual(text, self.text)
-        with self.assertRaisesRegex(validate.ValidationFailure, "schema-only \\['isolation'\\]"):
+        with self.assertRaisesRegex(validate.ValidationFailure, "schema-only \\['provider_directories'\\]"):
             self.run_gate(text=text)
 
     def test_missing_section_12_2_fails_rather_than_passing_vacuously(self) -> None:

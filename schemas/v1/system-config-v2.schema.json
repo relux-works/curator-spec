@@ -21,7 +21,8 @@
           "environments.passable_env_names",
           "environments.require_current_profile",
           "environments.transitive_system_modules",
-          "environments.isolation"
+          "environments.isolation",
+          "environments.provider_directories"
         ]
       },
       "uniqueItems": true
@@ -51,6 +52,7 @@
         "transitive_system_modules": {
           "enum": ["error"]
         },
+        "provider_directories": {"$ref": "manager-config-v2.schema.json#/$defs/environments/properties/provider_directories"},
         "isolation": {
           "type": "object",
           "propertyNames": {"$ref": "common.schema.json#/$defs/identifier"},
