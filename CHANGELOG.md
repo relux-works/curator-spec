@@ -22,6 +22,16 @@ Versioning for the complete specification set.
   `repository_alias_unknown`; draft schemas and conformance vectors are
   isolated from rc.9 release artifacts; no manager implementation or release
   qualification is claimed.
+- Manager CLI environment operands accept `claude` and `codex` as aliases of
+  the canonical `claude_code` and `codex_cli` ids (manager profile §12.1):
+  `env resolve`, `profile use --env`, and `env unmanage --env` normalize an
+  alias to the canonical id before validation or lookup; outputs,
+  diagnostics, markers, fragments, configuration records, and locks keep the
+  canonical id and aliases are never persisted, while any other unknown
+  spelling keeps the `environment_unknown` refusal. The launcher's `curator
+  run <env-id>` follows the same rule under the launcher SPEC
+  (curator-agent-launcher README). No schema, vector, or wire change; frozen
+  v1 bytes untouched.
 
 ### Changed
 

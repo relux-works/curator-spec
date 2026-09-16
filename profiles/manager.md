@@ -1998,6 +1998,18 @@ environment identifier outside the registry keeps the section 5
 unknown-identifier discipline — a warning and no output — except where
 environments requires an error for an explicit operand.
 
+The command-line environment operand — `env resolve <env-id>`, `profile
+use --env <env-id>`, `env unmanage --env <env-id>` — additionally accepts
+`claude` and `codex` as aliases of the canonical `claude_code` and
+`codex_cli` registry ids. The manager normalizes an alias to its canonical
+id before any validation or lookup, so an alias never reaches the
+`environment_unknown` refusal; every output, diagnostic, marker, fragment,
+configuration record, and lock carries the canonical id, and an alias is
+never persisted. Any other spelling outside the registry keeps the existing
+refusal. The launcher's `curator run <env-id>` operand follows the same
+rule under the launcher SPEC (curator-agent-launcher README), which owns
+that operand's implementation.
+
 The manager selects each environment's effective root-context form from
 the `forms.<env-id>` knob with the adapter defaults of environments §7.2;
 profile data never selects a form. A configured form the adapter does not
