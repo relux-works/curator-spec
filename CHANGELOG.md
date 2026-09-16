@@ -22,6 +22,17 @@ Versioning for the complete specification set.
   `repository_alias_unknown`; draft schemas and conformance vectors are
   isolated from rc.9 release artifacts; no manager implementation or release
   qualification is claimed.
+- Amended draft Decision 0018 (proposed — not adopted, no normative
+  change): the `curator run` permission mode is configured (launcher
+  `defaults.json` v2 member, environments §12.1 per-profile knob, CLI
+  `--permissions` override) with built-in default `yolo` for
+  interactive launches (`native` for headless/CI/tracked silence),
+  precedence flag > profile > global > default, a §12.2
+  force-`native` lock, provenance
+  `source=flag|profile|global|default-interactive|default-headless`,
+  and fail-closed legacy policy/lock transport
+  (`permission_policy_unsupported`); mapping, refusals, and the
+  tracked-mode outcome are unchanged.
 
 ### Changed
 

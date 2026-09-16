@@ -38,4 +38,4 @@ Fable-reviewed TASK-260916-2timlf design). Filing does not authorize
 implementation, normative changes, workarounds, or draft landing.
 
 - [Decision 0017: environment credential modes](decisions/0017-environment-credential-modes.md)
-- [Decision 0018: curator run permission interface](decisions/0018-curator-run-permission-interface.md)
+- [Decision 0018: curator run permission interface](decisions/0018-curator-run-permission-interface.md) — amended 2026-09-16 (TASK-260916-2fu85y, rev 2 after review): config-driven mode, interactive default `yolo` / headless default `native`, force-`native` lock, fail-closed legacy transport; still proposed — not adopted.
