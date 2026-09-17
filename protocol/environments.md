@@ -404,6 +404,9 @@ the addressed root is not a context package.
 | `agent-context.json` absent at the addressed root, malformed, unknown field, wrong `schema_version`, invalid `name`, `version`, `weight`, `weights`, or `requires` entry; `context` present without `context/` | `context_manifest_invalid` |
 | `agent-mcp.json` absent at the addressed root, malformed, unknown field, wrong `schema_version`, or a `server` rule of section 2.2 violated | `mcp_declaration_invalid` |
 | an MCP declaration package's canonical source identity is outside the machine's MCP package allowlist | `mcp_package_not_allowed` |
+| the MCP package allowlist is empty at install, update, or status (warning: every declaration package in the closure is admitted) | `mcp_package_allowlist_empty` |
+| S4 profile `s4-warn`: a launch passes an operator variable not listed in an explicitly configured `passable_env_names`, or any passed operator variable when the knob is absent (warning, names the variables and the knob) | `mcp_env_passthrough_unlisted` |
+| S4 profile `s4-enforce`: a requested name outside the effective `passable_env_names` is dropped from the launch allowlist (warning, names the variables) | `mcp_env_passthrough_dropped` |
 
 `profile_index_invalid`, `profile_root_invalid`, and
 `profile_context_manifest_invalid` are withdrawn with the `Profilefile.json`
@@ -443,8 +446,13 @@ server expects at run time; each MUST match the core §2 identifier grammar
 and MUST NOT name a manager-reserved variable — the union of every manager
 §3.1 reserved set across platforms and interpreter identifiers (`PATH`,
 `HOME`, the `LD_`, `DYLD_`, `NODE_`, `NPM_CONFIG_`, and `PYTHON` families,
-and the rest) — and machine configuration MAY bound the passable names
-further by the lockable `passable_env_names` allowlist (section 12.1).
+and the rest) — and machine configuration bounds the passable names by the
+lockable `passable_env_names` allowlist (section 12.1): only a listed
+name's operator value may reach a launch. Under the revision-1 rule (S4
+profile `s4-enforce`, section 10.3) an absent knob is the empty list, so
+nothing passes unless the operator opts a name in; an explicit `null`
+keeps meaning unbounded — every requested name passes — as an explicit,
+lockable-away operator choice.
 Values never appear in any package, lock, marker, fragment, or materialized
 file; the operator's environment supplies them. `environments` is the
 section 3 selector: the adapters whose materialized set includes this
@@ -460,7 +468,42 @@ which declaration packages a profile may resolve; a package outside it is
 `mcp_package_not_allowed` at resolution. The allowlist is over packages, not
 launcher binaries, because a binary allowlist bounds nothing: `npx`, `uvx`,
 `node`, or `sh` admit any program through `args`. An empty allowlist permits
-every network identity, as core §6.1.
+every network identity, as core §6.1 — and that state always warns:
+`profile install`, `profile update`, and `env status` MUST emit
+`mcp_package_allowlist_empty`, stating that every declaration package in
+the closure is admitted.
+
+### 2.3 MCP declaration surfacing
+
+A `stdio` declaration names a program the agent tool executes at launch
+(section 10.3), so the operator sees every declaration before it can run.
+At `profile install` (section 9.1) and `profile update` (section 9.2) the
+manager MUST print, after the audit gate passes and before the lock is
+published or any surface is (re-)materialized, one surfacing row per MCP
+declaration package in the resolved closure, in ascending package-name
+byte order. `env status` (section 12) repeats the same rows for the
+current profile of each scope it reports. The row columns are closed, in
+this order:
+
+| Column | Content |
+|---|---|
+| `package` | the declaration package's name |
+| `version` | the declaration package's resolved version |
+| `transport` | exactly `stdio` or `http` |
+| `command` | the `stdio` `command`; exactly `-` when `transport` is `http` |
+| `args` | the `stdio` `args` as a JSON array with no spaces; `[]` when `transport` is `http` |
+| `env_names` | the declaration's requested `env_names` in declared order, as a JSON array with no spaces |
+
+Each row is one line of the form
+
+```text
+mcp-declaration <package> <version> <transport> command=<command> args=<args> env_names=<env_names>
+```
+
+terminated by exactly one LF. Strings inside `args` and `env_names` are
+JSON double-quoted strings. When the resolved MCP set is empty the manager
+prints no surfacing row. Surfacing is informative: it emits no diagnostic
+and never fails the operation.
 
 ## 3. Context modules
 
@@ -1647,6 +1690,11 @@ for a `path` source MUST carry the hint that a `core.autocrlf` or
 `core.autocrlf=false`, or the `git` source kind, produces LF bytes. There is
 no normalizing install flag: section 3 has no normalization path.
 
+After the audit gate passes and before the lock is published, `profile
+install` MUST print the section 2.3 surfacing rows for the resolved MCP
+set, and MUST emit `mcp_package_allowlist_empty` when the MCP package
+allowlist is empty; neither fails the install.
+
 Activation on install follows operator intent without magic: `install` sets
 the machine current profile only when the machine has none — first install,
 and the activation is reported, never silent — or when the operator passes
@@ -1694,16 +1742,21 @@ this order:
    audited in strict mode under section 9.1; a blocking finding on any new
    member leaves the **old lock in place**, reports `profile_update_blocked`
    with the finding, and changes nothing;
-3. the new store entries are installed and the new lock is published as one
+3. after the audit gate passes and before the lock is published or any
+   surface is re-materialized, `profile update` MUST print the section 2.3
+   surfacing rows for the candidate lock's MCP set, and MUST emit
+   `mcp_package_allowlist_empty` when the MCP package allowlist is empty;
+   neither fails the update;
+4. the new store entries are installed and the new lock is published as one
    manager-home transaction;
-4. in-place scopes whose current profile is this one re-materialize from
+5. in-place scopes whose current profile is this one re-materialize from
    the new lock;
-5. managed homes of this profile are marked **stale** (`environment_home_stale`
+6. managed homes of this profile are marked **stale** (`environment_home_stale`
    at their next bare `env resolve`, section 10.1; `curator run` always
    passes `--repair` and repairs the home instead of surfacing it) for
    explicit repair, never repaired in the background — a running session
    may be reading them;
-6. store entries the new lock no longer names become GC-eligible under
+7. store entries the new lock no longer names become GC-eligible under
    section 12; the old lock is retained beside the new one until the next
    garbage collection so that a stale managed home can still be identified.
 
@@ -1987,9 +2040,11 @@ section 9.5 takeover path with its notice and backup.
 | lossy import proceeding under explicit consent (warning, loss list) | `environment_import_lossy` |
 | imported skill declaration recovered from foreign records (warning) | `environment_import_skill_foreign` |
 | chosen import profile name already installed | `profile_import_name_taken` |
+| MCP package allowlist empty at install or update (warning: every declaration package in the closure is admitted) | `mcp_package_allowlist_empty` |
 
 `profile_index_ambiguous` is withdrawn with the multi-profile repository
-shape; `--use` takes no name.
+shape; `--use` takes no name. Section 2.3 surfacing emits no diagnostic
+and never fails an operation.
 
 ## 10. Resolution and the launch fragment
 
@@ -2179,6 +2234,37 @@ also appears in the composed environment literals is dropped from the
 allowlist by the launcher with a warning (Decision 0013 Decision 6.3), so
 the composed document is disjoint by construction.
 
+**S4 rollout: warn-first passthrough profiles.** The `passable_env_names`
+default change is user-visible — the impact row is "S4 passthrough
+default" — so it ships in two explicitly labelled steps. The effective
+allowlist is the explicitly configured list when the knob carries one, and
+unbounded when the knob is explicitly `null`; when the knob is absent the
+profile decides:
+
+- Profile `s4-warn` (the warning release): an absent knob behaves as
+  unbounded — the pre-S4 behavior is kept — but every launch that passes
+  an operator variable warns `mcp_env_passthrough_unlisted`: when the knob
+  carries a list, for each passed variable outside it; when the knob is
+  absent, for each passed variable. The warning MUST name the variables
+  and the `passable_env_names` knob, and MUST carry the migration hint:
+  list the named variables to keep passing them after the flip. An
+  explicit `null` passes unbounded with no warning.
+- Profile `s4-enforce` (the flip release, the revision-1 rule): an absent
+  knob is the empty list. A requested name outside the effective list —
+  every requested name when the knob is absent — is dropped from the
+  launch allowlist with `mcp_env_passthrough_dropped`, naming the dropped
+  variables. An explicit `null` stays unbounded with no diagnostic, and a
+  system file MAY lock `passable_env_names` to a list so that `null` is
+  unavailable (section 12.2).
+
+A manager MUST ship `s4-warn` before `s4-enforce`: one release MUST NOT
+flip the default and start dropping in a single step. `env status` reports
+the active profile with the effective allowlist (section 12).
+
+The closed interpreter contract for MCP launch (audit item 4, analogous to
+`script-worker-v1`) is a later revision, not this one; it is noted here so
+that no reader mistakes the surfacing rows for an execution sandbox.
+
 ### 10.4 Diagnostics
 
 | Condition | Diagnostic |
@@ -2188,6 +2274,8 @@ the composed document is disjoint by construction.
 | managed home unprovisioned, stale, drifted, or passthrough detached; no fragment without `--repair` | `environment_home_stale` |
 | repair could not acquire the mutation lock within the bounded wait | `environment_lock_unavailable` |
 | managed home cannot be repaired from the store | `environment_repair_failed` |
+| S4 profile `s4-warn`: launch composition passes an operator variable outside the configured `passable_env_names` (warning, names the variables and the knob) | `mcp_env_passthrough_unlisted` |
+| S4 profile `s4-enforce`: launch composition drops a requested name outside the effective `passable_env_names` (warning, names the variables) | `mcp_env_passthrough_dropped` |
 
 ## 11. Umbrella subcommand discovery
 
@@ -2350,14 +2438,17 @@ their provisioning state (section 8.1), backup generation counts and ages
 per home (section 8.3), orphaned managed homes (section 9.2),
 `environment_context_size_exceeded` where it applies, the effective
 `transitive_system_modules` value with every dropped system module by
-package and path where the `drop` policy skipped any (section 3), and the resolved
+package and path where the `drop` policy skipped any (section 3), the resolved
 absolute provider path and trust verdict for every `curator-<name>`
 executable discovered by the active revision's search — revision A: the
 `PATH`-selected executable with its trust verdict; revision B: the
 trust-root match or the diagnostic-only `PATH`-probe match — and always
 for `curator-run` and `curator-session`, reported missing when absent and
 reported unreadable with the directory when a trust root cannot be read
-(section 11). Both commands follow
+(section 11), the `mcp_package_allowlist_empty` warning row when the MCP
+package allowlist is empty, the active S4 profile (`s4-warn` or
+`s4-enforce`) with the effective `passable_env_names`, and the section 2.3
+surfacing rows for the current profile of each scope reported. Both commands follow
 the manager §10 discipline exactly: recompute and report, never mutate — no
 fetch, no repair, no adoption, no channel application, no onboarding.
 `--check` returns non-zero when any row is non-current.
@@ -2380,7 +2471,8 @@ the `subcommand_provider_outside_trust_roots` warning row stays current.
 Warnings —
 `environment_context_size_exceeded`, `environment_tool_version_unverified`,
 `environment_seed_shadowed`, `environment_foreign_manager_suspected`,
-`context_system_module_dropped`, an
+`context_system_module_dropped`, `mcp_package_allowlist_empty`,
+`mcp_env_passthrough_unlisted`, `mcp_env_passthrough_dropped`, an
 acknowledged shadowing path — never make a row non-current.
 
 Garbage collection extends the manager §10 and core §9.4 rules: it runs
@@ -2417,8 +2509,8 @@ knob is absent.
 | `targets.<target-id>.consented` | boolean | `false` | 7.6 |
 | `isolation.<profile>.<env-id>` | `shared`, `isolated` | `shared`; `isolated` for `claude_code` on macOS at the pinned release | 7.4 |
 | `xdg_seed_allowlist` | list of XDG config entry names | `["git", "gh", "ssh"]` | 7.1 |
-| `passable_env_names` | list of identifiers, or `null` for unbounded | `null` | 2.2, 10.3 |
-| `mcp_package_allowlist` | list of canonical source identities | empty (permits all) | 2.2 |
+| `passable_env_names` | list of identifiers, or `null` for explicit unbounded | `[]` | 2.2, 10.3 |
+| `mcp_package_allowlist` | list of canonical source identities | empty (permits all, warned) | 2.2 |
 | `shadow_acknowledged` | list of `{ env, path }` | empty | 7.5, 12 |
 | `secret_material_waivers` | list of `{ pin, file, span: [start, end], reason }` | empty | 9.1 |
 | `transitive_system_modules` | `drop`, `error` | `drop` | 3, 5.5 |
@@ -2507,7 +2599,11 @@ is direct — with the `transitive_system_modules` and
 `system_module_waivers` machine-config schema cases and the system-config
 error-direction case; the detector classes of
 section 9.1 (`vectors/context-detectors.json`, positive and negative, the
-waiver and unpinnable cases included); the section 1.2 snapshot
+waiver and unpinnable cases included); the section 2.3 surfacing bytes
+and install/update surfacing order, the section 10.3 S4 rollout profiles'
+default resolution, and the `mcp_package_allowlist_empty` warning
+(`vectors/environments-env-passthrough.json`); the `passable_env_names`
+schema default (`vectors/manager-config-v2.json`); the section 1.2 snapshot
 byte-exactness vector (`vectors/snapshot-acquisition.json`); and the
 section 11 umbrella provider trust-root vectors
 (`vectors/umbrella-provider-resolution.json`): the install-directory and

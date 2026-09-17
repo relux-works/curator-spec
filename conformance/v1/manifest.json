@@ -4181,6 +4181,10 @@
       "sha256": "sha256:4eac87963ac86c6e56d418a9e33cf0375cf7670619f560d97763e51fbb05c6b6"
     },
     {
+      "path": "vectors/environments-env-passthrough.json",
+      "sha256": "sha256:1953748e548d4f335f9defa4baa1524998d29dab4bf36647fb8c8bcbdcabf6db"
+    },
+    {
       "path": "vectors/environments.json",
       "sha256": "sha256:08b3ad8fcd89c35389328c142d8fb8329c86b2d0ef73d444ccf47d62736e2f51"
     },
@@ -4206,7 +4210,7 @@
     },
     {
       "path": "vectors/manager-config-v2.json",
-      "sha256": "sha256:8365cc1ca31082426248fc5082af31ca2bfab1d29cb55f81b67b859aafd95ffd"
+      "sha256": "sha256:16cedcb1dfe468db99b2193cf3b792354fae55b115f58ba9920e9bfd68b637a6"
     },
     {
       "path": "vectors/manager-config.json",

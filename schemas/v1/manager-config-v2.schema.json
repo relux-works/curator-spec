@@ -467,7 +467,7 @@
               "type": "null"
             }
           ],
-          "default": null
+          "default": []
         },
         "mcp_package_allowlist": {
           "type": "array",

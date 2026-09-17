@@ -167,6 +167,28 @@ Versioning for the complete specification set.
   refusals, unreadable failures, missing) and new `provider_directories`
   schema cases and vectors for `manager-config-v2` and `system-config-v2`.
   Blocks proposal 0016 / `path_prepend` (`STORY-260916-2otjbn`).
+- S4 (MCP env passthrough and declaration surfacing): the environments
+  section 12.1 `passable_env_names` default is now empty (opt-in per name)
+  instead of `null` (unbounded); an explicit `null` keeps meaning unbounded
+  as a lockable-away operator choice (sections 2.2, 10.3; section 12.2
+  already lockable, unchanged). An empty `mcp_package_allowlist` still
+  permits every network identity but now warns
+  `mcp_package_allowlist_empty` at `profile install`, `profile update`,
+  and in `env status`, stating that every declaration package in the
+  closure is admitted. `profile install` and `profile update` print one
+  closed-column surfacing row per MCP declaration package (new section
+  2.3: `package`, `version`, `transport`, `command`, `args`, `env_names`),
+  repeated by `env status`. Warn-first rollout in two labelled steps
+  (impact row "S4 passthrough default"): profile `s4-warn` keeps the
+  unbounded default but warns `mcp_env_passthrough_unlisted` for every
+  passed operator variable outside the knob (naming the variables and the
+  knob, with a migration hint); profile `s4-enforce` makes the default
+  empty and drops unlisted names with `mcp_env_passthrough_dropped`. The
+  `manager-config-v2` schema default and its vectors follow the new empty
+  default, with new cases for absent/explicit-`null`/explicit-list, plus
+  `vectors/environments-env-passthrough.json` pinning both profiles, the
+  allowlist warning, and the surfacing bytes. The closed interpreter
+  contract for MCP launch stays a later revision.
 
 ### Added
 

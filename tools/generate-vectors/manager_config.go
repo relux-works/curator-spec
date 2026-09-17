@@ -19,7 +19,7 @@ func managerConfigV2EnvironmentDefaults() map[string]any {
 		"targets":                   map[string]any{},
 		"isolation":                 map[string]any{},
 		"xdg_seed_allowlist":        []any{"git", "gh", "ssh"},
-		"passable_env_names":        nil,
+		"passable_env_names":        []any{},
 		"mcp_package_allowlist":     []any{},
 		"shadow_acknowledged":       []any{},
 		"secret_material_waivers":   []any{},
@@ -334,5 +334,21 @@ func managerConfigV2Vectors() []any {
 			"expected": map[string]any{"environments": expectedWith(map[string]any{"provider_directories": []any{"/usr/local/lib/curator/providers"}})},
 		},
 		map[string]any{"name": "schema2-provider-directories-relative", "input": withEnvironments(map[string]any{"provider_directories": []any{"rel/providers"}}), "valid": false},
+		// S4 (environments §2.2, §10.3, §12.1): the passable_env_names
+		// default is empty (opt-in per name); an explicit null keeps
+		// meaning unbounded as a lockable-away operator choice.
+		map[string]any{
+			"name": "schema2-passable-env-absent-empty", "input": withEnvironments(map[string]any{}), "valid": true,
+			"expected": map[string]any{"environments": managerConfigV2EnvironmentDefaults()},
+		},
+		map[string]any{
+			"name": "schema2-passable-env-explicit-null-unbounded", "input": withEnvironments(map[string]any{"passable_env_names": nil}), "valid": true,
+			"expected": map[string]any{"environments": expectedWith(map[string]any{"passable_env_names": nil})},
+		},
+		map[string]any{
+			"name": "schema2-passable-env-explicit-empty", "input": withEnvironments(map[string]any{"passable_env_names": []any{}}), "valid": true,
+			"expected": map[string]any{"environments": expectedWith(map[string]any{"passable_env_names": []any{}})},
+		},
+		map[string]any{"name": "schema2-passable-env-invalid-name", "input": withEnvironments(map[string]any{"passable_env_names": []any{"FIGMA API KEY"}}), "valid": false},
 	}
 }

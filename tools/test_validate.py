@@ -1728,6 +1728,276 @@ class EnvironmentVectorTests(unittest.TestCase):
             self.assertFalse((validate.SCHEMAS / withdrawn).exists(), withdrawn)
 
 
+class EnvPassthroughVectorTests(unittest.TestCase):
+    """The S4 passthrough/allowlist/surfacing gate must fail closed.
+
+    validate_environments_env_passthrough_vectors is the production gate:
+    tools/validate.py main() runs it on every `make validate`, recomputing
+    the effective passable_env_names per profile/knob state, the
+    passed/dropped/warned name sets and diagnostics, the allowlist warning
+    verdict, and the surfacing output bytes from the declared inputs. Each
+    test narrows one rule and proves the gate rejects what the rule must
+    reject, including the review round-1 mutants.
+    """
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.SUITE / "vectors" / "environments-env-passthrough.json"
+        )
+        _, paths = validate.schema_registry()
+        self.schema = validate.load_json(paths["manager-config-v2.schema.json"])
+
+    def case(self, family: str, name: str, vector: dict | None = None) -> dict:
+        source = self.vector if vector is None else vector
+        return next(item for item in source[family] if item["name"] == name)
+
+    def run_gate(self, vector=None, schema=None) -> None:
+        validate.validate_environments_env_passthrough_vectors(
+            vector=self.vector if vector is None else vector,
+            schema=self.schema if schema is None else schema,
+        )
+
+    def test_published_vector_passes(self) -> None:
+        self.run_gate()
+
+    def test_review_mutant_enforce_absent_passes_is_rejected(self) -> None:
+        # The review round-1 mutant: the enforcing absent-knob case flipped
+        # to pass FIGMA_API_KEY and drop nothing must fail.
+        changed = copy.deepcopy(self.vector)
+        case = self.case("default_resolution_cases", "s4-enforce-absent-drops-all", changed)
+        case["passed"] = ["FIGMA_API_KEY"]
+        case["dropped"] = []
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_review_mutant_surfacing_bytes_are_rejected(self) -> None:
+        # The review round-1 mutant: expected surfacing bytes replaced with
+        # INVALID\n, both with stale and with refreshed length/hash pins.
+        changed = copy.deepcopy(self.vector)
+        self.case("surfacing_cases", "single-stdio-declaration", changed)["expected_bytes"] = "INVALID\n"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+        changed = copy.deepcopy(self.vector)
+        case = self.case("surfacing_cases", "single-stdio-declaration", changed)
+        case["expected_bytes"] = "INVALID\n"
+        case["expected_byte_length"] = 8
+        case["expected_sha256"] = "sha256:" + hashlib.sha256(b"INVALID\n").hexdigest()
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_narrowed_list_bypass_under_enforce_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("default_resolution_cases", "s4-enforce-explicit-list-drops-with-diagnostic", changed)
+        case["passed"] = ["FIGMA_API_KEY", "GITHUB_TOKEN"]
+        case["dropped"] = []
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_narrowed_list_bypass_under_warn_is_rejected(self) -> None:
+        # An explicit list still bounds under s4-warn, silently: passing an
+        # unlisted name is a bypass even with no diagnostic expected.
+        changed = copy.deepcopy(self.vector)
+        case = self.case("default_resolution_cases", "s4-warn-explicit-list-bounds-silently", changed)
+        case["passed"] = ["FIGMA_API_KEY", "GITHUB_TOKEN"]
+        case["dropped"] = []
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_warn_absent_silence_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("default_resolution_cases", "s4-warn-absent-warns-every-passed", changed)["diagnostic"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_warn_absent_missing_migration_hint_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("default_resolution_cases", "s4-warn-absent-warns-every-passed", changed)
+        case["migration_hint_names_knob"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_explicit_null_bound_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("default_resolution_cases", "explicit-null-unbounded", changed)
+        case["passed"] = ["FIGMA_API_KEY"]
+        case["dropped"] = ["GITHUB_TOKEN"]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_effective_mutation_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("default_resolution_cases", "s4-enforce-absent-drops-all", changed)["effective"] = "unbounded"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_empty_allowlist_silence_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("allowlist_empty_cases", "empty-allowlist-install-warns", changed)["diagnostic"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_nonempty_allowlist_warning_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("allowlist_empty_cases", "non-empty-allowlist-silent", changed)["diagnostic"] = (
+            "mcp_package_allowlist_empty"
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_admitted_wording_mutation_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("allowlist_empty_cases", "empty-allowlist-install-warns", changed)["admitted"] = (
+            "only listed declaration packages"
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_refused_package_inside_allowlist_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("allowlist_empty_cases", "outside-non-empty-allowlist-refused", changed)
+        case["mcp_package_allowlist"] = [case["package"]]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_negative_flag_flip_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        del self.case("default_resolution_cases", "s4-enforce-absent-passes-unlisted", changed)["conforming"]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+        changed = copy.deepcopy(self.vector)
+        self.case("default_resolution_cases", "s4-enforce-absent-drops-all", changed)["conforming"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_negative_observation_repair_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("default_resolution_cases", "s4-enforce-absent-passes-unlisted", changed)["passed"] = []
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+        changed = copy.deepcopy(self.vector)
+        self.case("allowlist_empty_cases", "non-empty-allowlist-warns", changed)["diagnostic"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+        changed = copy.deepcopy(self.vector)
+        self.case("surfacing_cases", "row-missing-env-names", changed)["row"] = (
+            'mcp-declaration figma-devmode 1.2.0 stdio command=npx args=["-y"] env_names=["FIGMA_API_KEY"]'
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_surfacing_order_reverted_is_rejected(self) -> None:
+        # The pre-rework contradiction: update surfacing after the lock is
+        # published must fail the pinned install/update order.
+        changed = copy.deepcopy(self.vector)
+        self.case("surfacing_order_cases", "update-surfacing-before-publish", changed)["order"] = [
+            "audit-gate",
+            "lock-published",
+            "surfacing",
+            "materialization",
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_surfacing_byte_order_mutation_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("surfacing_cases", "stdio-and-http-ordering", changed)
+        lines = case["expected_bytes"].splitlines(keepends=True)
+        case["expected_bytes"] = "".join(reversed(lines))
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_surfacing_row_with_space_arg_parses(self) -> None:
+        # Review round-2 admission control: a valid argument containing a
+        # space (agent-mcp-v1 string args) must not break the closed columns.
+        row = (
+            "mcp-declaration figma-devmode 1.2.0 stdio command=npx "
+            'args=["-y","figma-developer-mcp","--stdio","hello world"] '
+            'env_names=["FIGMA_API_KEY"]'
+        )
+        parsed = validate.s4_parse_surfacing_row(row)
+        self.assertIsNotNone(parsed)
+        assert parsed is not None
+        self.assertEqual(
+            parsed["args"],
+            ["-y", "figma-developer-mcp", "--stdio", "hello world"],
+        )
+        self.assertEqual(parsed["env_names"], ["FIGMA_API_KEY"])
+        self.assertEqual(parsed["command"], "npx")
+
+    def test_surfacing_row_with_escaped_quote_parses(self) -> None:
+        row = (
+            "mcp-declaration figma-devmode 1.2.0 stdio command=npx "
+            'args=["say \\"hi\\"","--stdio"] '
+            'env_names=["FIGMA_API_KEY"]'
+        )
+        parsed = validate.s4_parse_surfacing_row(row)
+        self.assertIsNotNone(parsed)
+        assert parsed is not None
+        self.assertEqual(parsed["args"], ['say "hi"', "--stdio"])
+
+    def test_surfacing_row_with_delimiter_like_string_parses(self) -> None:
+        # The columns are located structurally: a column marker inside a
+        # JSON string value must not be mistaken for the column itself.
+        row = (
+            "mcp-declaration figma-devmode 1.2.0 stdio command=npx "
+            'args=["a env_names=[\\"x\\"] b"] '
+            'env_names=["FIGMA_API_KEY"]'
+        )
+        parsed = validate.s4_parse_surfacing_row(row)
+        self.assertIsNotNone(parsed)
+        assert parsed is not None
+        self.assertEqual(parsed["args"], ['a env_names=["x"] b'])
+
+    def test_surfacing_row_extra_column_is_rejected(self) -> None:
+        row = (
+            "mcp-declaration figma-devmode 1.2.0 stdio command=npx "
+            'args=["-y"] env_names=["FIGMA_API_KEY"] extra=1'
+        )
+        self.assertIsNone(validate.s4_parse_surfacing_row(row))
+
+    def test_surfacing_row_padded_json_is_rejected(self) -> None:
+        # Separator whitespace inside the JSON arrays is still non-compact.
+        row = (
+            "mcp-declaration figma-devmode 1.2.0 stdio command=npx "
+            'args=["-y", "serve"] env_names=["FIGMA_API_KEY"]'
+        )
+        self.assertIsNone(validate.s4_parse_surfacing_row(row))
+
+    def test_space_and_quote_cases_pass_the_gate(self) -> None:
+        names = {item["name"] for item in self.vector["surfacing_cases"]}
+        self.assertIn("args-with-space", names)
+        self.assertIn("args-with-escaped-quote", names)
+        self.run_gate()
+
+    def test_dropped_case_fails_closed(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["surfacing_order_cases"] = [
+            item
+            for item in changed["surfacing_order_cases"]
+            if item["name"] != "update-surfacing-before-publish"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_schema_default_drift_is_rejected(self) -> None:
+        schema = copy.deepcopy(self.schema)
+        schema["$defs"]["environments"]["properties"]["passable_env_names"]["default"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(schema=schema)
+
+    def test_schema_valid_flag_flip_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("schema_cases", "knob-invalid-name", changed)["valid"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_wrong_capability_identity_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["protocol_version"] = "1.0.0-rc.8"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+
 class ContextVersionVectorTests(unittest.TestCase):
     """The environments.md section 1.3/1.4 gate must fail closed.
 

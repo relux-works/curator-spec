@@ -2358,7 +2358,8 @@ requirement they carry — audits every member under section 12.6, writes the
 lock, and installs every member's store entry. Every closure member passes
 the same gates: canonical source identity and the section 7 allowlist for
 `git` sources, the `mcp_package_allowlist` knob for `mcp` members (an
-empty list permits every network identity; a package outside a non-empty
+empty list permits every network identity with the
+`mcp_package_allowlist_empty` warning; a package outside a non-empty
 list is `mcp_package_not_allowed`), snapshot validation, and the audit.
 Activation follows operator intent without magic: install sets the machine
 current profile only when the machine has none — reported, never silent —
@@ -2583,7 +2584,7 @@ LF, so that the Decision 0013 Decision 6.4 `fragment-digest` extension key
 is `sha256:` over exactly those bytes without the LF; `--format env` and
 `--format shell` print the variables as environments §10.1 fixes, the
 latter POSIX-only. Two knobs shape what a fragment can carry: the
-`passable_env_names` knob (default `null`, unbounded) bounds, beside the
+`passable_env_names` knob (default empty — opt-in per name; explicit `null` stays unbounded; environments §2.2, §10.3) bounds, beside the
 reserved-name exclusion of environments §2.2, which operator variable names
 the fragment's `env_names` may name for the launcher's allowlist — values
 never appear anywhere — and the `system_prompt_files.<profile>.pi` knob

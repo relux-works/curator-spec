@@ -4501,6 +4501,399 @@ def validate_environment_vectors(vector: Any = None, suite_root: Path | None = N
 
 
 # ---------------------------------------------------------------------------
+# S4: MCP env passthrough bounds and declaration surfacing
+# (environments.md sections 2.2, 2.3, 9.1, 9.2, 10.3, 12, 12.1)
+
+
+S4_WARN_PROFILE = "s4-warn"
+S4_ENFORCE_PROFILE = "s4-enforce"
+S4_PROFILES = ("s4-enforce", "s4-warn")
+
+S4_DIAG_ALLOWLIST_EMPTY = "mcp_package_allowlist_empty"
+S4_DIAG_UNLISTED = "mcp_env_passthrough_unlisted"
+S4_DIAG_DROPPED = "mcp_env_passthrough_dropped"
+S4_DIAG_NOT_ALLOWED = "mcp_package_not_allowed"
+
+S4_ALLOWLIST_EMPTY_ADMITTED = "every declaration package in the closure"
+S4_ALLOWLIST_NONEMPTY_ADMITTED = "only listed declaration packages"
+
+S4_SURFACING_ORDER = ["audit-gate", "surfacing", "lock-published", "materialization"]
+S4_SURFACING_TRANSPORTS = ("stdio", "http")
+
+S4_DEFAULT_RESOLUTION_CASES = {
+    "s4-warn-absent-warns-every-passed",
+    "s4-enforce-absent-drops-all",
+    "explicit-null-unbounded",
+    "s4-warn-explicit-list-bounds-silently",
+    "s4-enforce-explicit-list-drops-with-diagnostic",
+    "s4-enforce-absent-passes-unlisted",
+    "explicit-null-treated-as-empty",
+}
+S4_DEFAULT_NEGATIVE_CASES = {
+    "s4-enforce-absent-passes-unlisted",
+    "explicit-null-treated-as-empty",
+}
+S4_ALLOWLIST_CASES = {
+    "empty-allowlist-install-warns",
+    "empty-allowlist-update-warns",
+    "empty-allowlist-status-posture",
+    "non-empty-allowlist-silent",
+    "non-empty-allowlist-warns",
+    "outside-non-empty-allowlist-refused",
+}
+S4_ALLOWLIST_NEGATIVE_CASES = {"non-empty-allowlist-warns"}
+S4_SURFACING_CASES = {
+    "single-stdio-declaration",
+    "stdio-and-http-ordering",
+    "args-with-space",
+    "args-with-escaped-quote",
+    "row-missing-env-names",
+    "row-wrong-column-order",
+}
+S4_SURFACING_NEGATIVE_CASES = {"row-missing-env-names", "row-wrong-column-order"}
+S4_SURFACING_ORDER_CASES = {
+    "install-surfacing-before-publish": "profile-install",
+    "update-surfacing-before-publish": "profile-update",
+}
+S4_SCHEMA_CASES = {
+    "knob-absent-defaults-empty",
+    "knob-explicit-null-unbounded",
+    "knob-explicit-list",
+    "knob-invalid-name",
+}
+
+
+def s4_effective_passable(knob: Any, profile: str) -> Any:
+    """Recompute the effective passable_env_names for one knob state (§10.3).
+
+    The knob is `"absent"`, `None` (explicit null), or a list. An absent
+    knob is unbounded under `s4-warn` and empty under `s4-enforce`; an
+    explicit null is unbounded under both; a list bounds under both.
+    """
+    if knob == "absent":
+        return "unbounded" if profile == S4_WARN_PROFILE else []
+    if knob is None:
+        return "unbounded"
+    return list(knob)
+
+
+def s4_compact_json(value: Any) -> str:
+    """Compact JSON with no spaces, matching the §2.3 row grammar.
+
+    Raw UTF-8 (ensure_ascii=False), the same choice the Go vector generator
+    makes: Go's encoder never escapes non-ASCII runes.
+    """
+    return json.dumps(value, separators=(",", ":"), ensure_ascii=False)
+
+
+def s4_surfacing_row(declaration: Any) -> str:
+    """Render one §2.3 surfacing row from a declaration, without the LF."""
+    if not isinstance(declaration, dict):
+        raise ValidationFailure("surfacing declaration must be an object")
+    package = declaration.get("package")
+    version = declaration.get("version")
+    transport = declaration.get("transport")
+    if not isinstance(package, str) or not package:
+        raise ValidationFailure("surfacing declaration needs a package name")
+    if not isinstance(version, str) or not version:
+        raise ValidationFailure(f"surfacing declaration {package}: needs a version")
+    if transport not in S4_SURFACING_TRANSPORTS:
+        raise ValidationFailure(f"surfacing declaration {package}: transport must be stdio or http")
+    env_names = declaration.get("env_names")
+    if not isinstance(env_names, list) or any(not isinstance(item, str) for item in env_names):
+        raise ValidationFailure(f"surfacing declaration {package}: env_names must be a string array")
+    if transport == "http":
+        if "command" in declaration and declaration["command"] != "-":
+            raise ValidationFailure(f"surfacing declaration {package}: http rows carry command=-")
+        if "args" in declaration and declaration["args"] != []:
+            raise ValidationFailure(f"surfacing declaration {package}: http rows carry args=[]")
+        command, args = "-", []
+    else:
+        command = declaration.get("command")
+        args = declaration.get("args")
+        if not isinstance(command, str) or not command:
+            raise ValidationFailure(f"surfacing declaration {package}: stdio needs a command")
+        if not isinstance(args, list) or any(not isinstance(item, str) for item in args):
+            raise ValidationFailure(f"surfacing declaration {package}: stdio args must be a string array")
+    return (
+        f"mcp-declaration {package} {version} {transport} "
+        f"command={command} args={s4_compact_json(args)} env_names={s4_compact_json(env_names)}"
+    )
+
+
+def s4_parse_surfacing_row(row: Any) -> dict[str, Any] | None:
+    """Parse one §2.3 surfacing row, or return None when it is non-conforming.
+
+    The columns are closed and ordered: command=, args=, env_names=. The
+    `args` and `env_names` JSON arrays are decoded structurally, so spaces
+    and escapes inside string values are preserved; the arrays must still
+    be compact (no separator whitespace), so a re-serialization check
+    rejects padded but otherwise valid rows. Missing, reordered, or extra
+    columns are rejected.
+    """
+    if not isinstance(row, str):
+        return None
+    if "\n" in row or "\r" in row:
+        return None
+    head = row.split(" ", 4)
+    if len(head) != 5:
+        return None
+    marker, package, version, transport, rest = head
+    if marker != "mcp-declaration" or not package or not version:
+        return None
+    if transport not in S4_SURFACING_TRANSPORTS:
+        return None
+    if not rest.startswith("command="):
+        return None
+    space = rest.find(" ")
+    if space < 0:
+        return None
+    command = rest[len("command="):space]
+    if not command:
+        return None
+    if transport == "http" and command != "-":
+        return None
+    after_command = rest[space + 1:]
+    if not after_command.startswith("args="):
+        return None
+    try:
+        args_value, args_end = json.JSONDecoder().raw_decode(after_command, len("args="))
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(args_value, list) or any(not isinstance(item, str) for item in args_value):
+        return None
+    if s4_compact_json(args_value) != after_command[len("args="):args_end]:
+        return None
+    after_args = after_command[args_end:]
+    if not after_args.startswith(" env_names="):
+        return None
+    try:
+        env_value, env_end = json.JSONDecoder().raw_decode(after_args, len(" env_names="))
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(env_value, list) or any(not isinstance(item, str) for item in env_value):
+        return None
+    if s4_compact_json(env_value) != after_args[len(" env_names="):env_end]:
+        return None
+    if env_end != len(after_args):
+        return None
+    if transport == "http" and args_value != []:
+        return None
+    return {
+        "package": package,
+        "version": version,
+        "transport": transport,
+        "command": command,
+        "args": args_value,
+        "env_names": env_value,
+    }
+
+
+def s4_expected_passthrough(knob: Any, profile: str, requested: list[str]) -> tuple[list[str], list[str], str | None]:
+    """Recompute (passed, dropped, diagnostic) for one launch composition."""
+    effective = s4_effective_passable(knob, profile)
+    if effective == "unbounded":
+        passed, dropped = list(requested), []
+    else:
+        passed = [name for name in requested if name in effective]
+        dropped = [name for name in requested if name not in effective]
+    if profile == S4_WARN_PROFILE:
+        if knob == "absent":
+            diagnostic = S4_DIAG_UNLISTED if passed else None
+        else:
+            # An explicit list still bounds under s4-warn, silently: the
+            # pre-S4 behavior is kept and nothing outside a list passes, so
+            # the unlisted warning has nothing to name.
+            diagnostic = None
+    else:
+        diagnostic = S4_DIAG_DROPPED if dropped else None
+    return passed, dropped, diagnostic
+
+
+def validate_environments_env_passthrough_vectors(
+    vector: Any = None, suite_root: Path | None = None, schema: Any = None
+) -> None:
+    """Recompute the S4 passthrough, allowlist, and surfacing expectations.
+
+    Every positive case is derived from its declared inputs — the effective
+    passable_env_names per profile/knob state, the passed/dropped name sets
+    and diagnostics, the allowlist warning verdict, and the surfacing output
+    bytes — and compared against the declared fields. Every negative case
+    must carry an observation that genuinely contradicts the recomputed rule,
+    so a repaired observation or a flipped flag fails here.
+    """
+    root = SUITE if suite_root is None else Path(suite_root)
+    if vector is None:
+        vector = load_json(root / "vectors" / "environments-env-passthrough.json")
+    if (
+        vector.get("schema_version") != 1
+        or vector.get("protocol_version") != PROTOCOL_VERSION
+        or vector.get("capability") != "agent-environments"
+        or vector.get("capability_revision") != 1
+    ):
+        raise ValidationFailure("env-passthrough vector has the wrong capability identity")
+    if vector.get("s4_profiles") != list(S4_PROFILES):
+        raise ValidationFailure("env-passthrough s4_profiles must pin exactly s4-enforce and s4-warn")
+
+    defaults = named_cases(vector.get("default_resolution_cases"), "env-passthrough default resolution")
+    if set(defaults) != S4_DEFAULT_RESOLUTION_CASES:
+        raise ValidationFailure("env-passthrough default resolution case inventory is not exact")
+    for name, case in defaults.items():
+        profiles = case.get("profiles", [case.get("profile")])
+        if (
+            not isinstance(profiles, list)
+            or not profiles
+            or any(profile not in S4_PROFILES for profile in profiles)
+        ):
+            raise ValidationFailure(f"env-passthrough case {name}: profile must be s4-warn or s4-enforce")
+        knob = case.get("knob", "absent")
+        if not (knob == "absent" or knob is None or isinstance(knob, list)):
+            raise ValidationFailure(f"env-passthrough case {name}: knob must be absent, null, or a list")
+        requested = case.get("requested")
+        if not isinstance(requested, list) or any(not isinstance(item, str) for item in requested):
+            raise ValidationFailure(f"env-passthrough case {name}: requested must be a string array")
+        if name in S4_DEFAULT_NEGATIVE_CASES:
+            if case.get("conforming") is not False or not case.get("reason"):
+                raise ValidationFailure(f"env-passthrough case {name}: a negative needs conforming=false and a reason")
+            observed = case.get("passed")
+            if not isinstance(observed, list):
+                raise ValidationFailure(f"env-passthrough case {name}: a negative needs its observed passed set")
+            for profile in profiles:
+                expected_passed, _, _ = s4_expected_passthrough(knob, profile, requested)
+                if observed == expected_passed:
+                    raise ValidationFailure(
+                        f"env-passthrough case {name}: the observation no longer violates the {profile} rule"
+                    )
+            continue
+        if case.get("conforming") is False:
+            raise ValidationFailure(f"env-passthrough case {name}: a positive case must not carry conforming=false")
+        for profile in profiles:
+            expected_passed, expected_dropped, expected_diag = s4_expected_passthrough(knob, profile, requested)
+            if case.get("passed") != expected_passed or case.get("dropped") != expected_dropped:
+                raise ValidationFailure(
+                    f"env-passthrough case {name}: passed/dropped are not the {profile} rule "
+                    f"({expected_passed}/{expected_dropped})"
+                )
+            if case.get("diagnostic") != expected_diag:
+                raise ValidationFailure(
+                    f"env-passthrough case {name}: diagnostic is not the {profile} rule ({expected_diag!r})"
+                )
+            if case.get("effective") != s4_effective_passable(knob, profile):
+                raise ValidationFailure(f"env-passthrough case {name}: effective is not the {profile} rule")
+        if case.get("diagnostic") == S4_DIAG_UNLISTED:
+            if case.get("migration_hint_names_variables") is not True or case.get("migration_hint_names_knob") is not True:
+                raise ValidationFailure(f"env-passthrough case {name}: the unlisted warning must name the variables and the knob")
+        elif case.get("migration_hint_names_variables") is True or case.get("migration_hint_names_knob") is True:
+            raise ValidationFailure(f"env-passthrough case {name}: a migration hint without the unlisted warning is stale")
+
+    allowlist = named_cases(vector.get("allowlist_empty_cases"), "env-passthrough allowlist")
+    if set(allowlist) != S4_ALLOWLIST_CASES:
+        raise ValidationFailure("env-passthrough allowlist case inventory is not exact")
+    for name, case in allowlist.items():
+        operation = case.get("operation")
+        if operation not in {"profile-install", "profile-update", "env-status"}:
+            raise ValidationFailure(f"env-passthrough case {name}: operation must be install, update, or status")
+        entries = case.get("mcp_package_allowlist")
+        if not isinstance(entries, list) or any(not isinstance(item, str) for item in entries):
+            raise ValidationFailure(f"env-passthrough case {name}: mcp_package_allowlist must be a string array")
+        expected_diag = S4_DIAG_ALLOWLIST_EMPTY if not entries else None
+        if name in S4_ALLOWLIST_NEGATIVE_CASES:
+            if case.get("conforming") is not False or not case.get("reason"):
+                raise ValidationFailure(f"env-passthrough case {name}: a negative needs conforming=false and a reason")
+            if case.get("diagnostic") == expected_diag:
+                raise ValidationFailure(f"env-passthrough case {name}: the observation no longer violates the allowlist rule")
+            continue
+        if case.get("conforming") is False:
+            raise ValidationFailure(f"env-passthrough case {name}: a positive case must not carry conforming=false")
+        if case.get("diagnostic") != expected_diag and "package" not in case:
+            raise ValidationFailure(f"env-passthrough case {name}: diagnostic is not the allowlist rule ({expected_diag!r})")
+        if "package" in case:
+            if not entries or case.get("package") in entries:
+                raise ValidationFailure(f"env-passthrough case {name}: the refused package must sit outside a non-empty allowlist")
+            if case.get("diagnostic") != S4_DIAG_NOT_ALLOWED or case.get("fails_operation") is not True:
+                raise ValidationFailure(f"env-passthrough case {name}: an outside package is refused with mcp_package_not_allowed")
+        elif not entries:
+            if case.get("admitted") != S4_ALLOWLIST_EMPTY_ADMITTED:
+                raise ValidationFailure(f"env-passthrough case {name}: an empty allowlist admits every declaration package in the closure")
+            if operation == "env-status":
+                if case.get("row_current") is not True:
+                    raise ValidationFailure(f"env-passthrough case {name}: the warning row stays current")
+            elif case.get("fails_operation") is not False:
+                raise ValidationFailure(f"env-passthrough case {name}: the warning never fails the operation")
+        else:
+            if case.get("admitted") != S4_ALLOWLIST_NONEMPTY_ADMITTED:
+                raise ValidationFailure(f"env-passthrough case {name}: a non-empty allowlist admits only listed declaration packages")
+            if case.get("fails_operation") is not False:
+                raise ValidationFailure(f"env-passthrough case {name}: silence never fails the operation")
+
+    surfacing = named_cases(vector.get("surfacing_cases"), "env-passthrough surfacing")
+    if set(surfacing) != S4_SURFACING_CASES:
+        raise ValidationFailure("env-passthrough surfacing case inventory is not exact")
+    for name, case in surfacing.items():
+        if name in S4_SURFACING_NEGATIVE_CASES:
+            if case.get("conforming") is not False or not case.get("reason"):
+                raise ValidationFailure(f"env-passthrough case {name}: a negative needs conforming=false and a reason")
+            if s4_parse_surfacing_row(case.get("row")) is not None:
+                raise ValidationFailure(f"env-passthrough case {name}: the row no longer violates the closed columns")
+            continue
+        if case.get("conforming") is False:
+            raise ValidationFailure(f"env-passthrough case {name}: a positive case must not carry conforming=false")
+        declarations = case.get("declarations")
+        if not isinstance(declarations, list) or not declarations:
+            raise ValidationFailure(f"env-passthrough case {name}: declarations must be a non-empty array")
+        rows = [s4_surfacing_row(item) for item in declarations]
+        rows.sort(key=lambda row: row.split(" ", 2)[1].encode("utf-8"))
+        for row in rows:
+            if s4_parse_surfacing_row(row) is None:
+                raise ValidationFailure(f"env-passthrough case {name}: recomputed row {row!r} violates the closed columns")
+        expected = "".join(row + "\n" for row in rows).encode("utf-8")
+        if not isinstance(case.get("expected_bytes"), str) or case["expected_bytes"].encode("utf-8") != expected:
+            raise ValidationFailure(f"env-passthrough case {name}: expected_bytes are stale")
+        if case.get("expected_byte_length") != len(expected):
+            raise ValidationFailure(f"env-passthrough case {name}: expected_byte_length is false")
+        if case.get("expected_sha256") != "sha256:" + hashlib.sha256(expected).hexdigest():
+            raise ValidationFailure(f"env-passthrough case {name}: expected_sha256 is stale")
+
+    order = named_cases(vector.get("surfacing_order_cases"), "env-passthrough surfacing order")
+    if set(order) != set(S4_SURFACING_ORDER_CASES):
+        raise ValidationFailure("env-passthrough surfacing order case inventory is not exact")
+    for name, case in order.items():
+        if case.get("operation") != S4_SURFACING_ORDER_CASES[name]:
+            raise ValidationFailure(f"env-passthrough case {name}: operation does not match the pinned one")
+        if case.get("order") != S4_SURFACING_ORDER:
+            raise ValidationFailure(
+                f"env-passthrough case {name}: surfacing must print after the audit gate "
+                "and before the lock is published or any surface is (re-)materialized"
+            )
+
+    registry, paths = schema_registry()
+    if schema is None:
+        schema = load_json(paths[MANAGER_CONFIG_SCHEMAS[2]])
+    knob_schema_default = schema["$defs"]["environments"]["properties"]["passable_env_names"]["default"]
+    if knob_schema_default != []:
+        raise ValidationFailure("env-passthrough schema cases need the passable_env_names schema default to be []")
+    knob_validator = Draft202012Validator(schema, registry=registry)
+    schema_cases = named_cases(vector.get("schema_cases"), "env-passthrough schema")
+    if set(schema_cases) != S4_SCHEMA_CASES:
+        raise ValidationFailure("env-passthrough schema case inventory is not exact")
+    for name, case in schema_cases.items():
+        knob = case.get("knob", "absent")
+        instance: dict[str, Any] = {"schema_version": 2, "skills_root": "./skills", "projects": {}, "environments": {}}
+        if knob != "absent":
+            instance["environments"]["passable_env_names"] = knob
+        errors = list(knob_validator.iter_errors(instance))
+        semantic = manager_config_semantic_error(instance) if not errors else None
+        if (not errors and semantic is None) != bool(case.get("valid")):
+            raise ValidationFailure(f"env-passthrough case {name}: valid flag contradicts the manager-config-v2 grammar")
+        if case.get("valid"):
+            expected_effective = [] if knob == "absent" else ("unbounded" if knob is None else knob)
+            if case.get("effective") != expected_effective:
+                raise ValidationFailure(f"env-passthrough case {name}: effective is not the knob default rule")
+        elif "effective" in case:
+            raise ValidationFailure(f"env-passthrough case {name}: an invalid knob binds no effective value")
+
+
+# ---------------------------------------------------------------------------
 # Section 9.1: detector classes
 
 
@@ -5241,6 +5634,7 @@ def main() -> int:
         validate_vector_semantics,
         validate_assurance_vectors,
         validate_environment_vectors,
+        validate_environments_env_passthrough_vectors,
         validate_context_version_vectors,
         validate_context_detector_vectors,
         validate_snapshot_acquisition_vectors,

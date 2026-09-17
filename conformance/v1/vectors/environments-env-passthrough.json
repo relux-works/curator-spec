@@ -1,0 +1,341 @@
+{
+  "allowlist_empty_cases": [
+    {
+      "admitted": "every declaration package in the closure",
+      "diagnostic": "mcp_package_allowlist_empty",
+      "fails_operation": false,
+      "mcp_package_allowlist": [],
+      "name": "empty-allowlist-install-warns",
+      "operation": "profile-install"
+    },
+    {
+      "admitted": "every declaration package in the closure",
+      "diagnostic": "mcp_package_allowlist_empty",
+      "fails_operation": false,
+      "mcp_package_allowlist": [],
+      "name": "empty-allowlist-update-warns",
+      "operation": "profile-update"
+    },
+    {
+      "admitted": "every declaration package in the closure",
+      "diagnostic": "mcp_package_allowlist_empty",
+      "mcp_package_allowlist": [],
+      "name": "empty-allowlist-status-posture",
+      "operation": "env-status",
+      "row_current": true
+    },
+    {
+      "admitted": "only listed declaration packages",
+      "diagnostic": null,
+      "fails_operation": false,
+      "mcp_package_allowlist": [
+        "https://github.com/example/figma-devmode-mcp"
+      ],
+      "name": "non-empty-allowlist-silent",
+      "operation": "profile-install"
+    },
+    {
+      "conforming": false,
+      "diagnostic": "mcp_package_allowlist_empty",
+      "mcp_package_allowlist": [
+        "https://github.com/example/figma-devmode-mcp"
+      ],
+      "name": "non-empty-allowlist-warns",
+      "operation": "profile-install",
+      "reason": "a manager that emits mcp_package_allowlist_empty for a non-empty allowlist is non-conforming"
+    },
+    {
+      "diagnostic": "mcp_package_not_allowed",
+      "fails_operation": true,
+      "mcp_package_allowlist": [
+        "https://github.com/example/figma-devmode-mcp"
+      ],
+      "name": "outside-non-empty-allowlist-refused",
+      "operation": "profile-install",
+      "package": "https://github.com/example/hostile-mcp"
+    }
+  ],
+  "capability": "agent-environments",
+  "capability_revision": 1,
+  "default_resolution_cases": [
+    {
+      "diagnostic": "mcp_env_passthrough_unlisted",
+      "dropped": [],
+      "effective": "unbounded",
+      "knob": "absent",
+      "migration_hint_names_knob": true,
+      "migration_hint_names_variables": true,
+      "name": "s4-warn-absent-warns-every-passed",
+      "passed": [
+        "FIGMA_API_KEY"
+      ],
+      "profile": "s4-warn",
+      "requested": [
+        "FIGMA_API_KEY"
+      ]
+    },
+    {
+      "diagnostic": "mcp_env_passthrough_dropped",
+      "dropped": [
+        "FIGMA_API_KEY"
+      ],
+      "effective": [],
+      "knob": "absent",
+      "name": "s4-enforce-absent-drops-all",
+      "passed": [],
+      "profile": "s4-enforce",
+      "requested": [
+        "FIGMA_API_KEY"
+      ]
+    },
+    {
+      "diagnostic": null,
+      "dropped": [],
+      "effective": "unbounded",
+      "knob": null,
+      "name": "explicit-null-unbounded",
+      "passed": [
+        "FIGMA_API_KEY",
+        "GITHUB_TOKEN"
+      ],
+      "profiles": [
+        "s4-enforce",
+        "s4-warn"
+      ],
+      "requested": [
+        "FIGMA_API_KEY",
+        "GITHUB_TOKEN"
+      ]
+    },
+    {
+      "diagnostic": null,
+      "dropped": [
+        "GITHUB_TOKEN"
+      ],
+      "effective": [
+        "FIGMA_API_KEY"
+      ],
+      "knob": [
+        "FIGMA_API_KEY"
+      ],
+      "name": "s4-warn-explicit-list-bounds-silently",
+      "passed": [
+        "FIGMA_API_KEY"
+      ],
+      "profile": "s4-warn",
+      "requested": [
+        "FIGMA_API_KEY",
+        "GITHUB_TOKEN"
+      ]
+    },
+    {
+      "diagnostic": "mcp_env_passthrough_dropped",
+      "dropped": [
+        "GITHUB_TOKEN"
+      ],
+      "effective": [
+        "FIGMA_API_KEY"
+      ],
+      "knob": [
+        "FIGMA_API_KEY"
+      ],
+      "name": "s4-enforce-explicit-list-drops-with-diagnostic",
+      "passed": [
+        "FIGMA_API_KEY"
+      ],
+      "profile": "s4-enforce",
+      "requested": [
+        "FIGMA_API_KEY",
+        "GITHUB_TOKEN"
+      ]
+    },
+    {
+      "conforming": false,
+      "name": "s4-enforce-absent-passes-unlisted",
+      "passed": [
+        "GITHUB_TOKEN"
+      ],
+      "profile": "s4-enforce",
+      "reason": "a manager that passes an unlisted operator value with an absent knob under s4-enforce is non-conforming",
+      "requested": [
+        "GITHUB_TOKEN"
+      ]
+    },
+    {
+      "conforming": false,
+      "knob": null,
+      "name": "explicit-null-treated-as-empty",
+      "passed": [],
+      "profile": "s4-enforce",
+      "reason": "a manager that treats an explicit null as the empty list is non-conforming; null stays unbounded",
+      "requested": [
+        "FIGMA_API_KEY"
+      ]
+    }
+  ],
+  "protocol_version": "1.0.0-rc.9",
+  "s4_profiles": [
+    "s4-enforce",
+    "s4-warn"
+  ],
+  "schema_cases": [
+    {
+      "effective": [],
+      "knob": "absent",
+      "name": "knob-absent-defaults-empty",
+      "valid": true
+    },
+    {
+      "effective": "unbounded",
+      "knob": null,
+      "name": "knob-explicit-null-unbounded",
+      "valid": true
+    },
+    {
+      "effective": [
+        "FIGMA_API_KEY"
+      ],
+      "knob": [
+        "FIGMA_API_KEY"
+      ],
+      "name": "knob-explicit-list",
+      "valid": true
+    },
+    {
+      "knob": [
+        "FIGMA API KEY"
+      ],
+      "name": "knob-invalid-name",
+      "valid": false
+    }
+  ],
+  "schema_version": 1,
+  "surfacing_cases": [
+    {
+      "declarations": [
+        {
+          "args": [
+            "-y",
+            "figma-developer-mcp",
+            "--stdio"
+          ],
+          "command": "npx",
+          "env_names": [
+            "FIGMA_API_KEY"
+          ],
+          "package": "figma-devmode",
+          "transport": "stdio",
+          "version": "1.2.0"
+        }
+      ],
+      "expected_byte_length": 126,
+      "expected_bytes": "mcp-declaration figma-devmode 1.2.0 stdio command=npx args=[\"-y\",\"figma-developer-mcp\",\"--stdio\"] env_names=[\"FIGMA_API_KEY\"]\n",
+      "expected_sha256": "sha256:fec4f12e1b86882f745362bd7ed51b1999b392ffaf8e29fce0560f67c43d0bb0",
+      "name": "single-stdio-declaration"
+    },
+    {
+      "declarations": [
+        {
+          "command": "-",
+          "env_names": [],
+          "package": "zeta-http",
+          "transport": "http",
+          "version": "2.0.0"
+        },
+        {
+          "args": [
+            "tool@1.0",
+            "serve"
+          ],
+          "command": "uvx",
+          "env_names": [],
+          "package": "alpha-stdio",
+          "transport": "stdio",
+          "version": "0.9.0"
+        }
+      ],
+      "expected_byte_length": 159,
+      "expected_bytes": "mcp-declaration alpha-stdio 0.9.0 stdio command=uvx args=[\"tool@1.0\",\"serve\"] env_names=[]\nmcp-declaration zeta-http 2.0.0 http command=- args=[] env_names=[]\n",
+      "expected_sha256": "sha256:21779bc294c12f777054976e9d5595eac1b2e676046963490574a2216fe491af",
+      "name": "stdio-and-http-ordering"
+    },
+    {
+      "declarations": [
+        {
+          "args": [
+            "-y",
+            "figma-developer-mcp",
+            "--stdio",
+            "hello world"
+          ],
+          "command": "npx",
+          "env_names": [
+            "FIGMA_API_KEY"
+          ],
+          "package": "figma-devmode",
+          "transport": "stdio",
+          "version": "1.2.0"
+        }
+      ],
+      "expected_byte_length": 140,
+      "expected_bytes": "mcp-declaration figma-devmode 1.2.0 stdio command=npx args=[\"-y\",\"figma-developer-mcp\",\"--stdio\",\"hello world\"] env_names=[\"FIGMA_API_KEY\"]\n",
+      "expected_sha256": "sha256:81889e773b59d5025e5c8f7bb088ddc01e6bdf73a0b37d9f140ccaac75f47bbd",
+      "name": "args-with-space"
+    },
+    {
+      "declarations": [
+        {
+          "args": [
+            "say \"hi\"",
+            "--stdio"
+          ],
+          "command": "npx",
+          "env_names": [
+            "FIGMA_API_KEY"
+          ],
+          "package": "figma-devmode",
+          "transport": "stdio",
+          "version": "1.2.0"
+        }
+      ],
+      "expected_byte_length": 112,
+      "expected_bytes": "mcp-declaration figma-devmode 1.2.0 stdio command=npx args=[\"say \\\"hi\\\"\",\"--stdio\"] env_names=[\"FIGMA_API_KEY\"]\n",
+      "expected_sha256": "sha256:8416c615ff66dab69b27fba4ffe69406fd52e7e26ca69ee16002c0866cce9770",
+      "name": "args-with-escaped-quote"
+    },
+    {
+      "conforming": false,
+      "name": "row-missing-env-names",
+      "reason": "a surfacing row without the closed env_names column is non-conforming",
+      "row": "mcp-declaration figma-devmode 1.2.0 stdio command=npx args=[\"-y\"]"
+    },
+    {
+      "conforming": false,
+      "name": "row-wrong-column-order",
+      "reason": "a surfacing row with reordered columns is non-conforming",
+      "row": "mcp-declaration figma-devmode 1.2.0 stdio env_names=[\"FIGMA_API_KEY\"] command=npx args=[\"-y\"]"
+    }
+  ],
+  "surfacing_order_cases": [
+    {
+      "name": "install-surfacing-before-publish",
+      "operation": "profile-install",
+      "order": [
+        "audit-gate",
+        "surfacing",
+        "lock-published",
+        "materialization"
+      ]
+    },
+    {
+      "name": "update-surfacing-before-publish",
+      "operation": "profile-update",
+      "order": [
+        "audit-gate",
+        "surfacing",
+        "lock-published",
+        "materialization"
+      ]
+    }
+  ]
+}

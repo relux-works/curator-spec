@@ -15,7 +15,7 @@
         "overlay_default_weight": 1000,
         "overlays": {},
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -56,7 +56,7 @@
         "overlay_default_weight": 1000,
         "overlays": {},
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -100,7 +100,7 @@
         "overlay_default_weight": 1000,
         "overlays": {},
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "lower-weight"
@@ -402,7 +402,7 @@
           ]
         },
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -477,7 +477,7 @@
           ]
         },
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -533,7 +533,7 @@
           ]
         },
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -589,7 +589,7 @@
           ]
         },
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -645,7 +645,7 @@
           ]
         },
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -701,7 +701,7 @@
           ]
         },
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -757,7 +757,7 @@
           ]
         },
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -814,7 +814,7 @@
           ]
         },
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -872,7 +872,7 @@
           ]
         },
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -930,7 +930,7 @@
           ]
         },
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -988,7 +988,7 @@
           ]
         },
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -1046,7 +1046,7 @@
           ]
         },
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -1104,7 +1104,7 @@
           ]
         },
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -1162,7 +1162,7 @@
           ]
         },
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -1571,7 +1571,7 @@
         "overlay_default_weight": 1000,
         "overlays": {},
         "overlays_allowed": true,
-        "passable_env_names": null,
+        "passable_env_names": [],
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -1619,6 +1619,150 @@
       "skills_root": "./skills"
     },
     "name": "schema2-provider-directories-relative",
+    "valid": false
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {},
+        "overlays_allowed": true,
+        "passable_env_names": [],
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "provider_directories": [],
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_module_waivers": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "transitive_system_modules": "drop",
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {},
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-passable-env-absent-empty",
+    "valid": true
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {},
+        "overlays_allowed": true,
+        "passable_env_names": null,
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "provider_directories": [],
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_module_waivers": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "transitive_system_modules": "drop",
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "passable_env_names": null
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-passable-env-explicit-null-unbounded",
+    "valid": true
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {},
+        "overlays_allowed": true,
+        "passable_env_names": [],
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "provider_directories": [],
+        "require_current_profile": null,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "system_module_waivers": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "transitive_system_modules": "drop",
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "passable_env_names": []
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-passable-env-explicit-empty",
+    "valid": true
+  },
+  {
+    "input": {
+      "environments": {
+        "passable_env_names": [
+          "FIGMA API KEY"
+        ]
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-passable-env-invalid-name",
     "valid": false
   }
 ]
