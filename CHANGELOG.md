@@ -35,6 +35,58 @@ Versioning for the complete specification set.
   backup-destination refusal, inside-link ledger refusal, clean-path
   and recorded-file positives — every foreign-link case asserting the
   link's former target is byte-identical afterwards), checked
+- S5: protected-boundary contract for the environments root and profile
+  store (environments §4/§1.3/§8.2/§8.4/§8.5/§10.1/§10.4/§12/§13,
+  manager §12.2/§12.5/§12.7), mirroring core §9.3: the environments root
+  and every store entry are protected state — manager-created,
+  manager-protected, resolved independently of package input. On every
+  `env resolve`, and again under the manager-home mutation lock for every
+  mutating profile operation (install, update, use, sync, repair,
+  garbage collection), the manager MUST verify ownership, private
+  mutation permissions or DACL, containment, regular file types, and link
+  safety (`lstat`, no symlink at the root, the entry root, or any
+  component the manager did not create) for the environments root, the
+  profile store root, the lock and marker files, and every store entry
+  the lock names; link-target identity is necessary but no longer
+  sufficient currency at resolve. Store integrity is verified against the
+  pin, not the marker: resolve recomputes every named entry's tree hash
+  from its bytes and requires equality with the pin (`git` tree identity,
+  `path`/`local` `state_sha256`), with no marker required and before any
+  provisioning or repair, at O(store entry bytes named by the lock) —
+  missing hashes never pass — so a same-user byte swap of a
+  system-prompt or root-context file (or any entry file) is detected even
+  for an unprovisioned home. Home currency is separate: a marker that
+  belongs to another lock is `environment_home_stale` repaired from the
+  verified store, never `environment_store_untrusted`; an absent marker
+  is unprovisioned while an unreadable or malformed marker is
+  `environment_marker_unreadable` (never "absent"). Two failure classes
+  in order (enclosing boundary → entries → pin hashes → home currency):
+  an enclosing boundary (environments root or store root) that cannot be
+  proven refuses every resolve and every mutating operation before its
+  first write with nothing rebuilt (operator repairs out of band), while
+  an entry-class failure (store entry, lock, marker) inside a proven
+  enclosing boundary is `environment_store_untrusted` (error): resolve
+  emits no fragment, status is non-current, `env status` reports the row
+  naming the failing check and the boundary; a real operation rebuilds a
+  `git` entry from the revalidated snapshot into newly established
+  protected state via operation-private staging and atomic publication (a
+  `path` or `local` entry has no second copy, so repair fails with
+  `environment_repair_failed` and the operator reinstalls); dry-run
+  evaluation of an entry-class failure reports
+  `would-rebuild-untrusted-store` and mutates nothing, while dry-run of
+  an enclosing failure reports `environment_store_untrusted` with no
+  rebuild planned. Repair re-applies only from entries that passed the
+  contract and the pin hash, so `env resolve --repair` is not persistence
+  for a tampered store (audit note E7). Rollout is direct, not warn-first
+  (impact row "S5"): no knob — the contract is not configurable.
+  Conformance: `vectors/environments-store-boundary.json` (intact
+  resolve, swapped bytes, symlinked root, ownership, permissions,
+  containment, non-regular, and pin-hash refusals, enclosing-root and
+  store-root refusals with no rebuild, intact-old-marker stale repair and
+  swapped-old-marker untrusted, unprovisioned intact/swapped,
+  unreadable-marker, the entry-class dry-run outcome and the enclosing
+  no-rebuild case, repair rebuild/entry-rebuild/enclosing-refusal/stale/
+  unprovisioned, the non-current posture rows, and negatives), checked
   semantically by `tools/validate.py`.
 - E1: per-source signer allowlist and `profile update` delta confirmation
   (Decision 0012 amendment 2026-09-17; environments

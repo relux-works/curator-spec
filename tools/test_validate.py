@@ -2000,6 +2000,235 @@ class EnvPassthroughVectorTests(unittest.TestCase):
             self.run_gate(vector=changed)
 
 
+class StoreBoundaryVectorTests(unittest.TestCase):
+    """The S5 protected-boundary gate must fail closed.
+
+    validate_environments_store_boundary_vectors is the production gate:
+    tools/validate.py main() runs it on every `make validate`, recomputing
+    the §4 store-trust verdict from the five boundary checks plus the pin
+    hash, then home currency, in enclosing → entries → pin hashes → home
+    currency order, and from it the §10.1 diagnostic, the fragment verdict,
+    the §12 currency, the §4 dry-run outcome (entry-class rebuilds,
+    enclosing never rebuilds), and the §10.1 repair outcomes. Each named
+    case is pinned to its discriminating inputs (object, check, home,
+    surface). Each test narrows one rule and proves the gate rejects what
+    the rule must reject.
+    """
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.SUITE / "vectors" / "environments-store-boundary.json"
+        )
+
+    def case(self, family: str, name: str, vector: dict | None = None) -> dict:
+        source = self.vector if vector is None else vector
+        return next(item for item in source[family] if item["name"] == name)
+
+    def run_gate(self, vector=None) -> None:
+        validate.validate_environments_store_boundary_vectors(
+            vector=self.vector if vector is None else vector,
+        )
+
+    def test_published_vector_passes(self) -> None:
+        self.run_gate()
+
+    def test_fragment_emitted_for_swapped_bytes_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("resolve_cases", "swapped-system-prompt-bytes-untrusted", changed)["fragment_emitted"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_untrusted_silence_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("resolve_cases", "wrong-ownership-untrusted", changed)["diagnostic"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_untrusted_reported_current_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("resolve_cases", "symlinked-entry-root-untrusted", changed)["row_current"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_intact_refusal_is_rejected(self) -> None:
+        # The gate recomputes in both directions: an intact store that
+        # refuses the fragment is as wrong as an untrusted one emitting it.
+        changed = copy.deepcopy(self.vector)
+        case = self.case("resolve_cases", "intact-resolve-emits-fragment", changed)
+        case["fragment_emitted"] = False
+        case["diagnostic"] = "environment_store_untrusted"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_multi_failure_case_is_rejected(self) -> None:
+        # A positive resolve case isolates exactly one failing check.
+        changed = copy.deepcopy(self.vector)
+        self.case("resolve_cases", "wrong-permissions-untrusted", changed)["ownership"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_swap_without_surface_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("resolve_cases", "swapped-root-context-bytes-untrusted", changed)
+        case["surface"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_surface_without_pin_break_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("resolve_cases", "swapped-root-context-bytes-untrusted", changed)
+        case["pin_hash_match"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_wrong_failing_check_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("resolve_cases", "containment-escape-untrusted", changed)["failing_check"] = "ownership"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_healed_negative_is_rejected(self) -> None:
+        # A negative whose observation stops violating the rule must fail:
+        # the flipped fragment now matches the recomputed verdict.
+        changed = copy.deepcopy(self.vector)
+        self.case("resolve_cases", "swapped-bytes-emits-fragment", changed)["fragment_emitted"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_dry_run_wrong_outcome_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("dry_run_cases", "dry-run-untrusted-reports-would-rebuild", changed)["outcome"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_dry_run_mutation_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("dry_run_cases", "dry-run-untrusted-reports-would-rebuild", changed)["mutated"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_repair_reapply_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("repair_cases", "repair-rebuilds-git-entry-from-snapshot", changed)["reapplied_before_trust"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_path_rebuild_is_rejected(self) -> None:
+        # A path entry has no second copy: only a git entry rebuilds.
+        changed = copy.deepcopy(self.vector)
+        case = self.case("repair_cases", "repair-path-entry-cannot-rebuild", changed)
+        case["rebuilt_from_snapshot"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_status_missing_check_name_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("status_cases", "status-names-failing-check", changed)["names_failing_check"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_case_inventory_is_exact(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["resolve_cases"] = [
+            item
+            for item in changed["resolve_cases"]
+            if item["name"] != "marker-symlink-untrusted"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_wrong_capability_identity_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["capability"] = "agent-environments-v2"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_five_to_one_narrowing_is_rejected(self) -> None:
+        # The reviewer's F4 narrowing: five named boundary branches
+        # collapsed to ownership-only, with failing_check updated to match.
+        # Without scenario pinning the gate accepts (5/5 coverage falls to
+        # 1/5 with exit 0); the pinned gate must refuse.
+        changed = copy.deepcopy(self.vector)
+        narrow = {
+            "wrong-permissions-untrusted": "permissions",
+            "containment-escape-untrusted": "containment",
+            "non-regular-component-untrusted": "regular_types",
+            "symlinked-entry-root-untrusted": "link_safety",
+        }
+        for name, check in narrow.items():
+            case = self.case("resolve_cases", name, changed)
+            case[check] = True
+            case["ownership"] = False
+            case["failing_check"] = "ownership"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_enclosing_object_swap_is_rejected(self) -> None:
+        # A named enclosing branch that no longer names its boundary is refused.
+        changed = copy.deepcopy(self.vector)
+        case = self.case("resolve_cases", "environments-root-wrong-owner-untrusted", changed)
+        case["object"] = "store-entry"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_stale_misclassified_as_untrusted_is_rejected(self) -> None:
+        # An intact updated store with an old marker is stale, never untrusted (F1).
+        changed = copy.deepcopy(self.vector)
+        case = self.case("resolve_cases", "intact-updated-store-old-marker-stale", changed)
+        case["diagnostic"] = "environment_store_untrusted"
+        case["failing_check"] = "pin_hash"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_swapped_old_marker_stale_is_rejected(self) -> None:
+        # A swapped updated store with an old marker is untrusted (pin wins
+        # over currency) and never adopted (F1).
+        changed = copy.deepcopy(self.vector)
+        case = self.case("resolve_cases", "swapped-updated-store-old-marker-untrusted", changed)
+        case["diagnostic"] = "environment_home_stale"
+        case["failing_check"] = "home_currency"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_unprovisioned_swap_provisioned_is_rejected(self) -> None:
+        # An unprovisioned home is verified the same way: a swapped entry is
+        # untrusted even with no marker (F2).
+        changed = copy.deepcopy(self.vector)
+        case = self.case("resolve_cases", "unprovisioned-swapped-untrusted", changed)
+        case["diagnostic"] = "environment_home_stale"
+        case["failing_check"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_unreadable_misreported_as_absent_is_rejected(self) -> None:
+        # Absent and unreadable markers are distinct facts: the unreadable
+        # marker is never reported as unprovisioned stale (F2).
+        changed = copy.deepcopy(self.vector)
+        case = self.case("resolve_cases", "unreadable-marker-non-current", changed)
+        case["diagnostic"] = "environment_home_stale"
+        case["home"] = "unprovisioned"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_enclosing_dry_run_would_rebuild_is_rejected(self) -> None:
+        # Dry-run of an enclosing failure plans no rebuild (F3).
+        changed = copy.deepcopy(self.vector)
+        case = self.case("dry_run_cases", "dry-run-enclosing-no-rebuild", changed)
+        case["outcome"] = "would-rebuild-untrusted-store"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_enclosing_rebuild_is_rejected(self) -> None:
+        # An enclosing failure is never rebuilt: no protected place (F3).
+        changed = copy.deepcopy(self.vector)
+        case = self.case("repair_cases", "repair-enclosing-refuses-no-rebuild", changed)
+        case["rebuilt_from_snapshot"] = True
+        case["diagnostic"] = None
+        case["fragment_emitted"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+
 class SourceSignersVectorTests(unittest.TestCase):
     """The E1 signer-verification/merge/posture/delta gate must fail closed.
 

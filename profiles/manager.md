@@ -2327,7 +2327,9 @@ and newest backup.
 Drift follows environments §8.4. A `linked` surface drifts when a link no
 longer targets the expected store path or its target's bytes fail the
 recorded hash; `copied` and `managed-home` surfaces drift when a recorded
-content hash no longer matches. A drifted file is never silently
+content hash no longer matches. A store entry that fails the environments
+section 4 contract is not drift: the profile is
+`environment_store_untrusted` (environments §8.4, §10.1). A drifted file is never silently
 overwritten outside repair, and an absent surface file and a failed read
 are different facts: unreadable evidence is reported as unreadable with
 currency unknown, never as absence. Every materialization, takeover,
@@ -2339,7 +2341,9 @@ a link the manager does not own is refused with
 
 | Condition | Diagnostic (environments §5.7, §7.7, §8.5) |
 |---|---|
-| marker unreadable, malformed, or unsupported version | `environment_marker_invalid` |
+| marker unreadable or malformed | `environment_marker_unreadable` |
+| marker unsupported version | `environment_marker_invalid` |
+| store entry, lock, or marker file fails the environments §4 protected-boundary contract or its pin hash | `environment_store_untrusted` |
 | managed surface bytes or link differ from the record | `environment_surface_drift` |
 | recorded surface file absent | `environment_surface_missing` |
 | recorded surface file exists but cannot be read | `environment_surface_unreadable` |
@@ -2568,8 +2572,17 @@ opt-in.
 
 Resolution is read-only by default and lock-free: it reads the marker and
 verifies exactly the surfaces the marker records, taking link-target
-identity into the immutable store as sufficient currency for a linked
-surface. A home that is unprovisioned, stale after `profile update`,
+identity into the immutable store as necessary but no longer sufficient
+currency for a linked surface — every resolve also verifies the
+environments section 4 protected-boundary contract and recomputes every
+named store entry's pin hash from its bytes, refusing with
+`environment_store_untrusted` and emitting no fragment when the boundary
+cannot be proven or a pin hash does not match, with an enclosing-boundary
+failure refusing with no rebuild and an entry-class failure rebuilding
+from the revalidated snapshot (environments §4, §10.1). Home currency is
+separate: a marker that belongs to another lock is
+`environment_home_stale`, never `environment_store_untrusted`. A home
+that is unprovisioned, stale after `profile update`,
 drifted, or whose passthrough is detached — or, for a `claude_code` home in
 the `referenced` form, that lacks the launch directory's project entry — is
 stale: without `--repair` the manager reports `environment_home_stale` with
@@ -2618,6 +2631,9 @@ in this profile launches.
 | operand names an unregistered environment | `environment_unknown` |
 | named or current profile not installed | `profile_unknown` |
 | managed home unprovisioned, stale, drifted, or passthrough detached; no fragment without `--repair` | `environment_home_stale` |
+| marker unreadable or malformed at resolve (no fragment; non-current, currency unknown) | `environment_marker_unreadable` |
+| store entry, lock, or marker file fails the environments §4 protected-boundary contract or its pin hash at resolve (no fragment; non-current) | `environment_store_untrusted` |
+| enclosing boundary cannot be proven at resolve (no fragment; non-current; nothing rebuilt) | `environment_store_untrusted` |
 | repair could not acquire the mutation lock within the bounded wait | `environment_lock_unavailable` |
 | managed home cannot be repaired from the store | `environment_repair_failed` |
 
@@ -2683,9 +2699,12 @@ parent, the standing `opencode` split-brain note, the recorded and detected
 tool release per adapter, both homes of the current profile per scope with
 their provisioning state, backup generation counts and ages per home,
 orphaned managed homes, a locked `require_current_profile`,
-`environment_context_size_exceeded` where it applies, and the effective
+`environment_context_size_exceeded` where it applies, the effective
 `transitive_system_modules` value with every dropped system module by
-package and path where the `drop` policy skipped any (environments §12).
+package and path where the `drop` policy skipped any, and the store-trust
+row per installed profile with the failing check — and, for an enclosing
+failure, the boundary — named when the profile is
+`environment_store_untrusted` (environments §12).
 `--check` returns
 non-zero when any row is non-current.
 
@@ -2693,7 +2712,8 @@ An installation row is current only when its marker is valid and
 supported; profile identity, lock hash, member list, precedence, mode, and
 form match the effective machine state; every recorded surface hash
 verifies; and every recorded passthrough entry is live. A drifted, missing,
-shadow-inert (unless acknowledged), detached, partially switched, stale, or
+shadow-inert (unless acknowledged), detached, partially switched, stale,
+store-untrusted (`environment_store_untrusted`), or
 unreadable state is non-current, and unreadable evidence is reported as
 unreadable, never as absence (environments §8.4). The warnings
 `environment_context_size_exceeded`, `environment_tool_version_unverified`,
@@ -2706,7 +2726,14 @@ mutation lock, and its live roots additionally include every store entry
 named by any installed profile's lock — and by a retained previous lock
 until it is dropped — every managed home and in-place surface set
 referenced by a valid environment marker, and every entry referenced by an
-in-flight transaction journal. An unreadable marker or unprovable reference
+in-flight transaction journal. An unreadable marker
+(`environment_marker_unreadable`) or unprovable reference
 fails safe: the uncertain entries are retained and the uncertainty reported.
+An enclosing boundary that cannot be proven refuses collection before its
+first write with nothing rebuilt. Garbage collection revalidates the
+environments section 4 boundary for
+every entry it considers inside a proven enclosing boundary: an entry that
+fails the contract is retained,
+never collected, and reported; collection never rebuilds an entry.
 Environment-owned mutable state inside managed homes is never collected,
 and backups are never collected by any revision-1 rule.

@@ -198,6 +198,14 @@ a signer allowlist (section 12.1) the selected candidate's tag or commit
 signature MUST verify before the candidate enters the lock. Verification
 results are `env status` posture (section 12), not lock content.
 
+The lock file itself is verified under the section 4 protected-boundary
+contract: on every `env resolve`, and again under the manager-home
+mutation lock for every mutating profile operation, the manager MUST verify
+the lock file's ownership, private mutation permissions or DACL, regular
+file type, and link safety before trusting the lock it names. A lock file
+that fails the contract makes the profile `environment_store_untrusted`
+(section 10.1).
+
 ### 1.4 Versions, ranges, and resolution
 
 **Versions.** Version tags are strict Semantic Versioning 2.0 with a
@@ -638,6 +646,67 @@ mode of section 8 — `managed-home`, `linked`, and `copied` — materializes
 from the same lock's store entries, so the modes cannot diverge for one lock
 hash. Physical store paths are implementation-specific (manager §1); the
 store joins garbage collection under section 12.
+
+The environments root and every store entry are **protected state** in the
+core §9.3 sense: manager-created, manager-protected, and resolved
+independently of package input. Resolution and materialization MUST reuse a
+store entry only below that protected state. On every `env resolve`, and
+again under the manager-home mutation lock for every mutating profile
+operation — install, update, use, sync, repair, garbage collection — the
+manager MUST verify ownership, private mutation permissions or DACL,
+containment, regular file types, and link safety for the environments root,
+the profile store root, the profile lock file (section 1.3), the
+environment marker of every home the operation reads or writes (section
+8.2), and every store entry the lock names:
+
+- **ownership** — every verified path is owned by the operator;
+- **permissions** — private mutation permissions, or the platform DACL
+  equivalent: no identity other than the operator may mutate a verified
+  path;
+- **containment** — every store entry path resolves below the environments
+  root without leaving it; an entry path that escapes the root is
+  untrusted wherever it points;
+- **regular file types** — every store component is a directory or a
+  regular file; a special file below the store is untrusted;
+- **link safety** — verified by `lstat`, never by following links: no
+  symlink at the environments root, at a store entry root, or at any
+  component below the store root the manager did not create. The manager
+  creates no symlink below the store root — entries are immutable
+  regular-file trees — so any symlink there is untrusted.
+
+Store integrity is verified against the pin, not the marker. For every
+store entry the lock names, the manager MUST recompute the entry's tree
+hash from its bytes and require it to equal the pin: for a `git` member
+the git tree object identity of the pinned commit (or the recorded
+snapshot tree hash the lock carries), for a `path` or `local` member the
+`state_sha256` (core §8 content hash, section 1). This check needs no home
+marker and runs at every `env resolve` and before provisioning or repair
+of any home. Missing hashes never count as passed: an entry whose tree
+hash cannot be recomputed, or whose expected pin hash is absent, fails.
+
+Two failure classes, in order. (a) An enclosing boundary that cannot be
+proven — the environments root or the profile store root (wrong owner,
+world/group-writable permissions, symlinked, not a directory, not
+contained) — refuses every mutating operation before its first write and
+every resolve (no fragment); nothing is rebuilt, because there is no
+protected place to rebuild into; `env status` reports the row non-current
+naming the boundary (section 12); the operator repairs the boundary out of
+band. (b) An individual entry — a store entry, the lock file, or a marker
+file — that fails its own boundary checks or its pin hash inside a proven
+enclosing boundary is `environment_store_untrusted`; a real operation
+rebuilds it from the revalidated snapshot into newly established protected
+state (operation-private staging, atomic publication under the mutation
+lock), dry-run evaluation reports `would-rebuild-untrusted-store` and
+mutates nothing, resolve fails closed (no fragment, non-current) until
+rebuilt. Verification order is enclosing boundary → entries → pin hashes →
+home currency (section 10.1). An implementation that cannot prove the
+enclosing boundary MUST fail closed as in (a); an implementation that
+cannot prove an entry boundary or pin hash MUST fail closed as in (b).
+Self-consistent lock, marker, and hash bytes do not repair or authenticate
+an untrusted boundary.
+
+The contract is not configurable: no knob narrows, widens, or disables it.
+Rollout is direct (impact row "S5").
 
 ## 5. Deterministic materialization
 
@@ -1581,15 +1650,30 @@ beside the managed surfaces. The marker records:
 - for a home whose backups directory is non-empty, nothing: backups are
   discovered from the section 8.3 directory, never recorded in the marker.
 
-Readers MUST reject an unsupported marker version and MUST NOT infer newer
-semantics from unknown fields. An unreadable or invalid marker fails closed:
-the home's surfaces are treated as unmanaged — nothing is removed or
-replaced — and status reports `environment_marker_invalid`. The marker joins
+Readers MUST reject an unsupported marker version with
+`environment_marker_invalid` and MUST NOT infer newer semantics from
+unknown fields. An absent marker and an unreadable or malformed marker are
+distinct facts (section 8.4): an absent marker is the unprovisioned-home
+condition (`environment_home_stale`, section 10.1), while an unreadable or
+malformed marker fails closed with `environment_marker_unreadable` — the
+marker-unreadable class, non-current with currency unknown, never
+"absent" — the home's surfaces are treated as unmanaged, nothing is
+removed or replaced. The marker joins
 the `agent-*` identifier family deliberately; the frozen core §1.1
 identifiers keep their exact spellings.
 
 The marker is a record, not a signature: it MUST NOT be used as an
 authorization token or provenance proof (core §10 discipline).
+
+The marker file itself is verified under the section 4
+protected-boundary contract alongside the home it records: ownership,
+private mutation permissions or DACL, regular file type, and link safety,
+verified on every `env resolve` and again under the manager-home mutation
+lock for every mutating profile operation. A marker file that fails the
+contract makes the profile `environment_store_untrusted` (section 10.1),
+distinct from `environment_marker_unreadable`, which means the marker
+cannot be read or parsed, and from `environment_marker_invalid`, which
+keeps meaning unsupported marker version.
 
 ### 8.3 Ledger discipline and backups
 
@@ -1683,16 +1767,32 @@ that is a symlink is identified with `readlink`, never opened through
 the link.
 
 An absent surface file and a failed read are different facts: a failed
-marker read is `environment_marker_invalid`; a failed read of a recorded
+marker read is `environment_marker_unreadable`; a failed read of a recorded
 surface file is `environment_surface_unreadable`, the row is non-current
 with its currency reported as unknown, and no absence-shaped outcome —
-`environment_surface_missing` included — may fire on either.
+`environment_surface_missing` included — may fire on either. An absent
+marker and an unreadable or malformed marker are likewise distinct: the
+absent marker is the unprovisioned-home condition
+(`environment_home_stale`, section 10.1), while the unreadable or
+malformed marker is `environment_marker_unreadable` (non-current, currency
+unknown), never "absent".
+
+Store failure is not drift: drift compares the home against the record,
+while `environment_store_untrusted` compares the store against its pin
+and the section 4 boundary. A linked surface whose link targets the
+expected store path but whose store entry fails the contract is not
+`environment_surface_drift`; the profile is `environment_store_untrusted`
+(section 10.1) and no fragment is emitted. Home currency is a separate
+check (section 10.1): a marker that belongs to another lock is
+`environment_home_stale`, never `environment_store_untrusted`.
 
 ### 8.5 Diagnostics
 
 | Condition | Diagnostic |
 | --- | --- |
-| marker unreadable, malformed, or unsupported version | `environment_marker_invalid` |
+| marker unreadable or malformed (non-current, currency unknown; never "absent") | `environment_marker_unreadable` |
+| marker unsupported version | `environment_marker_invalid` |
+| store entry, lock, or marker file fails the §4 protected-boundary contract or its pin hash (non-current) | `environment_store_untrusted` |
 | managed surface bytes or link differ from the record (non-current) | `environment_surface_drift` |
 | recorded surface file absent (non-current) | `environment_surface_missing` |
 | recorded surface file exists but cannot be read (non-current) | `environment_surface_unreadable` |
@@ -2243,10 +2343,10 @@ channel.
 home for the environment is materialized and current, and the verification
 is **lock-free**: it reads the marker and covers exactly the surfaces the
 marker records — no more — and for a symlinked surface whose link targets an
-entry of the immutable profile store, link-target identity is sufficient
-currency (the store entry's integrity is the store's own invariant, section
-4; the link target is read with `lstat`-class semantics, section 8.3.1),
-so a launch does not re-hash a large skills tree. A copied surface —
+entry of the immutable profile store, link-target identity is necessary but
+no longer sufficient currency: the store entry's integrity is verified, not
+assumed (section 4); the link target is read with `lstat`-class semantics
+(section 8.3.1). A copied surface —
 the `claude_code` root-context file in every mode, or a manager §5
 fallback copy — has no link target and is verified by the content hash
 the marker records for it (section 8.2), the same hash section 8.4 drift
@@ -2273,10 +2373,65 @@ restores managed bytes from the store; it MUST NOT adopt candidate bytes
 found in the home. Repair writes are section 8.3.1 writes: repair
 replaces directory entries and refuses with
 `environment_write_would_follow_link` rather than writing through a link
-the manager does not own. Lock acquisition that times out is
+the manager does not own.
+A store entry is re-applied only after that entry passed
+the section 4 contract and its pin hash: a non-trusted entry is never
+re-applied, so `env resolve --repair` is not persistence for a tampered
+store (audit note E7). Failure classes split (section 4): an enclosing
+boundary that cannot be proven refuses every mutating operation before its
+first write — nothing is rebuilt, because there is no protected place to
+rebuild into, and the operator repairs the boundary out of band; an
+individual entry (store entry, lock file, marker file) that fails inside a
+proven enclosing boundary is rebuilt by a real operation from the
+revalidated snapshot into newly established protected state
+(operation-private staging, atomic publication under the mutation lock):
+for a `git` member the manager re-acquires the pinned commit's exact
+snapshot bytes (section 1.2) and republishes the entry with a fresh
+boundary; for a `path` or `local` member there is no second copy of the
+snapshot — the source directory is never read again (section 1) — so the
+entry cannot be rebuilt and repair fails with
+`environment_repair_failed` while the operator reinstalls. Dry-run
+evaluation of an entry-class failure reports
+`would-rebuild-untrusted-store` and mutates nothing; dry-run evaluation of
+an enclosing-boundary failure reports `environment_store_untrusted` with
+no rebuild planned and mutates nothing.
+Lock acquisition that times out is
 `environment_lock_unavailable`, distinct from `environment_repair_failed`,
 which keeps meaning that the store cannot restore this home — an entry is
-missing or fails validation. Neither emits a fragment.
+missing or fails validation, including the section 4 contract. Neither emits a fragment.
+
+**Store-trust verification.** On every resolve, as part of the lock-free
+verification, the manager MUST verify in order: enclosing boundary →
+entries → pin hashes → home currency (section 4). It verifies the section
+4 protected-boundary contract for the environments root, the profile store
+root, the profile lock file, the home's marker file when the home has one,
+and every store entry the lock names; then it recomputes every named store
+entry's tree hash from its bytes and requires equality with the pin
+(section 4) — for a `git` member the tree object identity of the pinned
+commit, for a `path` or `local` member the `state_sha256` — with no home
+marker required, and before provisioning or repair of any home; missing
+hashes never count as passed. A boundary that cannot be proven, or a pin
+hash that does not match, makes the profile
+`environment_store_untrusted`: resolve reports the diagnostic and emits
+**no fragment**, the profile is non-current, and `env status` reports the
+row (section 12); an unprovisioned home is verified the same way, so a
+swapped entry is untrusted even with no marker. Pin hashes are verified,
+not trusted. Home currency is separate: the marker's recorded surface
+hashes are compared with the surfaces the CURRENT lock would generate
+(sections 5.1, 5.6); a mismatch because the marker belongs to another lock
+— stale after `profile update` (section 9.2) — is the ordinary stale-home
+condition (`environment_home_stale`) repaired from the verified store,
+never `environment_store_untrusted`. An intact updated store with an old
+marker is stale and repair succeeds; a swapped updated store with an old
+marker is untrusted and its bytes are never adopted. An absent marker is
+unprovisioned (`environment_home_stale`); an unreadable or malformed
+marker is `environment_marker_unreadable` (section 8.4), never "absent".
+The pin recomputation costs O(store entry bytes named by the lock) per
+resolve: every named entry is re-hashed, so a same-user byte swap of a
+system-prompt or root-context file — or any file in the entry — is
+detected without a marker. A per-surface rule would need the marker and
+would misclassify a stale home as untrusted; the pin baseline verifies
+unprovisioned homes and separates currency from integrity.
 
 The two lock classes this document names are the **mutation lock** (manager
 §2.5: every write below the manager home, `profile use`, `profile update`,
@@ -2453,6 +2608,11 @@ that no reader mistakes the surfacing rows for an execution sandbox.
 | operand names an unregistered environment | `environment_unknown` |
 | named or current profile not installed | `profile_unknown` |
 | managed home unprovisioned, stale, drifted, or passthrough detached; no fragment without `--repair` | `environment_home_stale` |
+| marker unreadable or malformed at resolve (no fragment; non-current, currency unknown; never "absent") | `environment_marker_unreadable` |
+| store entry, lock, or marker file fails the §4 protected-boundary contract or its pin hash at resolve (no fragment; non-current) | `environment_store_untrusted` |
+| enclosing boundary (environments root or store root) cannot be proven at resolve (no fragment; non-current; nothing rebuilt) | `environment_store_untrusted` |
+| dry-run evaluation of an entry-class failure (no mutation; a real operation would rebuild it) | `would-rebuild-untrusted-store` |
+| dry-run evaluation of an enclosing-boundary failure (no mutation; no rebuild planned) | `environment_store_untrusted` |
 | repair could not acquire the mutation lock within the bounded wait | `environment_lock_unavailable` |
 | managed home cannot be repaired from the store | `environment_repair_failed` |
 | S4 profile `s4-warn`: launch composition passes an operator variable outside the configured `passable_env_names` (warning, names the variables and the knob) | `mcp_env_passthrough_unlisted` |
@@ -2636,8 +2796,12 @@ signer-verification posture per lock member's source — `enforced` when an
 allowlist is present, naming the verified signer, `unconfigured` when none
 is, `required-missing` when `require_source_signers` is true and none is —,
 the active update-confirmation revision (`A-warning` or `B-flip`, section
-9.2) with its behaviour, and the machine-level `require_source_signers`
-value. Both commands follow
+9.2) with its behaviour, the machine-level `require_source_signers`
+value, and the store-trust row per installed profile — the section 4
+boundary and pin-hash verdict for the profile's lock, marker, and
+named store entries, naming the failing check and, for an enclosing
+failure, the boundary (environments root or store root) when the profile
+is `environment_store_untrusted`. Both commands follow
 the manager §10 discipline exactly: recompute and report, never mutate — no
 fetch, no repair, no adoption, no channel application, no onboarding.
 `--check` returns non-zero when any row is non-current.
@@ -2647,8 +2811,9 @@ profile identity, lock hash, member list, precedence, mode, and form match
 the effective machine state; every recorded surface hash verifies; and
 every recorded passthrough entry is live. A drifted, missing, shadow-inert
 (unless acknowledged under `shadow_acknowledged`), detached, partially
-switched, stale, refused-provider (section 11), link-blocked
-(section 8.3.1), or unreadable state is non-current; unreadable evidence is
+switched, stale, store-untrusted (`environment_store_untrusted`),
+refused-provider (section 11), link-blocked (section 8.3.1), or
+unreadable state is non-current; unreadable evidence is
 reported as unreadable, never as absence (section 8.4). A section 11
 provider row is non-current when the active revision refuses or fails
 that provider — a manager-published or managed directory match under
@@ -2686,8 +2851,16 @@ include every store entry named by any installed profile's lock — and by
 a retained previous lock until it is dropped (section 9.2) — every managed
 home and in-place surface set referenced by a valid environment marker, and
 every entry referenced by an in-flight transaction journal. An unreadable
-marker or unprovable reference fails safe: the uncertain entries are
-retained and the uncertainty reported. Environment-owned mutable state
+marker (`environment_marker_unreadable`) or unprovable reference fails
+safe: the uncertain entries are retained and the uncertainty reported. An
+enclosing boundary that cannot be proven refuses collection before its
+first write — nothing is collected and nothing is rebuilt, and the
+uncertainty is reported; the operator repairs the boundary out of band.
+Garbage collection revalidates the section 4 boundary for every entry it
+considers inside a proven enclosing boundary: an entry that fails the
+contract is retained, never collected, and reported; collection never
+rebuilds an entry — rebuild is repair's work (section 10.1).
+Environment-owned mutable state
 inside managed homes is never collected, and backups are never collected.
 
 ### 12.1 Machine configuration knobs
@@ -2862,7 +3035,7 @@ confirmation, a new system module, a changed MCP `args`, `url`, or
 selector, and a reordered `env_names` warning under revision A and
 refusing under revision B, `--confirm-system-delta` proceeding, a
 reinstall refusing under revision B and proceeding with the flag, and
-`--all` confirming every profile of the run; and the section 8.3.1
+`--all` confirming every profile of the run; the section 8.3.1
 write-discipline vectors
 (`vectors/environments-write-nofollow.json`) — the symlinked-target
 takeover (replaced with backup under authorization, stopped with
@@ -2872,7 +3045,26 @@ authorization states, the post-provisioning planted-link repair, the
 manager-owned-link replace, the symlinked-backup-destination refusals (a traversed parent link and a directly symlinked target),
 the inside-pointing-link ledger refusal, and the clean-path and
 recorded-file positives — every foreign-link case asserting the link's
-former target is byte-identical afterwards. The nine
+former target is byte-identical afterwards. ;
+and the section 4
+protected-boundary cases
+(`vectors/environments-store-boundary.json`) — the intact resolve that
+emits a fragment; the swapped system-prompt bytes, swapped root-context
+bytes, symlinked entry root, wrong ownership, wrong permissions,
+containment escape, non-regular component, and pin-hash mismatch cases
+that refuse with `environment_store_untrusted` and emit no fragment; the
+environments-root and store-root enclosing-boundary cases that refuse with
+no rebuild; the intact-updated-store with old marker case that reports
+`environment_home_stale` and repairs, and the swapped-updated-store with
+old marker case that refuses with `environment_store_untrusted` and is
+never adopted; the unprovisioned-home intact and swapped cases; the
+unreadable-marker case that reports
+`environment_marker_unreadable`; the dry-run `would-rebuild-untrusted-store`
+entry-class case and the enclosing no-rebuild case; the repair rebuild,
+entry-rebuild, enclosing-refusal, stale-repair, and unprovisioned cases;
+the `env status` non-current posture rows naming the failing check and the
+boundary; and the negative cases whose fragment-emitting,
+current-reporting, or re-applying observation is non-conforming.  The nine
 retired `expected/environments/*` sets are regenerated under the v2 type
 line. A manager claiming this capability MUST pass the complete vector set;
 there is no partial claim. A manager conforms to revision A by warning

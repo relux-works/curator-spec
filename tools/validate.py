@@ -6019,6 +6019,414 @@ def validate_environments_source_signers_vectors(
 
 
 # ---------------------------------------------------------------------------
+# Sections 4, 8.4, 10.1, 10.4, 12: protected-boundary contract (S5)
+
+
+S5_DIAG_UNTRUSTED = "environment_store_untrusted"
+S5_OUTCOME_WOULD_REBUILD = "would-rebuild-untrusted-store"
+S5_DIAG_REPAIR_FAILED = "environment_repair_failed"
+S5_DIAG_HOME_STALE = "environment_home_stale"
+S5_DIAG_MARKER_UNREADABLE = "environment_marker_unreadable"
+
+S5_BOUNDARY_CHECKS = ("ownership", "permissions", "containment", "regular_types", "link_safety")
+S5_OBJECTS = ("environments-root", "store-root", "lock-file", "marker-file", "store-entry")
+S5_ENCLOSING_OBJECTS = ("environments-root", "store-root")
+S5_SURFACES = ("system-prompt", "root-context")
+S5_ENTRY_KINDS = ("git", "path", "local")
+S5_HOME_STATES = ("current", "stale-old-marker", "unprovisioned", "unreadable-marker")
+
+S5_RESOLVE_CASES = {
+    "intact-resolve-emits-fragment",
+    "swapped-system-prompt-bytes-untrusted",
+    "swapped-root-context-bytes-untrusted",
+    "symlinked-entry-root-untrusted",
+    "wrong-ownership-untrusted",
+    "wrong-permissions-untrusted",
+    "containment-escape-untrusted",
+    "non-regular-component-untrusted",
+    "lock-file-wrong-owner-untrusted",
+    "marker-symlink-untrusted",
+    "environments-root-wrong-owner-untrusted",
+    "store-root-symlinked-untrusted",
+    "intact-updated-store-old-marker-stale",
+    "swapped-updated-store-old-marker-untrusted",
+    "unprovisioned-intact-stale",
+    "unprovisioned-swapped-untrusted",
+    "unreadable-marker-non-current",
+    "swapped-bytes-emits-fragment",
+    "untrusted-reported-current",
+    "untrusted-without-diagnostic",
+}
+S5_RESOLVE_NEGATIVE_CASES = {
+    "swapped-bytes-emits-fragment",
+    "untrusted-reported-current",
+    "untrusted-without-diagnostic",
+}
+S5_DRY_RUN_CASES = {
+    "dry-run-untrusted-reports-would-rebuild",
+    "dry-run-intact-plans-nothing",
+    "dry-run-enclosing-no-rebuild",
+    "dry-run-mutates",
+}
+S5_DRY_RUN_NEGATIVE_CASES = {"dry-run-mutates"}
+S5_REPAIR_CASES = {
+    "repair-rebuilds-git-entry-from-snapshot",
+    "repair-path-entry-cannot-rebuild",
+    "repair-local-entry-cannot-rebuild",
+    "repair-rebuilds-entry-boundary-failure",
+    "repair-enclosing-refuses-no-rebuild",
+    "repair-stale-old-marker-succeeds",
+    "repair-swapped-old-marker-never-adopted",
+    "repair-unprovisioned-intact-provisions",
+    "repair-unprovisioned-swapped-rebuilds",
+    "repair-reapplies-untrusted",
+}
+S5_REPAIR_NEGATIVE_CASES = {"repair-reapplies-untrusted"}
+S5_STATUS_CASES = {
+    "status-intact-current",
+    "status-names-failing-check",
+    "status-enclosing-names-boundary",
+    "status-hides-failing-check",
+}
+S5_STATUS_NEGATIVE_CASES = {"status-hides-failing-check"}
+
+# Each named case is pinned to its discriminating inputs: the object that
+# fails, the check that fails, the home state, and — for a pin-hash failure
+# on a store entry — the swapped surface. A corpus where a named branch no
+# longer exercises its check (for example the five boundary branches
+# collapsed to ownership-only) is refused.
+S5_RESOLVE_PIN: dict[str, dict[str, Any]] = {
+    "intact-resolve-emits-fragment": {"object": "store-entry", "check": None, "home": "current", "surface": None},
+    "swapped-system-prompt-bytes-untrusted": {"object": "store-entry", "check": "pin_hash", "home": "current", "surface": "system-prompt"},
+    "swapped-root-context-bytes-untrusted": {"object": "store-entry", "check": "pin_hash", "home": "current", "surface": "root-context"},
+    "symlinked-entry-root-untrusted": {"object": "store-entry", "check": "link_safety", "home": "current", "surface": None},
+    "wrong-ownership-untrusted": {"object": "store-entry", "check": "ownership", "home": "current", "surface": None},
+    "wrong-permissions-untrusted": {"object": "store-entry", "check": "permissions", "home": "current", "surface": None},
+    "containment-escape-untrusted": {"object": "store-entry", "check": "containment", "home": "current", "surface": None},
+    "non-regular-component-untrusted": {"object": "store-entry", "check": "regular_types", "home": "current", "surface": None},
+    "lock-file-wrong-owner-untrusted": {"object": "lock-file", "check": "ownership", "home": "current", "surface": None},
+    "marker-symlink-untrusted": {"object": "marker-file", "check": "link_safety", "home": "current", "surface": None},
+    "environments-root-wrong-owner-untrusted": {"object": "environments-root", "check": "ownership", "home": "current", "surface": None},
+    "store-root-symlinked-untrusted": {"object": "store-root", "check": "link_safety", "home": "current", "surface": None},
+    "intact-updated-store-old-marker-stale": {"object": "store-entry", "check": "home_currency", "home": "stale-old-marker", "surface": None},
+    "swapped-updated-store-old-marker-untrusted": {"object": "store-entry", "check": "pin_hash", "home": "stale-old-marker", "surface": "system-prompt"},
+    "unprovisioned-intact-stale": {"object": "store-entry", "check": None, "home": "unprovisioned", "surface": None},
+    "unprovisioned-swapped-untrusted": {"object": "store-entry", "check": "pin_hash", "home": "unprovisioned", "surface": "root-context"},
+    "unreadable-marker-non-current": {"object": "marker-file", "check": None, "home": "unreadable-marker", "surface": None},
+    "swapped-bytes-emits-fragment": {"object": "store-entry", "check": "pin_hash", "home": "current", "surface": "system-prompt"},
+    "untrusted-reported-current": {"object": "store-entry", "check": "ownership", "home": "current", "surface": None},
+    "untrusted-without-diagnostic": {"object": "store-entry", "check": "link_safety", "home": "current", "surface": None},
+}
+S5_DRY_RUN_PIN: dict[str, dict[str, Any]] = {
+    "dry-run-untrusted-reports-would-rebuild": {"object": "store-entry", "check": "ownership", "home": "current", "surface": None},
+    "dry-run-intact-plans-nothing": {"object": "store-entry", "check": None, "home": "current", "surface": None},
+    "dry-run-enclosing-no-rebuild": {"object": "store-root", "check": "ownership", "home": "current", "surface": None},
+    "dry-run-mutates": {"object": "store-entry", "check": "ownership", "home": "current", "surface": None},
+}
+S5_REPAIR_PIN: dict[str, dict[str, Any]] = {
+    "repair-rebuilds-git-entry-from-snapshot": {"object": "store-entry", "check": "pin_hash", "kind": "git", "home": "current", "surface": "system-prompt"},
+    "repair-path-entry-cannot-rebuild": {"object": "store-entry", "check": "ownership", "kind": "path", "home": "current", "surface": None},
+    "repair-local-entry-cannot-rebuild": {"object": "store-entry", "check": "permissions", "kind": "local", "home": "current", "surface": None},
+    "repair-rebuilds-entry-boundary-failure": {"object": "store-entry", "check": "ownership", "kind": "git", "home": "current", "surface": None},
+    "repair-enclosing-refuses-no-rebuild": {"object": "store-root", "check": "ownership", "kind": "git", "home": "current", "surface": None},
+    "repair-stale-old-marker-succeeds": {"object": "store-entry", "check": None, "kind": "git", "home": "stale-old-marker", "surface": None},
+    "repair-swapped-old-marker-never-adopted": {"object": "store-entry", "check": "pin_hash", "kind": "git", "home": "stale-old-marker", "surface": "system-prompt"},
+    "repair-unprovisioned-intact-provisions": {"object": "store-entry", "check": None, "kind": "git", "home": "unprovisioned", "surface": None},
+    "repair-unprovisioned-swapped-rebuilds": {"object": "store-entry", "check": "pin_hash", "kind": "git", "home": "unprovisioned", "surface": "root-context"},
+    "repair-reapplies-untrusted": {"object": "store-entry", "check": "ownership", "kind": "git", "home": "current", "surface": None},
+}
+S5_STATUS_PIN: dict[str, dict[str, Any]] = {
+    "status-intact-current": {"object": "store-entry", "check": None, "home": "current", "surface": None},
+    "status-names-failing-check": {"object": "store-entry", "check": "ownership", "home": "current", "surface": None},
+    "status-enclosing-names-boundary": {"object": "store-root", "check": "ownership", "home": "current", "surface": None},
+    "status-hides-failing-check": {"object": "store-entry", "check": "ownership", "home": "current", "surface": None},
+}
+
+
+def s5_check_inputs(case: dict[str, Any], name: str) -> dict[str, bool]:
+    """Read the six §4/§10.1 store-trust inputs of one case.
+
+    The five boundary checks plus the pin-hash comparison; each is a
+    boolean, true when the check passes. Anything else is a malformed
+    vector, not a verdict.
+    """
+    inputs: dict[str, bool] = {}
+    for check in (*S5_BOUNDARY_CHECKS, "pin_hash_match"):
+        value = case.get(check)
+        if not isinstance(value, bool):
+            raise ValidationFailure(f"store-boundary case {name}: {check} must be a boolean")
+        inputs[check] = value
+    return inputs
+
+
+def s5_check_home(case: dict[str, Any], name: str) -> str:
+    """Read the modeled home state: current, stale-old-marker, unprovisioned, or unreadable-marker."""
+    home = case.get("home")
+    if home not in S5_HOME_STATES:
+        raise ValidationFailure(f"store-boundary case {name}: home must be one of {', '.join(S5_HOME_STATES)}")
+    return str(home)
+
+
+def s5_store_trusted(inputs: dict[str, bool]) -> tuple[bool, list[str]]:
+    """Recompute the §4 store-trust verdict: every boundary check and the pin hash pass, else untrusted.
+
+    Returns the verdict with the failing checks in §4 order, the pin-hash
+    comparison last.
+    """
+    failing = [check for check in S5_BOUNDARY_CHECKS if not inputs[check]]
+    if not inputs["pin_hash_match"]:
+        failing.append("pin_hash")
+    return (not failing, failing)
+
+
+def s5_check_swap_shape(case: dict[str, Any], inputs: dict[str, bool], name: str) -> None:
+    """A modeled byte swap breaks the pin hash, and only a swap does.
+
+    `surface` names the entry file the swap touched (`system-prompt` or
+    `root-context`) or is null when the case models no swap; a swap lives
+    on a store entry, and only a store entry carries a pin hash.
+    """
+    surface = case.get("surface")
+    if surface is None:
+        if inputs["pin_hash_match"] is not True:
+            raise ValidationFailure(f"store-boundary case {name}: a pin mismatch without a swap needs its surface")
+    else:
+        if surface not in S5_SURFACES:
+            raise ValidationFailure(f"store-boundary case {name}: surface must be system-prompt, root-context, or null")
+        if inputs["pin_hash_match"] is not False:
+            raise ValidationFailure(f"store-boundary case {name}: a modeled swap breaks the pin hash")
+        if case.get("object") != "store-entry":
+            raise ValidationFailure(f"store-boundary case {name}: a modeled swap lives on a store entry")
+    if case.get("object") != "store-entry" and inputs["pin_hash_match"] is not True:
+        raise ValidationFailure(f"store-boundary case {name}: only a store entry carries a pin hash")
+
+
+def s5_check_pin(pin: dict[str, Any], case: dict[str, Any], failing: list[str], home: str, name: str) -> None:
+    """Bind a named case to its discriminating inputs: object, check, home, and surface.
+
+    A named branch that no longer exercises its check — for example five
+    boundary branches collapsed to ownership-only — is refused.
+    """
+    if case.get("object") != pin["object"]:
+        raise ValidationFailure(f"store-boundary case {name}: object must be {pin['object']} for this branch")
+    if home != pin["home"]:
+        raise ValidationFailure(f"store-boundary case {name}: home must be {pin['home']} for this branch")
+    if case.get("surface") != pin["surface"]:
+        raise ValidationFailure(f"store-boundary case {name}: surface must be {pin['surface']!r} for this branch")
+    expected = pin["check"]
+    if expected is None:
+        if failing:
+            raise ValidationFailure(f"store-boundary case {name}: this branch models no failing store check")
+    elif expected == "home_currency":
+        if failing:
+            raise ValidationFailure(f"store-boundary case {name}: this branch models intact store with a stale marker")
+        if home != "stale-old-marker":
+            raise ValidationFailure(f"store-boundary case {name}: home currency fails only for a stale old marker")
+    elif expected not in failing:
+        raise ValidationFailure(f"store-boundary case {name}: this branch must fail {expected}")
+    elif len(failing) != 1:
+        raise ValidationFailure(f"store-boundary case {name}: this branch isolates exactly its failing check")
+
+
+def validate_environments_store_boundary_vectors(vector: Any = None) -> None:
+    """Recompute every §4 protected-boundary verdict (§8.4, §10.1, §10.4, §12).
+
+    Verification order is enclosing boundary → entries → pin hashes → home
+    currency (§4, §10.1). Each named case is pinned to its discriminating
+    inputs — the object, the failing check, the home state, and the swapped
+    surface — so a corpus where a named branch no longer exercises its
+    check is refused. Negatives carry a non-conforming observation that
+    must still violate the recomputed rule.
+    """
+    if vector is None:
+        vector = load_json(SUITE / "vectors" / "environments-store-boundary.json")
+    if vector.get("capability") != "agent-environments" or vector.get("capability_revision") != 1:
+        raise ValidationFailure("store-boundary vector has the wrong capability identity")
+    pinned = vector.get("diagnostics")
+    if (
+        not isinstance(pinned, dict)
+        or pinned.get("store_untrusted") != S5_DIAG_UNTRUSTED
+        or pinned.get("dry_run_outcome") != S5_OUTCOME_WOULD_REBUILD
+        or pinned.get("repair_failed") != S5_DIAG_REPAIR_FAILED
+        or pinned.get("home_stale") != S5_DIAG_HOME_STALE
+        or pinned.get("marker_unreadable") != S5_DIAG_MARKER_UNREADABLE
+    ):
+        raise ValidationFailure(
+            "store-boundary diagnostics must pin environment_store_untrusted, "
+            "would-rebuild-untrusted-store, environment_repair_failed, "
+            "environment_home_stale, and environment_marker_unreadable"
+        )
+
+    resolve = named_cases(vector.get("resolve_cases"), "store-boundary resolve")
+    if set(resolve) != S5_RESOLVE_CASES:
+        raise ValidationFailure("store-boundary resolve case inventory is not exact")
+    for name, case in resolve.items():
+        if case.get("object") not in S5_OBJECTS:
+            raise ValidationFailure(f"store-boundary case {name}: object must be one of {', '.join(S5_OBJECTS)}")
+        inputs = s5_check_inputs(case, name)
+        home = s5_check_home(case, name)
+        s5_check_swap_shape(case, inputs, name)
+        store_trusted, failing = s5_store_trusted(inputs)
+        s5_check_pin(S5_RESOLVE_PIN[name], case, failing, home, name)
+        if failing:
+            expected_diag: str | None = S5_DIAG_UNTRUSTED
+            expected_fragment = False
+            expected_current = False
+            expected_check: str | None = failing[0] if len(failing) == 1 else None
+        elif home == "stale-old-marker":
+            expected_diag = S5_DIAG_HOME_STALE
+            expected_fragment = False
+            expected_current = False
+            expected_check = "home_currency"
+        elif home == "unprovisioned":
+            expected_diag = S5_DIAG_HOME_STALE
+            expected_fragment = False
+            expected_current = False
+            expected_check = None
+        elif home == "unreadable-marker":
+            expected_diag = S5_DIAG_MARKER_UNREADABLE
+            expected_fragment = False
+            expected_current = False
+            expected_check = None
+        else:
+            expected_diag = None
+            expected_fragment = True
+            expected_current = True
+            expected_check = None
+        if name in S5_RESOLVE_NEGATIVE_CASES:
+            if case.get("conforming") is not False or not case.get("reason"):
+                raise ValidationFailure(f"store-boundary case {name}: a negative needs conforming=false and a reason")
+            if (
+                case.get("diagnostic") == expected_diag
+                and case.get("fragment_emitted") is expected_fragment
+                and case.get("row_current") is expected_current
+            ):
+                raise ValidationFailure(f"store-boundary case {name}: the observation no longer violates the §10.1 rule")
+            continue
+        if case.get("conforming") is False:
+            raise ValidationFailure(f"store-boundary case {name}: a positive case must not carry conforming=false")
+        if case.get("diagnostic") != expected_diag:
+            raise ValidationFailure(f"store-boundary case {name}: diagnostic is not the §10.1 rule ({expected_diag!r})")
+        if case.get("fragment_emitted") is not expected_fragment:
+            raise ValidationFailure(f"store-boundary case {name}: fragment verdict is not the §10.1 rule")
+        if case.get("row_current") is not expected_current:
+            raise ValidationFailure(f"store-boundary case {name}: currency is not the §10.1 rule")
+        if case.get("failing_check") != expected_check:
+            raise ValidationFailure(f"store-boundary case {name}: failing_check is not the §10.1 rule ({expected_check!r})")
+
+    dry_run = named_cases(vector.get("dry_run_cases"), "store-boundary dry-run")
+    if set(dry_run) != S5_DRY_RUN_CASES:
+        raise ValidationFailure("store-boundary dry-run case inventory is not exact")
+    for name, case in dry_run.items():
+        if case.get("object") not in S5_OBJECTS:
+            raise ValidationFailure(f"store-boundary case {name}: object must be one of {', '.join(S5_OBJECTS)}")
+        inputs = s5_check_inputs(case, name)
+        home = s5_check_home(case, name)
+        s5_check_swap_shape(case, inputs, name)
+        store_trusted, failing = s5_store_trusted(inputs)
+        s5_check_pin(S5_DRY_RUN_PIN[name], case, failing, home, name)
+        if store_trusted:
+            expected_outcome = None
+        elif case.get("object") in S5_ENCLOSING_OBJECTS:
+            expected_outcome = None
+        else:
+            expected_outcome = S5_OUTCOME_WOULD_REBUILD
+        if name in S5_DRY_RUN_NEGATIVE_CASES:
+            if case.get("conforming") is not False or not case.get("reason"):
+                raise ValidationFailure(f"store-boundary case {name}: a negative needs conforming=false and a reason")
+            if case.get("mutated") is not True and case.get("outcome") == expected_outcome:
+                raise ValidationFailure(f"store-boundary case {name}: the observation no longer violates the dry-run rule")
+            continue
+        if case.get("conforming") is False:
+            raise ValidationFailure(f"store-boundary case {name}: a positive case must not carry conforming=false")
+        if case.get("outcome") != expected_outcome:
+            raise ValidationFailure(f"store-boundary case {name}: outcome is not the §4 dry-run rule ({expected_outcome!r})")
+        if case.get("mutated") is not False:
+            raise ValidationFailure(f"store-boundary case {name}: dry-run evaluation mutates nothing")
+
+    repair = named_cases(vector.get("repair_cases"), "store-boundary repair")
+    if set(repair) != S5_REPAIR_CASES:
+        raise ValidationFailure("store-boundary repair case inventory is not exact")
+    for name, case in repair.items():
+        kind = case.get("entry_kind")
+        if kind not in S5_ENTRY_KINDS:
+            raise ValidationFailure(f"store-boundary case {name}: entry_kind must be git, path, or local")
+        if case.get("object") not in S5_OBJECTS:
+            raise ValidationFailure(f"store-boundary case {name}: object must be one of {', '.join(S5_OBJECTS)}")
+        inputs = s5_check_inputs(case, name)
+        home = s5_check_home(case, name)
+        s5_check_swap_shape(case, inputs, name)
+        store_trusted, failing = s5_store_trusted(inputs)
+        pin = S5_REPAIR_PIN[name]
+        if kind != pin["kind"]:
+            raise ValidationFailure(f"store-boundary case {name}: entry_kind must be {pin['kind']} for this branch")
+        s5_check_pin(pin, case, failing, home, name)
+        if name in S5_REPAIR_NEGATIVE_CASES:
+            if case.get("conforming") is not False or not case.get("reason"):
+                raise ValidationFailure(f"store-boundary case {name}: a negative needs conforming=false and a reason")
+            if store_trusted or case.get("reapplied_before_trust") is not True:
+                raise ValidationFailure(f"store-boundary case {name}: the observation no longer violates the repair rule")
+            continue
+        if case.get("conforming") is False:
+            raise ValidationFailure(f"store-boundary case {name}: a positive case must not carry conforming=false")
+        if case.get("reapplied_before_trust") is not False:
+            raise ValidationFailure(f"store-boundary case {name}: a non-trusted entry is never re-applied")
+        obj = case.get("object")
+        if obj in S5_ENCLOSING_OBJECTS:
+            if store_trusted:
+                raise ValidationFailure(f"store-boundary case {name}: an enclosing repair case starts from an unproven boundary")
+            if case.get("rebuilt_from_snapshot") is not False:
+                raise ValidationFailure(f"store-boundary case {name}: an enclosing failure is never rebuilt")
+            if case.get("diagnostic") != S5_DIAG_UNTRUSTED or case.get("fragment_emitted") is not False:
+                raise ValidationFailure(f"store-boundary case {name}: an enclosing failure refuses with no fragment")
+        elif not store_trusted:
+            if (case.get("rebuilt_from_snapshot") is True) != (kind == "git"):
+                raise ValidationFailure(f"store-boundary case {name}: only a git entry rebuilds from the revalidated snapshot")
+            if kind == "git":
+                if case.get("diagnostic") is not None or case.get("fragment_emitted") is not True:
+                    raise ValidationFailure(f"store-boundary case {name}: a rebuilt git entry resolves")
+            elif case.get("diagnostic") != S5_DIAG_REPAIR_FAILED or case.get("fragment_emitted") is not False:
+                raise ValidationFailure(f"store-boundary case {name}: an unrebuildable entry fails repair without a fragment")
+        else:
+            if home not in ("stale-old-marker", "unprovisioned"):
+                raise ValidationFailure(f"store-boundary case {name}: a trusted-store repair starts from a stale or unprovisioned home")
+            if case.get("rebuilt_from_snapshot") is not False:
+                raise ValidationFailure(f"store-boundary case {name}: a verified store needs no rebuild")
+            if case.get("diagnostic") is not None or case.get("fragment_emitted") is not True:
+                raise ValidationFailure(f"store-boundary case {name}: repair from a verified store resolves")
+
+    status = named_cases(vector.get("status_cases"), "store-boundary status")
+    if set(status) != S5_STATUS_CASES:
+        raise ValidationFailure("store-boundary status case inventory is not exact")
+    for name, case in status.items():
+        if case.get("object") not in S5_OBJECTS:
+            raise ValidationFailure(f"store-boundary case {name}: object must be one of {', '.join(S5_OBJECTS)}")
+        inputs = s5_check_inputs(case, name)
+        home = s5_check_home(case, name)
+        s5_check_swap_shape(case, inputs, name)
+        store_trusted, failing = s5_store_trusted(inputs)
+        s5_check_pin(S5_STATUS_PIN[name], case, failing, home, name)
+        expected_diag = None if store_trusted else S5_DIAG_UNTRUSTED
+        if name in S5_STATUS_NEGATIVE_CASES:
+            if case.get("conforming") is not False or not case.get("reason"):
+                raise ValidationFailure(f"store-boundary case {name}: a negative needs conforming=false and a reason")
+            if case.get("diagnostic") == expected_diag and case.get("row_current") is store_trusted and (case.get("names_failing_check") in failing or store_trusted):
+                raise ValidationFailure(f"store-boundary case {name}: the observation no longer violates the §12 rule")
+            continue
+        if case.get("conforming") is False:
+            raise ValidationFailure(f"store-boundary case {name}: a positive case must not carry conforming=false")
+        if case.get("diagnostic") != expected_diag:
+            raise ValidationFailure(f"store-boundary case {name}: diagnostic is not the §12 rule ({expected_diag!r})")
+        if case.get("row_current") is not store_trusted:
+            raise ValidationFailure(f"store-boundary case {name}: an untrusted profile is non-current")
+        if store_trusted:
+            if case.get("names_failing_check") is not None:
+                raise ValidationFailure(f"store-boundary case {name}: a trusted row names no failing check")
+        elif case.get("names_failing_check") not in failing:
+            raise ValidationFailure(f"store-boundary case {name}: the status row names the failing check")
+
+
+# ---------------------------------------------------------------------------
 # Section 9.1: detector classes
 
 
@@ -7074,6 +7482,7 @@ def main() -> int:
         validate_environment_vectors,
         validate_environments_env_passthrough_vectors,
         validate_environments_source_signers_vectors,
+        validate_environments_store_boundary_vectors,
         validate_context_version_vectors,
         validate_context_detector_vectors,
         validate_snapshot_acquisition_vectors,
