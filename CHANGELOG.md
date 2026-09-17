@@ -88,6 +88,35 @@ Versioning for the complete specification set.
   no-rebuild case, repair rebuild/entry-rebuild/enclosing-refusal/stale/
   unprovisioned, the non-current posture rows, and negatives), checked
   semantically by `tools/validate.py`.
+- E3: the `codex_cli` provisioning seed stops inheriting native
+  `mcp_servers` (environments §7.4/§7.7/§7.8/§8.2/§12/§13): a whole-copy
+  seed runs every native MCP server outside the profile lock and the
+  §2.2 allowlist while `claude_code` runs only the profile set, so the
+  seed rule ships in two labelled revisions — revision A (warning
+  release, ships first) still copies `config.toml` whole but provisioning
+  warns `mcp_native_servers_ungoverned` naming every inherited entry with
+  the migration hint (declare the server in the profile's MCP set, or
+  accept the loss), and revision B (flip release) copies every top-level
+  member except `mcp_servers` and reports the stripped names once with
+  `mcp_native_servers_not_inherited`. Both revisions write the marker
+  `codex_seed_record` (`revision` exactly `A` or `B`, `native_mcp_servers`
+  the provisioning-time name snapshot, names only); a managed `codex_cli`
+  home whose marker predates the rule — and a revision-A home now served
+  by a revision-B manager — reports `mcp_seed_unstripped` (warning) with
+  the re-provision hint, and existing homes keep their bytes. `env status`
+  reports the active codex-seed revision with its behaviour and, per
+  managed `codex_cli` home, the record with the native entries listed as
+  ungoverned (revision A, including an A-record home under a B manager)
+  or not inherited (revision B); all three rows are warnings and never
+  make a row non-current. §7.8 gains the closed per-adapter residual
+  table (what each channel does to the home's own MCP configuration).
+  Conformance vectors in `vectors/environments-codex-seed.json`
+  (provisioning under both revisions, the no-server and empty-table
+  negatives, the pre-rule-home and the A-home-under-B-manager
+  `mcp_seed_unstripped` postures, and the non-codex negative), pinned by
+  the `validate_environments_codex_seed_vectors` gate. Manager/README follow-up
+  (`TASK-260916-33abdk`): a managed codex home runs only the profile MCP
+  set; native `~/.codex/config.toml` servers are not inherited.
 - E1: per-source signer allowlist and `profile update` delta confirmation
   (Decision 0012 amendment 2026-09-17; environments
   §1.1/§1.3/§1.4/§9.2/§9.7/§12/§12.1/§12.2/§13): the new closed machine knob

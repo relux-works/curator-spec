@@ -8,6 +8,7 @@ import hashlib
 import json
 import re
 import sys
+import tomllib
 import urllib.parse
 from pathlib import Path
 from typing import Any
@@ -6424,6 +6425,325 @@ def validate_environments_store_boundary_vectors(vector: Any = None) -> None:
                 raise ValidationFailure(f"store-boundary case {name}: a trusted row names no failing check")
         elif case.get("names_failing_check") not in failing:
             raise ValidationFailure(f"store-boundary case {name}: the status row names the failing check")
+# Sections 7.4, 7.7, 7.8, 8.2, 12: codex seed mcp_servers handling (E3)
+
+
+E3_DIAG_UNGOVERNED = "mcp_native_servers_ungoverned"
+E3_DIAG_NOT_INHERITED = "mcp_native_servers_not_inherited"
+E3_DIAG_UNSTRIPPED = "mcp_seed_unstripped"
+
+E3_REVISION_A = "warning release: the codex_cli seed is still copied whole, but provisioning warns mcp_native_servers_ungoverned naming every inherited native mcp_servers entry with the migration hint"
+E3_REVISION_B = "flip release: the codex_cli seed strips the mcp_servers table and every mcp_servers.* sub-table; provisioning reports the stripped names once with mcp_native_servers_not_inherited"
+
+# Each provisioning case is pinned to the branch it exercises: the seed
+# rule revision, the native mcp_servers state (present/absent/empty), the
+# TOML form that carries it, and the exact native top-level member set. A
+# named case whose body no longer matches its pin — e.g. the B-strip case
+# replaced by the no-server case — fails here even when the replacement is
+# internally consistent.
+E3_PROVISIONING_BRANCH = {
+    "a-copies-whole-with-servers": {
+        "revision": "A", "servers": "present", "form": "subtable",
+        "members": frozenset({"mcp_servers", "model", "projects", "tui"}),
+    },
+    "b-strips-servers-keeps-rest": {
+        "revision": "B", "servers": "present", "form": "subtable",
+        "members": frozenset({"mcp_servers", "model", "projects", "tui"}),
+    },
+    "a-without-servers-no-warning": {
+        "revision": "A", "servers": "absent", "form": "absent",
+        "members": frozenset({"model", "projects", "tui"}),
+    },
+    "b-without-servers-no-warning": {
+        "revision": "B", "servers": "absent", "form": "absent",
+        "members": frozenset({"model", "projects", "tui"}),
+    },
+    "b-subtable-only-form-stripped": {
+        "revision": "B", "servers": "present", "form": "subtable-only",
+        "members": frozenset({"mcp_servers", "model"}),
+    },
+    "a-inline-table-form-inherited": {
+        "revision": "A", "servers": "present", "form": "inline",
+        "members": frozenset({"mcp_servers", "model"}),
+    },
+    "b-empty-mcp-servers-table-no-warning": {
+        "revision": "B", "servers": "empty", "form": "empty-table",
+        "members": frozenset({"mcp_servers", "model"}),
+    },
+}
+
+# Each posture case is pinned to its inputs: the manager-shipped revision,
+# the adapter, the home's recorded seed revision (None means the record is
+# absent), and the snapshot state. The manager revision and the recorded
+# revision are distinct inputs: an A-record home under a B manager is its
+# own pinned case, not the A/A one.
+E3_POSTURE_BRANCH = {
+    "a-home-lists-ungoverned": {
+        "shipped": "A", "environment": "codex_cli", "record": "A", "snapshot": "non-empty",
+    },
+    "a-home-unstripped-under-b": {
+        "shipped": "B", "environment": "codex_cli", "record": "A", "snapshot": "non-empty",
+    },
+    "b-home-lists-not-inherited": {
+        "shipped": "B", "environment": "codex_cli", "record": "B", "snapshot": "non-empty",
+    },
+    "pre-rule-home-unstripped-under-b": {
+        "shipped": "B", "environment": "codex_cli", "record": None, "snapshot": "absent",
+    },
+    "pre-rule-home-unstripped-under-a": {
+        "shipped": "A", "environment": "codex_cli", "record": None, "snapshot": "absent",
+    },
+    "b-home-empty-snapshot-no-rows": {
+        "shipped": "B", "environment": "codex_cli", "record": "B", "snapshot": "empty",
+    },
+    "a-home-empty-snapshot-no-rows": {
+        "shipped": "A", "environment": "codex_cli", "record": "A", "snapshot": "empty",
+    },
+    "non-codex-home-without-record-no-rows": {
+        "shipped": "B", "environment": "claude_code", "record": None, "snapshot": "absent",
+    },
+}
+
+E3_PROVISIONING_CASE_KEYS = frozenset({"name", "revision", "native_config_toml", "expected"})
+E3_PROVISIONING_EXPECTED_KEYS = frozenset({
+    "seeded_has_mcp_servers", "seeded_top_level_members", "seeded_members",
+    "names", "diagnostic", "migration_hint", "codex_seed_record",
+})
+E3_POSTURE_CASE_KEYS = frozenset({"name", "revision_shipped", "environment", "codex_seed_record", "expected"})
+E3_POSTURE_EXPECTED_KEYS = frozenset({
+    "codex_seed_row", "status_diagnostics", "names_listed", "listed_as", "repair_hint", "row_current",
+})
+
+
+def e3_check_seed_record(value: Any, label: str) -> tuple[str, list[str]]:
+    """A section 8.2 seed record is the closed `{ revision,
+    native_mcp_servers }` object with an A/B revision and an
+    ascending-byte-order snapshot of non-empty names; return both."""
+    if not isinstance(value, dict) or set(value) != {"revision", "native_mcp_servers"}:
+        raise ValidationFailure(f"{label}: a codex seed record is exactly {{ revision, native_mcp_servers }}")
+    revision = value.get("revision")
+    if revision not in ("A", "B"):
+        raise ValidationFailure(f"{label}: a seed record revision must be A or B")
+    names = value.get("native_mcp_servers")
+    if not isinstance(names, list) or any(not isinstance(item, str) or not item for item in names):
+        raise ValidationFailure(f"{label}: native_mcp_servers must be an array of non-empty names")
+    if len(set(names)) != len(names):
+        raise ValidationFailure(f"{label}: native_mcp_servers names must be unique")
+    if names != sorted(names, key=lambda item: item.encode("utf-8")):
+        raise ValidationFailure(f"{label}: native_mcp_servers must be in ascending byte order")
+    return revision, names
+
+
+def e3_parse_native_config(text: Any, label: str) -> tuple[dict[str, Any], list[str]]:
+    """Parse a provisioning fixture: the native `config.toml` bytes and the
+    sorted native `mcp_servers` entry names. A fixture that is not TOML, or
+    whose `mcp_servers` member is not a table, asserts nothing and fails."""
+    if not isinstance(text, str):
+        raise ValidationFailure(f"{label}: native_config_toml must be text")
+    try:
+        doc = tomllib.loads(text)
+    except tomllib.TOMLDecodeError as exc:
+        raise ValidationFailure(f"{label}: native_config_toml is not valid TOML ({exc})") from exc
+    if "mcp_servers" not in doc:
+        return doc, []
+    servers = doc["mcp_servers"]
+    if not isinstance(servers, dict):
+        raise ValidationFailure(f"{label}: a native mcp_servers member is a table")
+    names = sorted(servers, key=lambda item: item.encode("utf-8"))
+    if any(not name for name in names):
+        raise ValidationFailure(f"{label}: a native mcp_servers entry name is empty")
+    return doc, names
+
+
+def e3_expected_provisioning(revision: str, doc: dict[str, Any], names: list[str]) -> dict[str, Any]:
+    """Recompute the section 7.4 provisioning outcome: revision A seeds the
+    native document whole, revision B seeds every top-level member except
+    `mcp_servers`, and the warning fires exactly when the snapshot is
+    non-empty, with the migration hint only on the revision-A warning."""
+    seeded = dict(doc) if revision == "A" else {key: value for key, value in doc.items() if key != "mcp_servers"}
+    diagnostic = (E3_DIAG_UNGOVERNED if revision == "A" else E3_DIAG_NOT_INHERITED) if names else None
+    return {
+        "seeded_has_mcp_servers": "mcp_servers" in seeded,
+        "seeded_top_level_members": sorted(seeded),
+        "seeded_members": seeded,
+        "names": names,
+        "diagnostic": diagnostic,
+        "migration_hint": diagnostic == E3_DIAG_UNGOVERNED,
+    }
+
+
+def e3_expected_posture(
+    shipped: str, environment: str, record_revision: str | None, record_names: list[str]
+) -> dict[str, Any]:
+    """Recompute the section 12 posture rows from the manager-shipped
+    revision and the home's recorded seed revision. An A-record home keeps
+    its inherited names listed as ungoverned under either manager and adds
+    `mcp_seed_unstripped` under a B manager when its snapshot is
+    non-empty; a B record lists stripped names as not inherited; an absent
+    record is pre-rule; any other adapter rows nothing. Every warning row
+    stays current."""
+    if environment != "codex_cli":
+        diagnostics, names, listed, repair = [], [], "none", False
+    elif record_revision is None:
+        diagnostics, names, listed, repair = [E3_DIAG_UNSTRIPPED], [], "unknown", True
+    elif record_revision == "A":
+        names = record_names
+        diagnostics = [E3_DIAG_UNGOVERNED] if record_names else []
+        if shipped == "B" and record_names:
+            diagnostics.append(E3_DIAG_UNSTRIPPED)
+        listed = "ungoverned" if record_names else "none"
+        repair = E3_DIAG_UNSTRIPPED in diagnostics
+    else:
+        names = record_names
+        diagnostics = [E3_DIAG_NOT_INHERITED] if record_names else []
+        listed = "not-inherited" if record_names else "none"
+        repair = False
+    return {
+        "codex_seed_row": shipped,
+        "status_diagnostics": diagnostics,
+        "names_listed": names,
+        "listed_as": listed,
+        "repair_hint": repair,
+        "row_current": True,
+    }
+
+
+def e3_check_native_form(raw: str, form: str, label: str) -> None:
+    """The TOML spelling the named case promises: dotted sub-tables, an
+    inline table, an empty table, or no `mcp_servers` mention at all. The
+    parsed document cannot tell an inline table from dotted sub-tables, so
+    the pin reads the raw fixture text."""
+    if form == "subtable" and "[mcp_servers." not in raw:
+        raise ValidationFailure(f"{label}: the pinned subtable form is gone")
+    elif form == "subtable-only" and ("[mcp_servers." not in raw or "mcp_servers =" in raw):
+        raise ValidationFailure(f"{label}: the pinned subtable-only form is gone")
+    elif form == "inline" and "mcp_servers = {" not in raw:
+        raise ValidationFailure(f"{label}: the pinned inline-table form is gone")
+    elif form == "absent" and "mcp_servers" in raw:
+        raise ValidationFailure(f"{label}: the pinned server-free form gained mcp_servers")
+    elif form == "empty-table" and ("[mcp_servers]" not in raw or "[mcp_servers." in raw):
+        raise ValidationFailure(f"{label}: the pinned empty-table form is gone")
+
+
+def validate_environments_codex_seed_vectors(
+    vector: Any = None, suite_root: Path | None = None
+) -> None:
+    """Recompute the E3 codex-seed provisioning and posture expectations.
+
+    Every provisioning case is derived from its declared inputs — the
+    parsed native `config.toml` members and values, the seed rule
+    revision, the snapshot names, the diagnostic and hint, and the marker
+    seed record — and every posture case from the manager-shipped
+    revision, the adapter, and the home's recorded seed revision. Every
+    named case is additionally pinned to the branch it exercises, so a
+    corpus where a named case no longer represents its branch — an
+    internally consistent replacement under the same name — fails here.
+    """
+    root = SUITE if suite_root is None else Path(suite_root)
+    if vector is None:
+        vector = load_json(root / "vectors" / "environments-codex-seed.json")
+    if (
+        vector.get("schema_version") != 1
+        or vector.get("protocol_version") != PROTOCOL_VERSION
+        or vector.get("capability") != "agent-environments"
+        or vector.get("capability_revision") != 1
+    ):
+        raise ValidationFailure("codex-seed vector has the wrong capability identity")
+    if vector.get("revision_a") != E3_REVISION_A or vector.get("revision_b") != E3_REVISION_B:
+        raise ValidationFailure("codex-seed revisions must pin exactly the warning and flip releases")
+
+    provisioning = named_cases(vector.get("provisioning_cases"), "codex-seed provisioning")
+    if set(provisioning) != set(E3_PROVISIONING_BRANCH):
+        raise ValidationFailure("codex-seed provisioning case inventory is not exact")
+    for name, case in provisioning.items():
+        label = f"codex-seed case {name}"
+        pin = E3_PROVISIONING_BRANCH[name]
+        if set(case) != E3_PROVISIONING_CASE_KEYS:
+            raise ValidationFailure(f"{label}: a provisioning case is exactly {{ name, revision, native_config_toml, expected }}")
+        revision = case.get("revision")
+        if revision not in ("A", "B"):
+            raise ValidationFailure(f"{label}: revision must be A or B")
+        if revision != pin["revision"]:
+            raise ValidationFailure(f"{label}: revision does not match the pinned one ({pin['revision']})")
+        raw = case.get("native_config_toml")
+        doc, names = e3_parse_native_config(raw, label)
+        if set(doc) != pin["members"]:
+            raise ValidationFailure(f"{label}: native top-level members are not the pinned set ({sorted(pin['members'])})")
+        servers_state = "absent" if "mcp_servers" not in doc else ("empty" if not names else "present")
+        if servers_state != pin["servers"]:
+            raise ValidationFailure(f"{label}: native mcp_servers are {servers_state}, the case pins {pin['servers']}")
+        e3_check_native_form(raw, pin["form"], label)
+        expected = case.get("expected")
+        if not isinstance(expected, dict) or set(expected) != E3_PROVISIONING_EXPECTED_KEYS:
+            raise ValidationFailure(f"{label}: expected is not the closed provisioning set")
+        want = e3_expected_provisioning(revision, doc, names)
+        if expected.get("seeded_has_mcp_servers") != want["seeded_has_mcp_servers"]:
+            raise ValidationFailure(f"{label}: seeded_has_mcp_servers is not the revision {revision} rule")
+        if expected.get("seeded_top_level_members") != want["seeded_top_level_members"]:
+            raise ValidationFailure(
+                f"{label}: seeded_top_level_members are not the revision {revision} rule ({want['seeded_top_level_members']})"
+            )
+        if expected.get("seeded_members") != want["seeded_members"]:
+            raise ValidationFailure(f"{label}: seeded_members are not the retained revision {revision} values")
+        if expected.get("names") != want["names"]:
+            raise ValidationFailure(f"{label}: names are not the native mcp_servers entries ({want['names']})")
+        if expected.get("diagnostic") != want["diagnostic"]:
+            raise ValidationFailure(f"{label}: diagnostic is not the revision {revision} rule ({want['diagnostic']!r})")
+        if expected.get("migration_hint") != want["migration_hint"]:
+            raise ValidationFailure(f"{label}: migration_hint rides only the revision-A warning")
+        record_revision, record_names = e3_check_seed_record(expected.get("codex_seed_record"), label)
+        if record_revision != revision or record_names != names:
+            raise ValidationFailure(f"{label}: codex_seed_record is not the revision {revision} record with the native names")
+
+    posture = named_cases(vector.get("posture_cases"), "codex-seed posture")
+    if set(posture) != set(E3_POSTURE_BRANCH):
+        raise ValidationFailure("codex-seed posture case inventory is not exact")
+    for name, case in posture.items():
+        label = f"codex-seed case {name}"
+        pin = E3_POSTURE_BRANCH[name]
+        if set(case) != E3_POSTURE_CASE_KEYS:
+            raise ValidationFailure(f"{label}: a posture case is exactly {{ name, revision_shipped, environment, codex_seed_record, expected }}")
+        shipped = case.get("revision_shipped")
+        if shipped not in ("A", "B"):
+            raise ValidationFailure(f"{label}: revision_shipped must be A or B")
+        if shipped != pin["shipped"]:
+            raise ValidationFailure(f"{label}: revision_shipped does not match the pinned one ({pin['shipped']})")
+        environment = case.get("environment")
+        if environment not in ENVIRONMENT_HOME_VARIABLES:
+            raise ValidationFailure(f"{label}: environment {environment!r} is outside the closed adapter set")
+        if environment != pin["environment"]:
+            raise ValidationFailure(f"{label}: environment does not match the pinned one ({pin['environment']})")
+        record = case.get("codex_seed_record")
+        if record is None:
+            if pin["record"] is not None or pin["snapshot"] != "absent":
+                raise ValidationFailure(f"{label}: the seed record is absent, the case pins a {pin['record']} record")
+            record_revision, record_names = None, []
+        else:
+            record_revision, record_names = e3_check_seed_record(record, label)
+            if record_revision != pin["record"]:
+                raise ValidationFailure(f"{label}: recorded revision does not match the pinned one ({pin['record']})")
+            snapshot = "empty" if not record_names else "non-empty"
+            if snapshot != pin["snapshot"]:
+                raise ValidationFailure(f"{label}: snapshot is {snapshot}, the case pins {pin['snapshot']}")
+        # The non-codex pin (record None) is what enforces the section 8.2
+        # absence rule: any other adapter carrying a seed record fails its
+        # recorded-revision pin above.
+        expected = case.get("expected")
+        if not isinstance(expected, dict) or set(expected) != E3_POSTURE_EXPECTED_KEYS:
+            raise ValidationFailure(f"{label}: expected is not the closed posture set")
+        want = e3_expected_posture(shipped, environment, record_revision, record_names)
+        if expected.get("codex_seed_row") != want["codex_seed_row"]:
+            raise ValidationFailure(f"{label}: codex_seed_row is not the shipped revision ({want['codex_seed_row']})")
+        if expected.get("status_diagnostics") != want["status_diagnostics"]:
+            raise ValidationFailure(f"{label}: status_diagnostics are not the posture rule ({want['status_diagnostics']})")
+        if expected.get("names_listed") != want["names_listed"]:
+            raise ValidationFailure(f"{label}: names_listed are not the recorded names ({want['names_listed']})")
+        if expected.get("listed_as") != want["listed_as"]:
+            raise ValidationFailure(f"{label}: listed_as is not the posture rule ({want['listed_as']!r})")
+        if expected.get("repair_hint") != want["repair_hint"]:
+            raise ValidationFailure(f"{label}: repair_hint rides only mcp_seed_unstripped")
+        if expected.get("row_current") != want["row_current"]:
+            raise ValidationFailure(f"{label}: a codex-seed warning row stays current")
 
 
 # ---------------------------------------------------------------------------
@@ -7483,6 +7803,7 @@ def main() -> int:
         validate_environments_env_passthrough_vectors,
         validate_environments_source_signers_vectors,
         validate_environments_store_boundary_vectors,
+        validate_environments_codex_seed_vectors,
         validate_context_version_vectors,
         validate_context_detector_vectors,
         validate_snapshot_acquisition_vectors,

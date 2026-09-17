@@ -1257,6 +1257,10 @@ func environmentMarkerSchemaExamples(valid map[string]any) []schemaExample {
 	passthroughLinked := cloneMap(valid)
 	passthroughLinked["passthrough"] = []any{map[string]any{"path": "auth.json", "strategy": "file-link"}}
 	delete(passthroughLinked, "seeded_projects")
+	codexSeed := cloneMap(valid)
+	codexSeed["codex_seed_record"] = map[string]any{"revision": "B", "native_mcp_servers": []any{"figma", "gh"}}
+	codexSeedEmpty := cloneMap(valid)
+	codexSeedEmpty["codex_seed_record"] = map[string]any{"revision": "A", "native_mcp_servers": []any{}}
 
 	return []schemaExample{
 		{name: "valid-local-profile", valid: true, instance: localProfile},
@@ -1268,6 +1272,8 @@ func environmentMarkerSchemaExamples(valid map[string]any) []schemaExample {
 		{name: "valid-copied", valid: true, instance: copied},
 		{name: "valid-seeded-opencode-parent", valid: true, instance: seededParent},
 		{name: "valid-passthrough-file-link", valid: true, instance: passthroughLinked},
+		{name: "valid-codex-seed-record", valid: true, instance: codexSeed},
+		{name: "valid-codex-seed-record-empty-snapshot", valid: true, instance: codexSeedEmpty},
 		{name: "invalid-version", valid: false, instance: withField(valid, "version", 2)},
 		{name: "invalid-unknown-field", valid: false, instance: withField(valid, "environment", "claude_code")},
 		{name: "invalid-missing-precedence", valid: false, instance: without(valid, "precedence")},
@@ -1310,6 +1316,11 @@ func environmentMarkerSchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-seed-links-on-linked-home", valid: false, instance: withField(linked, "seed_links", []any{"git"})},
 		{name: "invalid-seeded-projects-on-copied", valid: false, instance: withField(copied, "seeded_projects", []any{"/tmp"})},
 		{name: "invalid-seeded-projects-unsorted", valid: false, instance: withField(valid, "seeded_projects", []any{"/Users/operator/projects/b", "/Users/operator/projects/a"})},
+		{name: "invalid-codex-seed-record-unknown-field", valid: false, instance: withField(valid, "codex_seed_record", map[string]any{"revision": "B", "native_mcp_servers": []any{"figma"}, "commands": []any{"npx"}})},
+		{name: "invalid-codex-seed-record-revision", valid: false, instance: withField(valid, "codex_seed_record", map[string]any{"revision": "C", "native_mcp_servers": []any{"figma"}})},
+		{name: "invalid-codex-seed-record-names-member", valid: false, instance: withField(valid, "codex_seed_record", map[string]any{"revision": "B", "native_mcp_servers": []any{"figma", ""}})},
+		{name: "invalid-codex-seed-record-names-not-array", valid: false, instance: withField(valid, "codex_seed_record", map[string]any{"revision": "B", "native_mcp_servers": "figma"})},
+		{name: "invalid-codex-seed-record-on-linked-home", valid: false, instance: withField(linked, "codex_seed_record", map[string]any{"revision": "B", "native_mcp_servers": []any{"figma"}})},
 	}
 }
 

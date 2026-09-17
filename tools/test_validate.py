@@ -2681,6 +2681,295 @@ class SourceSignersVectorTests(unittest.TestCase):
         self.assertIn("section 9.2 delta rule", str(raised.exception))
 
 
+class CodexSeedVectorTests(unittest.TestCase):
+    """The E3 codex-seed provisioning/posture gate must fail closed.
+
+    validate_environments_codex_seed_vectors is the production gate:
+    tools/validate.py main() runs it on every `make validate`, recomputing
+    the section 7.4 provisioning outcome (seeded members and values,
+    snapshot names, diagnostic and hint, marker seed record) from the
+    parsed native config.toml and the seed rule revision, and the section
+    12 posture rows from the manager-shipped revision and the home's
+    recorded seed revision. Each test narrows one rule and proves the gate
+    rejects what the rule must reject, including the review round-1
+    branch-collapse replacements.
+    """
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.SUITE / "vectors" / "environments-codex-seed.json"
+        )
+
+    def case(self, family: str, name: str, vector: dict | None = None) -> dict:
+        source = self.vector if vector is None else vector
+        return next(item for item in source[family] if item["name"] == name)
+
+    def run_gate(self, vector=None) -> None:
+        validate.validate_environments_codex_seed_vectors(
+            vector=self.vector if vector is None else vector,
+        )
+
+    def replace_body(self, changed: dict, family: str, target: str, source: str) -> None:
+        donor = self.case(family, source, changed)
+        recipient = self.case(family, target, changed)
+        for key in list(recipient):
+            if key != "name":
+                del recipient[key]
+        for key, value in donor.items():
+            if key != "name":
+                recipient[key] = copy.deepcopy(value)
+
+    def test_published_vector_passes(self) -> None:
+        self.run_gate()
+
+    def test_review_mutant_strip_case_replaced_with_no_server_case_is_rejected(self) -> None:
+        # The review round-1 mutant: the B-strip case body replaced with
+        # the internally consistent no-server case under the same name.
+        changed = copy.deepcopy(self.vector)
+        self.replace_body(changed, "provisioning_cases", "b-strips-servers-keeps-rest", "b-without-servers-no-warning")
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_strip_case_replaced_with_subtable_only_case_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.replace_body(changed, "provisioning_cases", "b-strips-servers-keeps-rest", "b-subtable-only-form-stripped")
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_copy_case_replaced_with_inline_case_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.replace_body(changed, "provisioning_cases", "a-copies-whole-with-servers", "a-inline-table-form-inherited")
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_provisioning_revision_flip_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("provisioning_cases", "b-strips-servers-keeps-rest", changed)["revision"] = "A"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_provisioning_retained_table_dropped_from_fixture_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("provisioning_cases", "b-strips-servers-keeps-rest", changed)
+        case["native_config_toml"] = case["native_config_toml"].replace("[tui]\ntheme = \"dark\"\n\n", "")
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_provisioning_retained_value_mutation_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("provisioning_cases", "b-strips-servers-keeps-rest", changed)
+        case["expected"]["seeded_members"]["model"] = "gpt-5-mini"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_provisioning_diagnostic_silenced_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("provisioning_cases", "b-strips-servers-keeps-rest", changed)["expected"]["diagnostic"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_provisioning_warnings_not_interchangeable(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("provisioning_cases", "a-copies-whole-with-servers", changed)["expected"]["diagnostic"] = (
+            "mcp_native_servers_not_inherited"
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+        changed = copy.deepcopy(self.vector)
+        self.case("provisioning_cases", "b-strips-servers-keeps-rest", changed)["expected"]["diagnostic"] = (
+            "mcp_native_servers_ungoverned"
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_provisioning_hint_without_warning_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("provisioning_cases", "b-strips-servers-keeps-rest", changed)["expected"]["migration_hint"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+        changed = copy.deepcopy(self.vector)
+        self.case("provisioning_cases", "a-without-servers-no-warning", changed)["expected"]["migration_hint"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_provisioning_record_revision_mismatch_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("provisioning_cases", "b-strips-servers-keeps-rest", changed)
+        case["expected"]["codex_seed_record"]["revision"] = "A"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+        changed = copy.deepcopy(self.vector)
+        case = self.case("provisioning_cases", "b-strips-servers-keeps-rest", changed)
+        case["expected"]["codex_seed_record"]["revision"] = "C"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_provisioning_record_names_unsorted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("provisioning_cases", "b-strips-servers-keeps-rest", changed)
+        case["expected"]["codex_seed_record"]["native_mcp_servers"] = ["gh", "figma"]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_provisioning_record_extra_member_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("provisioning_cases", "b-strips-servers-keeps-rest", changed)
+        case["expected"]["codex_seed_record"]["commands"] = ["npx"]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_provisioning_invalid_toml_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("provisioning_cases", "b-strips-servers-keeps-rest", changed)
+        case["native_config_toml"] += "\n[unclosed"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_provisioning_seeded_flag_flip_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("provisioning_cases", "b-strips-servers-keeps-rest", changed)
+        case["expected"]["seeded_has_mcp_servers"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_provisioning_seeded_members_reorder_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("provisioning_cases", "b-strips-servers-keeps-rest", changed)
+        case["expected"]["seeded_top_level_members"] = ["tui", "projects", "model"]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_provisioning_names_truncation_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("provisioning_cases", "b-strips-servers-keeps-rest", changed)
+        case["expected"]["names"] = ["figma"]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_posture_unknown_adapter_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("posture_cases", "a-home-lists-ungoverned", changed)["environment"] = "cursor"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_provisioning_extra_case_key_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("provisioning_cases", "b-strips-servers-keeps-rest", changed)["notes"] = "stale annotation"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_provisioning_non_table_mcp_servers_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("provisioning_cases", "b-empty-mcp-servers-table-no-warning", changed)
+        case["native_config_toml"] = case["native_config_toml"].replace("[mcp_servers]\n", "mcp_servers = \"x\"\n")
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_posture_migration_case_replaced_with_same_revision_home_is_rejected(self) -> None:
+        # The F2 replacement: the B-manager/A-home case body replaced with
+        # the A/A case under the same name must fail on the shipped pin.
+        changed = copy.deepcopy(self.vector)
+        self.replace_body(changed, "posture_cases", "a-home-unstripped-under-b", "a-home-lists-ungoverned")
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_posture_migration_case_replaced_with_stripped_home_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.replace_body(changed, "posture_cases", "a-home-unstripped-under-b", "b-home-lists-not-inherited")
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_posture_unstripped_dropped_from_migration_case_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("posture_cases", "a-home-unstripped-under-b", changed)
+        case["expected"]["status_diagnostics"] = ["mcp_native_servers_ungoverned"]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_posture_repair_hint_rides_only_unstripped(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("posture_cases", "pre-rule-home-unstripped-under-b", changed)["expected"]["repair_hint"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+        changed = copy.deepcopy(self.vector)
+        self.case("posture_cases", "b-home-lists-not-inherited", changed)["expected"]["repair_hint"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_posture_cross_adapter_record_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("posture_cases", "non-codex-home-without-record-no-rows", changed)
+        case["codex_seed_record"] = {"revision": "B", "native_mcp_servers": []}
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_posture_names_mismatch_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("posture_cases", "a-home-lists-ungoverned", changed)["expected"]["names_listed"] = []
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_posture_row_non_current_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("posture_cases", "a-home-unstripped-under-b", changed)["expected"]["row_current"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_dropped_provisioning_case_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["provisioning_cases"] = [
+            item for item in changed["provisioning_cases"] if item["name"] != "b-empty-mcp-servers-table-no-warning"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_dropped_posture_case_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["posture_cases"] = [
+            item for item in changed["posture_cases"] if item["name"] != "a-home-unstripped-under-b"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_revision_string_mutation_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["revision_b"] = "flip release: the codex_cli seed strips everything"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_derivation_corners_beyond_corpus(self) -> None:
+        # Totality of the posture derivation for input combinations the
+        # corpus does not carry: an empty A snapshot under a B manager
+        # warns nothing, and a stripped B record never reports unstripped.
+        self.assertEqual(
+            validate.e3_expected_posture("B", "codex_cli", "A", []),
+            {
+                "codex_seed_row": "B",
+                "status_diagnostics": [],
+                "names_listed": [],
+                "listed_as": "none",
+                "repair_hint": False,
+                "row_current": True,
+            },
+        )
+        self.assertEqual(
+            validate.e3_expected_posture("A", "codex_cli", "B", ["figma"]),
+            {
+                "codex_seed_row": "A",
+                "status_diagnostics": ["mcp_native_servers_not_inherited"],
+                "names_listed": ["figma"],
+                "listed_as": "not-inherited",
+                "repair_hint": False,
+                "row_current": True,
+            },
+        )
+
+    def test_gate_is_registered_in_main(self) -> None:
+        import inspect
+
+        self.assertIn("validate_environments_codex_seed_vectors", inspect.getsource(validate.main))
+
+
 class ContextVersionVectorTests(unittest.TestCase):
     """The environments.md section 1.3/1.4 gate must fail closed.
 

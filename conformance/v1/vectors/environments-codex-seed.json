@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "protocol_version": "1.0.0-rc.9",
+  "capability": "agent-environments",
+  "capability_revision": 1,
+  "rule": "codex provisioning seed mcp_servers handling (sections 7.4, 7.7, 7.8, 8.2, 12)",
+  "revision_a": "warning release: the codex_cli seed is still copied whole, but provisioning warns mcp_native_servers_ungoverned naming every inherited native mcp_servers entry with the migration hint",
+  "revision_b": "flip release: the codex_cli seed strips the mcp_servers table and every mcp_servers.* sub-table; provisioning reports the stripped names once with mcp_native_servers_not_inherited",
+  "provisioning_cases": [
+    {
+      "name": "a-copies-whole-with-servers",
+      "revision": "A",
+      "native_config_toml": "model = \"gpt-5-codex\"\n\n[projects.\"/Users/operator/work\"]\ntrust_level = \"trusted\"\n\n[tui]\ntheme = \"dark\"\n\n[mcp_servers.figma]\ncommand = \"npx\"\nargs = [\"-y\", \"figma-developer-mcp\", \"--stdio\"]\n\n[mcp_servers.gh]\ncommand = \"gh\"\nargs = [\"mcp\"]\n",
+      "expected": {
+        "seeded_has_mcp_servers": true,
+        "seeded_top_level_members": ["mcp_servers", "model", "projects", "tui"],
+        "seeded_members": {
+          "mcp_servers": {
+            "figma": {"command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"]},
+            "gh": {"command": "gh", "args": ["mcp"]}
+          },
+          "model": "gpt-5-codex",
+          "projects": {"/Users/operator/work": {"trust_level": "trusted"}},
+          "tui": {"theme": "dark"}
+        },
+        "names": ["figma", "gh"],
+        "diagnostic": "mcp_native_servers_ungoverned",
+        "migration_hint": true,
+        "codex_seed_record": {"revision": "A", "native_mcp_servers": ["figma", "gh"]}
+      }
+    },
+    {
+      "name": "b-strips-servers-keeps-rest",
+      "revision": "B",
+      "native_config_toml": "model = \"gpt-5-codex\"\n\n[projects.\"/Users/operator/work\"]\ntrust_level = \"trusted\"\n\n[tui]\ntheme = \"dark\"\n\n[mcp_servers.figma]\ncommand = \"npx\"\nargs = [\"-y\", \"figma-developer-mcp\", \"--stdio\"]\n\n[mcp_servers.gh]\ncommand = \"gh\"\nargs = [\"mcp\"]\n",
+      "expected": {
+        "seeded_has_mcp_servers": false,
+        "seeded_top_level_members": ["model", "projects", "tui"],
+        "seeded_members": {
+          "model": "gpt-5-codex",
+          "projects": {"/Users/operator/work": {"trust_level": "trusted"}},
+          "tui": {"theme": "dark"}
+        },
+        "names": ["figma", "gh"],
+        "diagnostic": "mcp_native_servers_not_inherited",
+        "migration_hint": false,
+        "codex_seed_record": {"revision": "B", "native_mcp_servers": ["figma", "gh"]}
+      }
+    },
+    {
+      "name": "a-without-servers-no-warning",
+      "revision": "A",
+      "native_config_toml": "model = \"gpt-5-codex\"\n\n[projects.\"/Users/operator/work\"]\ntrust_level = \"trusted\"\n\n[tui]\ntheme = \"dark\"\n",
+      "expected": {
+        "seeded_has_mcp_servers": false,
+        "seeded_top_level_members": ["model", "projects", "tui"],
+        "seeded_members": {
+          "model": "gpt-5-codex",
+          "projects": {"/Users/operator/work": {"trust_level": "trusted"}},
+          "tui": {"theme": "dark"}
+        },
+        "names": [],
+        "diagnostic": null,
+        "migration_hint": false,
+        "codex_seed_record": {"revision": "A", "native_mcp_servers": []}
+      }
+    },
+    {
+      "name": "b-without-servers-no-warning",
+      "revision": "B",
+      "native_config_toml": "model = \"gpt-5-codex\"\n\n[projects.\"/Users/operator/work\"]\ntrust_level = \"trusted\"\n\n[tui]\ntheme = \"dark\"\n",
+      "expected": {
+        "seeded_has_mcp_servers": false,
+        "seeded_top_level_members": ["model", "projects", "tui"],
+        "seeded_members": {
+          "model": "gpt-5-codex",
+          "projects": {"/Users/operator/work": {"trust_level": "trusted"}},
+          "tui": {"theme": "dark"}
+        },
+        "names": [],
+        "diagnostic": null,
+        "migration_hint": false,
+        "codex_seed_record": {"revision": "B", "native_mcp_servers": []}
+      }
+    },
+    {
+      "name": "b-subtable-only-form-stripped",
+      "revision": "B",
+      "native_config_toml": "model = \"gpt-5-codex\"\n\n[mcp_servers.\"quoted-name\"]\ncommand = \"server\"\nargs = []\n",
+      "expected": {
+        "seeded_has_mcp_servers": false,
+        "seeded_top_level_members": ["model"],
+        "seeded_members": {"model": "gpt-5-codex"},
+        "names": ["quoted-name"],
+        "diagnostic": "mcp_native_servers_not_inherited",
+        "migration_hint": false,
+        "codex_seed_record": {"revision": "B", "native_mcp_servers": ["quoted-name"]}
+      }
+    },
+    {
+      "name": "a-inline-table-form-inherited",
+      "revision": "A",
+      "native_config_toml": "model = \"gpt-5-codex\"\nmcp_servers = { local = { command = \"server\", args = [] } }\n",
+      "expected": {
+        "seeded_has_mcp_servers": true,
+        "seeded_top_level_members": ["mcp_servers", "model"],
+        "seeded_members": {
+          "mcp_servers": {"local": {"command": "server", "args": []}},
+          "model": "gpt-5-codex"
+        },
+        "names": ["local"],
+        "diagnostic": "mcp_native_servers_ungoverned",
+        "migration_hint": true,
+        "codex_seed_record": {"revision": "A", "native_mcp_servers": ["local"]}
+      }
+    },
+    {
+      "name": "b-empty-mcp-servers-table-no-warning",
+      "revision": "B",
+      "native_config_toml": "model = \"gpt-5-codex\"\n\n[mcp_servers]\n",
+      "expected": {
+        "seeded_has_mcp_servers": false,
+        "seeded_top_level_members": ["model"],
+        "seeded_members": {"model": "gpt-5-codex"},
+        "names": [],
+        "diagnostic": null,
+        "migration_hint": false,
+        "codex_seed_record": {"revision": "B", "native_mcp_servers": []}
+      }
+    }
+  ],
+  "posture_cases": [
+    {
+      "name": "a-home-lists-ungoverned",
+      "revision_shipped": "A",
+      "environment": "codex_cli",
+      "codex_seed_record": {"revision": "A", "native_mcp_servers": ["figma", "gh"]},
+      "expected": {
+        "codex_seed_row": "A",
+        "status_diagnostics": ["mcp_native_servers_ungoverned"],
+        "names_listed": ["figma", "gh"],
+        "listed_as": "ungoverned",
+        "repair_hint": false,
+        "row_current": true
+      }
+    },
+    {
+      "name": "a-home-unstripped-under-b",
+      "revision_shipped": "B",
+      "environment": "codex_cli",
+      "codex_seed_record": {"revision": "A", "native_mcp_servers": ["figma", "gh"]},
+      "expected": {
+        "codex_seed_row": "B",
+        "status_diagnostics": ["mcp_native_servers_ungoverned", "mcp_seed_unstripped"],
+        "names_listed": ["figma", "gh"],
+        "listed_as": "ungoverned",
+        "repair_hint": true,
+        "row_current": true
+      }
+    },
+    {
+      "name": "b-home-lists-not-inherited",
+      "revision_shipped": "B",
+      "environment": "codex_cli",
+      "codex_seed_record": {"revision": "B", "native_mcp_servers": ["figma"]},
+      "expected": {
+        "codex_seed_row": "B",
+        "status_diagnostics": ["mcp_native_servers_not_inherited"],
+        "names_listed": ["figma"],
+        "listed_as": "not-inherited",
+        "repair_hint": false,
+        "row_current": true
+      }
+    },
+    {
+      "name": "pre-rule-home-unstripped-under-b",
+      "revision_shipped": "B",
+      "environment": "codex_cli",
+      "codex_seed_record": null,
+      "expected": {
+        "codex_seed_row": "B",
+        "status_diagnostics": ["mcp_seed_unstripped"],
+        "names_listed": [],
+        "listed_as": "unknown",
+        "repair_hint": true,
+        "row_current": true
+      }
+    },
+    {
+      "name": "pre-rule-home-unstripped-under-a",
+      "revision_shipped": "A",
+      "environment": "codex_cli",
+      "codex_seed_record": null,
+      "expected": {
+        "codex_seed_row": "A",
+        "status_diagnostics": ["mcp_seed_unstripped"],
+        "names_listed": [],
+        "listed_as": "unknown",
+        "repair_hint": true,
+        "row_current": true
+      }
+    },
+    {
+      "name": "b-home-empty-snapshot-no-rows",
+      "revision_shipped": "B",
+      "environment": "codex_cli",
+      "codex_seed_record": {"revision": "B", "native_mcp_servers": []},
+      "expected": {
+        "codex_seed_row": "B",
+        "status_diagnostics": [],
+        "names_listed": [],
+        "listed_as": "none",
+        "repair_hint": false,
+        "row_current": true
+      }
+    },
+    {
+      "name": "a-home-empty-snapshot-no-rows",
+      "revision_shipped": "A",
+      "environment": "codex_cli",
+      "codex_seed_record": {"revision": "A", "native_mcp_servers": []},
+      "expected": {
+        "codex_seed_row": "A",
+        "status_diagnostics": [],
+        "names_listed": [],
+        "listed_as": "none",
+        "repair_hint": false,
+        "row_current": true
+      }
+    },
+    {
+      "name": "non-codex-home-without-record-no-rows",
+      "revision_shipped": "B",
+      "environment": "claude_code",
+      "codex_seed_record": null,
+      "expected": {
+        "codex_seed_row": "B",
+        "status_diagnostics": [],
+        "names_listed": [],
+        "listed_as": "none",
+        "repair_hint": false,
+        "row_current": true
+      }
+    }
+  ]
+}

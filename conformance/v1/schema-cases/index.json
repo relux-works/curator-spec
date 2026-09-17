@@ -255,6 +255,16 @@
     "valid": true
   },
   {
+    "instance": "agent-environment-marker-v1/valid-codex-seed-record.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v1/valid-codex-seed-record-empty-snapshot.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": true
+  },
+  {
     "instance": "agent-environment-marker-v1/invalid-version.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": false
@@ -461,6 +471,31 @@
   },
   {
     "instance": "agent-environment-marker-v1/invalid-seeded-projects-unsorted.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-codex-seed-record-unknown-field.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-codex-seed-record-revision.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-codex-seed-record-names-member.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-codex-seed-record-names-not-array.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v1/invalid-codex-seed-record-on-linked-home.json",
     "schema": "agent-environment-marker-v1.schema.json",
     "valid": false
   },

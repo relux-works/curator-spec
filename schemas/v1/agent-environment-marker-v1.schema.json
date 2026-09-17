@@ -83,7 +83,20 @@
       "uniqueItems": true,
       "items": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
     },
-    "seed_links": {"$ref": "common.schema.json#/$defs/pathSet"}
+    "seed_links": {"$ref": "common.schema.json#/$defs/pathSet"},
+    "codex_seed_record": {
+      "type": "object",
+      "required": ["revision", "native_mcp_servers"],
+      "properties": {
+        "revision": {"enum": ["A", "B"]},
+        "native_mcp_servers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
+        }
+      },
+      "additionalProperties": false
+    }
   },
   "allOf": [
     {
@@ -107,7 +120,8 @@
           "passthrough": false,
           "seeds": false,
           "seeded_projects": false,
-          "seed_links": false
+          "seed_links": false,
+          "codex_seed_record": false
         }
       }
     }

@@ -1342,9 +1342,51 @@ and are excluded from every surface hash. The enumerated seeds:
 | Environment | Provisioning seeds | Evidence |
 |---|---|---|
 | `claude_code` | `.claude.json` — **written**, not copied: exactly the object `{"hasCompletedOnboarding":true,"projects":{}}` at provisioning, to which repair adds one project entry per launch directory (below); `oauthAccount` is never seeded — login is per home (passthrough table); a `settings.json` seed is not declared in revision 1 | the minimal seed shape is **verified** on 2.1.261: a file holding only these members survives the first run, which merges its own first-run members around them; the fresh-home "Not logged in" behavior is **verified** |
-| `codex_cli` | `config.toml` — copied whole (project trust, model, and MCP tables included; the launch channel of section 7.8 layers the profile's MCP set over it) | that the copied file is parsed in the fresh home is **verified** (0.153.2, its `mcp_servers` entries are listed); that a `projects.<path>.trust_level` entry does **not** lift the `exec` git wall is **verified** (section 7.9 `exec_flags`); the remaining member shapes are **docs-confidence** |
+| `codex_cli` | `config.toml` — copied under the seed rule below: revision A copies it whole (project trust, model, and MCP tables included); revision B copies every top-level member except `mcp_servers` (the `mcp_servers` table and every `mcp_servers.*` sub-table removed); the launch channel of section 7.8 layers the profile's MCP set over the seeded base in both revisions | that the copied file is parsed in the fresh home is **verified** (0.153.2); that a `projects.<path>.trust_level` entry does **not** lift the `exec` git wall is **verified** (section 7.9 `exec_flags`); that a whole-copy home lists the native `mcp_servers` entries is **verified** (0.153.2 — the revision-A and pre-rule behavior; revision B strips them); the remaining member shapes are **docs-confidence** |
 | `opencode` | none — the XDG seeds of section 7.1 are the analogous class | — |
 | `pi` | `settings.json`, `models.json` | that a fresh dir loses them and re-downloads its tool trees is **verified**; their shapes are docs-confidence |
+
+**Codex seed MCP rule.** A whole-copy `codex_cli` seed inherits every
+native `mcp_servers` entry into the managed home, outside the profile's
+lock and outside the section 2.2 allowlist, while the section 7.8 channel
+layers the profile's set over that base — the asymmetry the section 7.8
+residual table records. The seed rule therefore ships in two explicitly
+labelled revisions; a manager MUST ship revision A before revision B:
+
+- **Revision A (warning release).** The seed is still copied whole, but
+  provisioning MUST emit `mcp_native_servers_ungoverned` (warning) naming
+  every native `mcp_servers` entry the home inherited, stating that the
+  next revision stops inheriting them, and carrying the migration hint:
+  declare the server in the profile's MCP set, or accept the loss. `env
+  status` MUST list those entries per managed `codex_cli` home as
+  ungoverned — outside the lock and the section 2.2 allowlist.
+- **Revision B (flip release).** The seed copies `config.toml` with the
+  `mcp_servers` table and every `mcp_servers.*` sub-table removed — the
+  seeded file carries the trust, model, and TUI configuration, every
+  top-level member of the native file except `mcp_servers`, and MUST parse
+  as TOML — and provisioning MUST report the stripped names once with
+  `mcp_native_servers_not_inherited` (warning). A managed `codex_cli`
+  home provisioned under revision B runs only the profile's MCP set
+  through the section 7.8 channel. `env status` MUST list the stripped
+  entries per managed `codex_cli` home as not inherited.
+
+Both revisions write the `codex_seed_record` marker record of section 8.2
+at provisioning: the `revision` (`A` or `B`) and the snapshot of the
+native `mcp_servers` entry names taken from the native file at
+provisioning time — names only, never server commands or env values. The
+provisioning warning under either revision fires exactly when the snapshot
+is non-empty: a native file with no `mcp_servers` entries warns nothing,
+and the record is still written with an empty snapshot. The rule applies
+at provisioning only: seeds are thereafter owned by the tool, and an
+existing home keeps its bytes. The manager-shipped seed-rule revision and
+the home's recorded seed revision are distinct: a managed `codex_cli`
+home provisioned under revision A and now served by a revision-B manager
+keeps its inherited servers, `env status` MUST list their recorded names
+as ungoverned, and the home reports `mcp_seed_unstripped` (warning) with
+the repair hint (re-provision) — unless the recorded snapshot is empty,
+in which case there is no inherited server and the mismatch warns
+nothing. A managed `codex_cli` home whose marker predates the rule — the
+record is absent — reports the same warning with the same hint.
 
 A seed is one-time by definition: a native-home change after provisioning
 does not propagate, and the tool's later writes in the managed home are
@@ -1471,6 +1513,9 @@ identifier not declared by the registry is `environment_target_unknown`.
 | unrecorded entry in a managed `opencode` parent shadows an allowlisted operator entry (warning) | `environment_seed_shadowed` |
 | first `auto` write into a secondary target's home without recorded consent | `environment_target_consent_required` |
 | detected tool version differs from the adapter's recorded verified version (warning) | `environment_tool_version_unverified` |
+| native `mcp_servers` entries inherited into a managed `codex_cli` home under seed-rule revision A (warning; section 7.4) | `mcp_native_servers_ungoverned` |
+| native `mcp_servers` entries stripped from a managed `codex_cli` seed under seed-rule revision B (warning; section 7.4) | `mcp_native_servers_not_inherited` |
+| managed `codex_cli` home with an unstripped seed — marker lacks the seed record (pre-rule provisioning), or the recorded seed revision is `A` with a non-empty snapshot while the manager ships revision `B` (warning, re-provision hint; section 7.4) | `mcp_seed_unstripped` |
 
 ### 7.8 MCP launch channels
 
@@ -1487,6 +1532,19 @@ configuration.
 | `codex_cli` | `flag` `-p` with `argument: name`, `name: "curator-mcp"`: `-p <name>` layers `$CODEX_HOME/<name>.config.toml` on the base configuration, so the manager's `<home>/curator-mcp.config.toml` (section 5.8) carries the set. The layer name is fixed and reserved. `-p` accepts **exactly one** value — a second occurrence is the tool's argument error, not last-wins — so an operator `-p` after `--` fails the launch and operator profile layering is unavailable in a managed launch (recorded consequence; this closes Decision 0012 Open question 3). `-p` is accepted before and after `exec`. A **missing layer file is silently ignored** (exit 0) — under `--strict-config` too (0.153.2, sprint evidence) — so the launcher MUST stat the layer file immediately before exec and fail rather than launch without the set; `env resolve` covers the same file as a marker-recorded surface | all four facts **verified** on codex 0.153.2 by direct invocation; a layer file whose only table is `mcp_servers` composes over the base and its servers are listed (**verified**) |
 | `opencode` | `variable` `OPENCODE_CONFIG` naming the section 5.8 file. opencode merges configuration in a documented order — remote, global, `OPENCODE_CONFIG`, project `opencode.json`, `.opencode/`, `OPENCODE_CONFIG_CONTENT`, managed — so a project-level entry with the same server name overrides the managed one; recorded, not prevented | merge order **docs-confidence** (opencode is not installed on the recording machine) |
 | `pi` | none — pi 0.84.2 has no MCP channel; no file and no `mcp` section | **verified** absent from the 0.84.2 help |
+
+What each channel does to the home's own MCP configuration — the
+per-adapter residual — is closed in this table:
+
+| Environment | Home MCP configuration under the channel |
+|---|---|
+| `claude_code` | `--strict-mcp-config` disables every other MCP configuration, including servers recorded in the managed home's own `.claude.json`: the launch set is exactly the profile's |
+| `codex_cli` | `-p curator-mcp` layers the profile set over the seeded base: under seed-rule revision A the base still carries the native servers, reported as ungoverned (section 7.4); a home provisioned under revision B carries none in its base: the launch set is exactly the profile's (a revision-A home keeps its inherited base under a revision-B manager and reports `mcp_seed_unstripped`; section 7.4) |
+| `opencode` | the documented merge order applies — remote, global, `OPENCODE_CONFIG`, project `opencode.json`, `.opencode/`, `OPENCODE_CONFIG_CONTENT`, managed — so project-level servers remain and a same-named project entry overrides the managed one: recorded residual, not prevented |
+| `pi` | none: no channel, no MCP configuration in a managed launch |
+
+The launch set is what the tool offers the agent at launch under a managed
+launch through the channel above.
 
 Whether a given tool passes its own environment through to a `stdio` server
 is a per-adapter fact verified with the channel. Under Decision 0013 the
@@ -1645,6 +1703,18 @@ beside the managed surfaces. The marker records:
   literal launch-directory paths whose project entry section 7.4 has
   written into the managed `.claude.json`, so that resolve can tell a
   missing entry from one the tool later rewrote;
+- for a managed `codex_cli` home provisioned under the section 7.4 seed
+  rule, `codex_seed_record`: the closed object `{ revision,
+  native_mcp_servers }` — `revision` exactly `A` (warning release: the
+  native servers were inherited) or `B` (flip release: the native servers
+  were stripped), `native_mcp_servers` the ascending-byte-order snapshot
+  of the native `mcp_servers` entry names taken at provisioning, names
+  only, empty when the native file carried none. The record is absent on
+  every other home; its absence on a managed `codex_cli` home means
+  pre-rule provisioning, reported as `mcp_seed_unstripped` (section 7.7).
+  The recorded `revision` never changes after provisioning: an `A` record
+  under a revision-B manager keeps reporting its inherited names as
+  ungoverned and adds `mcp_seed_unstripped` (section 12);
 - for a managed `opencode` parent, the recorded XDG seed links of section
   7.1;
 - for a home whose backups directory is non-empty, nothing: backups are
@@ -2797,11 +2867,18 @@ allowlist is present, naming the verified signer, `unconfigured` when none
 is, `required-missing` when `require_source_signers` is true and none is —,
 the active update-confirmation revision (`A-warning` or `B-flip`, section
 9.2) with its behaviour, the machine-level `require_source_signers`
-value, and the store-trust row per installed profile — the section 4
+value, the store-trust row per installed profile — the section 4
 boundary and pin-hash verdict for the profile's lock, marker, and
 named store entries, naming the failing check and, for an enclosing
 failure, the boundary (environments root or store root) when the profile
-is `environment_store_untrusted`. Both commands follow
+is `environment_store_untrusted`, the active codex-seed revision (`A` or `B`, section 7.4) with its
+behaviour, and per managed `codex_cli` home the `codex_seed_record`
+revision with its native-server rows (`mcp_native_servers_ungoverned`
+for the native names an `A`-record home carries,
+`mcp_native_servers_not_inherited` for a `B`-record home's stripped
+names, `mcp_seed_unstripped` with the re-provision hint when the marker
+predates the rule or when an `A`-record home with a non-empty snapshot
+is served by a revision-`B` manager). Both commands follow
 the manager §10 discipline exactly: recompute and report, never mutate — no
 fetch, no repair, no adoption, no channel application, no onboarding.
 `--check` returns non-zero when any row is non-current.
@@ -2826,8 +2903,10 @@ Warnings —
 `environment_context_size_exceeded`, `environment_tool_version_unverified`,
 `environment_seed_shadowed`, `environment_foreign_manager_suspected`,
 `context_system_module_dropped`, `mcp_package_allowlist_empty`,
-`mcp_env_passthrough_unlisted`, `mcp_env_passthrough_dropped`, an
-acknowledged shadowing path — never make a row non-current.
+`mcp_env_passthrough_unlisted`, `mcp_env_passthrough_dropped`,
+`mcp_native_servers_ungoverned`, `mcp_native_servers_not_inherited`,
+`mcp_seed_unstripped`, an acknowledged shadowing path — never make a row
+non-current.
 
 The signer-verification rows re-verify the locked pins against the
 effective allowlists from the manager's local source state, without
@@ -2844,6 +2923,17 @@ revision B — a triggered delta refuses with
 `profile_update_confirmation_required` unless the invocation carries
 `--confirm-system-delta`. The row is informative and never makes a row
 non-current; no configuration knob pre-confirms.
+
+The codex-seed row reports `A` when the manager ships revision A of
+section 7.4 — the `codex_cli` seed is copied whole and provisioning warns
+`mcp_native_servers_ungoverned` with the migration hint — and `B` when it
+ships revision B — the seed strips `mcp_servers` and provisioning reports
+`mcp_native_servers_not_inherited`. A home whose recorded seed revision
+is older than the shipped one — revision `A` under a revision-`B`
+manager — additionally reports `mcp_seed_unstripped` with the
+re-provision hint while its recorded names stay listed as ungoverned
+(section 7.4). The row is informative and never makes a row non-current;
+no configuration knob selects the revision.
 
 Garbage collection extends the manager §10 and core §9.4 rules: it runs
 under the manager-home mutation lock, and its live roots additionally
@@ -3045,8 +3135,8 @@ authorization states, the post-provisioning planted-link repair, the
 manager-owned-link replace, the symlinked-backup-destination refusals (a traversed parent link and a directly symlinked target),
 the inside-pointing-link ledger refusal, and the clean-path and
 recorded-file positives — every foreign-link case asserting the link's
-former target is byte-identical afterwards. ;
-and the section 4
+former target is byte-identical afterwards;
+the section 4
 protected-boundary cases
 (`vectors/environments-store-boundary.json`) — the intact resolve that
 emits a fragment; the swapped system-prompt bytes, swapped root-context
@@ -3064,7 +3154,18 @@ entry-class case and the enclosing no-rebuild case; the repair rebuild,
 entry-rebuild, enclosing-refusal, stale-repair, and unprovisioned cases;
 the `env status` non-current posture rows naming the failing check and the
 boundary; and the negative cases whose fragment-emitting,
-current-reporting, or re-applying observation is non-conforming.  The nine
+current-reporting, or re-applying observation is non-conforming.;
+and the section 7.4 codex-seed
+cases (`vectors/environments-codex-seed.json`) — a native `config.toml`
+with `mcp_servers` tables under revision A (copied whole,
+`mcp_native_servers_ungoverned` names the entries, posture lists them
+ungoverned) and under revision B (the seeded file lacks them,
+`mcp_native_servers_not_inherited` names them), a native file without
+`mcp_servers` entries (no warning under either revision, the record still
+written), the pre-rule-home `mcp_seed_unstripped` posture, and the
+revision-A home under a revision-B manager (`mcp_seed_unstripped` with
+the re-provision hint, the recorded names still ungoverned) — with the
+`codex_seed_record` marker shape. The nine
 retired `expected/environments/*` sets are regenerated under the v2 type
 line. A manager claiming this capability MUST pass the complete vector set;
 there is no partial claim. A manager conforms to revision A by warning
@@ -3074,4 +3175,10 @@ revision B while still resolving on `PATH`. A manager conforms to the
 update-delta revision A by warning with `profile_update_system_delta`
 where the vectors warn, carrying the migration hint, and proceeding, and
 to revision B by refusing with `profile_update_confirmation_required`
-where the vectors refuse unless `--confirm-system-delta` is given.
+where the vectors refuse unless `--confirm-system-delta` is given. A
+manager conforms to the codex-seed revision A by copying the native
+`config.toml` whole, warning with `mcp_native_servers_ungoverned` where
+the vectors warn and carrying the migration hint, and to revision B by
+seeding without `mcp_servers` and reporting with
+`mcp_native_servers_not_inherited` where the vectors report; it MUST NOT
+claim revision B while still inheriting native servers.

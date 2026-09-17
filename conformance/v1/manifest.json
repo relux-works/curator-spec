@@ -509,6 +509,26 @@
       "sha256": "sha256:10d6e619e34cedea8b469d8d176a823805c76a0be0f3e33adf9cd379e7f54168"
     },
     {
+      "path": "schema-cases/agent-environment-marker-v1/invalid-codex-seed-record-names-member.json",
+      "sha256": "sha256:9e05ddbaf58b6c80d450bdb5acddafc1b080fdb03d1aafcc76a0ea3bae92cbaa"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v1/invalid-codex-seed-record-names-not-array.json",
+      "sha256": "sha256:e07cd97388d52b9c3e9b8b46b837af094f912178393466c6c5ae76f1ee289c3f"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v1/invalid-codex-seed-record-on-linked-home.json",
+      "sha256": "sha256:08851b781af73b73403dad99ff0706e30db6ee2791a12235dc9300200403b0a1"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v1/invalid-codex-seed-record-revision.json",
+      "sha256": "sha256:fb5402d8860a88a92fcd00b038f856f52670cd9e81ddc6bb133febb520393f8a"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v1/invalid-codex-seed-record-unknown-field.json",
+      "sha256": "sha256:b21511ff53554c4fb258397ed645457c860949fe86ac1d8bd42a784519a42674"
+    },
+    {
       "path": "schema-cases/agent-environment-marker-v1/invalid-composition-without-precedence.json",
       "sha256": "sha256:708fc93259a7ec50aafe833fb352c6ee068ec3cc559cbb5a9fa429630b519b37"
     },
@@ -719,6 +739,14 @@
     {
       "path": "schema-cases/agent-environment-marker-v1/invalid.json",
       "sha256": "sha256:371bd441938244caf0c6616b240a2aa167536aacdc26086929e9ad75b47a8a75"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v1/valid-codex-seed-record-empty-snapshot.json",
+      "sha256": "sha256:304cfa2dfbffc1be81dae07e3a6d7784f7eaa405796d9956ac1efa4396bd7770"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v1/valid-codex-seed-record.json",
+      "sha256": "sha256:33ebccc5ff3fbfcedeea9756aac370e3947d864c0904c3305a02d2e5a4f48da2"
     },
     {
       "path": "schema-cases/agent-environment-marker-v1/valid-copied.json",
@@ -2954,7 +2982,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:75c9fcc27dfd6fc1b47b8cc547c91f6a32ba375cfbe001efdcdd2226ac2f0b11"
+      "sha256": "sha256:abbf0662aa2d3ba8acff3fd838971a2666b590aee315b6719663790d2790b11a"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -4279,6 +4307,10 @@
     {
       "path": "vectors/context-versions.json",
       "sha256": "sha256:4eac87963ac86c6e56d418a9e33cf0375cf7670619f560d97763e51fbb05c6b6"
+    },
+    {
+      "path": "vectors/environments-codex-seed.json",
+      "sha256": "sha256:d7a6e24f783b72eecd5bed3e13db5ab7a0a286bca10289b8034a73d3f36b750f"
     },
     {
       "path": "vectors/environments-env-passthrough.json",
