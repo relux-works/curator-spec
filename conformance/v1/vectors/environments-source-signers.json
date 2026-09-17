@@ -1,0 +1,1610 @@
+{
+  "schema_version": 1,
+  "protocol_version": "1.0.0-rc.9",
+  "capability": "agent-environments",
+  "capability_revision": 1,
+  "rule": "source signer allowlist and update-delta confirmation (sections 1.4, 9.2, 12)",
+  "revision_a": "warning release: a triggered update delta warns profile_update_system_delta and proceeds",
+  "revision_b": "flip release: a triggered update delta refuses profile_update_confirmation_required unless --confirm-system-delta is given",
+  "verification_cases": [
+    {
+      "name": "ssh-tag-signature-accepted",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [
+        {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+      ],
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": "v1.2.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": {"signer": {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}, "valid": true},
+          "commit_signature": null
+        }
+      ],
+      "expected": {
+        "verdict": "accepted",
+        "diagnostic": null,
+        "selected": "1.2.0",
+        "lock_written": true,
+        "signers_seen": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}
+        ]
+      }
+    },
+    {
+      "name": "gpg-commit-signature-accepted",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [
+        {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}
+      ],
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": "v1.2.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": null,
+          "commit_signature": {"signer": {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}, "valid": true}
+        }
+      ],
+      "expected": {
+        "verdict": "accepted",
+        "diagnostic": null,
+        "selected": "1.2.0",
+        "lock_written": true,
+        "signers_seen": [
+          {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}
+        ]
+      }
+    },
+    {
+      "name": "either-signature-suffices",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [
+        {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+      ],
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": "v1.2.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": {"signer": {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}, "valid": true},
+          "commit_signature": {"signer": {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}, "valid": false}
+        }
+      ],
+      "expected": {
+        "verdict": "accepted",
+        "diagnostic": null,
+        "selected": "1.2.0",
+        "lock_written": true,
+        "signers_seen": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}
+        ]
+      }
+    },
+    {
+      "name": "unsigned-refused",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [
+        {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+      ],
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": "v1.2.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": null,
+          "commit_signature": null
+        }
+      ],
+      "expected": {
+        "verdict": "refused",
+        "diagnostic": "context_source_unsigned",
+        "selected": null,
+        "lock_written": false,
+        "signers_seen": []
+      }
+    },
+    {
+      "name": "wrong-signer-refused",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [
+        {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+      ],
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": "v1.2.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": {"signer": {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADwDQ8X4p1xN3kF6h7J8k9L0mN1oP2qR3sT4uV5w intruder@example"}, "valid": true},
+          "commit_signature": null
+        }
+      ],
+      "expected": {
+        "verdict": "refused",
+        "diagnostic": "context_source_signer_rejected",
+        "selected": null,
+        "lock_written": false,
+        "signers_seen": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADwDQ8X4p1xN3kF6h7J8k9L0mN1oP2qR3sT4uV5w"}
+        ]
+      }
+    },
+    {
+      "name": "invalid-signature-refused",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [
+        {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+      ],
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": "v1.2.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": {"signer": {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}, "valid": false},
+          "commit_signature": null
+        }
+      ],
+      "expected": {
+        "verdict": "refused",
+        "diagnostic": "context_source_signer_rejected",
+        "selected": null,
+        "lock_written": false,
+        "signers_seen": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}
+        ]
+      }
+    },
+    {
+      "name": "no-allowlist-accepted",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": null,
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": "v1.2.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": null,
+          "commit_signature": null
+        }
+      ],
+      "expected": {
+        "verdict": "accepted",
+        "diagnostic": null,
+        "selected": "1.2.0",
+        "lock_written": true,
+        "signers_seen": []
+      }
+    },
+    {
+      "name": "require-without-allowlist-refused",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": null,
+      "require_source_signers": true,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": "v1.2.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": {"signer": {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADwDQ8X4p1xN3kF6h7J8k9L0mN1oP2qR3sT4uV5w intruder@example"}, "valid": true},
+          "commit_signature": null
+        }
+      ],
+      "expected": {
+        "verdict": "refused",
+        "diagnostic": "context_source_signers_missing",
+        "selected": null,
+        "lock_written": false,
+        "signers_seen": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADwDQ8X4p1xN3kF6h7J8k9L0mN1oP2qR3sT4uV5w"}
+        ]
+      }
+    },
+    {
+      "name": "require-with-allowlist-accepted",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [
+        {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+      ],
+      "require_source_signers": true,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": "v1.2.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": {"signer": {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}, "valid": true},
+          "commit_signature": null
+        }
+      ],
+      "expected": {
+        "verdict": "accepted",
+        "diagnostic": null,
+        "selected": "1.2.0",
+        "lock_written": true,
+        "signers_seen": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}
+        ]
+      }
+    },
+    {
+      "name": "path-source-never-verified",
+      "source_kind": "path",
+      "source": null,
+      "allowlist": null,
+      "require_source_signers": true,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": null,
+          "commit": null,
+          "form": "path",
+          "tag_signature": null,
+          "commit_signature": null
+        }
+      ],
+      "expected": {
+        "verdict": "accepted",
+        "diagnostic": null,
+        "selected": "1.2.0",
+        "lock_written": true,
+        "signers_seen": []
+      }
+    },
+    {
+      "name": "no-silent-fallback-to-lower-candidate",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [
+        {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+      ],
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "2.0.0",
+          "tag": "v2.0.0",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "form": "range",
+          "tag_signature": null,
+          "commit_signature": null
+        },
+        {
+          "version": "1.9.0",
+          "tag": "v1.9.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": {"signer": {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}, "valid": true},
+          "commit_signature": null
+        }
+      ],
+      "expected": {
+        "verdict": "refused",
+        "diagnostic": "context_source_unsigned",
+        "selected": null,
+        "lock_written": false,
+        "signers_seen": []
+      }
+    },
+    {
+      "name": "empty-allowlist-signed-refused",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [],
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": "v1.2.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": {"signer": {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}, "valid": true},
+          "commit_signature": null
+        }
+      ],
+      "expected": {
+        "verdict": "refused",
+        "diagnostic": "context_source_signer_rejected",
+        "selected": null,
+        "lock_written": false,
+        "signers_seen": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}
+        ]
+      }
+    },
+    {
+      "name": "empty-allowlist-unsigned-refused",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [],
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": "v1.2.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": null,
+          "commit_signature": null
+        }
+      ],
+      "expected": {
+        "verdict": "refused",
+        "diagnostic": "context_source_unsigned",
+        "selected": null,
+        "lock_written": false,
+        "signers_seen": []
+      }
+    },
+    {
+      "name": "exact-tag-selection-verified",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [
+        {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}
+      ],
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": "v1.2.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "tag",
+          "tag_signature": null,
+          "commit_signature": {"signer": {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}, "valid": true}
+        }
+      ],
+      "expected": {
+        "verdict": "accepted",
+        "diagnostic": null,
+        "selected": "1.2.0",
+        "lock_written": true,
+        "signers_seen": [
+          {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}
+        ]
+      }
+    },
+    {
+      "name": "revision-selection-verifies-commit",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [
+        {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}
+      ],
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": null,
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "revision",
+          "tag_signature": null,
+          "commit_signature": {"signer": {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}, "valid": true}
+        }
+      ],
+      "expected": {
+        "verdict": "accepted",
+        "diagnostic": null,
+        "selected": "1.2.0",
+        "lock_written": true,
+        "signers_seen": [
+          {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}
+        ]
+      }
+    },
+    {
+      "name": "ssh-same-key-different-comment-accepted",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [
+        {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+      ],
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": "v1.2.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": {"signer": {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK laptop@example"}, "valid": true},
+          "commit_signature": null
+        }
+      ],
+      "expected": {
+        "verdict": "accepted",
+        "diagnostic": null,
+        "selected": "1.2.0",
+        "lock_written": true,
+        "signers_seen": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}
+        ]
+      }
+    },
+    {
+      "name": "ssh-different-material-rejected",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [
+        {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+      ],
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": "v1.2.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": {"signer": {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADwDQ8X4p1xN3kF6h7J8k9L0mN1oP2qR3sT4uV5w operator@example"}, "valid": true},
+          "commit_signature": null
+        }
+      ],
+      "expected": {
+        "verdict": "refused",
+        "diagnostic": "context_source_signer_rejected",
+        "selected": null,
+        "lock_written": false,
+        "signers_seen": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADwDQ8X4p1xN3kF6h7J8k9L0mN1oP2qR3sT4uV5w"}
+        ]
+      }
+    },
+    {
+      "name": "unsigned-accepted",
+      "conforming": false,
+      "reason": "a manager that locks an unsigned candidate from a source with an allowlist violates section 1.4",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [
+        {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+      ],
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "1.2.0",
+          "tag": "v1.2.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": null,
+          "commit_signature": null
+        }
+      ],
+      "observed": {
+        "verdict": "accepted",
+        "diagnostic": null,
+        "selected": "1.2.0",
+        "lock_written": true
+      }
+    },
+    {
+      "name": "fallback-selection",
+      "conforming": false,
+      "reason": "verification never moves a selection to a lower candidate: the failed top candidate refuses, it does not fall through",
+      "source_kind": "git",
+      "source": "github.com/example/context",
+      "allowlist": [
+        {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+      ],
+      "require_source_signers": false,
+      "candidates": [
+        {
+          "version": "2.0.0",
+          "tag": "v2.0.0",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "form": "range",
+          "tag_signature": null,
+          "commit_signature": null
+        },
+        {
+          "version": "1.9.0",
+          "tag": "v1.9.0",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "form": "range",
+          "tag_signature": {"signer": {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}, "valid": true},
+          "commit_signature": null
+        }
+      ],
+      "observed": {
+        "verdict": "accepted",
+        "diagnostic": null,
+        "selected": "1.9.0",
+        "lock_written": true
+      }
+    }
+  ],
+  "merge_cases": [
+    {
+      "name": "locked-overlap-system-wins-with-warning",
+      "locked": true,
+      "system": {
+        "github.com/example/context": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+        ]
+      },
+      "machine": {
+        "github.com/example/context": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADwDQ8X4p1xN3kF6h7J8k9L0mN1oP2qR3sT4uV5w intruder@example"}
+        ],
+        "github.com/example/personal": [
+          {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}
+        ]
+      },
+      "expected": {
+        "effective": {
+          "github.com/example/context": [
+            {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+          ],
+          "github.com/example/personal": [
+            {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}
+          ]
+        },
+        "warnings": ["github.com/example/context"]
+      }
+    },
+    {
+      "name": "locked-disjoint-machine-addition",
+      "locked": true,
+      "system": {
+        "github.com/example/context": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+        ]
+      },
+      "machine": {
+        "github.com/example/personal": [
+          {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}
+        ]
+      },
+      "expected": {
+        "effective": {
+          "github.com/example/context": [
+            {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+          ],
+          "github.com/example/personal": [
+            {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}
+          ]
+        },
+        "warnings": []
+      }
+    },
+    {
+      "name": "locked-machine-absent",
+      "locked": true,
+      "system": {
+        "github.com/example/context": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+        ]
+      },
+      "machine": null,
+      "expected": {
+        "effective": {
+          "github.com/example/context": [
+            {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+          ]
+        },
+        "warnings": []
+      }
+    },
+    {
+      "name": "locked-empty-system-machine-adds",
+      "locked": true,
+      "system": {},
+      "machine": {
+        "github.com/example/personal": [
+          {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}
+        ]
+      },
+      "expected": {
+        "effective": {
+          "github.com/example/personal": [
+            {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}
+          ]
+        },
+        "warnings": []
+      }
+    },
+    {
+      "name": "unlocked-machine-replaces-whole",
+      "locked": false,
+      "system": {
+        "github.com/example/context": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+        ]
+      },
+      "machine": {
+        "github.com/example/personal": [
+          {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}
+        ]
+      },
+      "expected": {
+        "effective": {
+          "github.com/example/personal": [
+            {"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}
+          ]
+        },
+        "warnings": []
+      }
+    },
+    {
+      "name": "unlocked-absent-machine-falls-back",
+      "locked": false,
+      "system": {
+        "github.com/example/context": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+        ]
+      },
+      "machine": null,
+      "expected": {
+        "effective": {
+          "github.com/example/context": [
+            {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+          ]
+        },
+        "warnings": []
+      }
+    }
+  ],
+  "posture_cases": [
+    {
+      "name": "enforced-names-verified-signer",
+      "members": [
+        {"kind": "context", "name": "companyA-core", "source": "github.com/example/context"}
+      ],
+      "allowlists": {
+        "github.com/example/context": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+        ]
+      },
+      "require_source_signers": false,
+      "local": {
+        "github.com/example/context": {"verdict": "verified", "signer": {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}}
+      },
+      "expected": {
+        "rows": [
+          {"source": "github.com/example/context", "state": "enforced", "signer": {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}, "current": true}
+        ],
+        "require_source_signers": false
+      }
+    },
+    {
+      "name": "enforced-unknown-without-local-material",
+      "members": [
+        {"kind": "context", "name": "companyA-core", "source": "github.com/example/context"}
+      ],
+      "allowlists": {
+        "github.com/example/context": [
+          {"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"}
+        ]
+      },
+      "require_source_signers": false,
+      "local": {
+        "github.com/example/context": {"verdict": "unknown"}
+      },
+      "expected": {
+        "rows": [
+          {"source": "github.com/example/context", "state": "enforced", "signer": "unknown", "current": true}
+        ],
+        "require_source_signers": false
+      }
+    },
+    {
+      "name": "enforced-pin-fails-non-current",
+      "members": [
+        {"kind": "context", "name": "companyA-core", "source": "github.com/example/context"}
+      ],
+      "allowlists": {
+        "github.com/example/context": [
+          {"type": "gpg", "fingerprint": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"}
+        ]
+      },
+      "require_source_signers": false,
+      "local": {
+        "github.com/example/context": {"verdict": "fails"}
+      },
+      "expected": {
+        "rows": [
+          {"source": "github.com/example/context", "state": "enforced", "signer": "unknown", "current": false}
+        ],
+        "require_source_signers": false
+      }
+    },
+    {
+      "name": "unconfigured",
+      "members": [
+        {"kind": "context", "name": "companyA-core", "source": "github.com/example/context"},
+        {"kind": "context", "name": "personal", "source": null}
+      ],
+      "allowlists": {},
+      "require_source_signers": false,
+      "local": {},
+      "expected": {
+        "rows": [
+          {"source": "github.com/example/context", "state": "unconfigured", "signer": null, "current": true}
+        ],
+        "require_source_signers": false
+      }
+    },
+    {
+      "name": "required-missing",
+      "members": [
+        {"kind": "context", "name": "companyA-core", "source": "github.com/example/context"}
+      ],
+      "allowlists": {},
+      "require_source_signers": true,
+      "local": {},
+      "expected": {
+        "rows": [
+          {"source": "github.com/example/context", "state": "required-missing", "signer": null, "current": true}
+        ],
+        "require_source_signers": true
+      }
+    }
+  ],
+  "delta_cases": [
+    {
+      "name": "plain-version-bump-no-confirmation",
+      "flag": false,
+      "old_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+      ],
+      "new_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.1.0", "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}
+      ],
+      "snapshots": {
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [], "mcp": null},
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {"system_modules": [], "mcp": null}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved context companyA-core 1.0.0 → 1.1.0 commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa → commit:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        "trigger": [],
+        "revision_a": {"diagnostic": null, "hint": null, "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+      }
+    },
+    {
+      "name": "empty-delta-identical-lock",
+      "flag": false,
+      "old_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+      ],
+      "new_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+      ],
+      "snapshots": {
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [], "mcp": null}
+      },
+      "expected": {
+        "lines": [],
+        "trigger": [],
+        "revision_a": {"diagnostic": null, "hint": null, "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+      }
+    },
+    {
+      "name": "new-system-module",
+      "flag": false,
+      "old_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+      ],
+      "new_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+        {"kind": "context", "name": "sysleaf", "version": "2.0.0", "commit": "3333333333333333333333333333333333333333"}
+      ],
+      "snapshots": {
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [], "mcp": null},
+        "3333333333333333333333333333333333333333": {"system_modules": [{"path": "90-system.md", "environments": ["claude_code"], "bytes": "system prompt v1\n"}], "mcp": null}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta added context sysleaf 2.0.0 commit:3333333333333333333333333333333333333333"
+        ],
+        "trigger": ["sysleaf"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    },
+    {
+      "name": "changed-system-bytes",
+      "flag": false,
+      "old_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+      ],
+      "new_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.1.0", "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}
+      ],
+      "snapshots": {
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [{"path": "90-system.md", "environments": ["claude_code"], "bytes": "system prompt v1\n"}], "mcp": null},
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {"system_modules": [{"path": "90-system.md", "environments": ["claude_code"], "bytes": "system prompt v2\n"}], "mcp": null}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved context companyA-core 1.0.0 → 1.1.0 commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa → commit:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        "trigger": ["companyA-core"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    },
+    {
+      "name": "changed-system-module-set",
+      "flag": false,
+      "old_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+      ],
+      "new_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.1.0", "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}
+      ],
+      "snapshots": {
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [{"path": "90-system.md", "environments": ["claude_code"], "bytes": "system prompt v1\n"}], "mcp": null},
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {"system_modules": [{"path": "90-system.md", "environments": ["claude_code"], "bytes": "system prompt v1\n"}, {"path": "91-extra.md", "environments": ["claude_code"], "bytes": "more system\n"}], "mcp": null}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved context companyA-core 1.0.0 → 1.1.0 commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa → commit:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        "trigger": ["companyA-core"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    },
+    {
+      "name": "changed-system-selector",
+      "flag": false,
+      "old_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+      ],
+      "new_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.1.0", "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}
+      ],
+      "snapshots": {
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [{"path": "90-system.md", "environments": ["claude_code"], "bytes": "system prompt v1\n"}], "mcp": null},
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {"system_modules": [{"path": "90-system.md", "environments": ["claude_code", "codex_cli"], "bytes": "system prompt v1\n"}], "mcp": null}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved context companyA-core 1.0.0 → 1.1.0 commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa → commit:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        ],
+        "trigger": ["companyA-core"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    },
+    {
+      "name": "new-mcp-member",
+      "flag": false,
+      "old_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+      ],
+      "new_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "4444444444444444444444444444444444444444"}
+      ],
+      "snapshots": {
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [], "mcp": null},
+        "4444444444444444444444444444444444444444": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"]}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta added mcp figma-devmode 1.2.0 commit:4444444444444444444444444444444444444444"
+        ],
+        "trigger": ["figma-devmode"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    },
+    {
+      "name": "changed-mcp-command",
+      "flag": false,
+      "old_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"]}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "stdio", "command": "uvx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"]}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp figma-devmode 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["figma-devmode"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    },
+    {
+      "name": "changed-mcp-args",
+      "flag": false,
+      "old_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"]}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio", "--evil"], "env_names": ["FIGMA_API_KEY"]}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp figma-devmode 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["figma-devmode"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    },
+    {
+      "name": "changed-mcp-env-names",
+      "flag": false,
+      "old_members": [
+        {"kind": "mcp", "name": "webfetch", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "webfetch", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "http", "env_names": ["WEBFETCH_TOKEN"], "url": "https://mcp.example.com/fetch"}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "http", "env_names": ["WEBFETCH_TOKEN", "GITHUB_TOKEN"], "url": "https://mcp.example.com/fetch"}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp webfetch 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["webfetch"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    },
+    {
+      "name": "changed-mcp-url",
+      "flag": false,
+      "old_members": [
+        {"kind": "mcp", "name": "webfetch", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "webfetch", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "http", "env_names": ["WEBFETCH_TOKEN"], "url": "https://mcp.example.com/fetch"}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "http", "env_names": ["WEBFETCH_TOKEN"], "url": "https://mcp.example.com/fetch-v2"}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp webfetch 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["webfetch"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    },
+    {
+      "name": "changed-mcp-url-confirmed",
+      "flag": true,
+      "old_members": [
+        {"kind": "mcp", "name": "webfetch", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "webfetch", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "http", "env_names": ["WEBFETCH_TOKEN"], "url": "https://mcp.example.com/fetch"}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "http", "env_names": ["WEBFETCH_TOKEN"], "url": "https://mcp.example.com/fetch-v2"}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp webfetch 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["webfetch"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+      }
+    },
+    {
+      "name": "changed-mcp-selector",
+      "flag": false,
+      "old_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"], "environments": ["claude_code"]}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"], "environments": ["opencode"]}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp figma-devmode 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["figma-devmode"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    },
+    {
+      "name": "changed-mcp-selector-confirmed",
+      "flag": true,
+      "old_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"], "environments": ["claude_code"]}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"], "environments": ["opencode"]}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp figma-devmode 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["figma-devmode"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+      }
+    },
+    {
+      "name": "mcp-env-names-reorder-triggers",
+      "flag": false,
+      "old_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp"], "env_names": ["FIGMA_API_KEY", "GITHUB_TOKEN"]}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp"], "env_names": ["GITHUB_TOKEN", "FIGMA_API_KEY"]}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp figma-devmode 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["figma-devmode"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    },
+    {
+      "name": "absent-selector-to-present",
+      "flag": false,
+      "old_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"]}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"], "environments": ["codex_cli"]}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp figma-devmode 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["figma-devmode"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    },
+    {
+      "name": "absent-selector-to-present-confirmed",
+      "flag": true,
+      "old_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"]}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"], "environments": ["codex_cli"]}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp figma-devmode 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["figma-devmode"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+      }
+    },
+    {
+      "name": "present-selector-to-absent",
+      "flag": false,
+      "old_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"], "environments": ["codex_cli"]}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"]}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp figma-devmode 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["figma-devmode"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    },
+    {
+      "name": "present-selector-to-absent-confirmed",
+      "flag": true,
+      "old_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"], "environments": ["codex_cli"]}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"]}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp figma-devmode 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["figma-devmode"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+      }
+    },
+    {
+      "name": "absent-env-names-to-empty",
+      "flag": false,
+      "old_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"]}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": []}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp figma-devmode 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["figma-devmode"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    },
+    {
+      "name": "absent-env-names-to-empty-confirmed",
+      "flag": true,
+      "old_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"]}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": []}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp figma-devmode 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["figma-devmode"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+      }
+    },
+    {
+      "name": "empty-env-names-to-absent",
+      "flag": false,
+      "old_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": []}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"]}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp figma-devmode 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["figma-devmode"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    },
+    {
+      "name": "empty-env-names-to-absent-confirmed",
+      "flag": true,
+      "old_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": []}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"]}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp figma-devmode 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["figma-devmode"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+      }
+    },
+    {
+      "name": "removed-system-member-silent",
+      "flag": false,
+      "old_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+        {"kind": "context", "name": "sysleaf", "version": "2.0.0", "commit": "3333333333333333333333333333333333333333"}
+      ],
+      "new_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+      ],
+      "snapshots": {
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [], "mcp": null},
+        "3333333333333333333333333333333333333333": {"system_modules": [{"path": "90-system.md", "environments": ["claude_code"], "bytes": "system prompt v1\n"}], "mcp": null}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta removed context sysleaf 2.0.0 commit:3333333333333333333333333333333333333333"
+        ],
+        "trigger": [],
+        "revision_a": {"diagnostic": null, "hint": null, "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+      }
+    },
+    {
+      "name": "confirmed-flag-proceeds",
+      "flag": true,
+      "old_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+      ],
+      "new_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+        {"kind": "context", "name": "sysleaf", "version": "2.0.0", "commit": "3333333333333333333333333333333333333333"}
+      ],
+      "snapshots": {
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [], "mcp": null},
+        "3333333333333333333333333333333333333333": {"system_modules": [{"path": "90-system.md", "environments": ["claude_code"], "bytes": "system prompt v1\n"}], "mcp": null}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta added context sysleaf 2.0.0 commit:3333333333333333333333333333333333333333"
+        ],
+        "trigger": ["sysleaf"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+      }
+    },
+    {
+      "name": "added-skill-silent",
+      "flag": false,
+      "old_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+      ],
+      "new_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+        {"kind": "skill", "name": "pdf", "version": "1.2.5", "commit": "5555555555555555555555555555555555555555"}
+      ],
+      "snapshots": {
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [], "mcp": null},
+        "5555555555555555555555555555555555555555": {"system_modules": [], "mcp": null}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta added skill pdf 1.2.5 commit:5555555555555555555555555555555555555555"
+        ],
+        "trigger": [],
+        "revision_a": {"diagnostic": null, "hint": null, "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+      }
+    },
+    {
+      "name": "moved-skill-without-version",
+      "flag": false,
+      "old_members": [
+        {"kind": "skill", "name": "pdf", "version": null, "commit": "1111111111111111111111111111111111111111"}
+      ],
+      "new_members": [
+        {"kind": "skill", "name": "pdf", "version": null, "commit": "2222222222222222222222222222222222222222"}
+      ],
+      "snapshots": {
+        "1111111111111111111111111111111111111111": {"system_modules": [], "mcp": null},
+        "2222222222222222222222222222222222222222": {"system_modules": [], "mcp": null}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved skill pdf - → - commit:1111111111111111111111111111111111111111 → commit:2222222222222222222222222222222222222222"
+        ],
+        "trigger": [],
+        "revision_a": {"diagnostic": null, "hint": null, "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+      }
+    },
+    {
+      "name": "config-preconfirm-claim",
+      "conforming": false,
+      "reason": "no configuration knob may pre-confirm the delta: revision B proceeds only under the per-run --confirm-system-delta flag",
+      "flag": false,
+      "old_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+      ],
+      "new_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+        {"kind": "context", "name": "sysleaf", "version": "2.0.0", "commit": "3333333333333333333333333333333333333333"}
+      ],
+      "snapshots": {
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [], "mcp": null},
+        "3333333333333333333333333333333333333333": {"system_modules": [{"path": "90-system.md", "environments": ["claude_code"], "bytes": "system prompt v1\n"}], "mcp": null}
+      },
+      "claimed": {
+        "revision": "revision-b",
+        "diagnostic": null,
+        "proceeds": true,
+        "lock_published": true
+      }
+    },
+    {
+      "name": "silent-system-introduction",
+      "conforming": false,
+      "reason": "revision A warns on a triggered delta: proceeding silently is non-conforming",
+      "flag": false,
+      "old_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+      ],
+      "new_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "4444444444444444444444444444444444444444"}
+      ],
+      "snapshots": {
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [], "mcp": null},
+        "4444444444444444444444444444444444444444": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"]}}
+      },
+      "claimed": {
+        "revision": "revision-a",
+        "diagnostic": null,
+        "hint": null,
+        "proceeds": true,
+        "lock_published": true
+      }
+    }
+  ],
+  "all_cases": [
+    {
+      "name": "all-with-flag-confirms-every-profile",
+      "flag": true,
+      "profiles": [
+        {
+          "profile": "companyA",
+          "old_members": [
+            {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+          ],
+          "new_members": [
+            {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+            {"kind": "context", "name": "sysleaf", "version": "2.0.0", "commit": "3333333333333333333333333333333333333333"}
+          ],
+          "snapshots": {
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [], "mcp": null},
+            "3333333333333333333333333333333333333333": {"system_modules": [{"path": "90-system.md", "environments": ["claude_code"], "bytes": "system prompt v1\n"}], "mcp": null}
+          }
+        },
+        {
+          "profile": "personal",
+          "old_members": [
+            {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+          ],
+          "new_members": [
+            {"kind": "mcp", "name": "figma-devmode", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+          ],
+          "snapshots": {
+            "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"]}},
+            "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio", "--evil"], "env_names": ["FIGMA_API_KEY"]}}
+          }
+        }
+      ],
+      "expected": {
+        "profiles": [
+          {
+            "profile": "companyA",
+            "lines": [
+              "lock-delta added context sysleaf 2.0.0 commit:3333333333333333333333333333333333333333"
+            ],
+            "trigger": ["sysleaf"],
+            "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+            "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+          },
+          {
+            "profile": "personal",
+            "lines": [
+              "lock-delta moved mcp figma-devmode 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+            ],
+            "trigger": ["figma-devmode"],
+            "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+            "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+          }
+        ],
+        "stopped": {"revision_a": null, "revision_b": null}
+      }
+    },
+    {
+      "name": "all-without-flag-stops-at-first-refusal",
+      "flag": false,
+      "profiles": [
+        {
+          "profile": "first",
+          "old_members": [
+            {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+          ],
+          "new_members": [
+            {"kind": "context", "name": "companyA-core", "version": "1.1.0", "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}
+          ],
+          "snapshots": {
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [], "mcp": null},
+            "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {"system_modules": [], "mcp": null}
+          }
+        },
+        {
+          "profile": "second",
+          "old_members": [
+            {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+          ],
+          "new_members": [
+            {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+            {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "4444444444444444444444444444444444444444"}
+          ],
+          "snapshots": {
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [], "mcp": null},
+            "4444444444444444444444444444444444444444": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"]}}
+          }
+        },
+        {
+          "profile": "third",
+          "old_members": [
+            {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+          ],
+          "new_members": [
+            {"kind": "context", "name": "companyA-core", "version": "1.1.0", "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}
+          ],
+          "snapshots": {
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [], "mcp": null},
+            "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": {"system_modules": [], "mcp": null}
+          }
+        }
+      ],
+      "expected": {
+        "profiles": [
+          {
+            "profile": "first",
+            "lines": [
+              "lock-delta moved context companyA-core 1.0.0 → 1.1.0 commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa → commit:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            ],
+            "trigger": [],
+            "revision_a": {"diagnostic": null, "hint": null, "proceeds": true, "lock_published": true},
+            "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+          },
+          {
+            "profile": "second",
+            "lines": [
+              "lock-delta added mcp figma-devmode 1.2.0 commit:4444444444444444444444444444444444444444"
+            ],
+            "trigger": ["figma-devmode"],
+            "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+            "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+          },
+          {
+            "profile": "third",
+            "lines": [
+              "lock-delta moved context companyA-core 1.0.0 → 1.1.0 commit:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa → commit:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            ],
+            "trigger": [],
+            "revision_a": {"diagnostic": null, "hint": null, "proceeds": true, "lock_published": true},
+            "revision_b": "untouched"
+          }
+        ],
+        "stopped": {"revision_a": null, "revision_b": "second"}
+      }
+    }
+  ],
+  "reinstall_cases": [
+    {
+      "name": "reinstall-with-flag-proceeds",
+      "operation": "profile install",
+      "flag": true,
+      "old_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}
+      ],
+      "new_members": [
+        {"kind": "context", "name": "companyA-core", "version": "1.0.0", "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+        {"kind": "context", "name": "sysleaf", "version": "2.0.0", "commit": "3333333333333333333333333333333333333333"}
+      ],
+      "snapshots": {
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {"system_modules": [], "mcp": null},
+        "3333333333333333333333333333333333333333": {"system_modules": [{"path": "90-system.md", "environments": ["claude_code"], "bytes": "system prompt v1\n"}], "mcp": null}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta added context sysleaf 2.0.0 commit:3333333333333333333333333333333333333333"
+        ],
+        "trigger": ["sysleaf"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": null, "proceeds": true, "lock_published": true}
+      }
+    },
+    {
+      "name": "reinstall-without-flag-refuses-under-b",
+      "operation": "profile install",
+      "flag": false,
+      "old_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.2.0", "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}
+      ],
+      "new_members": [
+        {"kind": "mcp", "name": "figma-devmode", "version": "1.3.0", "commit": "ffffffffffffffffffffffffffffffffffffffff"}
+      ],
+      "snapshots": {
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"], "environments": ["claude_code"]}},
+        "ffffffffffffffffffffffffffffffffffffffff": {"system_modules": [], "mcp": {"transport": "stdio", "command": "npx", "args": ["-y", "figma-developer-mcp", "--stdio"], "env_names": ["FIGMA_API_KEY"], "environments": ["opencode"]}}
+      },
+      "expected": {
+        "lines": [
+          "lock-delta moved mcp figma-devmode 1.2.0 → 1.3.0 commit:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee → commit:ffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "trigger": ["figma-devmode"],
+        "revision_a": {"diagnostic": "profile_update_system_delta", "hint": "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given", "proceeds": true, "lock_published": true},
+        "revision_b": {"diagnostic": "profile_update_confirmation_required", "proceeds": false, "lock_published": false}
+      }
+    }
+  ],
+  "confirmation_posture_cases": [
+    {
+      "name": "update-confirmation-revision-a-warning",
+      "update_confirmation_revision": "A-warning",
+      "expected": {
+        "row": {"revision": "A-warning", "behavior": "a triggered update delta warns profile_update_system_delta and proceeds"}
+      }
+    },
+    {
+      "name": "update-confirmation-revision-b-flip",
+      "update_confirmation_revision": "B-flip",
+      "expected": {
+        "row": {"revision": "B-flip", "behavior": "a triggered update delta refuses profile_update_confirmation_required unless --confirm-system-delta is given"}
+      }
+    }
+  ]
+}

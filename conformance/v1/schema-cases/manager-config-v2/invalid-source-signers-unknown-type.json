@@ -1,0 +1,125 @@
+{
+  "audit": {
+    "cache_ttl_seconds": 0,
+    "offline_grace_seconds": 0
+  },
+  "audit_registries": [
+    {
+      "name": "primary",
+      "url": "HTTPS://registry.example"
+    }
+  ],
+  "environments": {
+    "backup_retention": 0,
+    "current_profile": "companyA",
+    "forms": {
+      "claude_code": "referenced",
+      "opencode": "monolithic"
+    },
+    "in_place_mode": {
+      "codex_cli": "copied"
+    },
+    "isolation": {
+      "companyA": {
+        "codex_cli": "isolated",
+        "pi": "shared"
+      }
+    },
+    "mcp_package_allowlist": [
+      "https://github.com/example/figma-devmode-mcp"
+    ],
+    "overlay_default_weight": 500,
+    "overlays": {
+      "companyA": [
+        {
+          "range": "^1.2",
+          "source": "https://github.com/example/personal-context",
+          "weight": 2000
+        },
+        {
+          "directory": "packages/team",
+          "source": "https://github.com/example/team-context",
+          "tag": "v2.0.0"
+        },
+        {
+          "source": "/Users/operator/context"
+        }
+      ]
+    },
+    "overlays_allowed": false,
+    "passable_env_names": [
+      "FIGMA_API_KEY",
+      "GITHUB_TOKEN"
+    ],
+    "precedence": {
+      "placement": "winner-first",
+      "winner": "lower-weight"
+    },
+    "provider_directories": [
+      "/usr/local/lib/curator/providers",
+      "/opt/curator/bin"
+    ],
+    "require_current_profile": "companyA",
+    "require_source_signers": true,
+    "scoped_current": {
+      "pi": "personal",
+      "xcode-coding-assistant": "companyA"
+    },
+    "secret_material_waivers": [
+      {
+        "file": "context/root.md",
+        "pin": "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+        "reason": "documented placeholder token in the onboarding example",
+        "span": [
+          120,
+          164
+        ]
+      }
+    ],
+    "shadow_acknowledged": [
+      {
+        "env": "pi",
+        "path": "AGENTS.override.md"
+      }
+    ],
+    "source_signers": {
+      "github.com/example/context": [
+        {
+          "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK",
+          "type": "x509"
+        }
+      ]
+    },
+    "system_module_waivers": [
+      {
+        "package": "sysleaf",
+        "reason": "reviewed leaf system prompt; admitted for this profile"
+      }
+    ],
+    "system_prompt_files": {
+      "companyA": {
+        "pi": "append"
+      }
+    },
+    "targets": {
+      "xcode-coding-assistant": {
+        "consented": true,
+        "participation": "enabled"
+      }
+    },
+    "transitive_system_modules": "error",
+    "xdg_seed_allowlist": [
+      "git",
+      "gh"
+    ]
+  },
+  "preferred_locale": null,
+  "projects": {
+    "app": {
+      "path": "/tmp/app",
+      "project_alias": null
+    }
+  },
+  "schema_version": 2,
+  "skills_root": "/tmp/skills"
+}

@@ -17,6 +17,7 @@ var managerConfigV2Knobs = []string{
 	"passable_env_names", "mcp_package_allowlist", "shadow_acknowledged", "secret_material_waivers",
 	"transitive_system_modules", "system_module_waivers",
 	"backup_retention", "require_current_profile", "in_place_mode", "provider_directories",
+	"source_signers", "require_source_signers",
 }
 
 func TestManagerConfigV2IsSchemaOnePlusOneClosedEnvironmentsObject(t *testing.T) {
@@ -41,7 +42,7 @@ func TestManagerConfigV2IsSchemaOnePlusOneClosedEnvironmentsObject(t *testing.T)
 	if environments["additionalProperties"] != false {
 		t.Fatalf("the environments object must be closed")
 	}
-	for _, name := range []string{"overlay", "precedence", "systemPromptFiles", "target", "shadowAcknowledgement", "secretMaterialWaiver"} {
+	for _, name := range []string{"overlay", "precedence", "systemPromptFiles", "target", "shadowAcknowledgement", "secretMaterialWaiver", "sourceSigner"} {
 		def, ok := defs[name].(map[string]any)
 		if !ok || def["additionalProperties"] != false {
 			t.Fatalf("$defs.%s must be a closed object", name)

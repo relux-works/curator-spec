@@ -4220,6 +4220,86 @@
     "valid": false
   },
   {
+    "instance": "manager-config-v2/valid-source-signers.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-source-signers-gpg.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-source-signers-empty-list.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-require-source-signers.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/invalid-source-signers-unknown-type.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-source-signers-ssh-missing-key.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-source-signers-gpg-missing-fingerprint.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-source-signers-ssh-with-fingerprint.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-source-signers-gpg-with-key.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-source-signers-key-grammar.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-source-signers-retired-key-type.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-source-signers-fingerprint-grammar.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-source-signers-fingerprint-newline.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-source-signers-duplicate.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-source-signers-unknown-field.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-require-source-signers-type.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
     "instance": "provider-capability-receipt-v1/valid.json",
     "schema": "provider-capability-receipt-v1.schema.json",
     "valid": true
@@ -4626,6 +4706,31 @@
   },
   {
     "instance": "system-config-v2/invalid-provider-directories-duplicate.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-source-signers-unknown-type.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-source-signers-fingerprint-grammar.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-source-signers-fingerprint-newline.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-require-source-signers-false-direction.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-require-source-signers-type.json",
     "schema": "system-config-v2.schema.json",
     "valid": false
   },

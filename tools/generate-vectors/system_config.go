@@ -5,13 +5,14 @@ package main
 var systemConfigV2LockableKeys = []string{
 	"overlays_allowed", "precedence", "mcp_package_allowlist",
 	"passable_env_names", "require_current_profile", "transitive_system_modules",
-	"isolation", "provider_directories",
+	"isolation", "provider_directories", "source_signers", "require_source_signers",
 }
 
 // systemConfigV2EveryKey sets every §12.2 lockable knob to a non-default value
 // so that the positive case exercises every grammar the schema encodes.
-// `isolation` is `shared` only and `transitive_system_modules` is `error`
-// only: §12.2 makes each lockable in that direction alone.
+// `isolation` is `shared` only, `transitive_system_modules` is `error`
+// only, and `require_source_signers` is `true` only: §12.2 makes each
+// lockable in that direction alone.
 func systemConfigV2EveryKey() map[string]any {
 	return map[string]any{
 		"overlays_allowed":          false,
@@ -22,6 +23,12 @@ func systemConfigV2EveryKey() map[string]any {
 		"transitive_system_modules": "error",
 		"isolation":                 map[string]any{"companyA": map[string]any{"claude_code": "shared", "codex_cli": "shared"}},
 		"provider_directories":      []any{"/usr/local/lib/curator/providers"},
+		"source_signers": map[string]any{
+			"github.com/example/context": []any{
+				map[string]any{"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"},
+			},
+		},
+		"require_source_signers": true,
 	}
 }
 
@@ -91,5 +98,10 @@ func systemConfigV2SchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-isolation-profile-grammar", instance: withKnob("isolation", map[string]any{"Company A": map[string]any{"codex_cli": "shared"}})},
 		{name: "invalid-provider-directories-relative", instance: withKnob("provider_directories", []any{"rel/providers"})},
 		{name: "invalid-provider-directories-duplicate", instance: withKnob("provider_directories", []any{"/opt/curator/bin", "/opt/curator/bin"})},
+		{name: "invalid-source-signers-unknown-type", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "x509", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}}})},
+		{name: "invalid-source-signers-fingerprint-grammar", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "gpg", "fingerprint": "0123456789abcdef0123456789abcdef01234567"}}})},
+		{name: "invalid-source-signers-fingerprint-newline", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567\n"}}})},
+		{name: "invalid-require-source-signers-false-direction", instance: withKnob("require_source_signers", false)},
+		{name: "invalid-require-source-signers-type", instance: withKnob("require_source_signers", "yes")},
 	}
 }

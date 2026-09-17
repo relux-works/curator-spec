@@ -106,6 +106,9 @@ machine configuration.
 | profile name violates the core §2 grammar | `profile_name_invalid` |
 | operation names a profile that is not installed | `profile_unknown` |
 | no candidate satisfies a name's effective constraint, or a final constraint is unsatisfied (names every requirer, its range or exact form, and the candidates considered) | `context_range_conflict` |
+| `git` source with a signer allowlist whose selected candidate carries neither a tag signature nor a commit signature (names the source and the tag or commit) | `context_source_unsigned` |
+| `git` source with a signer allowlist whose candidate signature verifies against no allowed signer, or fails verification (names the source, the tag or commit, and the signer seen) | `context_source_signer_rejected` |
+| `git` source with no signer allowlist under `require_source_signers` (names the source) | `context_source_signers_missing` |
 | manifest `version` differs from the version of the tag the package was resolved from | `context_version_mismatch` |
 | root `weights` map names a package also named on a root requirement edge with a weight | `context_weights_duplicate` |
 | root `weights` map names a package outside the closure | `context_weight_unknown` |
@@ -189,7 +192,11 @@ audit of section 9.1 in full (section 9.2). Nothing re-resolves implicitly:
 find.
 
 The lock is a record, not a signature: it MUST NOT be used as an
-authorization token or provenance proof (core §10 discipline).
+authorization token or provenance proof (core §10 discipline). The
+signature check lives in resolution (section 1.4): for a `git` source with
+a signer allowlist (section 12.1) the selected candidate's tag or commit
+signature MUST verify before the candidate enters the lock. Verification
+results are `env status` posture (section 12), not lock content.
 
 ### 1.4 Versions, ranges, and resolution
 
@@ -241,7 +248,11 @@ Two npm forms are excluded: hyphen ranges (`1.2.3 - 2.3.4`) are not
 admitted, and `v` is not admitted inside a range — a range is over
 versions, a tag carries the prefix. The spelling `latest` is a Curator
 spelling equivalent to `*`. `*`, `x`, `X`, and `latest` select the highest
-**stable** version. A range that does not parse is `profile_source_invalid`.
+**stable** version. `latest` stays `*` under signer verification: with an
+allowlist it follows every signed in-range tag of that source, without one
+it follows any tag — the named residual of finding E1. The strict-tag
+policy covers a *moved* tag, not a *new* one (section 9.2). A range that
+does not parse is `profile_source_invalid`.
 
 **Prereleases.** A version with a prerelease satisfies a range only when
 some primitive of a satisfied comparator set names a prerelease on the same
@@ -311,6 +322,34 @@ direct machine declarations of section 9.4. The requirement-edge semantics
 of core §7 (activation modes, command narrowing) are unchanged. Project
 `Skillfile.json` and the skill manifest keep core §4.4 unchanged: no range
 enters a surface that has no lock.
+
+**Signer verification.** For a `git` source that carries a signer allowlist
+(section 12.1), resolution verifies the selected candidate's signature
+before the candidate enters the lock. The check applies to every selection
+from the source — by range or by exact `tag` or `revision`, for every
+closure member kind. The selected candidate's annotated tag signature OR
+the signature of the commit it peels to MUST verify against an allowed
+signer; either suffices. A `revision` selection carries no tag, so only
+the commit signature can satisfy the check. Verification failure is a
+resolution error and the operation fails closed: `profile install` MUST
+fail, and `profile update` MUST leave the old lock in place. The three
+failures are mutually exclusive:
+
+- neither the tag nor the commit carries a signature:
+  `context_source_unsigned`, naming the source and the tag or commit and
+  stating that no signature was found;
+- a signature is present but verifies against no allowed signer, or the
+  verification itself fails: `context_source_signer_rejected`, naming the
+  source, the tag or commit, and the signer the signature claims;
+- under `require_source_signers` (section 12.1), a `git` source with no
+  allowlist: `context_source_signers_missing`, naming the source.
+
+A verification failure is not a constraint: the manager MUST NOT silently
+select a lower candidate — step 3 re-selection never fires on it. A `path`
+source and the synthesized `local` root carry no signature material and
+are never verified. A source mapped to an empty allowlist has an allowlist
+that admits no signer: every candidate of that source fails — unsigned as
+`context_source_unsigned`, signed as `context_source_signer_rejected`.
 
 ## 2. Context package shape
 
@@ -1702,7 +1741,9 @@ and the activation is reported, never silent — or when the operator passes
 nothing to choose. In every other case the manager prints the installed
 profile and how to activate it. Re-installing an already installed source
 with the same requirement re-resolves exactly as `profile update` does
-(section 9.2) and is reported as an update.
+(section 9.2) and is reported as an update; `profile install` accepts
+`--confirm-system-delta` for that path with the same per-invocation
+semantics as `profile update`.
 
 ### 9.2 Current profile, switching, update, and removal
 
@@ -1733,9 +1774,9 @@ or the attempted one — completes the scope from the journal. The switch
 never touches environment-owned mutable state, credential files beyond
 section 7.4 links, unmanaged files, or backups.
 
-**`profile update [<name> | --all]`** re-resolves the root and the overlays
-from their declared requirements, fetching new candidates, and proceeds in
-this order:
+**`profile update [<name> | --all] [--confirm-system-delta]`** re-resolves
+the root and the overlays from their declared requirements, fetching new
+candidates, and proceeds in this order:
 
 1. resolution under section 1.4 produces a candidate lock;
 2. every member new to the lock — a name or pin not in the old lock — is
@@ -1743,10 +1784,12 @@ this order:
    member leaves the **old lock in place**, reports `profile_update_blocked`
    with the finding, and changes nothing;
 3. after the audit gate passes and before the lock is published or any
-   surface is re-materialized, `profile update` MUST print the section 2.3
-   surfacing rows for the candidate lock's MCP set, and MUST emit
-   `mcp_package_allowlist_empty` when the MCP package allowlist is empty;
-   neither fails the update;
+   surface is re-materialized, `profile update` MUST print the
+   resolved-version delta of the candidate lock against the old lock, then
+   the section 2.3 surfacing rows for the candidate lock's MCP set, and
+   MUST emit `mcp_package_allowlist_empty` when the MCP package allowlist
+   is empty; printing never fails the update, and the confirmation gate
+   below runs after all three;
 4. the new store entries are installed and the new lock is published as one
    manager-home transaction;
 5. in-place scopes whose current profile is this one re-materialize from
@@ -1759,6 +1802,74 @@ this order:
 7. store entries the new lock no longer names become GC-eligible under
    section 12; the old lock is retained beside the new one until the next
    garbage collection so that a stale managed home can still be identified.
+
+**Resolved-version delta.** The delta compares the candidate lock against
+the old lock per member, keyed by (`kind`, `name`): **added** (in the
+candidate lock only), **removed** (in the old lock only), **moved** (in
+both with a different version or pin). The manager prints one delta line
+per added, removed, or moved member, in ascending (`kind`, `name`)
+bytewise order; with an empty delta it prints no delta line. The line
+grammar is closed:
+
+```text
+lock-delta added <kind> <name> <version> <pin>
+lock-delta removed <kind> <name> <version> <pin>
+lock-delta moved <kind> <name> <from-version> → <to-version> <from-pin> → <to-pin>
+```
+
+`<kind>` is exactly `context`, `mcp`, or `skill`. `<version>` is the
+member's resolved version, or `-` when the lock carries none (a skill
+pinned exactly whose source carries no version tag peeling to that
+commit). `<pin>` is `commit:<full lowercase hex>` or `state:<64 lowercase
+hex>`, following the lock's pin shape. Each line is terminated by exactly
+one LF.
+
+**System-delta confirmation.** When the delta introduces or changes a
+`class: system` module or an MCP declaration, the update needs an explicit
+per-run confirmation. The trigger is exactly:
+
+- a member new to the lock that carries a `class: system` module, or a
+  moved member whose system-module inventory differs — the sorted list of
+  (`path`, `environments` selector, bytes) over its `class: system`
+  manifest entries, compared between the old and the new snapshot;
+  admission under section 3 does not narrow the trigger; or
+- an `mcp` member new to the lock, or a moved one whose MCP declaration
+  differs — the CCJ-1 bytes ([`registry.md`](registry.md) §1) of the
+  declaration object as the lock and the materialization read it:
+  `transport`, `command`, `args`, `env_names`, the `url` of an `http`
+  declaration, and the `environments` selector. Any byte difference
+  triggers — a changed `url`, a changed selector, or a reordered array
+  (CCJ-1 preserves array order) — and no field is narrowed out; absent
+  (an `http` declaration carries no `command` or `args`) differs from
+  present.
+
+The confirmation ships warn-first (impact row "E1 update confirmation") in
+two explicitly labelled revisions:
+
+- **Revision A (warning release).** The manager warns
+  `profile_update_system_delta`, naming every member the trigger names
+  and carrying the migration hint `revision B refuses with
+  profile_update_confirmation_required unless --confirm-system-delta is
+  given`, and proceeds. Old behavior is otherwise kept.
+- **Revision B (flip release).** The manager refuses with
+  `profile_update_confirmation_required`, naming every member the trigger
+  names, unless the invocation carries `--confirm-system-delta`. A refusal
+  leaves the old lock in place and changes nothing: no publish, no
+  re-materialization, no stale-marking.
+
+No release both warns-and-proceeds and refuses at once: revision A adds
+the warning and proceeds; revision B refuses without the flag. A manager
+MUST ship revision A before revision B. `--confirm-system-delta` is per
+invocation only: no configuration knob may pre-confirm it. Under `--all`
+the flag is given once and confirms every profile of the run; without it
+each profile updates in turn and the first refusal stops the run with the
+refusing profile unchanged and later profiles untouched. With an empty
+trigger the flag is accepted and ignored. A reinstall that re-resolves as
+an update (section 9.1) prints the delta and runs the same gate, and
+`profile install` accepts `--confirm-system-delta` with identical
+per-invocation semantics: a triggered reinstall under revision B refuses
+without the flag and proceeds with it. No configuration knob
+pre-confirms a reinstall either.
 
 A root pinned by exact `tag` or `revision` is reported as pinned and does
 not move; a moved tag is a warning, or an error under strict-tag policy. An
@@ -2033,6 +2144,8 @@ section 9.5 takeover path with its notice and backup.
 | `--as <name>` or the root package name is already an installed profile name | `profile_name_taken` |
 | more than one requirement flag, or a requirement flag or `--directory` with a `path` operand | `profile_install_ref_conflict` |
 | `profile update` candidate lock carries a blocking finding on a new member; old lock stands | `profile_update_blocked` |
+| update delta introduces or changes a `class: system` module or MCP declaration (revision A warning, names the members, carries the migration hint) | `profile_update_system_delta` |
+| same trigger under revision B without `--confirm-system-delta` (refusal, names the members; old lock stands) | `profile_update_confirmation_required` |
 | `profile use` left a scope partially switched; recorded current unchanged (non-current) | `profile_use_partial` |
 | `profile remove` names a profile that is current in any scope or an overlay of another profile | `profile_in_use` |
 | skill or managed bin entry named `curator-*` | `environment_reserved_command_name` |
@@ -2447,8 +2560,14 @@ for `curator-run` and `curator-session`, reported missing when absent and
 reported unreadable with the directory when a trust root cannot be read
 (section 11), the `mcp_package_allowlist_empty` warning row when the MCP
 package allowlist is empty, the active S4 profile (`s4-warn` or
-`s4-enforce`) with the effective `passable_env_names`, and the section 2.3
-surfacing rows for the current profile of each scope reported. Both commands follow
+`s4-enforce`) with the effective `passable_env_names`, the section 2.3
+surfacing rows for the current profile of each scope reported, the
+signer-verification posture per lock member's source — `enforced` when an
+allowlist is present, naming the verified signer, `unconfigured` when none
+is, `required-missing` when `require_source_signers` is true and none is —,
+the active update-confirmation revision (`A-warning` or `B-flip`, section
+9.2) with its behaviour, and the machine-level `require_source_signers`
+value. Both commands follow
 the manager §10 discipline exactly: recompute and report, never mutate — no
 fetch, no repair, no adoption, no channel application, no onboarding.
 `--check` returns non-zero when any row is non-current.
@@ -2474,6 +2593,22 @@ Warnings —
 `context_system_module_dropped`, `mcp_package_allowlist_empty`,
 `mcp_env_passthrough_unlisted`, `mcp_env_passthrough_dropped`, an
 acknowledged shadowing path — never make a row non-current.
+
+The signer-verification rows re-verify the locked pins against the
+effective allowlists from the manager's local source state, without
+fetching: an `enforced` row names the verified signer when the local state
+reproduces the verification and `unknown` when it cannot. An `enforced`
+row whose locked pin fails against the effective allowlist is non-current;
+`unconfigured` and `required-missing` rows are informative and never make
+a row non-current.
+
+The update-confirmation row reports `A-warning` when the manager ships
+revision A of section 9.2 — a triggered delta warns
+`profile_update_system_delta` and proceeds — and `B-flip` when it ships
+revision B — a triggered delta refuses with
+`profile_update_confirmation_required` unless the invocation carries
+`--confirm-system-delta`. The row is informative and never makes a row
+non-current; no configuration knob pre-confirms.
 
 Garbage collection extends the manager §10 and core §9.4 rules: it runs
 under the manager-home mutation lock, and its live roots additionally
@@ -2519,6 +2654,8 @@ knob is absent.
 | `require_current_profile` | profile name or `null` | `null` | 12.2 |
 | `in_place_mode.<env-id>` | `linked`, `copied` | adapter default | 8.1 — the `claude_code` root-context surface is always copied whatever this value says |
 | `provider_directories` | list of absolute paths | `[]` | 11 |
+| `source_signers.<source>` | map from canonical source identity to the source's signer allowlist: a list of `{ type, key }` ssh entries and `{ type, fingerprint }` gpg entries | `{}` | 1.4, 12.2 |
+| `require_source_signers` | boolean | `false` | 1.4, 12.2 |
 
 A `secret_material_waivers.pin` is spelled as the member's pin exactly as
 the lock (section 1.3) and the marker (section 8.2) record it: bare
@@ -2530,6 +2667,21 @@ A `system_module_waivers` entry carries `package`, a portable identifier
 (core §2) naming a `context` member of the lock, and `reason`, free text
 recording why the operator admits that package's system modules. An entry
 naming no member of the lock has no effect.
+
+A `source_signers` key is a canonical source identity exactly as the lock
+(section 1.3) spells it. Each entry carries `type` exactly `ssh` or `gpg`:
+an `ssh` entry carries `key`, an OpenSSH public key line — `<key-type>
+<base64> [<comment>]` where `<key-type>` is exactly one of `ssh-ed25519`,
+`ssh-rsa`, `ecdsa-sha2-nistp256`, `ecdsa-sha2-nistp384`,
+`ecdsa-sha2-nistp521`, `sk-ssh-ed25519@openssh.com`, or
+`sk-ecdsa-sha2-nistp256@openssh.com`; a `gpg` entry carries `fingerprint`, exactly 40 uppercase hex
+characters. An `ssh` entry MUST NOT carry `fingerprint`, and a `gpg`
+entry MUST NOT carry `key`. An `ssh` entry's identity is its key type
+plus its base64 key material; the trailing comment is not part of the
+identity — the same key under another comment still matches, and
+different material never does. A source absent from the map has no
+allowlist and is never verified; a source mapped to an empty list has an
+allowlist that admits no signer.
 
 Team distribution stays **per-machine** in revision 1: an organization
 ships a bootstrap shape — a system-configuration file (manager §1) carrying
@@ -2544,7 +2696,8 @@ The manager §1 `locked` set is extended, for managers implementing this
 capability, by exactly these keys under `environments`:
 `overlays_allowed`, `precedence`, `mcp_package_allowlist`,
 `passable_env_names`, `require_current_profile`, `transitive_system_modules`,
-`isolation`, and `provider_directories` — a locked provider list is fleet
+`isolation`, `provider_directories`, `source_signers`, and
+`require_source_signers` — a locked provider list is fleet
 policy for which provider directories every machine trusts. A system
 file that locks `require_current_profile` to a profile name makes `profile
 use` of any other profile in the machine scope a configuration error under
@@ -2556,7 +2709,15 @@ lockable only in the direction of `shared`. `transitive_system_modules`
 is lockable only in the direction of `error`: a system file MUST lock
 `transitive_system_modules` only to `error`, and `system_module_waivers`
 MUST NOT be lockable — a lock MUST NOT admit a transitive package's system
-modules.
+modules. `require_source_signers` is lockable only in the direction of
+`true`: a system file MUST lock `require_source_signers` only to `true`.
+A locked `source_signers` map is fleet policy per source: for a source the
+system file names, the effective allowlist is the system file's list and
+the machine file's list for that source is ignored — with the manager §1
+override warning naming the system file when the machine file names that
+source — while a source the system file does not name takes the machine
+file's list. An unlocked system `source_signers` is a default the machine
+knob replaces whole (manager §1 rule 3).
 
 A **non-overridable skill class** — a skill the root requires that no
 overlay may re-require at another version — is not needed under joint
@@ -2615,10 +2776,30 @@ S6-planted `curator-run`, the manager-published and managed directory
 refusals under both revisions, the unreadable-root failures under both
 revisions, and the missing case — with the
 `provider_directories` grammar pinned by the `manager-config-v2` and
-`system-config-v2` schema cases. The nine
+`system-config-v2` schema cases; the section 1.4 signer-verification cases
+(`vectors/environments-source-signers.json`) — an allowlisted ssh tag
+signature accepted, an allowlisted gpg commit signature accepted, an
+unsigned candidate refused, a wrong-signer candidate refused, a same-key
+ssh signature under another comment accepted, a different-material ssh
+signature refused, no allowlist accepted with the `unconfigured` posture,
+`require_source_signers` with no allowlist refused, the locked-list
+against machine-addition merge, and the update-confirmation revision row —
+with the `source_signers` and `require_source_signers` machine-config
+schema cases, the exact-length fingerprint cases, and the system-config
+direction case; and the section 9.2 update-delta cases (same file) — the
+added, removed, and moved lines, no system or MCP change needing no
+confirmation, a new system module, a changed MCP `args`, `url`, or
+selector, and a reordered `env_names` warning under revision A and
+refusing under revision B, `--confirm-system-delta` proceeding, a
+reinstall refusing under revision B and proceeding with the flag, and
+`--all` confirming every profile of the run. The nine
 retired `expected/environments/*` sets are regenerated under the v2 type
 line. A manager claiming this capability MUST pass the complete vector set;
 there is no partial claim. A manager conforms to revision A by warning
 where the vectors warn and failing where they fail, and to revision B by
 refusing or failing where the vectors refuse or fail; it MUST NOT claim
-revision B while still resolving on `PATH`.
+revision B while still resolving on `PATH`. A manager conforms to the
+update-delta revision A by warning with `profile_update_system_delta`
+where the vectors warn, carrying the migration hint, and proceeding, and
+to revision B by refusing with `profile_update_confirmation_required`
+where the vectors refuse unless `--confirm-system-delta` is given.

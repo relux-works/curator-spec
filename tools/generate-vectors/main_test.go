@@ -2502,7 +2502,7 @@ func TestSystemConfigV2IsSchemaOnePlusTheLockableEnvironmentsKeys(t *testing.T) 
 		"system_module_waivers",
 	})
 	for _, key := range systemConfigV2LockableKeys {
-		if key == "isolation" || key == "transitive_system_modules" {
+		if key == "isolation" || key == "transitive_system_modules" || key == "require_source_signers" {
 			continue
 		}
 		got := environments["properties"].(map[string]any)[key]
@@ -2513,6 +2513,9 @@ func TestSystemConfigV2IsSchemaOnePlusTheLockableEnvironmentsKeys(t *testing.T) 
 	}
 	if got := environments["properties"].(map[string]any)["transitive_system_modules"]; !reflect.DeepEqual(got, map[string]any{"enum": []any{"error"}}) {
 		t.Fatalf("system config v2 transitive_system_modules must admit error alone, got %#v", got)
+	}
+	if got := environments["properties"].(map[string]any)["require_source_signers"]; !reflect.DeepEqual(got, map[string]any{"enum": []any{true}}) {
+		t.Fatalf("system config v2 require_source_signers must admit true alone, got %#v", got)
 	}
 	valid := validSystemConfigV2()
 	for _, key := range systemConfigV2LockableKeys {

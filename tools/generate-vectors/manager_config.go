@@ -29,6 +29,8 @@ func managerConfigV2EnvironmentDefaults() map[string]any {
 		"require_current_profile":   nil,
 		"in_place_mode":             map[string]any{},
 		"provider_directories":      []any{},
+		"source_signers":            map[string]any{},
+		"require_source_signers":    false,
 	}
 }
 
@@ -74,6 +76,13 @@ func managerConfigV2EveryKnob() map[string]any {
 		"require_current_profile": "companyA",
 		"in_place_mode":           map[string]any{"codex_cli": "copied"},
 		"provider_directories":    []any{"/usr/local/lib/curator/providers", "/opt/curator/bin"},
+		"source_signers": map[string]any{
+			"github.com/example/context": []any{
+				map[string]any{"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example"},
+				map[string]any{"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"},
+			},
+		},
+		"require_source_signers": true,
 	}
 }
 
@@ -189,6 +198,22 @@ func managerConfigV2SchemaExamples(valid map[string]any) []schemaExample {
 		{name: "valid-provider-directories-windows-drive", valid: true, instance: withKnob("provider_directories", []any{"C:\\\\Program Files\\\\curator\\\\providers"})},
 		{name: "invalid-provider-directories-relative", instance: withKnob("provider_directories", []any{"rel/providers"})},
 		{name: "invalid-provider-directories-duplicate", instance: withKnob("provider_directories", []any{"/opt/curator/bin", "/opt/curator/bin"})},
+		{name: "valid-source-signers", valid: true, instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}}})},
+		{name: "valid-source-signers-gpg", valid: true, instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}}})},
+		{name: "valid-source-signers-empty-list", valid: true, instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{}})},
+		{name: "valid-require-source-signers", valid: true, instance: withKnob("require_source_signers", true)},
+		{name: "invalid-source-signers-unknown-type", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "x509", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}}})},
+		{name: "invalid-source-signers-ssh-missing-key", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "ssh"}}})},
+		{name: "invalid-source-signers-gpg-missing-fingerprint", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "gpg"}}})},
+		{name: "invalid-source-signers-ssh-with-fingerprint", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}}})},
+		{name: "invalid-source-signers-gpg-with-key", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}}})},
+		{name: "invalid-source-signers-key-grammar", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "ssh", "key": "not-an-openssh-key-line"}}})},
+		{name: "invalid-source-signers-retired-key-type", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "ssh", "key": "ssh-dss AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}}})},
+		{name: "invalid-source-signers-fingerprint-grammar", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "gpg", "fingerprint": "0123456789abcdef0123456789abcdef01234567"}}})},
+		{name: "invalid-source-signers-fingerprint-newline", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567\n"}}})},
+		{name: "invalid-source-signers-duplicate", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}, map[string]any{"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}}})},
+		{name: "invalid-source-signers-unknown-field", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK", "comment": "extra"}}})},
+		{name: "invalid-require-source-signers-type", instance: withKnob("require_source_signers", "yes")},
 	}
 }
 
@@ -350,5 +375,15 @@ func managerConfigV2Vectors() []any {
 			"expected": map[string]any{"environments": expectedWith(map[string]any{"passable_env_names": []any{}})},
 		},
 		map[string]any{"name": "schema2-passable-env-invalid-name", "input": withEnvironments(map[string]any{"passable_env_names": []any{"FIGMA API KEY"}}), "valid": false},
+		// E1 (environments §1.4, §12.1): the per-source signer allowlist
+		// defaults to no source configured, and require_source_signers
+		// defaults to false; the entry shapes are closed per type.
+		map[string]any{
+			"name": "schema2-source-signers", "input": withEnvironments(map[string]any{"source_signers": map[string]any{"github.com/example/context": []any{map[string]any{"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}, map[string]any{"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}}}, "require_source_signers": true}), "valid": true,
+			"expected": map[string]any{"environments": expectedWith(map[string]any{"source_signers": map[string]any{"github.com/example/context": []any{map[string]any{"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}, map[string]any{"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567"}}}, "require_source_signers": true})},
+		},
+		map[string]any{"name": "schema2-source-signers-ssh-missing-key", "input": withEnvironments(map[string]any{"source_signers": map[string]any{"github.com/example/context": []any{map[string]any{"type": "ssh"}}}}), "valid": false},
+		map[string]any{"name": "schema2-source-signers-fingerprint-grammar", "input": withEnvironments(map[string]any{"source_signers": map[string]any{"github.com/example/context": []any{map[string]any{"type": "gpg", "fingerprint": "0123456789abcdef0123456789abcdef01234567"}}}}), "valid": false},
+		map[string]any{"name": "schema2-require-source-signers-type", "input": withEnvironments(map[string]any{"require_source_signers": "yes"}), "valid": false},
 	}
 }

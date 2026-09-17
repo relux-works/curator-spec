@@ -26,6 +26,15 @@
       "/usr/local/lib/curator/providers"
     ],
     "require_current_profile": "companyA",
+    "require_source_signers": true,
+    "source_signers": {
+      "github.com/example/context": [
+        {
+          "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example",
+          "type": "ssh"
+        }
+      ]
+    },
     "transitive_system_modules": "error"
   },
   "locked": [

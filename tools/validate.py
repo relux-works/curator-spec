@@ -3143,6 +3143,8 @@ MANAGER_CONFIG_KNOB_DEFAULT_PATHS = {
     "backup_retention": ("$defs", "environments", "properties", "backup_retention", "default"),
     "require_current_profile": ("$defs", "environments", "properties", "require_current_profile", "default"),
     "provider_directories": ("$defs", "environments", "properties", "provider_directories", "default"),
+    "source_signers.<source>": ("$defs", "environments", "properties", "source_signers", "default"),
+    "require_source_signers": ("$defs", "environments", "properties", "require_source_signers", "default"),
 }
 
 
@@ -3345,13 +3347,17 @@ SYSTEM_CONFIG_SCHEMAS = {1: "system-config-v1.schema.json", 2: "system-config-v2
 
 # The section 12.2 knobs whose system-file grammar is narrower than their
 # section 12.1 grammar: `isolation` is lockable only in the direction of
-# `shared` and `transitive_system_modules` only in the direction of `error`,
-# so the system schema admits that literal alone in each case.
+# `shared`, `transitive_system_modules` only in the direction of `error`,
+# and `require_source_signers` only in the direction of `true`, so the
+# system schema admits that literal alone in each case.
 SYSTEM_CONFIG_ISOLATION_ENUM_PATH = (
     "$defs", "environments", "properties", "isolation", "additionalProperties", "additionalProperties", "enum"
 )
 SYSTEM_CONFIG_TRANSITIVE_ENUM_PATH = (
     "$defs", "environments", "properties", "transitive_system_modules", "enum"
+)
+SYSTEM_CONFIG_REQUIRE_SIGNERS_ENUM_PATH = (
+    "$defs", "environments", "properties", "require_source_signers", "enum"
 )
 
 
@@ -3383,10 +3389,11 @@ def validate_system_config_v2_schema(
     exactly the schema-1 enum plus `environments.<key>` for each of them.
     Every schema-1 member other than `schema_version` and `locked` keeps its
     schema-1 node byte for byte. Every environments knob other than
-    `isolation` and `transitive_system_modules` takes its grammar from the
-    `manager-config-v2` environments object by reference, so the two schemas
-    cannot drift; `isolation` admits `shared` alone and
-    `transitive_system_modules` admits `error` alone (section 12.2: each
+    `isolation`, `transitive_system_modules`, and `require_source_signers`
+    takes its grammar from the `manager-config-v2` environments object by
+    reference, so the two schemas cannot drift; `isolation` admits `shared`
+    alone, `transitive_system_modules` admits `error` alone, and
+    `require_source_signers` admits `true` alone (section 12.2: each
     lockable only in that direction).
     """
     _registry, paths = schema_registry()
@@ -3431,7 +3438,7 @@ def validate_system_config_v2_schema(
             f"table-only {sorted(set(keys) - set(environments['properties']))}"
         )
     for key in keys:
-        if key in ("isolation", "transitive_system_modules"):
+        if key in ("isolation", "transitive_system_modules", "require_source_signers"):
             continue
         want = {"$ref": f"{MANAGER_CONFIG_SCHEMAS[2]}#/$defs/environments/properties/{key}"}
         if environments["properties"][key] != want:
@@ -3450,6 +3457,13 @@ def validate_system_config_v2_schema(
         node = node[segment]
     if node != ["error"]:
         raise ValidationFailure(f"system-config-v2 transitive_system_modules admits {node!r}; section 12.2 permits error alone")
+    node = schema
+    for segment in SYSTEM_CONFIG_REQUIRE_SIGNERS_ENUM_PATH:
+        if not isinstance(node, dict) or segment not in node:
+            raise ValidationFailure("system-config-v2 states no closed require_source_signers value set")
+        node = node[segment]
+    if node != [True]:
+        raise ValidationFailure(f"system-config-v2 require_source_signers admits {node!r}; section 12.2 permits true alone")
 
     locked_v1 = schema_v1["properties"]["locked"]["items"]["enum"]
     want_locked = [*locked_v1, *(f"environments.{key}" for key in keys)]
@@ -5033,6 +5047,759 @@ def validate_environments_env_passthrough_vectors(
 
 
 # ---------------------------------------------------------------------------
+# Sections 1.4, 9.2, 12: source signer allowlist and update-delta confirmation
+
+
+E1_DIAG_UNSIGNED = "context_source_unsigned"
+E1_DIAG_REJECTED = "context_source_signer_rejected"
+E1_DIAG_MISSING = "context_source_signers_missing"
+E1_DIAG_DELTA = "profile_update_system_delta"
+E1_DIAG_CONFIRM = "profile_update_confirmation_required"
+
+E1_HINT_DELTA = "revision B refuses with profile_update_confirmation_required unless --confirm-system-delta is given"
+
+E1_REVISION_A = "warning release: a triggered update delta warns profile_update_system_delta and proceeds"
+E1_REVISION_B = "flip release: a triggered update delta refuses profile_update_confirmation_required unless --confirm-system-delta is given"
+
+E1_CONFIRMATION_BEHAVIOR = {
+    "A-warning": "a triggered update delta warns profile_update_system_delta and proceeds",
+    "B-flip": "a triggered update delta refuses profile_update_confirmation_required unless --confirm-system-delta is given",
+}
+
+E1_MEMBER_KINDS = ("context", "mcp", "skill")
+
+E1_VERIFICATION_CASES = {
+    "ssh-tag-signature-accepted",
+    "gpg-commit-signature-accepted",
+    "either-signature-suffices",
+    "unsigned-refused",
+    "wrong-signer-refused",
+    "invalid-signature-refused",
+    "no-allowlist-accepted",
+    "require-without-allowlist-refused",
+    "require-with-allowlist-accepted",
+    "path-source-never-verified",
+    "no-silent-fallback-to-lower-candidate",
+    "empty-allowlist-signed-refused",
+    "empty-allowlist-unsigned-refused",
+    "exact-tag-selection-verified",
+    "revision-selection-verifies-commit",
+    "ssh-same-key-different-comment-accepted",
+    "ssh-different-material-rejected",
+    "unsigned-accepted",
+    "fallback-selection",
+}
+E1_VERIFICATION_NEGATIVE_CASES = {"unsigned-accepted", "fallback-selection"}
+E1_MERGE_CASES = {
+    "locked-overlap-system-wins-with-warning",
+    "locked-disjoint-machine-addition",
+    "locked-machine-absent",
+    "locked-empty-system-machine-adds",
+    "unlocked-machine-replaces-whole",
+    "unlocked-absent-machine-falls-back",
+}
+E1_POSTURE_CASES = {
+    "enforced-names-verified-signer",
+    "enforced-unknown-without-local-material",
+    "enforced-pin-fails-non-current",
+    "unconfigured",
+    "required-missing",
+}
+E1_DELTA_CASES = {
+    "plain-version-bump-no-confirmation",
+    "empty-delta-identical-lock",
+    "new-system-module",
+    "changed-system-bytes",
+    "changed-system-module-set",
+    "changed-system-selector",
+    "new-mcp-member",
+    "changed-mcp-command",
+    "changed-mcp-args",
+    "changed-mcp-env-names",
+    "changed-mcp-url",
+    "changed-mcp-url-confirmed",
+    "changed-mcp-selector",
+    "changed-mcp-selector-confirmed",
+    "mcp-env-names-reorder-triggers",
+    "absent-selector-to-present",
+    "absent-selector-to-present-confirmed",
+    "present-selector-to-absent",
+    "present-selector-to-absent-confirmed",
+    "absent-env-names-to-empty",
+    "absent-env-names-to-empty-confirmed",
+    "empty-env-names-to-absent",
+    "empty-env-names-to-absent-confirmed",
+    "removed-system-member-silent",
+    "confirmed-flag-proceeds",
+    "added-skill-silent",
+    "moved-skill-without-version",
+    "config-preconfirm-claim",
+    "silent-system-introduction",
+}
+E1_DELTA_NEGATIVE_CASES = {"config-preconfirm-claim", "silent-system-introduction"}
+E1_ALL_CASES = {
+    "all-with-flag-confirms-every-profile",
+    "all-without-flag-stops-at-first-refusal",
+}
+E1_REINSTALL_CASES = {
+    "reinstall-with-flag-proceeds",
+    "reinstall-without-flag-refuses-under-b",
+}
+E1_CONFIRMATION_POSTURE_CASES = {
+    "update-confirmation-revision-a-warning",
+    "update-confirmation-revision-b-flip",
+}
+
+
+def e1_check_signer_shape(signer: Any, label: str) -> tuple[str, str]:
+    """A claimed signer is a closed `{ type, key }` or `{ type, fingerprint }`
+    shape; return its `(type, identity)` key."""
+    if not isinstance(signer, dict):
+        raise ValidationFailure(f"{label}: a signer must be an object")
+    kind = signer.get("type")
+    if kind == "ssh":
+        if not isinstance(signer.get("key"), str) or set(signer) != {"type", "key"}:
+            raise ValidationFailure(f"{label}: an ssh signer is exactly {{ type, key }}")
+        return ("ssh", signer["key"])
+    if kind == "gpg":
+        if not isinstance(signer.get("fingerprint"), str) or set(signer) != {"type", "fingerprint"}:
+            raise ValidationFailure(f"{label}: a gpg signer is exactly {{ type, fingerprint }}")
+        return ("gpg", signer["fingerprint"])
+    raise ValidationFailure(f"{label}: a signer type must be ssh or gpg")
+
+
+def e1_signer_identity(signer: dict[str, Any]) -> tuple[str, str]:
+    """The section 12.1 matching identity of a shape-checked signer: key type
+    plus base64 key material for `ssh` — the trailing OpenSSH comment is not
+    part of the identity — and the fingerprint for `gpg`."""
+    if signer["type"] == "ssh":
+        fields = signer["key"].split()
+        if len(fields) >= 2:
+            return ("ssh", f"{fields[0]} {fields[1]}")
+        return ("ssh", signer["key"])
+    return ("gpg", signer["fingerprint"])
+
+
+def e1_check_signer_map(value: Any, knob_validator: Any, label: str) -> None:
+    """Every allowlist map in the vectors MUST satisfy the `source_signers`
+    grammar of manager-config-v2, so the vectors cannot drift from the
+    schema's closed entry shapes."""
+    if not isinstance(value, dict):
+        raise ValidationFailure(f"{label}: a signer map must be an object")
+    instance: dict[str, Any] = {
+        "schema_version": 2, "skills_root": "./skills", "projects": {},
+        "environments": {"source_signers": value},
+    }
+    errors = list(knob_validator.iter_errors(instance))
+    semantic = manager_config_semantic_error(instance) if not errors else None
+    if errors or semantic is not None:
+        detail = errors[0].message if errors else semantic
+        raise ValidationFailure(f"{label}: source_signers map violates the manager-config-v2 grammar ({detail})")
+
+
+def e1_check_signature(value: Any, label: str) -> dict[str, Any] | None:
+    if value is None:
+        return None
+    if not isinstance(value, dict):
+        raise ValidationFailure(f"{label}: a signature must be an object or null")
+    if set(value) != {"signer", "valid"}:
+        raise ValidationFailure(f"{label}: a signature is exactly {{ signer, valid }}")
+    e1_check_signer_shape(value.get("signer"), label)
+    if value.get("valid") is not True and value.get("valid") is not False:
+        raise ValidationFailure(f"{label}: a signature valid flag must be a boolean")
+    return value
+
+
+def e1_expected_verification(case: dict[str, Any]) -> tuple[str, str | None, str | None, bool, list[dict[str, str]]]:
+    """Recompute the section 1.4 verdict from the declared inputs: the
+    allowlist presence, the require flag, and the top candidate's two
+    signatures. Only the top candidate is ever consulted: a verification
+    failure refuses, it never falls through to a lower candidate."""
+    label = f"source-signers case {case.get('name')}"
+    kind = case.get("source_kind")
+    if kind not in ("git", "path"):
+        raise ValidationFailure(f"{label}: source_kind must be git or path")
+    allowlist = case.get("allowlist")
+    if allowlist is not None and not isinstance(allowlist, list):
+        raise ValidationFailure(f"{label}: allowlist must be an array or null")
+    require = case.get("require_source_signers")
+    if require is not True and require is not False:
+        raise ValidationFailure(f"{label}: require_source_signers must be a boolean")
+    candidates = case.get("candidates")
+    if not isinstance(candidates, list) or not candidates:
+        raise ValidationFailure(f"{label}: candidates must be a non-empty array")
+    for candidate in candidates:
+        if not isinstance(candidate, dict) or not isinstance(candidate.get("version"), str):
+            raise ValidationFailure(f"{label}: a candidate carries a version string")
+        form = candidate.get("form")
+        if form not in ("range", "tag", "revision", "path"):
+            raise ValidationFailure(f"{label}: a candidate form must be range, tag, revision, or path")
+        tag, commit = candidate.get("tag"), candidate.get("commit")
+        if form == "path":
+            if tag is not None or commit is not None:
+                raise ValidationFailure(f"{label}: a path candidate carries no tag or commit")
+        elif form == "revision":
+            if tag is not None or not isinstance(commit, str):
+                raise ValidationFailure(f"{label}: a revision candidate carries a commit and no tag")
+            if candidate.get("tag_signature") is not None:
+                raise ValidationFailure(f"{label}: a revision selection carries no tag, so tag-only signature evidence cannot satisfy the check")
+        elif not isinstance(tag, str) or not isinstance(commit, str):
+            raise ValidationFailure(f"{label}: a range or tag candidate carries a tag and a commit")
+        e1_check_signature(candidate.get("tag_signature"), label)
+        e1_check_signature(candidate.get("commit_signature"), label)
+    if kind == "path":
+        if case.get("source") is not None or allowlist is not None:
+            raise ValidationFailure(f"{label}: a path source carries no source identity and no allowlist")
+        return ("accepted", None, candidates[0]["version"], True, [])
+    top = candidates[0]
+    signatures = [
+        signature
+        for signature in (top.get("tag_signature"), top.get("commit_signature"))
+        if signature is not None
+    ]
+    for item in signatures:
+        e1_check_signer_shape(item["signer"], label)
+    seen = sorted({e1_signer_identity(item["signer"]) for item in signatures})
+    signers_seen = [
+        {"type": kind, "key": identity} if kind == "ssh" else {"type": kind, "fingerprint": identity}
+        for kind, identity in seen
+    ]
+    if allowlist is None:
+        if require:
+            return ("refused", E1_DIAG_MISSING, None, False, signers_seen)
+        return ("accepted", None, top["version"], True, signers_seen)
+    for entry in allowlist:
+        e1_check_signer_shape(entry, label)
+    allowed = {e1_signer_identity(entry) for entry in allowlist}
+    if not signatures:
+        return ("refused", E1_DIAG_UNSIGNED, None, False, signers_seen)
+    if any(item["valid"] and e1_signer_identity(item["signer"]) in allowed for item in signatures):
+        return ("accepted", None, top["version"], True, signers_seen)
+    return ("refused", E1_DIAG_REJECTED, None, False, signers_seen)
+
+
+def e1_expected_merge(case: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+    """Recompute the section 12.2 effective allowlist: a locked map wins per
+    source with a warning on overlap, an unlocked map is a default the
+    machine knob replaces whole."""
+    label = f"source-signers case {case.get('name')}"
+    locked = case.get("locked")
+    if locked is not True and locked is not False:
+        raise ValidationFailure(f"{label}: locked must be a boolean")
+    system = case.get("system")
+    machine = case.get("machine")
+    if not isinstance(system, dict) or (machine is not None and not isinstance(machine, dict)):
+        raise ValidationFailure(f"{label}: system must be an object and machine an object or null")
+    if locked:
+        effective = dict(system)
+        warnings = sorted(machine) if machine else []
+        warnings = [source for source in warnings if source in system]
+        if machine:
+            for source, entries in machine.items():
+                if source not in effective:
+                    effective[source] = entries
+        return effective, warnings
+    return (machine if machine is not None else system), []
+
+
+def e1_expected_posture(case: dict[str, Any]) -> tuple[list[dict[str, Any]], bool]:
+    """Recompute the section 12 signer rows: one per lock member source with
+    the enforced/unconfigured/required-missing state, the verified signer or
+    `unknown`, and the currency the re-verification decides."""
+    label = f"source-signers case {case.get('name')}"
+    members = case.get("members")
+    if not isinstance(members, list) or not members:
+        raise ValidationFailure(f"{label}: members must be a non-empty array")
+    sources: set[str] = set()
+    for member in members:
+        if not isinstance(member, dict) or member.get("kind") not in E1_MEMBER_KINDS:
+            raise ValidationFailure(f"{label}: a member carries a kind of context, mcp, or skill")
+        if not isinstance(member.get("name"), str):
+            raise ValidationFailure(f"{label}: a member carries a name")
+        source = member.get("source")
+        if source is not None:
+            if not isinstance(source, str):
+                raise ValidationFailure(f"{label}: a member source must be a string or null")
+            sources.add(source)
+    allowlists = case.get("allowlists")
+    if not isinstance(allowlists, dict):
+        raise ValidationFailure(f"{label}: allowlists must be an object")
+    require = case.get("require_source_signers")
+    if require is not True and require is not False:
+        raise ValidationFailure(f"{label}: require_source_signers must be a boolean")
+    local = case.get("local")
+    if not isinstance(local, dict):
+        raise ValidationFailure(f"{label}: local must be an object")
+    rows: list[dict[str, Any]] = []
+    for source in sorted(sources):
+        if source in allowlists:
+            if source not in local:
+                raise ValidationFailure(f"{label}: an enforced source needs its local re-verification")
+            verdict = local[source].get("verdict") if isinstance(local[source], dict) else None
+            if verdict == "verified":
+                signer = local[source].get("signer")
+                e1_check_signer_shape(signer, label)
+                for entry in allowlists[source]:
+                    e1_check_signer_shape(entry, label)
+                if e1_signer_identity(signer) not in {
+                    e1_signer_identity(entry) for entry in allowlists[source]
+                }:
+                    raise ValidationFailure(f"{label}: the verified signer must sit in the source allowlist")
+                rows.append({"source": source, "state": "enforced", "signer": signer, "current": True})
+            elif verdict == "unknown":
+                rows.append({"source": source, "state": "enforced", "signer": "unknown", "current": True})
+            elif verdict == "fails":
+                rows.append({"source": source, "state": "enforced", "signer": "unknown", "current": False})
+            else:
+                raise ValidationFailure(f"{label}: a local verdict must be verified, unknown, or fails")
+        elif require:
+            rows.append({"source": source, "state": "required-missing", "signer": None, "current": True})
+        else:
+            rows.append({"source": source, "state": "unconfigured", "signer": None, "current": True})
+    if set(local) != {source for source in sources if source in allowlists}:
+        raise ValidationFailure(f"{label}: local covers exactly the enforced sources")
+    return rows, require
+
+
+def e1_member_pin(member: dict[str, Any], label: str) -> tuple[str, str]:
+    """A lock member pin is exactly one of `commit` or `state_sha256`; return
+    its hex and its delta-line spelling."""
+    has_commit = isinstance(member.get("commit"), str)
+    has_state = isinstance(member.get("state_sha256"), str)
+    if has_commit == has_state:
+        raise ValidationFailure(f"{label}: a member carries exactly one of commit or state_sha256")
+    if has_commit:
+        if re.fullmatch(r"[0-9a-f]{40}", member["commit"]) is None:
+            raise ValidationFailure(f"{label}: a commit pin is 40 lowercase hex")
+        return member["commit"], f"commit:{member['commit']}"
+    if re.fullmatch(r"[0-9a-f]{64}", member["state_sha256"]) is None:
+        raise ValidationFailure(f"{label}: a state pin is 64 lowercase hex")
+    return member["state_sha256"], f"state:{member['state_sha256']}"
+
+
+def e1_check_lock_members(value: Any, label: str) -> dict[tuple[str, str], dict[str, Any]]:
+    if not isinstance(value, list):
+        raise ValidationFailure(f"{label}: lock members must be an array")
+    members: dict[tuple[str, str], dict[str, Any]] = {}
+    for member in value:
+        if not isinstance(member, dict) or member.get("kind") not in E1_MEMBER_KINDS:
+            raise ValidationFailure(f"{label}: a member carries a kind of context, mcp, or skill")
+        if not isinstance(member.get("name"), str):
+            raise ValidationFailure(f"{label}: a member carries a name")
+        version = member.get("version")
+        if version is not None and not isinstance(version, str):
+            raise ValidationFailure(f"{label}: a member version must be a string or null")
+        e1_member_pin(member, label)
+        key = (member["kind"], member["name"])
+        if key in members:
+            raise ValidationFailure(f"{label}: a lock names one member per kind and name")
+        members[key] = member
+    return members
+
+
+def e1_check_snapshots(
+    value: Any,
+    old: dict[tuple[str, str], dict[str, Any]],
+    new: dict[tuple[str, str], dict[str, Any]],
+    label: str,
+    mcp_validator: Any,
+) -> dict[str, Any]:
+    """Snapshots cover exactly the old and new member pins; an mcp snapshot
+    is a presence-preserving declaration object — a real `server` object as
+    the lock and the materialization read it, with optional fields absent
+    rather than padded — validated through the agent-mcp-v1 Draft 2020-12
+    entry, so absent and present stay distinct inputs to the section 9.2
+    canonical-byte comparison."""
+    if not isinstance(value, dict):
+        raise ValidationFailure(f"{label}: snapshots must be an object")
+    for pin, snapshot in value.items():
+        if not isinstance(snapshot, dict):
+            raise ValidationFailure(f"{label}: a snapshot must be an object")
+        modules = snapshot.get("system_modules")
+        if not isinstance(modules, list):
+            raise ValidationFailure(f"{label}: snapshot system_modules must be an array")
+        for module in modules:
+            if (
+                not isinstance(module, dict)
+                or not isinstance(module.get("path"), str)
+                or not isinstance(module.get("environments"), list)
+                or any(not isinstance(item, str) for item in module["environments"])
+                or not isinstance(module.get("bytes"), str)
+            ):
+                raise ValidationFailure(f"{label}: a system module is {{ path, environments, bytes }}")
+        mcp = snapshot.get("mcp")
+        if mcp is not None:
+            if not isinstance(mcp, dict):
+                raise ValidationFailure(f"{label}: an mcp snapshot is a declaration object")
+            if mcp.get("transport") == "stdio":
+                if "url" in mcp:
+                    raise ValidationFailure(f"{label}: a stdio declaration carries no url")
+                if not isinstance(mcp.get("command"), str):
+                    raise ValidationFailure(f"{label}: a stdio declaration carries its command")
+                if not isinstance(mcp.get("args"), list) or any(
+                    not isinstance(item, str) for item in mcp["args"]
+                ):
+                    raise ValidationFailure(f"{label}: a stdio declaration carries its args array")
+            elif mcp.get("transport") == "http":
+                if "command" in mcp or "args" in mcp:
+                    raise ValidationFailure(f"{label}: an http declaration carries no command or args")
+                if not isinstance(mcp.get("url"), str):
+                    raise ValidationFailure(f"{label}: an http declaration carries its url")
+            else:
+                raise ValidationFailure(f"{label}: a declaration transport is stdio or http")
+            if "env_names" in mcp and (
+                not isinstance(mcp.get("env_names"), list)
+                or any(not isinstance(item, str) for item in mcp["env_names"])
+            ):
+                raise ValidationFailure(f"{label}: a declaration env_names, when present, is an array of names")
+            if "environments" in mcp and (
+                not isinstance(mcp.get("environments"), list)
+                or any(not isinstance(item, str) for item in mcp["environments"])
+            ):
+                raise ValidationFailure(f"{label}: a declaration environments, when present, is a selector array")
+            manifest = {
+                "schema_version": 1,
+                "name": "e1-fixture",
+                "version": "1.0.0",
+                "server": mcp,
+            }
+            errors = list(mcp_validator.iter_errors(manifest))
+            if errors:
+                raise ValidationFailure(
+                    f"{label}: an mcp snapshot is a declaration valid under agent-mcp-v1 ({errors[0].message})"
+                )
+    pins = {e1_member_pin(member, label)[0] for member in [*old.values(), *new.values()]}
+    if set(value) != pins:
+        raise ValidationFailure(f"{label}: snapshots cover exactly the old and new member pins")
+    kinds = {e1_member_pin(member, label)[0]: member["kind"] for member in [*old.values(), *new.values()]}
+    for pin, snapshot in value.items():
+        if kinds[pin] == "mcp":
+            if snapshot["mcp"] is None or snapshot["system_modules"]:
+                raise ValidationFailure(f"{label}: an mcp member snapshot carries its declaration and no system module")
+        elif snapshot["mcp"] is not None:
+            raise ValidationFailure(f"{label}: only an mcp member snapshot carries a declaration")
+    return value
+
+
+def e1_system_inventory(snapshot: dict[str, Any]) -> list[tuple[str, tuple[str, ...], str]]:
+    return sorted(
+        (module["path"], tuple(sorted(module["environments"])), module["bytes"])
+        for module in snapshot["system_modules"]
+    )
+
+
+def e1_mcp_changed(old: dict[str, Any], new: dict[str, Any]) -> bool:
+    """The section 9.2 MCP trigger: the CCJ-1 bytes of the moved member's
+    declaration object differ — the complete declaration as the
+    lock/materialization reads it, array order included, with no
+    field narrowed out and no set-comparison exception."""
+    return ccj1_bytes(old) != ccj1_bytes(new)
+
+
+def e1_expected_delta(
+    old: dict[tuple[str, str], dict[str, Any]], new: dict[tuple[str, str], dict[str, Any]], snapshots: dict[str, Any], label: str
+) -> tuple[list[str], list[str]]:
+    """Recompute the section 9.2 delta lines and the confirmation trigger:
+    added, removed, and moved members in lock order, and the members whose
+    system-module inventory or MCP declaration canonical bytes the delta
+    introduces or changes."""
+    lines: list[str] = []
+    for kind, name in sorted(set(old) | set(new)):
+        if (kind, name) not in old:
+            member = new[(kind, name)]
+            version = member["version"] if isinstance(member.get("version"), str) else "-"
+            lines.append(f"lock-delta added {kind} {name} {version} {e1_member_pin(member, label)[1]}")
+        elif (kind, name) not in new:
+            member = old[(kind, name)]
+            version = member["version"] if isinstance(member.get("version"), str) else "-"
+            lines.append(f"lock-delta removed {kind} {name} {version} {e1_member_pin(member, label)[1]}")
+        else:
+            before, after = old[(kind, name)], new[(kind, name)]
+            if before.get("version") == after.get("version") and e1_member_pin(before, label) == e1_member_pin(after, label):
+                continue
+            from_version = before["version"] if isinstance(before.get("version"), str) else "-"
+            to_version = after["version"] if isinstance(after.get("version"), str) else "-"
+            from_pin = e1_member_pin(before, label)[1]
+            to_pin = e1_member_pin(after, label)[1]
+            lines.append(f"lock-delta moved {kind} {name} {from_version} → {to_version} {from_pin} → {to_pin}")
+    trigger: dict[tuple[str, str], str] = {}
+    for key, member in new.items():
+        if key in old:
+            continue
+        snapshot = snapshots[e1_member_pin(member, label)[0]]
+        if member["kind"] == "context" and snapshot["system_modules"]:
+            trigger[key] = member["name"]
+        elif member["kind"] == "mcp":
+            trigger[key] = member["name"]
+    for key in new.keys() & old.keys():
+        before, after = old[key], new[key]
+        if before.get("version") == after.get("version") and e1_member_pin(before, label) == e1_member_pin(after, label):
+            continue
+        kind = key[0]
+        before_snapshot = snapshots[e1_member_pin(before, label)[0]]
+        after_snapshot = snapshots[e1_member_pin(after, label)[0]]
+        if kind == "context" and e1_system_inventory(before_snapshot) != e1_system_inventory(after_snapshot):
+            trigger[key] = after["name"]
+        elif kind == "mcp" and e1_mcp_changed(before_snapshot["mcp"], after_snapshot["mcp"]):
+            trigger[key] = after["name"]
+    return lines, [trigger[key] for key in sorted(trigger)]
+
+
+def e1_revision_outcomes(trigger: list[str], flag: bool) -> tuple[dict[str, Any], dict[str, Any]]:
+    revision_a: dict[str, Any] = {
+        "diagnostic": E1_DIAG_DELTA if trigger else None,
+        "hint": E1_HINT_DELTA if trigger else None,
+        "proceeds": True,
+        "lock_published": True,
+    }
+    if trigger and not flag:
+        revision_b: dict[str, Any] = {"diagnostic": E1_DIAG_CONFIRM, "proceeds": False, "lock_published": False}
+    else:
+        revision_b = {"diagnostic": None, "proceeds": True, "lock_published": True}
+    return revision_a, revision_b
+
+
+def e1_expected_confirmation_posture(revision: Any, label: str) -> dict[str, str]:
+    """The section 12 update-confirmation row: the active revision spelled as
+    section 9.2 spells the rollout, with the behaviour that revision gives a
+    triggered delta."""
+    if revision not in E1_CONFIRMATION_BEHAVIOR:
+        raise ValidationFailure(f"{label}: update_confirmation_revision must be A-warning or B-flip")
+    return {"revision": revision, "behavior": E1_CONFIRMATION_BEHAVIOR[revision]}
+
+
+def validate_environments_source_signers_vectors(
+    vector: Any = None, suite_root: Path | None = None, schema: Any = None
+) -> None:
+    """Recompute the E1 signer-verification, merge, posture, update-delta,
+    reinstall, and update-confirmation-posture expectations.
+
+    Every positive case is derived from its declared inputs — the
+    verification verdict from the allowlist, the require flag, and the top
+    candidate's signatures; the effective allowlist from the locked and
+    machine maps; the status rows from the lock sources and the local
+    re-verification; the delta lines, the trigger, and both rollout
+    revisions' outcomes from the old and new locks, identically for the
+    reinstall path; the update-confirmation row from the active revision.
+    Every negative case must carry an observation that genuinely contradicts
+    the recomputed rule, so a repaired observation or a flipped flag fails
+    here.
+    """
+    root = SUITE if suite_root is None else Path(suite_root)
+    if vector is None:
+        vector = load_json(root / "vectors" / "environments-source-signers.json")
+    if (
+        vector.get("schema_version") != 1
+        or vector.get("protocol_version") != PROTOCOL_VERSION
+        or vector.get("capability") != "agent-environments"
+        or vector.get("capability_revision") != 1
+    ):
+        raise ValidationFailure("source-signers vector has the wrong capability identity")
+    if vector.get("revision_a") != E1_REVISION_A or vector.get("revision_b") != E1_REVISION_B:
+        raise ValidationFailure("source-signers revisions must pin exactly the warning and flip releases")
+
+    registry, paths = schema_registry()
+    if schema is None:
+        schema = load_json(paths[MANAGER_CONFIG_SCHEMAS[2]])
+    knob_validator = Draft202012Validator(schema, registry=registry)
+    mcp_validator = Draft202012Validator(load_json(SCHEMAS / "agent-mcp-v1.schema.json"), registry=registry)
+
+    verification = named_cases(vector.get("verification_cases"), "source-signers verification")
+    if set(verification) != E1_VERIFICATION_CASES:
+        raise ValidationFailure("source-signers verification case inventory is not exact")
+    for name, case in verification.items():
+        label = f"source-signers case {name}"
+        allowlist = case.get("allowlist")
+        if allowlist is not None:
+            e1_check_signer_map({"vector": allowlist}, knob_validator, label)
+        verdict, diagnostic, selected, lock_written, signers_seen = e1_expected_verification(case)
+        if name in E1_VERIFICATION_NEGATIVE_CASES:
+            if case.get("conforming") is not False or not case.get("reason"):
+                raise ValidationFailure(f"{label}: a negative needs conforming=false and a reason")
+            observed = case.get("observed")
+            if not isinstance(observed, dict):
+                raise ValidationFailure(f"{label}: a negative needs its observed outcome")
+            if (
+                observed.get("verdict") == verdict
+                and observed.get("diagnostic") == diagnostic
+                and observed.get("selected") == selected
+                and observed.get("lock_written") == lock_written
+            ):
+                raise ValidationFailure(f"{label}: the observation no longer violates the verification rule")
+            continue
+        if case.get("conforming") is False:
+            raise ValidationFailure(f"{label}: a positive case must not carry conforming=false")
+        expected = case.get("expected")
+        if not isinstance(expected, dict):
+            raise ValidationFailure(f"{label}: a positive case needs its expected outcome")
+        if (
+            expected.get("verdict") != verdict
+            or expected.get("diagnostic") != diagnostic
+            or expected.get("selected") != selected
+            or expected.get("lock_written") != lock_written
+            or expected.get("signers_seen") != signers_seen
+        ):
+            raise ValidationFailure(
+                f"{label}: expected is not the verification rule ({verdict}/{diagnostic}/{selected})"
+            )
+
+    merge = named_cases(vector.get("merge_cases"), "source-signers merge")
+    if set(merge) != E1_MERGE_CASES:
+        raise ValidationFailure("source-signers merge case inventory is not exact")
+    for name, case in merge.items():
+        label = f"source-signers case {name}"
+        e1_check_signer_map(case.get("system"), knob_validator, label)
+        if case.get("machine") is not None:
+            e1_check_signer_map(case.get("machine"), knob_validator, label)
+        effective, warnings = e1_expected_merge(case)
+        expected = case.get("expected")
+        if not isinstance(expected, dict):
+            raise ValidationFailure(f"{label}: a merge case needs its expected outcome")
+        if expected.get("effective") != effective or expected.get("warnings") != warnings:
+            raise ValidationFailure(f"{label}: expected is not the section 12.2 merge rule")
+
+    posture = named_cases(vector.get("posture_cases"), "source-signers posture")
+    if set(posture) != E1_POSTURE_CASES:
+        raise ValidationFailure("source-signers posture case inventory is not exact")
+    for name, case in posture.items():
+        label = f"source-signers case {name}"
+        e1_check_signer_map(case.get("allowlists"), knob_validator, label)
+        rows, require = e1_expected_posture(case)
+        expected = case.get("expected")
+        if not isinstance(expected, dict):
+            raise ValidationFailure(f"{label}: a posture case needs its expected outcome")
+        if expected.get("rows") != rows or expected.get("require_source_signers") != require:
+            raise ValidationFailure(f"{label}: expected is not the section 12 posture rule")
+
+    delta = named_cases(vector.get("delta_cases"), "source-signers delta")
+    if set(delta) != E1_DELTA_CASES:
+        raise ValidationFailure("source-signers delta case inventory is not exact")
+    for name, case in delta.items():
+        label = f"source-signers case {name}"
+        flag = case.get("flag")
+        if flag is not True and flag is not False:
+            raise ValidationFailure(f"{label}: flag must be a boolean")
+        old = e1_check_lock_members(case.get("old_members"), label)
+        new = e1_check_lock_members(case.get("new_members"), label)
+        snapshots = e1_check_snapshots(case.get("snapshots"), old, new, label, mcp_validator)
+        lines, trigger = e1_expected_delta(old, new, snapshots, label)
+        revision_a, revision_b = e1_revision_outcomes(trigger, flag)
+        if name in E1_DELTA_NEGATIVE_CASES:
+            if case.get("conforming") is not False or not case.get("reason"):
+                raise ValidationFailure(f"{label}: a negative needs conforming=false and a reason")
+            claimed = case.get("claimed")
+            if not isinstance(claimed, dict) or claimed.get("revision") not in ("revision-a", "revision-b"):
+                raise ValidationFailure(f"{label}: a negative claims one revision outcome")
+            ruled = revision_a if claimed["revision"] == "revision-a" else revision_b
+            matches = (
+                claimed.get("diagnostic") == ruled["diagnostic"]
+                and claimed.get("proceeds") == ruled["proceeds"]
+                and claimed.get("lock_published") == ruled["lock_published"]
+            )
+            if claimed["revision"] == "revision-a":
+                matches = matches and claimed.get("hint") == ruled["hint"]
+            if matches:
+                raise ValidationFailure(f"{label}: the claimed outcome no longer violates the confirmation rule")
+            continue
+        if case.get("conforming") is False:
+            raise ValidationFailure(f"{label}: a positive case must not carry conforming=false")
+        expected = case.get("expected")
+        if not isinstance(expected, dict):
+            raise ValidationFailure(f"{label}: a positive case needs its expected outcome")
+        if (
+            expected.get("lines") != lines
+            or expected.get("trigger") != trigger
+            or expected.get("revision_a") != revision_a
+            or expected.get("revision_b") != revision_b
+        ):
+            raise ValidationFailure(f"{label}: expected is not the section 9.2 delta rule")
+
+    runs = named_cases(vector.get("all_cases"), "source-signers all")
+    if set(runs) != E1_ALL_CASES:
+        raise ValidationFailure("source-signers --all case inventory is not exact")
+    for name, case in runs.items():
+        label = f"source-signers case {name}"
+        flag = case.get("flag")
+        if flag is not True and flag is not False:
+            raise ValidationFailure(f"{label}: flag must be a boolean")
+        profiles = case.get("profiles")
+        if not isinstance(profiles, list) or len(profiles) < 2:
+            raise ValidationFailure(f"{label}: an --all case runs at least two profiles")
+        if len({item.get("profile") for item in profiles if isinstance(item, dict)}) != len(profiles):
+            raise ValidationFailure(f"{label}: an --all case names every profile once")
+        expected = case.get("expected")
+        if not isinstance(expected, dict):
+            raise ValidationFailure(f"{label}: an --all case needs its expected outcome")
+        expected_profiles = expected.get("profiles")
+        if not isinstance(expected_profiles, list) or len(expected_profiles) != len(profiles):
+            raise ValidationFailure(f"{label}: an --all case expects one outcome per profile")
+        stopped_a: str | None = None
+        stopped_b: str | None = None
+        for item, want in zip(profiles, expected_profiles):
+            profile_label = f"{label} profile {item.get('profile')}"
+            old = e1_check_lock_members(item.get("old_members"), profile_label)
+            new = e1_check_lock_members(item.get("new_members"), profile_label)
+            snapshots = e1_check_snapshots(item.get("snapshots"), old, new, profile_label, mcp_validator)
+            lines, trigger = e1_expected_delta(old, new, snapshots, profile_label)
+            revision_a, revision_b = e1_revision_outcomes(trigger, flag)
+            if not isinstance(want, dict) or want.get("profile") != item.get("profile"):
+                raise ValidationFailure(f"{profile_label}: the expected outcome names its profile")
+            if want.get("lines") != lines or want.get("trigger") != trigger:
+                raise ValidationFailure(f"{profile_label}: expected is not the section 9.2 delta rule")
+            if want.get("revision_a") != revision_a:
+                raise ValidationFailure(f"{profile_label}: revision A always proceeds")
+            if stopped_b is not None:
+                if want.get("revision_b") != "untouched":
+                    raise ValidationFailure(f"{profile_label}: a profile past the refusal stays untouched")
+            else:
+                if want.get("revision_b") != revision_b:
+                    raise ValidationFailure(f"{profile_label}: expected is not the revision B rule")
+                if not revision_b["proceeds"]:
+                    stopped_b = item.get("profile")
+        stopped = expected.get("stopped")
+        if not isinstance(stopped, dict) or stopped.get("revision_a") != stopped_a or stopped.get("revision_b") != stopped_b:
+            raise ValidationFailure(f"{label}: stopped names the first refusing profile per revision")
+
+    reinstalls = named_cases(vector.get("reinstall_cases"), "source-signers reinstall")
+    if set(reinstalls) != E1_REINSTALL_CASES:
+        raise ValidationFailure("source-signers reinstall case inventory is not exact")
+    for name, case in reinstalls.items():
+        label = f"source-signers case {name}"
+        if case.get("operation") != "profile install":
+            raise ValidationFailure(f"{label}: a reinstall case runs the profile install path")
+        flag = case.get("flag")
+        if flag is not True and flag is not False:
+            raise ValidationFailure(f"{label}: flag must be a boolean")
+        old = e1_check_lock_members(case.get("old_members"), label)
+        new = e1_check_lock_members(case.get("new_members"), label)
+        snapshots = e1_check_snapshots(case.get("snapshots"), old, new, label, mcp_validator)
+        lines, trigger = e1_expected_delta(old, new, snapshots, label)
+        revision_a, revision_b = e1_revision_outcomes(trigger, flag)
+        expected = case.get("expected")
+        if not isinstance(expected, dict):
+            raise ValidationFailure(f"{label}: a reinstall case needs its expected outcome")
+        if (
+            expected.get("lines") != lines
+            or expected.get("trigger") != trigger
+            or expected.get("revision_a") != revision_a
+            or expected.get("revision_b") != revision_b
+        ):
+            raise ValidationFailure(f"{label}: expected is not the section 9.2 reinstall rule")
+
+    confirmations = named_cases(vector.get("confirmation_posture_cases"), "source-signers confirmation posture")
+    if set(confirmations) != E1_CONFIRMATION_POSTURE_CASES:
+        raise ValidationFailure("source-signers confirmation-posture case inventory is not exact")
+    for name, case in confirmations.items():
+        label = f"source-signers case {name}"
+        row = e1_expected_confirmation_posture(case.get("update_confirmation_revision"), label)
+        expected = case.get("expected")
+        if not isinstance(expected, dict):
+            raise ValidationFailure(f"{label}: a confirmation-posture case needs its expected outcome")
+        if expected.get("row") != row:
+            raise ValidationFailure(f"{label}: expected is not the section 12 update-confirmation row")
+
+
+# ---------------------------------------------------------------------------
 # Section 9.1: detector classes
 
 
@@ -5774,6 +6541,7 @@ def main() -> int:
         validate_assurance_vectors,
         validate_environment_vectors,
         validate_environments_env_passthrough_vectors,
+        validate_environments_source_signers_vectors,
         validate_context_version_vectors,
         validate_context_detector_vectors,
         validate_snapshot_acquisition_vectors,

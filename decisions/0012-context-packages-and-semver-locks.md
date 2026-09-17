@@ -66,6 +66,64 @@ else in this document was changed by the erratum.
    `"argument": "path"`, as the §10.2 example does. The JSON bytes are not
    edited; the introducing sentence is annotated.
 
+## Amendment (2026-09-17, E1)
+
+Recorded for security-audit finding E1 (2026-09): range resolution trusts
+every future tag of a source, and no signature or provenance rule exists
+(`docs/security-audit-2026-09.md` E1, verified against the shipped manager
+in Appendix B). Each item quotes the original passage verbatim, states why
+it is incomplete, cites the evidence, and gives the added rule with its
+normative home in `protocol/environments.md`. The original passages remain
+in the body, each marked `[Amendment 2026-09-17, item N]`; nothing else in
+this document was changed by the amendment.
+
+1. **Signer allowlist per source.** Original (Decision 2,
+   "Resolution"): "The candidates of a name are the source's version tags,
+   peeled under §6.3." Why incomplete: the sentence selects a candidate
+   with no signature step, so whoever pushes an in-range tag ships new
+   system-prompt, root-context, and MCP bytes on the next `profile update`.
+   Evidence: finding E1 and Appendix B (no signer verification anywhere).
+   Added rule: a lockable per-source signer allowlist
+   (`source_signers.<source>`, entries `{ type: "ssh", key }` or
+   `{ type: "gpg", fingerprint }`) with the lockable
+   `require_source_signers` direction; for a `git` source that carries an
+   allowlist, the selected candidate's annotated tag signature OR the
+   signature of the commit it peels to MUST verify against an allowed
+   signer before the candidate enters the lock — either suffices — else
+   resolution fails closed (`context_source_unsigned`,
+   `context_source_signer_rejected`, `context_source_signers_missing`) and
+   the old lock stands. A `path` source is never verified. Verification
+   results are posture reported by `env status`, not lock content: the lock
+   stays a record, not a signature. Normative home: environments §1.4, §12,
+   §12.1, §12.2.
+2. **`profile update` resolved-version delta and confirmation.** Original
+   (Decision 8): "`profile update [<name> | --all]` re-resolves the root
+   and overlays from their declared ranges, fetches new candidates, audits
+   every member that is new to the lock in strict mode, and publishes the
+   new lock and store entries as one manager-home transaction". Why
+   incomplete: the update publishes a new lock with no resolved-version
+   delta and no confirmation, so a range re-resolution that introduces or
+   changes a `class: system` module or an MCP declaration ships silently.
+   Evidence: finding E1 recommendation 2 and Appendix B (`profile update`
+   prints only `updated profile <name> (lock <hash>)`). Added rule:
+   `profile update` MUST print the resolved-version delta of the candidate
+   lock against the old lock before the lock is published; when the delta
+   introduces or changes a `class: system` module or an MCP declaration,
+   revision A warns with `profile_update_system_delta` and proceeds, and
+   revision B refuses with `profile_update_confirmation_required` unless
+   the per-run flag `--confirm-system-delta` is given — a flag no
+   configuration knob may pre-confirm. Normative home: environments
+   §9.2, §9.7 (Decision 8's environments counterpart is §9.2).
+3. **`latest` residual.** Original (Decision 2, "Ranges"): "The spelling
+   `latest` is a Curator spelling equivalent to `*` (in npm, `latest` is a
+   distribution tag, not range grammar)." Why incomplete: the sentence
+   leaves unstated which tags `latest` follows once signer verification
+   exists. Evidence: finding E1 recommendation 3. Added rule, now stated:
+   `latest` stays `*`; with an allowlist it follows every signed in-range
+   tag of that source, without one it follows any tag. The strict-tag
+   policy of Decision 8 covers a *moved* tag, not a *new* one. Normative
+   home: environments §1.4.
+
 ## Context
 
 Decision 0010 shaped a profile as a directory inside one repository: an
@@ -244,7 +302,7 @@ Two npm forms are excluded: hyphen ranges (`1.2.3 - 2.3.4`) are not
 admitted, and `v` is not admitted inside a range — a range is over
 versions, a tag carries the prefix. The spelling `latest` is a Curator
 spelling equivalent to `*` (in npm, `latest` is a distribution tag, not
-range grammar). `*`, `x`, `X`, and `latest` select the highest **stable**
+range grammar) [Amendment 2026-09-17, item 3]. `*`, `x`, `X`, and `latest` select the highest **stable**
 version.
 
 **Prereleases.** A version with a prerelease satisfies a range only when
@@ -267,6 +325,7 @@ MUST admit that version. Two exact constraints on one name MUST peel to
 one commit (§7, unchanged; different refs resolving to one commit unify)
 [Erratum 2026-09-05, item 2].
 The candidates of a name are the source's version tags, peeled under §6.3.
+[Amendment 2026-09-17, item 1]
 
 The algorithm is fixed so that two managers lock identically:
 
@@ -542,7 +601,7 @@ only to a root that declares `context` with zero applicable modules — and
 `profile update [<name> | --all]` re-resolves the root and overlays from
 their declared ranges, fetches new candidates, audits every member that is
 new to the lock in strict mode, and publishes the new lock and store
-entries as one manager-home transaction; in-place scopes on that profile
+entries as one manager-home transaction [Amendment 2026-09-17, item 2]; in-place scopes on that profile
 re-materialize; managed homes are marked stale for explicit repair
 (review M10). Exact `tag` and `revision` roots are reported as pinned and
 do not move; a moved tag is a warning, or an error under strict-tag policy.

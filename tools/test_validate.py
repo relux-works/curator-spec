@@ -1998,6 +1998,458 @@ class EnvPassthroughVectorTests(unittest.TestCase):
             self.run_gate(vector=changed)
 
 
+class SourceSignersVectorTests(unittest.TestCase):
+    """The E1 signer-verification/merge/posture/delta gate must fail closed.
+
+    validate_environments_source_signers_vectors is the production gate:
+    tools/validate.py main() runs it on every `make validate`, recomputing
+    the section 1.4 verification verdict, the section 12.2 effective
+    allowlist, the section 12 posture rows, and the section 9.2 delta
+    lines, trigger, and both rollout revisions' outcomes from the declared
+    inputs. Each test narrows one rule and proves the gate rejects what
+    the rule must reject.
+    """
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.SUITE / "vectors" / "environments-source-signers.json"
+        )
+        _, paths = validate.schema_registry()
+        self.schema = validate.load_json(paths["manager-config-v2.schema.json"])
+
+    def case(self, family: str, name: str, vector: dict | None = None) -> dict:
+        source = self.vector if vector is None else vector
+        return next(item for item in source[family] if item["name"] == name)
+
+    def run_gate(self, vector=None, schema=None) -> None:
+        validate.validate_environments_source_signers_vectors(
+            vector=self.vector if vector is None else vector,
+            schema=self.schema if schema is None else schema,
+        )
+
+    def test_published_vector_passes(self) -> None:
+        self.run_gate()
+
+    def test_unsigned_accepted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("verification_cases", "unsigned-refused", changed)
+        case["expected"]["verdict"] = "accepted"
+        case["expected"]["diagnostic"] = None
+        case["expected"]["selected"] = "1.2.0"
+        case["expected"]["lock_written"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_wrong_signer_accepted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("verification_cases", "wrong-signer-refused", changed)
+        case["expected"]["verdict"] = "accepted"
+        case["expected"]["diagnostic"] = None
+        case["expected"]["lock_written"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_invalid_signature_accepted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("verification_cases", "invalid-signature-refused", changed)
+        case["expected"]["verdict"] = "accepted"
+        case["expected"]["diagnostic"] = None
+        case["expected"]["lock_written"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_fallback_selection_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("verification_cases", "no-silent-fallback-to-lower-candidate", changed)
+        case["expected"]["verdict"] = "accepted"
+        case["expected"]["diagnostic"] = None
+        case["expected"]["selected"] = "1.9.0"
+        case["expected"]["lock_written"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_require_without_allowlist_accepted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("verification_cases", "require-without-allowlist-refused", changed)
+        case["expected"]["verdict"] = "accepted"
+        case["expected"]["diagnostic"] = None
+        case["expected"]["lock_written"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_empty_allowlist_accepted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("verification_cases", "empty-allowlist-signed-refused", changed)
+        case["expected"]["verdict"] = "accepted"
+        case["expected"]["diagnostic"] = None
+        case["expected"]["lock_written"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_signers_seen_mutation_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("verification_cases", "wrong-signer-refused", changed)
+        case["expected"]["signers_seen"] = []
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_path_allowlist_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("verification_cases", "path-source-never-verified", changed)
+        case["allowlist"] = []
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_repaired_verification_negative_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("verification_cases", "unsigned-accepted", changed)
+        case["observed"]["verdict"] = "refused"
+        case["observed"]["diagnostic"] = "context_source_unsigned"
+        case["observed"]["selected"] = None
+        case["observed"]["lock_written"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_repaired_fallback_negative_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("verification_cases", "fallback-selection", changed)
+        case["observed"]["verdict"] = "refused"
+        case["observed"]["diagnostic"] = "context_source_unsigned"
+        case["observed"]["selected"] = None
+        case["observed"]["lock_written"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_allowlist_grammar_drift_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("verification_cases", "ssh-tag-signature-accepted", changed)
+        case["allowlist"][0]["key"] = "not-an-openssh-key-line"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_locked_overlap_taking_machine_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("merge_cases", "locked-overlap-system-wins-with-warning", changed)
+        case["expected"]["effective"]["github.com/example/context"] = case["machine"]["github.com/example/context"]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_locked_overlap_warning_dropped_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("merge_cases", "locked-overlap-system-wins-with-warning", changed)
+        case["expected"]["warnings"] = []
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_unlocked_merge_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("merge_cases", "unlocked-machine-replaces-whole", changed)
+        case["expected"]["effective"]["github.com/example/context"] = case["system"]["github.com/example/context"]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_enforced_row_without_allowlist_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("posture_cases", "unconfigured", changed)
+        case["expected"]["rows"][0]["state"] = "enforced"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_required_missing_without_require_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("posture_cases", "unconfigured", changed)
+        case["expected"]["rows"][0]["state"] = "required-missing"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_pin_fails_reported_current_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("posture_cases", "enforced-pin-fails-non-current", changed)
+        case["expected"]["rows"][0]["current"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_verified_signer_outside_allowlist_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("posture_cases", "enforced-names-verified-signer", changed)
+        case["local"]["github.com/example/context"]["signer"] = {
+            "type": "gpg", "fingerprint": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        }
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_dropped_trigger_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("delta_cases", "new-system-module", changed)
+        case["expected"]["trigger"] = []
+        case["expected"]["revision_a"]["diagnostic"] = None
+        case["expected"]["revision_b"]["diagnostic"] = None
+        case["expected"]["revision_b"]["proceeds"] = True
+        case["expected"]["revision_b"]["lock_published"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_revision_b_refusal_flipped_to_proceed_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("delta_cases", "changed-mcp-args", changed)
+        case["expected"]["revision_b"]["diagnostic"] = None
+        case["expected"]["revision_b"]["proceeds"] = True
+        case["expected"]["revision_b"]["lock_published"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_revision_a_silence_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("delta_cases", "new-mcp-member", changed)
+        case["expected"]["revision_a"]["diagnostic"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_stale_delta_line_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("delta_cases", "plain-version-bump-no-confirmation", changed)
+        case["expected"]["lines"] = []
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_env_names_reorder_silenced_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("delta_cases", "mcp-env-names-reorder-triggers", changed)
+        case["expected"]["trigger"] = []
+        case["expected"]["revision_a"]["diagnostic"] = None
+        case["expected"]["revision_a"]["hint"] = None
+        case["expected"]["revision_b"]["diagnostic"] = None
+        case["expected"]["revision_b"]["proceeds"] = True
+        case["expected"]["revision_b"]["lock_published"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_removal_treated_as_trigger_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("delta_cases", "removed-system-member-silent", changed)
+        case["expected"]["trigger"] = ["sysleaf"]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_snapshot_covering_no_pin_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("delta_cases", "plain-version-bump-no-confirmation", changed)
+        case["snapshots"]["0000000000000000000000000000000000000000"] = {"system_modules": [], "mcp": None}
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_repaired_preconfirm_negative_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("delta_cases", "config-preconfirm-claim", changed)
+        case["claimed"]["diagnostic"] = "profile_update_confirmation_required"
+        case["claimed"]["proceeds"] = False
+        case["claimed"]["lock_published"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_repaired_silence_negative_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("delta_cases", "silent-system-introduction", changed)
+        case["claimed"]["diagnostic"] = "profile_update_system_delta"
+        case["claimed"]["hint"] = validate.E1_HINT_DELTA
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_all_continuing_past_refusal_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("all_cases", "all-without-flag-stops-at-first-refusal", changed)
+        third = next(item for item in case["expected"]["profiles"] if item["profile"] == "third")
+        third["revision_b"] = {"diagnostic": None, "proceeds": True, "lock_published": True}
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_all_wrong_stop_profile_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("all_cases", "all-without-flag-stops-at-first-refusal", changed)
+        case["expected"]["stopped"]["revision_b"] = "third"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_dropped_case_fails_closed(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["delta_cases"] = [item for item in changed["delta_cases"] if item["name"] != "changed-mcp-args"]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_wrong_capability_identity_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["protocol_version"] = "1.0.0-rc.8"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_wrong_revision_pin_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["revision_b"] = "flip release: warn and proceed"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_mcp_url_only_change_silenced_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("delta_cases", "changed-mcp-url", changed)
+        case["expected"]["trigger"] = []
+        case["expected"]["revision_a"]["diagnostic"] = None
+        case["expected"]["revision_a"]["hint"] = None
+        case["expected"]["revision_b"]["diagnostic"] = None
+        case["expected"]["revision_b"]["proceeds"] = True
+        case["expected"]["revision_b"]["lock_published"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_mcp_selector_only_change_silenced_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("delta_cases", "changed-mcp-selector", changed)
+        case["expected"]["trigger"] = []
+        case["expected"]["revision_a"]["diagnostic"] = None
+        case["expected"]["revision_a"]["hint"] = None
+        case["expected"]["revision_b"]["diagnostic"] = None
+        case["expected"]["revision_b"]["proceeds"] = True
+        case["expected"]["revision_b"]["lock_published"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_mcp_declaration_field_narrowed_out_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("delta_cases", "changed-mcp-url", changed)
+        snapshots = case["snapshots"]
+        pins = sorted(snapshots)
+        snapshots[pins[1]]["mcp"]["url"] = snapshots[pins[0]]["mcp"]["url"]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_revision_a_hint_dropped_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("delta_cases", "new-mcp-member", changed)
+        case["expected"]["revision_a"]["hint"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_revision_a_hint_without_trigger_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("delta_cases", "plain-version-bump-no-confirmation", changed)
+        case["expected"]["revision_a"]["hint"] = validate.E1_HINT_DELTA
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_reinstall_refusal_flipped_to_proceed_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("reinstall_cases", "reinstall-without-flag-refuses-under-b", changed)
+        case["expected"]["revision_b"]["diagnostic"] = None
+        case["expected"]["revision_b"]["proceeds"] = True
+        case["expected"]["revision_b"]["lock_published"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_reinstall_claiming_update_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("reinstall_cases", "reinstall-with-flag-proceeds", changed)
+        case["operation"] = "profile update"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_revision_selection_tag_only_evidence_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("verification_cases", "revision-selection-verifies-commit", changed)
+        candidate = case["candidates"][0]
+        candidate["tag_signature"] = candidate["commit_signature"]
+        candidate["commit_signature"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_different_ssh_material_accepted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("verification_cases", "ssh-different-material-rejected", changed)
+        case["expected"]["verdict"] = "accepted"
+        case["expected"]["diagnostic"] = None
+        case["expected"]["selected"] = "1.2.0"
+        case["expected"]["lock_written"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_same_key_different_comment_refused_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("verification_cases", "ssh-same-key-different-comment-accepted", changed)
+        case["expected"]["verdict"] = "refused"
+        case["expected"]["diagnostic"] = "context_source_signer_rejected"
+        case["expected"]["selected"] = None
+        case["expected"]["lock_written"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_commented_signers_seen_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("verification_cases", "ssh-tag-signature-accepted", changed)
+        case["expected"]["signers_seen"] = [
+            {"type": "ssh", "key": case["allowlist"][0]["key"]}
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_confirmation_posture_wrong_behavior_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("confirmation_posture_cases", "update-confirmation-revision-b-flip", changed)
+        case["expected"]["row"]["behavior"] = "a triggered update delta warns and proceeds"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_confirmation_posture_unknown_revision_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("confirmation_posture_cases", "update-confirmation-revision-a-warning", changed)
+        case["update_confirmation_revision"] = "C-enforcing"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_absent_optional_padding_narrowing_fails_on_new_cases(self) -> None:
+        """A comparator that pads absent optional arrays with [] MUST miss the
+        new absent/present vectors while the section 9.2 CCJ-1 rule triggers
+        on all of them; padding the fixtures the same way MUST fail the gate
+        on the pinned trigger, proving the suite occupies the former
+        presence blind spot."""
+        presence = (
+            "absent-selector-to-present",
+            "present-selector-to-absent",
+            "absent-env-names-to-empty",
+            "empty-env-names-to-absent",
+        )
+        for name in presence:
+            case = self.case("delta_cases", name)
+            snapshots = case["snapshots"]
+            pins = sorted(snapshots)
+            old = snapshots[pins[0]]["mcp"]
+            new = snapshots[pins[1]]["mcp"]
+            self.assertTrue(validate.e1_mcp_changed(old, new), name)
+            self.assertEqual(case["expected"]["trigger"], ["figma-devmode"], name)
+            self.assertEqual(case["expected"]["revision_a"]["hint"], validate.E1_HINT_DELTA, name)
+            self.assertEqual(
+                case["expected"]["revision_b"]["diagnostic"],
+                "profile_update_confirmation_required",
+                name,
+            )
+        for name in ("absent-env-names-to-empty", "empty-env-names-to-absent"):
+            case = self.case("delta_cases", name)
+            snapshots = case["snapshots"]
+            pins = sorted(snapshots)
+            old = dict(snapshots[pins[0]]["mcp"])
+            new = dict(snapshots[pins[1]]["mcp"])
+            old.setdefault("env_names", [])
+            old.setdefault("environments", [])
+            new.setdefault("env_names", [])
+            new.setdefault("environments", [])
+            self.assertFalse(validate.e1_mcp_changed(old, new), name)
+        padded = copy.deepcopy(self.vector)
+        for name in ("absent-env-names-to-empty", "empty-env-names-to-absent"):
+            case = self.case("delta_cases", name, padded)
+            for snapshot in case["snapshots"].values():
+                snapshot["mcp"].setdefault("env_names", [])
+        with self.assertRaises(validate.ValidationFailure) as raised:
+            self.run_gate(vector=padded)
+        self.assertIn("section 9.2 delta rule", str(raised.exception))
+
+
 class ContextVersionVectorTests(unittest.TestCase):
     """The environments.md section 1.3/1.4 gate must fail closed.
 
@@ -2744,6 +3196,16 @@ class ManagerConfigVectorTests(unittest.TestCase):
         with self.assertRaisesRegex(validate.ValidationFailure, "default for transitive_system_modules is 'error'"):
             self.run_gate()
 
+    def test_source_signers_default_drifting_from_the_table_fails(self) -> None:
+        self.schema["$defs"]["environments"]["properties"]["source_signers"]["default"] = {"a": []}
+        with self.assertRaisesRegex(validate.ValidationFailure, "default for source_signers"):
+            self.run_gate()
+
+    def test_require_source_signers_default_drifting_from_the_table_fails(self) -> None:
+        self.schema["$defs"]["environments"]["properties"]["require_source_signers"]["default"] = True
+        with self.assertRaisesRegex(validate.ValidationFailure, "default for require_source_signers is True"):
+            self.run_gate()
+
     def test_table_value_drifting_from_the_enum_fails(self) -> None:
         text = self.text.replace("| `precedence.winner` | `higher-weight`, `lower-weight` |", "| `precedence.winner` | `higher-weight`, `lower-weight`, `heavier` |")
         self.assertNotEqual(text, self.text)
@@ -2799,6 +3261,7 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
 
     ISOLATION_ENUM = validate.SYSTEM_CONFIG_ISOLATION_ENUM_PATH
     TRANSITIVE_ENUM = validate.SYSTEM_CONFIG_TRANSITIVE_ENUM_PATH
+    REQUIRE_SIGNERS_ENUM = validate.SYSTEM_CONFIG_REQUIRE_SIGNERS_ENUM_PATH
 
     def setUp(self) -> None:
         _, paths = validate.schema_registry()
@@ -2823,11 +3286,12 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
     def test_published_inputs_pass(self) -> None:
         self.run_gate()
 
-    def test_section_12_2_lists_the_seven_keys_in_order(self) -> None:
+    def test_section_12_2_lists_the_ten_keys_in_order(self) -> None:
         self.assertEqual(
             validate.environments_lockable_keys(self.text),
             ["overlays_allowed", "precedence", "mcp_package_allowlist", "passable_env_names",
-             "require_current_profile", "transitive_system_modules", "isolation", "provider_directories"],
+             "require_current_profile", "transitive_system_modules", "isolation", "provider_directories",
+             "source_signers", "require_source_signers"],
         )
 
     def test_open_environments_object_fails(self) -> None:
@@ -2881,6 +3345,46 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
         with self.assertRaisesRegex(validate.ValidationFailure, "no closed transitive_system_modules value set"):
             self.run_gate(schema=self.mutated(open_values))
 
+    def test_require_source_signers_admitting_false_fails(self) -> None:
+        def widen(s):
+            node = s
+            for segment in self.REQUIRE_SIGNERS_ENUM[:-1]:
+                node = node[segment]
+            node["enum"] = [True, False]
+        with self.assertRaisesRegex(validate.ValidationFailure, "permits true alone"):
+            self.run_gate(schema=self.mutated(widen))
+
+    def test_fingerprint_with_trailing_newline_rejected_by_both_configs(self) -> None:
+        registry, _ = validate.schema_registry()
+        forty = "A" * 40
+        cases = [
+            (self.manager, {
+                "schema_version": 2, "skills_root": "./skills", "projects": {},
+                "environments": {"source_signers": {"github.com/example/context": [
+                    {"type": "gpg", "fingerprint": forty},
+                ]}},
+            }),
+            (self.schema, {
+                "schema_version": 2,
+                "locked": ["environments.source_signers"],
+                "environments": {"source_signers": {"github.com/example/context": [
+                    {"type": "gpg", "fingerprint": forty},
+                ]}},
+            }),
+        ]
+        for schema, instance in cases:
+            validator = validate.Draft202012Validator(schema, registry=registry)
+            self.assertEqual(list(validator.iter_errors(instance)), [])
+            instance["environments"]["source_signers"]["github.com/example/context"][0]["fingerprint"] = forty + "\n"
+            errors = list(validator.iter_errors(instance))
+            self.assertTrue(errors, "a 41-character fingerprint with a trailing newline must fail")
+
+    def test_require_source_signers_without_a_closed_value_set_fails(self) -> None:
+        def open_values(s):
+            s["$defs"]["environments"]["properties"]["require_source_signers"] = {"type": "boolean"}
+        with self.assertRaisesRegex(validate.ValidationFailure, "no closed require_source_signers value set"):
+            self.run_gate(schema=self.mutated(open_values))
+
     def test_isolation_without_a_closed_value_set_fails(self) -> None:
         def open_values(s):
             s["$defs"]["environments"]["properties"]["isolation"] = {"type": "object"}
@@ -2925,9 +3429,9 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
             self.run_gate(text=text)
 
     def test_section_12_2_drift_against_schema_fails(self) -> None:
-        text = self.text.replace("`isolation`, and `provider_directories`", "and `isolation`", 1)
+        text = self.text.replace("`provider_directories`, `source_signers`, and\n`require_source_signers`", "`provider_directories`", 1)
         self.assertNotEqual(text, self.text)
-        with self.assertRaisesRegex(validate.ValidationFailure, "schema-only \\['provider_directories'\\]"):
+        with self.assertRaisesRegex(validate.ValidationFailure, "schema-only \\['require_source_signers', 'source_signers'\\]"):
             self.run_gate(text=text)
 
     def test_missing_section_12_2_fails_rather_than_passing_vacuously(self) -> None:

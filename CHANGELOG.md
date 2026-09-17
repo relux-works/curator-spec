@@ -7,6 +7,48 @@ Versioning for the complete specification set.
 
 ### Added
 
+- E1: per-source signer allowlist and `profile update` delta confirmation
+  (Decision 0012 amendment 2026-09-17; environments
+  §1.1/§1.3/§1.4/§9.2/§9.7/§12/§12.1/§12.2/§13): the new closed machine knob
+  `source_signers.<source>` maps a canonical source identity to its signer
+  allowlist — entries `{ type: "ssh", key }` (OpenSSH public key line) or
+  `{ type: "gpg", fingerprint }` (exactly 40 uppercase hex characters),
+  default empty — and
+  `require_source_signers` (boolean, default `false`) requires every `git`
+  source to carry one. Both are lockable; a locked `source_signers` map is
+  fleet policy per source (the machine file adds signers only for sources
+  the lock does not name), and `require_source_signers` locks only to
+  `true`. Resolution verifies the selected candidate's annotated tag
+  signature OR the commit signature against an allowed signer before the
+  candidate enters the lock — either suffices, exact `tag`/`revision`
+  selections included — and fails closed with `context_source_unsigned`,
+  `context_source_signer_rejected`, or `context_source_signers_missing`,
+  never falling through to a lower candidate; `path` sources are never
+  verified. `env status` reports the per-source posture (`enforced` with
+  the verified signer, `unconfigured`, or `required-missing`) with the
+  machine-level `require_source_signers` value, and the active
+  update-confirmation revision (`A-warning` or `B-flip`) with its
+  behaviour. `profile update` prints the resolved-version delta
+  (`lock-delta` added/removed/moved lines with pins) before the lock is
+  published; when the delta introduces or changes a `class: system` module
+  or an MCP declaration — a moved `mcp` member triggers on any byte
+  difference of its declaration's CCJ-1 form, `url` and `environments`
+  selector included — revision A warns with
+  `profile_update_system_delta` (carrying the migration hint) and
+  proceeds, while revision B refuses with
+  `profile_update_confirmation_required` unless the per-run flag
+  `--confirm-system-delta` is given — no configuration knob may
+  pre-confirm, `profile install` takes the same flag on its reinstall
+  path, and `--all` confirms every profile of the run with one flag.
+  An `ssh` allowlist entry matches by key type plus key material; the
+  trailing comment is not part of the identity. Warn-first rollout in two
+  labelled revisions: revision A ships first, revision B flips to refusal.
+  `latest` stays `*`: with an allowlist it follows every signed in-range
+  tag of that source, without one it follows any tag. Conformance vectors
+  in `vectors/environments-source-signers.json` (verification, merge,
+  posture, delta, reinstall, update-confirmation-posture, and `--all`
+  cases) with schema cases for both knobs; the lock schema is unchanged —
+  verification results are posture, not lock content.
 - S6: shell-hook project env trust gate (manager profile section 8):
   the cached hook sources only `.agents/env.sh` / `.agents/env.ps1`
   bytes whose digest the manager recorded (`manager`) or the operator

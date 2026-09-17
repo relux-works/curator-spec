@@ -54,8 +54,9 @@ user configuration:
    as `environments.overlays_allowed`, `environments.precedence`,
    `environments.mcp_package_allowlist`, `environments.passable_env_names`,
    `environments.require_current_profile`, `environments.isolation`,
-   `environments.transitive_system_modules`, and
-   `environments.provider_directories`.
+   `environments.transitive_system_modules`,
+   `environments.provider_directories`, `environments.source_signers`, and
+   `environments.require_source_signers`.
    No other `environments` knob is lockable or carried by the system file.
    Operator credential selections — the `build_ssh` scopes among them — are
    never lockable: section 12.2 makes credential material operator-owned, and
@@ -63,14 +64,17 @@ user configuration:
    is lockable only in the direction of `shared`, and schema 2 admits no
    other value there; `environments.transitive_system_modules` is lockable
    only in the direction of `error`, and schema 2 admits no other value
-   there;
+   there; `environments.require_source_signers` is lockable only in the
+   direction of `true`, and schema 2 admits no other value there;
 2. a locked key MUST be set by the system file and overrides a user value with
    a warning naming the system file. For an `environments.<key>` lock the
    user value is the machine file's `manager-config` schema-2
    `environments.<key>` knob: the system value replaces it whole — a locked
    `precedence` replaces both primitives, a locked `isolation` replaces the
-   full profile-by-environment map — and a knob the machine file leaves
-   absent is overridden without a warning;
+   full profile-by-environment map — except `environments.source_signers`,
+   which the system and machine files merge per source under environments
+   section 12.2, and a knob the machine file leaves absent is overridden
+   without a warning;
 3. an unlocked system key is a default and a user value wins; an unlocked
    `environments.<key>` in the system file is the default the machine file's
    knob replaces whole, ahead of the section 12.1 default;

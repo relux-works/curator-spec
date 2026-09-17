@@ -60,6 +60,7 @@
       "/opt/curator/bin"
     ],
     "require_current_profile": "companyA",
+    "require_source_signers": true,
     "scoped_current": {
       "pi": "personal",
       "xcode-coding-assistant": "companyA"
@@ -82,6 +83,18 @@
         "path": "AGENTS.override.md"
       }
     ],
+    "source_signers": {
+      "github.com/example/context": [
+        {
+          "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example",
+          "type": "ssh"
+        },
+        {
+          "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567",
+          "type": "gpg"
+        }
+      ]
+    },
     "system_module_waivers": [
       {
         "package": "sysleaf",

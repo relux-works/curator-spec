@@ -22,9 +22,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -63,9 +65,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -107,9 +111,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -192,6 +198,7 @@
           "/opt/curator/bin"
         ],
         "require_current_profile": "companyA",
+        "require_source_signers": true,
         "scoped_current": {
           "pi": "personal",
           "xcode-coding-assistant": "companyA"
@@ -213,6 +220,18 @@
             "path": "AGENTS.override.md"
           }
         ],
+        "source_signers": {
+          "github.com/example/context": [
+            {
+              "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example",
+              "type": "ssh"
+            },
+            {
+              "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567",
+              "type": "gpg"
+            }
+          ]
+        },
         "system_module_waivers": [
           {
             "package": "sysleaf",
@@ -289,6 +308,7 @@
           "/opt/curator/bin"
         ],
         "require_current_profile": "companyA",
+        "require_source_signers": true,
         "scoped_current": {
           "pi": "personal",
           "xcode-coding-assistant": "companyA"
@@ -310,6 +330,18 @@
             "path": "AGENTS.override.md"
           }
         ],
+        "source_signers": {
+          "github.com/example/context": [
+            {
+              "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example",
+              "type": "ssh"
+            },
+            {
+              "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567",
+              "type": "gpg"
+            }
+          ]
+        },
         "system_module_waivers": [
           {
             "package": "sysleaf",
@@ -409,9 +441,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -484,9 +518,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -540,9 +576,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -596,9 +634,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -652,9 +692,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -708,9 +750,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -764,9 +808,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -821,9 +867,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -879,9 +927,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -937,9 +987,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -995,9 +1047,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -1053,9 +1107,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -1111,9 +1167,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -1169,9 +1227,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -1580,9 +1640,11 @@
           "/usr/local/lib/curator/providers"
         ],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -1640,9 +1702,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -1682,9 +1746,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -1726,9 +1792,11 @@
         },
         "provider_directories": [],
         "require_current_profile": null,
+        "require_source_signers": false,
         "scoped_current": {},
         "secret_material_waivers": [],
         "shadow_acknowledged": [],
+        "source_signers": {},
         "system_module_waivers": [],
         "system_prompt_files": {},
         "targets": {},
@@ -1763,6 +1831,124 @@
       "skills_root": "./skills"
     },
     "name": "schema2-passable-env-invalid-name",
+    "valid": false
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {},
+        "overlays_allowed": true,
+        "passable_env_names": [],
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "provider_directories": [],
+        "require_current_profile": null,
+        "require_source_signers": true,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "source_signers": {
+          "github.com/example/context": [
+            {
+              "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK",
+              "type": "ssh"
+            },
+            {
+              "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567",
+              "type": "gpg"
+            }
+          ]
+        },
+        "system_module_waivers": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "transitive_system_modules": "drop",
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "require_source_signers": true,
+        "source_signers": {
+          "github.com/example/context": [
+            {
+              "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK",
+              "type": "ssh"
+            },
+            {
+              "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567",
+              "type": "gpg"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-source-signers",
+    "valid": true
+  },
+  {
+    "input": {
+      "environments": {
+        "source_signers": {
+          "github.com/example/context": [
+            {
+              "type": "ssh"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-source-signers-ssh-missing-key",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "source_signers": {
+          "github.com/example/context": [
+            {
+              "fingerprint": "0123456789abcdef0123456789abcdef01234567",
+              "type": "gpg"
+            }
+          ]
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-source-signers-fingerprint-grammar",
+    "valid": false
+  },
+  {
+    "input": {
+      "environments": {
+        "require_source_signers": "yes"
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-require-source-signers-type",
     "valid": false
   }
 ]

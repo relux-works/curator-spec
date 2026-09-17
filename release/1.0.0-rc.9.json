@@ -12,7 +12,7 @@
     "verified_provider_contract": "host-execution-provider-v1"
   },
   "candidate_protocol_pin": {
-    "manifest_sha256": "sha256:ea9dd5a0030b889079cf5655517056e66a0f1d61812f8c2920b4beddc1fd24ed",
+    "manifest_sha256": "sha256:dede0c16008150e4536fa463a3fef04a5ee0615227b852907cf2d460f34d5f59",
     "suite_root": "conformance/v1"
   },
   "claim_v5": {
@@ -24,7 +24,7 @@
   "downstream_consumption": {
     "committed_release_pin_advanced": false,
     "environment": "CURATOR_CONFORMANCE_ROOT",
-    "required_manifest_sha256": "sha256:ea9dd5a0030b889079cf5655517056e66a0f1d61812f8c2920b4beddc1fd24ed"
+    "required_manifest_sha256": "sha256:dede0c16008150e4536fa463a3fef04a5ee0615227b852907cf2d460f34d5f59"
   },
   "historical_release": {
     "immutable": true,
