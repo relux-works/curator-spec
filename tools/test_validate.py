@@ -2939,5 +2939,131 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
             self.run_gate(text="### 12.2 Lockable knobs\n\nNothing is lockable.\n\n## 13\n")
 
 
+class RegistryPageBoundaryVectorTests(unittest.TestCase):
+    """The R1/P1 page-boundary gate must fail closed.
+
+    validate_registry_page_boundary_vectors is the production gate:
+    tools/validate.py main() runs it on every `make validate`,
+    recomputing each client case's accepted, diagnostic, high-water, and
+    exclusion values from its inputs. Each test narrows one rule and proves
+    the gate rejects what the rule must reject.
+    """
+
+    def setUp(self) -> None:
+        self.client = validate.load_json(
+            validate.SUITE / "vectors" / "registry-client.json"
+        )
+        self.service = validate.load_json(
+            validate.SUITE / "vectors" / "registry-service.json"
+        )
+
+    def case(self, name: str, vector: dict | None = None) -> dict:
+        source = self.client if vector is None else vector
+        return next(item for item in source["page_boundary_cases"] if item["name"] == name)
+
+    def run_gate(self, client=None, service=None) -> None:
+        validate.validate_registry_page_boundary_vectors(
+            client=self.client if client is None else client,
+            service=self.service if service is None else service,
+        )
+
+    def test_published_vectors_pass(self) -> None:
+        self.run_gate()
+
+    def test_stale_page_admitted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        case = self.case("below-high-water-rejected", changed)
+        case["accepted"] = True
+        case["diagnostic"] = None
+        case["registry_excluded"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_equivocated_equal_version_admitted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        case = self.case("equal-version-different-body-rejected", changed)
+        case["accepted"] = True
+        case["diagnostic"] = None
+        case["registry_excluded"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_chain_mismatch_admitted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        case = self.case("chain-boundary-mismatch-rejected", changed)
+        case["accepted"] = True
+        case["diagnostic"] = None
+        case["registry_excluded"] = False
+        case["high_water_advanced"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_missing_boundary_admitted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        case = self.case("missing-boundary-excluded", changed)
+        case["accepted"] = True
+        case["diagnostic"] = None
+        case["registry_excluded"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_bad_signature_accepted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        case = self.case("bad-signature-rejected", changed)
+        case["accepted"] = True
+        case["diagnostic"] = None
+        case["registry_excluded"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_wrong_diagnostic_spelling_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.case("below-high-water-rejected", changed)["diagnostic"] = "registry_page_stale"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_swapped_diagnostics_are_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.case("below-high-water-rejected", changed)["diagnostic"] = (
+            "registry_page_boundary_mismatch"
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_missing_exclusion_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.case("below-high-water-rejected", changed)["registry_excluded"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_missing_high_water_advance_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.case("fresh-boundary-advances-high-water", changed)["high_water_advanced"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_dropped_case_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        changed["page_boundary_cases"] = [
+            item
+            for item in changed["page_boundary_cases"]
+            if item["name"] != "missing-boundary-excluded"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_dropped_emission_pin_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        changed["pagination"]["boundary_emitted_on_every_page"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def test_reevaluating_cursor_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        changed["pagination"]["cursor_boundary_cases"][0]["reevaluate_at_newer_boundary"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+
 if __name__ == "__main__":
     unittest.main()

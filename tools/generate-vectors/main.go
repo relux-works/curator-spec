@@ -550,14 +550,19 @@ func writeRegistryServiceVectors(dir string) {
 			map[string]any{"name": "commit-without-source", "query": map[string]any{"commit": commitA}, "error": "invalid_query"},
 		},
 		"pagination": map[string]any{
-			"query":                        map[string]any{"content_sha256": hashA, "limit": 1},
-			"boundary_log_size":            4,
-			"expected_pages":               []any{[]any{"alpha-revoked"}, []any{"beta-mirror"}},
-			"append_after_first_page":      record("alpha-recovered", "alpha", sourceA, commitA, hashA, "audited"),
-			"expected_original_cursor_ids": []any{"beta-mirror"},
-			"expected_new_query_ids":       []any{"alpha-recovered", "beta-mirror"},
-			"cursor_rejections":            []any{"changed_query", "changed_limit", "wrong_endpoint", "expired", "unavailable_snapshot"},
-			"invalid_cursor_status":        404,
+			"query":                          map[string]any{"content_sha256": hashA, "limit": 1},
+			"boundary_log_size":              4,
+			"expected_pages":                 []any{[]any{"alpha-revoked"}, []any{"beta-mirror"}},
+			"append_after_first_page":        record("alpha-recovered", "alpha", sourceA, commitA, hashA, "audited"),
+			"expected_original_cursor_ids":   []any{"beta-mirror"},
+			"expected_new_query_ids":         []any{"alpha-recovered", "beta-mirror"},
+			"cursor_rejections":              []any{"changed_query", "changed_limit", "wrong_endpoint", "expired", "unavailable_snapshot"},
+			"invalid_cursor_status":          404,
+			"boundary_emitted_on_every_page": true,
+			"chain_boundary_byte_identical":  true,
+			"cursor_boundary_cases": []any{
+				map[string]any{"name": "cursor-boundary-disagreement", "status": 404, "error": "invalid_cursor", "reevaluate_at_newer_boundary": false},
+			},
 		},
 		"idempotency_cases": []any{
 			map[string]any{
@@ -658,6 +663,24 @@ func writeRegistryClientVectors(dir string) {
 			map[string]any{"name": "deleted-after-prior-use", "state": "deleted", "accepted": false},
 			map[string]any{"name": "corrupted-existing-state", "state": "malformed", "accepted": false},
 			map[string]any{"name": "unavailable-state-directory", "state": "unavailable", "accepted": false},
+		},
+		// page_boundary_cases follows registry protocol section 9.3. On a
+		// present, signature-valid boundary, chain_boundary_equal false only
+		// arises on a later page differing from the chain boundary (the first
+		// page's boundary); such a page reports mismatch with no high-water
+		// change even when its versions would otherwise be stale or higher.
+		// The missing-boundary case carries chain_boundary_equal false only
+		// as a placeholder because the missing check precedes the chain check.
+		"page_boundary_cases": []any{
+			map[string]any{"name": "fresh-boundary-advances-high-water", "stored_version": 7, "boundary_version": 8, "same_body": false, "signature_valid": true, "boundary_present": true, "chain_boundary_equal": true, "accepted": true, "diagnostic": nil, "high_water_advanced": true, "registry_excluded": false},
+			map[string]any{"name": "equal-version-same-body-accepted", "stored_version": 8, "boundary_version": 8, "same_body": true, "signature_valid": true, "boundary_present": true, "chain_boundary_equal": true, "accepted": true, "diagnostic": nil, "high_water_advanced": false, "registry_excluded": false},
+			map[string]any{"name": "equal-version-different-body-rejected", "stored_version": 8, "boundary_version": 8, "same_body": false, "signature_valid": true, "boundary_present": true, "chain_boundary_equal": true, "accepted": false, "diagnostic": "registry_page_boundary_stale", "high_water_advanced": false, "registry_excluded": true},
+			map[string]any{"name": "below-high-water-rejected", "stored_version": 8, "boundary_version": 7, "same_body": false, "signature_valid": true, "boundary_present": true, "chain_boundary_equal": true, "accepted": false, "diagnostic": "registry_page_boundary_stale", "high_water_advanced": false, "registry_excluded": true},
+			map[string]any{"name": "chain-boundary-mismatch-rejected", "stored_version": 7, "boundary_version": 8, "same_body": false, "signature_valid": true, "boundary_present": true, "chain_boundary_equal": false, "accepted": false, "diagnostic": "registry_page_boundary_mismatch", "high_water_advanced": false, "registry_excluded": true},
+			map[string]any{"name": "missing-boundary-excluded", "stored_version": 7, "boundary_version": 0, "same_body": false, "signature_valid": false, "boundary_present": false, "chain_boundary_equal": false, "accepted": false, "diagnostic": "registry_page_boundary_missing", "high_water_advanced": false, "registry_excluded": true},
+			map[string]any{"name": "bad-signature-rejected", "stored_version": 7, "boundary_version": 8, "same_body": false, "signature_valid": false, "boundary_present": true, "chain_boundary_equal": true, "accepted": false, "diagnostic": "registry_page_boundary_missing", "high_water_advanced": false, "registry_excluded": true},
+			map[string]any{"name": "stale-and-mismatch-reports-mismatch", "stored_version": 8, "boundary_version": 7, "same_body": false, "signature_valid": true, "boundary_present": true, "chain_boundary_equal": false, "accepted": false, "diagnostic": "registry_page_boundary_mismatch", "high_water_advanced": false, "registry_excluded": true},
+			map[string]any{"name": "higher-and-mismatch-never-advances", "stored_version": 7, "boundary_version": 9, "same_body": false, "signature_valid": true, "boundary_present": true, "chain_boundary_equal": false, "accepted": false, "diagnostic": "registry_page_boundary_mismatch", "high_water_advanced": false, "registry_excluded": true},
 		},
 	})
 }
@@ -2424,8 +2447,12 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 		map[string]any{"name": "golden", "version": "1.0.0", "public_keys": []any{pinned}, "record_schema_versions": []any{1}, "policy": "test"},
 		map[string]any{"name": "golden"},
 	}
-	cases["records-response-v1.schema.json"] = schemaCase{map[string]any{"records": []any{audited}, "next_cursor": nil}, map[string]any{"records": []any{}}}
-	cases["log-response-v1.schema.json"] = schemaCase{map[string]any{"entries": []any{logEntry}, "next_cursor": nil}, map[string]any{"entries": []any{map[string]any{"seq": 0}}, "next_cursor": nil}}
+	recordsV1 := map[string]any{"records": []any{audited}, "next_cursor": nil}
+	cases["records-response-v1.schema.json"] = schemaCase{recordsV1, map[string]any{"records": []any{}}}
+	cases["records-response-v2.schema.json"] = schemaCase{map[string]any{"records": []any{audited}, "next_cursor": nil, "boundary": snapshot}, recordsV1}
+	logV1 := map[string]any{"entries": []any{logEntry}, "next_cursor": nil}
+	cases["log-response-v1.schema.json"] = schemaCase{logV1, map[string]any{"entries": []any{map[string]any{"seq": 0}}, "next_cursor": nil}}
+	cases["log-response-v2.schema.json"] = schemaCase{map[string]any{"entries": []any{logEntry}, "next_cursor": nil, "boundary": snapshot}, logV1}
 	cases["submission-response-v1.schema.json"] = schemaCase{map[string]any{"seq": 1, "entry_hash": logEntry["entry_hash"]}, map[string]any{"seq": 0, "entry_hash": "bad"}}
 	cases["error-response-v1.schema.json"] = schemaCase{map[string]any{"error": map[string]any{"code": "invalid_record", "message": "invalid record", "details": map[string]any{}}}, map[string]any{"detail": "invalid"}}
 	cases["conformance-claim-v1.schema.json"] = schemaCase{

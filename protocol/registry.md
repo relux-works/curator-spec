@@ -161,6 +161,18 @@ the client MUST NOT treat either condition as first use. Equal versions are
 accepted only when `head`, `merkle_root`, and `log_size` equal the previously
 accepted state.
 
+Page boundaries advance and check the same rollback state. The `boundary`
+carried by every records and log page (section 9.3) is a signed snapshot, and
+a conforming client applies this section's rules to the chain boundary — the
+first page's boundary — exactly as to a snapshot fetched from `/v1/snapshot`:
+a chain boundary below the persisted high-water, or equal to it with a
+different `head`, `merkle_root`, or `log_size`, is rejected, and a higher
+chain boundary advances the high-water with the same atomic persistence.
+Later pages are compared to the chain boundary before anything else and never
+advance or re-check the high-water on their own (section 9.3). A page MUST NOT
+contribute records or entries before its boundary is accepted under these
+rules.
+
 Operators include rollback state in protected machine backup and restore it
 without lowering a recorded version. When an operator knows established state
 was lost and it cannot be recovered, trust in that registry remains disabled
@@ -237,15 +249,16 @@ Production registries MUST use HTTPS. Plain HTTP is permitted only for an
 explicitly configured loopback address. Requests use `Accept:
 application/json`; JSON responses use `Content-Type: application/json` and
 UTF-8. Unknown fields in response envelopes are ignored unless their schema
-says otherwise.
+says otherwise. In particular, a client validating the frozen v1 records or
+log envelope treats the v2 `boundary` member as ignorable under this rule.
 
 | Endpoint | Method | Success response |
 |---|---|---|
 | `/health` | GET | `health-response-v1.schema.json` |
 | `/v1/meta` | GET | `registry-meta-response-v1.schema.json` |
-| `/v1/records` | GET | `records-response-v1.schema.json` |
+| `/v1/records` | GET | `records-response-v2.schema.json` |
 | `/v1/snapshot` | GET | registry snapshot schema |
-| `/v1/log` | GET | `log-response-v1.schema.json` |
+| `/v1/log` | GET | `log-response-v2.schema.json` |
 | `/v1/records` | POST | `submission-response-v1.schema.json` |
 
 `/v1/records` GET accepts URL-encoded `source_identity`, `commit`, and
@@ -264,9 +277,11 @@ federation, without discarding other records from the page.
 `/v1/log` accepts non-negative `since`, the same `limit`, and cursor. Entries
 are ascending by sequence. A cursor is bound to its original query and expires
 no sooner than the advertised cache TTL. The first page of either endpoint
-captures one signed snapshot boundary; all cursor pages are evaluated at that
-same boundary according to the registry-service profile. Unknown, repeated,
-unpaired, or present-but-empty query parameters return `400 invalid_query`.
+captures one committed signed snapshot boundary; all cursor pages are evaluated
+at that same boundary according to the registry-service profile, and every
+page carries that boundary on the wire as section 9.3 requires. Unknown,
+repeated, unpaired, or present-but-empty query parameters return
+`400 invalid_query`.
 
 POST requires `Authorization: Bearer <token>`. Tokens carry at least 128 bits
 of entropy; services store only SHA-256 digests and compare in constant time.
@@ -330,6 +345,70 @@ pagination cursor with a new first-page request. `Retry-After` is honored when
 valid and within the remaining deadline. Other 4xx responses are not retried.
 All retry loops have a documented finite attempt bound and use backoff; they
 MUST NOT retry indefinitely.
+
+### 9.3 Page boundary
+
+Every successful `/v1/records` GET and `/v1/log` response carries a REQUIRED
+`boundary` member whose value is the registry snapshot
+(`registry-snapshot-v1.schema.json`, all fields including `sig`) at which the
+page was evaluated. All pages of one cursor chain carry a byte-identical
+`boundary`: the service evaluates every cursor page at the captured boundary
+and never re-evaluates a cursor at a newer one (registry-service profile
+section 2).
+
+Before a page contributes records or entries, a conforming client processes
+its boundary in this order. The first page's boundary is the chain boundary;
+later pages carry no new information and are compared to it before anything
+else:
+
+1. presence and section 2 signature verification: a page carrying no
+   `boundary`, or whose boundary fails section 2 verification, is rejected
+   with `registry_page_boundary_missing` with no state change;
+2. for every page after the first: the boundary MUST be byte-identical to the
+   chain boundary, else the page is rejected with
+   `registry_page_boundary_mismatch` with no state change. A later page never
+   advances or re-checks the high-water on its own: equality with the chain
+   boundary already implies the section 5 check below;
+3. for the first page: the section 5 rollback rules against the persisted
+   high-water for that registry URL. A boundary whose `version` is below the
+   persisted high-water, or equal to it with a different `head`,
+   `merkle_root`, or `log_size`, is rejected with
+   `registry_page_boundary_stale` with no state change; an equal version with
+   the same body is accepted with nothing persisted; a higher version is
+   persisted atomically as the new high-water (section 5 discipline) BEFORE
+   the page contributes anything, then accepted.
+
+Only a first page that passes steps 1 and 3 changes rollback state; a page
+rejected at any step leaves it untouched. Diagnostic precedence for a later
+page is therefore `registry_page_boundary_missing` over
+`registry_page_boundary_mismatch`, and `registry_page_boundary_stale` is
+reported only for a first page.
+
+A rejected page contributes nothing: the registry is excluded from the
+resolution for that operation exactly like a reachable registry with an
+invalid snapshot (section 5), and the registry contributes no record for that
+operation under the section 4 wording. The client reports one of exactly
+these diagnostics, naming the registry URL:
+
+| Condition | Diagnostic |
+|---|---|
+| boundary `version` below the persisted high-water, or equal with different `head`, `merkle_root`, or `log_size` | `registry_page_boundary_stale` |
+| page boundary differs from the first page's boundary | `registry_page_boundary_mismatch` |
+| page carries no valid `boundary` (absent, or failing section 2 verification) | `registry_page_boundary_missing` |
+
+No other page-boundary diagnostic exists. There is no legacy-accept mode and
+no configuration knob: a missing boundary is reported, never silently
+accepted.
+
+The `boundary` is the stated inclusion evidence for the page: the items on
+the page were evaluated at the committed snapshot it carries. Replaying the
+append-only log stays optional, and now has a stated purpose: it is how a
+client independently re-derives the `head`, `log_size`, and `merkle_root` a
+boundary claims before trusting them (registry-service profile section 10).
+
+A conforming manager's read-only status reports, per trusted registry URL,
+the persisted high-water (`version`, `log_size`) and whether the last page
+boundary received from that registry was verified.
 
 ## 10. Publication
 

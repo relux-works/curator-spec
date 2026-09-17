@@ -17,6 +17,14 @@ conformance claim v5. Rc.8 carries `assurance-policy-v1`,
 conformance claim v4. These are new closed objects; no prior schema is widened
 or reinterpreted.
 
+The R1/P1 page-boundary revision carries `records-response-v2` and
+`log-response-v2`: each v1 envelope plus one REQUIRED `boundary` member whose
+value is a `registry-snapshot-v1` object, `additionalProperties: false`
+unchanged. The v1 envelope schemas are byte-frozen and stay valid; a client
+validating the v1 envelope treats the added `boundary` as ignorable under the
+registry protocol section 9 unknown-fields rule. No other member is added,
+widened, or reinterpreted.
+
 The agent-environments capability of `protocol/environments.md` (revision 1,
 the Decision 0012 model) carries five closed objects: `agent-context-v1` for
 the package manifest `agent-context.json` (section 2, with the section 1.4

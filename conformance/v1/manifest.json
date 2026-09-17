@@ -2954,7 +2954,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:f724f40b2e159c93d7570d2fa11648c2cdfd54540e3e41f797e382582bd45200"
+      "sha256": "sha256:4bb75470ca071183aeb140f1ab3f4dc7e7432846edd08c4803389ac05b4ca053"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -3493,6 +3493,14 @@
       "sha256": "sha256:52b0224bfd696c95d62932517a1004f332bed7e9fec6b12917b44d5a23134494"
     },
     {
+      "path": "schema-cases/log-response-v2/invalid.json",
+      "sha256": "sha256:52b0224bfd696c95d62932517a1004f332bed7e9fec6b12917b44d5a23134494"
+    },
+    {
+      "path": "schema-cases/log-response-v2/valid.json",
+      "sha256": "sha256:0df6780dfc5c7d6c6c89af8d5711bd3c3577b31d278286a15326813665c9d495"
+    },
+    {
       "path": "schema-cases/manager-config-v1/invalid.json",
       "sha256": "sha256:a4490b4aeefe0600f599d34b64ec6ed5b6824d7847482a8cae2001a7633a0363"
     },
@@ -3839,6 +3847,14 @@
     {
       "path": "schema-cases/records-response-v1/valid.json",
       "sha256": "sha256:58787eeebe9b9381e220ab56bade8dfc6ef8d996c3edb79085dbe897b4385cb3"
+    },
+    {
+      "path": "schema-cases/records-response-v2/invalid.json",
+      "sha256": "sha256:58787eeebe9b9381e220ab56bade8dfc6ef8d996c3edb79085dbe897b4385cb3"
+    },
+    {
+      "path": "schema-cases/records-response-v2/valid.json",
+      "sha256": "sha256:e1b86a37ab960b8cf5a3d64d5fe3f4db48cc0b44c4727ad5c1db56a6bf7b1b43"
     },
     {
       "path": "schema-cases/registry-bundle-v1/invalid.json",
@@ -4234,7 +4250,7 @@
     },
     {
       "path": "vectors/registry-client.json",
-      "sha256": "sha256:2e5cdce709f9f5178cef9d734b672b68a758118cbd7f45b36e8db5569dae2117"
+      "sha256": "sha256:bdfe024fb86718d86b1ef966dc0d8c68560c8c25238de11dae6ded7a41347150"
     },
     {
       "path": "vectors/registry-resolution.json",
@@ -4242,7 +4258,7 @@
     },
     {
       "path": "vectors/registry-service.json",
-      "sha256": "sha256:7e8cb23ccb18e786ea06c20e617553d17d4e6b0a1001142fcc89360fb69ca2f5"
+      "sha256": "sha256:1173e63ca73513ba8303834c51483c4fd634f619b0a42aa47f500807f848f0aa"
     },
     {
       "path": "vectors/script-host-execution-policy.json",

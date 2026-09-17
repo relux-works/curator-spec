@@ -38,6 +38,12 @@ snapshot boundary. That boundary is the exact tuple `version`, `log_size`,
 `head`, `merkle_root`, and `created_at`. Every page reached from its cursor MUST
 be evaluated against that same boundary even when later appends commit.
 
+Every page of either endpoint carries that boundary on the wire in the
+REQUIRED `boundary` member of the v2 response envelope: the complete signed
+snapshot object (`registry-snapshot-v1.schema.json`, all fields including
+`sig`) for the captured boundary. All pages of one cursor chain carry a
+byte-identical `boundary`.
+
 For records, current-record selection ignores entries with `seq` greater than
 the boundary `log_size`. For the log, entries satisfy `since < seq <= log_size`
 and remain in ascending sequence order. An append after page one MUST NOT add,
@@ -54,7 +60,11 @@ A cursor is opaque to clients and MUST be integrity protected. It is bound to:
 
 Changing a filter, `since`, or `limit`; using a cursor on another endpoint;
 presenting a malformed or expired cursor; or presenting a cursor whose snapshot
-prefix is no longer available returns `404 invalid_cursor`. Cursor state MUST
+prefix is no longer available returns `404 invalid_cursor`. A cursor is bound
+to the boundary of its first page: presenting a cursor for a page that would
+be served at a boundary differing from the cursor's returns
+`404 invalid_cursor` (cursor-boundary disagreement), and the service MUST NOT
+re-evaluate a cursor at a newer boundary. Cursor state MUST
 be bounded and MUST NOT contain credentials or unsigned client-controlled SQL,
 paths, or object names. A cursor remains valid for at least the freshness
 lifetime advertised on the first page and never longer than the service's
@@ -115,7 +125,8 @@ A registry-service profile snapshot has `version == log_size`. The snapshot
 body for a committed boundary is immutable: repeated reads of that boundary
 retain its original `created_at`, head, size, and Merkle root. Key rotation MAY
 replace only the outer signature. A newly generated timestamp MUST NOT make an
-old boundary appear fresh.
+old boundary appear fresh. The `boundary` member emitted on records and log
+pages is the immutable snapshot body of the captured boundary.
 
 Before acknowledging a write, the service MUST use storage durability settings
 that survive the failure model documented by the operator. At minimum, process
@@ -213,16 +224,20 @@ rollback state in protected durable storage outside response caches. A
 registry signing key can authorize false records, and a
 registry can refuse service. The protocol detects rollback and inconsistent
 equal-version snapshots but does not create availability or consensus between
-registries. Protocol 1.0 verifies transparency by replaying the append-only log
-or an authenticated bundle; it does not define compact inclusion or consistency
-proofs. Deployments that require public gossip or multi-party consensus add
-those mechanisms without treating them as protocol 1.0 conformance evidence.
+registries. Protocol 1.0 states page inclusion evidence as the signed snapshot
+boundary carried on every records and log page; replaying the append-only log
+or an authenticated bundle stays optional and is how a client independently
+re-derives the head, size, and Merkle root a boundary claims. Protocol 1.0
+does not define compact inclusion or consistency proofs. Deployments that
+require public gossip or multi-party consensus add those mechanisms without
+treating them as protocol 1.0 conformance evidence.
 
 ## 11. Conformance
 
 A registry-service claim passes the shared schema and cryptographic vectors
 plus executable cases for conjunctive lookup, artifact identity, snapshot-bound
-pagination, scoped idempotency, concurrent append ordering, transaction
+pagination, page-boundary emission and cursor-boundary refusal, scoped
+idempotency, concurrent append ordering, transaction
 rollback, crash recovery, immutable snapshots, bundle atomicity, backup restore
 and rollback refusal, key rotation, and resource limits. Skipping a case is a
 failure. Implementation-owned tests may add coverage but cannot replace the

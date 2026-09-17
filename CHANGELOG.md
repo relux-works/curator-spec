@@ -88,6 +88,39 @@ Versioning for the complete specification set.
   run <env-id>` follows the same rule under the launcher SPEC
   (curator-agent-launcher README). No schema, vector, or wire change; frozen
   v1 bytes untouched.
+- R1/P1: records and log pages carry their committed snapshot boundary
+  (registry protocol §5/§9 with new §9.3, registry-service profile
+  §2/§5/§10/§11): every `/v1/records` GET and `/v1/log` success page
+  carries a REQUIRED `boundary` member holding the complete signed
+  snapshot (`registry-snapshot-v1`, all fields including `sig`) at which
+  the page was evaluated, and all pages of one cursor chain carry a
+  byte-identical boundary. The wire moves to the new
+  `records-response-v2` and `log-response-v2` envelopes (v1 fields plus
+  `boundary`, `additionalProperties: false`); the v1 schemas stay
+  byte-frozen and a client validating v1 treats `boundary` as ignorable.
+  Before a page contributes records, a conforming client verifies the
+  boundary signature (§2), applies the §5 rollback rules to it —
+  below-high-water and equal-version-different-body rejected as
+  `registry_page_boundary_stale`, a higher version advancing the
+  high-water exactly like an accepted snapshot — and requires every page
+  of the chain to carry the first page's boundary
+  (`registry_page_boundary_mismatch`). A page without a valid boundary
+  is reported as `registry_page_boundary_missing`, naming the registry
+  URL, and the registry contributes no record for that operation.
+  Rollout is direct, not warn-first (impact row "R1"): no
+  legacy-accept mode, no knob. Service side (P1): a cursor is bound to
+  its first page's boundary; serving it at a differing boundary refuses
+  `404 invalid_cursor`, and the service never re-evaluates a cursor at a
+  newer boundary. The boundary is the stated page inclusion evidence;
+  log replay stays optional as the independent re-derivation of a
+  boundary's claims. Read-only status reports, per trusted registry,
+  the persisted high-water (`version`, `log_size`) and whether the last
+  page boundary was verified. Conformance: `page_boundary_cases` in
+  `vectors/registry-client.json` (fresh advance, equal accept/reject,
+  stale, mismatch, missing, bad signature) and boundary emission plus
+  cursor-boundary-disagreement cases in
+  `vectors/registry-service.json`, with v2 schema cases. Specified for
+  `STORY-260910-25yc0h` with `STORY-260910-3rvvxh`.
 
 ### Changed
 

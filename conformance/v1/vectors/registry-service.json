@@ -97,7 +97,17 @@
         "status": "audited"
       }
     },
+    "boundary_emitted_on_every_page": true,
     "boundary_log_size": 4,
+    "chain_boundary_byte_identical": true,
+    "cursor_boundary_cases": [
+      {
+        "error": "invalid_cursor",
+        "name": "cursor-boundary-disagreement",
+        "reevaluate_at_newer_boundary": false,
+        "status": 404
+      }
+    ],
     "cursor_rejections": [
       "changed_query",
       "changed_limit",

@@ -3800,6 +3800,16 @@
     "valid": false
   },
   {
+    "instance": "log-response-v2/valid.json",
+    "schema": "log-response-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "log-response-v2/invalid.json",
+    "schema": "log-response-v2.schema.json",
+    "valid": false
+  },
+  {
     "instance": "manager-config-v1/valid.json",
     "schema": "manager-config-v1.schema.json",
     "valid": true
@@ -4232,6 +4242,16 @@
   {
     "instance": "records-response-v1/invalid.json",
     "schema": "records-response-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "records-response-v2/valid.json",
+    "schema": "records-response-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "records-response-v2/invalid.json",
+    "schema": "records-response-v2.schema.json",
     "valid": false
   },
   {

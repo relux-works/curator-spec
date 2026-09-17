@@ -2383,6 +2383,145 @@ def validate_shared_fixture_markers(expected_root: Path | None = None) -> None:
         )
 
 
+PAGE_BOUNDARY_DIAGNOSTICS = frozenset(
+    {
+        "registry_page_boundary_stale",
+        "registry_page_boundary_mismatch",
+        "registry_page_boundary_missing",
+    }
+)
+
+PAGE_BOUNDARY_CASES = frozenset(
+    {
+        "fresh-boundary-advances-high-water",
+        "equal-version-same-body-accepted",
+        "equal-version-different-body-rejected",
+        "below-high-water-rejected",
+        "chain-boundary-mismatch-rejected",
+        "missing-boundary-excluded",
+        "bad-signature-rejected",
+        "stale-and-mismatch-reports-mismatch",
+        "higher-and-mismatch-never-advances",
+    }
+)
+
+
+def expected_page_boundary_verdict(case: dict[str, Any]) -> tuple[bool, str | None, bool]:
+    """Recompute the R1 client verdict from the case inputs.
+
+    Returns (accepted, diagnostic, high_water_advanced) following registry
+    protocol section 9.3: presence and section 2 signature verification
+    first (absent or failing reports `registry_page_boundary_missing` with
+    no state change); then, for every page after the first, the chain
+    comparison against the chain boundary (the first page's boundary) — a
+    difference reports `registry_page_boundary_mismatch` with no state
+    change, and a later page never advances or re-checks the high-water on
+    its own; then, for the first page, the section 5 high-water comparison
+    (below, or equal with a different body, reports
+    `registry_page_boundary_stale` with no state change; equal with the
+    same body is accepted with nothing persisted; higher is accepted with
+    the high-water advanced). Only a first page that passes presence and
+    signature verification and the high-water check changes rollback state;
+    a rejected page leaves it untouched. Diagnostic precedence for a later
+    page is `missing` over `mismatch`, and `stale` is reported only for a
+    first page. In the vector shape, `chain_boundary_equal: false` on a
+    present, signature-valid boundary denotes a later page differing from
+    the chain boundary.
+    """
+    if not case.get("boundary_present") or not case.get("signature_valid"):
+        return False, "registry_page_boundary_missing", False
+    if not case.get("chain_boundary_equal"):
+        return False, "registry_page_boundary_mismatch", False
+    stored = case.get("stored_version")
+    boundary = case.get("boundary_version")
+    if (
+        not isinstance(stored, int)
+        or not isinstance(boundary, int)
+        or isinstance(stored, bool)
+        or isinstance(boundary, bool)
+        or stored < 0
+        or boundary < 0
+    ):
+        raise ValidationFailure(
+            f"registry-client page boundary case {case.get('name')!r} needs "
+            "non-negative integer stored and boundary versions"
+        )
+    if boundary < stored or (boundary == stored and not case.get("same_body")):
+        return False, "registry_page_boundary_stale", False
+    return True, None, boundary > stored
+
+
+def validate_registry_page_boundary_vectors(client: Any = None, service: Any = None) -> None:
+    """The R1/P1 records page-boundary vector gate.
+
+    Each client case's accepted, diagnostic, high-water, and exclusion values
+    are recomputed from its inputs, so a vector that admits a stale,
+    mismatched, or missing boundary fails. The service half pins the
+    boundary-on-every-page emission and the P1 cursor-boundary refusal.
+    """
+    if client is None:
+        client = load_json(SUITE / "vectors" / "registry-client.json")
+    if service is None:
+        service = load_json(SUITE / "vectors" / "registry-service.json")
+    require_named_cases(
+        client.get("page_boundary_cases"),
+        "registry-client page boundary",
+        set(PAGE_BOUNDARY_CASES),
+    )
+    for case in client["page_boundary_cases"]:
+        name = case.get("name")
+        accepted, diagnostic, advanced = expected_page_boundary_verdict(case)
+        if case.get("accepted") is not accepted:
+            raise ValidationFailure(
+                f"registry-client page boundary case {name!r} admits what "
+                "section 9.3 must reject" if accepted is False else
+                f"registry-client page boundary case {name!r} rejects what "
+                "section 9.3 must accept"
+            )
+        if case.get("diagnostic") is not None and case.get("diagnostic") not in PAGE_BOUNDARY_DIAGNOSTICS:
+            raise ValidationFailure(
+                f"registry-client page boundary case {name!r} uses "
+                f"non-closed diagnostic {case.get('diagnostic')!r}"
+            )
+        if case.get("diagnostic") != diagnostic:
+            raise ValidationFailure(
+                f"registry-client page boundary case {name!r} carries "
+                f"{case.get('diagnostic')!r}, expected {diagnostic!r}"
+            )
+        if case.get("high_water_advanced") is not advanced:
+            raise ValidationFailure(
+                f"registry-client page boundary case {name!r} has the wrong "
+                "high-water advance"
+            )
+        if case.get("registry_excluded") is not (not accepted):
+            raise ValidationFailure(
+                f"registry-client page boundary case {name!r} has the wrong "
+                "registry exclusion"
+            )
+    pagination = service.get("pagination")
+    if not isinstance(pagination, dict):
+        raise ValidationFailure("registry-service pagination boundary is incomplete")
+    if pagination.get("boundary_emitted_on_every_page") is not True:
+        raise ValidationFailure("registry-service must emit the boundary on every page")
+    if pagination.get("chain_boundary_byte_identical") is not True:
+        raise ValidationFailure("registry-service cursor-chain boundaries must be byte-identical")
+    require_named_cases(
+        pagination.get("cursor_boundary_cases"),
+        "registry-service cursor boundary",
+        {"cursor-boundary-disagreement"},
+    )
+    for case in pagination["cursor_boundary_cases"]:
+        if (
+            case.get("status") != 404
+            or case.get("error") != "invalid_cursor"
+            or case.get("reevaluate_at_newer_boundary") is not False
+        ):
+            raise ValidationFailure(
+                f"registry-service cursor boundary case {case.get('name')!r} must "
+                "refuse with 404 invalid_cursor without re-evaluating"
+            )
+
+
 def validate_vector_semantics() -> None:
     ledger = load_json(SUITE / "expected" / "adapter-ledger.json")
     require_sorted_unique(ledger["entries"], "adapter ledger entries")
@@ -5639,6 +5778,7 @@ def main() -> int:
         validate_context_detector_vectors,
         validate_snapshot_acquisition_vectors,
         validate_shell_hook_trust_vectors,
+        validate_registry_page_boundary_vectors,
         validate_manager_config_vectors,
         validate_system_config_v2_schema,
         validate_umbrella_provider_vectors,
