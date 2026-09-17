@@ -605,6 +605,27 @@ func writeRegistryServiceVectors(dir string) {
 			map[string]any{"name": "checkpoint-rollback", "restored_version": 7, "checkpoint_version": 8, "matching_head": false, "ready": false},
 			map[string]any{"name": "checkpoint-equivocation", "restored_version": 8, "checkpoint_version": 8, "matching_head": false, "ready": false},
 		},
+		// checkpoint_cases follows registry-service profile section 6. The
+		// startup checkpoint comparison runs after the section 5 startup
+		// integrity verification and before the service binds its listener
+		// or reports ready: signature first, then the live-boundary
+		// comparison (below refuses, equal requires the same body, above
+		// requires the live log to reproduce the checkpoint prefix).
+		// same_boundary_body is meaningful only on the equal-version arm
+		// and prefix_reproduced only on the live-above arm; the other arms
+		// carry placeholders. The bad-signature case keeps a consistent
+		// boundary to prove verification precedes comparison, and the
+		// not-configured case keeps placeholder versions with the recorded
+		// posture.
+		"checkpoint_cases": []any{
+			map[string]any{"name": "checkpoint-below-live-consistent", "checkpoint_configured": true, "signature_valid": true, "live_version": 10, "checkpoint_version": 8, "same_boundary_body": false, "prefix_reproduced": true, "ready": true, "diagnostic": nil, "posture": nil},
+			map[string]any{"name": "checkpoint-equal-consistent", "checkpoint_configured": true, "signature_valid": true, "live_version": 8, "checkpoint_version": 8, "same_boundary_body": true, "prefix_reproduced": true, "ready": true, "diagnostic": nil, "posture": nil},
+			map[string]any{"name": "checkpoint-equal-inconsistent", "checkpoint_configured": true, "signature_valid": true, "live_version": 8, "checkpoint_version": 8, "same_boundary_body": false, "prefix_reproduced": true, "ready": false, "diagnostic": "restore_inconsistent_with_checkpoint", "posture": nil},
+			map[string]any{"name": "live-below-checkpoint", "checkpoint_configured": true, "signature_valid": true, "live_version": 7, "checkpoint_version": 8, "same_boundary_body": false, "prefix_reproduced": false, "ready": false, "diagnostic": "restore_below_checkpoint", "posture": nil},
+			map[string]any{"name": "live-above-prefix-mismatch", "checkpoint_configured": true, "signature_valid": true, "live_version": 10, "checkpoint_version": 8, "same_boundary_body": false, "prefix_reproduced": false, "ready": false, "diagnostic": "restore_inconsistent_with_checkpoint", "posture": nil},
+			map[string]any{"name": "checkpoint-signature-invalid", "checkpoint_configured": true, "signature_valid": false, "live_version": 8, "checkpoint_version": 8, "same_boundary_body": true, "prefix_reproduced": true, "ready": false, "diagnostic": "checkpoint_signature_invalid", "posture": nil},
+			map[string]any{"name": "checkpoint-not-configured", "checkpoint_configured": false, "signature_valid": true, "live_version": 8, "checkpoint_version": 0, "same_boundary_body": true, "prefix_reproduced": true, "ready": true, "diagnostic": nil, "posture": "checkpoint_not_configured"},
+		},
 		"limits": map[string]any{
 			"body_bytes": 16777216, "page_items": 1000, "cursor_characters": 4096,
 			"idempotency_key_characters": 256, "idempotency_retention_seconds": 86400,

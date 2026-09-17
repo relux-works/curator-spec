@@ -141,6 +141,11 @@ idempotency and import ledgers. Recoverable derived indexes MAY be rebuilt from
 the log. A mismatch in authoritative state fails readiness and disables writes;
 the service MUST NOT truncate or invent history automatically.
 
+This startup integrity verification runs BEFORE the section 6 startup
+checkpoint comparison: a service with a configured checkpoint compares the
+verified live boundary against it only after this section's checks pass, and
+a refused comparison is a non-ready condition like a failed verification here.
+
 ## 6. Backup and restore
 
 A backup captures one committed snapshot boundary and all state required to
@@ -151,19 +156,58 @@ encrypted and access controlled. Operators MUST keep signing keys recoverable
 separately when an external key provider is used.
 
 The operator maintains an authenticated high-water checkpoint outside the
-primary store for every canonical registry URL. It contains at least snapshot
-version, log size, head, and Merkle root. Restore recomputes the chain and tree,
-verifies all ledgers, and compares the result with that checkpoint before the
-service becomes ready. A restored state below or inconsistent with the
-checkpoint MUST NOT serve the same canonical URL. It must first recover the
-missing verified suffix or remain unavailable. Key rotation does not reset the
-checkpoint or client rollback state.
+primary store for every canonical registry URL. The portable checkpoint
+interchange object is a signed `registry-snapshot-v1.schema.json` object: it
+contains at least snapshot version, log size, head, and Merkle root, its
+complete body including `created_at` is retained outside the primary store,
+and it is verified against the operator's out-of-band registry key set. A
+deployment-specific wrapper MAY add storage metadata, but it does not replace
+or weaken the signed snapshot.
 
-The portable checkpoint interchange object is a signed
-`registry-snapshot-v1.schema.json` object. Its complete body, including
-`created_at`, is retained outside the primary store and verified against the
-operator's out-of-band registry key set. A deployment-specific wrapper MAY add
-storage metadata, but it does not replace or weaken the signed snapshot.
+The normative enforcement point for "before the service becomes ready" is the
+startup checkpoint comparison. A conforming service accepts an
+operator-supplied checkpoint at start (the "startup checkpoint comparison"
+capability) and, AFTER the section 5 startup integrity verification and BEFORE
+it binds its listener or reports ready, verifies the checkpoint signature
+against its accepted signing keys (the staged rotation set) and compares the
+live boundary with it. Signature verification comes first: a checkpoint that
+fails verification is refused with `checkpoint_signature_invalid` without
+comparison. A verified checkpoint is then compared against the live boundary:
+a live `version`/`log_size` below the checkpoint is refused with
+`restore_below_checkpoint`; an equal version with a different `head`,
+`merkle_root`, or `log_size` is refused with
+`restore_inconsistent_with_checkpoint`; a live state above the checkpoint
+serves only when the live log reproduces the checkpoint boundary at its
+`log_size` (head and Merkle root at that prefix), otherwise it is refused with
+`restore_inconsistent_with_checkpoint`.
+
+A refusal is a non-ready condition like a failed section 5 verification: the
+service MUST NOT serve the same canonical URL, readiness fails, writes are
+disabled, and the service MUST NOT truncate or repair history automatically.
+It must first recover the missing verified suffix or remain unavailable. Key
+rotation does not reset the checkpoint or client rollback state.
+
+Without a configured checkpoint the service starts with no behavior change,
+but it MUST record the posture: startup diagnostics and the audit log carry
+`checkpoint_not_configured`. With a configured checkpoint they carry the
+compared boundary (`version`, `log_size`, `head`) and the comparison outcome.
+
+An offline `verify-backup`-style comparison of a candidate backup against the
+checkpoint stays as the operator procedure for vetting backups before a
+restore; it is not the readiness gate. The startup checkpoint comparison is
+the normative enforcement of "before the service becomes ready".
+
+This section defines exactly these diagnostics, spelled identically in text,
+tables, conformance vectors, and the CHANGELOG:
+
+| Condition | Diagnostic |
+|---|---|
+| live `version`/`log_size` below the checkpoint | `restore_below_checkpoint` |
+| equal version with a different `head`, `merkle_root`, or `log_size`; or a live state above the checkpoint whose log does not reproduce the checkpoint boundary at its `log_size` | `restore_inconsistent_with_checkpoint` |
+| checkpoint signature fails verification against the accepted signing keys | `checkpoint_signature_invalid` |
+| no checkpoint configured at startup (posture, recorded in startup diagnostics and the audit log) | `checkpoint_not_configured` |
+
+No other restore-checkpoint diagnostic exists.
 
 ## 7. Keys and credentials
 
@@ -204,10 +248,19 @@ dependencies are available. A non-ready service returns `503` using the
 protocol error envelope. Liveness MAY be exposed on a deployment-specific
 endpoint outside the protocol.
 
+A refused section 6 startup checkpoint comparison is a non-ready condition
+like a failed section 5 verification: `GET /health` returns `503` using the
+protocol error envelope until the operator recovers the missing verified
+suffix. The `health-response-v1` schema is unchanged; a refusal is reported
+through readiness, not a new response member.
+
 Audit logs record authentication outcome, auditor identity, idempotency replay
 or conflict, committed sequence, status, latency, and stable error code. They
 MUST omit credentials and MAY omit or hash artifact identifiers according to
-operator privacy policy. Operators document retention, backup frequency,
+operator privacy policy. Startup diagnostics and the audit log carry the
+compared checkpoint boundary (`version`, `log_size`, `head`) and the
+comparison outcome, or `checkpoint_not_configured` when no checkpoint is
+configured (section 6). Operators document retention, backup frequency,
 cursor retention, deadlines, rate limits, durability assumptions, and recovery
 objectives.
 
@@ -217,7 +270,8 @@ The profile assumes attackers can submit arbitrary bytes, replay requests,
 race writers, mutate caches or backups, interrupt processes, hold stale
 cursors, and control an auditor token or auditor key. Validation, scoped
 idempotency, serialized transactions, authenticated cursors, immutable
-snapshots, external checkpoints, and bounded resources address those threats.
+snapshots, the section 6 startup checkpoint comparison against the operator
+checkpoint, and bounded resources address those threats.
 
 Clients still treat every response as untrusted, verify signatures, and keep
 rollback state in protected durable storage outside response caches. A
@@ -238,7 +292,8 @@ A registry-service claim passes the shared schema and cryptographic vectors
 plus executable cases for conjunctive lookup, artifact identity, snapshot-bound
 pagination, page-boundary emission and cursor-boundary refusal, scoped
 idempotency, concurrent append ordering, transaction
-rollback, crash recovery, immutable snapshots, bundle atomicity, backup restore
+rollback, crash recovery, immutable snapshots, bundle atomicity, backup restore,
+startup checkpoint comparison including the no-checkpoint posture (section 6),
 and rollback refusal, key rotation, and resource limits. Skipping a case is a
 failure. Implementation-owned tests may add coverage but cannot replace the
 released vectors.

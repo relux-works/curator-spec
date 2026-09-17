@@ -4346,7 +4346,7 @@
     },
     {
       "path": "vectors/registry-service.json",
-      "sha256": "sha256:1173e63ca73513ba8303834c51483c4fd634f619b0a42aa47f500807f848f0aa"
+      "sha256": "sha256:1bacfdf34d0ed2a18e17bf6a0dd578d4e7a0da32f6023b6d61255eff1554e727"
     },
     {
       "path": "vectors/script-host-execution-policy.json",

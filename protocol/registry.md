@@ -177,8 +177,11 @@ Operators include rollback state in protected machine backup and restore it
 without lowering a recorded version. When an operator knows established state
 was lost and it cannot be recovered, trust in that registry remains disabled
 until an authenticated checkpoint or explicit operator rebootstrap establishes
-a new high-water state. Signing-key rotation, response-cache deletion, and
-implementation upgrades do not rebootstrap it.
+a new high-water state. The server-side counterpart is the registry-service
+profile's startup checkpoint comparison (profile section 6), the normative
+enforcement point for a restored service state before it becomes ready.
+Signing-key rotation, response-cache deletion, and implementation upgrades
+do not rebootstrap it.
 
 An unreachable snapshot warns but does not by itself invalidate individually
 signed records. A reachable invalid snapshot excludes that registry. When all

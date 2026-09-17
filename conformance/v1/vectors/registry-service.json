@@ -22,6 +22,92 @@
       "request": "GET /v1/records invalid"
     }
   ],
+  "checkpoint_cases": [
+    {
+      "checkpoint_configured": true,
+      "checkpoint_version": 8,
+      "diagnostic": null,
+      "live_version": 10,
+      "name": "checkpoint-below-live-consistent",
+      "posture": null,
+      "prefix_reproduced": true,
+      "ready": true,
+      "same_boundary_body": false,
+      "signature_valid": true
+    },
+    {
+      "checkpoint_configured": true,
+      "checkpoint_version": 8,
+      "diagnostic": null,
+      "live_version": 8,
+      "name": "checkpoint-equal-consistent",
+      "posture": null,
+      "prefix_reproduced": true,
+      "ready": true,
+      "same_boundary_body": true,
+      "signature_valid": true
+    },
+    {
+      "checkpoint_configured": true,
+      "checkpoint_version": 8,
+      "diagnostic": "restore_inconsistent_with_checkpoint",
+      "live_version": 8,
+      "name": "checkpoint-equal-inconsistent",
+      "posture": null,
+      "prefix_reproduced": true,
+      "ready": false,
+      "same_boundary_body": false,
+      "signature_valid": true
+    },
+    {
+      "checkpoint_configured": true,
+      "checkpoint_version": 8,
+      "diagnostic": "restore_below_checkpoint",
+      "live_version": 7,
+      "name": "live-below-checkpoint",
+      "posture": null,
+      "prefix_reproduced": false,
+      "ready": false,
+      "same_boundary_body": false,
+      "signature_valid": true
+    },
+    {
+      "checkpoint_configured": true,
+      "checkpoint_version": 8,
+      "diagnostic": "restore_inconsistent_with_checkpoint",
+      "live_version": 10,
+      "name": "live-above-prefix-mismatch",
+      "posture": null,
+      "prefix_reproduced": false,
+      "ready": false,
+      "same_boundary_body": false,
+      "signature_valid": true
+    },
+    {
+      "checkpoint_configured": true,
+      "checkpoint_version": 8,
+      "diagnostic": "checkpoint_signature_invalid",
+      "live_version": 8,
+      "name": "checkpoint-signature-invalid",
+      "posture": null,
+      "prefix_reproduced": true,
+      "ready": false,
+      "same_boundary_body": true,
+      "signature_valid": false
+    },
+    {
+      "checkpoint_configured": false,
+      "checkpoint_version": 0,
+      "diagnostic": null,
+      "live_version": 8,
+      "name": "checkpoint-not-configured",
+      "posture": "checkpoint_not_configured",
+      "prefix_reproduced": true,
+      "ready": true,
+      "same_boundary_body": true,
+      "signature_valid": true
+    }
+  ],
   "idempotency_cases": [
     {
       "appends": 1,

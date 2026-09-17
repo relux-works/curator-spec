@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import contextlib
 import copy
 import hashlib
 import importlib.util
+import io
 import json
 import shlex
 import tempfile
@@ -3567,6 +3569,202 @@ class RegistryPageBoundaryVectorTests(unittest.TestCase):
         changed["pagination"]["cursor_boundary_cases"][0]["reevaluate_at_newer_boundary"] = True
         with self.assertRaises(validate.ValidationFailure):
             self.run_gate(service=changed)
+
+
+PASSING_SCENARIO = {
+    "checkpoint_configured": True,
+    "signature_valid": True,
+    "live_version": 8,
+    "checkpoint_version": 8,
+    "same_boundary_body": True,
+    "prefix_reproduced": True,
+    "ready": True,
+    "diagnostic": None,
+    "posture": None,
+}
+
+BELOW_CHECKPOINT_SCENARIO = {
+    "checkpoint_configured": True,
+    "signature_valid": True,
+    "live_version": 7,
+    "checkpoint_version": 8,
+    "same_boundary_body": False,
+    "prefix_reproduced": False,
+    "ready": False,
+    "diagnostic": "restore_below_checkpoint",
+    "posture": None,
+}
+
+PREFIX_MISMATCH_SCENARIO = {
+    "checkpoint_configured": True,
+    "signature_valid": True,
+    "live_version": 10,
+    "checkpoint_version": 8,
+    "same_boundary_body": False,
+    "prefix_reproduced": False,
+    "ready": False,
+    "diagnostic": "restore_inconsistent_with_checkpoint",
+    "posture": None,
+}
+
+
+class RegistryCheckpointVectorTests(unittest.TestCase):
+    """The R3/P2 startup checkpoint gate must fail closed.
+
+    validate_registry_checkpoint_vectors is the production gate:
+    tools/validate.py main() runs it on every `make validate`,
+    recomputing each checkpoint case's ready, diagnostic, and posture
+    values from its inputs and pinning each required case name to its
+    mandatory scenario inputs. Each test narrows one rule and proves
+    the gate rejects what the rule must reject.
+    """
+
+    def setUp(self) -> None:
+        self.service = validate.load_json(
+            validate.SUITE / "vectors" / "registry-service.json"
+        )
+
+    def case(self, name: str, vector: dict | None = None) -> dict:
+        source = self.service if vector is None else vector
+        return next(item for item in source["checkpoint_cases"] if item["name"] == name)
+
+    def run_gate(self, service=None) -> None:
+        validate.validate_registry_checkpoint_vectors(
+            service=self.service if service is None else service,
+        )
+
+    def test_published_vectors_pass(self) -> None:
+        self.run_gate()
+
+    def test_below_checkpoint_admitted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        case = self.case("live-below-checkpoint", changed)
+        case["ready"] = True
+        case["diagnostic"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def test_inconsistent_equal_version_admitted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        case = self.case("checkpoint-equal-inconsistent", changed)
+        case["ready"] = True
+        case["diagnostic"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def test_unreproduced_prefix_admitted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        case = self.case("live-above-prefix-mismatch", changed)
+        case["ready"] = True
+        case["diagnostic"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def test_bad_signature_admitted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        case = self.case("checkpoint-signature-invalid", changed)
+        case["ready"] = True
+        case["diagnostic"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def test_wrong_diagnostic_spelling_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        self.case("live-below-checkpoint", changed)["diagnostic"] = "restore_below"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def test_swapped_diagnostics_are_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        self.case("live-below-checkpoint", changed)["diagnostic"] = (
+            "restore_inconsistent_with_checkpoint"
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def test_dropped_posture_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        self.case("checkpoint-not-configured", changed)["posture"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def test_dropped_case_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        changed["checkpoint_cases"] = [
+            item
+            for item in changed["checkpoint_cases"]
+            if item["name"] != "checkpoint-signature-invalid"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def replace_scenario(self, changed: dict, name: str, scenario: dict) -> None:
+        self.case(name, changed).update(copy.deepcopy(scenario))
+
+    def test_equal_inconsistent_replaced_by_passing_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        self.replace_scenario(changed, "checkpoint-equal-inconsistent", PASSING_SCENARIO)
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def test_below_checkpoint_replaced_by_passing_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        self.replace_scenario(changed, "live-below-checkpoint", PASSING_SCENARIO)
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def test_prefix_mismatch_replaced_by_passing_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        self.replace_scenario(changed, "live-above-prefix-mismatch", PASSING_SCENARIO)
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def test_bad_signature_replaced_by_passing_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        self.replace_scenario(changed, "checkpoint-signature-invalid", PASSING_SCENARIO)
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def test_equal_consistent_replaced_by_refusal_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        self.replace_scenario(
+            changed, "checkpoint-equal-consistent", BELOW_CHECKPOINT_SCENARIO
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def test_below_live_consistent_replaced_by_refusal_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        self.replace_scenario(
+            changed, "checkpoint-below-live-consistent", PREFIX_MISMATCH_SCENARIO
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def test_not_configured_replaced_by_configured_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.service)
+        self.replace_scenario(changed, "checkpoint-not-configured", PASSING_SCENARIO)
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(service=changed)
+
+    def test_replacement_is_rejected_by_main_entry(self) -> None:
+        changed = copy.deepcopy(self.service)
+        self.case("live-below-checkpoint", changed).update(
+            copy.deepcopy(PASSING_SCENARIO)
+        )
+        original = validate.load_json
+        validate.load_json = lambda path: (
+            changed
+            if path == validate.SUITE / "vectors" / "registry-service.json"
+            else original(path)
+        )
+        try:
+            with contextlib.redirect_stdout(io.StringIO()):
+                with contextlib.redirect_stderr(io.StringIO()):
+                    code = validate.main()
+        finally:
+            validate.load_json = original
+        self.assertEqual(code, 1)
 
 
 if __name__ == "__main__":

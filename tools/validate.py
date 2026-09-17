@@ -2405,6 +2405,28 @@ PAGE_BOUNDARY_CASES = frozenset(
     }
 )
 
+CHECKPOINT_DIAGNOSTICS = frozenset(
+    {
+        "restore_below_checkpoint",
+        "restore_inconsistent_with_checkpoint",
+        "checkpoint_signature_invalid",
+    }
+)
+
+CHECKPOINT_NOT_CONFIGURED = "checkpoint_not_configured"
+
+CHECKPOINT_CASES = frozenset(
+    {
+        "checkpoint-below-live-consistent",
+        "checkpoint-equal-consistent",
+        "checkpoint-equal-inconsistent",
+        "live-below-checkpoint",
+        "live-above-prefix-mismatch",
+        "checkpoint-signature-invalid",
+        "checkpoint-not-configured",
+    }
+)
+
 
 def expected_page_boundary_verdict(case: dict[str, Any]) -> tuple[bool, str | None, bool]:
     """Recompute the R1 client verdict from the case inputs.
@@ -2519,6 +2541,203 @@ def validate_registry_page_boundary_vectors(client: Any = None, service: Any = N
             raise ValidationFailure(
                 f"registry-service cursor boundary case {case.get('name')!r} must "
                 "refuse with 404 invalid_cursor without re-evaluating"
+            )
+
+
+def expected_checkpoint_verdict(case: dict[str, Any]) -> tuple[bool, str | None, str | None]:
+    """Recompute the R3/P2 startup checkpoint verdict from the case inputs.
+
+    Returns (ready, diagnostic, posture) following registry-service profile
+    section 6: without a configured checkpoint the service starts and records
+    the `checkpoint_not_configured` posture; otherwise the checkpoint
+    signature is verified first (a failure refuses with
+    `checkpoint_signature_invalid` without comparison); then a live
+    version below the checkpoint refuses with `restore_below_checkpoint`,
+    an equal version with a different boundary body refuses with
+    `restore_inconsistent_with_checkpoint`, and a live state above the
+    checkpoint serves only when the live log reproduces the checkpoint
+    boundary at its log size (head and Merkle root at that prefix),
+    otherwise `restore_inconsistent_with_checkpoint`.
+    """
+    if case.get("checkpoint_configured") is not True:
+        return True, None, CHECKPOINT_NOT_CONFIGURED
+    if case.get("signature_valid") is not True:
+        return False, "checkpoint_signature_invalid", None
+    live = case.get("live_version")
+    checkpoint = case.get("checkpoint_version")
+    if (
+        not isinstance(live, int)
+        or not isinstance(checkpoint, int)
+        or isinstance(live, bool)
+        or isinstance(checkpoint, bool)
+        or live < 0
+        or checkpoint < 0
+    ):
+        raise ValidationFailure(
+            f"registry-service checkpoint case {case.get('name')!r} needs "
+            "non-negative integer live and checkpoint versions"
+        )
+    if live < checkpoint:
+        return False, "restore_below_checkpoint", None
+    if live == checkpoint:
+        if case.get("same_boundary_body") is True:
+            return True, None, None
+        return False, "restore_inconsistent_with_checkpoint", None
+    if case.get("prefix_reproduced") is True:
+        return True, None, None
+    return False, "restore_inconsistent_with_checkpoint", None
+
+
+def require_checkpoint_scenario(case: dict[str, Any]) -> None:
+    """Pin each required checkpoint case name to its mandatory scenario inputs.
+
+    The verdict oracle recomputes ready, diagnostic, and posture from
+    whatever inputs a case carries, so without this pin a negative case
+    replaced by an internally consistent passing case of the same name
+    would survive the gate. Each required name therefore asserts its
+    discriminating input predicates (configured versus absent checkpoint,
+    signature validity, the live-versus-checkpoint version relationship,
+    equal-body versus different-body, prefix reproduced versus not)
+    following profile section 6. Extra (non-required) names carry no
+    scenario pin; the caller still verdict-checks them.
+    """
+    name = case.get("name")
+    if name == "checkpoint-not-configured":
+        if case.get("checkpoint_configured") is True:
+            raise ValidationFailure(
+                f"registry-service checkpoint case {name!r} must leave "
+                "the checkpoint unconfigured"
+            )
+        return
+    if name == "checkpoint-signature-invalid":
+        if case.get("checkpoint_configured") is not True:
+            raise ValidationFailure(
+                f"registry-service checkpoint case {name!r} must configure "
+                "a checkpoint"
+            )
+        if case.get("signature_valid") is True:
+            raise ValidationFailure(
+                f"registry-service checkpoint case {name!r} must carry "
+                "an invalid checkpoint signature"
+            )
+        return
+    if name not in (
+        "checkpoint-below-live-consistent",
+        "checkpoint-equal-consistent",
+        "checkpoint-equal-inconsistent",
+        "live-below-checkpoint",
+        "live-above-prefix-mismatch",
+    ):
+        return
+    if case.get("checkpoint_configured") is not True:
+        raise ValidationFailure(
+            f"registry-service checkpoint case {name!r} must configure "
+            "a checkpoint"
+        )
+    if case.get("signature_valid") is not True:
+        raise ValidationFailure(
+            f"registry-service checkpoint case {name!r} must carry "
+            "a valid checkpoint signature"
+        )
+    live = case.get("live_version")
+    checkpoint = case.get("checkpoint_version")
+    if (
+        not isinstance(live, int)
+        or not isinstance(checkpoint, int)
+        or isinstance(live, bool)
+        or isinstance(checkpoint, bool)
+        or live < 0
+        or checkpoint < 0
+    ):
+        raise ValidationFailure(
+            f"registry-service checkpoint case {case.get('name')!r} needs "
+            "non-negative integer live and checkpoint versions"
+        )
+    if name == "live-below-checkpoint":
+        if not live < checkpoint:
+            raise ValidationFailure(
+                f"registry-service checkpoint case {name!r} must place "
+                "the live version below the checkpoint version"
+            )
+    elif name in ("checkpoint-equal-consistent", "checkpoint-equal-inconsistent"):
+        if live != checkpoint:
+            raise ValidationFailure(
+                f"registry-service checkpoint case {name!r} must hold "
+                "the live version equal to the checkpoint version"
+            )
+        if (case.get("same_boundary_body") is True) == (
+            name == "checkpoint-equal-inconsistent"
+        ):
+            raise ValidationFailure(
+                f"registry-service checkpoint case {name!r} must carry "
+                + (
+                    "a different boundary body"
+                    if name == "checkpoint-equal-inconsistent"
+                    else "the same boundary body"
+                )
+            )
+    elif not live > checkpoint:
+        raise ValidationFailure(
+            f"registry-service checkpoint case {name!r} must place "
+            "the live version above the checkpoint version"
+        )
+    elif (case.get("prefix_reproduced") is True) == (
+        name == "live-above-prefix-mismatch"
+    ):
+        raise ValidationFailure(
+            f"registry-service checkpoint case {name!r} must "
+            + (
+                "fail to reproduce the checkpoint boundary at its log size"
+                if name == "live-above-prefix-mismatch"
+                else "reproduce the checkpoint boundary at its log size"
+            )
+        )
+
+
+def validate_registry_checkpoint_vectors(service: Any = None) -> None:
+    """The R3/P2 startup checkpoint comparison vector gate.
+
+    Each checkpoint case's ready, diagnostic, and posture values are
+    recomputed from its inputs, so a vector that admits a below-checkpoint
+    restore, an inconsistent equal version, an unreproduced prefix, or a
+    bad checkpoint signature fails. The not-configured case must record
+    the `checkpoint_not_configured` posture instead of a diagnostic.
+    Each required case name is additionally pinned to its mandatory
+    scenario inputs, so a self-consistent replacement scenario under a
+    required name fails as well.
+    """
+    if service is None:
+        service = load_json(SUITE / "vectors" / "registry-service.json")
+    require_named_cases(
+        service.get("checkpoint_cases"),
+        "registry-service checkpoint",
+        set(CHECKPOINT_CASES),
+    )
+    for case in service["checkpoint_cases"]:
+        name = case.get("name")
+        require_checkpoint_scenario(case)
+        ready, diagnostic, posture = expected_checkpoint_verdict(case)
+        if case.get("ready") is not ready:
+            raise ValidationFailure(
+                f"registry-service checkpoint case {name!r} admits what "
+                "section 6 must refuse" if ready is False else
+                f"registry-service checkpoint case {name!r} refuses what "
+                "section 6 must serve"
+            )
+        if case.get("diagnostic") is not None and case.get("diagnostic") not in CHECKPOINT_DIAGNOSTICS:
+            raise ValidationFailure(
+                f"registry-service checkpoint case {name!r} uses "
+                f"non-closed diagnostic {case.get('diagnostic')!r}"
+            )
+        if case.get("diagnostic") != diagnostic:
+            raise ValidationFailure(
+                f"registry-service checkpoint case {name!r} carries "
+                f"{case.get('diagnostic')!r}, expected {diagnostic!r}"
+            )
+        if case.get("posture") != posture:
+            raise ValidationFailure(
+                f"registry-service checkpoint case {name!r} carries "
+                f"posture {case.get('posture')!r}, expected {posture!r}"
             )
 
 
@@ -6547,6 +6766,7 @@ def main() -> int:
         validate_snapshot_acquisition_vectors,
         validate_shell_hook_trust_vectors,
         validate_registry_page_boundary_vectors,
+        validate_registry_checkpoint_vectors,
         validate_manager_config_vectors,
         validate_system_config_v2_schema,
         validate_umbrella_provider_vectors,
