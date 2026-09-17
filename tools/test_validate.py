@@ -2815,6 +2815,178 @@ class ShellHookTrustVectorTests(unittest.TestCase):
         ]
         with self.assertRaises(validate.ValidationFailure):
             validate.validate_shell_hook_trust_vectors(changed)
+
+
+class WriteNofollowVectorTests(unittest.TestCase):
+    """The environments §8.3.1 nofollow write discipline must fail closed.
+
+    Each test narrows one rule of
+    validate_environments_write_nofollow_vectors: a write through a
+    symlinked parent, an unauthorized takeover claimed as replaced, a
+    touched foreign target, a backup that dereferences the replaced link,
+    a private-destination link answered with the foreign-manager stop, a
+    scenario substitution under a retained name, or a dropped case must be
+    rejected.
+    """
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.SUITE / "vectors" / "environments-write-nofollow.json"
+        )
+
+    def case(self, name: str, vector=None) -> dict:
+        for item in (vector or self.vector)["cases"]:
+            if item["name"] == name:
+                return item
+        raise AssertionError(f"environments-write-nofollow case {name} is missing")
+
+    def run_main_with_vector(self, vector: dict) -> tuple[int, str]:
+        """Run the real validate.main() against a substituted on-disk corpus.
+
+        The mutated vector is written to the worktree with the manifest and
+        rc.9 pins recomputed around it, so the only failing check can be the
+        nofollow gate itself; all three files are restored byte-identical
+        afterwards.
+        """
+        vector_path = validate.SUITE / "vectors" / "environments-write-nofollow.json"
+        manifest_path = validate.SUITE / "manifest.json"
+        rc9_path = validate.ROOT / "release" / "1.0.0-rc.9.json"
+        originals = {path: path.read_bytes() for path in (vector_path, manifest_path, rc9_path)}
+        try:
+            vector_bytes = (json.dumps(vector, indent=2, sort_keys=True) + "\n").encode("utf-8")
+            vector_path.write_bytes(vector_bytes)
+            manifest = json.loads(originals[manifest_path].decode("utf-8"))
+            for entry in manifest["files"]:
+                if entry["path"] == "vectors/environments-write-nofollow.json":
+                    entry["sha256"] = "sha256:" + hashlib.sha256(vector_bytes).hexdigest()
+            manifest_bytes = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8")
+            manifest_path.write_bytes(manifest_bytes)
+            release = json.loads(originals[rc9_path].decode("utf-8"))
+            manifest_digest = "sha256:" + hashlib.sha256(manifest_bytes).hexdigest()
+            release["candidate_protocol_pin"]["manifest_sha256"] = manifest_digest
+            release["downstream_consumption"]["required_manifest_sha256"] = manifest_digest
+            rc9_path.write_bytes((json.dumps(release, indent=2, sort_keys=True) + "\n").encode("utf-8"))
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                status = validate.main()
+            return status, stderr.getvalue()
+        finally:
+            for path, payload in originals.items():
+                path.write_bytes(payload)
+            for path, payload in originals.items():
+                if path.read_bytes() != payload:
+                    raise AssertionError(f"{path} was not restored byte-identical")
+
+    def test_published_vector_passes(self) -> None:
+        validate.validate_environments_write_nofollow_vectors()
+
+    def test_substituted_scenario_rejected_through_main(self) -> None:
+        """Every retained name refuses an internally consistent foreign body.
+
+        Producer rule 7: substituting another branch's passing case under a
+        retained name must be rejected by the validator entry point, not
+        merely inventoried. Each substitution runs through validate.main()
+        against a repinned on-disk corpus.
+        """
+        for name in sorted(validate.WRITE_NOFOLLOW_CASES):
+            with self.subTest(case=name):
+                donor_name = (
+                    "materialize-recorded-file-replaced"
+                    if name == "materialize-clean-path-written"
+                    else "materialize-clean-path-written"
+                )
+                donor = copy.deepcopy(self.case(donor_name))
+                changed = copy.deepcopy(self.vector)
+                for index, item in enumerate(changed["cases"]):
+                    if item["name"] == name:
+                        changed["cases"][index] = dict(donor, name=name)
+                status, stderr = self.run_main_with_vector(changed)
+                self.assertEqual(status, 1)
+                self.assertIn("pinned scenario", stderr)
+
+    def test_parent_link_followed_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        refused = self.case("materialize-symlinked-parent-refused", changed)
+        refused["expected"]["outcome"] = "written"
+        refused["expected"]["diagnostic"] = None
+        refused["expected"]["entry_after"] = "managed-file"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_write_nofollow_vectors(changed)
+
+    def test_authorized_parent_traversal_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        refused = self.case("takeover-symlinked-parent-authorized-still-refused", changed)
+        refused["expected"]["outcome"] = "replaced"
+        refused["expected"]["diagnostic"] = None
+        refused["expected"]["entry_after"] = "managed-file"
+        refused["expected"]["backup_holds_link"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_write_nofollow_vectors(changed)
+
+    def test_unauthorized_takeover_replaced_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        stopped = self.case("takeover-symlinked-target-unauthorized-stopped", changed)
+        stopped["expected"]["outcome"] = "replaced"
+        stopped["expected"]["diagnostic"] = None
+        stopped["expected"]["entry_after"] = "managed-file"
+        stopped["expected"]["backup_holds_link"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_write_nofollow_vectors(changed)
+
+    def test_touched_foreign_target_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        replaced = self.case("takeover-symlinked-target-authorized-replaced", changed)
+        replaced["expected"]["foreign_target_sha256_after"] = "0" * 64
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_write_nofollow_vectors(changed)
+
+    def test_stale_fixture_digest_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["fixtures"]["foreign-notes"]["sha256"] = "0" * 64
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_write_nofollow_vectors(changed)
+
+    def test_missing_link_backup_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        replaced = self.case("takeover-symlinked-target-authorized-replaced", changed)
+        replaced["expected"]["backup_holds_link"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_write_nofollow_vectors(changed)
+
+    def test_wrong_refusal_code_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        refused = self.case("takeover-inside-link-unauthorized-unmanaged-conflict", changed)
+        refused["expected"]["diagnostic"] = "environment_write_would_follow_link"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_write_nofollow_vectors(changed)
+
+    def test_backup_target_link_foreign_manager_code_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        refused = self.case("backup-symlinked-target-refused", changed)
+        refused["expected"]["diagnostic"] = "environment_foreign_manager_detected"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_write_nofollow_vectors(changed)
+
+    def test_backup_target_link_claimed_replaced_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        refused = self.case("backup-symlinked-target-refused", changed)
+        refused["expected"]["outcome"] = "replaced"
+        refused["expected"]["diagnostic"] = None
+        refused["expected"]["entry_after"] = "managed-file"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_write_nofollow_vectors(changed)
+
+    def test_dropped_case_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["cases"] = [
+            item
+            for item in changed["cases"]
+            if item["name"] != "repair-planted-link-replaced"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_write_nofollow_vectors(changed)
+
+
 class UmbrellaProviderVectorTests(unittest.TestCase):
     """The environments §11 trust-root gate must fail closed.
 

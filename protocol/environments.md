@@ -654,7 +654,9 @@ case-insensitive filesystem, managed homes for two such profile names
 (section 8.1), backup paths (section 8.3) — MUST detect the collision and
 fail with `environment_path_collision` before writing anything: the core §2
 extraction rule, extended to every materialization and provisioning write
-path.
+path. Every write below follows the section 8.3.1 write discipline: the
+manager replaces directory entries and never writes through a symbolic
+link.
 
 **Parts and joining.** Output is assembled from ordered **parts**. Every
 part is a byte string ending with exactly one LF. The document is the parts
@@ -930,6 +932,7 @@ conformance-vector surface.
 The resolved MCP set of a profile for an adapter — the lock's `mcp` members
 whose `environments` selector applies to that adapter — materializes as one
 inert, hashed, marker-recorded file per adapter, in a managed home only.
+Its write is a section 8.3.1 write.
 It never materializes into a native in-place home, whose MCP configuration
 lives in tool-owned mutable state, and never into a secondary fixed-home
 target. The file location is below `<home>/.agent-context/mcp/` except
@@ -1322,6 +1325,9 @@ revision-1 declarations are:
 adapter ledger and environment marker protect only managed paths, so
 materialization and `env status` MUST report `environment_shadowing_path_present`
 when a declared shadowing path exists; the file itself is never touched.
+The existence check uses `lstat`-class semantics (section 8.3.1): a
+symlink at a declared shadowing path counts as present and is never
+dereferenced.
 The surface is genuinely inert, so the row is **non-current** by default
 (section 12). Machine configuration MAY record a per-path
 `shadow_acknowledged` entry (section 12.1) — "this override is deliberate" —
@@ -1508,7 +1514,8 @@ manager creates the home, materializes the managed surfaces, links the
 section 7.4 passthrough entries, writes or copies the section 7.4
 provisioning seeds, and — for `opencode` — seeds the section 7.1 XDG
 links, in that order, as
-one journaled transaction. The **first-resolve notice** accompanies that
+one journaled transaction. Every write in that transaction is a section
+8.3.1 write. The **first-resolve notice** accompanies that
 provisioning and every first resolve of a home: the manager prints the
 managed-home path, states that the tool will treat the home as its own
 state root — sessions, trust records, and approvals accrue there and not in
@@ -1614,6 +1621,54 @@ the number of backup generations and the age of the oldest and newest — a
 backup of a hand-maintained context file may hold secrets, and the
 operator is told it is there.
 
+### 8.3.1 Write discipline
+
+Every materialization, takeover, repair, or backup write this document
+directs at a managed surface in any mode (`copied`, `linked`,
+`managed-home`), a section 8.3 backup, the section 8.2 marker, or the
+adapter ledger — a closed list of write classes over a closed list of
+destinations — replaces the directory entry and never follows a symbolic
+link. The manager creates the new regular file or link under an
+operation-private name in the same directory, then renames over the
+target (atomic replace). The manager MUST NOT follow a symbolic link at
+the target path or at any path component below the managed root that the
+manager itself did not create in this operation: `O_NOFOLLOW`-class
+semantics on open, `lstat`-class semantics on inspection. Components at
+or above the managed root — the environments root for a managed home,
+the native home directory for in-place surfaces — resolve normally; only
+components strictly below the managed root are policed.
+
+A pre-existing symlink at a managed-surface target path is disposed by a
+closed rule:
+
+- a manager-owned link — a link the manager created in this operation,
+  or a marker-recorded surface entry — is replaced as an entry; drift
+  and repair semantics (sections 8.4, 10.1) apply unchanged;
+- the section 9.5 foreign-manager stop applies exactly as section 9.5
+  states: the operation stops, and an authorized takeover backs up the
+  link itself — the backup preserves the symlink with the same link
+  text, never dereferenced — then replaces the entry;
+- any other link the manager does not own follows the ledger rule: the
+  write fails with `environment_surface_unmanaged_conflict` unless a
+  takeover authorization covers that path, in which case the takeover
+  backs up the link itself, as above, and replaces the entry.
+
+A symlink at a path component below the managed root that the manager
+did not create in this operation refuses the write with
+`environment_write_would_follow_link`, naming the path, however the
+target itself is owned: no takeover flag authorizes traversal, because
+the flag covers replacing the target entry, never following a link. The
+same refusal fires when a backup, marker, or ledger destination path —
+manager-private paths with no ledger or takeover machinery of their own —
+traverses or names a link the manager did not create in this operation.
+Backup reads MUST NOT dereference a replaced link either. In no case is
+the target of a pre-existing link opened for writing.
+
+`env status` reports every managed-surface, backup, and marker path
+blocked by a link the manager does not own with
+`environment_write_would_follow_link`, naming the path; the row is
+non-current (section 12).
+
 ### 8.4 Drift
 
 For `linked` surfaces, drift is a link that no longer targets the expected
@@ -1622,7 +1677,10 @@ store path or a target whose bytes fail the recorded hash. For `copied` and
 matches. Drift detection MUST state both halves explicitly: the surface was
 modified outside the manager, and the file was left untouched; the
 installation is non-current, and `repair` restores the managed bytes. A
-drifted file is never silently overwritten outside `repair`.
+drifted file is never silently overwritten outside `repair`. Drift
+inspection uses `lstat`-class semantics (section 8.3.1): a surface path
+that is a symlink is identified with `readlink`, never opened through
+the link.
 
 An absent surface file and a failed read are different facts: a failed
 marker read is `environment_marker_invalid`; a failed read of a recorded
@@ -1640,6 +1698,7 @@ with its currency reported as unknown, and no absence-shaped outcome —
 | recorded surface file exists but cannot be read (non-current) | `environment_surface_unreadable` |
 | write would touch a file the marker does not record | `environment_surface_unmanaged_conflict` |
 | next backup generation directory already exists | `environment_backup_exists` |
+| a write that would traverse a symlink below the managed root, or open through a symlink at a backup, marker, or ledger destination, that the manager did not create | `environment_write_would_follow_link` |
 
 ## 9. Profile lifecycle
 
@@ -2018,7 +2077,9 @@ such a trigger the manager:
 3. **Backs up, always**: every file the operation will replace is copied
    into the next section 8.3 backup generation before the first write,
    whether or not any import was requested, subject to
-   `environment_backup_exists`.
+   `environment_backup_exists`. A symlink the operation will replace is
+   backed up as a symlink with the same link text, never dereferenced
+   (section 8.3.1).
 4. **Classifies and offers the import**: the detected state is classified
    under section 9.6 and the classification is reported before any write;
    the import itself runs only on the operator's request and under the
@@ -2035,6 +2096,9 @@ operation. A carrying operation that meets unmanaged files outside
 onboarding performs the same notice and backup as onboarding when the flag
 is given; without the flag, section 8.3 applies and the operation fails
 with `environment_surface_unmanaged_conflict` rather than overwrite.
+Every takeover write is a section 8.3.1 write: the operator's
+authorization covers replacing the directory entry after backup, never
+opening the link's target for writing.
 Authentication is never part of onboarding, takeover, or import: credential
 files stay where the section 7.4 passthrough expects them, untouched.
 
@@ -2181,7 +2245,8 @@ is **lock-free**: it reads the marker and covers exactly the surfaces the
 marker records — no more — and for a symlinked surface whose link targets an
 entry of the immutable profile store, link-target identity is sufficient
 currency (the store entry's integrity is the store's own invariant, section
-4), so a launch does not re-hash a large skills tree. A copied surface —
+4; the link target is read with `lstat`-class semantics, section 8.3.1),
+so a launch does not re-hash a large skills tree. A copied surface —
 the `claude_code` root-context file in every mode, or a manager §5
 fallback copy — has no link target and is verified by the content hash
 the marker records for it (section 8.2), the same hash section 8.4 drift
@@ -2205,7 +2270,10 @@ reconciling XDG seeds, adding the launch directory's project entry,
 never touching environment-owned mutable state,
 unmanaged files, seeds, or backups — and then emits the fragment. Repair
 restores managed bytes from the store; it MUST NOT adopt candidate bytes
-found in the home. Lock acquisition that times out is
+found in the home. Repair writes are section 8.3.1 writes: repair
+replaces directory entries and refuses with
+`environment_write_would_follow_link` rather than writing through a link
+the manager does not own. Lock acquisition that times out is
 `environment_lock_unavailable`, distinct from `environment_repair_failed`,
 which keeps meaning that the store cannot restore this home — an entry is
 missing or fails validation. Neither emits a fragment.
@@ -2548,7 +2616,9 @@ with any `environment_seed_shadowed` entry, the standing `opencode`
 split-brain note of section 7.1, the recorded and detected tool release per
 adapter (section 7.9), both homes of the current profile per scope and
 their provisioning state (section 8.1), backup generation counts and ages
-per home (section 8.3), orphaned managed homes (section 9.2),
+per home (section 8.3), managed-surface, backup, and marker paths blocked
+by a link the manager does not own (section 8.3.1), orphaned managed
+homes (section 9.2),
 `environment_context_size_exceeded` where it applies, the effective
 `transitive_system_modules` value with every dropped system module by
 package and path where the `drop` policy skipped any (section 3), the resolved
@@ -2577,8 +2647,8 @@ profile identity, lock hash, member list, precedence, mode, and form match
 the effective machine state; every recorded surface hash verifies; and
 every recorded passthrough entry is live. A drifted, missing, shadow-inert
 (unless acknowledged under `shadow_acknowledged`), detached, partially
-switched, stale, refused-provider (section 11), or
-unreadable state is non-current; unreadable evidence is
+switched, stale, refused-provider (section 11), link-blocked
+(section 8.3.1), or unreadable state is non-current; unreadable evidence is
 reported as unreadable, never as absence (section 8.4). A section 11
 provider row is non-current when the active revision refuses or fails
 that provider — a manager-published or managed directory match under
@@ -2792,7 +2862,17 @@ confirmation, a new system module, a changed MCP `args`, `url`, or
 selector, and a reordered `env_names` warning under revision A and
 refusing under revision B, `--confirm-system-delta` proceeding, a
 reinstall refusing under revision B and proceeding with the flag, and
-`--all` confirming every profile of the run. The nine
+`--all` confirming every profile of the run; and the section 8.3.1
+write-discipline vectors
+(`vectors/environments-write-nofollow.json`) — the symlinked-target
+takeover (replaced with backup under authorization, stopped with
+`environment_foreign_manager_detected` without), the symlinked-parent
+refusal with `environment_write_would_follow_link` under both
+authorization states, the post-provisioning planted-link repair, the
+manager-owned-link replace, the symlinked-backup-destination refusals (a traversed parent link and a directly symlinked target),
+the inside-pointing-link ledger refusal, and the clean-path and
+recorded-file positives — every foreign-link case asserting the link's
+former target is byte-identical afterwards. The nine
 retired `expected/environments/*` sets are regenerated under the v2 type
 line. A manager claiming this capability MUST pass the complete vector set;
 there is no partial claim. A manager conforms to revision A by warning

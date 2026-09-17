@@ -4289,6 +4289,10 @@
       "sha256": "sha256:fb59e44c33183fc5cf7c698c65038f49a8f1e2d2404137c80cb6d252d46f8d9c"
     },
     {
+      "path": "vectors/environments-write-nofollow.json",
+      "sha256": "sha256:c28e72bc698d852864ee98237c6f8962e7cfa75daecbc60638fd354bfaa9044c"
+    },
+    {
       "path": "vectors/environments.json",
       "sha256": "sha256:08b3ad8fcd89c35389328c142d8fb8329c86b2d0ef73d444ccf47d62736e2f51"
     },

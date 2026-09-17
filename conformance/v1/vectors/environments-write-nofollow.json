@@ -1,0 +1,305 @@
+{
+  "capability": "agent-environments",
+  "capability_revision": 1,
+  "cases": [
+    {
+      "expected": {
+        "backup_holds_link": true,
+        "diagnostic": null,
+        "entry_after": "managed-file",
+        "foreign_target_sha256_after": "4216d77d5df4a50bc737b315d9bbb070a042ee567b52213a35c255ad120d6120",
+        "outcome": "replaced"
+      },
+      "foreign_target_fixture": "foreign-notes",
+      "managed_fixture": "managed-root-context",
+      "marker_records_target": false,
+      "mode": "linked",
+      "name": "takeover-symlinked-target-authorized-replaced",
+      "operation": "takeover",
+      "parent_link": null,
+      "takeover_authorized": true,
+      "target": {
+        "kind": "symlink",
+        "link_owner": "foreign",
+        "link_points": "outside"
+      }
+    },
+    {
+      "expected": {
+        "backup_holds_link": false,
+        "diagnostic": "environment_foreign_manager_detected",
+        "entry_after": "unchanged",
+        "foreign_target_sha256_after": "4216d77d5df4a50bc737b315d9bbb070a042ee567b52213a35c255ad120d6120",
+        "outcome": "refused"
+      },
+      "foreign_target_fixture": "foreign-notes",
+      "managed_fixture": "managed-root-context",
+      "marker_records_target": false,
+      "mode": "linked",
+      "name": "takeover-symlinked-target-unauthorized-stopped",
+      "operation": "takeover",
+      "parent_link": null,
+      "takeover_authorized": false,
+      "target": {
+        "kind": "symlink",
+        "link_owner": "foreign",
+        "link_points": "outside"
+      }
+    },
+    {
+      "expected": {
+        "backup_holds_link": false,
+        "diagnostic": "environment_write_would_follow_link",
+        "entry_after": "unchanged",
+        "foreign_target_sha256_after": "4216d77d5df4a50bc737b315d9bbb070a042ee567b52213a35c255ad120d6120",
+        "outcome": "refused"
+      },
+      "foreign_target_fixture": "foreign-notes",
+      "managed_fixture": "managed-root-context",
+      "marker_records_target": false,
+      "mode": "managed-home",
+      "name": "materialize-symlinked-parent-refused",
+      "operation": "materialize",
+      "parent_link": {
+        "link_points": "outside"
+      },
+      "takeover_authorized": false,
+      "target": {
+        "kind": "absent",
+        "link_owner": null,
+        "link_points": null
+      }
+    },
+    {
+      "expected": {
+        "backup_holds_link": false,
+        "diagnostic": "environment_write_would_follow_link",
+        "entry_after": "unchanged",
+        "foreign_target_sha256_after": "4216d77d5df4a50bc737b315d9bbb070a042ee567b52213a35c255ad120d6120",
+        "outcome": "refused"
+      },
+      "foreign_target_fixture": "foreign-notes",
+      "managed_fixture": "managed-root-context",
+      "marker_records_target": false,
+      "mode": "linked",
+      "name": "takeover-symlinked-parent-authorized-still-refused",
+      "operation": "takeover",
+      "parent_link": {
+        "link_points": "outside"
+      },
+      "takeover_authorized": true,
+      "target": {
+        "kind": "symlink",
+        "link_owner": "foreign",
+        "link_points": "outside"
+      }
+    },
+    {
+      "expected": {
+        "backup_holds_link": false,
+        "diagnostic": null,
+        "entry_after": "managed-file",
+        "foreign_target_sha256_after": "4216d77d5df4a50bc737b315d9bbb070a042ee567b52213a35c255ad120d6120",
+        "outcome": "replaced"
+      },
+      "foreign_target_fixture": "foreign-notes",
+      "managed_fixture": "managed-root-context",
+      "marker_records_target": true,
+      "mode": "copied",
+      "name": "repair-planted-link-replaced",
+      "operation": "repair",
+      "parent_link": null,
+      "takeover_authorized": false,
+      "target": {
+        "kind": "symlink",
+        "link_owner": "foreign",
+        "link_points": "outside"
+      }
+    },
+    {
+      "expected": {
+        "backup_holds_link": false,
+        "diagnostic": null,
+        "entry_after": "managed-link",
+        "foreign_target_sha256_after": null,
+        "outcome": "replaced"
+      },
+      "foreign_target_fixture": null,
+      "managed_fixture": "managed-root-context",
+      "marker_records_target": true,
+      "mode": "linked",
+      "name": "repair-manager-owned-link-replaced",
+      "operation": "repair",
+      "parent_link": null,
+      "takeover_authorized": false,
+      "target": {
+        "kind": "symlink",
+        "link_owner": "manager",
+        "link_points": "store"
+      }
+    },
+    {
+      "expected": {
+        "backup_holds_link": false,
+        "diagnostic": "environment_write_would_follow_link",
+        "entry_after": "unchanged",
+        "foreign_target_sha256_after": "4216d77d5df4a50bc737b315d9bbb070a042ee567b52213a35c255ad120d6120",
+        "outcome": "refused"
+      },
+      "foreign_target_fixture": "foreign-notes",
+      "managed_fixture": "managed-root-context",
+      "marker_records_target": false,
+      "mode": "copied",
+      "name": "backup-symlinked-destination-refused",
+      "operation": "backup",
+      "parent_link": {
+        "link_points": "outside"
+      },
+      "takeover_authorized": false,
+      "target": {
+        "kind": "absent",
+        "link_owner": null,
+        "link_points": null
+      }
+    },
+    {
+      "expected": {
+        "backup_holds_link": false,
+        "diagnostic": "environment_write_would_follow_link",
+        "entry_after": "unchanged",
+        "foreign_target_sha256_after": "4216d77d5df4a50bc737b315d9bbb070a042ee567b52213a35c255ad120d6120",
+        "outcome": "refused"
+      },
+      "foreign_target_fixture": "foreign-notes",
+      "managed_fixture": "managed-root-context",
+      "marker_records_target": false,
+      "mode": "copied",
+      "name": "backup-symlinked-target-refused",
+      "operation": "backup",
+      "parent_link": null,
+      "takeover_authorized": false,
+      "target": {
+        "kind": "symlink",
+        "link_owner": "foreign",
+        "link_points": "outside"
+      }
+    },
+    {
+      "expected": {
+        "backup_holds_link": false,
+        "diagnostic": null,
+        "entry_after": "managed-file",
+        "foreign_target_sha256_after": null,
+        "outcome": "written"
+      },
+      "foreign_target_fixture": null,
+      "managed_fixture": "managed-root-context",
+      "marker_records_target": false,
+      "mode": "managed-home",
+      "name": "materialize-clean-path-written",
+      "operation": "materialize",
+      "parent_link": null,
+      "takeover_authorized": false,
+      "target": {
+        "kind": "absent",
+        "link_owner": null,
+        "link_points": null
+      }
+    },
+    {
+      "expected": {
+        "backup_holds_link": false,
+        "diagnostic": "environment_surface_unmanaged_conflict",
+        "entry_after": "unchanged",
+        "foreign_target_sha256_after": "4216d77d5df4a50bc737b315d9bbb070a042ee567b52213a35c255ad120d6120",
+        "outcome": "refused"
+      },
+      "foreign_target_fixture": "foreign-notes",
+      "managed_fixture": "managed-root-context",
+      "marker_records_target": false,
+      "mode": "linked",
+      "name": "takeover-inside-link-unauthorized-unmanaged-conflict",
+      "operation": "takeover",
+      "parent_link": null,
+      "takeover_authorized": false,
+      "target": {
+        "kind": "symlink",
+        "link_owner": "foreign",
+        "link_points": "store"
+      }
+    },
+    {
+      "expected": {
+        "backup_holds_link": false,
+        "diagnostic": null,
+        "entry_after": "managed-file",
+        "foreign_target_sha256_after": null,
+        "outcome": "replaced"
+      },
+      "foreign_target_fixture": null,
+      "managed_fixture": "managed-root-context",
+      "marker_records_target": true,
+      "mode": "copied",
+      "name": "materialize-recorded-file-replaced",
+      "operation": "materialize",
+      "parent_link": null,
+      "takeover_authorized": false,
+      "target": {
+        "kind": "file",
+        "link_owner": null,
+        "link_points": null
+      }
+    }
+  ],
+  "diagnostics": [
+    "environment_write_would_follow_link",
+    "environment_foreign_manager_detected",
+    "environment_surface_unmanaged_conflict"
+  ],
+  "entry_states": [
+    "managed-file",
+    "managed-link",
+    "unchanged"
+  ],
+  "finding": "E5",
+  "fixtures": {
+    "foreign-notes": {
+      "bytes_base64": "IyBvcGVyYXRvciBub3RlcyAoZm9yZWlnbiBtYW5hZ2VyIHNvdXJjZSBvZiB0cnV0aCkKLSByb3RhdGUgdGhlIGRlcGxveSBrZXkK",
+      "description": "bytes living at the foreign link's former target; every foreign-link case asserts these bytes are untouched afterwards",
+      "sha256": "4216d77d5df4a50bc737b315d9bbb070a042ee567b52213a35c255ad120d6120"
+    },
+    "managed-root-context": {
+      "bytes_base64": "IyBnZW5lcmF0ZWQ6IEN1cmF0b3IgUHJvdG9jb2wgZW52aXJvbm1lbnRzIHJldmlzaW9uIDEKIyMgQ29udGV4dDogdW1icmVsbGEgMS4wLjAK",
+      "description": "bytes the manager writes on a successful replace",
+      "sha256": "13a7c5de6adb150db5f0a9f86da97f6753676b96d745ec57e3cd2330255f7fbe"
+    }
+  },
+  "link_points_values": [
+    "outside",
+    "store"
+  ],
+  "modes": [
+    "linked",
+    "copied",
+    "managed-home"
+  ],
+  "outcomes": [
+    "written",
+    "replaced",
+    "refused"
+  ],
+  "protocol_version": "1.0.0-rc.9",
+  "rule": "protocol/environments.md section 8.3.1: a materialization, takeover, repair, or backup write replaces the directory entry (operation-private temp file plus rename) and MUST NOT follow a symlink at the target path or at any path component below the managed root that the manager did not create in this operation. link_points 'outside' means outside the managed root (hence outside the profile store, the section 9.5 foreign-manager stop); link_points 'store' means into the profile store.",
+  "schema_version": 1,
+  "target_kinds": [
+    "absent",
+    "file",
+    "symlink"
+  ],
+  "write_classes": [
+    "materialize",
+    "takeover",
+    "repair",
+    "backup"
+  ]
+}

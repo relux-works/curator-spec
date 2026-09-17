@@ -2330,7 +2330,12 @@ recorded hash; `copied` and `managed-home` surfaces drift when a recorded
 content hash no longer matches. A drifted file is never silently
 overwritten outside repair, and an absent surface file and a failed read
 are different facts: unreadable evidence is reported as unreadable with
-currency unknown, never as absence.
+currency unknown, never as absence. Every materialization, takeover,
+repair, or backup write replaces the directory entry — operation-private
+temp file plus rename — and never follows a symlink at the target or
+below the managed root (environments §8.3.1); a write that would follow
+a link the manager does not own is refused with
+`environment_write_would_follow_link`.
 
 | Condition | Diagnostic (environments §5.7, §7.7, §8.5) |
 |---|---|
@@ -2340,6 +2345,7 @@ currency unknown, never as absence.
 | recorded surface file exists but cannot be read | `environment_surface_unreadable` |
 | write would touch a file the marker does not record | `environment_surface_unmanaged_conflict` |
 | next backup generation directory already exists | `environment_backup_exists` |
+| a write that would traverse a symlink below the managed root, or open through a symlink at a backup, marker, or ledger destination, that the manager did not create | `environment_write_would_follow_link` |
 | two profile names map to one platform path below the environments root | `environment_path_collision` |
 | provisioning seed exists in the native home but cannot be read | `environment_seed_unreadable` |
 

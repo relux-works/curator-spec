@@ -7,6 +7,35 @@ Versioning for the complete specification set.
 
 ### Added
 
+- E5: nofollow write discipline for managed-surface writes (environments
+  §8.3.1, with pointers from §5/§5.8/§7.5/§8.1/§8.4/§9.5/§10.1/§12/§13
+  and the manager profile §12.2): every materialization, takeover,
+  repair, or backup write to a managed surface in any mode, a backup,
+  the marker, or the adapter ledger replaces the directory entry —
+  operation-private temp file plus rename — and MUST NOT follow a
+  symlink at the target path or at any path component below the managed
+  root that the manager did not create in this operation
+  (`O_NOFOLLOW`-class open, `lstat`-class inspection). A manager-owned
+  target link is replaced as an entry; the §9.5 foreign-manager stop
+  keeps its disposition, with an authorized takeover backing up the
+  link itself (same link text, never dereferenced) before replacing
+  the entry; any other unowned target link follows the ledger rule
+  (`environment_surface_unmanaged_conflict` unless a takeover
+  authorization covers the path). One new diagnostic,
+  `environment_write_would_follow_link`, refuses writes that would
+  traverse a non-manager link below the managed root, or open through
+  one at a backup, marker, or ledger destination — no takeover flag
+  authorizes traversal. `env status` reports link-blocked paths as
+  non-current rows naming the path. Direct rollout, under the hood: a
+  tampered or symlinked target now yields a refusal or an
+  entry-replacement, never a write through. Conformance vectors in
+  `vectors/environments-write-nofollow.json` (authorized-takeover
+  replace, unauthorized stop, symlinked-parent refusals under both
+  authorization states, planted-link and manager-owned-link repairs,
+  backup-destination refusal, inside-link ledger refusal, clean-path
+  and recorded-file positives — every foreign-link case asserting the
+  link's former target is byte-identical afterwards), checked
+  semantically by `tools/validate.py`.
 - E1: per-source signer allowlist and `profile update` delta confirmation
   (Decision 0012 amendment 2026-09-17; environments
   §1.1/§1.3/§1.4/§9.2/§9.7/§12/§12.1/§12.2/§13): the new closed machine knob

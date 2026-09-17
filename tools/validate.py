@@ -6398,6 +6398,319 @@ def validate_shell_hook_trust_vectors(vector: Any = None) -> None:
         for field, expected in warning_checks.items():
             if case.get(field) is not expected:
                 raise ValidationFailure(f"shell-hook-trust case {name} field {field} does not follow its trust state")
+
+
+WRITE_NOFOLLOW_WRITE_CLASSES = ("materialize", "takeover", "repair", "backup")
+WRITE_NOFOLLOW_MODES = ("linked", "copied", "managed-home")
+WRITE_NOFOLLOW_OUTCOMES = ("written", "replaced", "refused")
+WRITE_NOFOLLOW_DIAGNOSTICS = (
+    "environment_write_would_follow_link",
+    "environment_foreign_manager_detected",
+    "environment_surface_unmanaged_conflict",
+)
+WRITE_NOFOLLOW_TARGET_KINDS = ("absent", "file", "symlink")
+WRITE_NOFOLLOW_LINK_POINTS = ("outside", "store")
+WRITE_NOFOLLOW_ENTRY_STATES = ("managed-file", "managed-link", "unchanged")
+WRITE_NOFOLLOW_FIXTURES = ("foreign-notes", "managed-root-context")
+# Each required scenario pinned to its discriminating inputs (producer
+# rule 7): a named case rewritten as an internally consistent passing case
+# under the same name must be refused, not merely inventoried.
+WRITE_NOFOLLOW_SCENARIOS = {
+    "takeover-symlinked-target-authorized-replaced": {
+        "operation": "takeover",
+        "mode": "linked",
+        "takeover_authorized": True,
+        "marker_records_target": False,
+        "target_kind": "symlink",
+        "link_owner": "foreign",
+        "link_points": "outside",
+        "parent_link_points": None,
+        "foreign_target_fixture": "foreign-notes",
+    },
+    "takeover-symlinked-target-unauthorized-stopped": {
+        "operation": "takeover",
+        "mode": "linked",
+        "takeover_authorized": False,
+        "marker_records_target": False,
+        "target_kind": "symlink",
+        "link_owner": "foreign",
+        "link_points": "outside",
+        "parent_link_points": None,
+        "foreign_target_fixture": "foreign-notes",
+    },
+    "materialize-symlinked-parent-refused": {
+        "operation": "materialize",
+        "mode": "managed-home",
+        "takeover_authorized": False,
+        "marker_records_target": False,
+        "target_kind": "absent",
+        "link_owner": None,
+        "link_points": None,
+        "parent_link_points": "outside",
+        "foreign_target_fixture": "foreign-notes",
+    },
+    "takeover-symlinked-parent-authorized-still-refused": {
+        "operation": "takeover",
+        "mode": "linked",
+        "takeover_authorized": True,
+        "marker_records_target": False,
+        "target_kind": "symlink",
+        "link_owner": "foreign",
+        "link_points": "outside",
+        "parent_link_points": "outside",
+        "foreign_target_fixture": "foreign-notes",
+    },
+    "repair-planted-link-replaced": {
+        "operation": "repair",
+        "mode": "copied",
+        "takeover_authorized": False,
+        "marker_records_target": True,
+        "target_kind": "symlink",
+        "link_owner": "foreign",
+        "link_points": "outside",
+        "parent_link_points": None,
+        "foreign_target_fixture": "foreign-notes",
+    },
+    "repair-manager-owned-link-replaced": {
+        "operation": "repair",
+        "mode": "linked",
+        "takeover_authorized": False,
+        "marker_records_target": True,
+        "target_kind": "symlink",
+        "link_owner": "manager",
+        "link_points": "store",
+        "parent_link_points": None,
+        "foreign_target_fixture": None,
+    },
+    "backup-symlinked-destination-refused": {
+        "operation": "backup",
+        "mode": "copied",
+        "takeover_authorized": False,
+        "marker_records_target": False,
+        "target_kind": "absent",
+        "link_owner": None,
+        "link_points": None,
+        "parent_link_points": "outside",
+        "foreign_target_fixture": "foreign-notes",
+    },
+    "backup-symlinked-target-refused": {
+        "operation": "backup",
+        "mode": "copied",
+        "takeover_authorized": False,
+        "marker_records_target": False,
+        "target_kind": "symlink",
+        "link_owner": "foreign",
+        "link_points": "outside",
+        "parent_link_points": None,
+        "foreign_target_fixture": "foreign-notes",
+    },
+    "materialize-clean-path-written": {
+        "operation": "materialize",
+        "mode": "managed-home",
+        "takeover_authorized": False,
+        "marker_records_target": False,
+        "target_kind": "absent",
+        "link_owner": None,
+        "link_points": None,
+        "parent_link_points": None,
+        "foreign_target_fixture": None,
+    },
+    "takeover-inside-link-unauthorized-unmanaged-conflict": {
+        "operation": "takeover",
+        "mode": "linked",
+        "takeover_authorized": False,
+        "marker_records_target": False,
+        "target_kind": "symlink",
+        "link_owner": "foreign",
+        "link_points": "store",
+        "parent_link_points": None,
+        "foreign_target_fixture": "foreign-notes",
+    },
+    "materialize-recorded-file-replaced": {
+        "operation": "materialize",
+        "mode": "copied",
+        "takeover_authorized": False,
+        "marker_records_target": True,
+        "target_kind": "file",
+        "link_owner": None,
+        "link_points": None,
+        "parent_link_points": None,
+        "foreign_target_fixture": None,
+    },
+}
+WRITE_NOFOLLOW_CASES = frozenset(WRITE_NOFOLLOW_SCENARIOS)
+
+
+def _validate_write_nofollow_case(name: str, case: dict[str, Any], fixtures: dict[str, Any]) -> None:
+    label = f"environments-write-nofollow case {name}"
+    operation = case.get("operation")
+    if operation not in WRITE_NOFOLLOW_WRITE_CLASSES:
+        raise ValidationFailure(f"{label} names an unknown write class")
+    if case.get("mode") not in WRITE_NOFOLLOW_MODES:
+        raise ValidationFailure(f"{label} names an unknown mode")
+    authorized = case.get("takeover_authorized")
+    recorded = case.get("marker_records_target")
+    if authorized not in (True, False) or recorded not in (True, False):
+        raise ValidationFailure(f"{label} authorization and marker flags must be booleans")
+    target = case.get("target", {})
+    if not isinstance(target, dict):
+        raise ValidationFailure(f"{label} target is not an object")
+    kind = target.get("kind")
+    if kind not in WRITE_NOFOLLOW_TARGET_KINDS:
+        raise ValidationFailure(f"{label} names an unknown target kind")
+    points = target.get("link_points")
+    owner = target.get("link_owner")
+    if kind == "symlink":
+        if points not in WRITE_NOFOLLOW_LINK_POINTS:
+            raise ValidationFailure(f"{label} symlink target must point outside or to the store")
+        if owner not in ("manager", "foreign"):
+            raise ValidationFailure(f"{label} symlink target must be manager- or foreign-owned")
+        if owner == "manager" and not recorded:
+            raise ValidationFailure(f"{label} manager-owned link must be a recorded entry")
+    elif points is not None or owner is not None:
+        raise ValidationFailure(f"{label} non-link target must not carry link fields")
+    parent = case.get("parent_link")
+    if parent is not None and (
+        not isinstance(parent, dict) or parent.get("link_points") not in WRITE_NOFOLLOW_LINK_POINTS
+    ):
+        raise ValidationFailure(f"{label} parent link must point outside or to the store")
+    if case.get("managed_fixture") != "managed-root-context":
+        raise ValidationFailure(f"{label} managed fixture is not managed-root-context")
+
+    pinned = WRITE_NOFOLLOW_SCENARIOS.get(name)
+    actual = {
+        "operation": operation,
+        "mode": case.get("mode"),
+        "takeover_authorized": authorized,
+        "marker_records_target": recorded,
+        "target_kind": kind,
+        "link_owner": owner,
+        "link_points": points,
+        "parent_link_points": parent.get("link_points") if parent is not None else None,
+        "foreign_target_fixture": case.get("foreign_target_fixture"),
+    }
+    if pinned is None or actual != pinned:
+        raise ValidationFailure(f"{label} inputs do not match its pinned scenario")
+
+    # Derive the section 8.3.1 disposition: a non-manager parent link
+    # refuses first, then a manager-private destination naming a link,
+    # then the managed-surface target-link rule, then the clean path.
+    expected_diagnostic: Any = None
+    if parent is not None:
+        expected_outcome = "refused"
+        expected_diagnostic = "environment_write_would_follow_link"
+    elif operation == "backup" and kind == "symlink":
+        # Manager-private destination (§8.3.1): a backup path has no ledger
+        # or takeover machinery of its own, so any pre-existing link at
+        # the destination refuses with the nofollow code — never the
+        # section 9.5 foreign-manager stop.
+        expected_outcome = "refused"
+        expected_diagnostic = "environment_write_would_follow_link"
+    elif kind == "symlink":
+        if recorded or owner == "manager":
+            expected_outcome = "replaced"
+        elif points == "outside":
+            if operation == "takeover" and authorized:
+                expected_outcome = "replaced"
+            else:
+                expected_outcome = "refused"
+                expected_diagnostic = "environment_foreign_manager_detected"
+        elif operation == "takeover" and authorized:
+            expected_outcome = "replaced"
+        else:
+            expected_outcome = "refused"
+            expected_diagnostic = "environment_surface_unmanaged_conflict"
+    elif kind == "absent":
+        expected_outcome = "written"
+    elif recorded:
+        expected_outcome = "replaced"
+    else:
+        raise ValidationFailure(f"{label} unrecorded regular file is outside this vector's scope")
+
+    expected = case.get("expected", {})
+    if expected.get("outcome") != expected_outcome:
+        raise ValidationFailure(f"{label} outcome does not follow the section 8.3.1 disposition")
+    if expected.get("diagnostic") != expected_diagnostic:
+        raise ValidationFailure(f"{label} diagnostic does not follow the section 8.3.1 disposition")
+
+    backup = kind == "symlink" and expected_outcome == "replaced" and not (recorded or owner == "manager")
+    if expected.get("backup_holds_link") is not backup:
+        raise ValidationFailure(f"{label} backup expectation does not follow its disposition")
+
+    if expected_outcome == "refused":
+        expected_entry = "unchanged"
+    elif kind == "symlink" and recorded and case.get("mode") == "linked":
+        expected_entry = "managed-link"
+    else:
+        expected_entry = "managed-file"
+    if expected.get("entry_after") != expected_entry:
+        raise ValidationFailure(f"{label} entry state does not follow its disposition")
+
+    foreign_id = case.get("foreign_target_fixture")
+    foreign_after = expected.get("foreign_target_sha256_after")
+    has_foreign_link = (kind == "symlink" and owner == "foreign") or parent is not None
+    if has_foreign_link:
+        if foreign_id not in fixtures:
+            raise ValidationFailure(f"{label} names an unknown foreign-target fixture")
+        if foreign_after != fixtures[foreign_id]["sha256"]:
+            raise ValidationFailure(f"{label} foreign target is not byte-identical afterwards")
+    elif foreign_id is not None or foreign_after is not None:
+        raise ValidationFailure(f"{label} carries a foreign target without a foreign link")
+
+
+def validate_environments_write_nofollow_vectors(vector: Any = None) -> None:
+    """The environments section 8.3.1 nofollow write-discipline vector.
+
+    Structural validation only: fixture digests are recomputed from the
+    fixture bytes, each named case is pinned to its discriminating inputs,
+    and each case's outcome, diagnostic, backup, entry, and untouched-target
+    values are derived from the section 8.3.1 disposition model. This gate
+    never touches the filesystem; behavioral conformance is owned by the
+    manager implementation task TASK-260916-19shmj.
+    """
+    if vector is None:
+        vector = load_json(SUITE / "vectors" / "environments-write-nofollow.json")
+    if (
+        vector.get("schema_version") != 1
+        or vector.get("protocol_version") != PROTOCOL_VERSION
+        or vector.get("capability") != "agent-environments"
+        or vector.get("capability_revision") != 1
+        or vector.get("finding") != "E5"
+    ):
+        raise ValidationFailure("environments-write-nofollow vector has the wrong capability identity")
+    if vector.get("write_classes") != list(WRITE_NOFOLLOW_WRITE_CLASSES):
+        raise ValidationFailure("environments-write-nofollow write classes are not the closed four-class set")
+    if vector.get("modes") != list(WRITE_NOFOLLOW_MODES):
+        raise ValidationFailure("environments-write-nofollow modes are not the closed three-mode set")
+    if vector.get("outcomes") != list(WRITE_NOFOLLOW_OUTCOMES):
+        raise ValidationFailure("environments-write-nofollow outcomes are not the closed three-outcome set")
+    if vector.get("diagnostics") != list(WRITE_NOFOLLOW_DIAGNOSTICS):
+        raise ValidationFailure("environments-write-nofollow diagnostics are not the closed three-code set")
+    if vector.get("target_kinds") != list(WRITE_NOFOLLOW_TARGET_KINDS):
+        raise ValidationFailure("environments-write-nofollow target kinds are not the closed three-kind set")
+    if vector.get("link_points_values") != list(WRITE_NOFOLLOW_LINK_POINTS):
+        raise ValidationFailure("environments-write-nofollow link-points values are not the closed two-value set")
+    if vector.get("entry_states") != list(WRITE_NOFOLLOW_ENTRY_STATES):
+        raise ValidationFailure("environments-write-nofollow entry states are not the closed three-state set")
+
+    fixtures = vector.get("fixtures", {})
+    if set(fixtures) != set(WRITE_NOFOLLOW_FIXTURES):
+        raise ValidationFailure("environments-write-nofollow fixture inventory is not exact")
+    for fixture_id, fixture in fixtures.items():
+        raw = decode_base64(
+            fixture.get("bytes_base64"),
+            f"environments-write-nofollow fixture {fixture_id} bytes",
+        )
+        if hashlib.sha256(raw).hexdigest() != fixture.get("sha256"):
+            raise ValidationFailure(f"environments-write-nofollow fixture {fixture_id} sha256 does not match its bytes")
+
+    cases = named_cases(vector.get("cases"), "environments write-nofollow")
+    if set(cases) != WRITE_NOFOLLOW_CASES:
+        raise ValidationFailure("environments-write-nofollow case inventory is not exact")
+    for name, case in cases.items():
+        _validate_write_nofollow_case(name, case, fixtures)
+
+
 UMBRELLA_PROVIDER_DIAGNOSTICS = {
     "subcommand_provider_missing",
     "subcommand_provider_untrusted",
@@ -6765,6 +7078,7 @@ def main() -> int:
         validate_context_detector_vectors,
         validate_snapshot_acquisition_vectors,
         validate_shell_hook_trust_vectors,
+        validate_environments_write_nofollow_vectors,
         validate_registry_page_boundary_vectors,
         validate_registry_checkpoint_vectors,
         validate_manager_config_vectors,
