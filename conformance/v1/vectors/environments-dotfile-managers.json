@@ -1,0 +1,514 @@
+{
+  "capability": "agent-environments",
+  "capability_revision": 1,
+  "cases": [
+    {
+      "env": {},
+      "expected": {
+        "blocks": false,
+        "names_manager": "chezmoi",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "/home/operator/.local/share/chezmoi"
+      },
+      "home": "/home/operator",
+      "name": "chezmoi-linux-present-suspected",
+      "platform": "linux",
+      "states": {
+        "chezmoi": "directory",
+        "dotbot": null,
+        "home-manager": "absent",
+        "stow": null,
+        "yadm": "absent"
+      }
+    },
+    {
+      "env": {},
+      "expected": {
+        "blocks": false,
+        "names_manager": "chezmoi",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "/Users/operator/.local/share/chezmoi"
+      },
+      "home": "/Users/operator",
+      "name": "chezmoi-macos-present-suspected",
+      "platform": "macos",
+      "states": {
+        "chezmoi": "directory",
+        "dotbot": null,
+        "home-manager": "absent",
+        "stow": null,
+        "yadm": "absent"
+      }
+    },
+    {
+      "env": {},
+      "expected": {
+        "blocks": false,
+        "names_manager": "chezmoi",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "C:\\Users\\operator\\.local\\share\\chezmoi"
+      },
+      "home": "C:\\Users\\operator",
+      "name": "chezmoi-windows-present-suspected",
+      "platform": "windows",
+      "states": {
+        "chezmoi": "directory",
+        "dotbot": null,
+        "home-manager": null,
+        "stow": null,
+        "yadm": null
+      }
+    },
+    {
+      "env": {},
+      "expected": {
+        "blocks": false,
+        "names_manager": "home-manager",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "/home/operator/.config/home-manager"
+      },
+      "home": "/home/operator",
+      "name": "home-manager-linux-present-suspected",
+      "platform": "linux",
+      "states": {
+        "chezmoi": "absent",
+        "dotbot": null,
+        "home-manager": "directory",
+        "stow": null,
+        "yadm": "absent"
+      }
+    },
+    {
+      "env": {},
+      "expected": {
+        "blocks": false,
+        "names_manager": "home-manager",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "/Users/operator/.config/home-manager"
+      },
+      "home": "/Users/operator",
+      "name": "home-manager-macos-present-suspected",
+      "platform": "macos",
+      "states": {
+        "chezmoi": "absent",
+        "dotbot": null,
+        "home-manager": "directory",
+        "stow": null,
+        "yadm": "absent"
+      }
+    },
+    {
+      "env": {},
+      "expected": {
+        "blocks": false,
+        "names_manager": "yadm",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "/home/operator/.local/share/yadm"
+      },
+      "home": "/home/operator",
+      "name": "yadm-linux-present-suspected",
+      "platform": "linux",
+      "states": {
+        "chezmoi": "absent",
+        "dotbot": null,
+        "home-manager": "absent",
+        "stow": null,
+        "yadm": "directory"
+      }
+    },
+    {
+      "env": {},
+      "expected": {
+        "blocks": false,
+        "names_manager": "yadm",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "/Users/operator/.local/share/yadm"
+      },
+      "home": "/Users/operator",
+      "name": "yadm-macos-present-suspected",
+      "platform": "macos",
+      "states": {
+        "chezmoi": "absent",
+        "dotbot": null,
+        "home-manager": "absent",
+        "stow": null,
+        "yadm": "directory"
+      }
+    },
+    {
+      "env": {},
+      "expected": {
+        "blocks": false,
+        "names_manager": null,
+        "notice": null,
+        "resolved_path": null
+      },
+      "home": "/home/operator",
+      "name": "linux-all-absent-quiet",
+      "platform": "linux",
+      "states": {
+        "chezmoi": "absent",
+        "dotbot": null,
+        "home-manager": "absent",
+        "stow": null,
+        "yadm": "absent"
+      }
+    },
+    {
+      "env": {},
+      "expected": {
+        "blocks": false,
+        "names_manager": null,
+        "notice": null,
+        "resolved_path": null
+      },
+      "home": "/Users/operator",
+      "name": "macos-all-absent-quiet",
+      "platform": "macos",
+      "states": {
+        "chezmoi": "absent",
+        "dotbot": null,
+        "home-manager": "absent",
+        "stow": null,
+        "yadm": "absent"
+      }
+    },
+    {
+      "env": {},
+      "expected": {
+        "blocks": false,
+        "names_manager": null,
+        "notice": null,
+        "resolved_path": null
+      },
+      "home": "C:\\Users\\operator",
+      "name": "windows-all-absent-quiet",
+      "platform": "windows",
+      "states": {
+        "chezmoi": "absent",
+        "dotbot": null,
+        "home-manager": null,
+        "stow": null,
+        "yadm": null
+      }
+    },
+    {
+      "env": {
+        "XDG_DATA_HOME": "/data"
+      },
+      "expected": {
+        "blocks": false,
+        "names_manager": "chezmoi",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "/data/chezmoi"
+      },
+      "home": "/home/operator",
+      "name": "chezmoi-linux-xdg-data-home-relocated",
+      "platform": "linux",
+      "states": {
+        "chezmoi": "directory",
+        "dotbot": null,
+        "home-manager": "absent",
+        "stow": null,
+        "yadm": "absent"
+      }
+    },
+    {
+      "env": {
+        "XDG_DATA_HOME": ""
+      },
+      "expected": {
+        "blocks": false,
+        "names_manager": "chezmoi",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "/home/operator/.local/share/chezmoi"
+      },
+      "home": "/home/operator",
+      "name": "chezmoi-linux-xdg-data-home-empty-uses-default",
+      "platform": "linux",
+      "states": {
+        "chezmoi": "directory",
+        "dotbot": null,
+        "home-manager": "absent",
+        "stow": null,
+        "yadm": "absent"
+      }
+    },
+    {
+      "env": {
+        "XDG_DATA_HOME": "rel/path"
+      },
+      "expected": {
+        "blocks": false,
+        "names_manager": "chezmoi",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "/home/operator/.local/share/chezmoi"
+      },
+      "home": "/home/operator",
+      "name": "chezmoi-linux-xdg-data-home-relative-uses-default",
+      "platform": "linux",
+      "states": {
+        "chezmoi": "directory",
+        "dotbot": null,
+        "home-manager": "absent",
+        "stow": null,
+        "yadm": "absent"
+      }
+    },
+    {
+      "env": {
+        "XDG_CONFIG_HOME": "/cfg"
+      },
+      "expected": {
+        "blocks": false,
+        "names_manager": "home-manager",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "/cfg/home-manager"
+      },
+      "home": "/home/operator",
+      "name": "home-manager-linux-xdg-config-home-relocated",
+      "platform": "linux",
+      "states": {
+        "chezmoi": "absent",
+        "dotbot": null,
+        "home-manager": "directory",
+        "stow": null,
+        "yadm": "absent"
+      }
+    },
+    {
+      "env": {
+        "XDG_CONFIG_HOME": "rel/cfg"
+      },
+      "expected": {
+        "blocks": false,
+        "names_manager": "home-manager",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "/home/operator/.config/home-manager"
+      },
+      "home": "/home/operator",
+      "name": "home-manager-linux-xdg-config-home-relative-uses-default",
+      "platform": "linux",
+      "states": {
+        "chezmoi": "absent",
+        "dotbot": null,
+        "home-manager": "directory",
+        "stow": null,
+        "yadm": "absent"
+      }
+    },
+    {
+      "env": {
+        "XDG_DATA_HOME": "/Volumes/data"
+      },
+      "expected": {
+        "blocks": false,
+        "names_manager": "yadm",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "/Volumes/data/yadm"
+      },
+      "home": "/Users/operator",
+      "name": "yadm-macos-xdg-data-home-relocated",
+      "platform": "macos",
+      "states": {
+        "chezmoi": "absent",
+        "dotbot": null,
+        "home-manager": "absent",
+        "stow": null,
+        "yadm": "directory"
+      }
+    },
+    {
+      "env": {
+        "XDG_DATA_HOME": "D:\\data"
+      },
+      "expected": {
+        "blocks": false,
+        "names_manager": "chezmoi",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "D:\\data\\chezmoi"
+      },
+      "home": "C:\\Users\\operator",
+      "name": "chezmoi-windows-xdg-data-home-relocated",
+      "platform": "windows",
+      "states": {
+        "chezmoi": "directory",
+        "dotbot": null,
+        "home-manager": null,
+        "stow": null,
+        "yadm": null
+      }
+    },
+    {
+      "env": {},
+      "expected": {
+        "blocks": false,
+        "names_manager": null,
+        "notice": null,
+        "resolved_path": null
+      },
+      "home": "/home/operator",
+      "name": "chezmoi-linux-symlink-quiet",
+      "platform": "linux",
+      "states": {
+        "chezmoi": "symlink",
+        "dotbot": null,
+        "home-manager": "absent",
+        "stow": null,
+        "yadm": "absent"
+      }
+    },
+    {
+      "env": {},
+      "expected": {
+        "blocks": false,
+        "names_manager": null,
+        "notice": null,
+        "resolved_path": null
+      },
+      "home": "/home/operator",
+      "name": "yadm-linux-regular-file-quiet",
+      "platform": "linux",
+      "states": {
+        "chezmoi": "absent",
+        "dotbot": null,
+        "home-manager": "absent",
+        "stow": null,
+        "yadm": "file"
+      }
+    },
+    {
+      "env": {},
+      "expected": {
+        "blocks": false,
+        "names_manager": null,
+        "notice": null,
+        "resolved_path": null
+      },
+      "home": "/home/operator",
+      "name": "home-manager-linux-unreadable-quiet",
+      "platform": "linux",
+      "states": {
+        "chezmoi": "absent",
+        "dotbot": null,
+        "home-manager": "unreadable",
+        "stow": null,
+        "yadm": "absent"
+      }
+    },
+    {
+      "env": {},
+      "expected": {
+        "blocks": false,
+        "names_manager": "chezmoi",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "/home/operator/.local/share/chezmoi"
+      },
+      "home": "/home/operator",
+      "name": "linux-chezmoi-and-yadm-names-chezmoi",
+      "platform": "linux",
+      "states": {
+        "chezmoi": "directory",
+        "dotbot": null,
+        "home-manager": "absent",
+        "stow": null,
+        "yadm": "directory"
+      }
+    },
+    {
+      "env": {},
+      "expected": {
+        "blocks": false,
+        "names_manager": "home-manager",
+        "notice": "environment_foreign_manager_suspected",
+        "resolved_path": "/Users/operator/.config/home-manager"
+      },
+      "home": "/Users/operator",
+      "name": "macos-home-manager-and-yadm-names-home-manager",
+      "platform": "macos",
+      "states": {
+        "chezmoi": "absent",
+        "dotbot": null,
+        "home-manager": "directory",
+        "stow": null,
+        "yadm": "directory"
+      }
+    }
+  ],
+  "diagnostic": "environment_foreign_manager_suspected",
+  "location_states": [
+    "directory",
+    "absent",
+    "symlink",
+    "file",
+    "unreadable"
+  ],
+  "managers": [
+    "chezmoi",
+    "home-manager",
+    "yadm",
+    "stow",
+    "dotbot"
+  ],
+  "platforms": [
+    "macos",
+    "linux",
+    "windows"
+  ],
+  "protocol_version": "1.0.0-rc.9",
+  "rule": "environments section 9.5 dotfile-manager state table",
+  "schema_version": 1,
+  "table": [
+    {
+      "linux": {
+        "base": "XDG_DATA_HOME",
+        "leaf": "chezmoi"
+      },
+      "macos": {
+        "base": "XDG_DATA_HOME",
+        "leaf": "chezmoi"
+      },
+      "manager": "chezmoi",
+      "windows": {
+        "base": "XDG_DATA_HOME",
+        "leaf": "chezmoi"
+      }
+    },
+    {
+      "linux": {
+        "base": "XDG_CONFIG_HOME",
+        "leaf": "home-manager"
+      },
+      "macos": {
+        "base": "XDG_CONFIG_HOME",
+        "leaf": "home-manager"
+      },
+      "manager": "home-manager",
+      "windows": null
+    },
+    {
+      "linux": {
+        "base": "XDG_DATA_HOME",
+        "leaf": "yadm"
+      },
+      "macos": {
+        "base": "XDG_DATA_HOME",
+        "leaf": "yadm"
+      },
+      "manager": "yadm",
+      "windows": null
+    },
+    {
+      "linux": null,
+      "macos": null,
+      "manager": "stow",
+      "windows": null
+    },
+    {
+      "linux": null,
+      "macos": null,
+      "manager": "dotbot",
+      "windows": null
+    }
+  ]
+}

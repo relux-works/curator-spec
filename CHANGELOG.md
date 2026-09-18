@@ -7,6 +7,36 @@ Versioning for the complete specification set.
 
 ### Added
 
+- STORY-260916-12lbww: one closed per-manager, per-platform
+  dotfile-manager state table for the section 9.5 onboarding heuristic
+  (environments §9.5/§13), replacing the by-example POSIX-only list: one
+  row per manager — `chezmoi`, `home-manager`, `yadm`, `stow`, `dotbot`,
+  in that order — with the well-known state location on macOS, Linux,
+  and Windows or an explicit `none`, every cell `verified` against the
+  manager's own documentation or source (chezmoi's `defaultSourceDir`
+  over `go-xdg`, so `%USERPROFILE%\.local\share\chezmoi` on Windows and
+  not `%LOCALAPPDATA%`; home-manager's launcher honoring
+  `$XDG_CONFIG_HOME`; yadm's `set_yadm_dirs` honoring `$XDG_DATA_HOME`;
+  stow storing no state between runs; dotbot keeping its config in the
+  operator's own repo at any path). Resolution is stated per platform:
+  the OS-reported home (`$HOME`, `%USERPROFILE%`), the XDG override
+  rule with defaults (unset, empty, or relative falls back), and the
+  Windows `%LOCALAPPDATA%`/`%APPDATA%` roots defined for future rows; a
+  location is present only as a directory under `lstat` (a symlink, a
+  regular file, or an unreadable path is quiet, never reported as
+  absent); the notice names the first present row in table order and
+  never blocks; a conforming manager's list is exactly this table, so a
+  table change is a spec revision. Rollout is direct: the default path
+  spellings are unchanged, but detection semantics change — XDG
+  relocation is now honoured and a symlinked directory no longer
+  counts as present — with no manager change in this leaf.
+  Conformance vectors in
+  `vectors/environments-dotfile-managers.json` (one suspected case per
+  located cell, one quiet case per platform, XDG override/empty/relative
+  cases including a home-manager relative case pinning the heuristic's
+  default-fallback policy, symlink/file/unreadable quiet cases, two
+  table-order cases),
+  checked by `validate_environments_dotfile_managers_vectors`.
 - STORY-260916-1ll22r: absence-versus-read-failure discipline stated once
   (environments §1.1/§1.3/§4/§7.1/§7.3/§7.4/§7.5/§7.6/§7.7/§8.2/§8.3/§8.4/
   §9.4/§9.5/§9.6/§10.1/§10.4/§11/§12/§13, manager §12.2/§12.5/§12.7): new

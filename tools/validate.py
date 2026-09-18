@@ -8271,6 +8271,456 @@ def validate_environments_write_nofollow_vectors(vector: Any = None) -> None:
         _validate_write_nofollow_case(name, case, fixtures)
 
 
+DOTFILE_MANAGERS = ("chezmoi", "home-manager", "yadm", "stow", "dotbot")
+DOTFILE_PLATFORMS = ("macos", "linux", "windows")
+DOTFILE_LOCATION_STATES = ("directory", "absent", "symlink", "file", "unreadable")
+DOTFILE_DIAGNOSTIC = "environment_foreign_manager_suspected"
+DOTFILE_RULE = "environments section 9.5 dotfile-manager state table"
+DOTFILE_ENV_KEYS = ("XDG_DATA_HOME", "XDG_CONFIG_HOME")
+# The section 9.5 closed table, pinned cell by cell: each located cell is
+# (xdg base variable, leaf name); None is an explicit none — there is no
+# path to check on that platform. Row order is the heuristic scan order:
+# the notice names the first row in this order whose location is present.
+DOTFILE_TABLE = {
+    "chezmoi": {
+        "macos": ("XDG_DATA_HOME", "chezmoi"),
+        "linux": ("XDG_DATA_HOME", "chezmoi"),
+        "windows": ("XDG_DATA_HOME", "chezmoi"),
+    },
+    "home-manager": {
+        "macos": ("XDG_CONFIG_HOME", "home-manager"),
+        "linux": ("XDG_CONFIG_HOME", "home-manager"),
+        "windows": None,
+    },
+    "yadm": {
+        "macos": ("XDG_DATA_HOME", "yadm"),
+        "linux": ("XDG_DATA_HOME", "yadm"),
+        "windows": None,
+    },
+    "stow": {"macos": None, "linux": None, "windows": None},
+    "dotbot": {"macos": None, "linux": None, "windows": None},
+}
+DOTFILE_CASE_KEYS = frozenset({"name", "platform", "home", "env", "states", "expected"})
+DOTFILE_EXPECTED_KEYS = frozenset({"notice", "names_manager", "resolved_path", "blocks"})
+# Each required scenario pinned to its discriminating inputs (producer
+# rule 7): a named case rewritten as an internally consistent passing
+# case under the same name must be refused, not merely inventoried.
+DOTFILE_SCENARIOS = {
+    "chezmoi-linux-present-suspected": {
+        "platform": "linux",
+        "home": "/home/operator",
+        "env": {},
+        "states": {
+            "chezmoi": "directory",
+            "dotbot": None,
+            "home-manager": "absent",
+            "stow": None,
+            "yadm": "absent",
+        },
+    },
+    "chezmoi-macos-present-suspected": {
+        "platform": "macos",
+        "home": "/Users/operator",
+        "env": {},
+        "states": {
+            "chezmoi": "directory",
+            "dotbot": None,
+            "home-manager": "absent",
+            "stow": None,
+            "yadm": "absent",
+        },
+    },
+    "chezmoi-windows-present-suspected": {
+        "platform": "windows",
+        "home": "C:\\Users\\operator",
+        "env": {},
+        "states": {
+            "chezmoi": "directory",
+            "dotbot": None,
+            "home-manager": None,
+            "stow": None,
+            "yadm": None,
+        },
+    },
+    "home-manager-linux-present-suspected": {
+        "platform": "linux",
+        "home": "/home/operator",
+        "env": {},
+        "states": {
+            "chezmoi": "absent",
+            "dotbot": None,
+            "home-manager": "directory",
+            "stow": None,
+            "yadm": "absent",
+        },
+    },
+    "home-manager-macos-present-suspected": {
+        "platform": "macos",
+        "home": "/Users/operator",
+        "env": {},
+        "states": {
+            "chezmoi": "absent",
+            "dotbot": None,
+            "home-manager": "directory",
+            "stow": None,
+            "yadm": "absent",
+        },
+    },
+    "yadm-linux-present-suspected": {
+        "platform": "linux",
+        "home": "/home/operator",
+        "env": {},
+        "states": {
+            "chezmoi": "absent",
+            "dotbot": None,
+            "home-manager": "absent",
+            "stow": None,
+            "yadm": "directory",
+        },
+    },
+    "yadm-macos-present-suspected": {
+        "platform": "macos",
+        "home": "/Users/operator",
+        "env": {},
+        "states": {
+            "chezmoi": "absent",
+            "dotbot": None,
+            "home-manager": "absent",
+            "stow": None,
+            "yadm": "directory",
+        },
+    },
+    "linux-all-absent-quiet": {
+        "platform": "linux",
+        "home": "/home/operator",
+        "env": {},
+        "states": {
+            "chezmoi": "absent",
+            "dotbot": None,
+            "home-manager": "absent",
+            "stow": None,
+            "yadm": "absent",
+        },
+    },
+    "macos-all-absent-quiet": {
+        "platform": "macos",
+        "home": "/Users/operator",
+        "env": {},
+        "states": {
+            "chezmoi": "absent",
+            "dotbot": None,
+            "home-manager": "absent",
+            "stow": None,
+            "yadm": "absent",
+        },
+    },
+    "windows-all-absent-quiet": {
+        "platform": "windows",
+        "home": "C:\\Users\\operator",
+        "env": {},
+        "states": {
+            "chezmoi": "absent",
+            "dotbot": None,
+            "home-manager": None,
+            "stow": None,
+            "yadm": None,
+        },
+    },
+    "chezmoi-linux-xdg-data-home-relocated": {
+        "platform": "linux",
+        "home": "/home/operator",
+        "env": {"XDG_DATA_HOME": "/data"},
+        "states": {
+            "chezmoi": "directory",
+            "dotbot": None,
+            "home-manager": "absent",
+            "stow": None,
+            "yadm": "absent",
+        },
+    },
+    "chezmoi-linux-xdg-data-home-empty-uses-default": {
+        "platform": "linux",
+        "home": "/home/operator",
+        "env": {"XDG_DATA_HOME": ""},
+        "states": {
+            "chezmoi": "directory",
+            "dotbot": None,
+            "home-manager": "absent",
+            "stow": None,
+            "yadm": "absent",
+        },
+    },
+    "chezmoi-linux-xdg-data-home-relative-uses-default": {
+        "platform": "linux",
+        "home": "/home/operator",
+        "env": {"XDG_DATA_HOME": "rel/path"},
+        "states": {
+            "chezmoi": "directory",
+            "dotbot": None,
+            "home-manager": "absent",
+            "stow": None,
+            "yadm": "absent",
+        },
+    },
+    "home-manager-linux-xdg-config-home-relocated": {
+        "platform": "linux",
+        "home": "/home/operator",
+        "env": {"XDG_CONFIG_HOME": "/cfg"},
+        "states": {
+            "chezmoi": "absent",
+            "dotbot": None,
+            "home-manager": "directory",
+            "stow": None,
+            "yadm": "absent",
+        },
+    },
+    "home-manager-linux-xdg-config-home-relative-uses-default": {
+        "platform": "linux",
+        "home": "/home/operator",
+        "env": {"XDG_CONFIG_HOME": "rel/cfg"},
+        "states": {
+            "chezmoi": "absent",
+            "dotbot": None,
+            "home-manager": "directory",
+            "stow": None,
+            "yadm": "absent",
+        },
+    },
+    "yadm-macos-xdg-data-home-relocated": {
+        "platform": "macos",
+        "home": "/Users/operator",
+        "env": {"XDG_DATA_HOME": "/Volumes/data"},
+        "states": {
+            "chezmoi": "absent",
+            "dotbot": None,
+            "home-manager": "absent",
+            "stow": None,
+            "yadm": "directory",
+        },
+    },
+    "chezmoi-windows-xdg-data-home-relocated": {
+        "platform": "windows",
+        "home": "C:\\Users\\operator",
+        "env": {"XDG_DATA_HOME": "D:\\data"},
+        "states": {
+            "chezmoi": "directory",
+            "dotbot": None,
+            "home-manager": None,
+            "stow": None,
+            "yadm": None,
+        },
+    },
+    "chezmoi-linux-symlink-quiet": {
+        "platform": "linux",
+        "home": "/home/operator",
+        "env": {},
+        "states": {
+            "chezmoi": "symlink",
+            "dotbot": None,
+            "home-manager": "absent",
+            "stow": None,
+            "yadm": "absent",
+        },
+    },
+    "yadm-linux-regular-file-quiet": {
+        "platform": "linux",
+        "home": "/home/operator",
+        "env": {},
+        "states": {
+            "chezmoi": "absent",
+            "dotbot": None,
+            "home-manager": "absent",
+            "stow": None,
+            "yadm": "file",
+        },
+    },
+    "home-manager-linux-unreadable-quiet": {
+        "platform": "linux",
+        "home": "/home/operator",
+        "env": {},
+        "states": {
+            "chezmoi": "absent",
+            "dotbot": None,
+            "home-manager": "unreadable",
+            "stow": None,
+            "yadm": "absent",
+        },
+    },
+    "linux-chezmoi-and-yadm-names-chezmoi": {
+        "platform": "linux",
+        "home": "/home/operator",
+        "env": {},
+        "states": {
+            "chezmoi": "directory",
+            "dotbot": None,
+            "home-manager": "absent",
+            "stow": None,
+            "yadm": "directory",
+        },
+    },
+    "macos-home-manager-and-yadm-names-home-manager": {
+        "platform": "macos",
+        "home": "/Users/operator",
+        "env": {},
+        "states": {
+            "chezmoi": "absent",
+            "dotbot": None,
+            "home-manager": "directory",
+            "stow": None,
+            "yadm": "directory",
+        },
+    },
+}
+DOTFILE_CASES = frozenset(DOTFILE_SCENARIOS)
+
+
+def _dotfile_is_absolute(platform: str, value: str) -> bool:
+    if platform == "windows":
+        return value.startswith("\\\\") or re.match(r"^[A-Za-z]:[\\/]", value) is not None
+    return value.startswith("/")
+
+
+def _dotfile_join(platform: str, base: str, *rest: str) -> str:
+    sep = "\\" if platform == "windows" else "/"
+    out = base
+    for part in rest:
+        out += sep + part
+    return out
+
+
+def _dotfile_resolve(
+    platform: str, home: str, env: dict[str, Any], cell: tuple[str, str] | None
+) -> str | None:
+    if cell is None:
+        return None
+    base, leaf = cell
+    override = env.get(base, "")
+    if isinstance(override, str) and override and _dotfile_is_absolute(platform, override):
+        root = override
+    elif base == "XDG_DATA_HOME":
+        root = _dotfile_join(platform, home, ".local", "share")
+    else:
+        root = _dotfile_join(platform, home, ".config")
+    return _dotfile_join(platform, root, leaf)
+
+
+def _validate_dotfile_case(name: str, case: dict[str, Any]) -> None:
+    label = f"environments-dotfile-managers case {name}"
+    if set(case) != DOTFILE_CASE_KEYS:
+        raise ValidationFailure(f"{label} is not exactly {{ name, platform, home, env, states, expected }}")
+    platform = case.get("platform")
+    if platform not in DOTFILE_PLATFORMS:
+        raise ValidationFailure(f"{label} names an unknown platform")
+    home = case.get("home")
+    if not isinstance(home, str) or not home or not _dotfile_is_absolute(platform, home):
+        raise ValidationFailure(f"{label} home is not a non-empty absolute path")
+    env = case.get("env")
+    if not isinstance(env, dict) or any(key not in DOTFILE_ENV_KEYS for key in env):
+        raise ValidationFailure(f"{label} env carries a variable outside the closed XDG pair")
+    for key, value in env.items():
+        if not isinstance(value, str) or value.endswith(("/", "\\")):
+            raise ValidationFailure(f"{label} env {key} is not a string without a trailing separator")
+    states = case.get("states")
+    if not isinstance(states, dict) or set(states) != set(DOTFILE_MANAGERS):
+        raise ValidationFailure(f"{label} states do not cover exactly the five managers")
+    for manager in DOTFILE_MANAGERS:
+        cell = DOTFILE_TABLE[manager][platform]
+        state = states[manager]
+        if cell is None:
+            if state is not None:
+                raise ValidationFailure(
+                    f"{label} inspects a none cell ({manager} has no path on {platform})"
+                )
+        elif state not in DOTFILE_LOCATION_STATES:
+            raise ValidationFailure(f"{label} {manager} state is outside the closed five-state set")
+    pinned = DOTFILE_SCENARIOS.get(name)
+    actual = {"platform": platform, "home": home, "env": env, "states": states}
+    if pinned is None or actual != pinned:
+        raise ValidationFailure(f"{label} inputs do not match its pinned scenario")
+    resolved = {
+        manager: _dotfile_resolve(platform, home, env, DOTFILE_TABLE[manager][platform])
+        for manager in DOTFILE_MANAGERS
+    }
+    winner = next((manager for manager in DOTFILE_MANAGERS if states[manager] == "directory"), None)
+    expected = case.get("expected")
+    if not isinstance(expected, dict) or set(expected) != DOTFILE_EXPECTED_KEYS:
+        raise ValidationFailure(f"{label} expected is not the closed four-field set")
+    if expected.get("blocks") is not False:
+        raise ValidationFailure(f"{label} heuristic blocks; the section 9.5 heuristic never blocks")
+    if (
+        expected.get("notice") != (DOTFILE_DIAGNOSTIC if winner else None)
+        or expected.get("names_manager") != winner
+        or expected.get("resolved_path") != (resolved[winner] if winner else None)
+    ):
+        raise ValidationFailure(f"{label} notice does not follow the table-order first-present rule")
+
+
+def validate_environments_dotfile_managers_vectors(vector: Any = None) -> None:
+    """The environments section 9.5 dotfile-manager state-table vector.
+
+    Structural validation only: the closed manager order, platform set,
+    location-state vocabulary, and the table itself are pinned cell by
+    cell; each named case is pinned to its discriminating inputs; and
+    every resolved path, notice, and named manager is recomputed from
+    the section 9.5 resolution rules. This gate never touches the
+    filesystem; behavioral conformance is owned by the manager
+    implementation task created after this spec lands (STORY-260916-12lbww).
+    """
+    if vector is None:
+        vector = load_json(SUITE / "vectors" / "environments-dotfile-managers.json")
+    if (
+        vector.get("schema_version") != 1
+        or vector.get("protocol_version") != PROTOCOL_VERSION
+        or vector.get("capability") != "agent-environments"
+        or vector.get("capability_revision") != 1
+        or vector.get("rule") != DOTFILE_RULE
+    ):
+        raise ValidationFailure("environments-dotfile-managers vector has the wrong capability identity")
+    if vector.get("managers") != list(DOTFILE_MANAGERS):
+        raise ValidationFailure("environments-dotfile-managers managers are not the closed ordered five-manager set")
+    if vector.get("platforms") != list(DOTFILE_PLATFORMS):
+        raise ValidationFailure("environments-dotfile-managers platforms are not the closed three-platform set")
+    if vector.get("location_states") != list(DOTFILE_LOCATION_STATES):
+        raise ValidationFailure("environments-dotfile-managers location states are not the closed five-state set")
+    if vector.get("diagnostic") != DOTFILE_DIAGNOSTIC:
+        raise ValidationFailure(
+            "environments-dotfile-managers diagnostic is not environment_foreign_manager_suspected"
+        )
+    rows = vector.get("table")
+    if (
+        not isinstance(rows, list)
+        or [row.get("manager") for row in rows if isinstance(row, dict)] != list(DOTFILE_MANAGERS)
+    ):
+        raise ValidationFailure("environments-dotfile-managers table rows are not the closed ordered five-manager set")
+    for row in rows:
+        manager = row["manager"]
+        if set(row) != {"manager", "macos", "linux", "windows"}:
+            raise ValidationFailure(
+                f"environments-dotfile-managers table row {manager} is not exactly one cell per platform"
+            )
+        for platform in DOTFILE_PLATFORMS:
+            want = DOTFILE_TABLE[manager][platform]
+            cell = row[platform]
+            if want is None:
+                if cell is not None:
+                    raise ValidationFailure(
+                        f"environments-dotfile-managers table cell {manager}/{platform} is not the pinned none"
+                    )
+            elif (
+                not isinstance(cell, dict)
+                or set(cell) != {"base", "leaf"}
+                or (cell.get("base"), cell.get("leaf")) != want
+            ):
+                raise ValidationFailure(
+                    f"environments-dotfile-managers table cell {manager}/{platform} is not the pinned location"
+                )
+    cases = named_cases(vector.get("cases"), "environments dotfile managers")
+    if set(cases) != DOTFILE_CASES:
+        raise ValidationFailure("environments-dotfile-managers case inventory is not exact")
+    for name, case in cases.items():
+        _validate_dotfile_case(name, case)
+
+
 READ_FAILURE_DIAGNOSTICS = (
     "environment_backup_record_unreadable",
     "environment_home_stale",
@@ -10189,6 +10639,7 @@ def main() -> int:
         validate_snapshot_acquisition_vectors,
         validate_shell_hook_trust_vectors,
         validate_environments_write_nofollow_vectors,
+        validate_environments_dotfile_managers_vectors,
         validate_environments_read_failure_vectors,
         validate_registry_page_boundary_vectors,
         validate_registry_checkpoint_vectors,

@@ -4361,6 +4361,10 @@
       "sha256": "sha256:d7a6e24f783b72eecd5bed3e13db5ab7a0a286bca10289b8034a73d3f36b750f"
     },
     {
+      "path": "vectors/environments-dotfile-managers.json",
+      "sha256": "sha256:9c883a3dbc8f3210450adf9f9c23439c1289fa7aedefbe8e89d9cd3a6453edc4"
+    },
+    {
       "path": "vectors/environments-env-passthrough.json",
       "sha256": "sha256:1953748e548d4f335f9defa4baa1524998d29dab4bf36647fb8c8bcbdcabf6db"
     },

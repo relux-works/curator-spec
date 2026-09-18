@@ -4210,6 +4210,238 @@ class WriteNofollowVectorTests(unittest.TestCase):
             validate.validate_environments_write_nofollow_vectors(changed)
 
 
+class DotfileManagersVectorTests(unittest.TestCase):
+    """The environments §9.5 dotfile-manager state table must fail closed.
+
+    Each test narrows one rule of
+    validate_environments_dotfile_managers_vectors: a table row or cell
+    that drifts from the pinned table, a resolved path that drifts from
+    the XDG resolution rules, a notice that misnames the first-present
+    manager or fires on a symlink, a blocking heuristic, a quiet case
+    rewritten as suspected (or the reverse) under a retained name, or a
+    dropped case must be rejected.
+    """
+
+    VECTOR_PATH = "vectors/environments-dotfile-managers.json"
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(validate.SUITE / self.VECTOR_PATH)
+
+    def case(self, name: str, vector=None) -> dict:
+        for item in (vector or self.vector)["cases"]:
+            if item["name"] == name:
+                return item
+        raise AssertionError(f"environments-dotfile-managers case {name} is missing")
+
+    def run_main_with_vector(self, vector: dict) -> tuple[int, str]:
+        """Run the real validate.main() against a substituted on-disk corpus.
+
+        The mutated vector is written to the worktree with the manifest and
+        rc.9 pins recomputed around it, so the only failing check can be the
+        dotfile-managers gate itself; all three files are restored
+        byte-identical afterwards.
+        """
+        vector_path = validate.SUITE / self.VECTOR_PATH
+        manifest_path = validate.SUITE / "manifest.json"
+        rc9_path = validate.ROOT / "release" / "1.0.0-rc.9.json"
+        originals = {path: path.read_bytes() for path in (vector_path, manifest_path, rc9_path)}
+        try:
+            vector_bytes = (json.dumps(vector, indent=2, sort_keys=True) + "\n").encode("utf-8")
+            vector_path.write_bytes(vector_bytes)
+            manifest = json.loads(originals[manifest_path].decode("utf-8"))
+            for entry in manifest["files"]:
+                if entry["path"] == self.VECTOR_PATH:
+                    entry["sha256"] = "sha256:" + hashlib.sha256(vector_bytes).hexdigest()
+            manifest_bytes = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8")
+            manifest_path.write_bytes(manifest_bytes)
+            release = json.loads(originals[rc9_path].decode("utf-8"))
+            manifest_digest = "sha256:" + hashlib.sha256(manifest_bytes).hexdigest()
+            release["candidate_protocol_pin"]["manifest_sha256"] = manifest_digest
+            release["downstream_consumption"]["required_manifest_sha256"] = manifest_digest
+            rc9_path.write_bytes((json.dumps(release, indent=2, sort_keys=True) + "\n").encode("utf-8"))
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                status = validate.main()
+            return status, stderr.getvalue()
+        finally:
+            for path, payload in originals.items():
+                path.write_bytes(payload)
+            for path, payload in originals.items():
+                if path.read_bytes() != payload:
+                    raise AssertionError(f"{path} was not restored byte-identical")
+
+    def test_published_vector_passes(self) -> None:
+        validate.validate_environments_dotfile_managers_vectors()
+
+    def test_substituted_scenario_rejected_through_main(self) -> None:
+        """Every retained name refuses an internally consistent foreign body.
+
+        Producer rule 7: substituting another branch's passing case under a
+        retained name must be rejected by the validator entry point, not
+        merely inventoried. Each substitution runs through validate.main()
+        against a repinned on-disk corpus.
+        """
+        names = sorted(validate.DOTFILE_CASES)
+        for name in names:
+            with self.subTest(case=name):
+                donor_name = names[1] if name == names[0] else names[0]
+                donor = copy.deepcopy(self.case(donor_name))
+                changed = copy.deepcopy(self.vector)
+                for index, item in enumerate(changed["cases"]):
+                    if item["name"] == name:
+                        changed["cases"][index] = dict(donor, name=name)
+                status, stderr = self.run_main_with_vector(changed)
+                self.assertEqual(status, 1)
+                self.assertIn("pinned scenario", stderr)
+
+    def test_table_row_order_swap_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["table"] = swapped(changed["table"], 1, 2)
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_table_manager_order_swap_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["managers"] = swapped(changed["managers"], 0, 2)
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_table_none_cell_given_a_location_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        for row in changed["table"]:
+            if row["manager"] == "stow":
+                row["linux"] = {"base": "XDG_DATA_HOME", "leaf": "stow"}
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_table_cell_base_swap_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        for row in changed["table"]:
+            if row["manager"] == "home-manager":
+                row["linux"] = {"base": "XDG_DATA_HOME", "leaf": "home-manager"}
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_present_rewritten_quiet_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        suspected = self.case("chezmoi-linux-present-suspected", changed)
+        suspected["states"]["chezmoi"] = "absent"
+        suspected["expected"]["notice"] = None
+        suspected["expected"]["names_manager"] = None
+        suspected["expected"]["resolved_path"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_quiet_rewritten_suspected_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        quiet = self.case("linux-all-absent-quiet", changed)
+        quiet["states"]["yadm"] = "directory"
+        quiet["expected"]["notice"] = "environment_foreign_manager_suspected"
+        quiet["expected"]["names_manager"] = "yadm"
+        quiet["expected"]["resolved_path"] = "/home/operator/.local/share/yadm"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_none_cell_inspected_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        quiet = self.case("windows-all-absent-quiet", changed)
+        quiet["states"]["home-manager"] = "absent"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_wrong_diagnostic_spelling_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        suspected = self.case("yadm-linux-present-suspected", changed)
+        suspected["expected"]["notice"] = "environment_foreign_manager_detected"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_blocking_heuristic_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        suspected = self.case("chezmoi-macos-present-suspected", changed)
+        suspected["expected"]["blocks"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_resolved_path_drift_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        suspected = self.case("home-manager-linux-present-suspected", changed)
+        suspected["expected"]["resolved_path"] = "/home/operator/.config/home-manager.d"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_symlink_claiming_suspected_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        quiet = self.case("chezmoi-linux-symlink-quiet", changed)
+        quiet["expected"]["notice"] = "environment_foreign_manager_suspected"
+        quiet["expected"]["names_manager"] = "chezmoi"
+        quiet["expected"]["resolved_path"] = "/home/operator/.local/share/chezmoi"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_unreadable_claiming_suspected_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        quiet = self.case("home-manager-linux-unreadable-quiet", changed)
+        quiet["expected"]["notice"] = "environment_foreign_manager_suspected"
+        quiet["expected"]["names_manager"] = "home-manager"
+        quiet["expected"]["resolved_path"] = "/home/operator/.config/home-manager"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_xdg_relocated_claiming_default_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        relocated = self.case("chezmoi-linux-xdg-data-home-relocated", changed)
+        relocated["expected"]["resolved_path"] = "/home/operator/.local/share/chezmoi"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_xdg_empty_claiming_relocated_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        defaulted = self.case("chezmoi-linux-xdg-data-home-empty-uses-default", changed)
+        defaulted["expected"]["resolved_path"] = "/chezmoi"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_home_manager_relative_claiming_relocated_fails(self) -> None:
+        """A relative XDG_CONFIG_HOME resolves to the default, not the relative path.
+
+        Upstream home-manager would follow the relative value
+        (${XDG_CONFIG_HOME:-$HOME/.config} with no absolute-path check);
+        the section 9.5 heuristic deliberately falls back to the default,
+        so a case claiming the upstream-style relocated path must fail.
+        """
+        changed = copy.deepcopy(self.vector)
+        defaulted = self.case("home-manager-linux-xdg-config-home-relative-uses-default", changed)
+        defaulted["expected"]["resolved_path"] = "rel/cfg/home-manager"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_precedence_winner_swapped_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        precedence = self.case("linux-chezmoi-and-yadm-names-chezmoi", changed)
+        precedence["expected"]["names_manager"] = "yadm"
+        precedence["expected"]["resolved_path"] = "/home/operator/.local/share/yadm"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_manager_private_relocation_key_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        relocated = self.case("yadm-macos-xdg-data-home-relocated", changed)
+        relocated["env"] = {"YADM_DATA": "/Volumes/data"}
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+    def test_dropped_case_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["cases"] = [
+            item
+            for item in changed["cases"]
+            if item["name"] != "macos-home-manager-and-yadm-names-home-manager"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_dotfile_managers_vectors(changed)
+
+
 class ReadFailureVectorTests(unittest.TestCase):
     """The environments §8.4.1 absence-versus-read-failure gate must fail closed.
 

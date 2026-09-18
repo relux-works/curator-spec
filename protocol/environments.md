@@ -2426,13 +2426,13 @@ such a trigger the manager:
    manager's store. The last is evidence of another manager and stops the
    operation with `environment_foreign_manager_detected` and an explicit
    choice — abort, or take over with backup — never a silent absorption.
-   The inventory additionally applies a best-effort **heuristic**: the
-   presence of a well-known dotfile-manager state location (a closed,
-   documented list per manager — `~/.local/share/chezmoi`,
-   `~/.config/home-manager`, and the like) elevates the notice for plain
-   unmanaged files to `environment_foreign_manager_suspected` (warning): a
-   dotfile manager appears to manage this machine and will overwrite
-   managed surfaces on its next apply. The heuristic never blocks.
+   The inventory additionally applies a best-effort **heuristic**: when
+   plain unmanaged files are met and the well-known state location of a
+   dotfile manager from the closed table below is present, the notice is
+   elevated to `environment_foreign_manager_suspected` (warning), naming
+   the manager: a dotfile manager appears to manage this machine and
+   will overwrite managed surfaces on its next apply. The heuristic
+   never blocks.
    Inventory reads follow the section 8.4.1 absence-versus-read-failure
    rule (inventory-candidate row): a candidate that cannot be read is never
    treated as absent — a detected-surface candidate that cannot be read
@@ -2456,6 +2456,64 @@ such a trigger the manager:
    the import itself runs only on the operator's request and under the
    section 9.6 consent rules. Onboarding without an import ends after
    step 3 and the takeover writes the operator chose.
+
+**Dotfile-manager state table (closed).** The heuristic checks exactly
+the following per-manager, per-platform locations, in row order. A
+conforming manager's heuristic list is exactly this table, in this
+order; a table change is a spec revision, never an
+implementation-private list. Each cell carries its confidence:
+`verified` means checked against the manager's own documentation or
+source (cited in the revision evidence with URL and version/date);
+`docs-confidence` means documented but not verified end to end. A
+`verified` label scopes to the default location the cited source
+establishes — the base variable, the leaf name, and the default
+base — not to how the manager treats an unset, empty, or relative
+variable; that fallback is the heuristic's own resolution rule
+below.
+
+| # | Manager | macOS | Linux | Windows | Source |
+|---|---|---|---|---|---|
+| 1 | `chezmoi` | `$XDG_DATA_HOME/chezmoi` (default `~/.local/share/chezmoi`) — verified | `$XDG_DATA_HOME/chezmoi` (default `~/.local/share/chezmoi`) — verified | `%XDG_DATA_HOME%\chezmoi` (default `%USERPROFILE%\.local\share\chezmoi`) — verified | `defaultSourceDir` over `go-xdg`: the XDG data home on every platform, no platform switch |
+| 2 | `home-manager` | `$XDG_CONFIG_HOME/home-manager` (default `~/.config/home-manager`) — verified | `$XDG_CONFIG_HOME/home-manager` (default `~/.config/home-manager`) — verified | `none` — verified: Nix-only, no native Windows location | launcher `setConfigFile`/`setFlakeAttribute`; install docs name only Nix platforms |
+| 3 | `yadm` | `$XDG_DATA_HOME/yadm` (default `~/.local/share/yadm`) — verified | `$XDG_DATA_HOME/yadm` (default `~/.local/share/yadm`) — verified | `none` — verified: a bash script with no native Windows home to anchor to | `set_yadm_dirs` plus FILES section; every path `$HOME`-relative |
+| 4 | `stow` | `none` — verified: keeps no state of its own | `none` — verified: keeps no state of its own | `none` — verified: keeps no state of its own | manual: "stores no extra state between runs" |
+| 5 | `dotbot` | `none` — verified: its config lives in the operator's own repo at any path | `none` — verified: its config lives in the operator's own repo at any path | `none` — verified: its config lives in the operator's own repo at any path | README: the dotfiles path is the operator's ("replace with the path to your dotfiles") |
+
+**Resolution.** `~` is the operator home directory as the OS reports
+it (`$HOME` on macOS and Linux, `%USERPROFILE%` on Windows). An XDG
+cell names its base variable: when `$XDG_DATA_HOME` (resp.
+`$XDG_CONFIG_HOME`) is set to a non-empty absolute path it replaces
+the default base (`~/.local/share`, resp. `~/.config`); when it is
+unset, empty, or not an absolute path the default applies. This
+fallback is the heuristic's resolution rule, following the XDG Base
+Directory Specification (relative paths are invalid and ignored);
+upstream managers differ: yadm rejects a non-absolute value the
+same way (`set_yadm_dirs`), while home-manager's launcher
+(`setConfigFile`) and chezmoi's `go-xdg` take the first non-empty
+value without an absolute-path check, so a relative value resolves
+under the heuristic to the default even where the manager itself
+would follow the relative path. (`%XDG_DATA_HOME%` and
+`%XDG_CONFIG_HOME%` spell the same variables on Windows;
+`%LOCALAPPDATA%` and `%APPDATA%` name the Windows application-data
+roots for future rows — no current row uses them.)
+
+A location is **present** when the resolved path itself is an existing
+directory, inspected with `lstat`-class semantics (sections 4, 8.4):
+a symlink at the resolved path is not present even when its target is
+a directory, a regular file is not present, and an unreadable path or
+a failed inspection is not present — and is never reported as absent
+(section 8.4). The check reads exactly the resolved table path:
+system `$XDG_DATA_DIRS` entries, manager-private relocations (a
+chezmoi `sourceDir`, `$YADM_DIR`/`$YADM_DATA`,
+`$HOME_MANAGER_CONFIG`), and sibling paths (chezmoi's config
+directory, yadm's `YADM_DIR` config directory, home-manager's
+generation links) are not heuristic inputs.
+
+**Outcome.** The manager scans the table in row order and reports the
+first row whose location is present; the notice names that manager. A
+row whose cell is `none` on the running platform is inert — there is
+no path to check. When no row is present there is no notice. The
+heuristic never blocks: it only elevates the step-1 notice.
 
 Takeover is not an operation of its own: the explicit takeover flag is
 carried by a mutating operation and covers only the specific unmanaged
@@ -3477,7 +3535,16 @@ section 2.2/10.3/12 hardened-posture cases
 with its warning, the revision-B hardened flip, the effective defaults
 under each posture, explicit-value and lock precedence, the three
 profile refusals, the unreachable-registry warning versus error, and the
-posture rows with their provenance. The nine
+posture rows with their provenance; and the section 9.5 dotfile-manager
+state-table cases (`vectors/environments-dotfile-managers.json`) — the
+closed per-manager, per-platform table pinned cell by cell in the
+vectors, one `environment_foreign_manager_suspected` case per located
+cell, one quiet case per platform, the `none`-cell inert rule, the XDG
+override, empty, relative, and Windows cases, the symlink,
+regular-file, and unreadable quiet cases, and the two multi-present
+table-order cases — recomputed by
+`validate_environments_dotfile_managers_vectors`, which refuses a
+name-preserving replacement. The nine
 retired `expected/environments/*` sets are regenerated under the v2 type
 line. A manager claiming this capability MUST pass the complete vector set;
 there is no partial claim. A manager conforms to revision A by warning
