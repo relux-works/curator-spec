@@ -7,6 +7,40 @@ Versioning for the complete specification set.
 
 ### Added
 
+- E6: `path`-kind admission rule and the store-boundary extension to
+  `path` source directories (Decision 0012 amendment 2026-09-18;
+  environments §1/§2.1/§2.2/§3/§4/§6/§8.5/§9.6/§10.1/§10.4/§12/§13): MCP
+  declaration packages MUST resolve from `git` sources — a declaration
+  carried by a `path`-kind root, overlay, or onboarding import is refused
+  at resolution with the new error
+  `mcp_declaration_path_source_refused` naming the package and the
+  declaration, never admitted and never warned-through — because a `path`
+  source has no canonical identity for the MCP package allowlist and is
+  never verified (E1), which makes the allowlist total over canonical
+  identities. A `path` source may carry `class: system` modules only when
+  directly named (a root or overlay, the E2 direct-naming rule applying as
+  is) AND only after its directory passes the §4 protected-boundary
+  contract — ownership, private permissions or DACL, containment below the
+  declared directory, regular file types, link safety — at every resolve
+  and before any materialization, exactly like a store entry; a `path`
+  source that fails it is entry-class `environment_store_untrusted` (no
+  fragment, non-current, posture row naming the path and the failing
+  check) with no rebuild — the source is the operator's directory, the
+  operator fixes it — while its `state_sha256` pin remains the integrity
+  baseline for its store entry and no pin is recomputed against the live
+  directory. `path` overlays and onboarding imports without system modules
+  are admitted as today but pass the same contract: the check is on the
+  directory, not on the content class. Rollout is direct, not warn-first
+  (impact row "E6": under the hood): no knob. Conformance:
+  `vectors/environments-path-kind-admission.json` (the `git` MCP
+  positive, the `path` root/overlay/import MCP refusals, the admitted
+  `path` overlay with a system module, the admitted `path` root,
+  overlay, and import without system modules, the boundary-check
+  refusals with their posture rows — one per check plus no-system
+  overlay and import refusals — the transitive `path` module refused by
+  E2's rule, the dry-run cases reporting `environment_store_untrusted`
+  with no rebuild planned for a `path` directory failure, and
+  negatives), checked semantically by `tools/validate.py`.
 - E5: nofollow write discipline for managed-surface writes (environments
   §8.3.1, with pointers from §5/§5.8/§7.5/§8.1/§8.4/§9.5/§10.1/§12/§13
   and the manager profile §12.2): every materialization, takeover,

@@ -4317,6 +4317,10 @@
       "sha256": "sha256:1953748e548d4f335f9defa4baa1524998d29dab4bf36647fb8c8bcbdcabf6db"
     },
     {
+      "path": "vectors/environments-path-kind-admission.json",
+      "sha256": "sha256:708476ab6d581d71baea986b1bf6cb581b38ea6f530fe8a721c4a2cbbdf6f110"
+    },
+    {
       "path": "vectors/environments-source-signers.json",
       "sha256": "sha256:fb59e44c33183fc5cf7c698c65038f49a8f1e2d2404137c80cb6d252d46f8d9c"
     },

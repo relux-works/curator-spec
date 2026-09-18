@@ -124,6 +124,76 @@ this document was changed by the amendment.
    policy of Decision 8 covers a *moved* tag, not a *new* one. Normative
    home: environments §1.4.
 
+## Amendment (2026-09-18, E6)
+
+Recorded for security-audit finding E6 (2026-09): `path`-kind sources sit
+outside the source-identity allowlists and the store boundary
+(`docs/security-audit-2026-09.md` E6, verified against the shipped manager
+in Appendix B: dependencies are git-only, so a `path`-kind MCP package
+cannot enter a closure through `requires`, while a `path`-kind root or
+overlay still carries `class: system` modules with no directory boundary).
+Each item quotes the original passage verbatim, states why it is
+incomplete, cites the evidence, and gives the added rule with its
+normative home in `protocol/environments.md`. The original passages remain
+in the body, each marked `[Amendment 2026-09-18, item N]`; nothing else in
+this document was changed by the amendment.
+
+1. **MCP declarations: `git` sources only.** Original (Decision 6,
+   "Policy"): "Policy is the manager §1 system configuration: an allowlist
+   of MCP package canonical source identities (§6.1 matching), lockable,
+   bounding which declaration packages a profile may resolve —
+   `mcp_package_not_allowed` otherwise." Why incomplete: the allowlist is
+   over canonical source identities, which a `path` source does not have
+   (Decision 5; environments §1), and a `path` source is never verified
+   (Amendment 2026-09-17, item 1) — yet the text never states whether a
+   `path`-kind MCP declaration package is admissible, leaving the
+   allowlist's totality open. Evidence: finding E6 ("if a `path`-kind MCP
+   declaration package is admissible, the allowlist cannot name it and it
+   is unbounded by construction; if it is not, the text should say so").
+   Added rule: an MCP declaration package MUST resolve from a `git`
+   source; a declaration carried by a `path`-kind package — a root, an
+   overlay, or an onboarding import — is refused at resolution with
+   `mcp_declaration_path_source_refused` (error) naming the package and
+   the declaration — never admitted, never warned-through. The
+   environments §2.2 allowlist is total over canonical identities.
+   Normative home: environments §2.2, §2.1.
+2. **`class: system` modules from a `path` source: direct naming plus the
+   boundary contract.** Original (Decision 5): "An overlay is an ordinary
+   context package named by a `git` source with a range or exact form, or
+   by a `path` source (an operator-local directory under the environments
+   §1 `path` rules) — a personal repository or a local directory on the
+   machine." Why incomplete: the sentence admits `path` overlays into the
+   closure with no directory boundary, while a `path` source has no
+   canonical identity for the E1 signer allowlist and is never verified.
+   Evidence: finding E6 and Appendix B (a `path`-kind root or overlay
+   still carries `class: system` modules with no directory boundary).
+   Added rule: a `path` source may carry `class: system` modules only when
+   it is directly named — a `path` root or overlay, with the environments
+   §3 direct-naming rule applying as is — AND only after its directory
+   passes the environments §4 protected-boundary contract (ownership,
+   private permissions or DACL, containment below the declared directory,
+   regular file types, link safety) at every resolve and before any
+   materialization, exactly like a store entry; a `path` source that fails
+   it is `environment_store_untrusted` for that profile — no fragment,
+   non-current, posture row naming the path and the failing check — with
+   no rebuild (the source is the operator's directory; the operator fixes
+   it). Its `state_sha256` pin remains the integrity baseline as §4
+   defines. Normative home: environments §3, §4, §6.
+3. **The boundary contract covers every `path` source directory.**
+   Original (Compatibility impact, §9.6 row): "reassembly emits
+   `agent-context.json` (version `1.0.0`, one module per adapter as before)
+   with `requires.skills` pinned by `revision`; detection,
+   classification, consent, and normalization stand". Why incomplete: the
+   row reassembles the import into the `path` pipeline with no directory
+   boundary, and Decision 5 states the contract for no `path` overlay
+   either — yet the check is on the directory, not on the content class.
+   Evidence: finding E6 ("for `path` overlays, require the directory to
+   pass the ownership/permission/containment validation S5 proposes for
+   the store"). Added rule: `path` overlays and onboarding imports without
+   system modules are admitted as today but pass the same §4 boundary
+   contract at every resolve and before any materialization.
+   Normative home: environments §4, §6, §9.6.
+
 ## Context
 
 Decision 0010 shaped a profile as a directory inside one repository: an
@@ -464,7 +534,7 @@ Machine configuration MAY declare, per installed profile, an ordered list
 of overlays. An overlay is an ordinary context package named by a `git`
 source with a range or exact form, or by a `path` source (an operator-local
 directory under the environments §1 `path` rules) — a personal repository
-or a local directory on the machine. Each overlay declaration carries a
+or a local directory on the machine [Amendment 2026-09-18, item 2]. Each overlay declaration carries a
 machine-assigned weight (default: the configurable machine default,
 initially above the weights roots use in practice — Open question 1
 recommends `1000` — so that personal refinements prevail under the default
@@ -566,7 +636,7 @@ This is deliberately not a plugin runtime: MCP is the plugin standard, and
 the missing pieces were declaration, materialization, and policy. Policy is
 the manager §1 system configuration: an allowlist of MCP package canonical
 source identities (§6.1 matching), lockable, bounding which declaration
-packages a profile may resolve — `mcp_package_not_allowed` otherwise. The
+packages a profile may resolve — `mcp_package_not_allowed` otherwise [Amendment 2026-09-18, item 1]. The
 allowlist is over packages, not launcher binaries, because a binary
 allowlist bounds nothing: `npx`, `uvx`, `node`, or `sh` admit any program
 through `args`. An organization allowlists the declaration packages it has
@@ -826,7 +896,7 @@ change, *unchanged* means not a byte:
 | §9.3 | unchanged | — |
 | §9.4 skills and migration | rewritten | the profile skill set is the lock's skills; direct machine declarations write into the lock; `default` keeps its `local` kind with a lock of migrated skills |
 | §9.5 onboarding | unchanged | — |
-| §9.6 import | rewritten | reassembly emits `agent-context.json` (version `1.0.0`, one module per adapter as before) with `requires.skills` pinned by `revision`; detection, classification, consent, and normalization stand |
+| §9.6 import | rewritten | reassembly emits `agent-context.json` (version `1.0.0`, one module per adapter as before) with `requires.skills` pinned by `revision`; detection, classification, consent, and normalization stand [Amendment 2026-09-18, item 3] |
 | §9.7 | bytes change | `profile_index_ambiguous` withdrawn; the ref-flag row reworded |
 | §10.1 `env resolve` | bytes change | the pure-function tuple follows §5; repair semantics unchanged here (review M10 is separate) |
 | §10.2 fragment | rewritten | `profile` carries `lock_sha256`; `composition` withdrawn; `precedence` becomes an object; the `mcp` section; the identifier `launch-env-fragment-v1` is kept, its schema rewritten in place |

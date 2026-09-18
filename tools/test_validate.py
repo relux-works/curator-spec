@@ -2229,6 +2229,391 @@ class StoreBoundaryVectorTests(unittest.TestCase):
             self.run_gate(vector=changed)
 
 
+class PathKindAdmissionVectorTests(unittest.TestCase):
+    """The E6 path-kind admission gate must fail closed.
+
+    validate_environments_path_kind_admission_vectors is the production
+    gate: tools/validate.py main() runs it on every `make validate`,
+    recomputing the §2.2 MCP source-kind verdict (git only; a path
+    declaration is refused naming package and declaration), the §4
+    directory-boundary verdict from the five boundary checks (no pin is
+    recomputed against the live directory), the §3 direct-naming verdict
+    for a trusted directory, and from them the fragment verdict, the §12
+    currency, and the posture naming, plus the §10.1 dry-run verdict (a
+    `path` directory failure reports `environment_store_untrusted` with
+    no rebuild planned, never `would-rebuild-untrusted-store`). Each
+    named case is pinned to its discriminating inputs (source kind, pin
+    kind, origin; failing check, directness, content, policy, role,
+    origin). Each test narrows one rule and proves the gate rejects what
+    the rule must reject.
+    """
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.SUITE / "vectors" / "environments-path-kind-admission.json"
+        )
+
+    def case(self, family: str, name: str, vector: dict | None = None) -> dict:
+        source = self.vector if vector is None else vector
+        return next(item for item in source[family] if item["name"] == name)
+
+    def run_gate(self, vector=None) -> None:
+        validate.validate_environments_path_kind_admission_vectors(
+            vector=self.vector if vector is None else vector,
+        )
+
+    def test_published_vector_passes(self) -> None:
+        self.run_gate()
+
+    def test_path_mcp_admitted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("mcp_kind_cases", "path-overlay-mcp-declaration-refused", changed)
+        case["admitted"] = True
+        case["diagnostic"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_git_mcp_refused_is_rejected(self) -> None:
+        # The gate recomputes in both directions: a git declaration that
+        # refuses is as wrong as a path declaration that admits.
+        changed = copy.deepcopy(self.vector)
+        case = self.case("mcp_kind_cases", "git-mcp-declaration-admitted", changed)
+        case["admitted"] = False
+        case["diagnostic"] = "mcp_declaration_path_source_refused"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_refusal_missing_declaration_name_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("mcp_kind_cases", "path-root-mcp-declaration-refused", changed)["names_declaration"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_refusal_wrong_diagnostic_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("mcp_kind_cases", "path-import-mcp-declaration-refused", changed)["diagnostic"] = "mcp_package_not_allowed"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_path_rewritten_as_git_is_rejected(self) -> None:
+        # A named path branch rewritten as a git admission under the same
+        # name — with the pin inputs updated to match — is refused.
+        changed = copy.deepcopy(self.vector)
+        case = self.case("mcp_kind_cases", "path-overlay-mcp-declaration-refused", changed)
+        case["source_kind"] = "git"
+        case["pin_kind"] = "commit"
+        case["source"] = "github.com/companyA/mcp-figma-devmode"
+        case["admitted"] = True
+        case["diagnostic"] = None
+        case["names_package"] = None
+        case["names_declaration"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_healed_mcp_negative_is_rejected(self) -> None:
+        # A negative whose observation stops violating the rule must fail:
+        # the admitted observation now claims the recomputed refusal.
+        changed = copy.deepcopy(self.vector)
+        case = self.case("mcp_kind_cases", "path-mcp-declaration-admitted", changed)
+        case["admitted"] = False
+        case["diagnostic"] = "mcp_declaration_path_source_refused"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_world_writable_emits_fragment_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("path_boundary_cases", "path-overlay-world-writable-untrusted", changed)
+        case["fragment_emitted"] = True
+        case["row_current"] = True
+        case["diagnostic"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_untrusted_silence_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("path_boundary_cases", "path-overlay-symlinked-component-untrusted", changed)["diagnostic"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_posture_missing_path_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("path_boundary_cases", "path-overlay-wrong-ownership-untrusted", changed)["names_path"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_wrong_failing_check_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("path_boundary_cases", "path-overlay-containment-escape-untrusted", changed)
+        case["failing_check"] = "ownership"
+        case["names_check"] = "ownership"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_rebuild_planned_is_rejected(self) -> None:
+        # A path source has no second copy: no rebuild is ever planned.
+        changed = copy.deepcopy(self.vector)
+        self.case("path_boundary_cases", "path-overlay-non-regular-component-untrusted", changed)["rebuild_planned"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_healed_current_negative_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("path_boundary_cases", "path-overlay-untrusted-reported-current", changed)
+        case["diagnostic"] = "environment_store_untrusted"
+        case["fragment_emitted"] = False
+        case["row_current"] = False
+        case["failing_check"] = "permissions"
+        case["names_path"] = "/Users/operator/personal"
+        case["names_check"] = "permissions"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_healed_rebuild_negative_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("path_boundary_cases", "path-overlay-untrusted-rebuilds", changed)["rebuild_planned"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_five_to_one_narrowing_is_rejected(self) -> None:
+        # The reviewer's narrowing: five named boundary branches collapsed
+        # to ownership-only, with failing_check updated to match. Without
+        # scenario pinning the gate accepts (5/5 coverage falls to 1/5
+        # with exit 0); the pinned gate must refuse.
+        changed = copy.deepcopy(self.vector)
+        narrow = {
+            "path-overlay-world-writable-untrusted": "permissions",
+            "path-overlay-symlinked-component-untrusted": "link_safety",
+            "path-overlay-containment-escape-untrusted": "containment",
+            "path-overlay-non-regular-component-untrusted": "regular_types",
+        }
+        for name, check in narrow.items():
+            case = self.case("path_boundary_cases", name, changed)
+            case[check] = True
+            case["ownership"] = False
+            case["failing_check"] = "ownership"
+            case["names_check"] = "ownership"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_transitive_misdiagnosed_as_untrusted_is_rejected(self) -> None:
+        # A trusted directory with a transitive system module is E2's
+        # refusal, never environment_store_untrusted.
+        changed = copy.deepcopy(self.vector)
+        case = self.case("path_boundary_cases", "path-transitive-system-module-refused", changed)
+        case["diagnostic"] = "environment_store_untrusted"
+        case["failing_check"] = "ownership"
+        case["names_path"] = "/Users/operator/leaf"
+        case["names_check"] = "ownership"
+        case["names_package"] = None
+        case["names_module"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_transitive_rewritten_as_direct_is_rejected(self) -> None:
+        # A named transitive branch rewritten as a direct admission under
+        # the same name is refused.
+        changed = copy.deepcopy(self.vector)
+        case = self.case("path_boundary_cases", "path-transitive-system-module-refused", changed)
+        case["direct"] = True
+        case["role"] = "overlay"
+        case["diagnostic"] = None
+        case["fragment_emitted"] = True
+        case["row_current"] = True
+        case["names_package"] = None
+        case["names_module"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_pin_hash_comparison_is_rejected(self) -> None:
+        # No pin is recomputed against the live directory (§4): a case
+        # carrying a pin-hash comparison models the wrong rule.
+        changed = copy.deepcopy(self.vector)
+        self.case("path_boundary_cases", "path-overlay-system-module-admitted", changed)["pin_hash_match"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_multi_failure_case_is_rejected(self) -> None:
+        # A positive boundary case isolates exactly one failing check.
+        changed = copy.deepcopy(self.vector)
+        self.case("path_boundary_cases", "path-overlay-world-writable-untrusted", changed)["ownership"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_case_inventory_is_exact(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["path_boundary_cases"] = [
+            item
+            for item in changed["path_boundary_cases"]
+            if item["name"] != "path-transitive-system-module-refused"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_no_system_overlay_refusal_healed_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("path_boundary_cases", "path-overlay-no-system-world-writable-untrusted", changed)
+        case["permissions"] = True
+        case["fragment_emitted"] = True
+        case["row_current"] = True
+        case["diagnostic"] = None
+        case["failing_check"] = None
+        case["names_path"] = None
+        case["names_check"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_no_system_overlay_rewritten_as_system_is_rejected(self) -> None:
+        # A named no-system branch rewritten as a system-module case
+        # under the same name is refused: the check is on the directory,
+        # not on the content class.
+        changed = copy.deepcopy(self.vector)
+        case = self.case("path_boundary_cases", "path-overlay-no-system-world-writable-untrusted", changed)
+        case["carries_system_modules"] = True
+        case["module"] = "90-system.md"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_no_system_import_refusal_healed_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("path_boundary_cases", "path-import-no-system-wrong-ownership-untrusted", changed)
+        case["ownership"] = True
+        case["fragment_emitted"] = True
+        case["row_current"] = True
+        case["diagnostic"] = None
+        case["failing_check"] = None
+        case["names_path"] = None
+        case["names_check"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_no_system_import_rewritten_as_system_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("path_boundary_cases", "path-import-no-system-wrong-ownership-untrusted", changed)
+        case["carries_system_modules"] = True
+        case["module"] = "90-system.md"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_no_system_overlay_control_rewritten_as_system_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("path_boundary_cases", "path-overlay-no-system-modules-admitted", changed)
+        case["carries_system_modules"] = True
+        case["module"] = "90-system.md"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_no_system_narrowing_disagrees_with_corpus(self) -> None:
+        # The reviewer's narrowing as verdicts: a manager that skips the
+        # directory check for sources without system modules reports
+        # trusted for them. The pinned corpus must contradict it on both
+        # no-system entry classes (overlay and onboarding import).
+        mismatches = []
+        for case in self.vector["path_boundary_cases"]:
+            if case.get("conforming") is False:
+                continue
+            inputs = {check: case[check] for check in validate.E6_BOUNDARY_CHECKS}
+            trusted, _ = validate.e6_boundary_trusted(inputs)
+            narrowed = trusted if case["carries_system_modules"] else True
+            if not narrowed:
+                narrowed_diag = validate.E6_DIAG_UNTRUSTED
+            elif (
+                case["carries_system_modules"]
+                and not case["direct"]
+                and case["machine_policy"]["transitive_system_modules"] == "error"
+            ):
+                narrowed_diag = validate.E6_DIAG_TRANSITIVE
+            else:
+                narrowed_diag = None
+            if narrowed_diag != case["diagnostic"]:
+                mismatches.append(case["name"])
+        self.assertIn("path-overlay-no-system-world-writable-untrusted", mismatches)
+        self.assertIn("path-import-no-system-wrong-ownership-untrusted", mismatches)
+
+    def test_dry_run_would_rebuild_report_is_rejected(self) -> None:
+        # A dry-run evaluation of a `path` directory failure that reports
+        # would-rebuild-untrusted-store is refused: that outcome names
+        # only a store entry, lock, or marker file failure (§4, §10.1).
+        changed = copy.deepcopy(self.vector)
+        self.case("dry_run_cases", "path-overlay-dry-run-untrusted-no-rebuild", changed)["outcome"] = (
+            validate.S5_OUTCOME_WOULD_REBUILD
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_dry_run_untrusted_silence_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("dry_run_cases", "path-overlay-dry-run-untrusted-no-rebuild", changed)["diagnostic"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_dry_run_intact_reports_untrusted_is_rejected(self) -> None:
+        # The gate recomputes in both directions: an intact directory
+        # that reports untrusted is as wrong as a failure that is silent.
+        changed = copy.deepcopy(self.vector)
+        case = self.case("dry_run_cases", "path-overlay-dry-run-intact-plans-nothing", changed)
+        case["diagnostic"] = "environment_store_untrusted"
+        case["failing_check"] = "permissions"
+        case["names_path"] = "/Users/operator/personal"
+        case["names_check"] = "permissions"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_dry_run_mutates_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("dry_run_cases", "path-overlay-dry-run-untrusted-no-rebuild", changed)["mutated"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_dry_run_rebuild_planned_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("dry_run_cases", "path-overlay-dry-run-untrusted-no-rebuild", changed)["rebuild_planned"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_dry_run_untrusted_healed_is_rejected(self) -> None:
+        # A named dry-run failure branch rewritten as a passing case
+        # under the same name is refused.
+        changed = copy.deepcopy(self.vector)
+        case = self.case("dry_run_cases", "path-overlay-dry-run-untrusted-no-rebuild", changed)
+        case["permissions"] = True
+        case["diagnostic"] = None
+        case["failing_check"] = None
+        case["names_path"] = None
+        case["names_check"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_healed_dry_run_negative_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("dry_run_cases", "path-overlay-dry-run-reports-would-rebuild", changed)["outcome"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_dry_run_negative_wrong_violation_is_rejected(self) -> None:
+        # The negative isolates exactly the R1 violation: healing the
+        # outcome while violating elsewhere is still refused.
+        changed = copy.deepcopy(self.vector)
+        case = self.case("dry_run_cases", "path-overlay-dry-run-reports-would-rebuild", changed)
+        case["outcome"] = None
+        case["mutated"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_dry_run_inventory_is_exact(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["dry_run_cases"] = [
+            item for item in changed["dry_run_cases"] if item["name"] != "path-overlay-dry-run-intact-plans-nothing"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+    def test_wrong_capability_identity_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["capability"] = "agent-environments-v2"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(vector=changed)
+
+
 class SourceSignersVectorTests(unittest.TestCase):
     """The E1 signer-verification/merge/posture/delta gate must fail closed.
 

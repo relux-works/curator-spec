@@ -6747,6 +6747,355 @@ def validate_environments_codex_seed_vectors(
 
 
 # ---------------------------------------------------------------------------
+# E6: path-kind admission and the store-boundary extension to path source
+# directories (sections 1, 2.1, 2.2, 3, 4, 6, 8.5, 9.6, 10.1, 10.4, 12, 13)
+
+
+E6_DIAG_MCP_REFUSED = "mcp_declaration_path_source_refused"
+E6_DIAG_UNTRUSTED = "environment_store_untrusted"
+E6_DIAG_TRANSITIVE = "context_system_module_transitive"
+
+E6_BOUNDARY_CHECKS = ("ownership", "permissions", "containment", "regular_types", "link_safety")
+E6_SOURCE_KINDS = ("git", "path")
+E6_PIN_KINDS = ("commit", "state_sha256")
+E6_MCP_ORIGINS = ("requires-edge", "root", "overlay", "onboarding-import")
+E6_ROLES = ("root", "overlay", "member")
+E6_ORIGINS = ("operator", "onboarding-import")
+E6_POLICIES = ("drop", "error")
+
+E6_MCP_CASES = {
+    "git-mcp-declaration-admitted",
+    "path-overlay-mcp-declaration-refused",
+    "path-root-mcp-declaration-refused",
+    "path-import-mcp-declaration-refused",
+    "path-mcp-declaration-admitted",
+}
+E6_MCP_NEGATIVE_CASES = {"path-mcp-declaration-admitted"}
+E6_BOUNDARY_CASES = {
+    "path-overlay-system-module-admitted",
+    "path-root-no-system-modules-admitted",
+    "path-import-no-system-modules-admitted",
+    "path-overlay-no-system-modules-admitted",
+    "path-overlay-world-writable-untrusted",
+    "path-overlay-symlinked-component-untrusted",
+    "path-overlay-wrong-ownership-untrusted",
+    "path-overlay-containment-escape-untrusted",
+    "path-overlay-non-regular-component-untrusted",
+    "path-overlay-no-system-world-writable-untrusted",
+    "path-import-no-system-wrong-ownership-untrusted",
+    "path-transitive-system-module-refused",
+    "path-overlay-untrusted-reported-current",
+    "path-overlay-untrusted-rebuilds",
+}
+E6_BOUNDARY_NEGATIVE_CASES = {
+    "path-overlay-untrusted-reported-current",
+    "path-overlay-untrusted-rebuilds",
+}
+E6_DRY_RUN_CASES = {
+    "path-overlay-dry-run-untrusted-no-rebuild",
+    "path-overlay-dry-run-intact-plans-nothing",
+    "path-overlay-dry-run-reports-would-rebuild",
+}
+E6_DRY_RUN_NEGATIVE_CASES = {"path-overlay-dry-run-reports-would-rebuild"}
+
+# Each named case is pinned to its discriminating inputs: an MCP case to
+# the declaration's source kind, pin kind, and origin; a boundary or
+# dry-run case to its failing check (or none), directness, system-module
+# content, machine policy, role, and origin. A corpus where a named branch
+# no longer exercises its inputs (for example a path refusal rewritten as
+# a git admission under the same name, the five boundary branches
+# collapsed to ownership-only, or a no-system refusal rewritten as a
+# system-module case) is refused.
+E6_MCP_PIN: dict[str, dict[str, Any]] = {
+    "git-mcp-declaration-admitted": {"source_kind": "git", "pin_kind": "commit", "origin": "requires-edge"},
+    "path-overlay-mcp-declaration-refused": {"source_kind": "path", "pin_kind": "state_sha256", "origin": "overlay"},
+    "path-root-mcp-declaration-refused": {"source_kind": "path", "pin_kind": "state_sha256", "origin": "root"},
+    "path-import-mcp-declaration-refused": {"source_kind": "path", "pin_kind": "state_sha256", "origin": "onboarding-import"},
+    "path-mcp-declaration-admitted": {"source_kind": "path", "pin_kind": "state_sha256", "origin": "overlay"},
+}
+E6_BOUNDARY_PIN: dict[str, dict[str, Any]] = {
+    "path-overlay-system-module-admitted": {"check": None, "direct": True, "carries": True, "policy": "drop", "role": "overlay", "origin": "operator"},
+    "path-root-no-system-modules-admitted": {"check": None, "direct": True, "carries": False, "policy": "drop", "role": "root", "origin": "operator"},
+    "path-import-no-system-modules-admitted": {"check": None, "direct": True, "carries": False, "policy": "drop", "role": "root", "origin": "onboarding-import"},
+    "path-overlay-no-system-modules-admitted": {"check": None, "direct": True, "carries": False, "policy": "drop", "role": "overlay", "origin": "operator"},
+    "path-overlay-world-writable-untrusted": {"check": "permissions", "direct": True, "carries": True, "policy": "drop", "role": "overlay", "origin": "operator"},
+    "path-overlay-symlinked-component-untrusted": {"check": "link_safety", "direct": True, "carries": True, "policy": "drop", "role": "overlay", "origin": "operator"},
+    "path-overlay-wrong-ownership-untrusted": {"check": "ownership", "direct": True, "carries": True, "policy": "drop", "role": "overlay", "origin": "operator"},
+    "path-overlay-containment-escape-untrusted": {"check": "containment", "direct": True, "carries": True, "policy": "drop", "role": "overlay", "origin": "operator"},
+    "path-overlay-non-regular-component-untrusted": {"check": "regular_types", "direct": True, "carries": True, "policy": "drop", "role": "overlay", "origin": "operator"},
+    "path-overlay-no-system-world-writable-untrusted": {"check": "permissions", "direct": True, "carries": False, "policy": "drop", "role": "overlay", "origin": "operator"},
+    "path-import-no-system-wrong-ownership-untrusted": {"check": "ownership", "direct": True, "carries": False, "policy": "drop", "role": "root", "origin": "onboarding-import"},
+    "path-transitive-system-module-refused": {"check": None, "direct": False, "carries": True, "policy": "error", "role": "member", "origin": "operator"},
+    "path-overlay-untrusted-reported-current": {"check": "permissions", "direct": True, "carries": True, "policy": "drop", "role": "overlay", "origin": "operator"},
+    "path-overlay-untrusted-rebuilds": {"check": "ownership", "direct": True, "carries": True, "policy": "drop", "role": "overlay", "origin": "operator"},
+}
+E6_DRY_RUN_PIN: dict[str, dict[str, Any]] = {
+    "path-overlay-dry-run-untrusted-no-rebuild": {"check": "permissions", "direct": True, "carries": True, "policy": "drop", "role": "overlay", "origin": "operator"},
+    "path-overlay-dry-run-intact-plans-nothing": {"check": None, "direct": True, "carries": True, "policy": "drop", "role": "overlay", "origin": "operator"},
+    "path-overlay-dry-run-reports-would-rebuild": {"check": "permissions", "direct": True, "carries": True, "policy": "drop", "role": "overlay", "origin": "operator"},
+}
+
+
+def e6_check_boundary_inputs(case: dict[str, Any], name: str) -> dict[str, bool]:
+    """Read the five §4 boundary inputs of one path-directory case.
+
+    No pin is recomputed against the live directory (§4): a case carrying
+    a pin-hash comparison models the wrong rule.
+    """
+    if "pin_hash_match" in case:
+        raise ValidationFailure(f"path-kind case {name}: no pin is recomputed against the live directory")
+    inputs: dict[str, bool] = {}
+    for check in E6_BOUNDARY_CHECKS:
+        value = case.get(check)
+        if not isinstance(value, bool):
+            raise ValidationFailure(f"path-kind case {name}: {check} must be a boolean")
+        inputs[check] = value
+    return inputs
+
+
+def e6_boundary_trusted(inputs: dict[str, bool]) -> tuple[bool, list[str]]:
+    """Recompute the §4 directory verdict: every boundary check passes, else untrusted."""
+    failing = [check for check in E6_BOUNDARY_CHECKS if not inputs[check]]
+    return (not failing, failing)
+
+
+def e6_check_mcp_pin(pin: dict[str, Any], case: dict[str, Any], name: str) -> None:
+    """Bind a named MCP case to its source kind, pin kind, and origin."""
+    for field in ("source_kind", "pin_kind", "origin"):
+        if case.get(field) != pin[field]:
+            raise ValidationFailure(f"path-kind case {name}: {field} must be {pin[field]} for this branch")
+
+
+def e6_check_boundary_pin(pin: dict[str, Any], case: dict[str, Any], failing: list[str], name: str) -> None:
+    """Bind a named boundary case to its failing check, directness, content, policy, role, and origin."""
+    if case.get("direct") is not pin["direct"]:
+        raise ValidationFailure(f"path-kind case {name}: direct must be {pin['direct']} for this branch")
+    if case.get("carries_system_modules") is not pin["carries"]:
+        raise ValidationFailure(f"path-kind case {name}: carries_system_modules must be {pin['carries']} for this branch")
+    if case.get("machine_policy", {}).get("transitive_system_modules") != pin["policy"]:
+        raise ValidationFailure(f"path-kind case {name}: policy must be {pin['policy']} for this branch")
+    if case.get("role") != pin["role"]:
+        raise ValidationFailure(f"path-kind case {name}: role must be {pin['role']} for this branch")
+    if case.get("origin") != pin["origin"]:
+        raise ValidationFailure(f"path-kind case {name}: origin must be {pin['origin']} for this branch")
+    expected = pin["check"]
+    if expected is None:
+        if failing:
+            raise ValidationFailure(f"path-kind case {name}: this branch models no failing boundary check")
+    elif expected not in failing:
+        raise ValidationFailure(f"path-kind case {name}: this branch must fail {expected}")
+    elif len(failing) != 1:
+        raise ValidationFailure(f"path-kind case {name}: this branch isolates exactly its failing check")
+
+
+def e6_expected_names(case: dict[str, Any], expected_diag: str | None, failing: list[str]) -> dict[str, Any]:
+    """Recompute the §2.1/§3.1/§12 naming rule for one boundary observation."""
+    if expected_diag == E6_DIAG_UNTRUSTED:
+        return {"names_path": case.get("path"), "names_check": failing[0], "names_package": None, "names_module": None}
+    if expected_diag == E6_DIAG_TRANSITIVE:
+        return {"names_path": None, "names_check": None, "names_package": case.get("package"), "names_module": case.get("module")}
+    return {"names_path": None, "names_check": None, "names_package": None, "names_module": None}
+
+
+def validate_environments_path_kind_admission_vectors(vector: Any = None) -> None:
+    """Recompute every E6 path-kind admission verdict (§1, §2.1, §2.2, §3, §4, §10.1, §10.4, §12).
+
+    An MCP declaration resolves only from a `git` source: a declaration
+    carried by a `path` root, overlay, or onboarding import is refused
+    with `mcp_declaration_path_source_refused` naming the package and the
+    declaration. A `path` source directory passes the five §4 boundary
+    checks at every resolve; a failure is entry-class
+    `environment_store_untrusted` — no fragment, non-current, posture row
+    naming the path and the failing check — with no rebuild, while a
+    directory that passes admits system modules only under the §3
+    direct-naming rule. Dry-run evaluation of a `path` directory failure
+    reports `environment_store_untrusted` with no rebuild planned and
+    mutates nothing — never `would-rebuild-untrusted-store`, which names
+    only a store entry, lock, or marker file failure. Each named case is
+    pinned to its discriminating inputs, so a corpus where a named branch
+    no longer exercises its branch is refused. Negatives carry a
+    non-conforming observation that must still violate the recomputed rule.
+    """
+    if vector is None:
+        vector = load_json(SUITE / "vectors" / "environments-path-kind-admission.json")
+    if vector.get("capability") != "agent-environments" or vector.get("capability_revision") != 1:
+        raise ValidationFailure("path-kind vector has the wrong capability identity")
+    pinned = vector.get("diagnostics")
+    if (
+        not isinstance(pinned, dict)
+        or pinned.get("mcp_path_source_refused") != E6_DIAG_MCP_REFUSED
+        or pinned.get("store_untrusted") != E6_DIAG_UNTRUSTED
+        or pinned.get("system_module_transitive") != E6_DIAG_TRANSITIVE
+    ):
+        raise ValidationFailure(
+            "path-kind diagnostics must pin mcp_declaration_path_source_refused, "
+            "environment_store_untrusted, and context_system_module_transitive"
+        )
+
+    mcp = named_cases(vector.get("mcp_kind_cases"), "path-kind mcp")
+    if set(mcp) != E6_MCP_CASES:
+        raise ValidationFailure("path-kind mcp case inventory is not exact")
+    for name, case in mcp.items():
+        if case.get("source_kind") not in E6_SOURCE_KINDS:
+            raise ValidationFailure(f"path-kind case {name}: source_kind must be git or path")
+        if case.get("pin_kind") not in E6_PIN_KINDS:
+            raise ValidationFailure(f"path-kind case {name}: pin_kind must be commit or state_sha256")
+        if case.get("origin") not in E6_MCP_ORIGINS:
+            raise ValidationFailure(f"path-kind case {name}: origin must be one of {', '.join(E6_MCP_ORIGINS)}")
+        if not case.get("package") or not case.get("declaration"):
+            raise ValidationFailure(f"path-kind case {name}: package and declaration must be named")
+        if case["source_kind"] == "git":
+            if not case.get("source") or case.get("pin_kind") != "commit":
+                raise ValidationFailure(f"path-kind case {name}: a git declaration carries a canonical source and a commit pin")
+        else:
+            if case.get("source") is not None or case.get("pin_kind") != "state_sha256":
+                raise ValidationFailure(f"path-kind case {name}: a path declaration carries no source and a state pin")
+        e6_check_mcp_pin(E6_MCP_PIN[name], case, name)
+        expected_admitted = case["source_kind"] == "git"
+        expected_diag = None if expected_admitted else E6_DIAG_MCP_REFUSED
+        if name in E6_MCP_NEGATIVE_CASES:
+            if case.get("conforming") is not False or not case.get("reason"):
+                raise ValidationFailure(f"path-kind case {name}: a negative needs conforming=false and a reason")
+            if case.get("admitted") is expected_admitted and case.get("diagnostic") == expected_diag:
+                raise ValidationFailure(f"path-kind case {name}: the observation no longer violates the §2.2 rule")
+            continue
+        if case.get("conforming") is False:
+            raise ValidationFailure(f"path-kind case {name}: a positive case must not carry conforming=false")
+        if case.get("admitted") is not expected_admitted:
+            raise ValidationFailure(f"path-kind case {name}: admission is not the §2.2 rule")
+        if case.get("diagnostic") != expected_diag:
+            raise ValidationFailure(f"path-kind case {name}: diagnostic is not the §2.1 rule ({expected_diag!r})")
+        if expected_admitted:
+            if case.get("names_package") is not None or case.get("names_declaration") is not None:
+                raise ValidationFailure(f"path-kind case {name}: an admitted declaration names nothing")
+        elif case.get("names_package") != case.get("package") or case.get("names_declaration") != case.get("declaration"):
+            raise ValidationFailure(f"path-kind case {name}: the refusal names the package and the declaration")
+
+    boundary = named_cases(vector.get("path_boundary_cases"), "path-kind boundary")
+    if set(boundary) != E6_BOUNDARY_CASES:
+        raise ValidationFailure("path-kind boundary case inventory is not exact")
+    for name, case in boundary.items():
+        if case.get("role") not in E6_ROLES:
+            raise ValidationFailure(f"path-kind case {name}: role must be one of {', '.join(E6_ROLES)}")
+        if case.get("origin") not in E6_ORIGINS:
+            raise ValidationFailure(f"path-kind case {name}: origin must be operator or onboarding-import")
+        if not isinstance(case.get("direct"), bool) or not isinstance(case.get("carries_system_modules"), bool):
+            raise ValidationFailure(f"path-kind case {name}: direct and carries_system_modules must be booleans")
+        policy = case.get("machine_policy", {}).get("transitive_system_modules")
+        if policy not in E6_POLICIES:
+            raise ValidationFailure(f"path-kind case {name}: policy must be drop or error")
+        path = case.get("path")
+        if not isinstance(path, str) or not path.startswith("/"):
+            raise ValidationFailure(f"path-kind case {name}: path must be an absolute directory")
+        if not case.get("package"):
+            raise ValidationFailure(f"path-kind case {name}: package must be named")
+        if case["carries_system_modules"]:
+            if not case.get("module"):
+                raise ValidationFailure(f"path-kind case {name}: a system-module carrier names its module")
+        elif case.get("module") is not None:
+            raise ValidationFailure(f"path-kind case {name}: no module without system modules")
+        inputs = e6_check_boundary_inputs(case, name)
+        trusted, failing = e6_boundary_trusted(inputs)
+        e6_check_boundary_pin(E6_BOUNDARY_PIN[name], case, failing, name)
+        if not trusted:
+            expected_diag = E6_DIAG_UNTRUSTED
+        elif case["carries_system_modules"] and not case["direct"] and policy == "error":
+            expected_diag = E6_DIAG_TRANSITIVE
+        else:
+            expected_diag = None
+        expected_fragment = expected_diag is None
+        expected_current = expected_diag is None
+        expected_names = e6_expected_names(case, expected_diag, failing)
+        if name in E6_BOUNDARY_NEGATIVE_CASES:
+            if case.get("conforming") is not False or not case.get("reason"):
+                raise ValidationFailure(f"path-kind case {name}: a negative needs conforming=false and a reason")
+            if (
+                case.get("diagnostic") == expected_diag
+                and case.get("fragment_emitted") is expected_fragment
+                and case.get("row_current") is expected_current
+                and case.get("rebuild_planned") is False
+                and all(case.get(field) == value for field, value in expected_names.items())
+            ):
+                raise ValidationFailure(f"path-kind case {name}: the observation no longer violates the §4 rule")
+            continue
+        if case.get("conforming") is False:
+            raise ValidationFailure(f"path-kind case {name}: a positive case must not carry conforming=false")
+        if case.get("diagnostic") != expected_diag:
+            raise ValidationFailure(f"path-kind case {name}: diagnostic is not the §4/§3 rule ({expected_diag!r})")
+        if case.get("fragment_emitted") is not expected_fragment:
+            raise ValidationFailure(f"path-kind case {name}: fragment verdict is not the §4 rule")
+        if case.get("row_current") is not expected_current:
+            raise ValidationFailure(f"path-kind case {name}: currency is not the §12 rule")
+        if case.get("rebuild_planned") is not False:
+            raise ValidationFailure(f"path-kind case {name}: a path source is never rebuilt")
+        expected_check: str | None = failing[0] if failing else None
+        if case.get("failing_check") != expected_check:
+            raise ValidationFailure(f"path-kind case {name}: failing_check is not the §4 rule ({expected_check!r})")
+        for field, value in expected_names.items():
+            if case.get(field) != value:
+                raise ValidationFailure(f"path-kind case {name}: {field} is not the §12 rule ({value!r})")
+
+    dry_run = named_cases(vector.get("dry_run_cases"), "path-kind dry-run")
+    if set(dry_run) != E6_DRY_RUN_CASES:
+        raise ValidationFailure("path-kind dry-run case inventory is not exact")
+    for name, case in dry_run.items():
+        if case.get("role") not in E6_ROLES:
+            raise ValidationFailure(f"path-kind case {name}: role must be one of {', '.join(E6_ROLES)}")
+        if case.get("origin") not in E6_ORIGINS:
+            raise ValidationFailure(f"path-kind case {name}: origin must be operator or onboarding-import")
+        if not isinstance(case.get("direct"), bool) or not isinstance(case.get("carries_system_modules"), bool):
+            raise ValidationFailure(f"path-kind case {name}: direct and carries_system_modules must be booleans")
+        policy = case.get("machine_policy", {}).get("transitive_system_modules")
+        if policy not in E6_POLICIES:
+            raise ValidationFailure(f"path-kind case {name}: policy must be drop or error")
+        path = case.get("path")
+        if not isinstance(path, str) or not path.startswith("/"):
+            raise ValidationFailure(f"path-kind case {name}: path must be an absolute directory")
+        if not case.get("package"):
+            raise ValidationFailure(f"path-kind case {name}: package must be named")
+        if case["carries_system_modules"]:
+            if not case.get("module"):
+                raise ValidationFailure(f"path-kind case {name}: a system-module carrier names its module")
+        elif case.get("module") is not None:
+            raise ValidationFailure(f"path-kind case {name}: no module without system modules")
+        inputs = e6_check_boundary_inputs(case, name)
+        trusted, failing = e6_boundary_trusted(inputs)
+        e6_check_boundary_pin(E6_DRY_RUN_PIN[name], case, failing, name)
+        expected_diag = E6_DIAG_UNTRUSTED if not trusted else None
+        expected_check: str | None = failing[0] if failing else None
+        expected_names_path = path if not trusted else None
+        if name in E6_DRY_RUN_NEGATIVE_CASES:
+            if case.get("conforming") is not False or not case.get("reason"):
+                raise ValidationFailure(f"path-kind case {name}: a negative needs conforming=false and a reason")
+            if case.get("outcome") != S5_OUTCOME_WOULD_REBUILD:
+                raise ValidationFailure(f"path-kind case {name}: this branch must report would-rebuild-untrusted-store")
+            if (
+                case.get("diagnostic") != expected_diag
+                or case.get("mutated") is not False
+                or case.get("rebuild_planned") is not False
+                or case.get("failing_check") != expected_check
+                or case.get("names_path") != expected_names_path
+                or case.get("names_check") != expected_check
+            ):
+                raise ValidationFailure(f"path-kind case {name}: only the reported outcome violates the §10.1 rule")
+            continue
+        if case.get("conforming") is False:
+            raise ValidationFailure(f"path-kind case {name}: a positive case must not carry conforming=false")
+        if case.get("diagnostic") != expected_diag:
+            raise ValidationFailure(f"path-kind case {name}: diagnostic is not the §10.4 rule ({expected_diag!r})")
+        if case.get("outcome") is not None:
+            raise ValidationFailure(f"path-kind case {name}: a path directory dry-run never plans a rebuild")
+        if case.get("mutated") is not False:
+            raise ValidationFailure(f"path-kind case {name}: dry-run evaluation mutates nothing")
+        if case.get("rebuild_planned") is not False:
+            raise ValidationFailure(f"path-kind case {name}: a path source is never rebuilt")
+        if case.get("failing_check") != expected_check:
+            raise ValidationFailure(f"path-kind case {name}: failing_check is not the §4 rule ({expected_check!r})")
+        if case.get("names_path") != expected_names_path or case.get("names_check") != expected_check:
+            raise ValidationFailure(f"path-kind case {name}: posture naming is not the §12 rule")
+
+
+# ---------------------------------------------------------------------------
 # Section 9.1: detector classes
 
 
@@ -7804,6 +8153,7 @@ def main() -> int:
         validate_environments_source_signers_vectors,
         validate_environments_store_boundary_vectors,
         validate_environments_codex_seed_vectors,
+        validate_environments_path_kind_admission_vectors,
         validate_context_version_vectors,
         validate_context_detector_vectors,
         validate_snapshot_acquisition_vectors,

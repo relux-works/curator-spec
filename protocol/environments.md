@@ -73,10 +73,12 @@ The closed set of revision-1 source kinds is:
   project. The operand names a directory whose root contains
   `agent-context.json`; the section 2 and section 3 shapes apply unchanged.
   Installation copies the directory's tree into the profile store as an
-  immutable snapshot and never reads the source directory again: later
-  edits to the source directory change nothing until the operator
-  reinstalls, and nothing about a `path` source is ever fetched from a
-  network. The snapshot contains only directories and regular files under
+  immutable snapshot and never adopts bytes from the source directory
+  again: later edits to the source directory change nothing until the
+  operator reinstalls, and nothing about a `path` source is ever fetched
+  from a network. The section 4 boundary verification re-inspects the
+  directory (`lstat`-class, metadata only) at every resolve but adopts no
+  bytes. The snapshot contains only directories and regular files under
   the core §6.2 archive discipline — a symbolic link, hard link, special
   file, or platform path collision in the tree is `profile_source_invalid`.
   A root-level `.git` entry is excluded from the snapshot; a `.git` entry
@@ -451,6 +453,7 @@ the addressed root is not a context package.
 | `agent-context.json` absent at the addressed root, malformed, unknown field, wrong `schema_version`, invalid `name`, `version`, `weight`, `weights`, or `requires` entry; `context` present without `context/` | `context_manifest_invalid` |
 | `agent-mcp.json` absent at the addressed root, malformed, unknown field, wrong `schema_version`, or a `server` rule of section 2.2 violated | `mcp_declaration_invalid` |
 | an MCP declaration package's canonical source identity is outside the machine's MCP package allowlist | `mcp_package_not_allowed` |
+| MCP declaration carried by a `path`-kind package — a root, an overlay, or an onboarding import — at resolution (names the package and the declaration) | `mcp_declaration_path_source_refused` |
 | the MCP package allowlist is empty at install, update, or status (warning: every declaration package in the closure is admitted) | `mcp_package_allowlist_empty` |
 | S4 profile `s4-warn`: a launch passes an operator variable not listed in an explicitly configured `passable_env_names`, or any passed operator variable when the knob is absent (warning, names the variables and the knob) | `mcp_env_passthrough_unlisted` |
 | S4 profile `s4-enforce`: a requested name outside the effective `passable_env_names` is dropped from the launch allowlist (warning, names the variables) | `mcp_env_passthrough_dropped` |
@@ -519,6 +522,17 @@ every network identity, as core §6.1 — and that state always warns:
 `profile install`, `profile update`, and `env status` MUST emit
 `mcp_package_allowlist_empty`, stating that every declaration package in
 the closure is admitted.
+
+**Source kind: `git` only.** An MCP declaration package MUST resolve from
+a `git` source. A `path`-kind package — a root, an overlay, or an
+onboarding import (sections 6, 9.1, 9.6) — MUST NOT carry an MCP
+declaration: resolution MUST refuse a closure whose `mcp` member carries
+no canonical source (a `state_sha256` pin) with
+`mcp_declaration_path_source_refused` (error), naming the package and the
+declaration — never admitted, never warned-through. A `path` source has
+no canonical identity for the allowlist above and is never verified
+(section 1.4), which is why it may not carry declarations; the allowlist
+is total over canonical identities.
 
 ### 2.3 MCP declaration surfacing
 
@@ -619,6 +633,22 @@ only admitted system modules. The machine policy `transitive_system_modules`
   package — and the manager MUST NOT write or change the lock: `profile
   install` MUST fail, and `profile update` MUST leave the old lock in place.
 
+**`path` sources.** The direct-naming rule above applies as is to `path`
+members: a `path` root or overlay is direct, and a `path` package reached
+only through another package's `requires` is transitive — a lock
+resolution cannot produce, because `requires` entries are `git`-only
+(section 2) — with its system modules non-admitted exactly like any
+transitive package's. A `path` source is never verified (section 1.4),
+which is why
+its system modules are admitted only under this rule AND only after its
+directory passes the section 4 protected-boundary contract at every
+resolve and before any materialization, exactly like a store entry: a
+`path` source that fails it is `environment_store_untrusted` (section 4),
+not an admission verdict — no fragment, non-current, posture row naming
+the path and the failing check — with no rebuild. The boundary check is
+on the directory, not on the content class: a `path` source without
+system modules passes the same contract (sections 6, 9.6).
+
 The `context-system-module-present` finding class (section 9.1) is
 unaffected by admission: it MUST report every `class: system` module of every
 member at install and update, admitted or not, so system-prompt provenance
@@ -705,8 +735,50 @@ cannot prove an entry boundary or pin hash MUST fail closed as in (b).
 Self-consistent lock, marker, and hash bytes do not repair or authenticate
 an untrusted boundary.
 
+**`path` source directories.** The contract extends to the declared
+directory of every `path` source the lock names — a root, an overlay, or
+an onboarding import (sections 6, 9.1, 9.6). On every `env resolve`, and
+again under the manager-home mutation lock for every mutating profile
+operation — install, update, use, sync, repair, garbage collection — the
+manager MUST verify the five boundary checks for the directory, with the
+declared directory as the root the checks are relative to:
+
+- **ownership** — the directory and every component below it are owned by
+  the operator;
+- **permissions** — private mutation permissions, or the platform DACL
+  equivalent: no identity other than the operator may mutate the
+  directory or any component below it;
+- **containment** — every component resolves below the declared directory
+  without leaving it; a component that escapes it is untrusted wherever
+  it points;
+- **regular file types** — every component below the declared directory
+  is a directory or a regular file; a special file is untrusted;
+- **link safety** — verified by `lstat`, never by following links: no
+  symlink at the declared directory or at any component below it. The
+  manager creates no symlink below the declared directory, so any symlink
+  there is untrusted.
+
+The verification inspects the directory but adopts no bytes from it:
+later edits to the source directory change nothing until the operator
+reinstalls (section 1), and no pin is recomputed against the live
+directory — the member's `state_sha256` pin remains the integrity
+baseline for its store entry as above. A `path` source that fails the
+contract is entry-class `environment_store_untrusted` for that profile:
+resolve emits no fragment, status is non-current, and `env status`
+reports the row naming the path and the failing check (section 12).
+There is no rebuild: the source is the operator's directory, and the
+operator fixes it out of band; a real operation MUST NOT re-copy the
+directory into the store to clear the verdict. For dry-run purposes the
+failure is not in the entry-rebuild branch of (b) above: dry-run
+evaluation of a `path` source directory failure reports
+`environment_store_untrusted` with no rebuild planned and mutates
+nothing — never `would-rebuild-untrusted-store`, which names only a
+store entry, lock, or marker file failure that a real operation would
+rebuild (section 10.1).
+
 The contract is not configurable: no knob narrows, widens, or disables it.
-Rollout is direct (impact row "S5").
+Rollout is direct (impact row "S5"). Rollout of the `path`-directory
+extension is direct (impact row "E6": under the hood).
 
 ## 5. Deterministic materialization
 
@@ -1050,6 +1122,13 @@ records overlays as members flagged `overlay`. An overlay declaration naming
 an uninstallable or unreadable source fails resolution with the section 1.1
 diagnostic of that source; a declaration that repeats a name already in the
 closure by another declaration is `environment_composition_invalid`.
+
+A `path` overlay passes the section 4 protected-boundary contract at
+every resolve and before any materialization, exactly like a store
+entry — the check is on the directory, not on the content class — and a
+`path` overlay that fails it is `environment_store_untrusted` with no
+rebuild (section 4). A `path` overlay MUST NOT carry an MCP declaration
+(section 2.2).
 
 **Effective weight.** Every closure member has one effective weight,
 computed by exactly these rules in order, each overriding the previous:
@@ -1862,7 +1941,7 @@ check (section 10.1): a marker that belongs to another lock is
 | --- | --- |
 | marker unreadable or malformed (non-current, currency unknown; never "absent") | `environment_marker_unreadable` |
 | marker unsupported version | `environment_marker_invalid` |
-| store entry, lock, or marker file fails the §4 protected-boundary contract or its pin hash (non-current) | `environment_store_untrusted` |
+| store entry, lock, or marker file fails the §4 protected-boundary contract or its pin hash, or a `path` source directory fails its §4 boundary checks (non-current) | `environment_store_untrusted` |
 | managed surface bytes or link differ from the record (non-current) | `environment_surface_drift` |
 | recorded surface file absent (non-current) | `environment_surface_missing` |
 | recorded surface file exists but cannot be read (non-current) | `environment_surface_unreadable` |
@@ -2364,7 +2443,10 @@ resolution of the pinned skills, always-strict audit; a blocking finding,
 `context-secret-material` included, fails the import like any install.
 Activation follows the section 9.1 rules without magic. The import writes
 nothing into any native home by itself: replacing native files remains the
-section 9.5 takeover path with its notice and backup.
+section 9.5 takeover path with its notice and backup. The import is a
+`path` root for the section 4 boundary contract: its directory passes the
+same verification at every resolve, and an import MUST NOT carry an MCP
+declaration (section 2.2) — reassembly emits no `requires.mcp` entry.
 
 ### 9.7 Diagnostics
 
@@ -2458,13 +2540,14 @@ revalidated snapshot into newly established protected state
 for a `git` member the manager re-acquires the pinned commit's exact
 snapshot bytes (section 1.2) and republishes the entry with a fresh
 boundary; for a `path` or `local` member there is no second copy of the
-snapshot — the source directory is never read again (section 1) — so the
-entry cannot be rebuilt and repair fails with
+snapshot — bytes are never adopted from the source directory again
+(section 1) — so the entry cannot be rebuilt and repair fails with
 `environment_repair_failed` while the operator reinstalls. Dry-run
-evaluation of an entry-class failure reports
-`would-rebuild-untrusted-store` and mutates nothing; dry-run evaluation of
-an enclosing-boundary failure reports `environment_store_untrusted` with
-no rebuild planned and mutates nothing.
+evaluation of an entry-class failure of a store entry, the lock file, or
+a marker file reports `would-rebuild-untrusted-store` and mutates
+nothing; dry-run evaluation of an enclosing-boundary failure, or of a
+`path` source directory failure, reports `environment_store_untrusted`
+with no rebuild planned and mutates nothing (section 4).
 Lock acquisition that times out is
 `environment_lock_unavailable`, distinct from `environment_repair_failed`,
 which keeps meaning that the store cannot restore this home — an entry is
@@ -2475,7 +2558,8 @@ verification, the manager MUST verify in order: enclosing boundary →
 entries → pin hashes → home currency (section 4). It verifies the section
 4 protected-boundary contract for the environments root, the profile store
 root, the profile lock file, the home's marker file when the home has one,
-and every store entry the lock names; then it recomputes every named store
+every store entry the lock names, and — for a `path` root or overlay —
+the source directory (section 4); then it recomputes every named store
 entry's tree hash from its bytes and requires equality with the pin
 (section 4) — for a `git` member the tree object identity of the pinned
 commit, for a `path` or `local` member the `state_sha256` — with no home
@@ -2679,10 +2763,10 @@ that no reader mistakes the surfacing rows for an execution sandbox.
 | named or current profile not installed | `profile_unknown` |
 | managed home unprovisioned, stale, drifted, or passthrough detached; no fragment without `--repair` | `environment_home_stale` |
 | marker unreadable or malformed at resolve (no fragment; non-current, currency unknown; never "absent") | `environment_marker_unreadable` |
-| store entry, lock, or marker file fails the §4 protected-boundary contract or its pin hash at resolve (no fragment; non-current) | `environment_store_untrusted` |
+| store entry, lock, or marker file fails the §4 protected-boundary contract or its pin hash, or a `path` source directory fails its §4 boundary checks, at resolve (no fragment; non-current) | `environment_store_untrusted` |
 | enclosing boundary (environments root or store root) cannot be proven at resolve (no fragment; non-current; nothing rebuilt) | `environment_store_untrusted` |
-| dry-run evaluation of an entry-class failure (no mutation; a real operation would rebuild it) | `would-rebuild-untrusted-store` |
-| dry-run evaluation of an enclosing-boundary failure (no mutation; no rebuild planned) | `environment_store_untrusted` |
+| dry-run evaluation of an entry-class failure of a store entry, the lock file, or a marker file (no mutation; a real operation would rebuild it) | `would-rebuild-untrusted-store` |
+| dry-run evaluation of an enclosing-boundary failure, or of a `path` source directory failure (no mutation; no rebuild planned) | `environment_store_untrusted` |
 | repair could not acquire the mutation lock within the bounded wait | `environment_lock_unavailable` |
 | managed home cannot be repaired from the store | `environment_repair_failed` |
 | S4 profile `s4-warn`: launch composition passes an operator variable outside the configured `passable_env_names` (warning, names the variables and the knob) | `mcp_env_passthrough_unlisted` |
@@ -2868,10 +2952,11 @@ is, `required-missing` when `require_source_signers` is true and none is —,
 the active update-confirmation revision (`A-warning` or `B-flip`, section
 9.2) with its behaviour, the machine-level `require_source_signers`
 value, the store-trust row per installed profile — the section 4
-boundary and pin-hash verdict for the profile's lock, marker, and
-named store entries, naming the failing check and, for an enclosing
-failure, the boundary (environments root or store root) when the profile
-is `environment_store_untrusted`, the active codex-seed revision (`A` or `B`, section 7.4) with its
+boundary and pin-hash verdict for the profile's lock, marker, named store
+entries, and — for a `path` root or overlay — the source directory,
+naming the failing check and the path or, for an enclosing failure, the
+boundary (environments root or store root) when the profile is
+`environment_store_untrusted`, the active codex-seed revision (`A` or `B`, section 7.4) with its
 behaviour, and per managed `codex_cli` home the `codex_seed_record`
 revision with its native-server rows (`mcp_native_servers_ungoverned`
 for the native names an `A`-record home carries,
@@ -3154,8 +3239,8 @@ entry-class case and the enclosing no-rebuild case; the repair rebuild,
 entry-rebuild, enclosing-refusal, stale-repair, and unprovisioned cases;
 the `env status` non-current posture rows naming the failing check and the
 boundary; and the negative cases whose fragment-emitting,
-current-reporting, or re-applying observation is non-conforming.;
-and the section 7.4 codex-seed
+current-reporting, or re-applying observation is non-conforming;
+the section 7.4 codex-seed
 cases (`vectors/environments-codex-seed.json`) — a native `config.toml`
 with `mcp_servers` tables under revision A (copied whole,
 `mcp_native_servers_ungoverned` names the entries, posture lists them
@@ -3165,7 +3250,25 @@ ungoverned) and under revision B (the seeded file lacks them,
 written), the pre-rule-home `mcp_seed_unstripped` posture, and the
 revision-A home under a revision-B manager (`mcp_seed_unstripped` with
 the re-provision hint, the recorded names still ungoverned) — with the
-`codex_seed_record` marker shape. The nine
+`codex_seed_record` marker shape;
+and the section 2.2 and section 4 path-kind admission cases
+(`vectors/environments-path-kind-admission.json`) — the `git` MCP
+declaration admitted, the `path` root, overlay, and onboarding-import MCP
+declarations refused with `mcp_declaration_path_source_refused` naming the
+package and the declaration, the directly named `path` overlay with a
+system module admitted when its directory passes the contract, the `path`
+root, the `path` overlay, and the onboarding import without system
+modules admitted, the world-writable, symlinked-component,
+wrong-ownership, containment-escape, and non-regular-component
+directories refused with `environment_store_untrusted`, no fragment, and
+a posture row naming the path and the failing check, the world-writable
+no-system overlay and the untrusted no-system onboarding import refused
+the same way regardless of content class, the transitive `path` system
+module refused with `context_system_module_transitive`, the dry-run
+evaluation of a `path` directory failure reporting
+`environment_store_untrusted` with no rebuild planned and mutating
+nothing, and the negatives whose admitted, current-reporting,
+rebuilding, or would-rebuild-reporting observation is non-conforming. The nine
 retired `expected/environments/*` sets are regenerated under the v2 type
 line. A manager claiming this capability MUST pass the complete vector set;
 there is no partial claim. A manager conforms to revision A by warning
