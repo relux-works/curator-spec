@@ -69,7 +69,10 @@ are out of band and MUST NOT be accepted from `/v1/meta` alone.
 
 Persisted snapshot state is keyed by canonical registry URL, not key id, and
 survives rotation. Adding a key MUST NOT reset rollback state. Removing every
-key disables trust in that registry and produces a warning.
+key disables trust in that registry and produces a warning. A bootstrap
+checkpoint (§5) verifies against the same pinned set: rotation never
+revalidates or resets checkpoint-persisted high-water, and a checkpoint
+signed solely by a removed key no longer verifies.
 
 ### 2.2 Canonical registry URLs
 
@@ -173,19 +176,107 @@ advance or re-check the high-water on their own (section 9.3). A page MUST NOT
 contribute records or entries before its boundary is accepted under these
 rules.
 
+A registry entry in machine configuration MAY carry `bootstrap_checkpoint`
+(manager profile §1), a path to a signed `registry-snapshot-v1` checkpoint
+file — the same portable object the registry-service profile's operator
+checkpoint uses (profile §6). The path form keeps the checkpoint
+byte-identical to the operator's file so one file serves both; there is no
+inline-object form. A relative path resolves against the directory
+containing the configuration file. The checkpoint file is
+manager-protected state: the client validates ownership, permissions,
+containment, and link safety before reading it, and a missing, unreadable,
+or malformed file is a configuration error naming the path. A checkpoint
+whose signature fails section 2 verification against the pinned keys is
+refused as a configuration error naming the path; it is never treated as
+absent and never persists.
+
+On first use — no persisted high-water for the registry URL — with a
+configured checkpoint, the client verifies the checkpoint and persists it
+as the initial high-water BEFORE any network response is accepted. The
+first network snapshot, and the first page boundary (section 9.3), MUST
+then satisfy this section against that high-water: below it, or equal to
+it with a different `head`, `merkle_root`, or `log_size`, the snapshot is
+rejected as tampered and the registry excluded for the operation, while a
+page boundary in the same position is rejected with
+`registry_page_boundary_stale`. The checkpoint persist is not rolled back
+by a tampered first network response. There is no trust-on-first-use for a
+registry with a configured checkpoint.
+
+Without a configured checkpoint, first use stays trust-on-first-use: the
+first accepted network snapshot or chain boundary fixes the high-water.
+First fixation comes from the network only — a cached entry never fixes
+first-use high-water (section 8): a cached snapshot MAY establish the
+high-water only when those exact bytes were themselves accepted online
+under this section, in which case they reflect persisted state rather
+than a fresh fixation, and a cache entry never accepted online MUST NOT
+fix state. The client MUST report that fixation once as posture —
+`registry_bootstrap_tofu`, a warning naming the registry URL and the hint
+to pin a `bootstrap_checkpoint` — and the manager's read-only status
+lists, per registry, whether the high-water was bootstrapped from a
+checkpoint or from first use (manager profile §10). Later operations do
+not re-warn; the status row is the durable record.
+
 Operators include rollback state in protected machine backup and restore it
 without lowering a recorded version. When an operator knows established state
 was lost and it cannot be recovered, trust in that registry remains disabled
-until an authenticated checkpoint or explicit operator rebootstrap establishes
-a new high-water state. The server-side counterpart is the registry-service
+until the operator supplies a fresh `bootstrap_checkpoint`: the client
+verifies it against the pinned keys and persists it as the new high-water.
+A checkpoint never lowers or forks established state: against a
+still-present persisted high-water, a checkpoint whose version is below it,
+or equal to it with a different `head`, `merkle_root`, or `log_size`, is
+refused with `registry_checkpoint_regression` and the state is left
+unchanged; an equal version with the same body is accepted with nothing
+persisted, and a higher version advances the high-water with the same
+atomic persistence. The server-side counterpart is the registry-service
 profile's startup checkpoint comparison (profile section 6), the normative
 enforcement point for a restored service state before it becomes ready.
 Signing-key rotation, response-cache deletion, and implementation upgrades
 do not rebootstrap it.
 
+This section defines exactly these diagnostics, spelled identically in
+text, tables, schema, vectors, and the CHANGELOG:
+
+| Condition | Diagnostic | Severity |
+|---|---|---|
+| first use fixes the high-water from the network with no `bootstrap_checkpoint` configured (a cache entry never fixes first-use state; posture, reported once) | `registry_bootstrap_tofu` | warning |
+| a checkpoint below a still-present persisted high-water, or equal to it with a different `head`, `merkle_root`, or `log_size` | `registry_checkpoint_regression` | error |
+| two compared mirror-group views share a `log_size` with different `merkle_root` values (§5.1) | `registry_view_divergence` | warning under advisory registry policy, error under strict |
+
+No other bootstrap diagnostic exists. A checkpoint that fails section 2
+signature verification, or a checkpoint file that is missing, unreadable,
+or malformed, is a configuration error naming the path — not one of these
+diagnostics — and fails closed: on first use the registry is unavailable,
+on rebootstrap the persisted state is left unchanged.
+
 An unreachable snapshot warns but does not by itself invalidate individually
 signed records. A reachable invalid snapshot excludes that registry. When all
 otherwise trusted registries are excluded as tampered, resolution fails.
+
+### 5.1 Equivocation and optional view-divergence detection
+
+Equivocation is the residual this protocol does not close: a registry can
+serve each client a view that is monotonic for that client yet divergent
+across clients — different records, heads, or Merkle roots at the same
+`log_size` — and section 5 detects it only when two such views meet in one
+client. Rollback protection binds one client's history to its own
+high-water; it proves nothing about what another client saw.
+
+A client MAY implement view-divergence detection over mirror groups. A
+mirror group is the set of enabled registries in machine configuration
+that share one `mirror_group` value (manager profile §1); a registry
+with no `mirror_group` belongs to no group and is never compared. When
+two or more enabled registries of one group expose the same `log_size`
+— from accepted snapshots or chain boundaries — an implementing client
+MUST compare their `merkle_root` values at that size and MUST report a
+difference as `registry_view_divergence`: a warning under advisory
+registry policy, an error under strict registry policy, naming the group
+and the disagreeing registries. Detection is report-only in both
+policies: it never changes resolution, never excludes a registry, and
+defines no quorum — there is no majority view to prefer. Views that
+agree, groups with fewer than two enabled registries, and sizes exposed
+by only one member are not divergence. The manager's read-only status
+lists, per mirror group, whether the last comparison agreed or diverged
+(manager profile §10).
 
 ## 6. Transparency log and Merkle tree
 
@@ -245,6 +336,19 @@ with `Cache-Control`. A client never serves a cached response past its local
 offline grace merely because a larger server freshness lifetime was received.
 Authenticated submissions, bearer-token failures, and all non-2xx responses
 use `Cache-Control: no-store`.
+
+Caching and offline grace never bootstrap, lower, or recover rollback
+state: a cached or stale snapshot or page boundary still satisfies
+section 5 against the persisted high-water — including a
+checkpoint-persisted one — before it contributes anything. A cached
+entry fixes first-use high-water only when those exact bytes were
+themselves accepted online under section 5, in which case they reflect
+persisted state rather than a fresh fixation; a cache entry never
+accepted online MUST NOT fix state, bypass checkpoint validation, or
+recover known-lost state. The `registry_bootstrap_tofu` posture is
+reported once per registry when the network fixes first-use high-water
+without a checkpoint; serving a cached view thereafter does not
+re-report it.
 
 ## 9. HTTP service
 
@@ -418,4 +522,7 @@ boundary received from that registry was verified.
 An auditor signs a schema-valid record and submits it. Registry countersigning
 does not erase auditor provenance. Publication clients validate local JSON,
 CCJ-1 constraints, signature envelope, registry URL policy, and response schema
-before reporting success.
+before reporting success. Publication never bootstraps rollback state: only an
+accepted snapshot or chain boundary (§5, §9.3) — or a verified bootstrap
+checkpoint (§5) — establishes or advances the high-water; submission responses
+do not.

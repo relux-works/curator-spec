@@ -284,7 +284,12 @@ or an authenticated bundle stays optional and is how a client independently
 re-derives the head, size, and Merkle root a boundary claims. Protocol 1.0
 does not define compact inclusion or consistency proofs. Deployments that
 require public gossip or multi-party consensus add those mechanisms without
-treating them as protocol 1.0 conformance evidence.
+treating them as protocol 1.0 conformance evidence. Equivocation across
+clients stays a stated residual: the protocol detects divergent per-client
+views only when they meet in one client, which MAY compare `merkle_root`
+values at a shared `log_size` across a configured mirror group and report a
+difference as `registry_view_divergence` without changing resolution
+(registry protocol §5.1); there is no service-side quorum.
 
 ## 11. Conformance
 

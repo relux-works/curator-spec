@@ -25,6 +25,14 @@ validating the v1 envelope treats the added `boundary` as ignorable under the
 registry protocol section 9 unknown-fields rule. No other member is added,
 widened, or reinterpreted.
 
+The S2 bootstrap revision extends `manager-config-v2` only: `audit_registries`
+no longer reuses the schema-1 shape but a v2 `$defs/registry` that restates it
+byte for byte and adds exactly two OPTIONAL members — `bootstrap_checkpoint`
+(a path of 1 through 4096 characters) and `mirror_group` (a portable
+identifier) — `additionalProperties: false` unchanged. The schema-1 file is
+byte-frozen and stays valid; a schema-1 reader rejects both members as
+unknown fields. No other member is added, widened, or reinterpreted.
+
 The agent-environments capability of `protocol/environments.md` (revision 1,
 the Decision 0012 model) carries five closed objects: `agent-context-v1` for
 the package manifest `agent-context.json` (section 2, with the section 1.4

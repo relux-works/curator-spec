@@ -494,9 +494,26 @@ a label saying so.
 Client snapshot high-water state is security state. It is stored separately
 from disposable registry responses, written atomically before acceptance, and
 included in protected machine backups. Existing corruption or a failed write
-is fail-closed. Loss of all local state still requires an out-of-band
-authenticated checkpoint or explicit operator rebootstrap; signatures alone
+is fail-closed. A registry entry MAY pin its first use to a signed
+`registry-snapshot-v1` bootstrap checkpoint supplied out of band
+(`bootstrap_checkpoint`): the checkpoint is verified against the pinned
+keys and persisted as the initial high-water before any network response
+is accepted, so there is no trust-on-first-use for that registry. Without
+a checkpoint the first fixation stays trust-on-first-use — the first
+network view is trusted — and is reported once as
+`registry_bootstrap_tofu`. Loss of all local state requires the operator
+to supply a fresh checkpoint; a checkpoint never lowers or forks
+surviving state (`registry_checkpoint_regression`). Signatures alone
 cannot prove that a newly presented snapshot is not an old valid view.
+
+Equivocation stays a stated residual: a registry can serve each client a
+monotonic but divergent view, and the protocol detects it only when two
+views meet in one client. A client MAY compare `merkle_root` values at a
+shared `log_size` across a configured mirror group and report a
+difference as `registry_view_divergence` (warning under advisory
+registry policy, error under strict); detection is report-only, with no
+quorum and no change to resolution. See `protocol/registry.md` §5/§5.1
+and `profiles/manager.md` §1/§10.
 
 Registry trust anchors are distributed out of band. Removing a key from the
 pinned set revokes trust in signatures made solely by that key. Key rotation

@@ -2742,6 +2742,478 @@ def validate_registry_checkpoint_vectors(service: Any = None) -> None:
             )
 
 
+BOOTSTRAP_DIAGNOSTICS = frozenset(
+    {
+        "registry_checkpoint_regression",
+        "registry_view_divergence",
+    }
+)
+
+BOOTSTRAP_POSTURE = "registry_bootstrap_tofu"
+
+BOOTSTRAP_PHASES = frozenset({"bootstrap", "rebootstrap", "compare"})
+
+BOOTSTRAP_POLICIES = frozenset({"advisory", "strict"})
+
+BOOTSTRAP_SEVERITIES = frozenset({"warning", "error"})
+
+BOOTSTRAP_CASES = frozenset(
+    {
+        "checkpoint-first-use-accepted",
+        "checkpoint-first-network-below-tampered",
+        "checkpoint-first-network-equal-different-tampered",
+        "no-checkpoint-first-use-tofu",
+        "checkpoint-signature-invalid-first-use",
+        "rebootstrap-advance-accepted",
+        "rebootstrap-equal-consistent-noop",
+        "rebootstrap-regression-refused",
+        "rebootstrap-equal-inconsistent-refused",
+        "rebootstrap-signature-invalid-ignored",
+        "divergence-detected-advisory",
+        "divergence-detected-strict",
+        "divergence-views-agree",
+        "divergence-different-sizes-skipped",
+        "divergence-single-registry-skipped",
+    }
+)
+
+
+def bootstrap_version(case: dict[str, Any], field: str) -> int:
+    value = case.get(field)
+    if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+        raise ValidationFailure(
+            f"registry-client bootstrap case {case.get('name')!r} needs "
+            f"a non-negative integer {field}"
+        )
+    return value
+
+
+def bootstrap_bool(case: dict[str, Any], field: str) -> bool:
+    value = case.get(field)
+    if not isinstance(value, bool):
+        raise ValidationFailure(
+            f"registry-client bootstrap case {case.get('name')!r} needs "
+            f"a boolean {field}"
+        )
+    return value
+
+
+def expected_bootstrap_verdict(
+    case: dict[str, Any],
+) -> tuple[bool, bool, str | None, str | None, str | None, bool, bool, bool, bool]:
+    """Recompute the S2 bootstrap verdict from the case inputs.
+
+    Returns (accepted, state_changed, diagnostic, posture, severity,
+    compared, registry_excluded, resolution_changed, check_current)
+    following registry protocol section 5 and section 5.1 and the
+    manager profile section 10 status mapping. Every discriminating
+    boolean input must be present with an exact boolean type — a
+    missing, null, or mistyped input is refused, never read as false.
+    The `bootstrap` arm (first use) verifies a configured checkpoint
+    signature first — a failure refuses with no diagnostic and no
+    state change, leaving the registry unavailable (and `--check`
+    non-current) — and persists a verified checkpoint before any
+    network response is accepted, so a tampered first network still
+    reports a state change while the checkpoint-persisted row stays
+    current; without a checkpoint the first network view fixes the
+    high-water with the `registry_bootstrap_tofu` posture (a warning
+    row that stays current). The `rebootstrap` arm (prior state
+    present) verifies first as well — a bad signature is ignored with
+    the state unchanged and the registry usable on the persisted row,
+    which stays current — then refuses a checkpoint below the
+    high-water, or equal with a different body, with
+    `registry_checkpoint_regression` (an error row, `--check`
+    non-current). The `compare` arm states the behavior of a client
+    implementing section 5.1 detection: two or more enabled
+    registries of one mirror group exposing the same log size are
+    compared by Merkle root, a difference reports
+    `registry_view_divergence` (warning under advisory, staying
+    current; error under strict, `--check` non-current), and the
+    verdict never changes resolution, never excludes a registry, and
+    never blocks acceptance.
+    """
+    phase = case.get("phase")
+    if phase == "compare":
+        group = bootstrap_version(case, "group_size")
+        policy = case.get("policy")
+        if policy not in BOOTSTRAP_POLICIES:
+            raise ValidationFailure(
+                f"registry-client bootstrap case {case.get('name')!r} needs "
+                "a closed registry policy"
+            )
+        same_size = bootstrap_bool(case, "same_log_size")
+        roots_equal = bootstrap_bool(case, "roots_equal")
+        compared = group >= 2 and same_size
+        if compared and not roots_equal:
+            severity = "error" if policy == "strict" else "warning"
+            check_current = policy != "strict"
+            return True, False, "registry_view_divergence", None, severity, True, False, False, check_current
+        return True, False, None, None, None, compared, False, False, True
+    if phase == "bootstrap":
+        if case.get("prior_state") != "missing":
+            raise ValidationFailure(
+                f"registry-client bootstrap case {case.get('name')!r} must "
+                "start from missing prior state"
+            )
+        configured = bootstrap_bool(case, "checkpoint_configured")
+        if not configured:
+            return True, True, None, BOOTSTRAP_POSTURE, "warning", False, False, False, True
+        signature_valid = bootstrap_bool(case, "signature_valid")
+        if not signature_valid:
+            return False, False, None, None, None, False, True, False, False
+        checkpoint = bootstrap_version(case, "checkpoint_version")
+        first = bootstrap_version(case, "first_network_version")
+        same_body = bootstrap_bool(case, "candidate_same_body")
+        if first < checkpoint or (first == checkpoint and not same_body):
+            return False, True, None, None, None, False, True, False, True
+        return True, True, None, None, None, False, False, False, True
+    if phase == "rebootstrap":
+        if case.get("prior_state") != "present":
+            raise ValidationFailure(
+                f"registry-client bootstrap case {case.get('name')!r} must "
+                "start from present prior state"
+            )
+        configured = bootstrap_bool(case, "checkpoint_configured")
+        if not configured:
+            raise ValidationFailure(
+                f"registry-client bootstrap case {case.get('name')!r} must "
+                "configure a checkpoint"
+            )
+        signature_valid = bootstrap_bool(case, "signature_valid")
+        if not signature_valid:
+            return False, False, None, None, None, False, False, False, True
+        checkpoint = bootstrap_version(case, "checkpoint_version")
+        stored = bootstrap_version(case, "stored_version")
+        same_body = bootstrap_bool(case, "candidate_same_body")
+        if checkpoint < stored or (checkpoint == stored and not same_body):
+            return False, False, "registry_checkpoint_regression", None, "error", False, False, False, False
+        if checkpoint == stored:
+            return True, False, None, None, None, False, False, False, True
+        return True, True, None, None, None, False, False, False, True
+    raise ValidationFailure(
+        f"registry-client bootstrap case {case.get('name')!r} needs "
+        f"a closed phase, got {phase!r}"
+    )
+
+
+def require_bootstrap_scenario(case: dict[str, Any]) -> None:
+    """Pin each required bootstrap case name to its mandatory scenario inputs.
+
+    The verdict oracle recomputes every output from whatever inputs a case
+    carries, so without this pin a negative case replaced by an internally
+    consistent passing case of the same name would survive the gate. Each
+    required name therefore asserts its discriminating input predicates
+    (phase, configured versus absent checkpoint, signature validity,
+    missing versus present prior state, the version relationship, equal
+    body versus different body, group size, shared log size, root
+    equality, and registry policy) following registry protocol section 5
+    and section 5.1. Every discriminating boolean must be present with
+    an exact boolean type and, where false is the discriminator, must be
+    explicitly false — a missing, null, or mistyped input is refused,
+    never accepted as the negative branch. Extra (non-required) names
+    carry no scenario pin; the caller still verdict-checks them.
+    """
+    name = case.get("name")
+    if name in (
+        "checkpoint-first-use-accepted",
+        "checkpoint-first-network-below-tampered",
+        "checkpoint-first-network-equal-different-tampered",
+        "no-checkpoint-first-use-tofu",
+        "checkpoint-signature-invalid-first-use",
+    ):
+        if case.get("phase") != "bootstrap":
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} must run the bootstrap phase"
+            )
+        if case.get("prior_state") != "missing":
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} must start from missing prior state"
+            )
+        configured = bootstrap_bool(case, "checkpoint_configured")
+        if name == "no-checkpoint-first-use-tofu":
+            if configured:
+                raise ValidationFailure(
+                    f"registry-client bootstrap case {name!r} must leave "
+                    "the checkpoint unconfigured"
+                )
+            return
+        if not configured:
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} must configure a checkpoint"
+            )
+        signature_valid = bootstrap_bool(case, "signature_valid")
+        if name == "checkpoint-signature-invalid-first-use":
+            if signature_valid:
+                raise ValidationFailure(
+                    f"registry-client bootstrap case {name!r} must carry "
+                    "an invalid checkpoint signature"
+                )
+            return
+        if not signature_valid:
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} must carry a valid checkpoint signature"
+            )
+        checkpoint = bootstrap_version(case, "checkpoint_version")
+        first = bootstrap_version(case, "first_network_version")
+        same_body = bootstrap_bool(case, "candidate_same_body")
+        if name == "checkpoint-first-use-accepted":
+            if not first > checkpoint:
+                raise ValidationFailure(
+                    f"registry-client bootstrap case {name!r} must place "
+                    "the first network version above the checkpoint version"
+                )
+        elif name == "checkpoint-first-network-below-tampered":
+            if not first < checkpoint:
+                raise ValidationFailure(
+                    f"registry-client bootstrap case {name!r} must place "
+                    "the first network version below the checkpoint version"
+                )
+        else:
+            if first != checkpoint:
+                raise ValidationFailure(
+                    f"registry-client bootstrap case {name!r} must hold "
+                    "the first network version equal to the checkpoint version"
+                )
+            if same_body:
+                raise ValidationFailure(
+                    f"registry-client bootstrap case {name!r} must carry a different body"
+                )
+        return
+    if name in (
+        "rebootstrap-advance-accepted",
+        "rebootstrap-equal-consistent-noop",
+        "rebootstrap-regression-refused",
+        "rebootstrap-equal-inconsistent-refused",
+        "rebootstrap-signature-invalid-ignored",
+    ):
+        if case.get("phase") != "rebootstrap":
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} must run the rebootstrap phase"
+            )
+        if case.get("prior_state") != "present":
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} must start from present prior state"
+            )
+        configured = bootstrap_bool(case, "checkpoint_configured")
+        if not configured:
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} must configure a checkpoint"
+            )
+        signature_valid = bootstrap_bool(case, "signature_valid")
+        if name == "rebootstrap-signature-invalid-ignored":
+            if signature_valid:
+                raise ValidationFailure(
+                    f"registry-client bootstrap case {name!r} must carry "
+                    "an invalid checkpoint signature"
+                )
+            return
+        if not signature_valid:
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} must carry a valid checkpoint signature"
+            )
+        checkpoint = bootstrap_version(case, "checkpoint_version")
+        stored = bootstrap_version(case, "stored_version")
+        same_body = bootstrap_bool(case, "candidate_same_body")
+        if name == "rebootstrap-regression-refused":
+            if not checkpoint < stored:
+                raise ValidationFailure(
+                    f"registry-client bootstrap case {name!r} must place "
+                    "the checkpoint version below the stored version"
+                )
+        elif name == "rebootstrap-advance-accepted":
+            if not checkpoint > stored:
+                raise ValidationFailure(
+                    f"registry-client bootstrap case {name!r} must place "
+                    "the checkpoint version above the stored version"
+                )
+        else:
+            if checkpoint != stored:
+                raise ValidationFailure(
+                    f"registry-client bootstrap case {name!r} must hold "
+                    "the checkpoint version equal to the stored version"
+                )
+            if same_body == (name == "rebootstrap-equal-inconsistent-refused"):
+                raise ValidationFailure(
+                    f"registry-client bootstrap case {name!r} must carry "
+                    + (
+                        "a different body"
+                        if name == "rebootstrap-equal-inconsistent-refused"
+                        else "the same body"
+                    )
+                )
+        return
+    if name in (
+        "divergence-detected-advisory",
+        "divergence-detected-strict",
+        "divergence-views-agree",
+        "divergence-different-sizes-skipped",
+        "divergence-single-registry-skipped",
+    ):
+        if case.get("phase") != "compare":
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} must run the compare phase"
+            )
+        group = bootstrap_version(case, "group_size")
+        same_size = bootstrap_bool(case, "same_log_size")
+        roots_equal = bootstrap_bool(case, "roots_equal")
+        if name == "divergence-single-registry-skipped":
+            if group >= 2:
+                raise ValidationFailure(
+                    f"registry-client bootstrap case {name!r} must compare "
+                    "fewer than two registries"
+                )
+            return
+        if group < 2:
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} must compare "
+                "two or more registries"
+            )
+        if name == "divergence-different-sizes-skipped":
+            if same_size:
+                raise ValidationFailure(
+                    f"registry-client bootstrap case {name!r} must expose "
+                    "different log sizes"
+                )
+            return
+        if not same_size:
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} must expose the same log size"
+            )
+        if name == "divergence-views-agree":
+            if not roots_equal:
+                raise ValidationFailure(
+                    f"registry-client bootstrap case {name!r} must carry equal roots"
+                )
+            return
+        if roots_equal:
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} must carry different roots"
+            )
+        want_policy = "strict" if name == "divergence-detected-strict" else "advisory"
+        if case.get("policy") != want_policy:
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} must run under {want_policy} policy"
+            )
+
+
+BOOTSTRAP_BEHAVIOR = {
+    "checkpoint_object": "registry-snapshot-v1",
+    "checkpoint_form": "path",
+    "verified_before_network": True,
+    "tofu_posture": "registry_bootstrap_tofu",
+    "regression_diagnostic": "registry_checkpoint_regression",
+    "first_fixation_source": "checkpoint-or-network-only",
+}
+
+BOOTSTRAP_DIVERGENCE_BEHAVIOR = {
+    "compared_at": "same_log_size",
+    "diagnostic": "registry_view_divergence",
+    "resolution_changed": False,
+    "quorum": False,
+}
+
+
+def validate_registry_bootstrap_vectors(client: Any = None, behavior: Any = None) -> None:
+    """The S2 bootstrap checkpoint and view-divergence vector gate.
+
+    Each bootstrap case's accepted, state-changed, diagnostic, posture,
+    severity, compared, exclusion, resolution, and `--check` currency
+    values are recomputed from its inputs, so a vector that admits a
+    tampered first network, a regressing checkpoint, a bad checkpoint
+    signature, a dropped TOFU posture, a downgraded divergence severity,
+    a resolution-changing detection, or a mislabelled status row fails.
+    Each required case name is additionally pinned to its mandatory
+    scenario inputs, so a self-consistent replacement scenario under a
+    required name fails as well. The registry-behavior bootstrap and
+    divergence summaries are pinned to their exact S2 values, including
+    the checkpoint-or-network-only first-fixation source: the cache
+    never fixes first-use high-water.
+    """
+    if client is None:
+        client = load_json(SUITE / "vectors" / "registry-client.json")
+    require_named_cases(
+        client.get("bootstrap_cases"),
+        "registry-client bootstrap",
+        set(BOOTSTRAP_CASES),
+    )
+    for case in client["bootstrap_cases"]:
+        name = case.get("name")
+        require_bootstrap_scenario(case)
+        expected = expected_bootstrap_verdict(case)
+        actual = (
+            case.get("accepted"),
+            case.get("state_changed"),
+            case.get("diagnostic"),
+            case.get("posture"),
+            case.get("severity"),
+            case.get("compared"),
+            case.get("registry_excluded"),
+            case.get("resolution_changed"),
+            case.get("check_current"),
+        )
+        if actual != expected:
+            fields = (
+                "accepted",
+                "state_changed",
+                "diagnostic",
+                "posture",
+                "severity",
+                "compared",
+                "registry_excluded",
+                "resolution_changed",
+                "check_current",
+            )
+            mismatched = next(
+                field
+                for field, want, got in zip(fields, expected, actual)
+                if want != got
+            )
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} carries {mismatched} "
+                f"{case.get(mismatched)!r}, expected {expected[fields.index(mismatched)]!r}"
+            )
+        if case.get("diagnostic") is not None and case.get("diagnostic") not in BOOTSTRAP_DIAGNOSTICS:
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} uses "
+                f"non-closed diagnostic {case.get('diagnostic')!r}"
+            )
+        if case.get("posture") is not None and case.get("posture") != BOOTSTRAP_POSTURE:
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} uses "
+                f"non-closed posture {case.get('posture')!r}"
+            )
+        if case.get("severity") is not None and case.get("severity") not in BOOTSTRAP_SEVERITIES:
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} uses "
+                f"non-closed severity {case.get('severity')!r}"
+            )
+        if not isinstance(case.get("check_current"), bool):
+            raise ValidationFailure(
+                f"registry-client bootstrap case {name!r} needs "
+                "a boolean check_current"
+            )
+    if behavior is None:
+        behavior = load_json(SUITE / "vectors" / "registry-behavior.json")
+    bootstrap_summary = behavior.get("bootstrap")
+    if not isinstance(bootstrap_summary, dict):
+        raise ValidationFailure("registry-behavior bootstrap summary is incomplete")
+    for key, want in BOOTSTRAP_BEHAVIOR.items():
+        if bootstrap_summary.get(key) != want:
+            raise ValidationFailure(
+                f"registry-behavior bootstrap summary carries {key} "
+                f"{bootstrap_summary.get(key)!r}, expected {want!r}"
+            )
+    divergence_summary = behavior.get("divergence")
+    if not isinstance(divergence_summary, dict):
+        raise ValidationFailure("registry-behavior divergence summary is incomplete")
+    for key, want in BOOTSTRAP_DIVERGENCE_BEHAVIOR.items():
+        if divergence_summary.get(key) != want:
+            raise ValidationFailure(
+                f"registry-behavior divergence summary carries {key} "
+                f"{divergence_summary.get(key)!r}, expected {want!r}"
+            )
+
+
 def validate_vector_semantics() -> None:
     ledger = load_json(SUITE / "expected" / "adapter-ledger.json")
     require_sorted_unique(ledger["entries"], "adapter ledger entries")
@@ -8161,6 +8633,7 @@ def main() -> int:
         validate_environments_write_nofollow_vectors,
         validate_registry_page_boundary_vectors,
         validate_registry_checkpoint_vectors,
+        validate_registry_bootstrap_vectors,
         validate_manager_config_vectors,
         validate_system_config_v2_schema,
         validate_umbrella_provider_vectors,

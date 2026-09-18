@@ -4842,5 +4842,504 @@ class RegistryCheckpointVectorTests(unittest.TestCase):
         self.assertEqual(code, 1)
 
 
+BOOTSTRAP_FIRST_USE_SCENARIO = {
+    "phase": "bootstrap",
+    "checkpoint_configured": True,
+    "signature_valid": True,
+    "prior_state": "missing",
+    "checkpoint_version": 8,
+    "stored_version": 0,
+    "first_network_version": 9,
+    "candidate_same_body": False,
+    "group_size": 0,
+    "same_log_size": False,
+    "roots_equal": True,
+    "policy": "advisory",
+    "accepted": True,
+    "state_changed": True,
+    "diagnostic": None,
+    "posture": None,
+    "severity": None,
+    "compared": False,
+    "registry_excluded": False,
+    "resolution_changed": False,
+    "check_current": True,
+}
+
+BOOTSTRAP_TAMPERED_SCENARIO = {
+    "phase": "bootstrap",
+    "checkpoint_configured": True,
+    "signature_valid": True,
+    "prior_state": "missing",
+    "checkpoint_version": 8,
+    "stored_version": 0,
+    "first_network_version": 7,
+    "candidate_same_body": False,
+    "group_size": 0,
+    "same_log_size": False,
+    "roots_equal": True,
+    "policy": "advisory",
+    "accepted": False,
+    "state_changed": True,
+    "diagnostic": None,
+    "posture": None,
+    "severity": None,
+    "compared": False,
+    "registry_excluded": True,
+    "resolution_changed": False,
+    "check_current": True,
+}
+
+BOOTSTRAP_ADVANCE_SCENARIO = {
+    "phase": "rebootstrap",
+    "checkpoint_configured": True,
+    "signature_valid": True,
+    "prior_state": "present",
+    "checkpoint_version": 10,
+    "stored_version": 8,
+    "first_network_version": 0,
+    "candidate_same_body": False,
+    "group_size": 0,
+    "same_log_size": False,
+    "roots_equal": True,
+    "policy": "advisory",
+    "accepted": True,
+    "state_changed": True,
+    "diagnostic": None,
+    "posture": None,
+    "severity": None,
+    "compared": False,
+    "registry_excluded": False,
+    "resolution_changed": False,
+    "check_current": True,
+}
+
+BOOTSTRAP_NOOP_SCENARIO = {
+    "phase": "rebootstrap",
+    "checkpoint_configured": True,
+    "signature_valid": True,
+    "prior_state": "present",
+    "checkpoint_version": 8,
+    "stored_version": 8,
+    "first_network_version": 0,
+    "candidate_same_body": True,
+    "group_size": 0,
+    "same_log_size": False,
+    "roots_equal": True,
+    "policy": "advisory",
+    "accepted": True,
+    "state_changed": False,
+    "diagnostic": None,
+    "posture": None,
+    "severity": None,
+    "compared": False,
+    "registry_excluded": False,
+    "resolution_changed": False,
+    "check_current": True,
+}
+
+DIVERGENCE_ADVISORY_SCENARIO = {
+    "phase": "compare",
+    "checkpoint_configured": False,
+    "signature_valid": True,
+    "prior_state": "present",
+    "checkpoint_version": 0,
+    "stored_version": 8,
+    "first_network_version": 0,
+    "candidate_same_body": True,
+    "group_size": 2,
+    "same_log_size": True,
+    "roots_equal": False,
+    "policy": "advisory",
+    "accepted": True,
+    "state_changed": False,
+    "diagnostic": "registry_view_divergence",
+    "posture": None,
+    "severity": "warning",
+    "compared": True,
+    "registry_excluded": False,
+    "resolution_changed": False,
+    "check_current": True,
+}
+
+DIVERGENCE_AGREEING_SCENARIO = {
+    "phase": "compare",
+    "checkpoint_configured": False,
+    "signature_valid": True,
+    "prior_state": "present",
+    "checkpoint_version": 0,
+    "stored_version": 8,
+    "first_network_version": 0,
+    "candidate_same_body": True,
+    "group_size": 2,
+    "same_log_size": True,
+    "roots_equal": True,
+    "policy": "advisory",
+    "accepted": True,
+    "state_changed": False,
+    "diagnostic": None,
+    "posture": None,
+    "severity": None,
+    "compared": True,
+    "registry_excluded": False,
+    "resolution_changed": False,
+    "check_current": True,
+}
+
+
+class RegistryBootstrapVectorTests(unittest.TestCase):
+    """The S2 bootstrap checkpoint and view-divergence gate must fail closed.
+
+    validate_registry_bootstrap_vectors is the production gate:
+    tools/validate.py main() runs it on every `make validate`,
+    recomputing each bootstrap case's accepted, state-changed,
+    diagnostic, posture, severity, compared, exclusion, resolution,
+    and `--check` currency values from its inputs and pinning each
+    required case name to its mandatory scenario inputs. Each test
+    narrows one rule and proves the gate rejects what the rule must
+    reject.
+    """
+
+    def setUp(self) -> None:
+        self.client = validate.load_json(
+            validate.SUITE / "vectors" / "registry-client.json"
+        )
+        self.behavior = validate.load_json(
+            validate.SUITE / "vectors" / "registry-behavior.json"
+        )
+
+    def case(self, name: str, vector: dict | None = None) -> dict:
+        source = self.client if vector is None else vector
+        return next(item for item in source["bootstrap_cases"] if item["name"] == name)
+
+    def run_gate(self, client=None, behavior=None) -> None:
+        validate.validate_registry_bootstrap_vectors(
+            client=self.client if client is None else client,
+            behavior=self.behavior if behavior is None else behavior,
+        )
+
+    def test_published_vectors_pass(self) -> None:
+        self.run_gate()
+
+    def test_below_checkpoint_network_admitted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        case = self.case("checkpoint-first-network-below-tampered", changed)
+        case["accepted"] = True
+        case["registry_excluded"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_equal_different_network_admitted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        case = self.case("checkpoint-first-network-equal-different-tampered", changed)
+        case["accepted"] = True
+        case["registry_excluded"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_tofu_posture_dropped_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        case = self.case("no-checkpoint-first-use-tofu", changed)
+        case["posture"] = None
+        case["severity"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_bad_signature_first_use_admitted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        case = self.case("checkpoint-signature-invalid-first-use", changed)
+        case["accepted"] = True
+        case["state_changed"] = True
+        case["registry_excluded"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_regression_admitted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        case = self.case("rebootstrap-regression-refused", changed)
+        case["accepted"] = True
+        case["state_changed"] = True
+        case["diagnostic"] = None
+        case["severity"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_equal_inconsistent_regression_admitted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        case = self.case("rebootstrap-equal-inconsistent-refused", changed)
+        case["accepted"] = True
+        case["diagnostic"] = None
+        case["severity"] = None
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_bad_signature_rebootstrap_admitted_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        case = self.case("rebootstrap-signature-invalid-ignored", changed)
+        case["accepted"] = True
+        case["state_changed"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_strict_severity_downgraded_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.case("divergence-detected-strict", changed)["severity"] = "warning"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_resolution_changed_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.case("divergence-detected-advisory", changed)["resolution_changed"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_wrong_diagnostic_spelling_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.case("rebootstrap-regression-refused", changed)["diagnostic"] = (
+            "registry_checkpoint_rollback"
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_swapped_diagnostics_are_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.case("rebootstrap-regression-refused", changed)["diagnostic"] = (
+            "registry_view_divergence"
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_dropped_case_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        changed["bootstrap_cases"] = [
+            item
+            for item in changed["bootstrap_cases"]
+            if item["name"] != "checkpoint-signature-invalid-first-use"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def replace_scenario(self, changed: dict, name: str, scenario: dict) -> None:
+        self.case(name, changed).update(copy.deepcopy(scenario))
+
+    def test_below_tampered_replaced_by_passing_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.replace_scenario(
+            changed, "checkpoint-first-network-below-tampered", BOOTSTRAP_FIRST_USE_SCENARIO
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_tofu_replaced_by_checkpointed_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.replace_scenario(
+            changed, "no-checkpoint-first-use-tofu", BOOTSTRAP_FIRST_USE_SCENARIO
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_bad_signature_first_use_replaced_by_passing_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.replace_scenario(
+            changed, "checkpoint-signature-invalid-first-use", BOOTSTRAP_FIRST_USE_SCENARIO
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_regression_replaced_by_advance_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.replace_scenario(
+            changed, "rebootstrap-regression-refused", BOOTSTRAP_ADVANCE_SCENARIO
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_equal_inconsistent_replaced_by_noop_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.replace_scenario(
+            changed, "rebootstrap-equal-inconsistent-refused", BOOTSTRAP_NOOP_SCENARIO
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_divergence_replaced_by_agreeing_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.replace_scenario(
+            changed, "divergence-detected-advisory", DIVERGENCE_AGREEING_SCENARIO
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_strict_replaced_by_advisory_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.replace_scenario(
+            changed, "divergence-detected-strict", DIVERGENCE_ADVISORY_SCENARIO
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_accepted_replaced_by_tampered_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.replace_scenario(
+            changed, "checkpoint-first-use-accepted", BOOTSTRAP_TAMPERED_SCENARIO
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_replacement_is_rejected_by_main_entry(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.case("rebootstrap-regression-refused", changed).update(
+            copy.deepcopy(BOOTSTRAP_ADVANCE_SCENARIO)
+        )
+        original = validate.load_json
+        validate.load_json = lambda path: (
+            changed
+            if path == validate.SUITE / "vectors" / "registry-client.json"
+            else original(path)
+        )
+        try:
+            with contextlib.redirect_stdout(io.StringIO()):
+                with contextlib.redirect_stderr(io.StringIO()):
+                    code = validate.main()
+        finally:
+            validate.load_json = original
+        self.assertEqual(code, 1)
+
+    def assert_evidence_variants_refused(self, name: str, field: str) -> None:
+        for bad in (None, 0, 1, "true", "false", "yes", []):
+            with self.subTest(field=field, value=bad):
+                changed = copy.deepcopy(self.client)
+                self.case(name, changed)[field] = bad
+                with self.assertRaises(validate.ValidationFailure):
+                    self.run_gate(client=changed)
+        changed = copy.deepcopy(self.client)
+        del self.case(name, changed)[field]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_first_use_signature_evidence_missing_null_wrong_type_is_rejected(self) -> None:
+        self.assert_evidence_variants_refused(
+            "checkpoint-signature-invalid-first-use", "signature_valid"
+        )
+
+    def test_rebootstrap_signature_evidence_missing_null_wrong_type_is_rejected(self) -> None:
+        self.assert_evidence_variants_refused(
+            "rebootstrap-signature-invalid-ignored", "signature_valid"
+        )
+
+    def test_equal_different_body_evidence_missing_null_wrong_type_is_rejected(self) -> None:
+        self.assert_evidence_variants_refused(
+            "checkpoint-first-network-equal-different-tampered", "candidate_same_body"
+        )
+
+    def test_same_log_size_evidence_missing_null_wrong_type_is_rejected(self) -> None:
+        self.assert_evidence_variants_refused(
+            "divergence-different-sizes-skipped", "same_log_size"
+        )
+
+    def test_roots_equal_evidence_missing_null_wrong_type_is_rejected(self) -> None:
+        self.assert_evidence_variants_refused(
+            "divergence-detected-advisory", "roots_equal"
+        )
+
+    def test_checkpoint_configured_missing_null_wrong_type_is_rejected(self) -> None:
+        self.assert_evidence_variants_refused(
+            "checkpoint-first-use-accepted", "checkpoint_configured"
+        )
+
+    def test_removed_discriminating_inputs_are_rejected_by_main_entry(self) -> None:
+        mutant = copy.deepcopy(self.client)
+        for name, field in [
+            ("checkpoint-signature-invalid-first-use", "signature_valid"),
+            ("rebootstrap-signature-invalid-ignored", "signature_valid"),
+            ("checkpoint-first-network-equal-different-tampered", "candidate_same_body"),
+            ("divergence-different-sizes-skipped", "same_log_size"),
+            ("divergence-detected-advisory", "roots_equal"),
+        ]:
+            del next(
+                item for item in mutant["bootstrap_cases"] if item["name"] == name
+            )[field]
+        original = validate.load_json
+        validate.load_json = lambda path: (
+            mutant
+            if path == validate.SUITE / "vectors" / "registry-client.json"
+            else original(path)
+        )
+        try:
+            with contextlib.redirect_stdout(io.StringIO()):
+                with contextlib.redirect_stderr(io.StringIO()):
+                    code = validate.main()
+        finally:
+            validate.load_json = original
+        self.assertEqual(code, 1)
+
+    def test_equal_different_replaced_by_consistent_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        case = self.case("checkpoint-first-network-equal-different-tampered", changed)
+        case["candidate_same_body"] = True
+        case["accepted"] = True
+        case["state_changed"] = True
+        case["registry_excluded"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_sizes_skipped_replaced_by_compared_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        case = self.case("divergence-different-sizes-skipped", changed)
+        case["same_log_size"] = True
+        case["roots_equal"] = True
+        case["compared"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_regression_check_current_flipped_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.case("rebootstrap-regression-refused", changed)["check_current"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_strict_check_current_flipped_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.case("divergence-detected-strict", changed)["check_current"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_tofu_check_current_flipped_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.case("no-checkpoint-first-use-tofu", changed)["check_current"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_bad_signature_first_use_check_current_flipped_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.case("checkpoint-signature-invalid-first-use", changed)["check_current"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_advisory_check_current_flipped_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.client)
+        self.case("divergence-detected-advisory", changed)["check_current"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(client=changed)
+
+    def test_behavior_first_fixation_source_wrong_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.behavior)
+        changed["bootstrap"]["first_fixation_source"] = "network-or-cache"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(behavior=changed)
+
+    def test_behavior_first_fixation_source_missing_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.behavior)
+        del changed["bootstrap"]["first_fixation_source"]
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(behavior=changed)
+
+    def test_behavior_tofu_posture_wrong_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.behavior)
+        changed["bootstrap"]["tofu_posture"] = "registry_bootstrap_warn"
+        with self.assertRaises(validate.ValidationFailure):
+            self.run_gate(behavior=changed)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -2982,7 +2982,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:abbf0662aa2d3ba8acff3fd838971a2666b590aee315b6719663790d2790b11a"
+      "sha256": "sha256:7775c1775b46ac48c7f8f670f326ead31e1c965e8fdbd3ef07d4421f69cdff44"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -3685,6 +3685,22 @@
       "sha256": "sha256:8d352f48404d3bfff9486fc79e476e4287f9954768280f6700c0a870f77bbd3b"
     },
     {
+      "path": "schema-cases/manager-config-v2/invalid-registry-bootstrap-checkpoint-empty.json",
+      "sha256": "sha256:c46b06f73104d5ba8cf268d47a2672f153a6845477775e688c5a4cfad8d4a79b"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-registry-bootstrap-checkpoint-type.json",
+      "sha256": "sha256:e313567d0c33071e1d681374edeb6c992b44c0878e41da5a5a44d0373920f29d"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-registry-mirror-group-grammar.json",
+      "sha256": "sha256:01f8d5649c89d66778aa4926783d2285f7b048bfdd79ce2c761ddc4736213145"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-registry-unknown-field.json",
+      "sha256": "sha256:643a6e165f74a234cab49cdfc58c7f620aaec05fa9baa3c9cb9a3d2191d145f9"
+    },
+    {
       "path": "schema-cases/manager-config-v2/invalid-require-current-profile-grammar.json",
       "sha256": "sha256:d5fbae927dc2c9322b2a17421f0cee186e6a52211eeacffb5962b2b1955f18b8"
     },
@@ -3895,6 +3911,10 @@
     {
       "path": "schema-cases/manager-config-v2/valid-provider-directories.json",
       "sha256": "sha256:55316013874fe188483e08bb336bc77e218a763d65c1c6cbbd5e3fdcdb46eb7e"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/valid-registry-bootstrap-members.json",
+      "sha256": "sha256:dd9d76796f1b31fa85a95e7e2bcbd7ca7d7db806bd6ae988cc1d9fa3a9b4a9d9"
     },
     {
       "path": "schema-cases/manager-config-v2/valid-require-source-signers.json",
@@ -4358,7 +4378,7 @@
     },
     {
       "path": "vectors/manager-config-v2.json",
-      "sha256": "sha256:f22f95dbe0fd20fec403a029112ebd28e70631f57ac77d240871f79f988e494e"
+      "sha256": "sha256:bd98b4c79d95fa536f149036d38e2dd0092ed620c3ba643e5af5c1099634c5d6"
     },
     {
       "path": "vectors/manager-config.json",
@@ -4378,11 +4398,11 @@
     },
     {
       "path": "vectors/registry-behavior.json",
-      "sha256": "sha256:83d89a80c8c44d7001d73e454e96b230de75e066e3657e0c1e8f62e6dec23ba1"
+      "sha256": "sha256:c02499675cbcd908870915b61f88b4b1d659942ee5bce4741f6b4e04f16af881"
     },
     {
       "path": "vectors/registry-client.json",
-      "sha256": "sha256:bdfe024fb86718d86b1ef966dc0d8c68560c8c25238de11dae6ded7a41347150"
+      "sha256": "sha256:ab700c467576affdd6027deadb07d420430b83a7f1b7d6ab7d4e2c11ae52e6d8"
     },
     {
       "path": "vectors/registry-resolution.json",

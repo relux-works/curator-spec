@@ -1950,5 +1950,72 @@
     },
     "name": "schema2-require-source-signers-type",
     "valid": false
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {},
+        "overlays_allowed": true,
+        "passable_env_names": [],
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "provider_directories": [],
+        "require_current_profile": null,
+        "require_source_signers": false,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "source_signers": {},
+        "system_module_waivers": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "transitive_system_modules": "drop",
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "audit_registries": [
+        {
+          "bootstrap_checkpoint": "/etc/curator/checkpoints/primary.json",
+          "mirror_group": "prod",
+          "name": "primary",
+          "url": "https://registry.example"
+        }
+      ],
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-registry-bootstrap-members",
+    "valid": true
+  },
+  {
+    "input": {
+      "audit_registries": [
+        {
+          "name": "primary",
+          "required": true,
+          "url": "https://registry.example"
+        }
+      ],
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-registry-unknown-field",
+    "valid": false
   }
 ]

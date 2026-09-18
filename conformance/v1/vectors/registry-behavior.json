@@ -1,10 +1,24 @@
 {
   "artifact_hash": "sha256:f2c21f31f69bb5c9366028ac6e63a701c66803586c8ce12eac1186dcd350e5eb",
+  "bootstrap": {
+    "checkpoint_form": "path",
+    "checkpoint_object": "registry-snapshot-v1",
+    "first_fixation_source": "checkpoint-or-network-only",
+    "regression_diagnostic": "registry_checkpoint_regression",
+    "tofu_posture": "registry_bootstrap_tofu",
+    "verified_before_network": true
+  },
   "cache": {
     "body_limit_bytes": 16777216,
     "offline_grace_seconds": 604800,
     "record_limit": 10000,
     "ttl_seconds": 3600
+  },
+  "divergence": {
+    "compared_at": "same_log_size",
+    "diagnostic": "registry_view_divergence",
+    "quorum": false,
+    "resolution_changed": false
   },
   "pagination": {
     "cursor_bound_to_query": true,

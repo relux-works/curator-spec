@@ -42,17 +42,48 @@ func TestManagerConfigV2IsSchemaOnePlusOneClosedEnvironmentsObject(t *testing.T)
 	if environments["additionalProperties"] != false {
 		t.Fatalf("the environments object must be closed")
 	}
-	for _, name := range []string{"overlay", "precedence", "systemPromptFiles", "target", "shadowAcknowledgement", "secretMaterialWaiver", "sourceSigner"} {
+	for _, name := range []string{"overlay", "precedence", "systemPromptFiles", "target", "shadowAcknowledgement", "secretMaterialWaiver", "sourceSigner", "registry"} {
 		def, ok := defs[name].(map[string]any)
 		if !ok || def["additionalProperties"] != false {
 			t.Fatalf("$defs.%s must be a closed object", name)
 		}
 	}
-	for _, key := range []string{"skills_root", "projects", "audit", "audit_registries"} {
+	for _, key := range []string{"skills_root", "projects", "audit"} {
 		ref, _ := schema["properties"].(map[string]any)[key].(map[string]any)["$ref"].(string)
 		if !strings.HasPrefix(ref, "manager-config-v1.schema.json#/properties/") {
 			t.Fatalf("schema-2 %s must reuse the schema-1 shape, got %q", key, ref)
 		}
+	}
+	// S2: schema-2 `audit_registries` no longer reuses the schema-1 shape.
+	// It references a v2-local registry definition that restates the
+	// schema-1 entry exactly and adds only the two closed bootstrap
+	// members; the schema-1 file stays byte-frozen.
+	registries, _ := schema["properties"].(map[string]any)["audit_registries"].(map[string]any)
+	items, _ := registries["items"].(map[string]any)["$ref"].(string)
+	if items != "#/$defs/registry" {
+		t.Fatalf("schema-2 audit_registries must reference the v2 registry definition, got %q", items)
+	}
+	schemaOne := readObject(t, filepath.Join(root, "schemas", "v1", "manager-config-v1.schema.json"))
+	oneRegistry := schemaOne["$defs"].(map[string]any)["registry"].(map[string]any)
+	twoRegistry := defs["registry"].(map[string]any)
+	if twoRegistry["type"] != "object" || !equalJSON(twoRegistry["required"], []any{"name", "url"}) {
+		t.Fatalf("schema-2 registry must require exactly name and url, got %#v", twoRegistry["required"])
+	}
+	oneProps := oneRegistry["properties"].(map[string]any)
+	twoProps := twoRegistry["properties"].(map[string]any)
+	if len(twoProps) != len(oneProps)+2 {
+		t.Fatalf("schema-2 registry must extend schema-1 with exactly two members, got %d vs %d", len(twoProps), len(oneProps))
+	}
+	for name, shape := range oneProps {
+		if !equalJSON(twoProps[name], shape) {
+			t.Fatalf("schema-2 registry member %s differs from schema-1", name)
+		}
+	}
+	if !equalJSON(twoProps["bootstrap_checkpoint"], map[string]any{"type": "string", "minLength": 1, "maxLength": 4096}) {
+		t.Fatalf("schema-2 bootstrap_checkpoint has the wrong grammar: %#v", twoProps["bootstrap_checkpoint"])
+	}
+	if !equalJSON(twoProps["mirror_group"], map[string]any{"$ref": "common.schema.json#/$defs/identifier"}) {
+		t.Fatalf("schema-2 mirror_group has the wrong grammar: %#v", twoProps["mirror_group"])
 	}
 }
 

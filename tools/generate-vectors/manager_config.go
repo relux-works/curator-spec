@@ -112,6 +112,12 @@ func managerConfigV2SchemaExamples(valid map[string]any) []schemaExample {
 	withOverlay := func(overlay map[string]any) map[string]any {
 		return withKnob("overlays", map[string]any{"companyA": []any{overlay}})
 	}
+	withRegistry := func(mutate func(entry map[string]any)) map[string]any {
+		config := deepCloneMap(valid)
+		entry := config["audit_registries"].([]any)[0].(map[string]any)
+		mutate(entry)
+		return config
+	}
 	minimal := map[string]any{"schema_version": 2, "skills_root": "/tmp/skills", "projects": map[string]any{}}
 	emptyEnvironments := deepCloneMap(minimal)
 	emptyEnvironments["environments"] = map[string]any{}
@@ -214,6 +220,24 @@ func managerConfigV2SchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-source-signers-duplicate", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}, map[string]any{"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}}})},
 		{name: "invalid-source-signers-unknown-field", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "ssh", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK", "comment": "extra"}}})},
 		{name: "invalid-require-source-signers-type", instance: withKnob("require_source_signers", "yes")},
+		// S2 (registry §5, manager §1): the schema-2 registry entry carries
+		// exactly the two closed bootstrap members; the entry stays closed.
+		{name: "valid-registry-bootstrap-members", valid: true, instance: withRegistry(func(entry map[string]any) {
+			entry["bootstrap_checkpoint"] = "/etc/curator/checkpoints/primary.json"
+			entry["mirror_group"] = "prod"
+		})},
+		{name: "invalid-registry-bootstrap-checkpoint-empty", instance: withRegistry(func(entry map[string]any) {
+			entry["bootstrap_checkpoint"] = ""
+		})},
+		{name: "invalid-registry-bootstrap-checkpoint-type", instance: withRegistry(func(entry map[string]any) {
+			entry["bootstrap_checkpoint"] = 42
+		})},
+		{name: "invalid-registry-mirror-group-grammar", instance: withRegistry(func(entry map[string]any) {
+			entry["mirror_group"] = "prod mirrors"
+		})},
+		{name: "invalid-registry-unknown-field", instance: withRegistry(func(entry map[string]any) {
+			entry["required"] = true
+		})},
 	}
 }
 
@@ -385,5 +409,28 @@ func managerConfigV2Vectors() []any {
 		map[string]any{"name": "schema2-source-signers-ssh-missing-key", "input": withEnvironments(map[string]any{"source_signers": map[string]any{"github.com/example/context": []any{map[string]any{"type": "ssh"}}}}), "valid": false},
 		map[string]any{"name": "schema2-source-signers-fingerprint-grammar", "input": withEnvironments(map[string]any{"source_signers": map[string]any{"github.com/example/context": []any{map[string]any{"type": "gpg", "fingerprint": "0123456789abcdef0123456789abcdef01234567"}}}}), "valid": false},
 		map[string]any{"name": "schema2-require-source-signers-type", "input": withEnvironments(map[string]any{"require_source_signers": "yes"}), "valid": false},
+		// S2 (registry §5, manager §1): the schema-2 registry entry accepts
+		// exactly the two closed bootstrap members and stays closed.
+		func() map[string]any {
+			input := base()
+			input["audit_registries"] = []any{map[string]any{
+				"name": "primary", "url": "https://registry.example",
+				"bootstrap_checkpoint": "/etc/curator/checkpoints/primary.json",
+				"mirror_group":         "prod",
+			}}
+			return map[string]any{
+				"name": "schema2-registry-bootstrap-members", "input": input, "valid": true,
+				"expected": map[string]any{"environments": managerConfigV2EnvironmentDefaults()},
+			}
+		}(),
+		func() map[string]any {
+			input := base()
+			input["audit_registries"] = []any{map[string]any{
+				"name": "primary", "url": "https://registry.example", "required": true,
+			}}
+			return map[string]any{
+				"name": "schema2-registry-unknown-field", "input": input, "valid": false,
+			}
+		}(),
 	}
 }

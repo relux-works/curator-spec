@@ -4335,6 +4335,31 @@
     "valid": false
   },
   {
+    "instance": "manager-config-v2/valid-registry-bootstrap-members.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/invalid-registry-bootstrap-checkpoint-empty.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-registry-bootstrap-checkpoint-type.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-registry-mirror-group-grammar.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-registry-unknown-field.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
     "instance": "provider-capability-receipt-v1/valid.json",
     "schema": "provider-capability-receipt-v1.schema.json",
     "valid": true

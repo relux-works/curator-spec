@@ -43,6 +43,28 @@ cache hits; zero offline grace disables stale fallback; zero clock skew permits
 no future offset. The backend request limit defaults to 1048576 bytes and MUST
 NOT exceed 10485760 bytes.
 
+A registry entry MAY carry `bootstrap_checkpoint`, a path to a signed
+`registry-snapshot-v1` checkpoint file (registry protocol §5), and
+`mirror_group`, an identifier naming the mirror group the registry mirrors
+with (registry protocol §5.1). Both are OPTIONAL and absent by default;
+both are closed members of the schema-2 registry entry only — a schema-1
+reader rejects them as unknown fields. `bootstrap_checkpoint` is a path of
+1 through 4096 characters; a relative path resolves against the directory
+containing the configuration file. The path form — not an inline object —
+keeps the checkpoint byte-identical to the operator's file so one file
+serves the client's first use and the service's startup comparison. The
+checkpoint file is manager-protected state: the manager MUST validate
+ownership, private mutation permissions, containment, and link safety
+before reading it, MUST NOT follow a symlink to reach it, and MUST treat
+a missing, unreadable, or malformed file, or a checkpoint failing
+signature verification, as a configuration error naming the path that
+fails closed (registry protocol §5). `mirror_group` follows the portable
+identifier grammar; registries sharing one value form a mirror group,
+symmetric by construction with no reference graph to validate, and a
+registry with no `mirror_group` belongs to no group. Both members live
+inside `audit_registries`, so the existing `audit_registries` system lock
+covers them; no new lock key exists.
+
 An OPTIONAL system configuration conforms to `system-config-v1.schema.json`
 or, for a manager implementing the agent-environments capability, to
 `system-config-v2.schema.json`, and is merged before parsing the effective
@@ -1261,6 +1283,30 @@ MUST be mutually exclusive.
 Read-only status validates marker schema, recomputes content hashes, reports
 manifest and activation drift, and MAY re-resolve registry attestations. A
 check mode returns non-zero for drift without mutating state.
+
+`curator status` and, where the environments capability is implemented,
+`curator env status` list, per configured registry, the persisted
+high-water (`version`, `log_size`), its bootstrap source — `checkpoint`
+or `first-use` (`registry_bootstrap_tofu`) — and, for a registry in a
+mirror group on a client implementing registry protocol §5.1 detection,
+the last comparison outcome (`agree`, `diverged`
+(`registry_view_divergence`), or `not-compared`). Status severity is
+explicit per bootstrap row: a high-water bootstrapped from a verified
+checkpoint is a current row (informational, `--check` passes); a
+high-water fixed from first use without a checkpoint is a warning row
+carrying `registry_bootstrap_tofu` (stays current, `--check` passes); a
+refused checkpoint is an error row carrying
+`registry_checkpoint_regression` naming the registry (`--check` reports
+non-current); a diverged mirror group is a warning row carrying
+`registry_view_divergence` under advisory registry policy (stays
+current) and an error row under strict registry policy (`--check`
+reports non-current). A first-use checkpoint configuration error
+(missing, unreadable, malformed, or signature-invalid checkpoint) is an
+error row and `--check` reports non-current; a rebootstrap checkpoint
+with an invalid signature is ignored with the state unchanged, so the
+row keeps the persisted source and stays current. A tampered first
+network response excludes the registry for the operation but leaves the
+checkpoint-persisted row current.
 
 For a build-enabled marker, status additionally validates static build-root
 context exclusion, recomputes `curator-build-source-v1` from the fully validated
