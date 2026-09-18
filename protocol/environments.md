@@ -107,6 +107,7 @@ machine configuration.
 | `path` operand names a directory that cannot be read | `profile_source_path_unreadable` |
 | profile name violates the core §2 grammar | `profile_name_invalid` |
 | operation names a profile that is not installed | `profile_unknown` |
+| installed profile's lock file is present but cannot be read or parsed | `environment_store_untrusted` (entry-class; never `profile_unknown`) |
 | no candidate satisfies a name's effective constraint, or a final constraint is unsatisfied (names every requirer, its range or exact form, and the candidates considered) | `context_range_conflict` |
 | `git` source with a signer allowlist whose selected candidate carries neither a tag signature nor a commit signature (names the source and the tag or commit) | `context_source_unsigned` |
 | `git` source with a signer allowlist whose candidate signature verifies against no allowed signer, or fails verification (names the source, the tag or commit, and the signer seen) | `context_source_signer_rejected` |
@@ -116,7 +117,7 @@ machine configuration.
 | root `weights` map names a package outside the closure | `context_weight_unknown` |
 
 A missing `path` operand and an unreadable one are different facts (the
-section 8.4 discipline): `profile_source_path_missing` never fires on a
+section 8.4.1 discipline): `profile_source_path_missing` never fires on a
 failed read, and `profile_source_path_unreadable` never fires on absence.
 
 ### 1.2 Snapshot bytes
@@ -206,7 +207,13 @@ mutation lock for every mutating profile operation, the manager MUST verify
 the lock file's ownership, private mutation permissions or DACL, regular
 file type, and link safety before trusting the lock it names. A lock file
 that fails the contract makes the profile `environment_store_untrusted`
-(section 10.1).
+(section 10.1). Lock reads follow the section 8.4.1
+absence-versus-read-failure rule (lock row): an absent lock file is the
+not-installed condition (`profile_unknown`), while a lock file that is
+present but cannot be read or parsed — permission, I/O, or path errors,
+undecodable bytes, content that fails parsing or schema validation — is
+entry-class `environment_store_untrusted` (section 4), never
+`profile_unknown`, and is never rebuilt from (section 8.4.1, lock row).
 
 ### 1.4 Versions, ranges, and resolution
 
@@ -732,13 +739,21 @@ every resolve (no fragment); nothing is rebuilt, because there is no
 protected place to rebuild into; `env status` reports the row non-current
 naming the boundary (section 12); the operator repairs the boundary out of
 band. (b) An individual entry — a store entry, the lock file, or a marker
-file — that fails its own boundary checks or its pin hash inside a proven
-enclosing boundary is `environment_store_untrusted`; a real operation
+file — that fails its own boundary checks or its pin hash — or, for the
+lock file, cannot be read or parsed (section 8.4.1, lock row) — inside a
+proven enclosing boundary is `environment_store_untrusted`; a real operation
 rebuilds it from the revalidated snapshot into newly established protected
 state (operation-private staging, atomic publication under the mutation
-lock), dry-run evaluation reports `would-rebuild-untrusted-store` and
-mutates nothing, resolve fails closed (no fragment, non-current) until
-rebuilt. Verification order is enclosing boundary → entries → pin hashes →
+lock), except a lock file that cannot be read or parsed, which is never
+rebuilt from (section 8.4.1, lock row): no mutating operation rebuilds,
+re-materializes, or replaces anything from the unreadable evidence.
+Dry-run evaluation of a boundary-or-hash entry-class failure reports
+`would-rebuild-untrusted-store` and mutates nothing; dry-run evaluation
+of an unreadable or malformed lock reports `environment_store_untrusted`
+with no rebuild planned and mutates nothing. Resolve fails closed (no
+fragment, non-current) until rebuilt — or, for the unreadable lock, until
+the operator recovers out of band. Verification order is enclosing
+boundary → entries → pin hashes →
 home currency (section 10.1). An implementation that cannot prove the
 enclosing boundary MUST fail closed as in (a); an implementation that
 cannot prove an entry boundary or pin hash MUST fail closed as in (b).
@@ -783,8 +798,8 @@ failure is not in the entry-rebuild branch of (b) above: dry-run
 evaluation of a `path` source directory failure reports
 `environment_store_untrusted` with no rebuild planned and mutates
 nothing — never `would-rebuild-untrusted-store`, which names only a
-store entry, lock, or marker file failure that a real operation would
-rebuild (section 10.1).
+store entry or marker file failure, or a lock boundary-check failure,
+that a real operation would rebuild (section 10.1).
 
 The contract is not configurable: no knob narrows, widens, or disables it.
 Rollout is direct (impact row "S5"). Rollout of the `path`-directory
@@ -1258,6 +1273,12 @@ recorded; a recorded seed whose target no longer exists is removed; an
 entry in the managed parent that the marker does not record is never
 touched — where such an entry shadows an allowlisted operator entry, the
 condition is reported as `environment_seed_shadowed` and left as it is.
+Reconciliation presence checks follow the section 8.4.1
+absence-versus-read-failure rule (seed row): an allowlisted entry whose
+state cannot be established is never treated as absent — a recorded seed
+whose target cannot be statted for any reason other than absence is kept,
+nothing is seeded from an entry that cannot be read, and the operation
+reports `environment_seed_unreadable`.
 `XDG_DATA_HOME` and `XDG_STATE_HOME` are **ambient**: the manager never
 sets, seeds, or manages them, so opencode's authentication state and every
 XDG data or state file stay the operator's own on every launch. A dedicated
@@ -1320,7 +1341,7 @@ resolve is sent as literal prompt text. The descriptor therefore records
 `argument: path` with the polymorphism, and the launcher MUST verify that
 the path is a readable regular file immediately before exec and fail rather
 than let the tool interpret a dead path as prompt text — the read-failure-
-as-absence class section 8.4 bans, applied at launch. The `codex_cli`
+as-absence class section 8.4.1 bans, applied at launch. The `codex_cli`
 config key is **verified** present in the codex configuration surface
 (0.153.2); that a per-invocation `-c model_instructions_file=<path>`
 override applies it is docs-confidence.
@@ -1378,7 +1399,15 @@ file-shaped strategy is watched by the **liveness row** —
 `env status` MUST report `environment_passthrough_detached` (non-current)
 when a recorded passthrough entry is no longer a symlink or no longer
 targets the native entry, and `env resolve --repair` MUST re-link it,
-leaving both files' bytes untouched. Where the pinned release's write
+leaving both files' bytes untouched. A recorded entry whose link state
+cannot be established — `lstat` or `readlink` fails with permission, I/O,
+or path errors — is not detached (section 8.4.1, passthrough row): `env
+status` MUST report `environment_passthrough_unreadable` (non-current,
+currency unknown), `env resolve` MUST report it the same way and emit no
+fragment, and `--repair` MUST NOT re-link the entry: repair leaves it
+untouched for the operator to make readable. A directory at the entry path
+is "no longer a symlink" and stays detached-side: it is
+`environment_passthrough_detached`, re-linked by `--repair`. Where the pinned release's write
 behavior is verified in-place, a manager MAY record the entry as
 `in-place` and skip nothing: the liveness row runs regardless. An
 in-place rewrite has its own hazard, recorded here although nothing in this
@@ -1499,7 +1528,13 @@ repository for `exec`, and no configuration seed lifts it), and `pi` has
 no trust wall. A seed that is absent in the native home is simply not
 seeded; a seed that exists but cannot be read is
 `environment_seed_unreadable` and provisioning stops before the first
-write (section 8.4 discipline).
+write (section 8.4.1, seed row). A seed path that is not a regular file —
+a symlink, directory, or special file — is unreadable-side: provisioning
+stops with `environment_seed_unreadable`, never by copying through the
+link nor by skipping the seed as absent. Under revision B, native
+`config.toml` bytes that do not parse as TOML are likewise
+`environment_seed_unreadable`: the strip cannot be computed, so
+provisioning stops rather than seeding whole or skipping.
 
 **Isolation matrix.** What a managed home isolates per adapter, in revision
 1, normatively:
@@ -1527,7 +1562,10 @@ materialization and `env status` MUST report `environment_shadowing_path_present
 when a declared shadowing path exists; the file itself is never touched.
 The existence check uses `lstat`-class semantics (section 8.3.1): a
 symlink at a declared shadowing path counts as present and is never
-dereferenced.
+dereferenced. An `lstat` that fails for any reason other than ENOENT-class
+absence is not absence (section 8.4.1): the path is reported as
+`environment_shadowing_path_present` naming the path as unverifiable,
+never as absent.
 The surface is genuinely inert, so the row is **non-current** by default
 (section 12). Machine configuration MAY record a per-path
 `shadow_acknowledged` entry (section 12.1) — "this override is deliberate" —
@@ -1574,7 +1612,11 @@ Target participation is machine configuration, never profile data: `auto`
 (default), `off`, or an explicit per-target enable. Under `auto` the target
 participates exactly when its probe path exists: a machine without the probe
 path materializes nothing there and reports nothing missing; a machine with
-it re-materializes the target on every install, `use`, and `sync`. The
+it re-materializes the target on every install, `use`, and `sync`. A probe
+path that cannot be statted for any reason other than ENOENT-class absence
+counts as present — the target participates and the first-write consent
+gate below applies unchanged — and `env status` reports the probe as
+unverifiable, never as absent (section 8.4.1). The
 **first write** into a target's home under `auto` is a write into another
 application's directory and requires one-time consent: the manager stops
 with `environment_target_consent_required`, naming the target and the home,
@@ -1598,7 +1640,8 @@ identifier not declared by the registry is `environment_target_unknown`.
 | `isolated` configured for `opencode`, or for `claude_code` on macOS below the pinned release | `environment_isolated_unsupported` |
 | `shared` configured for `claude_code` on macOS at or above the pinned release | `environment_shared_unsupported` |
 | recorded passthrough entry is no longer a symlink to the native entry (non-current) | `environment_passthrough_detached` |
-| provisioning seed exists in the native home but cannot be read | `environment_seed_unreadable` |
+| recorded passthrough entry whose link state cannot be established — `lstat` or `readlink` fails with permission, I/O, or path errors (non-current, currency unknown; never "detached") | `environment_passthrough_unreadable` |
+| provisioning seed exists but cannot be read — a native-home file or a named XDG entry | `environment_seed_unreadable` |
 | unrecorded entry in a managed `opencode` parent shadows an allowlisted operator entry (warning) | `environment_seed_shadowed` |
 | first `auto` write into a secondary target's home without recorded consent | `environment_target_consent_required` |
 | detected tool version differs from the adapter's recorded verified version (warning) | `environment_tool_version_unverified` |
@@ -1811,11 +1854,11 @@ beside the managed surfaces. The marker records:
 
 Readers MUST reject an unsupported marker version with
 `environment_marker_invalid` and MUST NOT infer newer semantics from
-unknown fields. An absent marker and an unreadable or malformed marker are
-distinct facts (section 8.4): an absent marker is the unprovisioned-home
-condition (`environment_home_stale`, section 10.1), while an unreadable or
-malformed marker fails closed with `environment_marker_unreadable` — the
-marker-unreadable class, non-current with currency unknown, never
+unknown fields. Marker reads follow the section 8.4.1
+absence-versus-read-failure rule (marker row): an absent marker is the
+unprovisioned-home condition (`environment_home_stale`, section 10.1),
+while an unreadable or malformed marker fails closed with
+`environment_marker_unreadable` — non-current with currency unknown, never
 "absent" — the home's surfaces are treated as unmanaged, nothing is
 removed or replaced. The marker joins
 the `agent-*` identifier family deliberately; the frozen core §1.1
@@ -1863,6 +1906,19 @@ backup, and garbage collection never does. `env status` reports, per home,
 the number of backup generations and the age of the oldest and newest — a
 backup of a hand-maintained context file may hold secrets, and the
 operator is told it is there.
+
+Ledger and backup reads follow the section 8.4.1 absence-versus-read-failure
+rule (ledger and backup-record rows). The ledger of record unreadable is
+`environment_marker_unreadable`: nothing is recorded, so nothing is removed
+or replaced, and any attempted write meets
+`environment_surface_unmanaged_conflict`. A backup inventory that cannot be
+established — the generations directory or a generation needed by restore,
+scrub, retention, or status cannot be listed or read — is unknown, never
+empty, and reports `environment_backup_record_unreadable`: `env status`
+reports the backup row non-current with currency unknown; restore, scrub,
+and retention pruning stop before mutating with the same diagnostic; and
+the next-generation existence check never proceeds as if the generation
+were absent.
 
 ### 8.3.1 Write discipline
 
@@ -1925,16 +1981,12 @@ inspection uses `lstat`-class semantics (section 8.3.1): a surface path
 that is a symlink is identified with `readlink`, never opened through
 the link.
 
-An absent surface file and a failed read are different facts: a failed
-marker read is `environment_marker_unreadable`; a failed read of a recorded
-surface file is `environment_surface_unreadable`, the row is non-current
-with its currency reported as unknown, and no absence-shaped outcome —
-`environment_surface_missing` included — may fire on either. An absent
-marker and an unreadable or malformed marker are likewise distinct: the
-absent marker is the unprovisioned-home condition
-(`environment_home_stale`, section 10.1), while the unreadable or
-malformed marker is `environment_marker_unreadable` (non-current, currency
-unknown), never "absent".
+Absence and read failure are distinct facts for every state and surface
+file (section 8.4.1): drift compares the home against the record, so a
+surface that cannot be read is not drifted — it is
+`environment_surface_unreadable` (non-current, currency unknown), and no
+absence-shaped outcome — `environment_surface_missing` included — may fire
+on it.
 
 Store failure is not drift: drift compares the home against the record,
 while `environment_store_untrusted` compares the store against its pin
@@ -1944,6 +1996,47 @@ expected store path but whose store entry fails the contract is not
 (section 10.1) and no fragment is emitted. Home currency is a separate
 check (section 10.1): a marker that belongs to another lock is
 `environment_home_stale`, never `environment_store_untrusted`.
+
+### 8.4.1 Absence versus read failure
+
+For every file the manager reads as state or surface — marker, lock,
+ledger, backup record, provisioning seed, passthrough entry, recorded
+surface, inventory candidate, a closed list — the outcomes "absent" and
+"present but unreadable or malformed" are distinct facts. "Absent" means
+ENOENT-class on `lstat` or `open` of the exact path: no entry exists there.
+"Present but unreadable or malformed" means the path resolves to an entry
+the manager cannot use: permission or I/O errors on stat, open, or read; a
+path component that is not a directory; a symlink where a regular file is
+required, or a directory where a file is expected; undecodable bytes; or
+content that fails parsing or schema validation. A failed read, stat, or
+parse of any such file MUST NOT be reported, persisted, or acted upon as
+absence, and MUST NOT trigger any absence-shaped action — provisioning,
+re-seeding, takeover, re-materialization, or an "unprovisioned" verdict. An
+unreadable file makes the affected row non-current with currency unknown
+(section 12), and the operation that needs the file fails closed.
+
+The unreadable outcome per file class is closed in this table; every
+section that reads one of these files references this rule and names its
+row's diagnostic, never a local restatement:
+
+| File class | Absence legitimately means | Present but unreadable or malformed means | Owning section |
+| --- | --- | --- | --- |
+| marker | no marker file: the home is unprovisioned (`environment_home_stale` at resolve) | `environment_marker_unreadable` — non-current, currency unknown; surfaces treated as unmanaged, nothing removed or replaced | 8.2 |
+| lock | no lock file: the profile is not installed (`profile_unknown`) | `environment_store_untrusted` (entry-class) — never `profile_unknown`; resolve emits no fragment, status is non-current with currency unknown, and no mutating operation (install, update, use, sync, repair, garbage collection) rebuilds, re-materializes, or replaces anything from the unreadable evidence — recovery is an explicit operator action (reinstall from the profile source, or the section 9.2 retained previous lock) that never reads the unreadable file as input | 1.3 |
+| ledger | the ledger is absent with its home (unprovisioned) | the marker as ledger of record unreadable is `environment_marker_unreadable`; no remove or replace (attempted writes meet `environment_surface_unmanaged_conflict`) | 8.3 |
+| backup record | no generations: nothing to restore; the next generation proceeds; status reports zero | `environment_backup_record_unreadable` — the backup inventory is unknown: status reports the backup row non-current with currency unknown; restore, scrub, and retention pruning stop before mutating; the next-generation check never proceeds as if the generation were absent | 8.3 |
+| provisioning seed | the seed is not seeded | `environment_seed_unreadable` — provisioning stops before the first write | 7.4 |
+| passthrough entry | the recorded link is missing, replaced, or retargeted: `environment_passthrough_detached`, re-linked by `--repair` | `environment_passthrough_unreadable` — non-current, currency unknown, never "detached"; repair leaves the entry untouched | 7.4 |
+| recorded surface | `environment_surface_missing` | `environment_surface_unreadable` — non-current, currency unknown | 8.4 |
+| inventory candidate | not detected — never in the loss list | a loss with reason; a lossy import stops with `environment_import_lossy` unless consented; onboarding stops before its first write while the inventory is incomplete | 9.5, 9.6 |
+
+Boundary verification precedes readability classification: on the section
+10.1 verification order (enclosing boundary, then entries, then pin hashes,
+then home currency), a failure that violates the section 4 contract — a
+symlink at the marker or lock path, a non-regular entry component — or that
+prevents proving the boundary at all is `environment_store_untrusted` for a
+lock, marker, or store file, never an unreadable code (sections 1.3, 4,
+8.2).
 
 ### 8.5 Diagnostics
 
@@ -1957,6 +2050,7 @@ check (section 10.1): a marker that belongs to another lock is
 | recorded surface file exists but cannot be read (non-current) | `environment_surface_unreadable` |
 | write would touch a file the marker does not record | `environment_surface_unmanaged_conflict` |
 | next backup generation directory already exists | `environment_backup_exists` |
+| backup inventory (generations directory or a needed generation) cannot be listed or read (non-current, currency unknown; restore, scrub, and retention pruning stop before mutating) | `environment_backup_record_unreadable` |
 | a write that would traverse a symlink below the managed root, or open through a symlink at a backup, marker, or ledger destination, that the manager did not create | `environment_write_would_follow_link` |
 
 ## 9. Profile lifecycle
@@ -2260,7 +2354,9 @@ discipline. Global skill operations act on the current profile and accept
 `--profile <name>` and `--all-profiles`. `profile sync` re-materializes
 every installed profile across every registered adapter and participating
 target from the locks it finds; it is the actualization path when a new
-adapter or target is registered on the machine.
+adapter or target is registered on the machine. A lock it cannot read is
+not "not found" (section 8.4.1, lock row): the profile is reported as
+`environment_store_untrusted` and left unmaterialized.
 
 **Commands.** Skill commands reach a shell through the manager's forwarding
 shims in one user-bin directory (manager §12.1; core §12.1). That directory
@@ -2300,7 +2396,14 @@ root-context surface (section 2), so no root-context file is written for
 `env status` treat a `local` profile exactly like an installed one. A
 machine that never installs another profile observes no behavior change:
 `default` simply is the current profile and existing global installations
-keep their behavior byte-for-byte.
+keep their behavior byte-for-byte. Migration reads each global skill's
+install record to synthesize the lock; a record it cannot read is a loss
+with reason under the section 8.4.1 inventory-candidate row — never "not
+installed" — and migration stops before any write with
+`environment_import_lossy` naming the skill. Unlike import, the migration
+path admits no consent flag: the operator makes the record readable — or
+removes the skill through the normal global-remove path — and retries;
+the skill is never dropped silently.
 
 ### 9.5 Onboarding
 
@@ -2330,6 +2433,15 @@ such a trigger the manager:
    unmanaged files to `environment_foreign_manager_suspected` (warning): a
    dotfile manager appears to manage this machine and will overwrite
    managed surfaces on its next apply. The heuristic never blocks.
+   Inventory reads follow the section 8.4.1 absence-versus-read-failure
+   rule (inventory-candidate row): a candidate that cannot be read is never
+   treated as absent — a detected-surface candidate that cannot be read
+   joins the section 9.6 loss list with its reason, and a symlink at a
+   managed-surface path whose target cannot be read stops the operation
+   with `environment_foreign_manager_detected`, naming the path as
+   unverifiable, with the same explicit choice. The dotfile-manager
+   heuristic stays best-effort and warning-only: a probe it cannot
+   complete yields no signal and never gates.
 2. **Notifies**: before any write, the operator is told that native global
    context files are being replaced by managed ones and where the backup
    lands.
@@ -2384,7 +2496,10 @@ For each registered adapter, over its native default home:
 - each **skills entry** of the adapter's manager §5 global skills surface
   that the manager's adapter ledger does not record. A ledgered entry
   belongs to the machine-global scope and reaches managed state through
-  the section 9.4 migration, never through import.
+  the section 9.4 migration, never through import. An entry whose ledger
+  membership cannot be established — the ledger cannot be read — is not
+  "not recorded" (section 8.4.1, inventory-candidate row): it is a loss
+  with reason below.
 
 A surface that is absent is simply not detected. A participating
 secondary fixed-home target (section 7.6) joins the section 9.5 inventory
@@ -2411,8 +2526,9 @@ root-context file that is not valid UTF-8, a skills entry with no
 recoverable exact declaration, or a divergent secondary-target
 root-context file. The **loss list** names each loss — adapter, platform
 path, and reason — and an absence and a failed read stay different facts
-(section 8.4): an absent surface never appears in the loss list, and a
-failed read is always a loss, never treated as absence.
+(section 8.4.1, inventory-candidate row): an absent surface never appears
+in the loss list, and a failed read is always a loss, never treated as
+absence.
 
 **Consent gate.** A lossless import proceeds without stopping. A lossy
 import stops with `environment_import_lossy` and the loss list; it
@@ -2481,6 +2597,8 @@ declaration (section 2.2) — reassembly emits no `requires.mcp` entry.
 | chosen import profile name already installed | `profile_import_name_taken` |
 | MCP package allowlist empty at install or update under the `permissive` posture (warning: every declaration package in the closure is admitted) | `mcp_package_allowlist_empty` |
 | MCP package allowlist empty at install or update under the `hardened` posture while the resolved closure carries an MCP declaration package (resolution error; old lock stands) | `mcp_package_allowlist_empty` |
+| recorded passthrough entry whose link state cannot be established (non-current, currency unknown; never "detached"; policy owned by §7.7) | `environment_passthrough_unreadable` |
+| backup inventory (generations directory or a needed generation) that cannot be listed or read (non-current, currency unknown; restore, scrub, and retention pruning stop before mutating; policy owned by §8.5) | `environment_backup_record_unreadable` |
 
 `profile_index_ambiguous` is withdrawn with the multi-profile repository
 shape; `--use` takes no name. Section 2.3 surfacing emits no diagnostic
@@ -2547,18 +2665,24 @@ rebuild into, and the operator repairs the boundary out of band; an
 individual entry (store entry, lock file, marker file) that fails inside a
 proven enclosing boundary is rebuilt by a real operation from the
 revalidated snapshot into newly established protected state
-(operation-private staging, atomic publication under the mutation lock):
-for a `git` member the manager re-acquires the pinned commit's exact
-snapshot bytes (section 1.2) and republishes the entry with a fresh
-boundary; for a `path` or `local` member there is no second copy of the
-snapshot — bytes are never adopted from the source directory again
-(section 1) — so the entry cannot be rebuilt and repair fails with
-`environment_repair_failed` while the operator reinstalls. Dry-run
-evaluation of an entry-class failure of a store entry, the lock file, or
-a marker file reports `would-rebuild-untrusted-store` and mutates
-nothing; dry-run evaluation of an enclosing-boundary failure, or of a
-`path` source directory failure, reports `environment_store_untrusted`
-with no rebuild planned and mutates nothing (section 4).
+(operation-private staging, atomic publication under the mutation lock);
+an unreadable or malformed lock file is never rebuilt from (section
+8.4.1, lock row) — install, update, use, sync, repair, and garbage
+collection refuse with `environment_store_untrusted` without rebuilding,
+re-materializing, or replacing anything, and recovery is the lock row's
+explicit operator action. For a `git` member the manager re-acquires the
+pinned commit's exact snapshot bytes (section 1.2) and republishes the
+entry with a fresh boundary; for a `path` or `local` member there is no
+second copy of the snapshot — bytes are never adopted from the source
+directory again (section 1) — so the entry cannot be rebuilt and repair
+fails with `environment_repair_failed` while the operator reinstalls.
+Dry-run evaluation of an entry-class failure of a store entry or a marker
+file, or of a lock file that fails its boundary checks, reports
+`would-rebuild-untrusted-store` and mutates nothing; dry-run evaluation
+of an enclosing-boundary failure, of a `path` source directory failure,
+or of an unreadable or malformed lock file reports
+`environment_store_untrusted` with no rebuild planned and mutates nothing
+(section 4).
 Lock acquisition that times out is
 `environment_lock_unavailable`, distinct from `environment_repair_failed`,
 which keeps meaning that the store cannot restore this home — an entry is
@@ -2588,9 +2712,21 @@ hashes are compared with the surfaces the CURRENT lock would generate
 condition (`environment_home_stale`) repaired from the verified store,
 never `environment_store_untrusted`. An intact updated store with an old
 marker is stale and repair succeeds; a swapped updated store with an old
-marker is untrusted and its bytes are never adopted. An absent marker is
-unprovisioned (`environment_home_stale`); an unreadable or malformed
-marker is `environment_marker_unreadable` (section 8.4), never "absent".
+marker is untrusted and its bytes are never adopted. Resolve's reads follow
+the section 8.4.1 absence-versus-read-failure rule: an absent marker is
+unprovisioned (`environment_home_stale`); an unreadable or malformed marker
+is `environment_marker_unreadable` (marker row), never "absent"; an
+unreadable recorded surface is `environment_surface_unreadable` (surface
+row), never "missing" and never a stale-home reason; an unreadable lock is
+entry-class `environment_store_untrusted` (lock row), never
+`profile_unknown` and never rebuilt from; and an unreadable passthrough
+entry is `environment_passthrough_unreadable` (passthrough row), never
+"detached" and never a stale-home reason — while a detached entry stays
+a stale-home reason repaired by `--repair`. `--repair` neither
+re-materializes an unreadable surface nor re-links an unreadable entry:
+it reports the unreadable diagnostic and emits no fragment.
+Provisioning-time seed reads fail with `environment_seed_unreadable`
+(seed row) and stop provisioning before the first write.
 The pin recomputation costs O(store entry bytes named by the lock) per
 resolve: every named entry is re-hashed, so a same-user byte swap of a
 system-prompt or root-context file — or any file in the entry — is
@@ -2786,10 +2922,13 @@ that no reader mistakes the surfacing rows for an execution sandbox.
 | named or current profile not installed | `profile_unknown` |
 | managed home unprovisioned, stale, drifted, or passthrough detached; no fragment without `--repair` | `environment_home_stale` |
 | marker unreadable or malformed at resolve (no fragment; non-current, currency unknown; never "absent") | `environment_marker_unreadable` |
+| recorded surface file unreadable at resolve (no fragment; non-current, currency unknown; never "missing", never a stale-home reason; `--repair` does not re-materialize it) | `environment_surface_unreadable` |
+| lock file unreadable or malformed at resolve (no fragment; non-current, currency unknown; never `profile_unknown`; never rebuilt from — section 8.4.1, lock row) | `environment_store_untrusted` |
+| recorded passthrough entry unreadable at resolve (no fragment; non-current, currency unknown; never "detached", never a stale-home reason; `--repair` does not re-link it) | `environment_passthrough_unreadable` |
 | store entry, lock, or marker file fails the §4 protected-boundary contract or its pin hash, or a `path` source directory fails its §4 boundary checks, at resolve (no fragment; non-current) | `environment_store_untrusted` |
 | enclosing boundary (environments root or store root) cannot be proven at resolve (no fragment; non-current; nothing rebuilt) | `environment_store_untrusted` |
-| dry-run evaluation of an entry-class failure of a store entry, the lock file, or a marker file (no mutation; a real operation would rebuild it) | `would-rebuild-untrusted-store` |
-| dry-run evaluation of an enclosing-boundary failure, or of a `path` source directory failure (no mutation; no rebuild planned) | `environment_store_untrusted` |
+| dry-run evaluation of an entry-class failure of a store entry or a marker file, or of a lock file that fails its boundary checks (no mutation; a real operation would rebuild it) | `would-rebuild-untrusted-store` |
+| dry-run evaluation of an enclosing-boundary failure, of a `path` source directory failure, or of an unreadable or malformed lock file (no mutation; no rebuild planned) | `environment_store_untrusted` |
 | repair could not acquire the mutation lock within the bounded wait | `environment_lock_unavailable` |
 | managed home cannot be repaired from the store | `environment_repair_failed` |
 | S4 profile `s4-warn`: launch composition passes an operator variable outside the configured `passable_env_names` (warning, names the variables and the knob) | `mcp_env_passthrough_unlisted` |
@@ -2832,7 +2971,7 @@ each profile names. The rules are closed:
   MUST fail with `subcommand_provider_root_unreadable`, naming the first
   unreadable root in search order, and MUST NOT fall through to a later
   root, to `PATH`, or to `subcommand_provider_missing`. An unreadable root
-  is reported as unreadable, never as absence (section 8.4).
+  is reported as unreadable, never as absence (section 8.4.1).
 - The ambient `PATH` is not a trust root. Under revision A the ambient
   `PATH` still selects the provider (the pre-change behavior) and a
   selection outside the trust roots warns; under revision B the ambient
@@ -2937,7 +3076,9 @@ default and every section 9.3 scope that differs. A `local` profile
 reports `local` as its source, `-` for requirement, `0.0.0` as version, and
 its lock hash. A `path` root reports `path` as its source, its recorded
 source path as the identity, `-` for requirement, and whether it is
-imported-from-native.
+imported-from-native. A profile whose lock cannot be read is listed with
+`environment_store_untrusted`, never omitted as not installed (section
+8.4.1, lock row).
 
 `env status [--check] [--json]` reports the
 profile × environment × surface matrix: mode, form, materialized lock hash,
@@ -2954,7 +3095,9 @@ with any `environment_seed_shadowed` entry, the standing `opencode`
 split-brain note of section 7.1, the recorded and detected tool release per
 adapter (section 7.9), both homes of the current profile per scope and
 their provisioning state (section 8.1), backup generation counts and ages
-per home (section 8.3), managed-surface, backup, and marker paths blocked
+per home (section 8.3; `environment_backup_record_unreadable`,
+non-current with currency unknown, when the inventory cannot be
+established), managed-surface, backup, and marker paths blocked
 by a link the manager does not own (section 8.3.1), orphaned managed
 homes (section 9.2),
 `environment_context_size_exceeded` where it applies, the effective
@@ -3017,7 +3160,7 @@ every recorded passthrough entry is live. A drifted, missing, shadow-inert
 switched, stale, store-untrusted (`environment_store_untrusted`),
 refused-provider (section 11), link-blocked (section 8.3.1), or
 unreadable state is non-current; unreadable evidence is
-reported as unreadable, never as absence (section 8.4). A section 11
+reported as unreadable, never as absence (section 8.4.1). A section 11
 provider row is non-current when the active revision refuses or fails
 that provider — a manager-published or managed directory match under
 either revision, an outside-trust-roots `PATH` match refused under
@@ -3073,8 +3216,10 @@ include every store entry named by any installed profile's lock — and by
 a retained previous lock until it is dropped (section 9.2) — every managed
 home and in-place surface set referenced by a valid environment marker, and
 every entry referenced by an in-flight transaction journal. An unreadable
-marker (`environment_marker_unreadable`) or unprovable reference fails
-safe: the uncertain entries are retained and the uncertainty reported. An
+marker (`environment_marker_unreadable`, section 8.4.1), an unreadable lock
+(entry-class `environment_store_untrusted`, section 8.4.1), or another
+unprovable reference fails safe: the uncertain entries are retained and the
+uncertainty reported. An
 enclosing boundary that cannot be proven refuses collection before its
 first write — nothing is collected and nothing is rebuilt, and the
 uncertainty is reported; the operator repairs the boundary out of band.
@@ -3349,3 +3494,36 @@ the vectors warn and carrying the migration hint, and to revision B by
 seeding without `mcp_servers` and reporting with
 `mcp_native_servers_not_inherited` where the vectors report; it MUST NOT
 claim revision B while still inheriting native servers.
+
+The section 8.4.1 absence-versus-read-failure cases
+(`vectors/environments-read-failure.json`) pin unreadable-but-present to its
+typed discriminating inputs for five file classes: markers at the
+open/read/parse stages (permission-denied, I/O, unparseable, and
+schema-invalid cases report `environment_marker_unreadable`, never
+`environment_home_stale`; a marker failure that violates the section 4
+contract, or that prevents proving the boundary, stays
+`environment_store_untrusted` under the section 8.4.1 precedence rule);
+locks (all seven failure classes — permission-denied, I/O, unparseable,
+schema-invalid, symlink-where-regular-required,
+directory-where-file-expected, parent-not-directory — report entry-class
+`environment_store_untrusted`, never `profile_unknown`; repair and update
+against an unreadable lock refuse with nothing rebuilt and nothing
+written); provisioning seeds (the six applicable classes report
+`environment_seed_unreadable` and provisioning stops, including a
+non-regular seed path and unparseable revision-B `config.toml` bytes);
+passthrough entries (lstat/readlink permission-denied, I/O, and
+parent-not-directory report `environment_passthrough_unreadable` at status
+and at resolve with no fragment, and `--repair` leaves the entry
+untouched; a directory at the entry path stays detached-side); and backup
+records (an unreadable generations inventory reports
+`environment_backup_record_unreadable` at status with currency unknown
+and stops restore before mutating). Each class carries absence-side
+positives pinning the contrast — an absent marker is
+`environment_home_stale`, an absent lock is `profile_unknown`, an absent
+seed provisions through, a missing link is
+`environment_passthrough_detached` (a stale-home reason at resolve), an
+absent backup inventory reports zero at status and nothing to restore —
+and negatives whose absence-shaped observation (stale, unknown,
+provisioned-through, detached, reported-empty) — or, for the lock,
+rebuild-shaped observation — is non-conforming, checked by
+`validate_environments_read_failure_vectors`.

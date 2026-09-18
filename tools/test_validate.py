@@ -4210,6 +4210,277 @@ class WriteNofollowVectorTests(unittest.TestCase):
             validate.validate_environments_write_nofollow_vectors(changed)
 
 
+class ReadFailureVectorTests(unittest.TestCase):
+    """The environments §8.4.1 absence-versus-read-failure gate must fail closed.
+
+    Each test narrows one rule of
+    validate_environments_read_failure_vectors: an unreadable marker, lock,
+    seed, passthrough entry, or backup-record inventory answered with its
+    absence-shaped outcome, a lock repair or update that rebuilds or writes,
+    a failure class collapsed onto another, a currency or repair disposition
+    relaxed, a scenario substitution under a retained name, a negative
+    rewritten as a passing case or as a different violation, or a dropped
+    case must be rejected.
+    """
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.SUITE / "vectors" / "environments-read-failure.json"
+        )
+
+    def case(self, name: str, vector=None) -> dict:
+        for item in (vector or self.vector)["cases"]:
+            if item["name"] == name:
+                return item
+        raise AssertionError(f"environments-read-failure case {name} is missing")
+
+    def run_main_with_vector(self, vector: dict) -> tuple[int, str]:
+        """Run the real validate.main() against a substituted on-disk corpus.
+
+        The mutated vector is written to the worktree with the manifest and
+        rc.9 pins recomputed around it, so the only failing check can be the
+        read-failure gate itself; all three files are restored byte-identical
+        afterwards.
+        """
+        vector_path = validate.SUITE / "vectors" / "environments-read-failure.json"
+        manifest_path = validate.SUITE / "manifest.json"
+        rc9_path = validate.ROOT / "release" / "1.0.0-rc.9.json"
+        originals = {path: path.read_bytes() for path in (vector_path, manifest_path, rc9_path)}
+        try:
+            vector_bytes = (json.dumps(vector, indent=2, sort_keys=True) + "\n").encode("utf-8")
+            vector_path.write_bytes(vector_bytes)
+            manifest = json.loads(originals[manifest_path].decode("utf-8"))
+            for entry in manifest["files"]:
+                if entry["path"] == "vectors/environments-read-failure.json":
+                    entry["sha256"] = "sha256:" + hashlib.sha256(vector_bytes).hexdigest()
+            manifest_bytes = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8")
+            manifest_path.write_bytes(manifest_bytes)
+            release = json.loads(originals[rc9_path].decode("utf-8"))
+            manifest_digest = "sha256:" + hashlib.sha256(manifest_bytes).hexdigest()
+            release["candidate_protocol_pin"]["manifest_sha256"] = manifest_digest
+            release["downstream_consumption"]["required_manifest_sha256"] = manifest_digest
+            rc9_path.write_bytes((json.dumps(release, indent=2, sort_keys=True) + "\n").encode("utf-8"))
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                status = validate.main()
+            return status, stderr.getvalue()
+        finally:
+            for path, payload in originals.items():
+                path.write_bytes(payload)
+            for path, payload in originals.items():
+                if path.read_bytes() != payload:
+                    raise AssertionError(f"{path} was not restored byte-identical")
+
+    def test_published_vector_passes(self) -> None:
+        validate.validate_environments_read_failure_vectors()
+
+    def test_substituted_scenario_rejected_through_main(self) -> None:
+        """Every retained name refuses an internally consistent foreign body.
+
+        Producer rule 7: substituting another branch's passing case under a
+        retained name must be rejected by the validator entry point, not
+        merely inventoried. Each substitution runs through validate.main()
+        against a repinned on-disk corpus.
+        """
+        for name in sorted(validate.READ_FAILURE_CASES):
+            with self.subTest(case=name):
+                donor_name = (
+                    "marker-absent-unprovisioned-stale"
+                    if self.case(name)["file_class"] != "marker"
+                    else "seed-absent-not-seeded-provisioned"
+                )
+                donor = copy.deepcopy(self.case(donor_name))
+                changed = copy.deepcopy(self.vector)
+                for index, item in enumerate(changed["cases"]):
+                    if item["name"] == name:
+                        changed["cases"][index] = dict(donor, name=name)
+                status, stderr = self.run_main_with_vector(changed)
+                self.assertEqual(status, 1)
+                self.assertIn("pinned scenario", stderr)
+
+    def test_unreadable_marker_reported_stale_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        unreadable = self.case("marker-open-permission-denied-unreadable", changed)
+        unreadable["expected"] = dict(validate.READ_FAILURE_NEGATIVES["marker-unreadable-reported-stale"])
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_read_failure_vectors(changed)
+
+    def test_unreadable_lock_reported_unknown_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        unreadable = self.case("lock-read-io-error-untrusted", changed)
+        unreadable["expected"] = dict(validate.READ_FAILURE_NEGATIVES["lock-unreadable-reported-unknown"])
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_read_failure_vectors(changed)
+
+    def test_unreadable_seed_provisioned_through_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        unreadable = self.case("seed-open-permission-denied-unreadable", changed)
+        unreadable["expected"] = dict(validate.READ_FAILURE_NEGATIVES["seed-unreadable-skipped-as-absent"])
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_read_failure_vectors(changed)
+
+    def test_unreadable_passthrough_reported_detached_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        unreadable = self.case("passthrough-lstat-permission-denied-unreadable", changed)
+        unreadable["expected"] = dict(
+            validate.READ_FAILURE_NEGATIVES["passthrough-unreadable-reported-detached"]
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_read_failure_vectors(changed)
+
+    def test_lock_repair_rebuild_or_write_fails(self) -> None:
+        """A repair against an unreadable lock rebuilds nothing and writes nothing."""
+        for field in ("rebuilt", "written"):
+            with self.subTest(field=field):
+                changed = copy.deepcopy(self.vector)
+                refused = self.case("lock-unreadable-repair-refused-no-rebuild", changed)
+                refused["expected"][field] = True
+                with self.assertRaises(validate.ValidationFailure):
+                    validate.validate_environments_read_failure_vectors(changed)
+
+    def test_lock_update_unknown_or_rebuild_fails(self) -> None:
+        """An update against an unreadable lock refuses as untrusted, never unknown."""
+        changed = copy.deepcopy(self.vector)
+        refused = self.case("lock-unreadable-update-refused-no-rebuild", changed)
+        refused["expected"]["diagnostic"] = "profile_unknown"
+        refused["expected"]["currency"] = "known"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_read_failure_vectors(changed)
+        changed = copy.deepcopy(self.vector)
+        refused = self.case("lock-unreadable-update-refused-no-rebuild", changed)
+        refused["expected"]["rebuilt"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_read_failure_vectors(changed)
+
+    def test_backup_unreadable_reported_empty_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        unreadable = self.case("backup-record-unreadable-status-unknown", changed)
+        unreadable["expected"] = dict(
+            validate.READ_FAILURE_NEGATIVES["backup-record-unreadable-reported-empty"]
+        )
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_read_failure_vectors(changed)
+
+    def test_backup_restore_write_or_silence_fails(self) -> None:
+        """A restore against an unreadable inventory stops with its diagnostic."""
+        changed = copy.deepcopy(self.vector)
+        stopped = self.case("backup-record-unreadable-restore-stops", changed)
+        stopped["expected"]["written"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_read_failure_vectors(changed)
+        changed = copy.deepcopy(self.vector)
+        stopped = self.case("backup-record-unreadable-restore-stops", changed)
+        stopped["expected"]["diagnostic"] = None
+        stopped["expected"]["currency"] = "known"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_read_failure_vectors(changed)
+
+    def test_failure_class_collapse_refused(self) -> None:
+        """Collapsing every failure class onto one is refused per scenario.
+
+        Producer rule 7: the mutant keeps each case internally consistent —
+        only the pinned failure class (and the entry shape it implies)
+        changes — so only scenario pinning can catch it.
+        """
+        for name in sorted(validate.READ_FAILURE_CASES):
+            pinned = validate.READ_FAILURE_SCENARIOS[name]
+            if pinned["failure_class"] is None or pinned["failure_class"] == "permission-denied":
+                continue
+            with self.subTest(case=name):
+                changed = copy.deepcopy(self.vector)
+                collapsed = self.case(name, changed)
+                collapsed["failure_class"] = "permission-denied"
+                collapsed["entry_kind"] = (
+                    "symlink" if pinned["file_class"] == "passthrough" else "file"
+                )
+                with self.assertRaises(validate.ValidationFailure):
+                    validate.validate_environments_read_failure_vectors(changed)
+
+    def test_relaxed_currency_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        unreadable = self.case("lock-parent-not-directory-untrusted", changed)
+        unreadable["expected"]["currency"] = "known"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_read_failure_vectors(changed)
+
+    def test_repair_relinks_relaxed_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        unreadable = self.case("passthrough-readlink-io-error-unreadable", changed)
+        unreadable["expected"]["repair_relinks"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_read_failure_vectors(changed)
+
+    def test_absent_rewritten_as_unreadable_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        absent = self.case("marker-absent-unprovisioned-stale", changed)
+        absent["presence"] = "present"
+        absent["entry_kind"] = "file"
+        absent["failure_class"] = "permission-denied"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_read_failure_vectors(changed)
+
+    def test_negative_rewritten_as_passing_fails(self) -> None:
+        """A negative rewritten as an internally consistent passing case fails.
+
+        Producer rule 7: for every negative, the absence-shaped observation
+        is replaced by the derived correct verdict and the negative verdict
+        is removed; the pinned refusal must still catch the retained name.
+        """
+        for name, inputs in validate.READ_FAILURE_SCENARIOS.items():
+            if name not in validate.READ_FAILURE_NEGATIVES:
+                continue
+            with self.subTest(case=name):
+                changed = copy.deepcopy(self.vector)
+                rewritten = self.case(name, changed)
+                rewritten["expected"] = validate._read_failure_expected(
+                    inputs["file_class"],
+                    inputs["operation"],
+                    inputs["presence"],
+                    inputs["entry_kind"],
+                    inputs["failure_class"],
+                )
+                del rewritten["conforming"]
+                del rewritten["reason"]
+                with self.assertRaises(validate.ValidationFailure):
+                    validate.validate_environments_read_failure_vectors(changed)
+
+    def test_negative_rewritten_as_other_violation_fails(self) -> None:
+        """A negative rewritten as a different violation still fails.
+
+        The negative pins the exact absence-shaped observation it refuses,
+        not merely 'some violation': a stall reported as a fragment-emitting
+        success under the retained negative name must be refused.
+        """
+        changed = copy.deepcopy(self.vector)
+        rewritten = self.case("marker-unreadable-reported-stale", changed)
+        rewritten["expected"] = {
+            "diagnostic": None,
+            "fragment_emitted": True,
+            "row_current": True,
+            "currency": "known",
+        }
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_read_failure_vectors(changed)
+
+    def test_dropped_case_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["cases"] = [
+            item
+            for item in changed["cases"]
+            if item["name"] != "passthrough-unreadable-resolve-no-fragment"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_read_failure_vectors(changed)
+
+    def test_relaxed_closed_set_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["diagnostics"] = [
+            code for code in changed["diagnostics"] if code != "profile_unknown"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_read_failure_vectors(changed)
+
+
 class UmbrellaProviderVectorTests(unittest.TestCase):
     """The environments §11 trust-root gate must fail closed.
 

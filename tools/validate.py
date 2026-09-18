@@ -8271,6 +8271,640 @@ def validate_environments_write_nofollow_vectors(vector: Any = None) -> None:
         _validate_write_nofollow_case(name, case, fixtures)
 
 
+READ_FAILURE_DIAGNOSTICS = (
+    "environment_backup_record_unreadable",
+    "environment_home_stale",
+    "environment_marker_unreadable",
+    "environment_passthrough_detached",
+    "environment_passthrough_unreadable",
+    "environment_seed_unreadable",
+    "environment_store_untrusted",
+    "profile_unknown",
+)
+READ_FAILURE_FILE_CLASSES = ("backup-record", "lock", "marker", "passthrough", "seed")
+READ_FAILURE_OPERATIONS = ("env-resolve", "env-status", "provision", "repair", "restore", "update")
+READ_FAILURE_PRESENCE_VALUES = ("absent", "present")
+READ_FAILURE_ENTRY_KINDS = ("directory", "file", "missing", "symlink")
+READ_FAILURE_FAILURE_CLASSES = (
+    "directory-where-file-expected",
+    "io-error",
+    "parent-not-directory",
+    "permission-denied",
+    "schema-invalid-content",
+    "symlink-where-regular-required",
+    "unparseable-content",
+)
+READ_FAILURE_CURRENCIES = ("known", "unknown")
+# Failure classes applicable per file class (section 8.4.1): a marker failure
+# that violates the section 4 contract, or that prevents proving the boundary,
+# is environment_store_untrusted and is outside this family, so markers cover
+# the open/read/parse stages only; seeds are unparsed byte copies except the
+# codex_cli revision-B strip, so schema-invalid-content does not apply to them;
+# passthrough entries carry no content and require a link, so only the
+# lstat/readlink failure classes apply to them; backup-record inventories are
+# listed, never parsed, and their inventory root is a directory, so only the
+# list/stat failure classes apply to them.
+READ_FAILURE_APPLICABLE = {
+    "backup-record": frozenset(
+        {"permission-denied", "io-error", "parent-not-directory"}
+    ),
+    "marker": frozenset(
+        {
+            "permission-denied",
+            "io-error",
+            "unparseable-content",
+            "schema-invalid-content",
+        }
+    ),
+    "lock": frozenset(READ_FAILURE_FAILURE_CLASSES),
+    "seed": frozenset(
+        {
+            "permission-denied",
+            "io-error",
+            "unparseable-content",
+            "symlink-where-regular-required",
+            "directory-where-file-expected",
+            "parent-not-directory",
+        }
+    ),
+    "passthrough": frozenset(
+        {"permission-denied", "io-error", "parent-not-directory"}
+    ),
+}
+# Each required scenario pinned to its typed discriminating inputs (producer
+# rule 7): a named case rewritten as another branch's passing case under the
+# same name — or with its failure class collapsed to another — must be
+# refused, not merely inventoried.
+READ_FAILURE_SCENARIOS = {
+    "marker-open-permission-denied-unreadable": {
+        "file_class": "marker",
+        "operation": "env-resolve",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "permission-denied",
+    },
+    "marker-read-io-error-unreadable": {
+        "file_class": "marker",
+        "operation": "env-resolve",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "io-error",
+    },
+    "marker-unparseable-content-unreadable": {
+        "file_class": "marker",
+        "operation": "env-resolve",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "unparseable-content",
+    },
+    "marker-schema-invalid-content-unreadable": {
+        "file_class": "marker",
+        "operation": "env-resolve",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "schema-invalid-content",
+    },
+    "marker-absent-unprovisioned-stale": {
+        "file_class": "marker",
+        "operation": "env-resolve",
+        "presence": "absent",
+        "entry_kind": "missing",
+        "failure_class": None,
+    },
+    "marker-unreadable-reported-stale": {
+        "file_class": "marker",
+        "operation": "env-resolve",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "permission-denied",
+    },
+    "lock-open-permission-denied-untrusted": {
+        "file_class": "lock",
+        "operation": "env-resolve",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "permission-denied",
+    },
+    "lock-read-io-error-untrusted": {
+        "file_class": "lock",
+        "operation": "env-resolve",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "io-error",
+    },
+    "lock-unparseable-content-untrusted": {
+        "file_class": "lock",
+        "operation": "env-resolve",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "unparseable-content",
+    },
+    "lock-schema-invalid-content-untrusted": {
+        "file_class": "lock",
+        "operation": "env-resolve",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "schema-invalid-content",
+    },
+    "lock-symlink-where-regular-required-untrusted": {
+        "file_class": "lock",
+        "operation": "env-resolve",
+        "presence": "present",
+        "entry_kind": "symlink",
+        "failure_class": "symlink-where-regular-required",
+    },
+    "lock-directory-where-file-expected-untrusted": {
+        "file_class": "lock",
+        "operation": "env-resolve",
+        "presence": "present",
+        "entry_kind": "directory",
+        "failure_class": "directory-where-file-expected",
+    },
+    "lock-parent-not-directory-untrusted": {
+        "file_class": "lock",
+        "operation": "env-resolve",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "parent-not-directory",
+    },
+    "lock-absent-profile-unknown": {
+        "file_class": "lock",
+        "operation": "env-resolve",
+        "presence": "absent",
+        "entry_kind": "missing",
+        "failure_class": None,
+    },
+    "lock-unreadable-reported-unknown": {
+        "file_class": "lock",
+        "operation": "env-resolve",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "permission-denied",
+    },
+    "lock-unreadable-repair-refused-no-rebuild": {
+        "file_class": "lock",
+        "operation": "repair",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "permission-denied",
+    },
+    "lock-unreadable-update-refused-no-rebuild": {
+        "file_class": "lock",
+        "operation": "update",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "unparseable-content",
+    },
+    "lock-unreadable-repair-rebuilt": {
+        "file_class": "lock",
+        "operation": "repair",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "permission-denied",
+    },
+    "seed-open-permission-denied-unreadable": {
+        "file_class": "seed",
+        "operation": "provision",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "permission-denied",
+    },
+    "seed-read-io-error-unreadable": {
+        "file_class": "seed",
+        "operation": "provision",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "io-error",
+    },
+    "seed-unparseable-content-unreadable": {
+        "file_class": "seed",
+        "operation": "provision",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "unparseable-content",
+    },
+    "seed-symlink-where-regular-required-unreadable": {
+        "file_class": "seed",
+        "operation": "provision",
+        "presence": "present",
+        "entry_kind": "symlink",
+        "failure_class": "symlink-where-regular-required",
+    },
+    "seed-directory-where-file-expected-unreadable": {
+        "file_class": "seed",
+        "operation": "provision",
+        "presence": "present",
+        "entry_kind": "directory",
+        "failure_class": "directory-where-file-expected",
+    },
+    "seed-parent-not-directory-unreadable": {
+        "file_class": "seed",
+        "operation": "provision",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "parent-not-directory",
+    },
+    "seed-absent-not-seeded-provisioned": {
+        "file_class": "seed",
+        "operation": "provision",
+        "presence": "absent",
+        "entry_kind": "missing",
+        "failure_class": None,
+    },
+    "seed-unreadable-skipped-as-absent": {
+        "file_class": "seed",
+        "operation": "provision",
+        "presence": "present",
+        "entry_kind": "file",
+        "failure_class": "permission-denied",
+    },
+    "passthrough-lstat-permission-denied-unreadable": {
+        "file_class": "passthrough",
+        "operation": "env-status",
+        "presence": "present",
+        "entry_kind": "symlink",
+        "failure_class": "permission-denied",
+    },
+    "passthrough-readlink-io-error-unreadable": {
+        "file_class": "passthrough",
+        "operation": "env-status",
+        "presence": "present",
+        "entry_kind": "symlink",
+        "failure_class": "io-error",
+    },
+    "passthrough-parent-not-directory-unreadable": {
+        "file_class": "passthrough",
+        "operation": "env-status",
+        "presence": "present",
+        "entry_kind": "symlink",
+        "failure_class": "parent-not-directory",
+    },
+    "passthrough-unreadable-resolve-no-fragment": {
+        "file_class": "passthrough",
+        "operation": "env-resolve",
+        "presence": "present",
+        "entry_kind": "symlink",
+        "failure_class": "permission-denied",
+    },
+    "passthrough-link-missing-detached": {
+        "file_class": "passthrough",
+        "operation": "env-status",
+        "presence": "absent",
+        "entry_kind": "missing",
+        "failure_class": None,
+    },
+    "passthrough-directory-at-entry-detached": {
+        "file_class": "passthrough",
+        "operation": "env-status",
+        "presence": "present",
+        "entry_kind": "directory",
+        "failure_class": None,
+    },
+    "passthrough-detached-resolve-stale": {
+        "file_class": "passthrough",
+        "operation": "env-resolve",
+        "presence": "absent",
+        "entry_kind": "missing",
+        "failure_class": None,
+    },
+    "passthrough-unreadable-reported-detached": {
+        "file_class": "passthrough",
+        "operation": "env-status",
+        "presence": "present",
+        "entry_kind": "symlink",
+        "failure_class": "permission-denied",
+    },
+    "backup-record-unreadable-status-unknown": {
+        "file_class": "backup-record",
+        "operation": "env-status",
+        "presence": "present",
+        "entry_kind": "directory",
+        "failure_class": "permission-denied",
+    },
+    "backup-record-unreadable-restore-stops": {
+        "file_class": "backup-record",
+        "operation": "restore",
+        "presence": "present",
+        "entry_kind": "directory",
+        "failure_class": "io-error",
+    },
+    "backup-record-absent-status-zero": {
+        "file_class": "backup-record",
+        "operation": "env-status",
+        "presence": "absent",
+        "entry_kind": "missing",
+        "failure_class": None,
+    },
+    "backup-record-absent-restore-nothing": {
+        "file_class": "backup-record",
+        "operation": "restore",
+        "presence": "absent",
+        "entry_kind": "missing",
+        "failure_class": None,
+    },
+    "backup-record-unreadable-reported-empty": {
+        "file_class": "backup-record",
+        "operation": "env-status",
+        "presence": "present",
+        "entry_kind": "directory",
+        "failure_class": "permission-denied",
+    },
+}
+READ_FAILURE_CASES = frozenset(READ_FAILURE_SCENARIOS)
+# Each negative pinned to the exact non-conforming observation it refuses —
+# absence-shaped for the per-class negatives, rebuild-shaped for the lock
+# no-rebuild negative: a negative rewritten as an internally consistent
+# passing case — or as a different violation — under the same name must be
+# refused.
+READ_FAILURE_NEGATIVES = {
+    "marker-unreadable-reported-stale": {
+        "diagnostic": "environment_home_stale",
+        "fragment_emitted": False,
+        "row_current": False,
+        "currency": "known",
+    },
+    "lock-unreadable-reported-unknown": {
+        "diagnostic": "profile_unknown",
+        "fragment_emitted": False,
+        "row_current": False,
+        "currency": "known",
+    },
+    "seed-unreadable-skipped-as-absent": {
+        "diagnostic": None,
+        "provisioning_continues": True,
+        "currency": "known",
+    },
+    "passthrough-unreadable-reported-detached": {
+        "diagnostic": "environment_passthrough_detached",
+        "row_current": False,
+        "currency": "known",
+        "repair_relinks": True,
+    },
+    "lock-unreadable-repair-rebuilt": {
+        "diagnostic": "environment_store_untrusted",
+        "fragment_emitted": False,
+        "row_current": False,
+        "currency": "unknown",
+        "rebuilt": True,
+        "written": True,
+    },
+    "backup-record-unreadable-reported-empty": {
+        "diagnostic": None,
+        "row_current": True,
+        "currency": "known",
+    },
+}
+
+
+def _read_failure_expected(
+    file_class: str, operation: str, presence: str, entry_kind: str, failure_class: Any
+) -> dict[str, Any]:
+    """Derive the section 8.4.1 disposition for one scenario's inputs."""
+    if failure_class is None:
+        if file_class == "marker":
+            return {
+                "diagnostic": "environment_home_stale",
+                "fragment_emitted": False,
+                "row_current": False,
+                "currency": "known",
+            }
+        if file_class == "lock":
+            return {
+                "diagnostic": "profile_unknown",
+                "fragment_emitted": False,
+                "row_current": False,
+                "currency": "known",
+            }
+        if file_class == "seed":
+            return {
+                "diagnostic": None,
+                "provisioning_continues": True,
+                "currency": "known",
+            }
+        if file_class == "backup-record":
+            if operation == "restore":
+                return {
+                    "diagnostic": None,
+                    "currency": "known",
+                    "written": False,
+                }
+            return {
+                "diagnostic": None,
+                "row_current": True,
+                "currency": "known",
+            }
+        if operation == "env-resolve":
+            return {
+                "diagnostic": "environment_home_stale",
+                "fragment_emitted": False,
+                "row_current": False,
+                "currency": "known",
+            }
+        return {
+            "diagnostic": "environment_passthrough_detached",
+            "row_current": False,
+            "currency": "known",
+            "repair_relinks": True,
+        }
+    if file_class == "marker":
+        return {
+            "diagnostic": "environment_marker_unreadable",
+            "fragment_emitted": False,
+            "row_current": False,
+            "currency": "unknown",
+        }
+    if file_class == "lock":
+        if operation == "repair":
+            return {
+                "diagnostic": "environment_store_untrusted",
+                "fragment_emitted": False,
+                "row_current": False,
+                "currency": "unknown",
+                "rebuilt": False,
+                "written": False,
+            }
+        if operation == "update":
+            return {
+                "diagnostic": "environment_store_untrusted",
+                "row_current": False,
+                "currency": "unknown",
+                "rebuilt": False,
+                "written": False,
+            }
+        return {
+            "diagnostic": "environment_store_untrusted",
+            "fragment_emitted": False,
+            "row_current": False,
+            "currency": "unknown",
+        }
+    if file_class == "seed":
+        return {
+            "diagnostic": "environment_seed_unreadable",
+            "provisioning_continues": False,
+            "currency": "unknown",
+        }
+    if file_class == "backup-record":
+        if operation == "restore":
+            return {
+                "diagnostic": "environment_backup_record_unreadable",
+                "currency": "unknown",
+                "written": False,
+            }
+        return {
+            "diagnostic": "environment_backup_record_unreadable",
+            "row_current": False,
+            "currency": "unknown",
+        }
+    if operation == "env-resolve":
+        return {
+            "diagnostic": "environment_passthrough_unreadable",
+            "fragment_emitted": False,
+            "row_current": False,
+            "currency": "unknown",
+        }
+    return {
+        "diagnostic": "environment_passthrough_unreadable",
+        "row_current": False,
+        "currency": "unknown",
+        "repair_relinks": False,
+    }
+
+
+def _validate_read_failure_case(name: str, case: dict[str, Any]) -> None:
+    label = f"environments-read-failure case {name}"
+    file_class = case.get("file_class")
+    if file_class not in READ_FAILURE_FILE_CLASSES:
+        raise ValidationFailure(f"{label} names an unknown file class")
+    operation = case.get("operation")
+    if operation not in READ_FAILURE_OPERATIONS:
+        raise ValidationFailure(f"{label} names an unknown operation")
+    if file_class == "marker" and operation != "env-resolve":
+        raise ValidationFailure(f"{label} marker scenarios resolve")
+    if file_class == "lock" and operation not in ("env-resolve", "repair", "update"):
+        raise ValidationFailure(f"{label} lock scenarios resolve, repair, or update")
+    if file_class == "seed" and operation != "provision":
+        raise ValidationFailure(f"{label} seed scenarios provision")
+    if file_class == "passthrough" and operation not in ("env-resolve", "env-status"):
+        raise ValidationFailure(f"{label} passthrough scenarios resolve or report status")
+    if file_class == "backup-record" and operation not in ("env-status", "restore"):
+        raise ValidationFailure(f"{label} backup-record scenarios report status or restore")
+    presence = case.get("presence")
+    if presence not in READ_FAILURE_PRESENCE_VALUES:
+        raise ValidationFailure(f"{label} presence is not absent or present")
+    entry_kind = case.get("entry_kind")
+    if entry_kind not in READ_FAILURE_ENTRY_KINDS:
+        raise ValidationFailure(f"{label} names an unknown entry kind")
+    failure_class = case.get("failure_class")
+    if failure_class is not None and failure_class not in READ_FAILURE_FAILURE_CLASSES:
+        raise ValidationFailure(f"{label} names an unknown failure class")
+    if presence == "absent":
+        if entry_kind != "missing" or failure_class is not None:
+            raise ValidationFailure(f"{label} an absent entry carries no kind or failure")
+    elif failure_class is None:
+        # The one present-but-absence-side scenario: a directory at a
+        # passthrough entry path is "no longer a symlink" (section 7.4).
+        if not (
+            file_class == "passthrough"
+            and entry_kind == "directory"
+            and operation == "env-status"
+        ):
+            raise ValidationFailure(f"{label} a present entry with no failure is outside this family")
+    else:
+        if failure_class not in READ_FAILURE_APPLICABLE[file_class]:
+            raise ValidationFailure(f"{label} failure class does not apply to its file class")
+        if failure_class == "symlink-where-regular-required" and entry_kind != "symlink":
+            raise ValidationFailure(f"{label} symlink failure needs a symlink entry")
+        elif failure_class == "directory-where-file-expected" and entry_kind != "directory":
+            raise ValidationFailure(f"{label} directory failure needs a directory entry")
+        elif failure_class == "parent-not-directory" and entry_kind not in ("file", "symlink"):
+            raise ValidationFailure(f"{label} parent failure needs an entry beyond the bad component")
+        elif (
+            failure_class
+            in (
+                "permission-denied",
+                "io-error",
+                "unparseable-content",
+                "schema-invalid-content",
+            )
+            and entry_kind
+            != {"passthrough": "symlink", "backup-record": "directory"}.get(
+                file_class, "file"
+            )
+        ):
+            raise ValidationFailure(f"{label} content failure needs its file-class entry shape")
+
+    pinned = READ_FAILURE_SCENARIOS.get(name)
+    actual = {
+        "file_class": file_class,
+        "operation": operation,
+        "presence": presence,
+        "entry_kind": entry_kind,
+        "failure_class": failure_class,
+    }
+    if pinned is None or actual != pinned:
+        raise ValidationFailure(f"{label} inputs do not match its pinned scenario")
+
+    expected = case.get("expected")
+    if not isinstance(expected, dict):
+        raise ValidationFailure(f"{label} expected is not an object")
+    if name in READ_FAILURE_NEGATIVES:
+        if case.get("conforming") is not False or not case.get("reason"):
+            raise ValidationFailure(f"{label} a negative needs conforming=false and a reason")
+        refused = READ_FAILURE_NEGATIVES[name]
+        if expected != refused:
+            raise ValidationFailure(f"{label} observation is not its pinned absence-shaped refusal")
+        return
+    if case.get("conforming") is False or "reason" in case:
+        raise ValidationFailure(f"{label} a positive case must not carry a negative verdict")
+    derived = _read_failure_expected(file_class, operation, presence, entry_kind, failure_class)
+    if expected != derived:
+        raise ValidationFailure(f"{label} observation does not follow the section 8.4.1 disposition")
+
+
+def validate_environments_read_failure_vectors(vector: Any = None) -> None:
+    """The environments section 8.4.1 absence-versus-read-failure vectors.
+
+    Structural validation only: closed sets are exact, each named case is
+    pinned to its typed discriminating inputs, each positive observation is
+    derived from the section 8.4.1 disposition, and each negative pins the
+    exact absence-shaped observation it refuses. This gate never touches the
+    filesystem; behavioral conformance is owned by the manager
+    implementation task created after this spec lands.
+    """
+    if vector is None:
+        vector = load_json(SUITE / "vectors" / "environments-read-failure.json")
+    if (
+        vector.get("schema_version") != 1
+        or vector.get("protocol_version") != PROTOCOL_VERSION
+        or vector.get("capability") != "agent-environments"
+        or vector.get("capability_revision") != 1
+        or vector.get("story") != "STORY-260916-1ll22r"
+    ):
+        raise ValidationFailure("environments-read-failure vector has the wrong capability identity")
+    if vector.get("file_classes") != list(READ_FAILURE_FILE_CLASSES):
+        raise ValidationFailure("environments-read-failure file classes are not the closed five-class set")
+    if vector.get("operations") != list(READ_FAILURE_OPERATIONS):
+        raise ValidationFailure("environments-read-failure operations are not the closed six-operation set")
+    if vector.get("presence_values") != list(READ_FAILURE_PRESENCE_VALUES):
+        raise ValidationFailure("environments-read-failure presence values are not the closed two-value set")
+    if vector.get("entry_kinds") != list(READ_FAILURE_ENTRY_KINDS):
+        raise ValidationFailure("environments-read-failure entry kinds are not the closed four-kind set")
+    if vector.get("failure_classes") != list(READ_FAILURE_FAILURE_CLASSES):
+        raise ValidationFailure("environments-read-failure failure classes are not the closed seven-class set")
+    if vector.get("diagnostics") != list(READ_FAILURE_DIAGNOSTICS):
+        raise ValidationFailure("environments-read-failure diagnostics are not the closed eight-code set")
+    if vector.get("currencies") != list(READ_FAILURE_CURRENCIES):
+        raise ValidationFailure("environments-read-failure currencies are not the closed two-value set")
+    if not isinstance(vector.get("rule"), str) or not vector.get("rule"):
+        raise ValidationFailure("environments-read-failure rule text is missing")
+
+    cases = named_cases(vector.get("cases"), "environments read-failure")
+    if set(cases) != READ_FAILURE_CASES:
+        raise ValidationFailure("environments-read-failure case inventory is not exact")
+    for name, case in cases.items():
+        _validate_read_failure_case(name, case)
+
+
 UMBRELLA_PROVIDER_DIAGNOSTICS = {
     "subcommand_provider_missing",
     "subcommand_provider_untrusted",
@@ -9555,6 +10189,7 @@ def main() -> int:
         validate_snapshot_acquisition_vectors,
         validate_shell_hook_trust_vectors,
         validate_environments_write_nofollow_vectors,
+        validate_environments_read_failure_vectors,
         validate_registry_page_boundary_vectors,
         validate_registry_checkpoint_vectors,
         validate_registry_bootstrap_vectors,

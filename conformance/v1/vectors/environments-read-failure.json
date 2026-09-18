@@ -1,0 +1,608 @@
+{
+  "capability": "agent-environments",
+  "capability_revision": 1,
+  "cases": [
+    {
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_marker_unreadable",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": "permission-denied",
+      "file_class": "marker",
+      "name": "marker-open-permission-denied-unreadable",
+      "operation": "env-resolve",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_marker_unreadable",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": "io-error",
+      "file_class": "marker",
+      "name": "marker-read-io-error-unreadable",
+      "operation": "env-resolve",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_marker_unreadable",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": "unparseable-content",
+      "file_class": "marker",
+      "name": "marker-unparseable-content-unreadable",
+      "operation": "env-resolve",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_marker_unreadable",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": "schema-invalid-content",
+      "file_class": "marker",
+      "name": "marker-schema-invalid-content-unreadable",
+      "operation": "env-resolve",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "missing",
+      "expected": {
+        "currency": "known",
+        "diagnostic": "environment_home_stale",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": null,
+      "file_class": "marker",
+      "name": "marker-absent-unprovisioned-stale",
+      "operation": "env-resolve",
+      "presence": "absent"
+    },
+    {
+      "conforming": false,
+      "entry_kind": "file",
+      "expected": {
+        "currency": "known",
+        "diagnostic": "environment_home_stale",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": "permission-denied",
+      "file_class": "marker",
+      "name": "marker-unreadable-reported-stale",
+      "operation": "env-resolve",
+      "presence": "present",
+      "reason": "reporting an unreadable marker as unprovisioned (environment_home_stale) is non-conforming: a failed marker read is environment_marker_unreadable with currency unknown, never absence"
+    },
+    {
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_store_untrusted",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": "permission-denied",
+      "file_class": "lock",
+      "name": "lock-open-permission-denied-untrusted",
+      "operation": "env-resolve",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_store_untrusted",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": "io-error",
+      "file_class": "lock",
+      "name": "lock-read-io-error-untrusted",
+      "operation": "env-resolve",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_store_untrusted",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": "unparseable-content",
+      "file_class": "lock",
+      "name": "lock-unparseable-content-untrusted",
+      "operation": "env-resolve",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_store_untrusted",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": "schema-invalid-content",
+      "file_class": "lock",
+      "name": "lock-schema-invalid-content-untrusted",
+      "operation": "env-resolve",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "symlink",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_store_untrusted",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": "symlink-where-regular-required",
+      "file_class": "lock",
+      "name": "lock-symlink-where-regular-required-untrusted",
+      "operation": "env-resolve",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "directory",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_store_untrusted",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": "directory-where-file-expected",
+      "file_class": "lock",
+      "name": "lock-directory-where-file-expected-untrusted",
+      "operation": "env-resolve",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_store_untrusted",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": "parent-not-directory",
+      "file_class": "lock",
+      "name": "lock-parent-not-directory-untrusted",
+      "operation": "env-resolve",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "missing",
+      "expected": {
+        "currency": "known",
+        "diagnostic": "profile_unknown",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": null,
+      "file_class": "lock",
+      "name": "lock-absent-profile-unknown",
+      "operation": "env-resolve",
+      "presence": "absent"
+    },
+    {
+      "conforming": false,
+      "entry_kind": "file",
+      "expected": {
+        "currency": "known",
+        "diagnostic": "profile_unknown",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": "permission-denied",
+      "file_class": "lock",
+      "name": "lock-unreadable-reported-unknown",
+      "operation": "env-resolve",
+      "presence": "present",
+      "reason": "reporting an unreadable lock as not-installed (profile_unknown) is non-conforming: a failed lock read is entry-class environment_store_untrusted, never absence"
+    },
+    {
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_store_untrusted",
+        "fragment_emitted": false,
+        "rebuilt": false,
+        "row_current": false,
+        "written": false
+      },
+      "failure_class": "permission-denied",
+      "file_class": "lock",
+      "name": "lock-unreadable-repair-refused-no-rebuild",
+      "operation": "repair",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_store_untrusted",
+        "rebuilt": false,
+        "row_current": false,
+        "written": false
+      },
+      "failure_class": "unparseable-content",
+      "file_class": "lock",
+      "name": "lock-unreadable-update-refused-no-rebuild",
+      "operation": "update",
+      "presence": "present"
+    },
+    {
+      "conforming": false,
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_store_untrusted",
+        "fragment_emitted": false,
+        "rebuilt": true,
+        "row_current": false,
+        "written": true
+      },
+      "failure_class": "permission-denied",
+      "file_class": "lock",
+      "name": "lock-unreadable-repair-rebuilt",
+      "operation": "repair",
+      "presence": "present",
+      "reason": "rebuilding or writing from an unreadable lock is non-conforming: a mutating operation against an unreadable lock refuses with environment_store_untrusted and rebuilds nothing and writes nothing — recovery is an explicit operator action"
+    },
+    {
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_seed_unreadable",
+        "provisioning_continues": false
+      },
+      "failure_class": "permission-denied",
+      "file_class": "seed",
+      "name": "seed-open-permission-denied-unreadable",
+      "operation": "provision",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_seed_unreadable",
+        "provisioning_continues": false
+      },
+      "failure_class": "io-error",
+      "file_class": "seed",
+      "name": "seed-read-io-error-unreadable",
+      "operation": "provision",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_seed_unreadable",
+        "provisioning_continues": false
+      },
+      "failure_class": "unparseable-content",
+      "file_class": "seed",
+      "name": "seed-unparseable-content-unreadable",
+      "operation": "provision",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "symlink",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_seed_unreadable",
+        "provisioning_continues": false
+      },
+      "failure_class": "symlink-where-regular-required",
+      "file_class": "seed",
+      "name": "seed-symlink-where-regular-required-unreadable",
+      "operation": "provision",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "directory",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_seed_unreadable",
+        "provisioning_continues": false
+      },
+      "failure_class": "directory-where-file-expected",
+      "file_class": "seed",
+      "name": "seed-directory-where-file-expected-unreadable",
+      "operation": "provision",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "file",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_seed_unreadable",
+        "provisioning_continues": false
+      },
+      "failure_class": "parent-not-directory",
+      "file_class": "seed",
+      "name": "seed-parent-not-directory-unreadable",
+      "operation": "provision",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "missing",
+      "expected": {
+        "currency": "known",
+        "diagnostic": null,
+        "provisioning_continues": true
+      },
+      "failure_class": null,
+      "file_class": "seed",
+      "name": "seed-absent-not-seeded-provisioned",
+      "operation": "provision",
+      "presence": "absent"
+    },
+    {
+      "conforming": false,
+      "entry_kind": "file",
+      "expected": {
+        "currency": "known",
+        "diagnostic": null,
+        "provisioning_continues": true
+      },
+      "failure_class": "permission-denied",
+      "file_class": "seed",
+      "name": "seed-unreadable-skipped-as-absent",
+      "operation": "provision",
+      "presence": "present",
+      "reason": "skipping an unreadable seed as absent and provisioning through is non-conforming: a failed seed read is environment_seed_unreadable and provisioning stops before the first write"
+    },
+    {
+      "entry_kind": "symlink",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_passthrough_unreadable",
+        "repair_relinks": false,
+        "row_current": false
+      },
+      "failure_class": "permission-denied",
+      "file_class": "passthrough",
+      "name": "passthrough-lstat-permission-denied-unreadable",
+      "operation": "env-status",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "symlink",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_passthrough_unreadable",
+        "repair_relinks": false,
+        "row_current": false
+      },
+      "failure_class": "io-error",
+      "file_class": "passthrough",
+      "name": "passthrough-readlink-io-error-unreadable",
+      "operation": "env-status",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "symlink",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_passthrough_unreadable",
+        "repair_relinks": false,
+        "row_current": false
+      },
+      "failure_class": "parent-not-directory",
+      "file_class": "passthrough",
+      "name": "passthrough-parent-not-directory-unreadable",
+      "operation": "env-status",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "symlink",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_passthrough_unreadable",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": "permission-denied",
+      "file_class": "passthrough",
+      "name": "passthrough-unreadable-resolve-no-fragment",
+      "operation": "env-resolve",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "missing",
+      "expected": {
+        "currency": "known",
+        "diagnostic": "environment_passthrough_detached",
+        "repair_relinks": true,
+        "row_current": false
+      },
+      "failure_class": null,
+      "file_class": "passthrough",
+      "name": "passthrough-link-missing-detached",
+      "operation": "env-status",
+      "presence": "absent"
+    },
+    {
+      "entry_kind": "directory",
+      "expected": {
+        "currency": "known",
+        "diagnostic": "environment_passthrough_detached",
+        "repair_relinks": true,
+        "row_current": false
+      },
+      "failure_class": null,
+      "file_class": "passthrough",
+      "name": "passthrough-directory-at-entry-detached",
+      "operation": "env-status",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "missing",
+      "expected": {
+        "currency": "known",
+        "diagnostic": "environment_home_stale",
+        "fragment_emitted": false,
+        "row_current": false
+      },
+      "failure_class": null,
+      "file_class": "passthrough",
+      "name": "passthrough-detached-resolve-stale",
+      "operation": "env-resolve",
+      "presence": "absent"
+    },
+    {
+      "conforming": false,
+      "entry_kind": "symlink",
+      "expected": {
+        "currency": "known",
+        "diagnostic": "environment_passthrough_detached",
+        "repair_relinks": true,
+        "row_current": false
+      },
+      "failure_class": "permission-denied",
+      "file_class": "passthrough",
+      "name": "passthrough-unreadable-reported-detached",
+      "operation": "env-status",
+      "presence": "present",
+      "reason": "reporting an unreadable passthrough entry as detached (environment_passthrough_detached) is non-conforming: a failed entry read is environment_passthrough_unreadable with currency unknown, and repair must not re-link the entry"
+    },
+    {
+      "entry_kind": "directory",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_backup_record_unreadable",
+        "row_current": false
+      },
+      "failure_class": "permission-denied",
+      "file_class": "backup-record",
+      "name": "backup-record-unreadable-status-unknown",
+      "operation": "env-status",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "directory",
+      "expected": {
+        "currency": "unknown",
+        "diagnostic": "environment_backup_record_unreadable",
+        "written": false
+      },
+      "failure_class": "io-error",
+      "file_class": "backup-record",
+      "name": "backup-record-unreadable-restore-stops",
+      "operation": "restore",
+      "presence": "present"
+    },
+    {
+      "entry_kind": "missing",
+      "expected": {
+        "currency": "known",
+        "diagnostic": null,
+        "row_current": true
+      },
+      "failure_class": null,
+      "file_class": "backup-record",
+      "name": "backup-record-absent-status-zero",
+      "operation": "env-status",
+      "presence": "absent"
+    },
+    {
+      "entry_kind": "missing",
+      "expected": {
+        "currency": "known",
+        "diagnostic": null,
+        "written": false
+      },
+      "failure_class": null,
+      "file_class": "backup-record",
+      "name": "backup-record-absent-restore-nothing",
+      "operation": "restore",
+      "presence": "absent"
+    },
+    {
+      "conforming": false,
+      "entry_kind": "directory",
+      "expected": {
+        "currency": "known",
+        "diagnostic": null,
+        "row_current": true
+      },
+      "failure_class": "permission-denied",
+      "file_class": "backup-record",
+      "name": "backup-record-unreadable-reported-empty",
+      "operation": "env-status",
+      "presence": "present",
+      "reason": "reporting an unreadable backup inventory as empty (zero generations, current) is non-conforming: a failed backup-inventory read is environment_backup_record_unreadable with currency unknown, never absence"
+    }
+  ],
+  "currencies": [
+    "known",
+    "unknown"
+  ],
+  "diagnostics": [
+    "environment_backup_record_unreadable",
+    "environment_home_stale",
+    "environment_marker_unreadable",
+    "environment_passthrough_detached",
+    "environment_passthrough_unreadable",
+    "environment_seed_unreadable",
+    "environment_store_untrusted",
+    "profile_unknown"
+  ],
+  "entry_kinds": [
+    "directory",
+    "file",
+    "missing",
+    "symlink"
+  ],
+  "failure_classes": [
+    "directory-where-file-expected",
+    "io-error",
+    "parent-not-directory",
+    "permission-denied",
+    "schema-invalid-content",
+    "symlink-where-regular-required",
+    "unparseable-content"
+  ],
+  "file_classes": [
+    "backup-record",
+    "lock",
+    "marker",
+    "passthrough",
+    "seed"
+  ],
+  "operations": [
+    "env-resolve",
+    "env-status",
+    "provision",
+    "repair",
+    "restore",
+    "update"
+  ],
+  "presence_values": [
+    "absent",
+    "present"
+  ],
+  "protocol_version": "1.0.0-rc.9",
+  "rule": "protocol/environments.md section 8.4.1: a failed read, stat, or parse of any state or surface file is never reported as absence. Each case pins one file class (marker, lock, provisioning seed, credential passthrough entry, backup-record inventory) to its typed, present-or-absent discriminating inputs and the expected diagnostic. Failure classes: permission-denied (EACCES-class), io-error (EIO-class), unparseable-content (bytes fail decoding or parsing), schema-invalid-content (parsed content fails schema validation for a reason other than version), symlink-where-regular-required, directory-where-file-expected, parent-not-directory (ENOTDIR-class: the entry exists but a path component above it is not a directory, so the open fails). presence/entry_kind are ground truth: permission-denied and io-error strike at the open/read stage after lstat. Boundary verification precedes readability classification (sections 1.3, 4, 8.2, 10.1): a marker failure that violates the section 4 contract, or that prevents proving the boundary (symlink, directory, or unstatable marker path), is environment_store_untrusted and is outside this family; the marker cases therefore cover the open/read/parse stages only. Seed unparseable-content applies where the seed path parses (the codex_cli revision-B mcp_servers strip, which MUST parse as TOML); elsewhere seeds are unparsed byte copies. Passthrough entries carry no content and require a link, so unparseable-content, schema-invalid-content, and symlink-where-regular-required do not apply to them; a directory at the entry path is 'no longer a symlink' and stays detached-side. currency 'unknown' pins the section 8.4.1 rule that an unreadable file makes the affected row non-current with currency unknown; absence-side outcomes carry currency 'known'. repair_relinks pins that --repair re-links a detached entry and leaves an unreadable entry untouched. repair is env resolve --repair and update is profile update (sections 10.1, 9.2): against an unreadable lock both refuse with environment_store_untrusted and rebuild nothing (rebuilt) and write nothing (written), repair emitting no fragment; restore restores the newest backup generation (env unmanage --restore-backups, section 9.2) and stops before mutating (written) when the generations inventory cannot be established. The backup-record class covers the generations inventory: an unreadable inventory is environment_backup_record_unreadable with currency unknown, while a known-empty inventory is current with currency known.",
+  "schema_version": 1,
+  "story": "STORY-260916-1ll22r"
+}

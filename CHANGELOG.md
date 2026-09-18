@@ -7,6 +7,31 @@ Versioning for the complete specification set.
 
 ### Added
 
+- STORY-260916-1ll22r: absence-versus-read-failure discipline stated once
+  (environments §1.1/§1.3/§4/§7.1/§7.3/§7.4/§7.5/§7.6/§7.7/§8.2/§8.3/§8.4/
+  §9.4/§9.5/§9.6/§10.1/§10.4/§11/§12/§13, manager §12.2/§12.5/§12.7): new
+  §8.4.1 states the general rule once — a failed read, stat, or parse of
+  any state or surface file is never reported as absence and never triggers
+  an absence-shaped action — with a closed table of the unreadable outcome
+  per file class (marker, lock, ledger, backup record, provisioning seed,
+  passthrough entry, recorded surface, inventory candidate); every read-site
+  section references the rule instead of restating it. New diagnostic
+  `environment_passthrough_unreadable` for a recorded passthrough entry
+  whose link state cannot be established (status and resolve report it
+  non-current with currency unknown; `--repair` leaves the entry untouched);
+  lock read/parse failures are entry-class `environment_store_untrusted`,
+  never `profile_unknown`, and are never rebuilt from — no mutating
+  operation rebuilds, re-materializes, or replaces anything from an
+  unreadable lock (recovery is an explicit operator action). New diagnostic
+  `environment_backup_record_unreadable` for a backup inventory that cannot
+  be listed or read (status reports it non-current with currency unknown;
+  restore, scrub, and retention pruning stop before mutating). Conformance
+  vectors in `vectors/environments-read-failure.json` (unreadable-but-present
+  markers, locks, seeds, passthrough entries, and backup records across the
+  applicable failure classes, repair/update no-rebuild cases, absence-side
+  positives, and absence-shaped negatives), checked by
+  `validate_environments_read_failure_vectors`. Rollout is direct
+  (correctness of an existing MUST).
 - S1/S3: hardened-defaults profile and the named advisory revocation
   residual (manager §1/§7.1/§10/§12.7, registry §4/§8, SECURITY.md,
   environments §2.1/§2.2/§9.7/§10.3/§10.4/§12/§12.1/§13): one closed

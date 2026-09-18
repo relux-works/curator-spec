@@ -2481,7 +2481,8 @@ environment surfaces, extending the Protocol Core section 11 rule
 unchanged: the manager MUST remove or replace only files the preceding
 marker records and MUST fail rather than overwrite an unmanaged file. Skill
 entries keep the core adapter ledger; the two records never merge. An
-unreadable or invalid marker fails closed: the home's surfaces are treated
+unreadable or invalid marker fails closed under the environments §8.4.1
+absence-versus-read-failure rule: the home's surfaces are treated
 as unmanaged and nothing is removed or replaced. The marker is a record,
 not a signature, and MUST NOT be used as an authorization token or
 provenance proof.
@@ -2495,7 +2496,7 @@ the XDG links. Two profile names that map to one platform path below the
 environments root fail with `environment_path_collision` before writing. A
 provisioning seed that is absent in the native home is not seeded; one that
 exists but cannot be read is `environment_seed_unreadable` and provisioning
-stops before the first write. The manager prints the first-resolve notice
+stops before the first write (environments §8.4.1, seed row). The manager prints the first-resolve notice
 with that provisioning and on every first resolve of a home — the
 managed-home path, the statement that the tool treats the home as its own
 state root, and any first-run step the seeds do not cover — and never
@@ -2512,7 +2513,11 @@ it removes the oldest generations beyond the count, and `0` keeps every
 generation. `env backups scrub [--older-than <days>]` removes generations
 on the operator's explicit request and nothing else removes one. `env
 status` reports, per home, the generation count and the age of the oldest
-and newest backup.
+and newest backup. A backup inventory that cannot be established is
+unknown, never empty (environments §8.4.1, backup-record row): status
+reports `environment_backup_record_unreadable` with the row non-current
+and currency unknown, and restore, scrub, and retention pruning stop
+before mutating.
 
 Drift follows environments §8.4. A `linked` surface drifts when a link no
 longer targets the expected store path or its target's bytes fail the
@@ -2521,8 +2526,9 @@ content hash no longer matches. A store entry that fails the environments
 section 4 contract is not drift: the profile is
 `environment_store_untrusted` (environments §8.4, §10.1). A drifted file is never silently
 overwritten outside repair, and an absent surface file and a failed read
-are different facts: unreadable evidence is reported as unreadable with
-currency unknown, never as absence. Every materialization, takeover,
+are different facts (environments §8.4.1): unreadable evidence is reported
+as unreadable with currency unknown, never as absence. Every
+materialization, takeover,
 repair, or backup write replaces the directory entry — operation-private
 temp file plus rename — and never follows a symlink at the target or
 below the managed root (environments §8.3.1); a write that would follow
@@ -2539,9 +2545,11 @@ a link the manager does not own is refused with
 | recorded surface file exists but cannot be read | `environment_surface_unreadable` |
 | write would touch a file the marker does not record | `environment_surface_unmanaged_conflict` |
 | next backup generation directory already exists | `environment_backup_exists` |
+| backup inventory (generations directory or a needed generation) cannot be listed or read (non-current, currency unknown) | `environment_backup_record_unreadable` |
 | a write that would traverse a symlink below the managed root, or open through a symlink at a backup, marker, or ledger destination, that the manager did not create | `environment_write_would_follow_link` |
 | two profile names map to one platform path below the environments root | `environment_path_collision` |
 | provisioning seed exists in the native home but cannot be read | `environment_seed_unreadable` |
+| recorded passthrough entry whose link state cannot be established (non-current, currency unknown; never "detached") | `environment_passthrough_unreadable` |
 
 ### 12.3 Profile lifecycle
 
@@ -2769,14 +2777,21 @@ named store entry's pin hash from its bytes, refusing with
 `environment_store_untrusted` and emitting no fragment when the boundary
 cannot be proven or a pin hash does not match, with an enclosing-boundary
 failure refusing with no rebuild and an entry-class failure rebuilding
-from the revalidated snapshot (environments §4, §10.1). Home currency is
+from the revalidated snapshot (environments §4, §10.1), except an
+unreadable or malformed lock, which no mutating operation rebuilds,
+re-materializes, or replaces anything from (environments §8.4.1, lock
+row). Home currency is
 separate: a marker that belongs to another lock is
 `environment_home_stale`, never `environment_store_untrusted`. A home
 that is unprovisioned, stale after `profile update`,
 drifted, or whose passthrough is detached — or, for a `claude_code` home in
 the `referenced` form, that lacks the launch directory's project entry — is
 stale: without `--repair` the manager reports `environment_home_stale` with
-the reasons and emits no fragment. Under `--repair` the same verification
+the reasons and emits no fragment. An unreadable marker, surface, lock, or
+passthrough entry is never stale (environments §8.4.1): resolve reports the
+unreadable diagnostic and emits no fragment, and `--repair` neither
+re-materializes an unreadable surface nor re-links an unreadable entry.
+Under `--repair` the same verification
 runs first and a current home emits its fragment without any lock; only a
 stale home takes the section 2.5 mutation lock with a bounded wait of at
 least one and at most sixty seconds, documented by the manager, and
@@ -2822,6 +2837,9 @@ in this profile launches.
 | named or current profile not installed | `profile_unknown` |
 | managed home unprovisioned, stale, drifted, or passthrough detached; no fragment without `--repair` | `environment_home_stale` |
 | marker unreadable or malformed at resolve (no fragment; non-current, currency unknown) | `environment_marker_unreadable` |
+| recorded surface file unreadable at resolve (no fragment; non-current, currency unknown) | `environment_surface_unreadable` |
+| lock file unreadable or malformed at resolve (no fragment; non-current, currency unknown; never rebuilt from) | `environment_store_untrusted` |
+| recorded passthrough entry unreadable at resolve (no fragment; non-current, currency unknown) | `environment_passthrough_unreadable` |
 | store entry, lock, or marker file fails the environments §4 protected-boundary contract or its pin hash at resolve (no fragment; non-current) | `environment_store_untrusted` |
 | enclosing boundary cannot be proven at resolve (no fragment; non-current; nothing rebuilt) | `environment_store_untrusted` |
 | repair could not acquire the mutation lock within the bounded wait | `environment_lock_unavailable` |
@@ -2876,7 +2894,9 @@ declared requirement (`range`, `tag`, or `revision` as written), root
 version, lock hash, and current markers — the machine default and every
 scope that differs; a `local` profile reports `local`, `-`, `0.0.0`, and
 its lock hash, and a `path` root reports `path`, its recorded source path,
-`-`, and whether it is imported-from-native. `env status` reports the
+`-`, and whether it is imported-from-native. A profile whose lock cannot
+be read is listed with `environment_store_untrusted`, never omitted as not
+installed (environments §8.4.1, lock row). `env status` reports the
 profile × environment × surface matrix of environments §12: mode, form,
 materialized lock hash, content-hash currency, drift, missing surfaces,
 marker validity, unregistered adapters found in the `environments` object,
@@ -2887,8 +2907,9 @@ ungoverned-surfaces statement, the passthrough liveness row and the
 recorded seeds per managed home, the XDG seed state per managed `opencode`
 parent, the standing `opencode` split-brain note, the recorded and detected
 tool release per adapter, both homes of the current profile per scope with
-their provisioning state, backup generation counts and ages per home,
-orphaned managed homes, a locked `require_current_profile`,
+their provisioning state, backup generation counts and ages per home (or
+`environment_backup_record_unreadable` when the inventory cannot be
+established), orphaned managed homes, a locked `require_current_profile`,
 `environment_context_size_exceeded` where it applies, the effective
 `transitive_system_modules` value with every dropped system module by
 package and path where the `drop` policy skipped any, and the store-trust
@@ -2912,7 +2933,7 @@ shadow-inert (unless acknowledged), detached, partially switched, stale,
 store-untrusted (`environment_store_untrusted`), hardened-contradicting
 (section 10), or
 unreadable state is non-current, and unreadable evidence is reported as
-unreadable, never as absence (environments §8.4). The warnings
+unreadable, never as absence (environments §8.4.1). The warnings
 `environment_context_size_exceeded`, `environment_tool_version_unverified`,
 `environment_seed_shadowed`, `environment_foreign_manager_suspected`,
 `context_system_module_dropped`, and
@@ -2924,8 +2945,10 @@ named by any installed profile's lock — and by a retained previous lock
 until it is dropped — every managed home and in-place surface set
 referenced by a valid environment marker, and every entry referenced by an
 in-flight transaction journal. An unreadable marker
-(`environment_marker_unreadable`) or unprovable reference
-fails safe: the uncertain entries are retained and the uncertainty reported.
+(`environment_marker_unreadable`, environments §8.4.1), an unreadable lock
+(entry-class `environment_store_untrusted`, environments §8.4.1), or another
+unprovable reference fails safe: the uncertain entries are retained and the
+uncertainty reported.
 An enclosing boundary that cannot be proven refuses collection before its
 first write with nothing rebuilt. Garbage collection revalidates the
 environments section 4 boundary for
