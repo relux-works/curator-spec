@@ -37,6 +37,17 @@ sandbox. A successful audit or registry attestation does not make skill-provided
 code safe to execute without the consuming agent's own isolation and
 authorization controls.
 
+The recommended operating posture is the hardened-defaults profile
+(`security_posture: hardened`, manager §7.1): strict audit mode, strict
+registry policy, non-empty source and MCP allowlists, no unbounded
+environment passthrough, transitive system modules refused, and source
+signers required. The default posture is `permissive` under rollout
+revision A — every strong gate stays opt-in and a hostile repository plus
+`curator install` passes with zero blocking gates — and flips to
+`hardened` under revision B. Managers report the posture they run in
+through the `security_posture` status rows, so the composition an
+operator actually runs is always visible.
+
 ## Compile-only build boundary
 
 Manifest schema 6 does not introduce package hooks. It admits only untrusted Go
@@ -521,6 +532,17 @@ and incident behavior are defined in `protocol/registry.md`. The production
 registry threat model, including replay, rollback, equivocation, cursor abuse,
 resource exhaustion, credential compromise, crash recovery, and backup
 rollback, is normative in `profiles/registry-service.md`.
+
+Under `advisory` registry policy revocation is network-dependent: an
+attacker on the network can suppress delivery of a `revoked` record, the
+artifact resolves unknown, and advisory installs proceed — for up to the
+offline grace, which keeps a cached pre-revocation response stale-valid
+(`protocol/registry.md` §4, §8). This residual is named, not changed:
+availability under advisory policy costs revocation assurance, and
+managers surface every unreachable trusted registry during install and
+update as the prominent gate notice `registry_unreachable_during_install`.
+The `hardened` posture removes the residual with strict registry policy
+at the cost of availability.
 
 ## Release review
 

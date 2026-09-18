@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://relux-works.github.io/curator-spec/schemas/v1/manager-config-v2.schema.json",
   "title": "Curator manager logical configuration schema 2",
-  "description": "Schema 1 plus one closed `environments` object carrying exactly the environments protocol section 12.1 machine-configuration knobs, plus exactly two closed S2 members on each `audit_registries` entry (`bootstrap_checkpoint`, `mirror_group`). Every other schema-1 member keeps its schema-1 shape and default; `environments` is optional and every knob inside it defaults when absent; the two registry members are optional and absent by default.",
+  "description": "Schema 1 plus one closed `environments` object carrying exactly the environments protocol section 12.1 machine-configuration knobs, plus exactly two closed S2 members on each `audit_registries` entry (`bootstrap_checkpoint`, `mirror_group`), plus the top-level `security_posture` knob of manager profile section 7.1. Every other schema-1 member keeps its schema-1 shape and default; `environments` is optional and every knob inside it defaults when absent; the two registry members are optional and absent by default; `security_posture` defaults to `permissive` under rollout revision A and to `hardened` under revision B.",
   "type": "object",
   "required": [
     "schema_version",
@@ -45,6 +45,13 @@
     },
     "disable_builtin_registries": {
       "$ref": "manager-config-v1.schema.json#/properties/disable_builtin_registries"
+    },
+    "security_posture": {
+      "enum": [
+        "permissive",
+        "hardened"
+      ],
+      "default": "permissive"
     },
     "environments": {
       "$ref": "#/$defs/environments"

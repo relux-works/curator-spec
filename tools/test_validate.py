@@ -3720,6 +3720,326 @@ class ShellHookTrustVectorTests(unittest.TestCase):
             validate.validate_shell_hook_trust_vectors(changed)
 
 
+class SecurityPostureVectorTests(unittest.TestCase):
+    """Negative shapes for the section 7.1 hardened-defaults vector.
+
+    Each test narrows one rule of validate_security_posture_vectors: the
+    warn-first revision defaults, the lock direction, the three profile
+    refusals, the explicit-null versus absent distinction, the gate-notice
+    artifact naming, the warning count, the status-check currency
+    verdict, and the codex-seed row presence, order, and shipped
+    revision. The scenario-substitution tests perform exactly the
+    replacements producer rule 7 forbids: a named negative case rewritten
+    as an internally consistent passing case under the same name.
+    """
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.SUITE / "vectors" / "security-posture.json"
+        )
+
+    def case(self, name: str, vector=None) -> dict:
+        for item in (vector or self.vector)["cases"]:
+            if item["name"] == name:
+                return item
+        raise AssertionError(f"security-posture case {name} is missing")
+
+    def test_published_vector_passes(self) -> None:
+        validate.validate_security_posture_vectors()
+
+    def test_flipped_revision_default_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        for entry in changed["rollout_revisions"]:
+            if entry["name"] == "B":
+                entry["posture_default"] = "permissive"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_refusal_rewritten_as_passing_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        rewritten = self.case("refusal-source-allowlist-empty-explicit", changed)
+        rewritten["machine"]["allowed_sources"] = [
+            "https://github.com/example/skills"
+        ]
+        rewritten["expected"]["effective"]["allowed_sources"] = [
+            "https://github.com/example/skills"
+        ]
+        rewritten["expected"]["diagnostics"] = []
+        rewritten["expected"]["outcome"] = "proceeds"
+        for rows in (
+            rewritten["expected"]["curator_status_rows"],
+            rewritten["expected"]["env_status_rows"],
+        ):
+            for row in rows:
+                if row["gate"] == "source-allowlist":
+                    row["value"] = 1
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_refusal_expected_flipped_alone_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        flipped = self.case("refusal-source-allowlist-empty-explicit", changed)
+        flipped["expected"]["diagnostics"] = []
+        flipped["expected"]["outcome"] = "proceeds"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_explicit_null_rewritten_as_absent_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        rewritten = self.case("refusal-passable-env-null", changed)
+        del rewritten["machine"]["environments"]["passable_env_names"]
+        rewritten["expected"]["effective"]["passable_env_names"] = []
+        rewritten["expected"]["sources"]["passable_env_names"] = "profile"
+        rewritten["expected"]["passable_env_null_explicit"] = False
+        rewritten["expected"]["diagnostics"] = []
+        rewritten["expected"]["outcome"] = "proceeds"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_absent_null_claimed_explicit_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        flipped = self.case("hardened-absent-passthrough-follows-s4-warn", changed)
+        flipped["expected"]["passable_env_null_explicit"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_locked_posture_downgraded_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        downgraded = self.case("locked-posture-beats-explicit-permissive", changed)
+        downgraded["system"]["security_posture"] = "permissive"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_explicit_advisory_claimed_locked_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        flipped = self.case("explicit-knob-beats-profile-default", changed)
+        flipped["expected"]["sources"]["audit_mode"] = "lock"
+        for rows in (
+            flipped["expected"]["curator_status_rows"],
+            flipped["expected"]["env_status_rows"],
+        ):
+            for row in rows:
+                if row["gate"] == "audit-mode":
+                    row["source"] = "lock"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_superseded_provenance_profile_default_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["provenance"] = ["profile-default", "explicit", "lock", "shipped"]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+        changed = copy.deepcopy(self.vector)
+        flawed = self.case("revision-A-default-permissive-status", changed)
+        flawed["expected"]["profile_source"] = "profile-default"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+        changed = copy.deepcopy(self.vector)
+        flawed = self.case("revision-A-default-permissive-status", changed)
+        flawed["expected"]["sources"]["audit_mode"] = "profile-default"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+        changed = copy.deepcopy(self.vector)
+        flawed = self.case("revision-A-default-permissive-status", changed)
+        for row in flawed["expected"]["curator_status_rows"]:
+            if row["gate"] == "audit-mode":
+                row["source"] = "profile-default"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_superseded_provenance_locked_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["provenance"] = ["profile", "explicit", "locked", "shipped"]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+        changed = copy.deepcopy(self.vector)
+        flawed = self.case("locked-value-beats-explicit", changed)
+        flawed["expected"]["sources"]["audit_mode"] = "locked"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+        changed = copy.deepcopy(self.vector)
+        flawed = self.case("locked-posture-beats-explicit-permissive", changed)
+        flawed["expected"]["profile_source"] = "locked"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+        changed = copy.deepcopy(self.vector)
+        flawed = self.case("locked-value-beats-explicit", changed)
+        for row in flawed["expected"]["env_status_rows"]:
+            if row["gate"] == "audit-mode":
+                row["source"] = "locked"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_unreachable_without_artifacts_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        unnamed = self.case("unreachable-registry-permissive-warns", changed)
+        unnamed["operation"]["artifacts_without_evidence"] = []
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_hardened_notice_downgraded_to_warning_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        downgraded = self.case("unreachable-registry-hardened-refuses", changed)
+        downgraded["expected"]["diagnostics"][0]["severity"] = "warning"
+        downgraded["expected"]["outcome"] = "proceeds"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_mcp_error_downgraded_to_warning_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        downgraded = self.case(
+            "refusal-mcp-allowlist-empty-with-declarations", changed
+        )
+        downgraded["expected"]["diagnostics"][0]["severity"] = "warning"
+        downgraded["expected"]["outcome"] = "proceeds"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_warning_count_flipped_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        repeated = self.case("revision-A-permissive-warning-once-install", changed)
+        repeated["expected"]["diagnostics"][0]["count"] = 2
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_status_check_contradiction_claimed_current_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        flipped = self.case(
+            "hardened-contradiction-status-check-non-current", changed
+        )
+        flipped["expected"]["outcome"] = "current"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_schema1_with_posture_knob_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        knobbed = self.case("schema1-machine-is-permissive", changed)
+        knobbed["machine"]["security_posture"] = "hardened"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_dropped_case_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["cases"] = [
+            item
+            for item in changed["cases"]
+            if item["name"] != "posture-rows-flipped-revisions"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_codex_seed_row_dropped_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        dropped = self.case("revision-A-default-permissive-status", changed)
+        for rows in (
+            dropped["expected"]["curator_status_rows"],
+            dropped["expected"]["env_status_rows"],
+        ):
+            rows[:] = [row for row in rows if row["gate"] != "codex-seed"]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_codex_seed_row_misplaced_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        moved = self.case("revision-A-default-permissive-status", changed)
+        for rows in (
+            moved["expected"]["curator_status_rows"],
+            moved["expected"]["env_status_rows"],
+        ):
+            names = [row["gate"] for row in rows]
+            seed = names.index("codex-seed")
+            boundary = names.index("store-boundary")
+            rows[seed], rows[boundary] = rows[boundary], rows[seed]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_codex_seed_shipped_revision_rewritten_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        rewritten = self.case("revision-A-default-permissive-status", changed)
+        rewritten["shipped_revisions"]["codex_seed"] = "B"
+        profile, profile_source, effective, sources, null_explicit = (
+            validate._posture_resolve(rewritten["name"], rewritten)
+        )
+        want_curator, want_env = validate._posture_status_rows(
+            rewritten, profile, profile_source, effective, sources
+        )
+        rewritten["expected"]["curator_status_rows"] = want_curator
+        rewritten["expected"]["env_status_rows"] = want_env
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_mcp_refusal_rewritten_as_permissive_warning_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        rewritten = self.case(
+            "refusal-mcp-allowlist-empty-with-declarations", changed
+        )
+        rewritten["machine"]["security_posture"] = "permissive"
+        profile, profile_source, effective, sources, null_explicit = (
+            validate._posture_resolve(rewritten["name"], rewritten)
+        )
+        expected = rewritten["expected"]
+        expected.update(
+            profile=profile,
+            profile_source=profile_source,
+            effective=effective,
+            sources=sources,
+            passable_env_null_explicit=null_explicit,
+            diagnostics=validate._posture_diagnostics(
+                rewritten["name"], rewritten, profile, effective, null_explicit
+            ),
+            outcome="proceeds",
+        )
+        want_curator, want_env = validate._posture_status_rows(
+            rewritten, profile, profile_source, effective, sources
+        )
+        expected["curator_status_rows"] = want_curator
+        expected["env_status_rows"] = want_env
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_revision_a_default_swapped_with_locked_case_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        donor = copy.deepcopy(self.case("locked-value-beats-explicit"))
+        donor["name"] = "revision-A-default-permissive-status"
+        changed["cases"] = [
+            donor if item["name"] == donor["name"] else item
+            for item in changed["cases"]
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_revision_b_flip_swapped_with_schema1_case_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        donor = copy.deepcopy(self.case("schema1-machine-is-permissive"))
+        donor["name"] = "revision-B-default-hardened-flip-install"
+        changed["cases"] = [
+            donor if item["name"] == donor["name"] else item
+            for item in changed["cases"]
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_security_posture_vectors(changed)
+
+    def test_no_whole_case_substitution_survives(self) -> None:
+        bodies = {item["name"]: item for item in self.vector["cases"]}
+        self.assertEqual(set(bodies), validate.SECURITY_POSTURE_CASES)
+        for target in sorted(bodies):
+            for donor_name in sorted(bodies):
+                if donor_name == target:
+                    continue
+                changed = copy.deepcopy(self.vector)
+                donor = copy.deepcopy(bodies[donor_name])
+                donor["name"] = target
+                changed["cases"] = [
+                    donor if item["name"] == target else item
+                    for item in changed["cases"]
+                ]
+                with self.assertRaises(
+                    validate.ValidationFailure,
+                    msg=f"{target} <- {donor_name} survived",
+                ):
+                    validate.validate_security_posture_vectors(changed)
+
+
 class WriteNofollowVectorTests(unittest.TestCase):
     """The environments §8.3.1 nofollow write discipline must fail closed.
 

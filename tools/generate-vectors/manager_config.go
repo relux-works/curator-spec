@@ -109,6 +109,11 @@ func managerConfigV2SchemaExamples(valid map[string]any) []schemaExample {
 	withKnob := func(knob string, value any) map[string]any {
 		return withEnvironments(func(env map[string]any) { env[knob] = value })
 	}
+	withTopLevel := func(key string, value any) map[string]any {
+		config := deepCloneMap(valid)
+		config[key] = value
+		return config
+	}
 	withOverlay := func(overlay map[string]any) map[string]any {
 		return withKnob("overlays", map[string]any{"companyA": []any{overlay}})
 	}
@@ -238,6 +243,13 @@ func managerConfigV2SchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-registry-unknown-field", instance: withRegistry(func(entry map[string]any) {
 			entry["required"] = true
 		})},
+		// S1 (manager §1, §7.1): the top-level security_posture knob is
+		// exactly permissive or hardened; absent it defaults per the
+		// rollout revision (permissive under A, hardened under B).
+		{name: "valid-security-posture-hardened", valid: true, instance: withTopLevel("security_posture", "hardened")},
+		{name: "valid-security-posture-permissive", valid: true, instance: withTopLevel("security_posture", "permissive")},
+		{name: "invalid-security-posture-value", instance: withTopLevel("security_posture", "strict")},
+		{name: "invalid-security-posture-type", instance: withTopLevel("security_posture", true)},
 	}
 }
 

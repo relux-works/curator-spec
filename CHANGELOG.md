@@ -7,6 +7,44 @@ Versioning for the complete specification set.
 
 ### Added
 
+- S1/S3: hardened-defaults profile and the named advisory revocation
+  residual (manager §1/§7.1/§10/§12.7, registry §4/§8, SECURITY.md,
+  environments §2.1/§2.2/§9.7/§10.3/§10.4/§12/§12.1/§13): one closed
+  machine knob `security_posture` (`permissive` or `hardened`, top level
+  in `manager-config-v2`, lockable in `system-config-v2` only in the
+  direction of `hardened`; schema-1 managers run `permissive`). Under
+  `hardened` the effective defaults are `audit.mode: strict`,
+  `audit.registry_policy: strict`, `transitive_system_modules: error`,
+  and `require_source_signers: true`, while an empty `allowed_sources`
+  (`source_allowlist_empty`), an empty `mcp_package_allowlist` for a
+  profile carrying an MCP declaration (`mcp_package_allowlist_empty` as
+  an error instead of the warning), and an explicit `passable_env_names:
+  null` (`passable_env_names_unbounded_refused`) are refused at
+  install/update however the value arrived; an explicit per-knob value
+  otherwise still wins over the profile default. Warn-first in two
+  labelled revisions: revision A admits the knob with default
+  `permissive` and warns `security_posture_permissive` once per
+  operation with the migration hint; revision B flips the default to
+  `hardened`. `curator status` and `env status` carry the
+  `security_posture` header row plus thirteen rows, one per gate, with
+  the effective value and its provenance (`profile`, `explicit`, `lock`,
+  `shipped`) — the thirteenth row is the E3 codex-seed shipped revision
+  (`A` or `B`, environments §7.4), directly after
+  `update-confirmation`; the per-home `codex_seed_record` rows stay
+  outside the posture inventory; `--check` treats a `hardened` machine
+  whose effective values contradict the profile as non-current.
+  Registry §4 and
+  SECURITY.md state the S3 residual — under `advisory` policy revocation
+  is network-dependent for up to the offline grace — and managers
+  surface an unreachable trusted registry during install/update as the
+  prominent gate notice `registry_unreachable_during_install` (warning
+  under `permissive`, error under `hardened`), naming the artifacts
+  resolved without registry evidence; the routine per-query warning is
+  unchanged. Conformance vectors in
+  `vectors/security-posture.json` (effective defaults under each
+  posture, explicit-vs-lock precedence, the three refusals, the
+  revision-A warning, the warning-vs-error notice, posture rows),
+  checked by `validate_security_posture_vectors`.
 - E6: `path`-kind admission rule and the store-boundary extension to
   `path` source directories (Decision 0012 amendment 2026-09-18;
   environments §1/§2.1/§2.2/§3/§4/§6/§8.5/§9.6/§10.1/§10.4/§12/§13): MCP

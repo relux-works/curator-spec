@@ -65,6 +65,16 @@ registry with no `mirror_group` belongs to no group. Both members live
 inside `audit_registries`, so the existing `audit_registries` system lock
 covers them; no new lock key exists.
 
+Machine security posture is one closed top-level knob, `security_posture`,
+carried by `manager-config-v2` next to `audit` (schema 2 only;
+`manager-config-v1` is frozen without it). Its values are closed to exactly
+`permissive` and `hardened`, and its default is `permissive` under rollout
+revision A and `hardened` under rollout revision B (section 7.1). The posture
+selects the effective defaults of the audit, registry-policy, and allowlist
+gates; section 7.1 states the effective policy under each posture. A manager
+reading schema 1 runs the `permissive` posture unconditionally: without the
+knob there is no hardened profile to select.
+
 An OPTIONAL system configuration conforms to `system-config-v1.schema.json`
 or, for a manager implementing the agent-environments capability, to
 `system-config-v2.schema.json`, and is merged before parsing the effective
@@ -72,7 +82,8 @@ user configuration:
 
 1. `locked` contains only `audit_registries`,
    `disable_builtin_registries`, `allowed_sources`, and `audit`, and under
-   schema 2 additionally the environments protocol section 12.2 keys, named
+   schema 2 additionally `security_posture` and the environments protocol
+   section 12.2 keys, named
    as `environments.overlays_allowed`, `environments.precedence`,
    `environments.mcp_package_allowlist`, `environments.passable_env_names`,
    `environments.require_current_profile`, `environments.isolation`,
@@ -88,6 +99,11 @@ user configuration:
    only in the direction of `error`, and schema 2 admits no other value
    there; `environments.require_source_signers` is lockable only in the
    direction of `true`, and schema 2 admits no other value there;
+   `security_posture` is lockable only in the direction of `hardened`,
+   and `system-config-v2` admits no other value there: a system file MUST
+   lock `security_posture` only to `hardened`, and a system file carrying
+   any other `security_posture` value is malformed and fails closed under
+   rule 4;
 2. a locked key MUST be set by the system file and overrides a user value with
    a warning naming the system file. For an `environments.<key>` lock the
    user value is the machine file's `manager-config` schema-2
@@ -1083,6 +1099,92 @@ pipeline in strict mode unconditionally and adds the REQUIRED
 behavior; [`protocol/environments.md`](../protocol/environments.md) section
 9.1 is normative for the class.
 
+### 7.1 Hardened-defaults profile (S1)
+
+The audit finding S1 names the default-open posture of every strong gate:
+strict registry policy, strict audit mode, and non-empty allowlists are all
+opt-in, so a hostile repository plus `curator install` passes with zero
+blocking gates under defaults. This section specifies the named
+hardened-defaults profile that closes that composition: one machine knob,
+`security_posture` (section 1), whose `hardened` value selects the strict
+end of every gate below. The profile changes no gate's own default — each
+gate's default stays as its own revision settled it — it only selects which
+default an absent knob takes.
+
+The effective policy under each posture is closed to exactly these rows.
+`absent` means the machine file carries no value for the knob and no lock
+supplies one:
+
+| Gate | `permissive` (today's defaults) | `hardened` |
+|---|---|---|
+| `audit.mode` | `advisory` | `strict` |
+| `audit.registry_policy` | `advisory` | `strict` |
+| `allowed_sources` | empty permits all network identities (core §6.1) | MUST be non-empty: an empty list is the install/update error `source_allowlist_empty` |
+| environments `mcp_package_allowlist` | empty permits all declaration sources, warned (`mcp_package_allowlist_empty`) | MUST be non-empty for any profile whose resolved closure carries an MCP declaration package: an empty list is then the resolution error `mcp_package_allowlist_empty` instead of the warning (environments §2.2) |
+| environments `passable_env_names` | explicit `null` is unbounded | explicit `null` is refused with `passable_env_names_unbounded_refused` (environments §10.3) |
+| environments `transitive_system_modules` | `drop` | `error` |
+| environments `require_source_signers` | `false` | `true` |
+| unreachable trusted registry during install/update | the gate notice `registry_unreachable_during_install` warns (registry §4) | the same notice is a blocking error |
+
+Precedence is lock, then explicit machine value, then the profile default:
+a locked key takes the system value; otherwise an explicit per-knob value
+in the machine file wins over the profile's default for keys that are not
+locked — EXCEPT the three refusals above (`source_allowlist_empty`, the
+`mcp_package_allowlist_empty` error, `passable_env_names_unbounded_refused`),
+which are the profile's meaning and fire under `hardened` however the
+refused value arrived: absent, explicit, or locked. The profile never
+invents allowlist entries: under `hardened` an absent allowlist is still
+empty, and therefore refused. An explicit `audit.mode: advisory` or
+`audit.registry_policy: advisory` under `hardened` stays advisory: the
+operator opted that knob out, and only that knob.
+
+Warn-first rollout (impact row "S1 hardened defaults"). The profile ships
+in two explicitly labelled revisions:
+
+- **Revision A (this release).** The knob is admitted with default
+  `permissive`, and every manager MUST report the posture it runs in
+  (section 10). Every operation under the `permissive` posture MUST emit
+  the warning `security_posture_permissive` exactly once per operation,
+  naming the `security_posture` knob and carrying the migration hint `set
+  security_posture: hardened in the machine configuration to adopt the
+  hardened defaults before revision B flips the default`. Old behavior is
+  otherwise kept.
+- **Revision B (a later release).** The default flips to `hardened`. An
+  explicit `permissive` remains a valid machine-file value that restores
+  today's per-knob defaults, and keeps emitting
+  `security_posture_permissive` whenever the effective posture is
+  `permissive`.
+
+A release MUST NOT flip the default and add the refusals at once: revision
+A admits the knob with the warning, revision B flips the default.
+
+The section-7.1 diagnostics are closed to exactly these two snake_case
+codes:
+
+| Condition | Diagnostic |
+|---|---|
+| `allowed_sources` empty at install/update under the `hardened` posture (error, refuses the operation) | `source_allowlist_empty` |
+| effective posture is `permissive` (warning, once per operation, names the knob and carries the migration hint) | `security_posture_permissive` |
+
+No other section-7.1 diagnostic exists. The `registry_unreachable_during_install`
+gate notice is defined in [`protocol/registry.md`](../protocol/registry.md)
+§4; the `mcp_package_allowlist_empty` escalation and the
+`passable_env_names_unbounded_refused` refusal are defined in
+[`protocol/environments.md`](../protocol/environments.md) §2.2 and §10.3.
+All five codes use the identical spelling in text, tables, schemas,
+vectors, CLI rows, and CHANGELOG.
+
+Downstream execution binding (labelled): the specification repository's
+gates do NOT resolve machine configurations. `tools/validate.py`
+(`validate_security_posture_vectors`) performs structural validation
+only — it recomputes the effective profile, the effective values with
+their provenance, the diagnostics, the outcome, and the posture rows of
+every case of `conformance/v1/vectors/security-posture.json` from the
+case's inputs — but it never runs a manager. Executing these vectors is
+owned downstream by the manager implementation: the install-time
+unreachable-registry notice by `TASK-260910-1sapuy`, the effective
+defaults and the posture rows by the manager posture work.
+
 ## 8. Shell activation
 
 Shell activation is an OPTIONAL convenience for interactive users. A manager
@@ -1330,6 +1432,48 @@ provenance nor a live reference. An unreadable consumer, marker, journal, or
 unprovable cache boundary fails safe: uncertain entries are retained or
 conservatively quarantined according to documented local policy and the
 uncertainty is reported. GC MUST NOT execute or adopt entry content.
+
+Read-only status MUST report the machine security posture (section 7.1).
+Where the environments capability is implemented, `curator status` and
+`env status` carry the same closed posture inventory: one
+`security_posture` header row — the profile in force (`permissive` or
+`hardened`) and its provenance — followed by one row per gate, in one
+shared closed order. Each row carries the gate, the effective value, and
+the value's provenance: `profile` (the profile's default filled an
+absent knob), `explicit` (the machine file sets the knob), `lock` (the
+system file locks it), or `shipped` (the manager ships the revision; no
+knob selects it). The posture rows are closed to exactly these thirteen,
+in this order:
+
+| Gate | Value | Provenance |
+|---|---|---|
+| `hook-trust` | the shipped shell-hook revision, `A-warning` or `B-enforcing` (section 8.5) | `shipped` |
+| `registry-policy` | the effective `audit.registry_policy`, `advisory` or `strict` | `profile`, `explicit`, or `lock` |
+| `audit-mode` | the effective `audit.mode`, `advisory` or `strict` | `profile`, `explicit`, or `lock` |
+| `source-allowlist` | the `allowed_sources` entry count | `profile`, `explicit`, or `lock` |
+| `env-passthrough` | the shipped S4 profile, `s4-warn` or `s4-enforce` (environments §10.3) | `shipped` |
+| `transitive-system-modules` | the effective policy, `drop` or `error` | `profile`, `explicit`, or `lock` |
+| `provider-trust-roots` | the shipped section 11 revision, `revision-A` or `revision-B` (environments §11) | `shipped` |
+| `source-signers` | the effective machine `require_source_signers`, `true` or `false` | `profile`, `explicit`, or `lock` |
+| `update-confirmation` | the shipped section 9.2 revision, `A-warning` or `B-flip` (environments §9.2) | `shipped` |
+| `codex-seed` | the shipped section 7.4 revision, `A` or `B` (environments §7.4) | `shipped` |
+| `store-boundary` | `enforced` (environments §4) | `shipped` |
+| `write-discipline` | `enforced` (environments §8.3.1) | `shipped` |
+| `mcp-package-allowlist` | the `mcp_package_allowlist` entry count | `profile`, `explicit`, or `lock` |
+
+No other posture row exists on either command: both commands report the
+same gates in the same order with the same values and provenance.
+A schema-1 manager has no environments capability: its `curator status`
+carries only the header row plus the first four rows above
+(`hook-trust`, `registry-policy`, `audit-mode`, `source-allowlist`), and
+`env status` has no posture section. `--check` treats a
+`hardened` machine whose effective values contradict the profile as
+non-current: an empty `allowed_sources`, an explicit `null`
+`passable_env_names`, or an empty `mcp_package_allowlist` while an
+installed profile's resolved closure carries an MCP declaration package.
+An explicit per-knob opt-out that the profile permits (for example an
+explicit `audit.mode: advisory` under `hardened`) is reported with
+`explicit` provenance and never makes a row non-current.
 
 ## 11. External repository manager profile
 
@@ -2750,7 +2894,13 @@ orphaned managed homes, a locked `require_current_profile`,
 package and path where the `drop` policy skipped any, and the store-trust
 row per installed profile with the failing check — and, for an enclosing
 failure, the boundary — named when the profile is
-`environment_store_untrusted` (environments §12).
+`environment_store_untrusted` (environments §12) — and the
+`security_posture` header row with the thirteen posture rows of section 10
+(the same closed inventory `curator status` carries: hook trust, registry
+policy, audit mode, source allowlist, passthrough, transitive system
+modules, provider trust roots, source signers, update confirmation,
+codex seed, store boundary, write discipline, MCP allowlist), each with its
+effective value and provenance.
 `--check` returns
 non-zero when any row is non-current.
 
@@ -2759,7 +2909,8 @@ supported; profile identity, lock hash, member list, precedence, mode, and
 form match the effective machine state; every recorded surface hash
 verifies; and every recorded passthrough entry is live. A drifted, missing,
 shadow-inert (unless acknowledged), detached, partially switched, stale,
-store-untrusted (`environment_store_untrusted`), or
+store-untrusted (`environment_store_untrusted`), hardened-contradicting
+(section 10), or
 unreadable state is non-current, and unreadable evidence is reported as
 unreadable, never as absence (environments §8.4). The warnings
 `environment_context_size_exceeded`, `environment_tool_version_unverified`,

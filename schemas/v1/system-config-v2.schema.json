@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://relux-works.github.io/curator-spec/schemas/v1/system-config-v2.schema.json",
   "title": "Curator enforced system configuration schema 2",
-  "description": "Schema 1 plus one closed `environments` object carrying exactly the environments protocol section 12.2 lockable knobs with their section 12.1 value grammars, and a `locked` set that may name each of them as `environments.<key>`. Every schema-1 member keeps its schema-1 shape by reference; `isolation` admits only `shared`, `transitive_system_modules` admits only `error`, and `require_source_signers` admits only `true`, the one direction section 12.2 makes lockable in each case.",
+  "description": "Schema 1 plus one closed `environments` object carrying exactly the environments protocol section 12.2 lockable knobs with their section 12.1 value grammars, a `locked` set that may name each of them as `environments.<key>`, and the top-level `security_posture` member of manager profile section 1. Every schema-1 member keeps its schema-1 shape by reference; `isolation` admits only `shared`, `transitive_system_modules` admits only `error`, and `require_source_signers` admits only `true`, the one direction section 12.2 makes lockable in each case; `security_posture` admits only `hardened`, the one direction manager section 1 makes lockable.",
   "type": "object",
   "required": ["schema_version"],
   "properties": {
@@ -15,6 +15,7 @@
           "disable_builtin_registries",
           "allowed_sources",
           "audit",
+          "security_posture",
           "environments.overlays_allowed",
           "environments.precedence",
           "environments.mcp_package_allowlist",
@@ -39,6 +40,9 @@
     "disable_builtin_registries": {"$ref": "manager-config-v1.schema.json#/properties/disable_builtin_registries"},
     "audit": {"$ref": "manager-config-v1.schema.json#/properties/audit"},
     "audit_registries": {"$ref": "manager-config-v1.schema.json#/properties/audit_registries"},
+    "security_posture": {
+      "enum": ["hardened"]
+    },
     "environments": {"$ref": "#/$defs/environments"}
   },
   "additionalProperties": false,

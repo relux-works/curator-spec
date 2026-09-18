@@ -454,7 +454,8 @@ the addressed root is not a context package.
 | `agent-mcp.json` absent at the addressed root, malformed, unknown field, wrong `schema_version`, or a `server` rule of section 2.2 violated | `mcp_declaration_invalid` |
 | an MCP declaration package's canonical source identity is outside the machine's MCP package allowlist | `mcp_package_not_allowed` |
 | MCP declaration carried by a `path`-kind package — a root, an overlay, or an onboarding import — at resolution (names the package and the declaration) | `mcp_declaration_path_source_refused` |
-| the MCP package allowlist is empty at install, update, or status (warning: every declaration package in the closure is admitted) | `mcp_package_allowlist_empty` |
+| the MCP package allowlist is empty at install, update, or status under the `permissive` posture (warning: every declaration package in the closure is admitted) | `mcp_package_allowlist_empty` |
+| the MCP package allowlist is empty under the `hardened` posture while the resolved closure carries an MCP declaration package (resolution error at install/update; non-current at status) | `mcp_package_allowlist_empty` |
 | S4 profile `s4-warn`: a launch passes an operator variable not listed in an explicitly configured `passable_env_names`, or any passed operator variable when the knob is absent (warning, names the variables and the knob) | `mcp_env_passthrough_unlisted` |
 | S4 profile `s4-enforce`: a requested name outside the effective `passable_env_names` is dropped from the launch allowlist (warning, names the variables) | `mcp_env_passthrough_dropped` |
 
@@ -502,7 +503,8 @@ name's operator value may reach a launch. Under the revision-1 rule (S4
 profile `s4-enforce`, section 10.3) an absent knob is the empty list, so
 nothing passes unless the operator opts a name in; an explicit `null`
 keeps meaning unbounded — every requested name passes — as an explicit,
-lockable-away operator choice.
+lockable-away operator choice. Under the `hardened` machine posture
+(manager §7.1) an explicit `null` is refused instead (section 10.3).
 Values never appear in any package, lock, marker, fragment, or materialized
 file; the operator's environment supplies them. `environments` is the
 section 3 selector: the adapters whose materialized set includes this
@@ -521,7 +523,15 @@ launcher binaries, because a binary allowlist bounds nothing: `npx`, `uvx`,
 every network identity, as core §6.1 — and that state always warns:
 `profile install`, `profile update`, and `env status` MUST emit
 `mcp_package_allowlist_empty`, stating that every declaration package in
-the closure is admitted.
+the closure is admitted. Under the `hardened` machine posture (manager
+§7.1) the warning becomes a resolution error — the same code — for any
+profile whose resolved closure carries an MCP declaration package:
+install and update MUST fail without writing or changing the lock, and
+`env status --check` MUST report the row non-current. Under `hardened`
+with no MCP declaration in the closure the empty allowlist keeps warning
+and the operation proceeds. The refusal fires however the empty value
+arrived — absent, explicit, or locked — since it is the profile's meaning,
+not a default the operator can keep by writing it down (manager §7.1).
 
 **Source kind: `git` only.** An MCP declaration package MUST resolve from
 a `git` source. A `path`-kind package — a root, an overlay, or an
@@ -2469,7 +2479,8 @@ declaration (section 2.2) — reassembly emits no `requires.mcp` entry.
 | lossy import proceeding under explicit consent (warning, loss list) | `environment_import_lossy` |
 | imported skill declaration recovered from foreign records (warning) | `environment_import_skill_foreign` |
 | chosen import profile name already installed | `profile_import_name_taken` |
-| MCP package allowlist empty at install or update (warning: every declaration package in the closure is admitted) | `mcp_package_allowlist_empty` |
+| MCP package allowlist empty at install or update under the `permissive` posture (warning: every declaration package in the closure is admitted) | `mcp_package_allowlist_empty` |
+| MCP package allowlist empty at install or update under the `hardened` posture while the resolved closure carries an MCP declaration package (resolution error; old lock stands) | `mcp_package_allowlist_empty` |
 
 `profile_index_ambiguous` is withdrawn with the multi-profile repository
 shape; `--use` takes no name. Section 2.3 surfacing emits no diagnostic
@@ -2751,6 +2762,18 @@ A manager MUST ship `s4-warn` before `s4-enforce`: one release MUST NOT
 flip the default and start dropping in a single step. `env status` reports
 the active profile with the effective allowlist (section 12).
 
+Under the `hardened` machine posture (manager §7.1) an explicit
+`passable_env_names: null` is refused with
+`passable_env_names_unbounded_refused`, naming the knob, at profile
+install, profile update, and launch composition alike: no launch allowlist
+is composed from it, the install or update fails without writing or
+changing the lock, and `env status --check` reports the machine
+non-current. The refusal fires however the `null` arrived — explicit or
+locked — since it is the profile's meaning (manager §7.1). An absent knob
+keeps following the shipped S4 profile above: the hardened posture
+refuses only the explicit unbounded choice, and changes neither S4
+profile's own absent-knob rule.
+
 The closed interpreter contract for MCP launch (audit item 4, analogous to
 `script-worker-v1`) is a later revision, not this one; it is noted here so
 that no reader mistakes the surfacing rows for an execution sandbox.
@@ -2771,6 +2794,7 @@ that no reader mistakes the surfacing rows for an execution sandbox.
 | managed home cannot be repaired from the store | `environment_repair_failed` |
 | S4 profile `s4-warn`: launch composition passes an operator variable outside the configured `passable_env_names` (warning, names the variables and the knob) | `mcp_env_passthrough_unlisted` |
 | S4 profile `s4-enforce`: launch composition drops a requested name outside the effective `passable_env_names` (warning, names the variables) | `mcp_env_passthrough_dropped` |
+| explicit `passable_env_names: null` under the `hardened` posture at profile install, profile update, or launch composition (refusal, names the knob; old lock stands) | `passable_env_names_unbounded_refused` |
 
 ## 11. Umbrella subcommand discovery
 
@@ -2943,7 +2967,10 @@ trust-root match or the diagnostic-only `PATH`-probe match — and always
 for `curator-run` and `curator-session`, reported missing when absent and
 reported unreadable with the directory when a trust root cannot be read
 (section 11), the `mcp_package_allowlist_empty` warning row when the MCP
-package allowlist is empty, the active S4 profile (`s4-warn` or
+package allowlist is empty under the `permissive` posture — under
+`hardened` the row is an error row, non-current, when the current
+profile's resolved closure carries an MCP declaration package (section
+2.2) — the active S4 profile (`s4-warn` or
 `s4-enforce`) with the effective `passable_env_names`, the section 2.3
 surfacing rows for the current profile of each scope reported, the
 signer-verification posture per lock member's source — `enforced` when an
@@ -2957,13 +2984,27 @@ entries, and — for a `path` root or overlay — the source directory,
 naming the failing check and the path or, for an enclosing failure, the
 boundary (environments root or store root) when the profile is
 `environment_store_untrusted`, the active codex-seed revision (`A` or `B`, section 7.4) with its
-behaviour, and per managed `codex_cli` home the `codex_seed_record`
+behaviour, per managed `codex_cli` home the `codex_seed_record`
 revision with its native-server rows (`mcp_native_servers_ungoverned`
 for the native names an `A`-record home carries,
 `mcp_native_servers_not_inherited` for a `B`-record home's stripped
 names, `mcp_seed_unstripped` with the re-provision hint when the marker
 predates the rule or when an `A`-record home with a non-empty snapshot
-is served by a revision-`B` manager). Both commands follow
+is served by a revision-`B` manager), and the `security_posture` header row —
+the profile in force (`permissive` or `hardened`) with its provenance —
+followed by the thirteen posture rows of the manager §10 table, identical
+in gate name, order, value, and provenance on `env status` and `curator
+status`: `hook-trust`, `registry-policy`, `audit-mode`,
+`source-allowlist`, `env-passthrough`, `transitive-system-modules`,
+`provider-trust-roots`, `source-signers` (the per-source
+enforced/unconfigured/required-missing rows above are unchanged),
+`update-confirmation`, `codex-seed` (the per-home `codex_seed_record`
+native-server rows above are not posture rows and stay unchanged),
+`store-boundary` (the per-profile trust verdicts
+stay in the store-trust row above), `write-discipline`, and
+`mcp-package-allowlist`. No other `env status` posture row exists.
+Revision and always-on gates report `shipped` provenance; knob gates
+report `profile`, `explicit`, or `lock`. Both commands follow
 the manager §10 discipline exactly: recompute and report, never mutate — no
 fetch, no repair, no adoption, no channel application, no onboarding.
 `--check` returns non-zero when any row is non-current.
@@ -2984,10 +3025,16 @@ revision B, or an unreadable trust root failed under either revision with
 currency unknown; a `PATH`-absent row under revision A is missing
 (non-current) even when a trust root holds the provider. Under revision A
 the `subcommand_provider_outside_trust_roots` warning row stays current.
-Warnings —
+A `hardened` machine whose effective values contradict the profile
+(manager §10: empty `allowed_sources`, explicit `null`
+`passable_env_names`, or an empty `mcp_package_allowlist` while an
+installed profile's resolved closure carries an MCP declaration package)
+is non-current, and `--check` returns non-zero. Warnings —
 `environment_context_size_exceeded`, `environment_tool_version_unverified`,
 `environment_seed_shadowed`, `environment_foreign_manager_suspected`,
-`context_system_module_dropped`, `mcp_package_allowlist_empty`,
+`context_system_module_dropped`, `mcp_package_allowlist_empty` under the
+`permissive` posture (under `hardened` with an MCP declaration in the
+closure it is the non-current error row above),
 `mcp_env_passthrough_unlisted`, `mcp_env_passthrough_dropped`,
 `mcp_native_servers_ungoverned`, `mcp_native_servers_not_inherited`,
 `mcp_seed_unstripped`, an acknowledged shadowing path — never make a row
@@ -3074,6 +3121,17 @@ knob is absent.
 | `provider_directories` | list of absolute paths | `[]` | 11 |
 | `source_signers.<source>` | map from canonical source identity to the source's signer allowlist: a list of `{ type, key }` ssh entries and `{ type, fingerprint }` gpg entries | `{}` | 1.4, 12.2 |
 | `require_source_signers` | boolean | `false` | 1.4, 12.2 |
+
+Four knobs take part in the machine security posture of manager §7.1:
+under the `hardened` posture an absent `transitive_system_modules`
+resolves to `error` instead of `drop`, an absent `require_source_signers`
+resolves to `true` instead of `false`, an empty `mcp_package_allowlist`
+is a resolution error instead of a warning when the closure carries an
+MCP declaration package (section 2.2), and an explicit
+`passable_env_names: null` is refused (section 10.3). The table above
+still states each knob's own default; the posture selects which default
+an absent knob takes, and the two refusals are the profile's meaning,
+not defaults.
 
 A `secret_material_waivers.pin` is spelled as the member's pin exactly as
 the lock (section 1.3) and the marker (section 8.2) record it: bare
@@ -3268,7 +3326,13 @@ module refused with `context_system_module_transitive`, the dry-run
 evaluation of a `path` directory failure reporting
 `environment_store_untrusted` with no rebuild planned and mutating
 nothing, and the negatives whose admitted, current-reporting,
-rebuilding, or would-rebuild-reporting observation is non-conforming. The nine
+rebuilding, or would-rebuild-reporting observation is non-conforming; and the
+section 2.2/10.3/12 hardened-posture cases
+(`vectors/security-posture.json`) — the revision-A permissive default
+with its warning, the revision-B hardened flip, the effective defaults
+under each posture, explicit-value and lock precedence, the three
+profile refusals, the unreachable-registry warning versus error, and the
+posture rows with their provenance. The nine
 retired `expected/environments/*` sets are regenerated under the v2 type
 line. A manager claiming this capability MUST pass the complete vector set;
 there is no partial claim. A manager conforms to revision A by warning

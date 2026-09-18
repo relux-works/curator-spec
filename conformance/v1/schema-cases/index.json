@@ -4360,6 +4360,26 @@
     "valid": false
   },
   {
+    "instance": "manager-config-v2/valid-security-posture-hardened.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/valid-security-posture-permissive.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v2/invalid-security-posture-value.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-security-posture-type.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
     "instance": "provider-capability-receipt-v1/valid.json",
     "schema": "provider-capability-receipt-v1.schema.json",
     "valid": true
@@ -4791,6 +4811,21 @@
   },
   {
     "instance": "system-config-v2/invalid-require-source-signers-type.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/valid-security-posture-hardened-locked.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "system-config-v2/invalid-security-posture-permissive-direction.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-security-posture-type.json",
     "schema": "system-config-v2.schema.json",
     "valid": false
   },

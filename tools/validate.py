@@ -4051,6 +4051,7 @@ SYSTEM_CONFIG_TRANSITIVE_ENUM_PATH = (
 SYSTEM_CONFIG_REQUIRE_SIGNERS_ENUM_PATH = (
     "$defs", "environments", "properties", "require_source_signers", "enum"
 )
+SYSTEM_CONFIG_POSTURE_ENUM_PATH = ("properties", "security_posture", "enum")
 
 
 def environments_lockable_keys(text: str) -> list[str]:
@@ -4077,14 +4078,17 @@ def validate_system_config_v2_schema(
     environments.md section 12.2.
 
     Schema 2 is schema 1 plus one closed `environments` object whose members
-    are exactly the section 12.2 lockable keys, and a `locked` enum that is
-    exactly the schema-1 enum plus `environments.<key>` for each of them.
-    Every schema-1 member other than `schema_version` and `locked` keeps its
-    schema-1 node byte for byte. Every environments knob other than
-    `isolation`, `transitive_system_modules`, and `require_source_signers`
-    takes its grammar from the `manager-config-v2` environments object by
-    reference, so the two schemas cannot drift; `isolation` admits `shared`
-    alone, `transitive_system_modules` admits `error` alone, and
+    are exactly the section 12.2 lockable keys, the top-level
+    `security_posture` member (manager section 1: lockable only in the
+    direction of `hardened`), and a `locked` enum that is exactly the
+    schema-1 enum plus `security_posture` plus `environments.<key>` for
+    each lockable key. Every schema-1 member other than `schema_version`
+    and `locked` keeps its schema-1 node byte for byte. Every environments
+    knob other than `isolation`, `transitive_system_modules`, and
+    `require_source_signers` takes its grammar from the
+    `manager-config-v2` environments object by reference, so the two
+    schemas cannot drift; `isolation` admits `shared` alone,
+    `transitive_system_modules` admits `error` alone, and
     `require_source_signers` admits `true` alone (section 12.2: each
     lockable only in that direction).
     """
@@ -4103,10 +4107,10 @@ def validate_system_config_v2_schema(
     if schema["properties"].get("schema_version") != {"const": 2}:
         raise ValidationFailure("system-config-v2 schema_version is not const 2")
     inherited = set(schema_v1["properties"]) - {"schema_version", "locked"}
-    if set(schema["properties"]) != inherited | {"schema_version", "locked", "environments"}:
+    if set(schema["properties"]) != inherited | {"schema_version", "locked", "environments", "security_posture"}:
         raise ValidationFailure(
-            "system-config-v2 properties are not schema 1 plus environments: "
-            f"{sorted(set(schema['properties']) ^ (inherited | {'schema_version', 'locked', 'environments'}))}"
+            "system-config-v2 properties are not schema 1 plus environments plus security_posture: "
+            f"{sorted(set(schema['properties']) ^ (inherited | {'schema_version', 'locked', 'environments', 'security_posture'}))}"
         )
     for name in sorted(inherited):
         if schema["properties"][name] != schema_v1["properties"][name]:
@@ -4156,9 +4160,16 @@ def validate_system_config_v2_schema(
         node = node[segment]
     if node != [True]:
         raise ValidationFailure(f"system-config-v2 require_source_signers admits {node!r}; section 12.2 permits true alone")
+    node = schema
+    for segment in SYSTEM_CONFIG_POSTURE_ENUM_PATH:
+        if not isinstance(node, dict) or segment not in node:
+            raise ValidationFailure("system-config-v2 states no closed security_posture value set")
+        node = node[segment]
+    if node != ["hardened"]:
+        raise ValidationFailure(f"system-config-v2 security_posture admits {node!r}; manager section 1 permits hardened alone")
 
     locked_v1 = schema_v1["properties"]["locked"]["items"]["enum"]
-    want_locked = [*locked_v1, *(f"environments.{key}" for key in keys)]
+    want_locked = [*locked_v1, "security_posture", *(f"environments.{key}" for key in keys)]
     locked = schema["properties"].get("locked", {})
     if locked.get("type") != "array" or locked.get("uniqueItems") is not True:
         raise ValidationFailure("system-config-v2 locked is not a unique-item array")
@@ -8611,6 +8622,919 @@ def validate_umbrella_provider_vectors(root: Path | None = None) -> None:
         raise ValidationFailure("umbrella provider vectors fail unreadable under no case")
 
 
+# The manager-profile section 7.1 hardened-defaults vocabulary (findings
+# S1+S3): rollout revisions with their posture defaults, the four new
+# diagnostic codes plus the one pre-existing code the profile escalates,
+# the three refusals that are the profile's meaning, the closed provenance
+# set, and the posture-row gate orders of manager section 10 and
+# environments section 12.
+SECURITY_POSTURE_REVISION_DEFAULTS = {"A": "permissive", "B": "hardened"}
+SECURITY_POSTURE_DIAGNOSTICS = (
+    "source_allowlist_empty",
+    "passable_env_names_unbounded_refused",
+    "security_posture_permissive",
+    "registry_unreachable_during_install",
+)
+SECURITY_POSTURE_REFERENCED_DIAGNOSTICS = ("mcp_package_allowlist_empty",)
+SECURITY_POSTURE_REFUSALS = (
+    "source_allowlist_empty",
+    "mcp_package_allowlist_empty",
+    "passable_env_names_unbounded_refused",
+)
+SECURITY_POSTURE_PROVENANCE = ("profile", "explicit", "lock", "shipped")
+# One shared closed gate vocabulary (manager section 10, environments
+# section 12): when the environments capability exists both `curator
+# status` and `env status` carry the header row plus these thirteen rows in
+# this order. A schema-1 manager has no environments capability and its
+# `curator status` carries only the header row plus the four-gate manager
+# subset; `env status` then has no posture section.
+SECURITY_POSTURE_STATUS_GATES = (
+    "hook-trust",
+    "registry-policy",
+    "audit-mode",
+    "source-allowlist",
+    "env-passthrough",
+    "transitive-system-modules",
+    "provider-trust-roots",
+    "source-signers",
+    "update-confirmation",
+    "codex-seed",
+    "store-boundary",
+    "write-discipline",
+    "mcp-package-allowlist",
+)
+SECURITY_POSTURE_SCHEMA1_GATES = (
+    "hook-trust",
+    "registry-policy",
+    "audit-mode",
+    "source-allowlist",
+)
+SECURITY_POSTURE_DEFAULTS = {
+    "permissive": {
+        "audit_mode": "advisory",
+        "audit_registry_policy": "advisory",
+        "transitive_system_modules": "drop",
+        "require_source_signers": False,
+    },
+    "hardened": {
+        "audit_mode": "strict",
+        "audit_registry_policy": "strict",
+        "transitive_system_modules": "error",
+        "require_source_signers": True,
+    },
+}
+SECURITY_POSTURE_DIAGNOSTIC_ORDER = (
+    "security_posture_permissive",
+    "source_allowlist_empty",
+    "mcp_package_allowlist_empty",
+    "passable_env_names_unbounded_refused",
+    "registry_unreachable_during_install",
+)
+SECURITY_POSTURE_CASES = {
+    "revision-A-default-permissive-status",
+    "revision-B-default-hardened-flip-install",
+    "explicit-hardened-effective-defaults",
+    "explicit-knob-beats-profile-default",
+    "locked-value-beats-explicit",
+    "locked-posture-beats-explicit-permissive",
+    "refusal-source-allowlist-empty-explicit",
+    "refusal-mcp-allowlist-empty-with-declarations",
+    "hardened-empty-mcp-allowlist-without-declarations-warns",
+    "refusal-passable-env-null",
+    "revision-A-permissive-warning-once-install",
+    "unreachable-registry-permissive-warns",
+    "unreachable-registry-hardened-refuses",
+    "schema1-machine-is-permissive",
+    "hardened-contradiction-status-check-non-current",
+    "hardened-absent-passthrough-follows-s4-warn",
+    "posture-rows-flipped-revisions",
+}
+# Each required scenario pinned to its schema version, its effective
+# posture, its precedence conditions, and the inputs distinguishing its
+# branch (producer rule 7): a named case rewritten as an internally
+# consistent passing case under the same name — a changed posture, a
+# changed precedence source, or another case's whole body — must be
+# refused, not merely inventoried. Pins are dotted input paths to exact
+# values; "<absent>" requires the path to be missing, {"contains": x}
+# requires list membership, {"nonempty": True} requires a non-empty list,
+# and {"present": None} requires a present null (distinct from absent).
+# The "effective.profile" and "effective.profile_source" pins name the
+# posture the inputs must resolve to under the section 7.1 merge rules,
+# so a rewrite that keeps the inputs plausible but flips the effective
+# posture (or its precedence source) still fails under its old name.
+SECURITY_POSTURE_SCENARIOS = {
+    "revision-A-default-permissive-status": {
+        "rollout_revision": "A",
+        "machine.schema_version": 2,
+        "machine.security_posture": "<absent>",
+        "machine.audit": "<absent>",
+        "machine.allowed_sources": "<absent>",
+        "machine.environments": "<absent>",
+        "system.locked": "<absent>",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "status",
+        "operation.mcp_declarations_present": False,
+        "operation.unreachable_trusted_registries": [],
+        "operation.artifacts_without_evidence": [],
+        "effective.profile": "permissive",
+        "effective.profile_source": "profile",
+    },
+    "revision-B-default-hardened-flip-install": {
+        "rollout_revision": "B",
+        "machine.schema_version": 2,
+        "machine.security_posture": "<absent>",
+        "machine.audit": "<absent>",
+        "machine.allowed_sources": {"nonempty": True},
+        "machine.environments.mcp_package_allowlist": {"nonempty": True},
+        "machine.environments.passable_env_names": "<absent>",
+        "machine.environments.transitive_system_modules": "<absent>",
+        "machine.environments.require_source_signers": "<absent>",
+        "system.locked": "<absent>",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "install",
+        "operation.mcp_declarations_present": False,
+        "operation.unreachable_trusted_registries": [],
+        "operation.artifacts_without_evidence": [],
+        "effective.profile": "hardened",
+        "effective.profile_source": "profile",
+    },
+    "explicit-hardened-effective-defaults": {
+        "rollout_revision": "A",
+        "machine.schema_version": 2,
+        "machine.security_posture": "hardened",
+        "machine.audit": "<absent>",
+        "machine.allowed_sources": "<absent>",
+        "machine.environments": "<absent>",
+        "system.locked": "<absent>",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "status",
+        "operation.mcp_declarations_present": False,
+        "operation.unreachable_trusted_registries": [],
+        "operation.artifacts_without_evidence": [],
+        "effective.profile": "hardened",
+        "effective.profile_source": "explicit",
+    },
+    "explicit-knob-beats-profile-default": {
+        "rollout_revision": "A",
+        "machine.schema_version": 2,
+        "machine.security_posture": "hardened",
+        "machine.audit.mode": "advisory",
+        "machine.audit.registry_policy": "<absent>",
+        "machine.allowed_sources": {"nonempty": True},
+        "machine.environments.mcp_package_allowlist": {"nonempty": True},
+        "machine.environments.passable_env_names": "<absent>",
+        "machine.environments.transitive_system_modules": "<absent>",
+        "machine.environments.require_source_signers": "<absent>",
+        "system.locked": "<absent>",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "install",
+        "operation.mcp_declarations_present": False,
+        "operation.unreachable_trusted_registries": [],
+        "operation.artifacts_without_evidence": [],
+        "effective.profile": "hardened",
+        "effective.profile_source": "explicit",
+    },
+    "locked-value-beats-explicit": {
+        "rollout_revision": "A",
+        "machine.schema_version": 2,
+        "machine.security_posture": "<absent>",
+        "machine.audit.mode": "advisory",
+        "machine.audit.registry_policy": "advisory",
+        "machine.allowed_sources": "<absent>",
+        "machine.environments": "<absent>",
+        "system.locked": ["audit"],
+        "system.audit.mode": "strict",
+        "system.audit.registry_policy": "strict",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "status",
+        "operation.mcp_declarations_present": False,
+        "operation.unreachable_trusted_registries": [],
+        "operation.artifacts_without_evidence": [],
+        "effective.profile": "permissive",
+        "effective.profile_source": "profile",
+    },
+    "locked-posture-beats-explicit-permissive": {
+        "rollout_revision": "A",
+        "machine.schema_version": 2,
+        "machine.security_posture": "permissive",
+        "machine.audit": "<absent>",
+        "machine.allowed_sources": "<absent>",
+        "machine.environments": "<absent>",
+        "system.locked": ["security_posture"],
+        "system.security_posture": "hardened",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "status",
+        "operation.mcp_declarations_present": False,
+        "operation.unreachable_trusted_registries": [],
+        "operation.artifacts_without_evidence": [],
+        "effective.profile": "hardened",
+        "effective.profile_source": "lock",
+    },
+    "refusal-source-allowlist-empty-explicit": {
+        "rollout_revision": "A",
+        "machine.schema_version": 2,
+        "machine.security_posture": "hardened",
+        "machine.audit": "<absent>",
+        "machine.allowed_sources": [],
+        "machine.environments": "<absent>",
+        "system.locked": "<absent>",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "install",
+        "operation.mcp_declarations_present": False,
+        "operation.unreachable_trusted_registries": [],
+        "operation.artifacts_without_evidence": [],
+        "effective.profile": "hardened",
+        "effective.profile_source": "explicit",
+    },
+    "refusal-mcp-allowlist-empty-with-declarations": {
+        "rollout_revision": "B",
+        "machine.schema_version": 2,
+        "machine.security_posture": "<absent>",
+        "machine.audit": "<absent>",
+        "machine.allowed_sources": {"nonempty": True},
+        "machine.environments": "<absent>",
+        "system.locked": "<absent>",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "profile-install",
+        "operation.mcp_declarations_present": True,
+        "operation.unreachable_trusted_registries": [],
+        "operation.artifacts_without_evidence": [],
+        "effective.profile": "hardened",
+        "effective.profile_source": "profile",
+    },
+    "hardened-empty-mcp-allowlist-without-declarations-warns": {
+        "rollout_revision": "B",
+        "machine.schema_version": 2,
+        "machine.security_posture": "hardened",
+        "machine.audit": "<absent>",
+        "machine.allowed_sources": {"nonempty": True},
+        "machine.environments": "<absent>",
+        "system.locked": "<absent>",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "profile-install",
+        "operation.mcp_declarations_present": False,
+        "operation.unreachable_trusted_registries": [],
+        "operation.artifacts_without_evidence": [],
+        "effective.profile": "hardened",
+        "effective.profile_source": "explicit",
+    },
+    "refusal-passable-env-null": {
+        "rollout_revision": "A",
+        "machine.schema_version": 2,
+        "machine.security_posture": "hardened",
+        "machine.audit": "<absent>",
+        "machine.allowed_sources": {"nonempty": True},
+        "machine.environments.mcp_package_allowlist": {"nonempty": True},
+        "machine.environments.passable_env_names": {"present": None},
+        "machine.environments.transitive_system_modules": "<absent>",
+        "machine.environments.require_source_signers": "<absent>",
+        "system.locked": "<absent>",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "profile-install",
+        "operation.mcp_declarations_present": True,
+        "operation.unreachable_trusted_registries": [],
+        "operation.artifacts_without_evidence": [],
+        "effective.profile": "hardened",
+        "effective.profile_source": "explicit",
+    },
+    "revision-A-permissive-warning-once-install": {
+        "rollout_revision": "A",
+        "machine.schema_version": 2,
+        "machine.security_posture": "<absent>",
+        "machine.audit": "<absent>",
+        "machine.allowed_sources": "<absent>",
+        "machine.environments": "<absent>",
+        "system.locked": "<absent>",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "install",
+        "operation.mcp_declarations_present": False,
+        "operation.unreachable_trusted_registries": [],
+        "operation.artifacts_without_evidence": [],
+        "effective.profile": "permissive",
+        "effective.profile_source": "profile",
+    },
+    "unreachable-registry-permissive-warns": {
+        "rollout_revision": "A",
+        "machine.schema_version": 2,
+        "machine.security_posture": "<absent>",
+        "machine.audit": "<absent>",
+        "machine.allowed_sources": {"nonempty": True},
+        "machine.environments": "<absent>",
+        "system.locked": "<absent>",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "install",
+        "operation.mcp_declarations_present": False,
+        "operation.unreachable_trusted_registries": {"nonempty": True},
+        "operation.artifacts_without_evidence": {"nonempty": True},
+        "effective.profile": "permissive",
+        "effective.profile_source": "profile",
+    },
+    "unreachable-registry-hardened-refuses": {
+        "rollout_revision": "A",
+        "machine.schema_version": 2,
+        "machine.security_posture": "hardened",
+        "machine.audit": "<absent>",
+        "machine.allowed_sources": {"nonempty": True},
+        "machine.environments": "<absent>",
+        "system.locked": "<absent>",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "install",
+        "operation.mcp_declarations_present": False,
+        "operation.unreachable_trusted_registries": {"nonempty": True},
+        "operation.artifacts_without_evidence": {"nonempty": True},
+        "effective.profile": "hardened",
+        "effective.profile_source": "explicit",
+    },
+    "schema1-machine-is-permissive": {
+        "rollout_revision": "B",
+        "machine.schema_version": 1,
+        "machine.security_posture": "<absent>",
+        "machine.audit.mode": "advisory",
+        "machine.audit.registry_policy": "<absent>",
+        "machine.allowed_sources": "<absent>",
+        "machine.environments": "<absent>",
+        "system.locked": "<absent>",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "install",
+        "operation.mcp_declarations_present": False,
+        "operation.unreachable_trusted_registries": [],
+        "operation.artifacts_without_evidence": [],
+        "effective.profile": "permissive",
+        "effective.profile_source": "profile",
+    },
+    "hardened-contradiction-status-check-non-current": {
+        "rollout_revision": "B",
+        "machine.schema_version": 2,
+        "machine.security_posture": "<absent>",
+        "machine.audit": "<absent>",
+        "machine.allowed_sources": "<absent>",
+        "machine.environments": "<absent>",
+        "system.locked": "<absent>",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "status-check",
+        "operation.mcp_declarations_present": True,
+        "operation.unreachable_trusted_registries": [],
+        "operation.artifacts_without_evidence": [],
+        "effective.profile": "hardened",
+        "effective.profile_source": "profile",
+    },
+    "hardened-absent-passthrough-follows-s4-warn": {
+        "rollout_revision": "A",
+        "machine.schema_version": 2,
+        "machine.security_posture": "hardened",
+        "machine.audit": "<absent>",
+        "machine.allowed_sources": {"nonempty": True},
+        "machine.environments.mcp_package_allowlist": {"nonempty": True},
+        "machine.environments.passable_env_names": "<absent>",
+        "machine.environments.transitive_system_modules": "<absent>",
+        "machine.environments.require_source_signers": "<absent>",
+        "system.locked": "<absent>",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "A-warning",
+        "shipped_revisions.env_passthrough": "s4-warn",
+        "shipped_revisions.provider_trust_roots": "revision-A",
+        "shipped_revisions.update_confirmation": "A-warning",
+        "shipped_revisions.codex_seed": "A",
+        "operation.kind": "profile-install",
+        "operation.mcp_declarations_present": True,
+        "operation.unreachable_trusted_registries": [],
+        "operation.artifacts_without_evidence": [],
+        "effective.profile": "hardened",
+        "effective.profile_source": "explicit",
+    },
+    "posture-rows-flipped-revisions": {
+        "rollout_revision": "B",
+        "machine.schema_version": 2,
+        "machine.security_posture": "hardened",
+        "machine.audit.mode": "strict",
+        "machine.audit.registry_policy": "<absent>",
+        "machine.allowed_sources": {"nonempty": True},
+        "machine.environments.mcp_package_allowlist": {"nonempty": True},
+        "machine.environments.passable_env_names": "<absent>",
+        "machine.environments.transitive_system_modules": "error",
+        "machine.environments.require_source_signers": True,
+        "system.locked": "<absent>",
+        "system.audit": "<absent>",
+        "system.allowed_sources": "<absent>",
+        "system.security_posture": "<absent>",
+        "system.environments": "<absent>",
+        "shipped_revisions.hook_trust": "B-enforcing",
+        "shipped_revisions.env_passthrough": "s4-enforce",
+        "shipped_revisions.provider_trust_roots": "revision-B",
+        "shipped_revisions.update_confirmation": "B-flip",
+        "shipped_revisions.codex_seed": "B",
+        "operation.kind": "status",
+        "operation.mcp_declarations_present": True,
+        "operation.unreachable_trusted_registries": [],
+        "operation.artifacts_without_evidence": [],
+        "effective.profile": "hardened",
+        "effective.profile_source": "explicit",
+    },
+}
+
+
+def _posture_lookup(case: Any, path: str) -> tuple[bool, Any]:
+    node = case
+    for segment in path.split("."):
+        if not isinstance(node, dict) or segment not in node:
+            return False, None
+        node = node[segment]
+    return True, node
+
+
+def _posture_check_scenario(name: str, case: Any, profile: str = "", profile_source: str = "") -> None:
+    pins = SECURITY_POSTURE_SCENARIOS.get(name)
+    if pins is None:
+        raise ValidationFailure(f"security-posture case {name} has no scenario pin")
+    derived = {"effective.profile": profile, "effective.profile_source": profile_source}
+    for path, want in pins.items():
+        if path in derived:
+            if derived[path] != want:
+                raise ValidationFailure(
+                    f"security-posture case {name} must resolve {path} == {want!r}"
+                )
+            continue
+        present, value = _posture_lookup(case, path)
+        if want == "<absent>":
+            if present:
+                raise ValidationFailure(f"security-posture case {name} must leave {path} absent")
+            continue
+        if isinstance(want, dict) and "contains" in want:
+            if not present or not isinstance(value, list) or want["contains"] not in value:
+                raise ValidationFailure(f"security-posture case {name} must carry {path} containing {want['contains']!r}")
+            continue
+        if isinstance(want, dict) and want.get("nonempty") is True:
+            if not present or not isinstance(value, list) or not value:
+                raise ValidationFailure(f"security-posture case {name} must carry a non-empty {path}")
+            continue
+        if isinstance(want, dict) and "present" in want:
+            if not present or value != want["present"]:
+                raise ValidationFailure(f"security-posture case {name} must carry {path} present as {want['present']!r}")
+            continue
+        if not present or value != want:
+            raise ValidationFailure(f"security-posture case {name} must carry {path} == {want!r}")
+
+
+def _posture_resolve(name: str, case: Any) -> tuple[str, str, dict[str, Any], dict[str, str], bool]:
+    """Resolve the effective profile, values, and provenance from the inputs.
+
+    Returns (profile, profile_source, effective, sources,
+    passable_env_null_explicit) under the manager section 1 and 7.1 merge
+    rules: lock, then explicit machine value, then the profile default. A
+    schema-1 machine has no posture knob and runs permissive.
+    """
+    label = f"security-posture case {name}"
+    revision = case.get("rollout_revision")
+    if revision not in SECURITY_POSTURE_REVISION_DEFAULTS:
+        raise ValidationFailure(f"{label} names an unknown rollout revision")
+    machine = case.get("machine")
+    if not isinstance(machine, dict) or machine.get("schema_version") not in (1, 2):
+        raise ValidationFailure(f"{label} machine names no known schema_version")
+    schema2 = machine.get("schema_version") == 2
+    if not schema2 and "security_posture" in machine:
+        raise ValidationFailure(f"{label} schema-1 machine carries a posture knob")
+    if "security_posture" in machine and machine["security_posture"] not in ("permissive", "hardened"):
+        raise ValidationFailure(f"{label} machine posture is not a closed value")
+    system = case.get("system")
+    if not isinstance(system, dict):
+        raise ValidationFailure(f"{label} system is not an object")
+    locked = system.get("locked", [])
+    if not isinstance(locked, list) or any(not isinstance(key, str) for key in locked):
+        raise ValidationFailure(f"{label} system locked is not a string list")
+    known_locks = {
+        "audit", "allowed_sources", "security_posture",
+        "environments.mcp_package_allowlist", "environments.passable_env_names",
+        "environments.transitive_system_modules", "environments.require_source_signers",
+    }
+    for key in locked:
+        if key not in known_locks:
+            raise ValidationFailure(f"{label} system locks an unknown key {key}")
+    if "security_posture" in system and system["security_posture"] != "hardened":
+        raise ValidationFailure(f"{label} system posture is not the hardened direction")
+    shipped = case.get("shipped_revisions")
+    if not isinstance(shipped, dict) or set(shipped) != {
+        "hook_trust", "env_passthrough", "provider_trust_roots", "update_confirmation",
+        "codex_seed",
+    }:
+        raise ValidationFailure(f"{label} shipped revisions are not the closed five-gate set")
+    if shipped["hook_trust"] not in ("A-warning", "B-enforcing"):
+        raise ValidationFailure(f"{label} hook-trust revision is not closed")
+    if shipped["env_passthrough"] not in ("s4-warn", "s4-enforce"):
+        raise ValidationFailure(f"{label} passthrough profile is not closed")
+    if shipped["provider_trust_roots"] not in ("revision-A", "revision-B"):
+        raise ValidationFailure(f"{label} provider-trust-roots revision is not closed")
+    if shipped["update_confirmation"] not in ("A-warning", "B-flip"):
+        raise ValidationFailure(f"{label} update-confirmation revision is not closed")
+    if shipped["codex_seed"] not in ("A", "B"):
+        raise ValidationFailure(f"{label} codex-seed revision is not closed")
+
+    if not schema2:
+        profile, profile_source = "permissive", "profile"
+    elif "security_posture" in locked:
+        if "security_posture" not in system:
+            raise ValidationFailure(f"{label} locks security_posture without a system value")
+        profile, profile_source = system["security_posture"], "lock"
+    elif "security_posture" in machine:
+        profile, profile_source = machine["security_posture"], "explicit"
+    else:
+        profile = SECURITY_POSTURE_REVISION_DEFAULTS[revision]
+        profile_source = "profile"
+
+    def resolve(lock_key: str, machine_value: Any, machine_present: bool,
+                system_value: Any, system_present: bool, default: Any) -> tuple[Any, str]:
+        if lock_key in locked:
+            if not system_present:
+                raise ValidationFailure(f"{label} locks {lock_key} without a system value")
+            return system_value, "lock"
+        if machine_present:
+            return machine_value, "explicit"
+        return default, "profile"
+
+    machine_audit = machine.get("audit", {})
+    system_audit = system.get("audit", {})
+    if not isinstance(machine_audit, dict) or not isinstance(system_audit, dict):
+        raise ValidationFailure(f"{label} audit member is not an object")
+    defaults = SECURITY_POSTURE_DEFAULTS[profile]
+    effective: dict[str, Any] = {}
+    sources: dict[str, str] = {}
+    effective["audit_mode"], sources["audit_mode"] = resolve(
+        "audit", machine_audit.get("mode"), "mode" in machine_audit,
+        system_audit.get("mode"), "mode" in system_audit, defaults["audit_mode"])
+    effective["audit_registry_policy"], sources["audit_registry_policy"] = resolve(
+        "audit", machine_audit.get("registry_policy"), "registry_policy" in machine_audit,
+        system_audit.get("registry_policy"), "registry_policy" in system_audit,
+        defaults["audit_registry_policy"])
+    effective["allowed_sources"], sources["allowed_sources"] = resolve(
+        "allowed_sources", machine.get("allowed_sources"), "allowed_sources" in machine,
+        system.get("allowed_sources"), "allowed_sources" in system, [])
+    if not isinstance(effective["allowed_sources"], list):
+        raise ValidationFailure(f"{label} effective allowed_sources is not a list")
+    null_explicit = False
+    if schema2:
+        machine_env = machine.get("environments", {})
+        system_env = system.get("environments", {})
+        if not isinstance(machine_env, dict) or not isinstance(system_env, dict):
+            raise ValidationFailure(f"{label} environments member is not an object")
+        effective["mcp_package_allowlist"], sources["mcp_package_allowlist"] = resolve(
+            "environments.mcp_package_allowlist",
+            machine_env.get("mcp_package_allowlist"), "mcp_package_allowlist" in machine_env,
+            system_env.get("mcp_package_allowlist"), "mcp_package_allowlist" in system_env, [])
+        if not isinstance(effective["mcp_package_allowlist"], list):
+            raise ValidationFailure(f"{label} effective mcp_package_allowlist is not a list")
+        pass_default = [] if shipped["env_passthrough"] == "s4-enforce" else None
+        effective["passable_env_names"], sources["passable_env_names"] = resolve(
+            "environments.passable_env_names",
+            machine_env.get("passable_env_names"), "passable_env_names" in machine_env,
+            system_env.get("passable_env_names"), "passable_env_names" in system_env,
+            pass_default)
+        if effective["passable_env_names"] is not None and not isinstance(effective["passable_env_names"], list):
+            raise ValidationFailure(f"{label} effective passable_env_names is not a list or null")
+        null_explicit = (
+            effective["passable_env_names"] is None
+            and sources["passable_env_names"] in ("explicit", "lock")
+        )
+        effective["transitive_system_modules"], sources["transitive_system_modules"] = resolve(
+            "environments.transitive_system_modules",
+            machine_env.get("transitive_system_modules"), "transitive_system_modules" in machine_env,
+            system_env.get("transitive_system_modules"), "transitive_system_modules" in system_env,
+            defaults["transitive_system_modules"])
+        effective["require_source_signers"], sources["require_source_signers"] = resolve(
+            "environments.require_source_signers",
+            machine_env.get("require_source_signers"), "require_source_signers" in machine_env,
+            system_env.get("require_source_signers"), "require_source_signers" in system_env,
+            defaults["require_source_signers"])
+    return profile, profile_source, effective, sources, null_explicit
+
+
+def _posture_diagnostics(name: str, case: Any, profile: str, effective: dict[str, Any],
+                          null_explicit: bool) -> list[dict[str, Any]]:
+    """Derive the operation diagnostics in canonical order from the inputs."""
+    label = f"security-posture case {name}"
+    operation = case.get("operation")
+    if not isinstance(operation, dict) or set(operation) != {
+        "kind", "mcp_declarations_present", "unreachable_trusted_registries", "artifacts_without_evidence"
+    }:
+        raise ValidationFailure(f"{label} operation is not the closed four-member shape")
+    kind = operation["kind"]
+    if kind not in ("install", "profile-install", "status", "status-check"):
+        raise ValidationFailure(f"{label} operation kind is not closed")
+    unreachable = operation["unreachable_trusted_registries"]
+    artifacts = operation["artifacts_without_evidence"]
+    if not isinstance(unreachable, list) or not isinstance(artifacts, list):
+        raise ValidationFailure(f"{label} unreachable registries and artifacts must be lists")
+    if bool(unreachable) != bool(artifacts):
+        raise ValidationFailure(f"{label} names unreachable registries without artifacts, or artifacts without a registry")
+    schema2 = case["machine"].get("schema_version") == 2
+    if not schema2 and operation["mcp_declarations_present"]:
+        raise ValidationFailure(f"{label} schema-1 machine carries MCP declarations")
+    found: dict[str, dict[str, Any]] = {}
+    if profile == "permissive":
+        found["security_posture_permissive"] = {
+            "code": "security_posture_permissive", "severity": "warning",
+            "count": 1, "names_knob": True, "migration_hint": True,
+        }
+    if profile == "hardened" and not effective["allowed_sources"] and kind in ("install", "profile-install"):
+        found["source_allowlist_empty"] = {"code": "source_allowlist_empty", "severity": "error"}
+    if schema2 and kind == "profile-install" and not effective["mcp_package_allowlist"]:
+        severity = "error" if profile == "hardened" and operation["mcp_declarations_present"] else "warning"
+        found["mcp_package_allowlist_empty"] = {"code": "mcp_package_allowlist_empty", "severity": severity}
+    if profile == "hardened" and null_explicit and kind == "profile-install":
+        found["passable_env_names_unbounded_refused"] = {
+            "code": "passable_env_names_unbounded_refused", "severity": "error", "names_knob": True,
+        }
+    if unreachable and kind in ("install", "profile-install"):
+        found["registry_unreachable_during_install"] = {
+            "code": "registry_unreachable_during_install",
+            "severity": "warning" if profile == "permissive" else "error",
+            "registries": unreachable, "artifacts": artifacts,
+        }
+    return [found[code] for code in SECURITY_POSTURE_DIAGNOSTIC_ORDER if code in found]
+
+
+def _posture_status_rows(case: Any, profile: str, profile_source: str,
+                         effective: dict[str, Any], sources: dict[str, str]) -> tuple[list[dict[str, Any]], Any]:
+    """Derive both status-command posture outputs from the resolved inputs.
+
+    When the environments capability exists (schema 2) `curator status`
+    and `env status` carry the same closed inventory — the header row
+    plus the thirteen shared gates of manager section 10 — so both
+    outputs are the one derived list. A schema-1 manager carries only
+    the header row plus the four-gate manager subset on `curator
+    status`, and `env status` has no posture section (None).
+    """
+    # The header row spells the knob (`security_posture`, manager §10);
+    # the per-gate rows use the hyphenated gate vocabulary.
+    header = {"gate": "security_posture", "value": profile, "source": profile_source}
+    shipped = case["shipped_revisions"]
+    manager_rows = [
+        {"gate": "hook-trust", "value": shipped["hook_trust"], "source": "shipped"},
+        {"gate": "registry-policy", "value": effective["audit_registry_policy"],
+         "source": sources["audit_registry_policy"]},
+        {"gate": "audit-mode", "value": effective["audit_mode"], "source": sources["audit_mode"]},
+        {"gate": "source-allowlist", "value": len(effective["allowed_sources"]),
+         "source": sources["allowed_sources"]},
+    ]
+    if case["machine"].get("schema_version") == 1:
+        return [header, *manager_rows], None
+    environments_rows = [
+        {"gate": "env-passthrough", "value": shipped["env_passthrough"], "source": "shipped"},
+        {"gate": "transitive-system-modules", "value": effective["transitive_system_modules"],
+         "source": sources["transitive_system_modules"]},
+        {"gate": "provider-trust-roots", "value": shipped["provider_trust_roots"],
+         "source": "shipped"},
+        {"gate": "source-signers", "value": "true" if effective["require_source_signers"] else "false",
+         "source": sources["require_source_signers"]},
+        {"gate": "update-confirmation", "value": shipped["update_confirmation"],
+         "source": "shipped"},
+        {"gate": "codex-seed", "value": shipped["codex_seed"],
+         "source": "shipped"},
+        {"gate": "store-boundary", "value": "enforced", "source": "shipped"},
+        {"gate": "write-discipline", "value": "enforced", "source": "shipped"},
+        {"gate": "mcp-package-allowlist", "value": len(effective["mcp_package_allowlist"]),
+         "source": sources["mcp_package_allowlist"]},
+    ]
+    full = [header, *manager_rows, *environments_rows]
+    return full, [dict(row) for row in full]
+
+
+def validate_security_posture_vectors(vector: Any = None) -> None:
+    """`vectors/security-posture.json` (manager §1/§7.1/§10, findings S1+S3).
+
+    Structural validation only: the closed posture, diagnostic, provenance,
+    and gate vocabularies are pinned, every case is pinned to its
+    discriminating inputs, and the effective profile, values, diagnostics,
+    outcome, and posture rows are recomputed from the case inputs under the
+    section 7.1 merge rules. This gate never runs a manager; downstream
+    execution is owned by TASK-260910-1sapuy and the manager posture work.
+    """
+    if vector is None:
+        vector = load_json(SUITE / "vectors" / "security-posture.json")
+    if (
+        vector.get("schema_version") != 1
+        or vector.get("protocol_version") != PROTOCOL_VERSION
+        or vector.get("capability") != "security-posture"
+        or vector.get("findings") != ["S1", "S3"]
+    ):
+        raise ValidationFailure("security-posture vector has the wrong capability identity")
+    revisions = {entry.get("name"): entry for entry in vector.get("rollout_revisions", [])}
+    if set(revisions) != set(SECURITY_POSTURE_REVISION_DEFAULTS):
+        raise ValidationFailure("security-posture rollout revisions are not exactly A and B")
+    for name, default in SECURITY_POSTURE_REVISION_DEFAULTS.items():
+        if revisions[name].get("posture_default") != default:
+            raise ValidationFailure(f"security-posture revision {name} defaults to the wrong posture")
+    if revisions["A"].get("posture_default") != "permissive" or revisions["B"].get("posture_default") != "hardened":
+        raise ValidationFailure("security-posture revisions do not warn first and flip second")
+    if vector.get("postures") != ["permissive", "hardened"]:
+        raise ValidationFailure("security-posture postures are not the closed two-value set")
+    if vector.get("profile_defaults") != SECURITY_POSTURE_DEFAULTS:
+        raise ValidationFailure("security-posture profile defaults are not the section 7.1 table")
+    if vector.get("profile_refusals") != list(SECURITY_POSTURE_REFUSALS):
+        raise ValidationFailure("security-posture refusals are not the closed three-code set")
+    if vector.get("diagnostics") != list(SECURITY_POSTURE_DIAGNOSTICS):
+        raise ValidationFailure("security-posture diagnostics are not the closed four-code set")
+    if vector.get("referenced_diagnostics") != list(SECURITY_POSTURE_REFERENCED_DIAGNOSTICS):
+        raise ValidationFailure("security-posture referenced diagnostics are not exact")
+    if vector.get("provenance") != list(SECURITY_POSTURE_PROVENANCE):
+        raise ValidationFailure("security-posture provenance is not the closed four-value set")
+    if vector.get("status_gates") != list(SECURITY_POSTURE_STATUS_GATES):
+        raise ValidationFailure("security-posture status gates are not the closed ordered thirteen-gate set")
+    if vector.get("schema1_gates") != list(SECURITY_POSTURE_SCHEMA1_GATES):
+        raise ValidationFailure("security-posture schema-1 gates are not the closed ordered manager subset")
+    binding = vector.get("execution_binding", {})
+    if binding.get("downstream_owner_tasks") != ["TASK-260910-1sapuy"]:
+        raise ValidationFailure("security-posture execution binding does not name the downstream owner task")
+    notes = vector.get("scope_notes")
+    if not isinstance(notes, list) or not notes or any(not isinstance(note, str) or not note for note in notes):
+        raise ValidationFailure("security-posture scope notes are not a non-empty note list")
+
+    cases = named_cases(vector.get("cases"), "security posture")
+    if set(cases) != SECURITY_POSTURE_CASES:
+        raise ValidationFailure("security-posture case inventory is not exact")
+    seen_codes: set[str] = set()
+    for name, case in cases.items():
+        profile, profile_source, effective, sources, null_explicit = _posture_resolve(name, case)
+        _posture_check_scenario(name, case, profile, profile_source)
+        expected = case.get("expected")
+        if not isinstance(expected, dict):
+            raise ValidationFailure(f"security-posture case {name} carries no expected block")
+        if expected.get("profile") != profile or expected.get("profile_source") != profile_source:
+            raise ValidationFailure(f"security-posture case {name} profile does not follow its inputs")
+        if expected.get("effective") != effective or expected.get("sources") != sources:
+            raise ValidationFailure(f"security-posture case {name} effective values do not follow their inputs")
+        if expected.get("passable_env_null_explicit") is not null_explicit:
+            raise ValidationFailure(f"security-posture case {name} null-explicit flag does not follow its inputs")
+        diagnostics = _posture_diagnostics(name, case, profile, effective, null_explicit)
+        if expected.get("diagnostics") != diagnostics:
+            raise ValidationFailure(f"security-posture case {name} diagnostics do not follow their inputs")
+        for entry in diagnostics:
+            seen_codes.add(entry["code"])
+        kind = case["operation"]["kind"]
+        if kind in ("install", "profile-install"):
+            want_outcome = "refused" if any(entry["severity"] == "error" for entry in diagnostics) else "proceeds"
+        elif kind == "status":
+            want_outcome = "current"
+        else:
+            schema2 = case["machine"].get("schema_version") == 2
+            contradicts = profile == "hardened" and (
+                not effective["allowed_sources"]
+                or (schema2 and null_explicit)
+                or (schema2 and not effective["mcp_package_allowlist"]
+                    and case["operation"]["mcp_declarations_present"])
+            )
+            want_outcome = "non-current" if contradicts else "current"
+        if expected.get("outcome") != want_outcome:
+            raise ValidationFailure(f"security-posture case {name} outcome does not follow its inputs")
+
+        # Both status commands are pinned: `curator status` and `env
+        # status` carry the same closed inventory (manager section 10),
+        # so both outputs must equal the one derived list.
+        want_curator, want_env = _posture_status_rows(case, profile, profile_source, effective, sources)
+        curator_rows = expected.get("curator_status_rows")
+        if not isinstance(curator_rows, list) or [row.get("gate") for row in curator_rows] != [
+            row["gate"] for row in want_curator
+        ]:
+            raise ValidationFailure(f"security-posture case {name} curator status rows are not the closed ordered set")
+        if curator_rows != want_curator:
+            raise ValidationFailure(f"security-posture case {name} curator status rows do not follow their inputs")
+        env_rows = expected.get("env_status_rows")
+        if want_env is None:
+            if env_rows is not None:
+                raise ValidationFailure(f"security-posture case {name} schema-1 machine carries env status rows")
+            continue
+        if not isinstance(env_rows, list) or [row.get("gate") for row in env_rows] != [
+            row["gate"] for row in want_env
+        ]:
+            raise ValidationFailure(f"security-posture case {name} env status rows are not the closed ordered set")
+        if env_rows != want_env:
+            raise ValidationFailure(f"security-posture case {name} env status rows do not follow their inputs")
+    want_codes = set(SECURITY_POSTURE_DIAGNOSTICS) | set(SECURITY_POSTURE_REFERENCED_DIAGNOSTICS)
+    if seen_codes != want_codes:
+        raise ValidationFailure(
+            f"security-posture cases cover {sorted(seen_codes)}; want {sorted(want_codes)}"
+        )
+
+
 def main() -> int:
     checks = [
         validate_schemas,
@@ -8637,6 +9561,7 @@ def main() -> int:
         validate_manager_config_vectors,
         validate_system_config_v2_schema,
         validate_umbrella_provider_vectors,
+        validate_security_posture_vectors,
         validate_local_links,
     ]
     try:

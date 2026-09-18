@@ -63,6 +63,11 @@ func systemConfigV2SchemaExamples(valid map[string]any) []schemaExample {
 		config["locked"] = locked
 		return config
 	}
+	withTopLevel := func(key string, value any) map[string]any {
+		config := deepCloneMap(valid)
+		config[key] = value
+		return config
+	}
 	minimal := map[string]any{"schema_version": 2}
 	emptyEnvironments := map[string]any{"schema_version": 2, "environments": map[string]any{}}
 	schemaOneLocked := map[string]any{"schema_version": 2, "locked": []any{"audit"}, "audit": map[string]any{}}
@@ -103,5 +108,14 @@ func systemConfigV2SchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-source-signers-fingerprint-newline", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "gpg", "fingerprint": "0123456789ABCDEF0123456789ABCDEF01234567\n"}}})},
 		{name: "invalid-require-source-signers-false-direction", instance: withKnob("require_source_signers", false)},
 		{name: "invalid-require-source-signers-type", instance: withKnob("require_source_signers", "yes")},
+		// S1 (manager §1): security_posture is lockable only in the
+		// direction of hardened; any other system value is malformed.
+		{name: "valid-security-posture-hardened-locked", valid: true, instance: func() map[string]any {
+			config := withTopLevel("security_posture", "hardened")
+			config["locked"] = append(config["locked"].([]any), "security_posture")
+			return config
+		}()},
+		{name: "invalid-security-posture-permissive-direction", instance: withTopLevel("security_posture", "permissive")},
+		{name: "invalid-security-posture-type", instance: withTopLevel("security_posture", true)},
 	}
 }

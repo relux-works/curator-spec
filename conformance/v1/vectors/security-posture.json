@@ -1,0 +1,3413 @@
+{
+  "schema_version": 1,
+  "protocol_version": "1.0.0-rc.9",
+  "capability": "security-posture",
+  "findings": [
+    "S1",
+    "S3"
+  ],
+  "rollout_revisions": [
+    {
+      "name": "A",
+      "description": "Revision A warning release: the security_posture knob is admitted with default permissive, every manager reports the posture it runs in, and every operation under permissive warns security_posture_permissive once; shipped first",
+      "posture_default": "permissive"
+    },
+    {
+      "name": "B",
+      "description": "Revision B flip release: the security_posture default flips to hardened; an explicit permissive keeps restoring today's per-knob defaults with the warning",
+      "posture_default": "hardened"
+    }
+  ],
+  "postures": [
+    "permissive",
+    "hardened"
+  ],
+  "profile_defaults": {
+    "permissive": {
+      "audit_mode": "advisory",
+      "audit_registry_policy": "advisory",
+      "transitive_system_modules": "drop",
+      "require_source_signers": false
+    },
+    "hardened": {
+      "audit_mode": "strict",
+      "audit_registry_policy": "strict",
+      "transitive_system_modules": "error",
+      "require_source_signers": true
+    }
+  },
+  "profile_note": "The profile never invents allowlist entries: under either posture an absent allowlist is still empty. Under hardened the empties are refused (profile_refusals); under permissive they permit all with the documented warnings.",
+  "profile_refusals": [
+    "source_allowlist_empty",
+    "mcp_package_allowlist_empty",
+    "passable_env_names_unbounded_refused"
+  ],
+  "diagnostics": [
+    "source_allowlist_empty",
+    "passable_env_names_unbounded_refused",
+    "security_posture_permissive",
+    "registry_unreachable_during_install"
+  ],
+  "referenced_diagnostics": [
+    "mcp_package_allowlist_empty"
+  ],
+  "provenance": [
+    "profile",
+    "explicit",
+    "lock",
+    "shipped"
+  ],
+  "status_gates": [
+    "hook-trust",
+    "registry-policy",
+    "audit-mode",
+    "source-allowlist",
+    "env-passthrough",
+    "transitive-system-modules",
+    "provider-trust-roots",
+    "source-signers",
+    "update-confirmation",
+    "codex-seed",
+    "store-boundary",
+    "write-discipline",
+    "mcp-package-allowlist"
+  ],
+  "schema1_gates": [
+    "hook-trust",
+    "registry-policy",
+    "audit-mode",
+    "source-allowlist"
+  ],
+  "scope_notes": [
+    "The routine per-query unreachable-registry warning of registry section 4 carries no code and is unchanged; only the install/update gate notice is a vector surface.",
+    "The mcp_package_allowlist_empty section 12 status-row rendering stays in vectors/environments-env-passthrough.json; this family pins the hardened error escalation and the status-check currency verdict.",
+    "Both status commands carry the same closed inventory: curator_status_rows and env_status_rows are the header row plus the thirteen status_gates in order. A schema-1 machine has no environments object: curator_status_rows is bounded to the header row plus the four schema1_gates, env_status_rows is null, and the effective set carries no environments keys."
+  ],
+  "execution_binding": {
+    "surface": "manager configuration resolution and read-only status: the effective profile, the effective values with provenance, the operation diagnostics and outcome, and the security_posture rows",
+    "spec_gate": "structural only: tools/validate.py validate_security_posture_vectors recomputes the profile, effective values, diagnostics, outcome, and rows of every case from the case inputs; it does not run a manager",
+    "downstream_owner_tasks": [
+      "TASK-260910-1sapuy"
+    ],
+    "downstream_note": "TASK-260910-1sapuy owns the install-time unreachable-registry notice; the effective defaults and the posture rows are owned by the manager posture work"
+  },
+  "cases": [
+    {
+      "name": "revision-A-default-permissive-status",
+      "rollout_revision": "A",
+      "machine": {
+        "schema_version": 2
+      },
+      "system": {},
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "status",
+        "mcp_declarations_present": false,
+        "unreachable_trusted_registries": [],
+        "artifacts_without_evidence": []
+      },
+      "expected": {
+        "profile": "permissive",
+        "profile_source": "profile",
+        "effective": {
+          "audit_mode": "advisory",
+          "audit_registry_policy": "advisory",
+          "allowed_sources": [],
+          "mcp_package_allowlist": [],
+          "passable_env_names": [],
+          "transitive_system_modules": "drop",
+          "require_source_signers": false
+        },
+        "sources": {
+          "audit_mode": "profile",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "profile",
+          "mcp_package_allowlist": "profile",
+          "passable_env_names": "profile",
+          "transitive_system_modules": "profile",
+          "require_source_signers": "profile"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [
+          {
+            "code": "security_posture_permissive",
+            "severity": "warning",
+            "count": 1,
+            "names_knob": true,
+            "migration_hint": true
+          }
+        ],
+        "outcome": "current",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "permissive",
+            "source": "profile"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "advisory",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "advisory",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 0,
+            "source": "profile"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "drop",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "false",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "permissive",
+            "source": "profile"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "advisory",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "advisory",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 0,
+            "source": "profile"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "drop",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "false",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ]
+      }
+    },
+    {
+      "name": "revision-B-default-hardened-flip-install",
+      "rollout_revision": "B",
+      "machine": {
+        "schema_version": 2,
+        "allowed_sources": [
+          "https://github.com/example/skills"
+        ],
+        "environments": {
+          "mcp_package_allowlist": [
+            "https://github.com/example/mcp"
+          ]
+        }
+      },
+      "system": {},
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "install",
+        "mcp_declarations_present": false,
+        "unreachable_trusted_registries": [],
+        "artifacts_without_evidence": []
+      },
+      "expected": {
+        "profile": "hardened",
+        "profile_source": "profile",
+        "effective": {
+          "audit_mode": "strict",
+          "audit_registry_policy": "strict",
+          "allowed_sources": [
+            "https://github.com/example/skills"
+          ],
+          "mcp_package_allowlist": [
+            "https://github.com/example/mcp"
+          ],
+          "passable_env_names": [],
+          "transitive_system_modules": "error",
+          "require_source_signers": true
+        },
+        "sources": {
+          "audit_mode": "profile",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "explicit",
+          "mcp_package_allowlist": "explicit",
+          "passable_env_names": "profile",
+          "transitive_system_modules": "profile",
+          "require_source_signers": "profile"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [],
+        "outcome": "proceeds",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "profile"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 1,
+            "source": "explicit"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "profile"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 1,
+            "source": "explicit"
+          }
+        ]
+      }
+    },
+    {
+      "name": "explicit-hardened-effective-defaults",
+      "rollout_revision": "A",
+      "machine": {
+        "schema_version": 2,
+        "security_posture": "hardened"
+      },
+      "system": {},
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "status",
+        "mcp_declarations_present": false,
+        "unreachable_trusted_registries": [],
+        "artifacts_without_evidence": []
+      },
+      "expected": {
+        "profile": "hardened",
+        "profile_source": "explicit",
+        "effective": {
+          "audit_mode": "strict",
+          "audit_registry_policy": "strict",
+          "allowed_sources": [],
+          "mcp_package_allowlist": [],
+          "passable_env_names": [],
+          "transitive_system_modules": "error",
+          "require_source_signers": true
+        },
+        "sources": {
+          "audit_mode": "profile",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "profile",
+          "mcp_package_allowlist": "profile",
+          "passable_env_names": "profile",
+          "transitive_system_modules": "profile",
+          "require_source_signers": "profile"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [],
+        "outcome": "current",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 0,
+            "source": "profile"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 0,
+            "source": "profile"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ]
+      }
+    },
+    {
+      "name": "explicit-knob-beats-profile-default",
+      "rollout_revision": "A",
+      "machine": {
+        "schema_version": 2,
+        "security_posture": "hardened",
+        "audit": {
+          "mode": "advisory"
+        },
+        "allowed_sources": [
+          "https://github.com/example/skills"
+        ],
+        "environments": {
+          "mcp_package_allowlist": [
+            "https://github.com/example/mcp"
+          ]
+        }
+      },
+      "system": {},
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "install",
+        "mcp_declarations_present": false,
+        "unreachable_trusted_registries": [],
+        "artifacts_without_evidence": []
+      },
+      "expected": {
+        "profile": "hardened",
+        "profile_source": "explicit",
+        "effective": {
+          "audit_mode": "advisory",
+          "audit_registry_policy": "strict",
+          "allowed_sources": [
+            "https://github.com/example/skills"
+          ],
+          "mcp_package_allowlist": [
+            "https://github.com/example/mcp"
+          ],
+          "passable_env_names": [],
+          "transitive_system_modules": "error",
+          "require_source_signers": true
+        },
+        "sources": {
+          "audit_mode": "explicit",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "explicit",
+          "mcp_package_allowlist": "explicit",
+          "passable_env_names": "profile",
+          "transitive_system_modules": "profile",
+          "require_source_signers": "profile"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [],
+        "outcome": "proceeds",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "advisory",
+            "source": "explicit"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 1,
+            "source": "explicit"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "advisory",
+            "source": "explicit"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 1,
+            "source": "explicit"
+          }
+        ]
+      }
+    },
+    {
+      "name": "locked-value-beats-explicit",
+      "rollout_revision": "A",
+      "machine": {
+        "schema_version": 2,
+        "audit": {
+          "mode": "advisory",
+          "registry_policy": "advisory"
+        }
+      },
+      "system": {
+        "locked": [
+          "audit"
+        ],
+        "audit": {
+          "mode": "strict",
+          "registry_policy": "strict"
+        }
+      },
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "status",
+        "mcp_declarations_present": false,
+        "unreachable_trusted_registries": [],
+        "artifacts_without_evidence": []
+      },
+      "expected": {
+        "profile": "permissive",
+        "profile_source": "profile",
+        "effective": {
+          "audit_mode": "strict",
+          "audit_registry_policy": "strict",
+          "allowed_sources": [],
+          "mcp_package_allowlist": [],
+          "passable_env_names": [],
+          "transitive_system_modules": "drop",
+          "require_source_signers": false
+        },
+        "sources": {
+          "audit_mode": "lock",
+          "audit_registry_policy": "lock",
+          "allowed_sources": "profile",
+          "mcp_package_allowlist": "profile",
+          "passable_env_names": "profile",
+          "transitive_system_modules": "profile",
+          "require_source_signers": "profile"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [
+          {
+            "code": "security_posture_permissive",
+            "severity": "warning",
+            "count": 1,
+            "names_knob": true,
+            "migration_hint": true
+          }
+        ],
+        "outcome": "current",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "permissive",
+            "source": "profile"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "lock"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "lock"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 0,
+            "source": "profile"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "drop",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "false",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "permissive",
+            "source": "profile"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "lock"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "lock"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 0,
+            "source": "profile"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "drop",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "false",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ]
+      }
+    },
+    {
+      "name": "locked-posture-beats-explicit-permissive",
+      "rollout_revision": "A",
+      "machine": {
+        "schema_version": 2,
+        "security_posture": "permissive"
+      },
+      "system": {
+        "locked": [
+          "security_posture"
+        ],
+        "security_posture": "hardened"
+      },
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "status",
+        "mcp_declarations_present": false,
+        "unreachable_trusted_registries": [],
+        "artifacts_without_evidence": []
+      },
+      "expected": {
+        "profile": "hardened",
+        "profile_source": "lock",
+        "effective": {
+          "audit_mode": "strict",
+          "audit_registry_policy": "strict",
+          "allowed_sources": [],
+          "mcp_package_allowlist": [],
+          "passable_env_names": [],
+          "transitive_system_modules": "error",
+          "require_source_signers": true
+        },
+        "sources": {
+          "audit_mode": "profile",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "profile",
+          "mcp_package_allowlist": "profile",
+          "passable_env_names": "profile",
+          "transitive_system_modules": "profile",
+          "require_source_signers": "profile"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [],
+        "outcome": "current",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "lock"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 0,
+            "source": "profile"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "lock"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 0,
+            "source": "profile"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ]
+      }
+    },
+    {
+      "name": "refusal-source-allowlist-empty-explicit",
+      "rollout_revision": "A",
+      "machine": {
+        "schema_version": 2,
+        "security_posture": "hardened",
+        "allowed_sources": []
+      },
+      "system": {},
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "install",
+        "mcp_declarations_present": false,
+        "unreachable_trusted_registries": [],
+        "artifacts_without_evidence": []
+      },
+      "expected": {
+        "profile": "hardened",
+        "profile_source": "explicit",
+        "effective": {
+          "audit_mode": "strict",
+          "audit_registry_policy": "strict",
+          "allowed_sources": [],
+          "mcp_package_allowlist": [],
+          "passable_env_names": [],
+          "transitive_system_modules": "error",
+          "require_source_signers": true
+        },
+        "sources": {
+          "audit_mode": "profile",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "explicit",
+          "mcp_package_allowlist": "profile",
+          "passable_env_names": "profile",
+          "transitive_system_modules": "profile",
+          "require_source_signers": "profile"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [
+          {
+            "code": "source_allowlist_empty",
+            "severity": "error"
+          }
+        ],
+        "outcome": "refused",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 0,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 0,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ]
+      }
+    },
+    {
+      "name": "refusal-mcp-allowlist-empty-with-declarations",
+      "rollout_revision": "B",
+      "machine": {
+        "schema_version": 2,
+        "allowed_sources": [
+          "https://github.com/example/skills"
+        ]
+      },
+      "system": {},
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "profile-install",
+        "mcp_declarations_present": true,
+        "unreachable_trusted_registries": [],
+        "artifacts_without_evidence": []
+      },
+      "expected": {
+        "profile": "hardened",
+        "profile_source": "profile",
+        "effective": {
+          "audit_mode": "strict",
+          "audit_registry_policy": "strict",
+          "allowed_sources": [
+            "https://github.com/example/skills"
+          ],
+          "mcp_package_allowlist": [],
+          "passable_env_names": [],
+          "transitive_system_modules": "error",
+          "require_source_signers": true
+        },
+        "sources": {
+          "audit_mode": "profile",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "explicit",
+          "mcp_package_allowlist": "profile",
+          "passable_env_names": "profile",
+          "transitive_system_modules": "profile",
+          "require_source_signers": "profile"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [
+          {
+            "code": "mcp_package_allowlist_empty",
+            "severity": "error"
+          }
+        ],
+        "outcome": "refused",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "profile"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "profile"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ]
+      }
+    },
+    {
+      "name": "hardened-empty-mcp-allowlist-without-declarations-warns",
+      "rollout_revision": "B",
+      "machine": {
+        "schema_version": 2,
+        "security_posture": "hardened",
+        "allowed_sources": [
+          "https://github.com/example/skills"
+        ]
+      },
+      "system": {},
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "profile-install",
+        "mcp_declarations_present": false,
+        "unreachable_trusted_registries": [],
+        "artifacts_without_evidence": []
+      },
+      "expected": {
+        "profile": "hardened",
+        "profile_source": "explicit",
+        "effective": {
+          "audit_mode": "strict",
+          "audit_registry_policy": "strict",
+          "allowed_sources": [
+            "https://github.com/example/skills"
+          ],
+          "mcp_package_allowlist": [],
+          "passable_env_names": [],
+          "transitive_system_modules": "error",
+          "require_source_signers": true
+        },
+        "sources": {
+          "audit_mode": "profile",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "explicit",
+          "mcp_package_allowlist": "profile",
+          "passable_env_names": "profile",
+          "transitive_system_modules": "profile",
+          "require_source_signers": "profile"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [
+          {
+            "code": "mcp_package_allowlist_empty",
+            "severity": "warning"
+          }
+        ],
+        "outcome": "proceeds",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ]
+      }
+    },
+    {
+      "name": "refusal-passable-env-null",
+      "rollout_revision": "A",
+      "machine": {
+        "schema_version": 2,
+        "security_posture": "hardened",
+        "allowed_sources": [
+          "https://github.com/example/skills"
+        ],
+        "environments": {
+          "mcp_package_allowlist": [
+            "https://github.com/example/mcp"
+          ],
+          "passable_env_names": null
+        }
+      },
+      "system": {},
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "profile-install",
+        "mcp_declarations_present": true,
+        "unreachable_trusted_registries": [],
+        "artifacts_without_evidence": []
+      },
+      "expected": {
+        "profile": "hardened",
+        "profile_source": "explicit",
+        "effective": {
+          "audit_mode": "strict",
+          "audit_registry_policy": "strict",
+          "allowed_sources": [
+            "https://github.com/example/skills"
+          ],
+          "mcp_package_allowlist": [
+            "https://github.com/example/mcp"
+          ],
+          "passable_env_names": null,
+          "transitive_system_modules": "error",
+          "require_source_signers": true
+        },
+        "sources": {
+          "audit_mode": "profile",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "explicit",
+          "mcp_package_allowlist": "explicit",
+          "passable_env_names": "explicit",
+          "transitive_system_modules": "profile",
+          "require_source_signers": "profile"
+        },
+        "passable_env_null_explicit": true,
+        "diagnostics": [
+          {
+            "code": "passable_env_names_unbounded_refused",
+            "severity": "error",
+            "names_knob": true
+          }
+        ],
+        "outcome": "refused",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 1,
+            "source": "explicit"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 1,
+            "source": "explicit"
+          }
+        ]
+      }
+    },
+    {
+      "name": "revision-A-permissive-warning-once-install",
+      "rollout_revision": "A",
+      "machine": {
+        "schema_version": 2
+      },
+      "system": {},
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "install",
+        "mcp_declarations_present": false,
+        "unreachable_trusted_registries": [],
+        "artifacts_without_evidence": []
+      },
+      "expected": {
+        "profile": "permissive",
+        "profile_source": "profile",
+        "effective": {
+          "audit_mode": "advisory",
+          "audit_registry_policy": "advisory",
+          "allowed_sources": [],
+          "mcp_package_allowlist": [],
+          "passable_env_names": [],
+          "transitive_system_modules": "drop",
+          "require_source_signers": false
+        },
+        "sources": {
+          "audit_mode": "profile",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "profile",
+          "mcp_package_allowlist": "profile",
+          "passable_env_names": "profile",
+          "transitive_system_modules": "profile",
+          "require_source_signers": "profile"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [
+          {
+            "code": "security_posture_permissive",
+            "severity": "warning",
+            "count": 1,
+            "names_knob": true,
+            "migration_hint": true
+          }
+        ],
+        "outcome": "proceeds",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "permissive",
+            "source": "profile"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "advisory",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "advisory",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 0,
+            "source": "profile"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "drop",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "false",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "permissive",
+            "source": "profile"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "advisory",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "advisory",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 0,
+            "source": "profile"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "drop",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "false",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ]
+      }
+    },
+    {
+      "name": "unreachable-registry-permissive-warns",
+      "rollout_revision": "A",
+      "machine": {
+        "schema_version": 2,
+        "allowed_sources": [
+          "https://github.com/example/skills"
+        ]
+      },
+      "system": {},
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "install",
+        "mcp_declarations_present": false,
+        "unreachable_trusted_registries": [
+          "https://registry.example"
+        ],
+        "artifacts_without_evidence": [
+          "golden-skill@0123456789abcdef0123456789abcdef01234567"
+        ]
+      },
+      "expected": {
+        "profile": "permissive",
+        "profile_source": "profile",
+        "effective": {
+          "audit_mode": "advisory",
+          "audit_registry_policy": "advisory",
+          "allowed_sources": [
+            "https://github.com/example/skills"
+          ],
+          "mcp_package_allowlist": [],
+          "passable_env_names": [],
+          "transitive_system_modules": "drop",
+          "require_source_signers": false
+        },
+        "sources": {
+          "audit_mode": "profile",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "explicit",
+          "mcp_package_allowlist": "profile",
+          "passable_env_names": "profile",
+          "transitive_system_modules": "profile",
+          "require_source_signers": "profile"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [
+          {
+            "code": "security_posture_permissive",
+            "severity": "warning",
+            "count": 1,
+            "names_knob": true,
+            "migration_hint": true
+          },
+          {
+            "code": "registry_unreachable_during_install",
+            "severity": "warning",
+            "registries": [
+              "https://registry.example"
+            ],
+            "artifacts": [
+              "golden-skill@0123456789abcdef0123456789abcdef01234567"
+            ]
+          }
+        ],
+        "outcome": "proceeds",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "permissive",
+            "source": "profile"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "advisory",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "advisory",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "drop",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "false",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "permissive",
+            "source": "profile"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "advisory",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "advisory",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "drop",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "false",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ]
+      }
+    },
+    {
+      "name": "unreachable-registry-hardened-refuses",
+      "rollout_revision": "A",
+      "machine": {
+        "schema_version": 2,
+        "security_posture": "hardened",
+        "allowed_sources": [
+          "https://github.com/example/skills"
+        ]
+      },
+      "system": {},
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "install",
+        "mcp_declarations_present": false,
+        "unreachable_trusted_registries": [
+          "https://registry.example"
+        ],
+        "artifacts_without_evidence": [
+          "golden-skill@0123456789abcdef0123456789abcdef01234567"
+        ]
+      },
+      "expected": {
+        "profile": "hardened",
+        "profile_source": "explicit",
+        "effective": {
+          "audit_mode": "strict",
+          "audit_registry_policy": "strict",
+          "allowed_sources": [
+            "https://github.com/example/skills"
+          ],
+          "mcp_package_allowlist": [],
+          "passable_env_names": [],
+          "transitive_system_modules": "error",
+          "require_source_signers": true
+        },
+        "sources": {
+          "audit_mode": "profile",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "explicit",
+          "mcp_package_allowlist": "profile",
+          "passable_env_names": "profile",
+          "transitive_system_modules": "profile",
+          "require_source_signers": "profile"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [
+          {
+            "code": "registry_unreachable_during_install",
+            "severity": "error",
+            "registries": [
+              "https://registry.example"
+            ],
+            "artifacts": [
+              "golden-skill@0123456789abcdef0123456789abcdef01234567"
+            ]
+          }
+        ],
+        "outcome": "refused",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ]
+      }
+    },
+    {
+      "name": "schema1-machine-is-permissive",
+      "rollout_revision": "B",
+      "machine": {
+        "schema_version": 1,
+        "audit": {
+          "mode": "advisory"
+        }
+      },
+      "system": {},
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "install",
+        "mcp_declarations_present": false,
+        "unreachable_trusted_registries": [],
+        "artifacts_without_evidence": []
+      },
+      "expected": {
+        "profile": "permissive",
+        "profile_source": "profile",
+        "effective": {
+          "audit_mode": "advisory",
+          "audit_registry_policy": "advisory",
+          "allowed_sources": []
+        },
+        "sources": {
+          "audit_mode": "explicit",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "profile"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [
+          {
+            "code": "security_posture_permissive",
+            "severity": "warning",
+            "count": 1,
+            "names_knob": true,
+            "migration_hint": true
+          }
+        ],
+        "outcome": "proceeds",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "permissive",
+            "source": "profile"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "advisory",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "advisory",
+            "source": "explicit"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ],
+        "env_status_rows": null
+      }
+    },
+    {
+      "name": "hardened-contradiction-status-check-non-current",
+      "rollout_revision": "B",
+      "machine": {
+        "schema_version": 2
+      },
+      "system": {},
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "status-check",
+        "mcp_declarations_present": true,
+        "unreachable_trusted_registries": [],
+        "artifacts_without_evidence": []
+      },
+      "expected": {
+        "profile": "hardened",
+        "profile_source": "profile",
+        "effective": {
+          "audit_mode": "strict",
+          "audit_registry_policy": "strict",
+          "allowed_sources": [],
+          "mcp_package_allowlist": [],
+          "passable_env_names": [],
+          "transitive_system_modules": "error",
+          "require_source_signers": true
+        },
+        "sources": {
+          "audit_mode": "profile",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "profile",
+          "mcp_package_allowlist": "profile",
+          "passable_env_names": "profile",
+          "transitive_system_modules": "profile",
+          "require_source_signers": "profile"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [],
+        "outcome": "non-current",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "profile"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 0,
+            "source": "profile"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "profile"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 0,
+            "source": "profile"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 0,
+            "source": "profile"
+          }
+        ]
+      }
+    },
+    {
+      "name": "hardened-absent-passthrough-follows-s4-warn",
+      "rollout_revision": "A",
+      "machine": {
+        "schema_version": 2,
+        "security_posture": "hardened",
+        "allowed_sources": [
+          "https://github.com/example/skills"
+        ],
+        "environments": {
+          "mcp_package_allowlist": [
+            "https://github.com/example/mcp"
+          ]
+        }
+      },
+      "system": {},
+      "shipped_revisions": {
+        "hook_trust": "A-warning",
+        "env_passthrough": "s4-warn",
+        "provider_trust_roots": "revision-A",
+        "update_confirmation": "A-warning",
+        "codex_seed": "A"
+      },
+      "operation": {
+        "kind": "profile-install",
+        "mcp_declarations_present": true,
+        "unreachable_trusted_registries": [],
+        "artifacts_without_evidence": []
+      },
+      "expected": {
+        "profile": "hardened",
+        "profile_source": "explicit",
+        "effective": {
+          "audit_mode": "strict",
+          "audit_registry_policy": "strict",
+          "allowed_sources": [
+            "https://github.com/example/skills"
+          ],
+          "mcp_package_allowlist": [
+            "https://github.com/example/mcp"
+          ],
+          "passable_env_names": null,
+          "transitive_system_modules": "error",
+          "require_source_signers": true
+        },
+        "sources": {
+          "audit_mode": "profile",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "explicit",
+          "mcp_package_allowlist": "explicit",
+          "passable_env_names": "profile",
+          "transitive_system_modules": "profile",
+          "require_source_signers": "profile"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [],
+        "outcome": "proceeds",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-warn",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 1,
+            "source": "explicit"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 1,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-warn",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "profile"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-A",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "profile"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "A-warning",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "A",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 1,
+            "source": "explicit"
+          }
+        ]
+      }
+    },
+    {
+      "name": "posture-rows-flipped-revisions",
+      "rollout_revision": "B",
+      "machine": {
+        "schema_version": 2,
+        "security_posture": "hardened",
+        "audit": {
+          "mode": "strict"
+        },
+        "allowed_sources": [
+          "https://github.com/example/a",
+          "https://github.com/example/b"
+        ],
+        "environments": {
+          "mcp_package_allowlist": [
+            "https://github.com/example/mcp"
+          ],
+          "transitive_system_modules": "error",
+          "require_source_signers": true
+        }
+      },
+      "system": {},
+      "shipped_revisions": {
+        "hook_trust": "B-enforcing",
+        "env_passthrough": "s4-enforce",
+        "provider_trust_roots": "revision-B",
+        "update_confirmation": "B-flip",
+        "codex_seed": "B"
+      },
+      "operation": {
+        "kind": "status",
+        "mcp_declarations_present": true,
+        "unreachable_trusted_registries": [],
+        "artifacts_without_evidence": []
+      },
+      "expected": {
+        "profile": "hardened",
+        "profile_source": "explicit",
+        "effective": {
+          "audit_mode": "strict",
+          "audit_registry_policy": "strict",
+          "allowed_sources": [
+            "https://github.com/example/a",
+            "https://github.com/example/b"
+          ],
+          "mcp_package_allowlist": [
+            "https://github.com/example/mcp"
+          ],
+          "passable_env_names": [],
+          "transitive_system_modules": "error",
+          "require_source_signers": true
+        },
+        "sources": {
+          "audit_mode": "explicit",
+          "audit_registry_policy": "profile",
+          "allowed_sources": "explicit",
+          "mcp_package_allowlist": "explicit",
+          "passable_env_names": "profile",
+          "transitive_system_modules": "explicit",
+          "require_source_signers": "explicit"
+        },
+        "passable_env_null_explicit": false,
+        "diagnostics": [],
+        "outcome": "current",
+        "curator_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "B-enforcing",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "explicit"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 2,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "explicit"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-B",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "explicit"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "B-flip",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "B",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 1,
+            "source": "explicit"
+          }
+        ],
+        "env_status_rows": [
+          {
+            "gate": "security_posture",
+            "value": "hardened",
+            "source": "explicit"
+          },
+          {
+            "gate": "hook-trust",
+            "value": "B-enforcing",
+            "source": "shipped"
+          },
+          {
+            "gate": "registry-policy",
+            "value": "strict",
+            "source": "profile"
+          },
+          {
+            "gate": "audit-mode",
+            "value": "strict",
+            "source": "explicit"
+          },
+          {
+            "gate": "source-allowlist",
+            "value": 2,
+            "source": "explicit"
+          },
+          {
+            "gate": "env-passthrough",
+            "value": "s4-enforce",
+            "source": "shipped"
+          },
+          {
+            "gate": "transitive-system-modules",
+            "value": "error",
+            "source": "explicit"
+          },
+          {
+            "gate": "provider-trust-roots",
+            "value": "revision-B",
+            "source": "shipped"
+          },
+          {
+            "gate": "source-signers",
+            "value": "true",
+            "source": "explicit"
+          },
+          {
+            "gate": "update-confirmation",
+            "value": "B-flip",
+            "source": "shipped"
+          },
+          {
+            "gate": "codex-seed",
+            "value": "B",
+            "source": "shipped"
+          },
+          {
+            "gate": "store-boundary",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "write-discipline",
+            "value": "enforced",
+            "source": "shipped"
+          },
+          {
+            "gate": "mcp-package-allowlist",
+            "value": 1,
+            "source": "explicit"
+          }
+        ]
+      }
+    }
+  ]
+}

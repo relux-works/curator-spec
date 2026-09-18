@@ -26,7 +26,7 @@ func TestManagerConfigV2IsSchemaOnePlusOneClosedEnvironmentsObject(t *testing.T)
 	assertPropertySet(t, "manager config v2", schema, []string{
 		"schema_version", "skills_root", "default_agents", "preferred_locale", "adapter_mode",
 		"worktree_alias_pattern", "projects", "allowed_sources", "audit", "audit_registries",
-		"disable_builtin_registries", "environments",
+		"disable_builtin_registries", "security_posture", "environments",
 	})
 	// `env` is absent from this list only because environments §12.1 spells the
 	// `shadow_acknowledged` item as `{ env, path }` — an environment identifier,

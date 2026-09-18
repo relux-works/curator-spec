@@ -135,6 +135,30 @@ leaves an artifact unknown, strict policy therefore blocks it. Protocol 1.0 has
 no per-registry availability quorum. An attestation records registry name,
 status, and key id but does not copy authority to the marker.
 
+Under `advisory` registry policy revocation is network-dependent: an
+unreachable trusted registry can hide a revocation — the artifact resolves
+unknown, and advisory installs proceed — for up to the offline grace of
+section 8, which keeps a cached pre-revocation response stale-valid. Deny-wins
+requires seeing the revocation; hiding it is sufficient. This composed
+residual is stated, not changed: availability under advisory policy costs
+revocation assurance. The `hardened` machine posture (manager §7.1) removes
+the residual with strict registry policy at the cost of availability: an
+unreachable trusted registry then blocks the operation instead.
+
+During install and update a manager MUST surface every unreachable trusted
+registry as a prominent gate notice, naming each artifact resolved without
+registry evidence:
+
+| Condition | Diagnostic |
+|---|---|
+| trusted registry unreachable during install/update; names the registry and every artifact resolved without registry evidence (warning under `permissive`, error under `hardened`) | `registry_unreachable_during_install` |
+
+The named §4 diagnostics are closed to exactly this code. The routine
+per-query warning above ("Unreachable registries warn") stays as it is:
+it carries no code, fires per query, and is unchanged by the gate notice,
+which fires once per operation at the install/update gate and, under
+`hardened`, refuses the operation.
+
 ## 5. Snapshots
 
 Snapshots conform to `registry-snapshot-v1.schema.json`. Every field is
@@ -326,6 +350,10 @@ hour) is served without network. On refresh failure a
 stale entry MAY be used within the offline grace period (default seven days)
 and MUST be marked stale in diagnostics. Past grace, the registry is
 unreachable. Invalid signatures and schema failures are never cached as valid.
+The grace widens the advisory-policy residual that section 4 states: a
+cached pre-revocation response stays stale-valid for up to the grace, so an
+attacker who suppresses delivery of the revocation keeps the artifact
+resolving unknown — and advisory installs proceeding — for that long.
 
 Cache writes are atomic. Cache keys include every query parameter and page
 cursor. Implementations MUST cap one response body at 16 MiB and total records

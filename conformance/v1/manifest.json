@@ -2982,7 +2982,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:7775c1775b46ac48c7f8f670f326ead31e1c965e8fdbd3ef07d4421f69cdff44"
+      "sha256": "sha256:c7f40d961d21dd31c088ce48d63175b49ec1de075e24d3549febdec67774054c"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -3717,6 +3717,14 @@
       "sha256": "sha256:4422ed78bc1fd891d50fe9c6f648167eaf7b4ec61a246587567c8165e448caae"
     },
     {
+      "path": "schema-cases/manager-config-v2/invalid-security-posture-type.json",
+      "sha256": "sha256:be1201bf469f64f280c6e05bff3a23b114cc501eb4b48d2807d448154976accd"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/invalid-security-posture-value.json",
+      "sha256": "sha256:2c32aabebc3549ffe4acae1eb108f0c1e67cf51a375b23d5d7f0d503698f6546"
+    },
+    {
       "path": "schema-cases/manager-config-v2/invalid-shadow-acknowledged-missing-path.json",
       "sha256": "sha256:d6f4a31695d8bbbe31d72d05bc5fdc623e3433044deeb5b3e63937bb099633c2"
     },
@@ -3919,6 +3927,14 @@
     {
       "path": "schema-cases/manager-config-v2/valid-require-source-signers.json",
       "sha256": "sha256:55316013874fe188483e08bb336bc77e218a763d65c1c6cbbd5e3fdcdb46eb7e"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/valid-security-posture-hardened.json",
+      "sha256": "sha256:98e0a6fb53d770f66032f45f667356562bdcce48fc536d78b5347e7a26e99191"
+    },
+    {
+      "path": "schema-cases/manager-config-v2/valid-security-posture-permissive.json",
+      "sha256": "sha256:5a0ece626802e86371e5bd76834393b2cb8a588fc51d9b24d5a936e94adb23eb"
     },
     {
       "path": "schema-cases/manager-config-v2/valid-source-signers-empty-list.json",
@@ -4237,6 +4253,14 @@
       "sha256": "sha256:e5392c3cfa70a290e176733363c6abec81c7e3679c8d5a4ffecb19efa70dcc2b"
     },
     {
+      "path": "schema-cases/system-config-v2/invalid-security-posture-permissive-direction.json",
+      "sha256": "sha256:c62b620aeefa9e7cc8a1837678684e7445fdd035404e9892e8e6884e8472443e"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-security-posture-type.json",
+      "sha256": "sha256:dd68ab66fc99ffcc0ffb1c51efea55dd7c2a4f9a7ff21502c492db2c6094627a"
+    },
+    {
       "path": "schema-cases/system-config-v2/invalid-source-signers-fingerprint-grammar.json",
       "sha256": "sha256:acdca8640728d531b7ba3c0c3f43b6a9a3d6acab6054cea4a1c2dc1025d52272"
     },
@@ -4283,6 +4307,10 @@
     {
       "path": "schema-cases/system-config-v2/valid-schema-1-locked-set.json",
       "sha256": "sha256:0d7c06e3af2a70c3de4f10b6ccb68d29a337f33e0b2baf51824a317b01f96d2d"
+    },
+    {
+      "path": "schema-cases/system-config-v2/valid-security-posture-hardened-locked.json",
+      "sha256": "sha256:ee3cb91433b682e2f8bec3d1cb1e6c492732d277c3b5ccbe4cb6f47944c23ea0"
     },
     {
       "path": "schema-cases/system-config-v2/valid.json",
@@ -4415,6 +4443,10 @@
     {
       "path": "vectors/script-host-execution-policy.json",
       "sha256": "sha256:35a58adc2df68bca8c89a042cbd617d76121a58601237de19013a62c5976617d"
+    },
+    {
+      "path": "vectors/security-posture.json",
+      "sha256": "sha256:708a9da9dde0ba05300ef3e5ad3087e2ee81add0338b7a5e9c59e085759cbcbd"
     },
     {
       "path": "vectors/shell-hook-trust.json",

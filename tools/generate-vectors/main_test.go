@@ -2476,7 +2476,7 @@ func TestSystemConfigV2IsSchemaOnePlusTheLockableEnvironmentsKeys(t *testing.T) 
 	assertPropertySet(t, "system config v2", system, []string{
 		"schema_version", "locked", "skills_root", "default_agents", "preferred_locale", "adapter_mode",
 		"worktree_alias_pattern", "projects", "allowed_sources", "disable_builtin_registries", "audit",
-		"audit_registries", "environments",
+		"audit_registries", "security_posture", "environments",
 	})
 	if got := system["properties"].(map[string]any)["schema_version"].(map[string]any); len(got) != 1 || fmt.Sprint(got["const"]) != "2" {
 		t.Fatalf("system config v2 schema_version = %#v, want const 2", got)
@@ -2487,7 +2487,7 @@ func TestSystemConfigV2IsSchemaOnePlusTheLockableEnvironmentsKeys(t *testing.T) 
 		t.Fatal("system config v2 environments object is not closed")
 	}
 	locked := system["properties"].(map[string]any)["locked"].(map[string]any)["items"].(map[string]any)["enum"].([]any)
-	want := []any{"audit_registries", "disable_builtin_registries", "allowed_sources", "audit"}
+	want := []any{"audit_registries", "disable_builtin_registries", "allowed_sources", "audit", "security_posture"}
 	for _, key := range systemConfigV2LockableKeys {
 		want = append(want, "environments."+key)
 	}
@@ -2516,6 +2516,9 @@ func TestSystemConfigV2IsSchemaOnePlusTheLockableEnvironmentsKeys(t *testing.T) 
 	}
 	if got := environments["properties"].(map[string]any)["require_source_signers"]; !reflect.DeepEqual(got, map[string]any{"enum": []any{true}}) {
 		t.Fatalf("system config v2 require_source_signers must admit true alone, got %#v", got)
+	}
+	if got := system["properties"].(map[string]any)["security_posture"]; !reflect.DeepEqual(got, map[string]any{"enum": []any{"hardened"}}) {
+		t.Fatalf("system config v2 security_posture must admit hardened alone, got %#v", got)
 	}
 	valid := validSystemConfigV2()
 	for _, key := range systemConfigV2LockableKeys {
