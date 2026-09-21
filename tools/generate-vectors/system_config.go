@@ -6,13 +6,14 @@ var systemConfigV2LockableKeys = []string{
 	"overlays_allowed", "precedence", "mcp_package_allowlist",
 	"passable_env_names", "require_current_profile", "transitive_system_modules",
 	"isolation", "provider_directories", "source_signers", "require_source_signers",
+	"permissions",
 }
 
 // systemConfigV2EveryKey sets every §12.2 lockable knob to a non-default value
 // so that the positive case exercises every grammar the schema encodes.
 // `isolation` is `shared` only, `transitive_system_modules` is `error`
-// only, and `require_source_signers` is `true` only: §12.2 makes each
-// lockable in that direction alone.
+// only, `require_source_signers` is `true` only, and `permissions` is
+// `native` only: §12.2 makes each lockable in that direction alone.
 func systemConfigV2EveryKey() map[string]any {
 	return map[string]any{
 		"overlays_allowed":          false,
@@ -22,6 +23,7 @@ func systemConfigV2EveryKey() map[string]any {
 		"require_current_profile":   "companyA",
 		"transitive_system_modules": "error",
 		"isolation":                 map[string]any{"companyA": map[string]any{"claude_code": "shared", "codex_cli": "shared"}},
+		"permissions":               map[string]any{"companyA": "native"},
 		"provider_directories":      []any{"/usr/local/lib/curator/providers"},
 		"source_signers": map[string]any{
 			"github.com/example/context": []any{
@@ -101,6 +103,9 @@ func systemConfigV2SchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-isolation-isolated-direction", instance: withKnob("isolation", map[string]any{"companyA": map[string]any{"claude_code": "isolated"}})},
 		{name: "invalid-isolation-value", instance: withKnob("isolation", map[string]any{"companyA": map[string]any{"codex_cli": "private"}})},
 		{name: "invalid-isolation-profile-grammar", instance: withKnob("isolation", map[string]any{"Company A": map[string]any{"codex_cli": "shared"}})},
+		{name: "invalid-permissions-yolo-direction", instance: withKnob("permissions", map[string]any{"companyA": "yolo"})},
+		{name: "invalid-permissions-value", instance: withKnob("permissions", map[string]any{"companyA": "standard"})},
+		{name: "invalid-permissions-profile-grammar", instance: withKnob("permissions", map[string]any{"Company A": "native"})},
 		{name: "invalid-provider-directories-relative", instance: withKnob("provider_directories", []any{"rel/providers"})},
 		{name: "invalid-provider-directories-duplicate", instance: withKnob("provider_directories", []any{"/opt/curator/bin", "/opt/curator/bin"})},
 		{name: "invalid-source-signers-unknown-type", instance: withKnob("source_signers", map[string]any{"github.com/example/context": []any{map[string]any{"type": "x509", "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK"}}})},

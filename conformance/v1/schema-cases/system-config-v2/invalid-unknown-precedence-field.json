@@ -18,6 +18,9 @@
       "FIGMA_API_KEY",
       "GITHUB_TOKEN"
     ],
+    "permissions": {
+      "companyA": "native"
+    },
     "precedence": {
       "order": "last",
       "winner": "higher-weight"
@@ -49,7 +52,8 @@
     "environments.isolation",
     "environments.provider_directories",
     "environments.source_signers",
-    "environments.require_source_signers"
+    "environments.require_source_signers",
+    "environments.permissions"
   ],
   "preferred_locale": "en",
   "schema_version": 2

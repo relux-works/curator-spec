@@ -531,6 +531,19 @@
           },
           "default": {}
         },
+        "permissions": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "additionalProperties": {
+            "enum": [
+              "native",
+              "yolo"
+            ]
+          },
+          "default": {}
+        },
         "xdg_seed_allowlist": {
           "type": "array",
           "items": {

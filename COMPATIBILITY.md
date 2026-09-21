@@ -204,11 +204,16 @@ than ignoring `environments`, and a schema-2 reader rejects `schema_version`
 `system-config-v1` plus one closed `environments` object whose members are
 exactly the `protocol/environments.md` section 12.2 lockable keys
 (`overlays_allowed`, `precedence`, `mcp_package_allowlist`,
-`passable_env_names`, `require_current_profile`, `isolation`), each with its
-section 12.1 grammar taken from `manager-config-v2` by reference, and a
-`locked` set that may additionally name each of them as `environments.<key>`.
-`isolation` admits `shared` alone, the one direction section 12.2 makes
-lockable. Every schema-1 member keeps its schema-1 node by reference, and
+`passable_env_names`, `require_current_profile`,
+`transitive_system_modules`, `isolation`, `provider_directories`,
+`source_signers`, `require_source_signers`, `permissions`), each with its
+section 12.1 grammar taken from `manager-config-v2` by reference except
+the four one-direction knobs, and a `locked` set that may additionally
+name each of them as `environments.<key>`. `isolation` admits `shared`
+alone, `transitive_system_modules` admits `error` alone,
+`require_source_signers` admits `true` alone, and `permissions` admits
+`native` alone — the one direction section 12.2 makes lockable in each
+case. Every schema-1 member keeps its schema-1 node by reference, and
 `system-config-v1` stays byte-frozen and valid: a schema-1 system file locks
 nothing under `environments`, and a manager that does not implement the
 environments capability keeps reading schema 1 unchanged. A schema-1 reader

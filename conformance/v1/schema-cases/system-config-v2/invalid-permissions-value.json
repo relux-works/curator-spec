@@ -19,7 +19,7 @@
       "GITHUB_TOKEN"
     ],
     "permissions": {
-      "companyA": "native"
+      "companyA": "standard"
     },
     "precedence": {
       "placement": "winner-first",
@@ -38,7 +38,7 @@
         }
       ]
     },
-    "transitive_system_modules": "drop"
+    "transitive_system_modules": "error"
   },
   "locked": [
     "audit",

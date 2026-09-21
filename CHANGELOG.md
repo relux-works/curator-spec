@@ -7,6 +7,30 @@ Versioning for the complete specification set.
 
 ### Added
 
+- STORY-260921-3z0fgr: adopt decisions 0017 (environment credential
+  modes) and 0018 (`curator run` permission interface), both proposed
+  2026-09-16 and adopted 2026-09-21 with every open question resolved
+  to a recorded choice. 0017 keeps
+  `isolation.<profile>.<env-id>` as the canonical knob (described as
+  credential-store sharing, not a sandbox), adopts the registry-owned
+  per-environment × GOOS strategies with the Pi native root corrected
+  to `~/.pi/agent`, answers the macOS `claude_code` shared-store
+  residual negatively (`shared` stays refused until the
+  disposable-account experiment passes), and requires fix-first
+  repairs plus an explicit inspect → plan → apply migration under the
+  manager lock, never silent inside `resolve --repair` (new
+  `environment_credential_conflict` and
+  `environment_credential_unsupported` diagnostics; the manager never
+  copies credential material). 0018 adopts the config-driven
+  permission mode with flag override and default `yolo` for
+  interactive launches (`native` for headless, CI, and tracked
+  silence): new `permissions.<profile>` knob (`native|yolo`, absent
+  is a silent level), lockable only toward `native`, with legacy
+  policy/lock transport failing closed; the launcher SPEC,
+  implementation, fragment transport members, and `ax` capability are
+  follow-up leaves. Normative text, `manager-config-v2`,
+  `system-config-v2`, vectors, schema cases, and gates extended in
+  the same revision; frozen v1 protocol schemas untouched.
 - STORY-260916-12lbww: one closed per-manager, per-platform
   dotfile-manager state table for the section 9.5 onboarding heuristic
   (environments §9.5/§13), replacing the by-example POSIX-only list: one

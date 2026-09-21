@@ -5091,6 +5091,11 @@ class ManagerConfigVectorTests(unittest.TestCase):
         with self.assertRaisesRegex(validate.ValidationFailure, "enum for transitive_system_modules is .*'quarantine'"):
             self.run_gate()
 
+    def test_widened_permissions_enum_fails(self) -> None:
+        self.schema["$defs"]["environments"]["properties"]["permissions"]["additionalProperties"]["enum"].append("standard")
+        with self.assertRaisesRegex(validate.ValidationFailure, "enum for permissions.<profile> is .*'standard'"):
+            self.run_gate()
+
     def test_transitive_default_drifting_from_the_table_fails(self) -> None:
         self.schema["$defs"]["environments"]["properties"]["transitive_system_modules"]["default"] = "error"
         with self.assertRaisesRegex(validate.ValidationFailure, "default for transitive_system_modules is 'error'"):
@@ -5162,6 +5167,7 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
     ISOLATION_ENUM = validate.SYSTEM_CONFIG_ISOLATION_ENUM_PATH
     TRANSITIVE_ENUM = validate.SYSTEM_CONFIG_TRANSITIVE_ENUM_PATH
     REQUIRE_SIGNERS_ENUM = validate.SYSTEM_CONFIG_REQUIRE_SIGNERS_ENUM_PATH
+    PERMISSIONS_ENUM = validate.SYSTEM_CONFIG_PERMISSIONS_ENUM_PATH
 
     def setUp(self) -> None:
         _, paths = validate.schema_registry()
@@ -5186,12 +5192,12 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
     def test_published_inputs_pass(self) -> None:
         self.run_gate()
 
-    def test_section_12_2_lists_the_ten_keys_in_order(self) -> None:
+    def test_section_12_2_lists_the_eleven_keys_in_order(self) -> None:
         self.assertEqual(
             validate.environments_lockable_keys(self.text),
             ["overlays_allowed", "precedence", "mcp_package_allowlist", "passable_env_names",
              "require_current_profile", "transitive_system_modules", "isolation", "provider_directories",
-             "source_signers", "require_source_signers"],
+             "source_signers", "require_source_signers", "permissions"],
         )
 
     def test_open_environments_object_fails(self) -> None:
@@ -5291,6 +5297,21 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
         with self.assertRaisesRegex(validate.ValidationFailure, "no closed isolation value set"):
             self.run_gate(schema=self.mutated(open_values))
 
+    def test_permissions_admitting_yolo_fails(self) -> None:
+        def widen(s):
+            node = s
+            for segment in self.PERMISSIONS_ENUM[:-1]:
+                node = node[segment]
+            node["enum"] = ["native", "yolo"]
+        with self.assertRaisesRegex(validate.ValidationFailure, "permits native alone"):
+            self.run_gate(schema=self.mutated(widen))
+
+    def test_permissions_without_a_closed_value_set_fails(self) -> None:
+        def open_values(s):
+            s["$defs"]["environments"]["properties"]["permissions"] = {"type": "object"}
+        with self.assertRaisesRegex(validate.ValidationFailure, "no closed permissions value set"):
+            self.run_gate(schema=self.mutated(open_values))
+
     def test_locked_enum_missing_a_key_fails(self) -> None:
         def drop(s):
             s["properties"]["locked"]["items"]["enum"].remove("environments.isolation")
@@ -5329,9 +5350,9 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
             self.run_gate(text=text)
 
     def test_section_12_2_drift_against_schema_fails(self) -> None:
-        text = self.text.replace("`provider_directories`, `source_signers`, and\n`require_source_signers`", "`provider_directories`", 1)
+        text = self.text.replace("`provider_directories`, `source_signers`,\n`require_source_signers`, and `permissions`", "`provider_directories`", 1)
         self.assertNotEqual(text, self.text)
-        with self.assertRaisesRegex(validate.ValidationFailure, "schema-only \\['require_source_signers', 'source_signers'\\]"):
+        with self.assertRaisesRegex(validate.ValidationFailure, "schema-only \\['permissions', 'require_source_signers', 'source_signers'\\]"):
             self.run_gate(text=text)
 
     def test_missing_section_12_2_fails_rather_than_passing_vacuously(self) -> None:

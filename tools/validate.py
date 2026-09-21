@@ -3854,6 +3854,9 @@ MANAGER_CONFIG_KNOB_ENUM_PATHS = {
     "isolation.<profile>.<env-id>": (
         "$defs", "environments", "properties", "isolation", "additionalProperties", "additionalProperties", "enum"
     ),
+    "permissions.<profile>": (
+        "$defs", "environments", "properties", "permissions", "additionalProperties", "enum"
+    ),
     "transitive_system_modules": ("$defs", "environments", "properties", "transitive_system_modules", "enum"),
     "in_place_mode.<env-id>": ("$defs", "environments", "properties", "in_place_mode", "additionalProperties", "enum"),
 }
@@ -4040,8 +4043,9 @@ SYSTEM_CONFIG_SCHEMAS = {1: "system-config-v1.schema.json", 2: "system-config-v2
 # The section 12.2 knobs whose system-file grammar is narrower than their
 # section 12.1 grammar: `isolation` is lockable only in the direction of
 # `shared`, `transitive_system_modules` only in the direction of `error`,
-# and `require_source_signers` only in the direction of `true`, so the
-# system schema admits that literal alone in each case.
+# `require_source_signers` only in the direction of `true`, and
+# `permissions` only in the direction of `native`, so the system schema
+# admits that literal alone in each case.
 SYSTEM_CONFIG_ISOLATION_ENUM_PATH = (
     "$defs", "environments", "properties", "isolation", "additionalProperties", "additionalProperties", "enum"
 )
@@ -4050,6 +4054,9 @@ SYSTEM_CONFIG_TRANSITIVE_ENUM_PATH = (
 )
 SYSTEM_CONFIG_REQUIRE_SIGNERS_ENUM_PATH = (
     "$defs", "environments", "properties", "require_source_signers", "enum"
+)
+SYSTEM_CONFIG_PERMISSIONS_ENUM_PATH = (
+    "$defs", "environments", "properties", "permissions", "additionalProperties", "enum"
 )
 SYSTEM_CONFIG_POSTURE_ENUM_PATH = ("properties", "security_posture", "enum")
 
@@ -4084,13 +4091,14 @@ def validate_system_config_v2_schema(
     schema-1 enum plus `security_posture` plus `environments.<key>` for
     each lockable key. Every schema-1 member other than `schema_version`
     and `locked` keeps its schema-1 node byte for byte. Every environments
-    knob other than `isolation`, `transitive_system_modules`, and
-    `require_source_signers` takes its grammar from the
+    knob other than `isolation`, `transitive_system_modules`,
+    `require_source_signers`, and `permissions` takes its grammar from the
     `manager-config-v2` environments object by reference, so the two
     schemas cannot drift; `isolation` admits `shared` alone,
-    `transitive_system_modules` admits `error` alone, and
-    `require_source_signers` admits `true` alone (section 12.2: each
-    lockable only in that direction).
+    `transitive_system_modules` admits `error` alone,
+    `require_source_signers` admits `true` alone, and `permissions`
+    admits `native` alone (section 12.2: each lockable only in that
+    direction).
     """
     _registry, paths = schema_registry()
     if schema is None:
@@ -4134,7 +4142,7 @@ def validate_system_config_v2_schema(
             f"table-only {sorted(set(keys) - set(environments['properties']))}"
         )
     for key in keys:
-        if key in ("isolation", "transitive_system_modules", "require_source_signers"):
+        if key in ("isolation", "transitive_system_modules", "require_source_signers", "permissions"):
             continue
         want = {"$ref": f"{MANAGER_CONFIG_SCHEMAS[2]}#/$defs/environments/properties/{key}"}
         if environments["properties"][key] != want:
@@ -4160,6 +4168,13 @@ def validate_system_config_v2_schema(
         node = node[segment]
     if node != [True]:
         raise ValidationFailure(f"system-config-v2 require_source_signers admits {node!r}; section 12.2 permits true alone")
+    node = schema
+    for segment in SYSTEM_CONFIG_PERMISSIONS_ENUM_PATH:
+        if not isinstance(node, dict) or segment not in node:
+            raise ValidationFailure("system-config-v2 states no closed permissions value set")
+        node = node[segment]
+    if node != ["native"]:
+        raise ValidationFailure(f"system-config-v2 permissions admits {node!r}; section 12.2 permits native alone")
     node = schema
     for segment in SYSTEM_CONFIG_POSTURE_ENUM_PATH:
         if not isinstance(node, dict) or segment not in node:

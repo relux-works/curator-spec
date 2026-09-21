@@ -53,6 +53,10 @@
       "FIGMA_API_KEY",
       "GITHUB_TOKEN"
     ],
+    "permissions": {
+      "companyA": "yolo",
+      "personal": "native"
+    },
     "precedence": {
       "placement": "winner-first",
       "winner": "lower-weight"

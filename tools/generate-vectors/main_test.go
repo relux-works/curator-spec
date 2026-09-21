@@ -2502,7 +2502,7 @@ func TestSystemConfigV2IsSchemaOnePlusTheLockableEnvironmentsKeys(t *testing.T) 
 		"system_module_waivers",
 	})
 	for _, key := range systemConfigV2LockableKeys {
-		if key == "isolation" || key == "transitive_system_modules" || key == "require_source_signers" {
+		if key == "isolation" || key == "transitive_system_modules" || key == "require_source_signers" || key == "permissions" {
 			continue
 		}
 		got := environments["properties"].(map[string]any)[key]

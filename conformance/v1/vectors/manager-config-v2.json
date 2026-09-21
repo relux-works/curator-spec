@@ -16,6 +16,7 @@
         "overlays": {},
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -59,6 +60,7 @@
         "overlays": {},
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -105,6 +107,7 @@
         "overlays": {},
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "lower-weight"
@@ -189,6 +192,10 @@
           "FIGMA_API_KEY",
           "GITHUB_TOKEN"
         ],
+        "permissions": {
+          "companyA": "yolo",
+          "personal": "native"
+        },
         "precedence": {
           "placement": "winner-first",
           "winner": "lower-weight"
@@ -299,6 +306,10 @@
           "FIGMA_API_KEY",
           "GITHUB_TOKEN"
         ],
+        "permissions": {
+          "companyA": "yolo",
+          "personal": "native"
+        },
         "precedence": {
           "placement": "winner-first",
           "winner": "lower-weight"
@@ -435,6 +446,7 @@
         },
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -512,6 +524,7 @@
         },
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -570,6 +583,7 @@
         },
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -628,6 +642,7 @@
         },
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -686,6 +701,7 @@
         },
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -744,6 +760,7 @@
         },
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -802,6 +819,7 @@
         },
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -861,6 +879,7 @@
         },
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -921,6 +940,7 @@
         },
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -981,6 +1001,7 @@
         },
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -1041,6 +1062,7 @@
         },
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -1101,6 +1123,7 @@
         },
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -1161,6 +1184,7 @@
         },
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -1221,6 +1245,7 @@
         },
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -1632,6 +1657,72 @@
         "overlays": {},
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {
+          "companyA": "yolo"
+        },
+        "precedence": {
+          "placement": "winner-last",
+          "winner": "higher-weight"
+        },
+        "provider_directories": [],
+        "require_current_profile": null,
+        "require_source_signers": false,
+        "scoped_current": {},
+        "secret_material_waivers": [],
+        "shadow_acknowledged": [],
+        "source_signers": {},
+        "system_module_waivers": [],
+        "system_prompt_files": {},
+        "targets": {},
+        "transitive_system_modules": "drop",
+        "xdg_seed_allowlist": [
+          "git",
+          "gh",
+          "ssh"
+        ]
+      }
+    },
+    "input": {
+      "environments": {
+        "permissions": {
+          "companyA": "yolo"
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-permissions",
+    "valid": true
+  },
+  {
+    "input": {
+      "environments": {
+        "permissions": {
+          "companyA": "standard"
+        }
+      },
+      "projects": {},
+      "schema_version": 2,
+      "skills_root": "./skills"
+    },
+    "name": "schema2-permissions-value-grammar",
+    "valid": false
+  },
+  {
+    "expected": {
+      "environments": {
+        "backup_retention": 5,
+        "current_profile": null,
+        "forms": {},
+        "in_place_mode": {},
+        "isolation": {},
+        "mcp_package_allowlist": [],
+        "overlay_default_weight": 1000,
+        "overlays": {},
+        "overlays_allowed": true,
+        "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -1696,6 +1787,7 @@
         "overlays": {},
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -1740,6 +1832,7 @@
         "overlays": {},
         "overlays_allowed": true,
         "passable_env_names": null,
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -1786,6 +1879,7 @@
         "overlays": {},
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -1846,6 +1940,7 @@
         "overlays": {},
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"
@@ -1964,6 +2059,7 @@
         "overlays": {},
         "overlays_allowed": true,
         "passable_env_names": [],
+        "permissions": {},
         "precedence": {
           "placement": "winner-last",
           "winner": "higher-weight"

@@ -50,6 +50,10 @@
     "passable_env_names": [
       "FIGMA API KEY"
     ],
+    "permissions": {
+      "companyA": "yolo",
+      "personal": "native"
+    },
     "precedence": {
       "placement": "winner-first",
       "winner": "lower-weight"

@@ -153,6 +153,20 @@ to the `ax` provider ids `claude`, `codex`, and `pi`, and `opencode` is the
 launcher's `env_unsupported` in revision 1 — `env resolve opencode` works and
 the operator applies the fragment by hand.
 
+Under Decision 0018 (adopted) `curator run` takes a permission mode,
+`--permissions <native|yolo>` before `--` (with `--yolo` as an exact
+alias), resolved per launch as flag, then the `permissions.<profile>`
+machine knob, then the launcher-global `defaults.json` default, then
+the built-in default — `yolo` for interactive untracked launches,
+`native` for headless, CI, and tracked silence. A fleet-wide
+force-`native` lock overrides the whole precedence. The launcher maps
+`yolo` to the verified native bypass flag per environment, refuses
+conflicts and unsupported environments, and records the effective mode
+and its provenance; raw bypass text after `--` stays available
+untracked and unvalidated. The flag spelling, mapping, refusals, and
+provenance are owned by the launcher SPEC; environments §10.1 states
+the Curator-side resolution, lock, and transport rules.
+
 ```bash
 # Install one root context package as a profile; profile audit is always
 # strict. One requirement applies to the root: a range over version tags
@@ -188,6 +202,12 @@ curator env status --check
 # fragment; with it the home is repaired from the store first.
 curator env resolve claude_code --profile companyA --format shell
 curator env resolve claude_code --repair --format json
+
+# Launch with an explicit permission mode (Decision 0018): the flag
+# overrides configuration; silence resolves yolo when interactive and
+# native when headless, CI, or tracked.
+curator run claude_code --permissions yolo -- --model opus
+curator run codex_cli --permissions native -- exec "run tests"
 
 # Hand in-place surfaces back to native ownership, restoring the newest backup.
 curator env unmanage --restore-backups --env pi

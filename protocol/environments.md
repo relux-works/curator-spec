@@ -1380,9 +1380,9 @@ pinned release that the strategy answers to:
 | Environment | Passthrough entries | Strategy | Write behavior |
 |---|---|---|---|
 | `claude_code` | macOS: none — Claude Code stores OAuth credentials in the login Keychain as service `Claude Code-credentials`, account `$USER`; with `CLAUDE_CONFIG_DIR` set the service name is suffixed with `-` plus the first 8 hex characters of the SHA-256 of the config-dir path, so each managed home owns a separate Keychain item that the native item never serves (**verified** from the 2.1.261 bundle strings and the Keychain items present); Linux: `.credentials.json`; Windows: none in revision 1 (reserved pending platform verification) | macOS: `per-home-keychain` — nothing is linked, and every managed home logs in on its own; Linux: `file-link` — the managed home's `.credentials.json` is a symlink to the native file, re-checked by the liveness row | Linux write behavior **unverified** (docs-confidence: rename-over assumed until verified, so the Linux `file-link` is the expected-to-detach case below) |
-| `codex_cli` | `auth.json` | `keyring-preferred`: where the operator's `config.toml` sets `cli_auth_credentials_store` to `keyring` the credential is ambient and no entry is linked; under `file` (the default) or `auto` the managed `auth.json` is a `file-link` — a symlink to the native file, re-checked by the liveness row | **verified** in-place: codex 0.153.2 rewrites `auth.json` by truncate-and-write on the same inode, mode 0600, never temp-and-rename (upstream `login/src/auth/storage.rs` for the path the binary names); `cli_auth_credentials_store = file|keyring|auto` **verified** in the embedded configuration docs |
+| `codex_cli` | `auth.json` | `keyring-preferred`: where the operator's `config.toml` sets `cli_auth_credentials_store` to `keyring` the credential is ambient and no entry is linked; under `file` (the default) or `auto` the managed `auth.json` is a `file-link` — a symlink to the native file, re-checked by the liveness row. The manager assumes the keyring identity is operator-global (independent of `CODEX_HOME`) until a disposable-account scratch-`CODEX_HOME` probe proves per-home scoping, so under `keyring` or `auto` storage `isolated` is `environment_isolated_unsupported`; a storage selector outside the verified `file`/`keyring`/`auto` set fails closed with `environment_credential_unsupported` | **verified** in-place: codex 0.153.2 rewrites `auth.json` by truncate-and-write on the same inode, mode 0600, never temp-and-rename (upstream `login/src/auth/storage.rs` for the path the binary names); `cli_auth_credentials_store = file|keyring|auto` **verified** in the embedded configuration docs |
 | `opencode` | none — auth lives in `XDG_DATA_HOME`, which the config swap never touches (section 7.1) | ambient | — |
-| `pi` | `auth.json` | `file-link` — the managed `auth.json` is a symlink to the native file, re-checked by the liveness row | **verified** in-place: pi 0.84.2 rewrites `auth.json` with a single in-place write, mode 0600, under its own lockfile, never temp-and-rename (installed `core/auth-storage.js`) |
+| `pi` | `auth.json` | `file-link` — the managed `auth.json` is a symlink to the native `~/.pi/agent/auth.json` (native root `~/.pi/agent`, not `~/.pi`), re-checked by the liveness row | **verified** in-place: pi 0.84.2 rewrites its agent-root `auth.json` with a single in-place write, mode 0600, under its own lockfile, never temp-and-rename (installed `core/auth-storage.js`) |
 
 A per-file symlink is severed by any write-temp-then-rename refresh: the
 tool replaces the link itself with a regular file, and from that moment the
@@ -1394,12 +1394,18 @@ a `file-link` is safe under a verified in-place writer — `codex_cli` and
 `pi` — because an in-place rewrite keeps the inode and the link with it,
 while a `file-link` under a rename-over tool, or one whose write behavior
 is unverified (`claude_code` on Linux), is **expected to detach** and is
-caught by the liveness row and re-linked by `--repair`; and every
+caught by the liveness row — reported detached, re-linked when the link
+path is absent, refused with `environment_credential_conflict` when the
+detach left a regular file; and every
 file-shaped strategy is watched by the **liveness row** —
 `env status` MUST report `environment_passthrough_detached` (non-current)
 when a recorded passthrough entry is no longer a symlink or no longer
-targets the native entry, and `env resolve --repair` MUST re-link it,
-leaving both files' bytes untouched. A recorded entry whose link state
+targets the native entry. A link path that is absent is re-linked by
+`env resolve --repair`, leaving the native bytes untouched; a link
+path that instead holds a regular file or a symlink to an unexpected
+target is the refusal `environment_credential_conflict` — repair MUST
+NOT remove, replace, or re-point it, and emits no fragment. A recorded
+entry whose link state
 cannot be established — `lstat` or `readlink` fails with permission, I/O,
 or path errors — is not detached (section 8.4.1, passthrough row): `env
 status` MUST report `environment_passthrough_unreadable` (non-current,
@@ -1407,7 +1413,10 @@ currency unknown), `env resolve` MUST report it the same way and emit no
 fragment, and `--repair` MUST NOT re-link the entry: repair leaves it
 untouched for the operator to make readable. A directory at the entry path
 is "no longer a symlink" and stays detached-side: it is
-`environment_passthrough_detached`, re-linked by `--repair`. Where the pinned release's write
+`environment_passthrough_detached`, re-linked by `--repair`, which
+removes only an empty directory — a non-empty one fails the repair
+with `environment_credential_conflict` instead of destroying its
+contents. Where the pinned release's write
 behavior is verified in-place, a manager MAY record the entry as
 `in-place` and skip nothing: the liveness row runs regardless. An
 in-place rewrite has its own hazard, recorded here although nothing in this
@@ -1416,15 +1425,28 @@ mid-write can observe a truncated file, so any such copy is taken under the
 tool's own lock or while the tool is idle.
 
 The default per profile × environment is `shared`: every managed home reuses
-the operator's existing authentication through exactly these entries.
-`isolated` — no passthrough, the tool authenticates fresh inside the managed
-home — is **unsupported in revision 1** for `opencode`, where it is a no-op
-because auth lives outside the swapped config home, and for `claude_code`
-on macOS **below the pinned release 2.1.261**, for which no evidence covers
-how a managed home's login interacts with the native Keychain item.
-Configuring `isolated` for either is the configuration error
-`environment_isolated_unsupported`, never a silently shared home. For
-`claude_code` on macOS **at or above 2.1.261** the evidence is positive and
+the operator's existing authentication through exactly these entries. The
+`isolation` knob selects credential-store sharing, not a security
+sandbox: `isolated` is bounded store separation — the managed home does
+not share the declared credential stores with the native home — never
+account separation (ambient auth such as helpers, cloud credentials,
+auth variables, and native selectors is unchanged) and never
+filesystem isolation. `isolated` — no passthrough, the tool
+authenticates fresh inside the managed home — is **unsupported in
+revision 1** for `opencode`, where it is a no-op because auth lives
+outside the swapped config home, for `claude_code` on macOS **below
+the pinned release 2.1.261**, for which no evidence covers how a
+managed home's login interacts with the native Keychain item, and for
+`codex_cli` under native `keyring` or `auto` storage, whose identity
+is assumed operator-global (passthrough table above): under `auto`
+the tool uses the keyring when one is available and the file-link is
+inert there, so an `isolated` home on a keyring host would
+authenticate through the operator-global keyring. Configuring
+`isolated` for any of these is the configuration error
+`environment_isolated_unsupported`, never a silently shared home. A
+future revision may admit `auto` only where the manager proves the
+effective store is `file`, probe-gated.
+For `claude_code` on macOS **at or above 2.1.261** the evidence is positive and
 the restriction is lifted: the tool selects the Keychain item by
 `CLAUDE_CONFIG_DIR` (the passthrough table above), so a managed home is
 credential-isolated **by construction** — it never sees the native item
@@ -1433,12 +1455,49 @@ same fact removes `shared`: there is no Keychain item a manager could link
 without handling credential material, which section 7.4 forbids. The
 adapter therefore declares `isolated` as the platform default for
 `claude_code` on macOS at the pinned release, and a configured `shared` is
-the configuration error `environment_shared_unsupported`. One residual is
-recorded: that a fresh login inside a managed home writes the suffixed
-item and nothing else is inferred from the bundle's service-name builder
-and **requires an operator** to confirm with a real login; the verified
-selection scheme stands regardless. `isolated` remains available for
-`codex_cli`, for `pi`, and for `claude_code` on Linux.
+the configuration error `environment_shared_unsupported`. The recorded
+residual is answered negatively: a 2.1.273 managed-home login wrote a
+`.credentials.json` file under `CLAUDE_CONFIG_DIR` and no suffixed
+Keychain item appeared — the native item untouched, cause unknown — so
+no verified `shared` store exists and `shared` stays refused until an
+authorized disposable-account experiment proves which store Claude
+reads first, whether the file is rewritten in place on refresh, and
+under which conditions, if any, a suffixed item is written; the
+verified selection scheme stands regardless. `isolated` remains
+available for `codex_cli` under `file` storage only, for `pi`,
+and for `claude_code` on Linux. Sharing is defined by the native
+home's effective storage alone: a managed `config.toml` that diverges
+from the native selection changes nothing, and the manager never
+rewrites either file to realign them.
+
+**Migration.** A mode change is never applied by repair: changing the
+effective mode of a provisioned home runs an explicit inspect → plan
+→ apply migration under the manager lock. The migration inventories
+the old marker, every link target, and both Pi roots (`~/.pi/auth.json`
+and `~/.pi/agent/auth.json`); preserves the effective mode on upgrade;
+unlinks only a recorded link still targeting the declared native
+store; and never copies secret material at any step. On an isolated →
+shared conflict — the managed home holds credential bytes a link
+would displace — the migration reports both sides and stops: the
+operator resolves the conflict out of band and re-runs. The recorded
+2 B `~/.pi/auth.json` is unlinked as a recorded link of the wrong
+target, never deleted as a native file.
+
+**Credential record.** From the marker revision Decision 0017 choice
+5 defines (follow-up), every passthrough record carries the effective
+`isolation` mode it was linked under, its strategy, its `source_role`
+(`native` when the bytes live in the native home, `managed` when they
+live in the managed home), its `backend` (`file`, `keychain`, or
+`ambient`), the `backend_version` tool release the write behavior was
+verified on, and its `provenance` (`provisioned`, `repaired`, or
+`migrated`). Strategies with no linkable entry — macOS
+per-home-keychain under `isolated`, `ambient` — record without a
+path. A schema-1 marker records `path` and `strategy` only and is
+never rewritten to add the record. Records publish under the
+manager-home mutation lock through a same-directory temporary file and
+atomic rename with journal protection; rollback restores the preceding
+marker. Backup discovery and general backups MUST NOT follow auth
+symlinks and MUST NOT archive credential bytes.
 
 Passthrough entries are excluded from surface content hashes and drift
 detection, are never copied into the profile store, and are never audited
@@ -1541,8 +1600,8 @@ provisioning stops rather than seeding whole or skipping.
 
 | Environment | Root context, system prompt, MCP set | Skills | Session state and caches | Authentication | Tool configuration |
 |---|---|---|---|---|---|
-| `claude_code` | per profile (managed home) | per profile (`<home>/skills/`) | per profile | macOS: isolated, always, at the pinned release (per-`CLAUDE_CONFIG_DIR` Keychain item); Linux: shared by default, `isolated` available | seeded `.claude.json` (minimal object plus per-launch-directory project entries), then per home |
-| `codex_cli` | per profile | per profile | per profile | shared by default, `isolated` available | seeded once from the native `config.toml`, then per home |
+| `claude_code` | per profile (managed home) | per profile (`<home>/skills/`) | per profile | macOS: isolated, always, at the pinned release (per-`CLAUDE_CONFIG_DIR` Keychain item; `shared` refused until the Decision 0017 experiment passes); Linux: shared by default, `isolated` available | seeded `.claude.json` (minimal object plus per-launch-directory project entries), then per home |
+| `codex_cli` | per profile | per profile | per profile | shared by default, `isolated` available under `file` storage only (`isolated` refused under `keyring` or `auto` storage) | seeded once from the native `config.toml`, then per home |
 | `opencode` | per profile | **machine-current profile** (split-brain, section 7.1) | per profile for config-home state; `XDG_DATA_HOME`/`XDG_STATE_HOME` state is shared and ambient | shared, always | XDG-seeded allowlist links, reconciled |
 | `pi` | per profile | per profile | per profile | shared by default, `isolated` available | seeded once (`settings.json`, `models.json`), then per home |
 
@@ -1641,6 +1700,8 @@ identifier not declared by the registry is `environment_target_unknown`.
 | `shared` configured for `claude_code` on macOS at or above the pinned release | `environment_shared_unsupported` |
 | recorded passthrough entry is no longer a symlink to the native entry (non-current) | `environment_passthrough_detached` |
 | recorded passthrough entry whose link state cannot be established — `lstat` or `readlink` fails with permission, I/O, or path errors (non-current, currency unknown; never "detached") | `environment_passthrough_unreadable` |
+| recorded passthrough link path holds a regular file or a symlink to an unexpected target at repair (refusal, no fragment; never removed or re-pointed) | `environment_credential_conflict` |
+| credential strategy cannot be established — native storage selector outside the verified set (refusal, no fragment) | `environment_credential_unsupported` |
 | provisioning seed exists but cannot be read — a native-home file or a named XDG entry | `environment_seed_unreadable` |
 | unrecorded entry in a managed `opencode` parent shadows an allowlisted operator entry (warning) | `environment_seed_shadowed` |
 | first `auto` write into a secondary target's home without recorded consent | `environment_target_consent_required` |
@@ -2026,7 +2087,7 @@ row's diagnostic, never a local restatement:
 | ledger | the ledger is absent with its home (unprovisioned) | the marker as ledger of record unreadable is `environment_marker_unreadable`; no remove or replace (attempted writes meet `environment_surface_unmanaged_conflict`) | 8.3 |
 | backup record | no generations: nothing to restore; the next generation proceeds; status reports zero | `environment_backup_record_unreadable` — the backup inventory is unknown: status reports the backup row non-current with currency unknown; restore, scrub, and retention pruning stop before mutating; the next-generation check never proceeds as if the generation were absent | 8.3 |
 | provisioning seed | the seed is not seeded | `environment_seed_unreadable` — provisioning stops before the first write | 7.4 |
-| passthrough entry | the recorded link is missing, replaced, or retargeted: `environment_passthrough_detached`, re-linked by `--repair` | `environment_passthrough_unreadable` — non-current, currency unknown, never "detached"; repair leaves the entry untouched | 7.4 |
+| passthrough entry | the recorded link is missing, replaced, or retargeted: `environment_passthrough_detached` — a missing link, or a directory at the entry path, is re-linked by `--repair`; a regular file or an unexpected retarget is `environment_credential_conflict` at repair, never removed or re-pointed | `environment_passthrough_unreadable` — non-current, currency unknown, never "detached"; repair leaves the entry untouched | 7.4 |
 | recorded surface | `environment_surface_missing` | `environment_surface_unreadable` — non-current, currency unknown | 8.4 |
 | inventory candidate | not detected — never in the loss list | a loss with reason; a lossy import stops with `environment_import_lossy` unless consented; onboarding stops before its first write while the inventory is incomplete | 9.5, 9.6 |
 
@@ -2704,10 +2765,16 @@ mutation lock of manager §2.5, the same lock `profile use` holds — with a
 bounded wait (implementation-documented, at least one second and at most
 sixty), provisions or repairs the home from
 the store entries the lock names as one journaled transaction —
-re-materializing managed surfaces, re-linking passthrough entries,
+re-materializing managed surfaces, re-linking absent passthrough links,
 reconciling XDG seeds, adding the launch directory's project entry,
 never touching environment-owned mutable state,
-unmanaged files, seeds, or backups — and then emits the fragment. Repair
+unmanaged files, seeds, or backups — and then emits the fragment. A link
+path that holds a regular file or a symlink to an unexpected target is
+`environment_credential_conflict`: the repair stops with the diagnostic
+and emits no fragment; completed surface repairs stand. Repair never
+migrates credential ownership: a mode change that leaves a recorded
+link behind it is the explicit migration of section 7.4, never silent
+inside `--repair`. Repair
 restores managed bytes from the store; it MUST NOT adopt candidate bytes
 found in the home. Repair writes are section 8.3.1 writes: repair
 replaces directory entries and refuses with
@@ -2840,6 +2907,31 @@ in revision 1 — no agents-management system plugin exists for it — while
 an operator applies the fragment by hand. `env_unsupported` is the
 launcher's diagnostic, not this document's.
 
+**Permission mode.** Under Decision 0018 (adopted) every `curator run`
+launch resolves one permission mode, `native` or `yolo`, per launch,
+first naming level wins: the CLI `--permissions` flag (or `--yolo`)
+over the per-profile `permissions` knob of section 12.1, over the
+launcher-global `defaults.json` default, over the built-in default —
+`yolo` for interactive untracked launches, `native` for headless, CI,
+and tracked silence. `native` means no launcher override (argv
+forwarded verbatim), not a guaranteed prompting posture; `yolo`
+requests the launcher-SPEC-declared native bypass, never an
+outside-policy bypass. A launch is headless when stdin or stdout is
+not a TTY, when the native arguments select a non-interactive form,
+when a non-interactive marker (`CI` or `GITHUB_ACTIONS`, the closed
+set — additions by specification revision only) is present, or when
+the launch is tracked. The force-`native` lock of section 12.2 sits
+above the whole precedence: under an engaged lock any launcher-visible
+`yolo` is a `usage` error naming the locked knob, and total silence
+resolves `native`. Curator resolves the profile level and the lock
+engagement and delivers them through the fragment (section 10.2);
+verified transport support is a precondition for admitting `yolo` —
+when the launcher cannot establish it, any launch that would otherwise
+resolve `yolo` is refused (`permission_policy_unsupported`), while a
+launch that resolves `native` proceeds. The flag spelling, mapping
+table, refusal rules, and provenance line are owned by the launcher
+SPEC, not this document.
+
 **Tracked residual.** Decision 0013's document has no destination
 environment-unset or `PATH`-transform member. Its own-literals-only
 composition cannot transport the plugin's inherited-name removals or
@@ -2906,6 +2998,15 @@ unknown kinds, and unknown semantics or argument values:
   launcher prepends to the child's `PATH`. Revision 1 never emits it
   (section 9.4); a reader MUST accept its absence and MUST reject any value
   outside the environments root.
+
+Curator delivers the section 12.1 `permissions` profile level and the
+section 12.2 lock engagement to the launcher through this fragment;
+the member names and the minimum transport version token are fixed by
+the implementing revision (Decision 0018, choice 7), and until they
+are, every fragment predates the transport: the launcher MUST refuse
+would-be `yolo` with `permission_policy_unsupported` and proceed only
+on `native`. A fragment that cannot carry the policy or the lock is
+never silence.
 
 ### 10.3 The profile-influence boundary
 
@@ -2983,6 +3084,8 @@ that no reader mistakes the surfacing rows for an execution sandbox.
 | recorded surface file unreadable at resolve (no fragment; non-current, currency unknown; never "missing", never a stale-home reason; `--repair` does not re-materialize it) | `environment_surface_unreadable` |
 | lock file unreadable or malformed at resolve (no fragment; non-current, currency unknown; never `profile_unknown`; never rebuilt from — section 8.4.1, lock row) | `environment_store_untrusted` |
 | recorded passthrough entry unreadable at resolve (no fragment; non-current, currency unknown; never "detached", never a stale-home reason; `--repair` does not re-link it) | `environment_passthrough_unreadable` |
+| recorded passthrough link path holds a regular file or an unexpected symlink target under `--repair` (no fragment; without `--repair` the same state is the stale-home reason above) | `environment_credential_conflict` |
+| native credential storage selector outside the verified set at provisioning or repair (no fragment) | `environment_credential_unsupported` |
 | store entry, lock, or marker file fails the §4 protected-boundary contract or its pin hash, or a `path` source directory fails its §4 boundary checks, at resolve (no fragment; non-current) | `environment_store_untrusted` |
 | enclosing boundary (environments root or store root) cannot be proven at resolve (no fragment; non-current; nothing rebuilt) | `environment_store_untrusted` |
 | dry-run evaluation of an entry-class failure of a store entry or a marker file, or of a lock file that fails its boundary checks (no mutation; a real operation would rebuild it) | `would-rebuild-untrusted-store` |
@@ -3311,6 +3414,7 @@ knob is absent.
 | `targets.<target-id>.participation` | `auto`, `off`, `enabled` | `auto` | 7.6 |
 | `targets.<target-id>.consented` | boolean | `false` | 7.6 |
 | `isolation.<profile>.<env-id>` | `shared`, `isolated` | `shared`; `isolated` for `claude_code` on macOS at the pinned release | 7.4 |
+| `permissions.<profile>` | `native`, `yolo` | absent (a silent level) | 10.1 |
 | `xdg_seed_allowlist` | list of XDG config entry names | `["git", "gh", "ssh"]` | 7.1 |
 | `passable_env_names` | list of identifiers, or `null` for explicit unbounded | `[]` | 2.2, 10.3 |
 | `mcp_package_allowlist` | list of canonical source identities | empty (permits all, warned) | 2.2 |
@@ -3375,8 +3479,8 @@ The manager §1 `locked` set is extended, for managers implementing this
 capability, by exactly these keys under `environments`:
 `overlays_allowed`, `precedence`, `mcp_package_allowlist`,
 `passable_env_names`, `require_current_profile`, `transitive_system_modules`,
-`isolation`, `provider_directories`, `source_signers`, and
-`require_source_signers` — a locked provider list is fleet
+`isolation`, `provider_directories`, `source_signers`,
+`require_source_signers`, and `permissions` — a locked provider list is fleet
 policy for which provider directories every machine trusts. A system
 file that locks `require_current_profile` to a profile name makes `profile
 use` of any other profile in the machine scope a configuration error under
@@ -3390,6 +3494,12 @@ is lockable only in the direction of `error`: a system file MUST lock
 MUST NOT be lockable — a lock MUST NOT admit a transitive package's system
 modules. `require_source_signers` is lockable only in the direction of
 `true`: a system file MUST lock `require_source_signers` only to `true`.
+`permissions` is lockable only in the direction of `native`: a system
+file MUST lock `permissions` only to `native`. A locked `permissions`
+map replaces the machine knob whole with the manager §1 warning when
+the machine file set it; total silence under an engaged lock resolves
+`native` — the lock redefines the effective default on that machine
+(section 10.1).
 A locked `source_signers` map is fleet policy per source: for a source the
 system file names, the effective allowlist is the system file's list and
 the machine file's list for that source is ignored — with the manager §1
@@ -3455,7 +3565,10 @@ S6-planted `curator-run`, the manager-published and managed directory
 refusals under both revisions, the unreadable-root failures under both
 revisions, and the missing case — with the
 `provider_directories` grammar pinned by the `manager-config-v2` and
-`system-config-v2` schema cases; the section 1.4 signer-verification cases
+`system-config-v2` schema cases; the section 12.1 `permissions`
+per-profile mode grammar with the `native`-alone system direction case
+(`vectors/manager-config-v2.json` and the `manager-config-v2` /
+`system-config-v2` schema cases); the section 1.4 signer-verification cases
 (`vectors/environments-source-signers.json`) — an allowlisted ssh tag
 signature accepted, an allowlisted gpg commit signature accepted, an
 unsigned candidate refused, a wrong-signer candidate refused, a same-key

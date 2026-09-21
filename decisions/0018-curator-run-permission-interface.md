@@ -2,12 +2,10 @@
 
 ## Status
 
-Status: proposed — not adopted
+Status: adopted
 
 Proposed 2026-09-16. DRAFT for review under TASK-260916-vht714,
-STORY-260916-1on1d2. No option is selected.
-Filing this proposal authorizes no implementation, workaround, normative
-amendment, or landing of the draft.
+STORY-260916-1on1d2.
 
 Amended 2026-09-16 by operator decision under TASK-260916-2fu85y
 (STORY-260916-1on1d2): the permission mode is configured, not only
@@ -15,9 +13,18 @@ flagged — a launcher-global default, a per-profile setting, a CLI
 override, and a built-in default of `yolo` for interactive launches,
 with a lockable fleet-wide force-`native`. Headless, CI, and tracked
 silence defaults to `native`, and legacy policy/lock transport fails
-closed (revision 2, same task, after independent review). Still
-proposed — not adopted; no option is selected, and the amendment
-authorizes nothing beyond the draft.
+closed (revision 2, same task, after independent review).
+
+Adopted 2026-09-21 by operator decision under TASK-260921-3qcjsy
+(STORY-260921-3z0fgr), with the 2026-09-16 amendment: options 1–6
+adopted as amended below (config-driven mode, flag override, default
+`yolo` for interactive launches), and open questions 1–7 resolved to
+the recorded choices in Adoption choices. The Curator-side normative
+amendments land in the same revision (environments §10.1, §10.2, §12.1,
+§12.2, §13; manager §1, §12.3, §12.5; `manager-config-v2`,
+`system-config-v2`, vectors); the launcher SPEC and implementation,
+the fragment transport members and token, and the `ax` capability are
+named follow-ups (Compatibility and security impact).
 
 Numbering: the existing decision series ends at 0016; 0011 remains
 reserved as recorded in Decision 0013. This filing uses the next two
@@ -51,7 +58,9 @@ authoritative where they differ from the report), and the outcome
 resource `TASK-260916-2timlf_native-help.txt` (each capture exit 0;
 embedded line numbers below refer to it). Tool versions: Claude
 2.1.273, Codex 0.153.4, Pi 0.84.2. The verdict's FINAL recommended
-design (§3) is recorded below as a proposal, not an adoption.
+design (§3) is recorded below as adopted with the 2026-09-16
+amendment: options 1–6 adopted as amended, open questions 1–7
+resolved to the recorded choices.
 
 Verified native flags (all quotes from the installed `--help`):
 
@@ -121,10 +130,12 @@ with legacy policy/lock transport failing closed.
 
 ## Options and trade-offs
 
+All six options are adopted as amended (2026-09-21).
+
 1. **`--permissions <native|yolo>` before `--`, resolved by precedence
    with an interactive-only built-in default `yolo`, and `--yolo` as an
-   exact alias.** The review recommends the flag; the operator decision
-   changes only what silence means. `native` still means no launcher
+   exact alias.** Adopted as amended. The review recommends the flag;
+   the operator decision changes only what silence means. `native` still means no launcher
    override (argv forwarded verbatim), not a guaranteed prompting
    posture; `yolo` still requests the declared native bypass below, not
    an outside-policy bypass. Omission no longer equals `native`: a
@@ -142,8 +153,8 @@ with legacy policy/lock transport failing closed.
    | `pi` | none — refuse `permission_mode_unsupported` (`--approve` is not equivalent) | — |
    | `opencode` | `env_unsupported` (already refused by launcher mapping) | — |
 
-2. **Configuration surfaces and precedence.** The mode resolves per
-   launch, first naming level wins:
+2. **Configuration surfaces and precedence.** Adopted as amended.
+   The mode resolves per launch, first naming level wins:
 
    CLI `--permissions` (or `--yolo`) > per-profile setting > launcher
    global default > built-in default (`yolo` when interactive,
@@ -172,10 +183,11 @@ with legacy policy/lock transport failing closed.
      from duplicating §12.1 values into its own files — so the launcher
      learns the profile level the way it learns every §12.1 knob that
      shapes a launch, resolved by Curator and delivered through the
-     `env resolve` fragment (the adopting revision amends the fragment
-     schema accordingly). Keying launcher-global state by env-id and
+     `env resolve` fragment (the fragment schema is untouched by this
+     revision; the member names are choice 7, follow-up F-S2). Keying
+     launcher-global state by env-id and
      Curator policy by profile keeps each authority single; this
-     proposal creates no launcher section in machine configuration
+     decision creates no launcher section in machine configuration
      (the §4.7 open item stays open).
    - The mode is still never derived from anything but these surfaces:
      never inferred from model, prompt, credentials, environment, or
@@ -184,8 +196,9 @@ with legacy policy/lock transport failing closed.
      configuration error for the §12.1 knob); a v1 `defaults.json`
      carrying a `permissions` member is rejected as a closed-schema
      violation, never read as v2.
-3. **Fleet-wide force-`native` lock.** `permissions` joins the §12.2
-   lockable set, lockable only in the direction of `native` — mirroring
+3. **Fleet-wide force-`native` lock.** Adopted as amended.
+   `permissions` joins the §12.2 lockable set, lockable only in the
+   direction of `native` — mirroring
    the §12.2 `isolation`-to-`shared` one-direction rule (locking `yolo`
    would be perverse beside a `yolo` default). The system file names
    `environments.permissions` under manager §1: the locked key must be
@@ -206,7 +219,8 @@ with legacy policy/lock transport failing closed.
    establish the engagement at all — the fragment predates the lock
    transport — item 5 applies instead: would-be `yolo` is refused,
    never silently admitted past a possibly engaged lock.
-4. **Refusal rules (usage exit 2 unless noted).** Effective `yolo` from
+4. **Refusal rules (usage exit 2 unless noted).** Adopted as amended.
+   Effective `yolo` from
    any item-2 level plus a conflicting native selector after `--` is
    refused, in `=` and separate forms, including aliases and `exec`
    placement: Claude `--permission-mode`,
@@ -221,11 +235,12 @@ with legacy policy/lock transport failing closed.
    interface is UX, not a security perimeter; raw requests are recorded
    separately.
 5. **Headless, CI, and tracked launches never inherit `yolo`;
-   their silence is `native`.** A launch is headless when any of
+   their silence is `native`.** Adopted as amended. A launch is
+   headless when any of
    these holds: stdin or stdout is not a TTY; the native arguments
    select a non-interactive form (`-p`/`exec`-style native args); a
-   non-interactive marker is present (`CI`, `GITHUB_ACTIONS`, or an
-   equivalent marker the adopting revision enumerates); or the launch
+   non-interactive marker is present (the closed marker set choice 7
+   fixes — {`CI`, `GITHUB_ACTIONS`}); or the launch
    is tracked. The built-in `yolo` default applies only to interactive
    untracked launches on an operator-owned machine. An untracked
    headless or CI launch that names no mode resolves `native`
@@ -258,9 +273,10 @@ with legacy policy/lock transport failing closed.
    `yolo`, including past an unenforced lock. An absent knob in a
    current-version configuration is still a silent level; only an
    unproven transport fails closed. The minimum fragment/Curator
-   version token stays open question 7; the fail-closed rule itself is
+   version token is choice 7 (follow-up); the fail-closed rule itself is
    specified here, not deferred.
-6. **Provenance.** One stderr line in untracked mode:
+6. **Provenance.** Adopted as amended. One stderr line in untracked
+   mode:
    `curator-run: permissions=<native|yolo>
    source=<flag|profile|global|default-interactive|default-headless>
    mapped=<flag or none>` — so an operator can distinguish "native"
@@ -279,59 +295,52 @@ with legacy policy/lock transport failing closed.
    `--ax-profile yolo` (tracked-only concept, distinct ownership), and
    `-d`/`--danger` aliases (Claude's native `-d` is debug).
 
-## Open questions
+## Adoption choices
 
-1. Should `--yolo` ship in the same increment as `--permissions`
-   (review recommendation, for legacy-wrapper parity) or follow after
-   the mapping settles? `-d`/`--danger` stay rejected either way.
-2. What is the exact `ax` admission precondition for tracked yolo — an
-   ax-owned permission representation, validated natively-mapped
-   admission, or both — and which version carries it?
-3. How are unknown future native policy forms (new Codex `-c` keys,
-   new Claude modes) detected without false resolved-policy claims?
-   The provider grammar must distinguish prompt text from flags.
-4. What does the launcher print, and where is it recorded, when native
-   stored settings relax the posture beneath a `native` request?
-5. Which negative tests drive the real `curator run` entry with a fake
-   process (mappings, refusals, `=`/separate forms, raw conflicts,
-   precedence across flag/profile/global/default, v1-file-with-member
-   and unknown-value rejection, lock refusal, tracked refusal from
-   every level, headless/CI silence resolving `native` with
-   `source=default-headless`, legacy-fragment refusal of would-be
-   `yolo` from every level including the flag), and what narrowing
-   mutants prove each refusal's bound?
-6. Later tool versions change flag grammar: what versioned-capability
-   rule re-verifies each mapping, and what fails closed first?
-7. What minimum Curator/fragment version token carries the profile
-   level and the lock engagement to the launcher? The fail-closed rule
-   is specified — item 5 refuses would-be `yolo` with
-   `permission_policy_unsupported` when the transport support cannot be
-   established — so only the token value and the exact fragment member
-   names are open. Which non-interactive markers beyond
-   `CI`/`GITHUB_ACTIONS` complete the item-5 headless detector
-   enumeration, and where is that list versioned?
+Open questions 1–7 resolved at adoption (2026-09-21). Each row states
+the question and the recorded choice.
+
+| # | Question | Adopted choice |
+|---|---|---|
+| 1 | Should `--yolo` ship in the same increment as `--permissions` or follow after the mapping settles? | **Same increment, as an exact alias of the yolo mode** (review recommendation, for legacy-wrapper parity). `-d`/`--danger` stay rejected. Launcher follow-up implements both together. |
+| 2 | What is the exact `ax` admission precondition for tracked yolo, and which version carries it? | **Both, carried by a versioned `ax` capability — until then, refused.** Tracked yolo is admitted only by an ax-owned permission representation **and** validated natively-mapped admission, carried by a versioned `ax` capability (the carrying version is fixed by the implementing revision — follow-up). Normative now: tracked plus effective `yolo` from any level is refused (`permission_mode_tracked_unsupported`) with no fallback to untracked, and no bypass spelling enters the composed `ax` document (D5/D3.6). |
+| 3 | How are unknown future native policy forms detected without false resolved-policy claims? | **Refused (fail closed) with a versioned-capability token.** The provider grammar is closed per pinned tool release; unknown future native policy forms (new Codex `-c` keys, new Claude modes) are refused (`usage`, exit 2), never resolved into a policy claim. The grammar distinguishes prompt text from flags (the launcher SPEC owns the parsing rule); the capability table is versioned per choice 6. |
+| 4 | What does the launcher print, and where is it recorded, when native stored settings relax the posture beneath a `native` request? | **Print the effective-native-policy line; record it in the launch record.** The launcher prints an stderr warning line naming the detected relaxation and its source (best-effort detection over known selectors; the launcher never claims beyond what it inspected) and records it in the launch record — the tracked `ax` launch document (launcher-SPEC-owned extension key) when tracked, the stderr provenance stream when untracked (no persistent record in untracked mode). Exact spelling and key: launcher SPEC revision (follow-up). |
+| 5 | Which negative tests drive the real `curator run` entry, and what narrowing mutants prove each bound? | **Real `curator run` entry with a fake tool; rows named.** The implementation MUST add negative rows driving the real entry: per-environment mapping rows; per-conflict refusal rows (`=` and separate forms, aliases, `exec` placement); precedence rows (flag/profile/global/default-interactive/default-headless); v1-file-with-member and unknown-value rejection rows; lock-engaged refusal rows from every level (visible `yolo` ⇒ `usage`, silence ⇒ `native`); tracked-refusal rows from every level; headless/CI-silence ⇒ `native` rows (`source=default-headless`); legacy-fragment would-be-`yolo` refusal rows from every level including the flag; and one narrowing mutant per refusal bound. Launcher follow-up implements; no new spec vectors in this revision. |
+| 6 | What versioned-capability rule re-verifies each mapping, and what fails closed first? | **Draft's proposal adopted; encoding is a follow-up.** Each mapping is re-verified per tool release; the capability table keys (environment, tool release) to a grammar version. On version drift the `yolo` mapping fails closed first (refuse `yolo` for unverified releases; `native` still forwards verbatim with no claims). The exact token/member encoding is to be fixed by the implementing revision (follow-up). |
+| 7 | What minimum Curator/fragment version token carries the profile level and the lock engagement, which markers complete the headless detector, and where is that list versioned? | **Fail-closed rule normative now; token value, member names, and marker list fixed as stated.** The item-5 rule is specified, not deferred: unestablished transport support ⇒ would-be `yolo` refused (`permission_policy_unsupported`); `native` (explicit, or headless/CI/tracked silence) proceeds. The minimum token value and the exact fragment member names are to be fixed by the implementing revision (follow-up — the token names the revision that defines it). Non-interactive markers: the closed set {`CI`, `GITHUB_ACTIONS`} fixed by this adoption; additions by later spec revision only, never ad-hoc; the list is versioned in the launcher SPEC §4.6 and mirrored in environments §10.1. |
 
 ## Compatibility and security impact
 
-No launcher flag, mapping, default, composition, `ax` document, or
-`defaults.json` change. Adoption would touch launcher SPEC §3 (flag
-table), §4.1 (fragment members and the transport version
-precondition), §4.2 (mapping table), §4.3 (defaults v2 and item-2
-precedence), §4.5 (composition placement and conflicts), §4.6 (tracked
-refusal from every level, the item-5 headless detector, headless/CI/
-tracked default `native`), §4.7 (file family note), §6 (diagnostics,
-including `permission_policy_unsupported`), the README options table,
-and `internal/cli` parse, `internal/mapping` capability table,
-`internal/composition` placement, and `internal/execution` refusal plus
-provenance — with Decision 0013 D3.6/D5/D6.4 satisfied before any
-tracked bypass — and, on the Curator side, environments §12.1 (new
-knob), §12.2 (lockable set), manager §1 (system `locked` list),
-`manager-config-v2`, `system-config-v2`, and the launch-env fragment
-schema, each by its own specification revision. Raw bypass after `--`
-stays available untracked by design; the typed flag adds validated UX,
-not a perimeter. `--dangerously-bypass-hook-trust` is never mapped.
-Historical `full-auto`/`untrusted` alias spellings are not exposed in
-the installed help and are not canonical mappings.
+Adoption touches, on the Curator side, environments §10.1
+(permission-mode resolution, the item-5 headless detector, the
+transport fail-closed rule), §10.2 (transport requirement), §12.1 (new
+`permissions.<profile>` knob), §12.2 (lockable set plus the
+`native`-only direction), §13 (vector clause), manager §1 (system
+`locked` list), §12.3 (profile-remove entries), and §12.5 (fragment
+shaping), with `manager-config-v2`, `system-config-v2`, vectors,
+schema cases, and gates extended in the same revision. The launcher
+SPEC §3 (flag table), §4.1 (fragment members and the transport
+version precondition), §4.2 (mapping table), §4.3 (defaults v2 and
+item-2 precedence), §4.5 (composition placement and conflicts), §4.6
+(tracked refusal from every level, the item-5 headless detector,
+headless/CI/tracked default `native`), §4.7 (file family note), §6
+(diagnostics, including `permission_policy_unsupported`), the README
+options table, and `internal/cli` parse, `internal/mapping` capability
+table, `internal/composition` placement, and `internal/execution`
+refusal plus provenance — with Decision 0013 D3.6/D5/D6.4 satisfied
+before any tracked bypass — are a launcher follow-up leaf, as are the
+choice-5 negative rows. The launch-env fragment member names and the
+minimum transport token (choice 7) and the `ax` permission capability
+(choice 2) are follow-up spec revisions; the versioned
+provider-capability encoding (choice 6) is owned by the launcher SPEC
+revision (launcher follow-up F-L1). No launcher flag, mapping,
+default, composition, `ax` document, or `defaults.json` changes in
+this revision. Raw bypass after `--` stays available untracked by
+design; the typed flag adds validated UX, not a perimeter.
+`--dangerously-bypass-hook-trust` is never mapped. Historical
+`full-auto`/`untrusted` alias spellings are not exposed in the
+installed help and are not canonical mappings.
 
 Bypass by default is an explicit operator choice, scoped to interactive
 untracked launches on operator-owned machines — not a claim that bypass

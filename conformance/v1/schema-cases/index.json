@@ -4160,6 +4160,16 @@
     "valid": false
   },
   {
+    "instance": "manager-config-v2/invalid-permissions-value.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v2/invalid-permissions-profile-grammar.json",
+    "schema": "manager-config-v2.schema.json",
+    "valid": false
+  },
+  {
     "instance": "manager-config-v2/invalid-xdg-seed-entry-path.json",
     "schema": "manager-config-v2.schema.json",
     "valid": false
@@ -4776,6 +4786,21 @@
   },
   {
     "instance": "system-config-v2/invalid-isolation-profile-grammar.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-permissions-yolo-direction.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-permissions-value.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-permissions-profile-grammar.json",
     "schema": "system-config-v2.schema.json",
     "valid": false
   },

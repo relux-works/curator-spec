@@ -88,8 +88,8 @@ user configuration:
    `environments.mcp_package_allowlist`, `environments.passable_env_names`,
    `environments.require_current_profile`, `environments.isolation`,
    `environments.transitive_system_modules`,
-   `environments.provider_directories`, `environments.source_signers`, and
-   `environments.require_source_signers`.
+   `environments.provider_directories`, `environments.source_signers`,
+   `environments.require_source_signers`, and `environments.permissions`.
    No other `environments` knob is lockable or carried by the system file.
    Operator credential selections — the `build_ssh` scopes among them — are
    never lockable: section 12.2 makes credential material operator-owned, and
@@ -99,6 +99,8 @@ user configuration:
    only in the direction of `error`, and schema 2 admits no other value
    there; `environments.require_source_signers` is lockable only in the
    direction of `true`, and schema 2 admits no other value there;
+   `environments.permissions` is lockable only in the direction of
+   `native`, and schema 2 admits no other value there;
    `security_posture` is lockable only in the direction of `hardened`,
    and `system-config-v2` admits no other value there: a system file MUST
    lock `security_posture` only to `hardened`, and a system file carrying
@@ -2645,7 +2647,7 @@ fetch only and report which pins `profile update` would move.
 the profile is current in any scope or is an overlay of another installed
 profile. Removal deletes the lock and the profile's configuration records
 — its `current_profile`, `scoped_current`, `overlays`, `system_prompt_files`,
-and `isolation` entries — and retains its managed homes, which hold the
+`isolation`, and `permissions` entries — and retains its managed homes, which hold the
 operator's session data, unless `--purge` removes them with their markers
 and backups after the notice. Retained homes without a profile are orphans:
 `env status` reports each by path, and `env unmanage` or a later `--purge`
@@ -2731,12 +2733,16 @@ adapter declares the closed per-platform passthrough set of environments
 copies exactly once at provisioning. The `isolation.<profile>.<env-id>`
 knob selects `shared` (default) or `isolated` per profile × environment:
 under `shared` a managed home reuses the operator's existing authentication
-through exactly the declared entries, and under `isolated` — the supported
-shape for genuinely separate accounts — no passthrough is linked and the
+through exactly the declared entries, and under `isolated` — bounded
+store separation (environments §7.4), never account separation and never
+filesystem isolation — no passthrough is linked and the
 tool authenticates fresh inside the managed home. The adapter table fixes
 where a value is a configuration error rather than a choice: `isolated` for
-`opencode`, or for `claude_code` on macOS below the pinned release, is
-`environment_isolated_unsupported`; `shared` for `claude_code` on macOS at
+`opencode`, for `claude_code` on macOS below the pinned release, or for
+`codex_cli` under native `keyring` or `auto` storage, is
+`environment_isolated_unsupported` (under `auto` the file-link is
+inert on a keyring host, so admission would authenticate through the
+operator-global keyring — environments §7.4); `shared` for `claude_code` on macOS at
 or above the pinned release is `environment_shared_unsupported`, because
 that adapter is isolated by construction there and the knob's default
 follows. Passthrough entries are excluded from surface content hashes and
@@ -2744,17 +2750,24 @@ drift detection, are never copied into the profile store, and are never
 audited as profile content, but every file-shaped strategy is watched by
 the liveness row: `env status` reports `environment_passthrough_detached`
 (non-current) when a recorded entry is no longer a symlink to the native
-entry, and `env resolve --repair` re-links it leaving both files' bytes
-untouched. Materialization, refresh, switch, and garbage collection MUST
+entry; `env resolve --repair` re-links an absent link leaving the native
+bytes untouched, and refuses with `environment_credential_conflict` —
+removing nothing — when the link path holds a regular file or a symlink
+to an unexpected target (environments §7.4). A mode change of a
+provisioned home is the explicit inspect → plan → apply migration of
+environments §7.4 under the manager lock, never silent inside `--repair`.
+Materialization, refresh, switch, and garbage collection MUST
 NOT create, rewrite, or delete a credential file beyond maintaining the
 declared passthrough links themselves: the operator-owned credential
 boundary of section 1, applied to environment homes.
 
 | Condition | Diagnostic (environments §7.7) |
 |---|---|
-| `isolated` configured for `opencode`, or for `claude_code` on macOS below the pinned release | `environment_isolated_unsupported` |
+| `isolated` configured for `opencode`, for `claude_code` on macOS below the pinned release, or for `codex_cli` under native `keyring` or `auto` storage | `environment_isolated_unsupported` |
 | `shared` configured for `claude_code` on macOS at or above the pinned release | `environment_shared_unsupported` |
 | recorded passthrough entry is no longer a symlink to the native entry (non-current) | `environment_passthrough_detached` |
+| recorded passthrough link path holds a regular file or an unexpected symlink target at repair (refusal, no fragment) | `environment_credential_conflict` |
+| native credential storage selector outside the verified set (refusal, no fragment) | `environment_credential_unsupported` |
 
 ### 12.5 `env resolve`
 
@@ -2797,9 +2810,13 @@ stale home takes the section 2.5 mutation lock with a bounded wait of at
 least one and at most sixty seconds, documented by the manager, and
 provisions or repairs the home from the store entries the lock names as one
 journaled transaction — re-materializing managed surfaces, re-linking
-passthrough entries, reconciling XDG seeds, adding the launch directory's
-project entry — never touching environment-owned mutable state, unmanaged
-files, seeds, or backups. Repair restores managed bytes from the store and
+absent passthrough links, reconciling XDG seeds, adding the launch
+directory's project entry — never touching environment-owned mutable
+state, unmanaged files, seeds, or backups. A link path that holds a
+regular file or an unexpected symlink target is
+`environment_credential_conflict`: the repair stops with the diagnostic
+and emits no fragment (environments §10.1). Repair restores managed
+bytes from the store and
 MUST NOT adopt candidate bytes found in the home — the no-adoption rule of
 sections 2.6 and 11.9. A lock wait that times out is
 `environment_lock_unavailable`; a store that cannot restore the home is
@@ -2811,7 +2828,7 @@ first read is the recorded residual of environments §10.1.
 LF, so that the Decision 0013 Decision 6.4 `fragment-digest` extension key
 is `sha256:` over exactly those bytes without the LF; `--format env` and
 `--format shell` print the variables as environments §10.1 fixes, the
-latter POSIX-only. Two knobs shape what a fragment can carry: the
+latter POSIX-only. Three knobs shape what a fragment can carry: the
 `passable_env_names` knob (default empty — opt-in per name; explicit `null` stays unbounded; environments §2.2, §10.3) bounds, beside the
 reserved-name exclusion of environments §2.2, which operator variable names
 the fragment's `env_names` may name for the launcher's allowlist — values
@@ -2819,7 +2836,10 @@ never appear anywhere — and the `system_prompt_files.<profile>.pi` knob
 (`off` by default) additionally materializes the system output at
 `<home>/APPEND_SYSTEM.md` under `append` or `<home>/SYSTEM.md` under
 `replace` for `pi` managed homes only, both live channels the tool applies
-unconditionally when present. The profile-influence boundary of
+unconditionally when present — and the `permissions.<profile>` knob
+(absent is a silent level), whose effective mode and section 12.2 lock
+engagement Curator resolves and delivers through the fragment
+(environments §10.2). The profile-influence boundary of
 environments §10.3 is this profile's package-influence boundary applied to
 environment injection: fragment variable names come only from the closed
 registry, fragment values stay below the manager-owned environments root,
@@ -2840,6 +2860,7 @@ in this profile launches.
 | recorded surface file unreadable at resolve (no fragment; non-current, currency unknown) | `environment_surface_unreadable` |
 | lock file unreadable or malformed at resolve (no fragment; non-current, currency unknown; never rebuilt from) | `environment_store_untrusted` |
 | recorded passthrough entry unreadable at resolve (no fragment; non-current, currency unknown) | `environment_passthrough_unreadable` |
+| recorded passthrough link path holds a regular file or an unexpected symlink target under `--repair` (no fragment) | `environment_credential_conflict` |
 | store entry, lock, or marker file fails the environments §4 protected-boundary contract or its pin hash at resolve (no fragment; non-current) | `environment_store_untrusted` |
 | enclosing boundary cannot be proven at resolve (no fragment; non-current; nothing rebuilt) | `environment_store_untrusted` |
 | repair could not acquire the mutation lock within the bounded wait | `environment_lock_unavailable` |
