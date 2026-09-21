@@ -257,7 +257,14 @@
   {
     "schema": "install-marker-v5.schema.json",
     "instance": "schema-cases/install-marker-v5/valid.json",
-    "valid": true
+    "valid": true,
+    "comment": "Present branch of protocol/skillfile-sources.md:268 (top-level build_source required exactly for active local go-v1 commands): local-helper go-v1 build entry; BUG-260921-3cgij4 fixed empty-builds+build_source here"
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/valid-no-builds.json",
+    "valid": true,
+    "comment": "Absent branch of protocol/skillfile-sources.md:268 (build_source absent otherwise): empty builds and no top-level build_source; sibling of valid.json per BUG-260921-3cgij4"
   },
   {
     "schema": "install-marker-v5.schema.json",

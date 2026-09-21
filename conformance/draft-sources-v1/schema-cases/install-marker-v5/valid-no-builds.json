@@ -11,21 +11,7 @@
   "build_roots": [
     "build"
   ],
-  "build_source": {
-    "algorithm": "curator-build-source-v1",
-    "content_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-  },
-  "builds": {
-    "local-helper": {
-      "artifact_path": "bin/local-helper",
-      "artifact_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
-      "cache_key": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
-      "driver": "go-v1",
-      "execution_policy": "manager-worker-v1",
-      "receipt_schema_version": 3,
-      "receipt_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-    }
-  },
+  "builds": {},
   "commands": [
     "golden-tool",
     "local-helper"
