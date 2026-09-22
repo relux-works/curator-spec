@@ -159,13 +159,17 @@ alias), resolved per launch as flag, then the `permissions.<profile>`
 machine knob, then the launcher-global `defaults.json` default, then
 the built-in default — `yolo` for interactive untracked launches,
 `native` for headless, CI, and tracked silence. A fleet-wide
-force-`native` lock overrides the whole precedence. The launcher maps
-`yolo` to the verified native bypass flag per environment, refuses
-conflicts and unsupported environments, and records the effective mode
-and its provenance; raw bypass text after `--` stays available
-untracked and unvalidated. The flag spelling, mapping, refusals, and
-provenance are owned by the launcher SPEC; environments §10.1 states
-the Curator-side resolution, lock, and transport rules.
+force-`native` lock overrides the whole precedence. The launcher
+resolves the mode and passes it to agents-management, which maps
+`yolo` to the verified native bypass flag per environment; the
+launcher refuses conflicts and unsupported environments, and records
+the effective mode and its provenance; raw bypass text after `--`
+stays available untracked and unvalidated. The provider flag
+spelling, the per-tool-release mapping with its goldens, and the argv
+grammar are owned by agents-management as a `LaunchRequest`
+permission-mode member — the launcher never spells a provider flag
+(Decision 0013 D5); environments §10.1 states the Curator-side
+resolution, lock, and transport rules.
 
 ```bash
 # Install one root context package as a profile; profile audit is always

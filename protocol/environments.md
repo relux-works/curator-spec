@@ -1380,7 +1380,7 @@ pinned release that the strategy answers to:
 | Environment | Passthrough entries | Strategy | Write behavior |
 |---|---|---|---|
 | `claude_code` | macOS: none — Claude Code stores OAuth credentials in the login Keychain as service `Claude Code-credentials`, account `$USER`; with `CLAUDE_CONFIG_DIR` set the service name is suffixed with `-` plus the first 8 hex characters of the SHA-256 of the config-dir path, so each managed home owns a separate Keychain item that the native item never serves (**verified** from the 2.1.261 bundle strings and the Keychain items present); Linux: `.credentials.json`; Windows: none in revision 1 (reserved pending platform verification) | macOS: `per-home-keychain` — nothing is linked, and every managed home logs in on its own; Linux: `file-link` — the managed home's `.credentials.json` is a symlink to the native file, re-checked by the liveness row | Linux write behavior **unverified** (docs-confidence: rename-over assumed until verified, so the Linux `file-link` is the expected-to-detach case below) |
-| `codex_cli` | `auth.json` | `keyring-preferred`: where the operator's `config.toml` sets `cli_auth_credentials_store` to `keyring` the credential is ambient and no entry is linked; under `file` (the default) or `auto` the managed `auth.json` is a `file-link` — a symlink to the native file, re-checked by the liveness row. The manager assumes the keyring identity is operator-global (independent of `CODEX_HOME`) until a disposable-account scratch-`CODEX_HOME` probe proves per-home scoping, so under `keyring` or `auto` storage `isolated` is `environment_isolated_unsupported`; a storage selector outside the verified `file`/`keyring`/`auto` set fails closed with `environment_credential_unsupported` | **verified** in-place: codex 0.153.2 rewrites `auth.json` by truncate-and-write on the same inode, mode 0600, never temp-and-rename (upstream `login/src/auth/storage.rs` for the path the binary names); `cli_auth_credentials_store = file|keyring|auto` **verified** in the embedded configuration docs |
+| `codex_cli` | `auth.json` | `keyring-preferred`: where the operator's `config.toml` sets `cli_auth_credentials_store` to `keyring` the credential is ambient and no entry is linked; under `file` (the default) or `auto` the managed `auth.json` is a `file-link` — a symlink to the native file, re-checked by the liveness row. The manager assumes the keyring identity is operator-global (independent of `CODEX_HOME`) until a disposable-account scratch-`CODEX_HOME` probe proves per-home scoping, so under `keyring` or `auto` storage `isolated` is `environment_isolated_unsupported`. An absent `cli_auth_credentials_store` key means effective `file` storage, so `isolated` is admitted; a storage selector outside the verified `file`/`keyring`/`auto` set fails closed with `environment_credential_unsupported` | **verified** in-place: codex 0.153.2 rewrites `auth.json` by truncate-and-write on the same inode, mode 0600, never temp-and-rename (upstream `login/src/auth/storage.rs` for the path the binary names); `cli_auth_credentials_store = file|keyring|auto` **verified** in the embedded configuration docs |
 | `opencode` | none — auth lives in `XDG_DATA_HOME`, which the config swap never touches (section 7.1) | ambient | — |
 | `pi` | `auth.json` | `file-link` — the managed `auth.json` is a symlink to the native `~/.pi/agent/auth.json` (native root `~/.pi/agent`, not `~/.pi`), re-checked by the liveness row | **verified** in-place: pi 0.84.2 rewrites its agent-root `auth.json` with a single in-place write, mode 0600, under its own lockfile, never temp-and-rename (installed `core/auth-storage.js`) |
 
@@ -1464,11 +1464,13 @@ authorized disposable-account experiment proves which store Claude
 reads first, whether the file is rewritten in place on refresh, and
 under which conditions, if any, a suffixed item is written; the
 verified selection scheme stands regardless. `isolated` remains
-available for `codex_cli` under `file` storage only, for `pi`,
+available for `codex_cli` under `file` storage only — including an
+absent `cli_auth_credentials_store` key, which resolves to effective
+`file` — for `pi`,
 and for `claude_code` on Linux. Sharing is defined by the native
 home's effective storage alone: a managed `config.toml` that diverges
 from the native selection changes nothing, and the manager never
-rewrites either file to realign them.
+rewrites either file to realign them. The operator's machines have no cli_auth_credentials_store key in config.toml, so the platform default file applies and isolated is admitted; the operator's profile design relies on that platform default and on nothing more from 0017.
 
 **Migration.** A mode change is never applied by repair: changing the
 effective mode of a provisioned home runs an explicit inspect → plan
@@ -1481,7 +1483,14 @@ shared conflict — the managed home holds credential bytes a link
 would displace — the migration reports both sides and stops: the
 operator resolves the conflict out of band and re-runs. The recorded
 2 B `~/.pi/auth.json` is unlinked as a recorded link of the wrong
-target, never deleted as a native file.
+target, never deleted as a native file. Operator evidence
+2026-09-21: on the operator Mac the managed Pi home links to
+`~/.pi/auth.json`, which does not exist — the real credential is
+`~/.pi/agent/auth.json` — so the link is dangling, and `env status`
+is silent about it. A dangling or mis-targeted credential link is
+reported, never silent: `env status` (and `resolve`) report it with
+`environment_credential_conflict`-class wording (curator follow-up
+F-C1). On the operator Mac, ~/.curator/environments/default/pi/auth.json points to ~/.pi/auth.json; that target does not exist, the real credential is ~/.pi/agent/auth.json, and env status does not show the dangling passthrough as detached. env status and resolve report dangling or mis-targeted credential links as detached, with environment_credential_conflict-class wording instead of silence.
 
 **Credential record.** From the marker revision Decision 0017 choice
 5 defines (follow-up), every passthrough record carries the effective
@@ -2915,7 +2924,7 @@ launcher-global `defaults.json` default, over the built-in default —
 `yolo` for interactive untracked launches, `native` for headless, CI,
 and tracked silence. `native` means no launcher override (argv
 forwarded verbatim), not a guaranteed prompting posture; `yolo`
-requests the launcher-SPEC-declared native bypass, never an
+requests the agents-management-declared native bypass, never an
 outside-policy bypass. A launch is headless when stdin or stdout is
 not a TTY, when the native arguments select a non-interactive form,
 when a non-interactive marker (`CI` or `GITHUB_ACTIONS`, the closed
@@ -2928,9 +2937,16 @@ engagement and delivers them through the fragment (section 10.2);
 verified transport support is a precondition for admitting `yolo` —
 when the launcher cannot establish it, any launch that would otherwise
 resolve `yolo` is refused (`permission_policy_unsupported`), while a
-launch that resolves `native` proceeds. The flag spelling, mapping
-table, refusal rules, and provenance line are owned by the launcher
-SPEC, not this document.
+launch that resolves `native` proceeds. The provider flag spelling,
+the per-tool-release mapping with its goldens, and the argv grammar
+are owned by agents-management as a `LaunchRequest` permission-mode
+member for `LaunchModeInteractive` (Decision 0018, choices 3 and 6),
+not this document and not the launcher SPEC: the launcher never
+spells a provider flag (Decision 0013 D5) — it resolves and passes
+the mode only. The launcher owns mode resolution (flag over profile
+over global over built-in default, including conflict refusal), the
+headless detector, transport of the resolved mode, the stderr
+provenance line, and the launch-record extension key.
 
 **Tracked residual.** Decision 0013's document has no destination
 environment-unset or `PATH`-transform member. Its own-literals-only

@@ -2742,7 +2742,10 @@ where a value is a configuration error rather than a choice: `isolated` for
 `codex_cli` under native `keyring` or `auto` storage, is
 `environment_isolated_unsupported` (under `auto` the file-link is
 inert on a keyring host, so admission would authenticate through the
-operator-global keyring — environments §7.4); `shared` for `claude_code` on macOS at
+operator-global keyring — environments §7.4). An absent
+`cli_auth_credentials_store` key resolves to effective `file`
+storage, so `isolated` is admitted for `codex_cli` (environments
+§7.4). The operator's machines have no cli_auth_credentials_store key in config.toml, so the platform default file applies and isolated is admitted; the operator's profile design relies on that platform default and on nothing more from 0017. `shared` for `claude_code` on macOS at
 or above the pinned release is `environment_shared_unsupported`, because
 that adapter is isolated by construction there and the knob's default
 follows. Passthrough entries are excluded from surface content hashes and

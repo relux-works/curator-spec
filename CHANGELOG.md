@@ -31,6 +31,22 @@ Versioning for the complete specification set.
   follow-up leaves. Normative text, `manager-config-v2`,
   `system-config-v2`, vectors, schema cases, and gates extended in
   the same revision; frozen v1 protocol schemas untouched.
+- STORY-260921-3z0fgr (TASK-260922-23ahj2): operator corrections to
+  the landed 0017/0018 adoption (text only; no schema, vector, or
+  generator change). C1: the provider flag spelling (`yolo` →
+  `--dangerously-skip-permissions` / `--dangerously-bypass-approvals-and-sandbox`),
+  the per-tool-release mapping, the argv grammar, and the
+  (environment, tool release) capability table are owned by
+  agents-management as a `LaunchRequest` permission-mode member for
+  `LaunchModeInteractive` with goldens — the launcher only resolves
+  and passes the mode (Decision 0013 D5); follow-up F-M1 added, F-L1
+  narrowed to mode resolution, transport, and provenance. C2: the Pi
+  dangling-link operator evidence (managed home links to a missing
+  `~/.pi/auth.json` while the credential is `~/.pi/agent/auth.json`,
+  `env status` silent) is recorded, and `env status`/`resolve` must
+  report dangling or mis-targeted credential links (F-C1). C3: an
+  absent `cli_auth_credentials_store` key resolves to effective
+  `file` storage, so `isolated` is admitted for `codex_cli`.
 - STORY-260916-12lbww: one closed per-manager, per-platform
   dotfile-manager state table for the section 9.5 onboarding heuristic
   (environments §9.5/§13), replacing the by-example POSIX-only list: one
