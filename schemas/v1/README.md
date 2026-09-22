@@ -59,6 +59,14 @@ section 5.6 surface hashes) with expected bytes under
 `conformance/v1/expected/environments/`, and `context-detectors.json`
 (the section 9.1 detector classes).
 
+The Decision 0018 choice-7 revision carries `launch-env-fragment-v2`:
+revision v1 plus one REQUIRED closed `permissions` member (`mode`,
+`locked`, `source`; `locked` is true iff `source` is `global`; `mode`
+is `native` whenever `source` is `global` or `default`), with
+`launch-env-fragment-v2` as the minimum transport version token. The
+v1 file is untouched and stays valid: a v1 fragment carrying the
+member is invalid, and a v2 fragment without it is invalid.
+
 All `$id` values are stable identifiers. Relative `$ref` values resolve from
 the containing schema. `common.schema.json` is a definition library and is not
 a standalone wire object.

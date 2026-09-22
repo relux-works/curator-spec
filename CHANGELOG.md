@@ -7,6 +7,27 @@ Versioning for the complete specification set.
 
 ### Added
 
+- STORY-260922-188t6n (TASK-260922-1hla8q, F-S2): fix the Decision
+  0018 choice-7 transport left open at adoption. The minimum transport
+  version token is `launch-env-fragment-v2` — a launcher establishes
+  transport support iff the fragment revision is v2 or later — and
+  the fragment member carrying the section 12.1 `permissions` profile
+  level and the section 12.2 lock engagement is the REQUIRED closed
+  object `permissions` = `{ "mode": "native"|"yolo", "locked":
+  true|false, "source": "profile"|"global"|"default" }`
+  (`locked` true iff `source` is `global`; `mode` is `native`
+  whenever `source` is `global` or `default`; `yolo` with
+  `locked: true` is contradictory and invalid). Normative text in
+  environments §10.1, §10.2, and §13 and manager §12.5, with the
+  fail-closed rule now citing the token; new `launch-env-fragment-v2`
+  schema with positive and negative cases. The closed non-interactive
+  marker set {`CI`, `GITHUB_ACTIONS`} is stated once in §10.1 —
+  additions by specification revision only — mirrored in the launcher
+  SPEC §4.6. Consumers: the launcher follow-up F-L1
+  (STORY-260922-39hxog — launcher SPEC §4.1 precondition mirror,
+  mode resolution, transport, provenance) and the curator emission
+  follow-up (manager-side v2 emission). Frozen v1 protocol schemas
+  untouched; the v1 fragment file is untouched and stays valid.
 - STORY-260921-3z0fgr: adopt decisions 0017 (environment credential
   modes) and 0018 (`curator run` permission interface), both proposed
   2026-09-16 and adopted 2026-09-21 with every open question resolved

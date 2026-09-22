@@ -1697,6 +1697,14 @@ class EnvironmentVectorTests(unittest.TestCase):
                 "launch-env-fragment-v1.schema.json",
                 {"environment": "claude_code", "path_prepend": "/usr/local/bin"},
             ),
+            "fragment v2 channels not the registry": (
+                "launch-env-fragment-v2.schema.json",
+                {"environment": "claude_code", "system_prompt": {"channels": fragment_channels[:1]}},
+            ),
+            "fragment v2 path_prepend outside root": (
+                "launch-env-fragment-v2.schema.json",
+                {"environment": "claude_code", "path_prepend": "/usr/local/bin"},
+            ),
         }
         for label, (schema_name, instance) in rejected.items():
             with self.subTest(label=label):
@@ -1718,6 +1726,10 @@ class EnvironmentVectorTests(unittest.TestCase):
             ),
             "fragment registry channels": (
                 "launch-env-fragment-v1.schema.json",
+                {"environment": "claude_code", "system_prompt": {"channels": fragment_channels}, "mcp": {"channels": validate.ENVIRONMENT_MCP_CHANNELS["claude_code"], "env_names": ["A", "B"]}, "path_prepend": "/manager/environments/x/bin"},
+            ),
+            "fragment v2 registry channels": (
+                "launch-env-fragment-v2.schema.json",
                 {"environment": "claude_code", "system_prompt": {"channels": fragment_channels}, "mcp": {"channels": validate.ENVIRONMENT_MCP_CHANNELS["claude_code"], "env_names": ["A", "B"]}, "path_prepend": "/manager/environments/x/bin"},
             ),
         }

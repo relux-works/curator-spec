@@ -1366,9 +1366,19 @@ var adapterHomeVariables = map[string]string{
 	"pi":          "PI_CODING_AGENT_DIR",
 }
 
-// validLaunchEnvFragmentV1 is the section 10.2 positive example.
+// validLaunchEnvFragmentV1 is the section 10.2 revision-1 positive example.
 func validLaunchEnvFragmentV1() map[string]any {
 	return launchFragmentFor("claude_code", true, true)
+}
+
+// validLaunchEnvFragmentV2 is the section 10.2 revision-2 positive example:
+// the revision-1 shape plus the REQUIRED closed permissions member carrying
+// the resolved profile level and the lock engagement.
+func validLaunchEnvFragmentV2() map[string]any {
+	fragment := launchFragmentFor("claude_code", true, true)
+	fragment["fragment"] = "launch-env-fragment-v2"
+	fragment["permissions"] = map[string]any{"mode": "native", "locked": false, "source": "profile"}
+	return fragment
 }
 
 func launchFragmentFor(environment string, systemPrompt, mcp bool) map[string]any {
@@ -1414,6 +1424,7 @@ func launchEnvFragmentSchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-fragment-identity", valid: false, instance: withField(valid, "fragment", "launch-env-fragment-v2")},
 		{name: "invalid-unknown-environment", valid: false, instance: withField(valid, "environment", "cursor")},
 		{name: "invalid-unknown-field", valid: false, instance: withField(valid, "composition", []any{})},
+		{name: "invalid-permissions-member", valid: false, instance: withField(valid, "permissions", map[string]any{"mode": "native", "locked": false, "source": "profile"})},
 		{name: "invalid-missing-precedence", valid: false, instance: without(valid, "precedence")},
 		{name: "invalid-precedence-string", valid: false, instance: withField(valid, "precedence", "later-overrides-earlier")},
 		{name: "invalid-profile-commit-pin", valid: false, instance: withField(valid, "profile", map[string]any{"name": "companyA", "commit": fixedCommit})},
@@ -1450,6 +1461,30 @@ func launchEnvFragmentSchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-path-prepend-dotdot-segment", valid: false, instance: withField(valid, "path_prepend", "/manager/environments/companyA/../bin")},
 		{name: "invalid-env-dotdot-segment", valid: false, instance: withField(valid, "env", map[string]any{"CLAUDE_CONFIG_DIR": "/manager/environments/companyA/../claude_code"})},
 		{name: "invalid-system-prompt-path-dotdot-segment", valid: false, instance: withField(valid, "system_prompt", withField(valid["system_prompt"].(map[string]any), "path", "/manager/environments/companyA/claude_code/.agent-context/../../system-prompt.md"))},
+	}
+}
+
+// launchEnvFragmentV2SchemaExamples covers the revision-2 closed permissions
+// member: the knob-set native and yolo modes, the lock-engaged native mode,
+// and the silent-knob encoding are valid; a missing member, an unknown mode,
+// and every contradictory locked/source/mode combination are invalid.
+func launchEnvFragmentV2SchemaExamples(valid map[string]any) []schemaExample {
+	permissions := func(mode string, locked bool, source string) map[string]any {
+		return map[string]any{"mode": mode, "locked": locked, "source": source}
+	}
+	return []schemaExample{
+		{name: "valid-permissions-yolo-unlocked", valid: true, instance: withField(valid, "permissions", permissions("yolo", false, "profile"))},
+		{name: "valid-permissions-native-locked", valid: true, instance: withField(valid, "permissions", permissions("native", true, "global"))},
+		{name: "valid-permissions-native-silent", valid: true, instance: withField(valid, "permissions", permissions("native", false, "default"))},
+		{name: "invalid-permissions-absent", valid: false, instance: without(valid, "permissions")},
+		{name: "invalid-permissions-unknown-mode", valid: false, instance: withField(valid, "permissions", permissions("auto", false, "profile"))},
+		{name: "invalid-permissions-yolo-locked", valid: false, instance: withField(valid, "permissions", permissions("yolo", true, "global"))},
+		{name: "invalid-permissions-yolo-silent", valid: false, instance: withField(valid, "permissions", permissions("yolo", false, "default"))},
+		{name: "invalid-permissions-locked-profile-source", valid: false, instance: withField(valid, "permissions", permissions("native", true, "profile"))},
+		{name: "invalid-permissions-global-unlocked", valid: false, instance: withField(valid, "permissions", permissions("native", false, "global"))},
+		{name: "invalid-permissions-unknown-source", valid: false, instance: withField(valid, "permissions", permissions("native", false, "flag"))},
+		{name: "invalid-permissions-unknown-field", valid: false, instance: withField(valid, "permissions", map[string]any{"mode": "native", "locked": false, "source": "profile", "level": "profile"})},
+		{name: "invalid-permissions-missing-mode", valid: false, instance: withField(valid, "permissions", map[string]any{"locked": false, "source": "profile"})},
 	}
 }
 

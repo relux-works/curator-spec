@@ -418,6 +418,7 @@ func TestEnvironmentSchemaCasesCoverTheClosedSurfaces(t *testing.T) {
 		"context-lock-v1.schema.json":             contextLockSchemaExamples(validContextLockV1()),
 		"agent-environment-marker-v1.schema.json": environmentMarkerSchemaExamples(validEnvironmentMarkerV1()),
 		"launch-env-fragment-v1.schema.json":      launchEnvFragmentSchemaExamples(validLaunchEnvFragmentV1()),
+		"launch-env-fragment-v2.schema.json":      launchEnvFragmentV2SchemaExamples(validLaunchEnvFragmentV2()),
 	} {
 		requireCase(schema, "valid.json", true)
 		requireCase(schema, "invalid.json", false)

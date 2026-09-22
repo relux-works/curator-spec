@@ -2776,8 +2776,10 @@ boundary of section 1, applied to environment homes.
 
 `env resolve` is the manager's only execution-facing primitive
 (environments §10.1): a pure function from (lock, precedence policy,
-environment, machine configuration) to the closed `launch-env-fragment-v1`
-object, whose `profile` carries the lock hash, whose `precedence` carries
+environment, machine configuration) to the closed launch environment
+fragment (`launch-env-fragment-v1` until the manager adopts the v2
+emission; environments §10.2), whose `profile` carries the lock hash,
+whose `precedence` carries
 both primitives, and whose `mcp` section reproduces the adapter's MCP
 channel descriptor over the materialized section 12.1 file. It launches
 nothing and applies no channel; channel descriptors in the fragment are
@@ -2841,8 +2843,12 @@ never appear anywhere — and the `system_prompt_files.<profile>.pi` knob
 `replace` for `pi` managed homes only, both live channels the tool applies
 unconditionally when present — and the `permissions.<profile>` knob
 (absent is a silent level), whose effective mode and section 12.2 lock
-engagement Curator resolves and delivers through the fragment
-(environments §10.2). The profile-influence boundary of
+engagement Curator resolves and delivers through the fragment's
+`permissions` member. `launch-env-fragment-v2` is the minimum
+transport version token (environments §10.2): a fragment that predates
+it cannot carry the policy or the lock and is never silence —
+would-be `yolo` is refused (`permission_policy_unsupported`) while
+`native` proceeds. The profile-influence boundary of
 environments §10.3 is this profile's package-influence boundary applied to
 environment injection: fragment variable names come only from the closed
 registry, fragment values stay below the manager-owned environments root,

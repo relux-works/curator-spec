@@ -2927,17 +2927,28 @@ forwarded verbatim), not a guaranteed prompting posture; `yolo`
 requests the agents-management-declared native bypass, never an
 outside-policy bypass. A launch is headless when stdin or stdout is
 not a TTY, when the native arguments select a non-interactive form,
-when a non-interactive marker (`CI` or `GITHUB_ACTIONS`, the closed
-set — additions by specification revision only) is present, or when
-the launch is tracked. The force-`native` lock of section 12.2 sits
-above the whole precedence: under an engaged lock any launcher-visible
-`yolo` is a `usage` error naming the locked knob, and total silence
-resolves `native`. Curator resolves the profile level and the lock
-engagement and delivers them through the fragment (section 10.2);
-verified transport support is a precondition for admitting `yolo` —
-when the launcher cannot establish it, any launch that would otherwise
+when a non-interactive marker is present, or when the launch is
+tracked. The non-interactive marker set is exactly {`CI`,
+`GITHUB_ACTIONS`}: this paragraph is the set's single normative
+statement in this specification — the set is closed, additions come by
+specification revision only, never ad-hoc — and the launcher SPEC §4.6
+headless detector mirrors it (Decision 0018, choice 7); the two
+spellings change only together, in the same revision. The
+force-`native` lock of section 12.2 sits above the whole precedence:
+under an engaged lock any launcher-visible `yolo` is a `usage` error
+naming the locked knob, and total silence resolves `native`. Curator
+resolves the profile level and the lock engagement and delivers them
+through the fragment's `permissions` member (section 10.2);
+`launch-env-fragment-v2` is the minimum transport version token —
+transport support is established iff the fragment revision is v2 or
+later — and verified transport support is a precondition for admitting
+`yolo`: a fragment that predates the token cannot carry the policy or
+the lock and is never silence, so any launch that would otherwise
 resolve `yolo` is refused (`permission_policy_unsupported`), while a
-launch that resolves `native` proceeds. The provider flag spelling,
+launch that resolves `native` — explicit `native`, or
+headless/CI/tracked silence — proceeds as `native`. The launcher SPEC
+§4.1 mirror of this precondition lands with follow-up F-L1. The
+provider flag spelling,
 the per-tool-release mapping with its goldens, and the argv grammar
 are owned by agents-management as a `LaunchRequest` permission-mode
 member for `LaunchModeInteractive` (Decision 0018, choices 3 and 6),
@@ -2954,10 +2965,34 @@ composition cannot transport the plugin's inherited-name removals or
 `PATH` sanitization to ax's destination environment. Destination filtering
 by ax is unknown here; no ax field or implementation change is specified.
 
-### 10.2 `launch-env-fragment-v1`
+### 10.2 The launch environment fragment
+
+Two fragment revisions exist, `launch-env-fragment-v1` and
+`launch-env-fragment-v2`, named by the REQUIRED `fragment` member,
+which is the fragment's revision token. `launch-env-fragment-v2` is
+the minimum transport version token for the section 12.1 `permissions`
+profile level and the section 12.2 lock engagement (Decision 0018,
+choice 7): a launcher establishes transport support iff the fragment
+revision is v2 or later. A v1 reader MUST reject a v2 fragment
+(unknown revision token), and MUST reject a v1 fragment carrying the
+v2 `permissions` member (unknown field — a v1 fragment with the member
+is invalid); the revision token is the only transport signal. A v2
+fragment MUST carry the `permissions` member: absence is invalid. A
+fragment that cannot carry the policy or the lock is never silence:
+when the launcher cannot establish transport support, any launch that
+would otherwise resolve `yolo` — from the flag, the profile setting,
+the global default, or the built-in default — is refused
+(`permission_policy_unsupported`); a launch that resolves `native` —
+explicit `native`, or headless/CI/tracked silence — proceeds as
+`native` (section 10.1). The launcher SPEC §4.1 mirror of this
+precondition lands with follow-up F-L1. Managers emit v1 fragments
+until they adopt the v2 emission; the emission cutover is the curator
+follow-up named in the changelog, not this revision.
 
 The fragment is a closed object; readers MUST reject unknown fields,
-unknown kinds, and unknown semantics or argument values:
+unknown kinds, and unknown semantics or argument values.
+
+**`launch-env-fragment-v1`.** The revision-1 shape:
 
 ```json
 {
@@ -3015,14 +3050,40 @@ unknown kinds, and unknown semantics or argument values:
   (section 9.4); a reader MUST accept its absence and MUST reject any value
   outside the environments root.
 
-Curator delivers the section 12.1 `permissions` profile level and the
-section 12.2 lock engagement to the launcher through this fragment;
-the member names and the minimum transport version token are fixed by
-the implementing revision (Decision 0018, choice 7), and until they
-are, every fragment predates the transport: the launcher MUST refuse
-would-be `yolo` with `permission_policy_unsupported` and proceed only
-on `native`. A fragment that cannot carry the policy or the lock is
-never silence.
+**`launch-env-fragment-v2`.** Revision v2 is revision v1 plus one
+REQUIRED member, `permissions`, a closed object carrying the resolved
+profile level and the lock engagement for the resolved profile. Every
+other member keeps its revision-1 meaning; the value has exactly this
+shape:
+
+```json
+{ "mode": "native", "locked": false, "source": "profile" }
+```
+
+- `mode` is REQUIRED, exactly `native` or `yolo`: the
+  `permissions.<profile>` knob value for the resolved profile when the
+  knob names one, `native` otherwise — under an engaged lock the knob
+  was already overridden to `native` with a warning, and when the
+  knob is absent `native` is the silence placeholder (see below).
+- `locked` is REQUIRED, a boolean: true iff the section 12.2
+  force-`native` lock is engaged for the resolved profile.
+- `source` is REQUIRED, exactly `profile`, `global`, or `default`:
+  which Curator-side input fixed `mode` — `profile` when the machine
+  knob named it, `global` when the fleet-global system-file lock
+  fixed it, `default` when the knob was absent and no lock is
+  engaged. `global` never means the launcher-global `defaults.json`
+  default: the launcher reads its own file, and that default never
+  appears in the fragment.
+- Consistency is schema-enforced: `locked` is true iff `source` is
+  `global`, and `mode` is `native` whenever `source` is `global` or
+  `default` — a lock forces native, and silence carries the `native`
+  placeholder — so `mode` is `yolo` only with `locked: false` and
+  `source: "profile"`, and a fragment carrying `yolo` with
+  `locked: true` is contradictory and invalid.
+- Silence: with `source: "default"` the launcher MUST treat the
+  profile level as silent — falling through to the launcher-global
+  default — never as an explicit `native` naming. With
+  `source: "profile"` the profile level names `mode`.
 
 ### 10.3 The profile-influence boundary
 
@@ -3540,10 +3601,12 @@ with schemas and vectors delivered separately (`schemas/v1/`, positive and
 negative vectors, and byte-exact determinism vectors). Schemas:
 `agent-context-v1` (section 2), `agent-mcp-v1` (section 2.2),
 `context-lock-v1` (section 1.3), the rewritten `agent-environment-marker-v1`
-(section 8.2), and the rewritten `launch-env-fragment-v1` (section 10.2)
+(section 8.2), the rewritten `launch-env-fragment-v1` (section 10.2)
 — which requires `argument` on every `flag` descriptor and `name` exactly
 when `argument` is `name`; the Decision 0012 §9 worked example, which omits
 `argument` on its system-prompt descriptors, is read as pre-revision —
+and `launch-env-fragment-v2` (section 10.2) — revision v1 plus the
+REQUIRED closed `permissions` member —
 each with positive and negative schema cases; `profilefile-v1` and
 `context-manifest-v1` with their cases are withdrawn. Vector families:
 version and range parsing (section 1.4, including the coercion table and

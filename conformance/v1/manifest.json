@@ -2982,7 +2982,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:3817cf706a3e0f4798824e69d2e44d866d478c7a456346dbbc515b11fd6484d3"
+      "sha256": "sha256:464af01ccb873bc1c219dda4f2a3f28e5e9a236ecd97166f959b9e49bfd96241"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -3397,6 +3397,10 @@
       "sha256": "sha256:d71d29429f130495ee8ba2ff7185b07d54566ceb0d083abb2d7eff1ede0cc40d"
     },
     {
+      "path": "schema-cases/launch-env-fragment-v1/invalid-permissions-member.json",
+      "sha256": "sha256:9d803e7dfce39e221bf691550375c4acdd66722c93b4ef7d47dc135c103573e2"
+    },
+    {
       "path": "schema-cases/launch-env-fragment-v1/invalid-precedence-string.json",
       "sha256": "sha256:90526b9c865936c0e81da2e3e892881e8dcffe6821419178bed6f0b7e19d26c0"
     },
@@ -3511,6 +3515,62 @@
     {
       "path": "schema-cases/launch-env-fragment-v1/valid.json",
       "sha256": "sha256:8ec5a08a84fe81a939b505f182834d9939e545fd385c1b28957d70c39bea2c48"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v2/invalid-permissions-absent.json",
+      "sha256": "sha256:4d6682480caeeba100d8c4b8f89054978c605e580fde5fad8926697cdff23f0a"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v2/invalid-permissions-global-unlocked.json",
+      "sha256": "sha256:b6b788a5960254bfec9514bd5d118dadaeee6498c1034abf4ec9b80bdc65ad48"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v2/invalid-permissions-locked-profile-source.json",
+      "sha256": "sha256:a3a4bc4cac8408ccfeddbe73fc854e02e1f05c51c7464e07f5863d56016b06e3"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v2/invalid-permissions-missing-mode.json",
+      "sha256": "sha256:73c128e6483022c8ceecf69b102c4ca636832f7950215a91e60ae50ec611ca44"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v2/invalid-permissions-unknown-field.json",
+      "sha256": "sha256:482ff51b3fcb215b82bb3545cb076d8718afbcbdf22886be3d7b8ab9a8d18b3c"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v2/invalid-permissions-unknown-mode.json",
+      "sha256": "sha256:dd982d3a7b23b52f70749b492bc29228d6b530ecb2eb77a738db28c0edaef7d9"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v2/invalid-permissions-unknown-source.json",
+      "sha256": "sha256:189fc1dde3dc4dd40c15bcfd25da09aeffd4854074b8a4155993b6d9ed38ece1"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v2/invalid-permissions-yolo-locked.json",
+      "sha256": "sha256:d8b74a55badb4636e09f439467e67ef72d30d234e22d24a34fb5f27f0c9dae65"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v2/invalid-permissions-yolo-silent.json",
+      "sha256": "sha256:8f03fca4fb73219f8ce1e4a02335e08a0a8d46834ce2130c032490a537f0be36"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v2/invalid.json",
+      "sha256": "sha256:63cbe2536c4cdf49f78579845c7acb3d0b3b88e153b76a3bc48669c0b62fbfb7"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v2/valid-permissions-native-locked.json",
+      "sha256": "sha256:291a23de8790e9a42f2b9e20ff79139e9802baa9ef22aac3e4be7f93e32da41d"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v2/valid-permissions-native-silent.json",
+      "sha256": "sha256:a19a8b5830b7f7ceafec054139e375086417e1d4304794f3ef32aa78f8d0e533"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v2/valid-permissions-yolo-unlocked.json",
+      "sha256": "sha256:1e3109eb548dea8c80809aa26fced6ba37eea34e8a5083cbebd4eaf17bb07c6e"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v2/valid.json",
+      "sha256": "sha256:af5a2706d82e6629d1d9d3b893457744b5d094ca8a7caae554dd1d738a9c8f62"
     },
     {
       "path": "schema-cases/log-response-v1/invalid.json",

@@ -2638,6 +2638,9 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	launchFragment := validLaunchEnvFragmentV1()
 	cases["launch-env-fragment-v1.schema.json"] = schemaCase{launchFragment, without(launchFragment, "env")}
 	additionalCases["launch-env-fragment-v1.schema.json"] = launchEnvFragmentSchemaExamples(launchFragment)
+	launchFragmentV2 := validLaunchEnvFragmentV2()
+	cases["launch-env-fragment-v2.schema.json"] = schemaCase{launchFragmentV2, without(launchFragmentV2, "env")}
+	additionalCases["launch-env-fragment-v2.schema.json"] = launchEnvFragmentV2SchemaExamples(launchFragmentV2)
 
 	root := filepath.Join(suite, "schema-cases")
 	var index []any

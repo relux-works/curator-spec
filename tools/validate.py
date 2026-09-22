@@ -781,7 +781,7 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
         seeded = instance.get("seeded_projects")
         if isinstance(seeded, list) and seeded != sorted(seeded):
             return "seeded_projects must be sorted"
-    elif schema_name == "launch-env-fragment-v1.schema.json":
+    elif schema_name in ("launch-env-fragment-v1.schema.json", "launch-env-fragment-v2.schema.json"):
         environment = instance.get("environment")
         system_prompt = instance.get("system_prompt")
         if isinstance(system_prompt, dict) and environment in ENVIRONMENT_SYSTEM_PROMPT_CHANNELS:

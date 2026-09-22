@@ -3645,6 +3645,11 @@
     "valid": false
   },
   {
+    "instance": "launch-env-fragment-v1/invalid-permissions-member.json",
+    "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
     "instance": "launch-env-fragment-v1/invalid-missing-precedence.json",
     "schema": "launch-env-fragment-v1.schema.json",
     "valid": false
@@ -3822,6 +3827,76 @@
   {
     "instance": "launch-env-fragment-v1/invalid-system-prompt-path-dotdot-segment.json",
     "schema": "launch-env-fragment-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v2/valid.json",
+    "schema": "launch-env-fragment-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v2/invalid.json",
+    "schema": "launch-env-fragment-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v2/valid-permissions-yolo-unlocked.json",
+    "schema": "launch-env-fragment-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v2/valid-permissions-native-locked.json",
+    "schema": "launch-env-fragment-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v2/valid-permissions-native-silent.json",
+    "schema": "launch-env-fragment-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v2/invalid-permissions-absent.json",
+    "schema": "launch-env-fragment-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v2/invalid-permissions-unknown-mode.json",
+    "schema": "launch-env-fragment-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v2/invalid-permissions-yolo-locked.json",
+    "schema": "launch-env-fragment-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v2/invalid-permissions-yolo-silent.json",
+    "schema": "launch-env-fragment-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v2/invalid-permissions-locked-profile-source.json",
+    "schema": "launch-env-fragment-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v2/invalid-permissions-global-unlocked.json",
+    "schema": "launch-env-fragment-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v2/invalid-permissions-unknown-source.json",
+    "schema": "launch-env-fragment-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v2/invalid-permissions-unknown-field.json",
+    "schema": "launch-env-fragment-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v2/invalid-permissions-missing-mode.json",
+    "schema": "launch-env-fragment-v2.schema.json",
     "valid": false
   },
   {
