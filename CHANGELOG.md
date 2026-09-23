@@ -563,6 +563,25 @@ Versioning for the complete specification set.
 
 ### Changed
 
+- Closed the environments §9.5 takeover closed-set question for `profile
+  import` activation and the §9.4 global operations by text, keeping the
+  five-member carrier set (orchestrator decision 2026-09-22,
+  TASK-260906-1xbrz6): §9.5 now states normatively that import activation
+  and §9.4 `global add`/`global install` are outside the set, fail closed
+  with `environment_surface_unmanaged_conflict` exactly as §8.3 states,
+  and recover through `profile sync --takeover` or `profile use
+  --takeover`; import recovery retries activation, not the import. §9.4
+  and §9.6 mirror the clause with a §9.5 cross-reference, the manager
+  profile §12.3 agrees, and
+  `cli/curator.md` carries no new flag on the import or global rows.
+  `tools/validate.py` pins the enumeration (sourced to the §9.5
+  onboarding triggers), the four exact sentences, exact section headings,
+  and the flag-free CLI rows, with predicate and section-boundary
+  mutants in `tools/test_validate.py`. A decision packet records the
+  unresolved ordering of global lock publication versus materialization.
+  No schema, vector, or diagnostic change: no
+  conformance family enumerates the carrying operations, so no new case
+  is added.
 - Made the section 6 `path` overlay declarable: the environments section
   12.1 `overlays.<profile>` row now requires the `range | tag | revision`
   form only for a `git` source and states `{ source, weight? }` for a

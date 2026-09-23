@@ -6,6 +6,7 @@ import hashlib
 import importlib.util
 import io
 import json
+import re
 import shlex
 import tempfile
 import unittest
@@ -6225,6 +6226,200 @@ class RegistryBootstrapVectorTests(unittest.TestCase):
         changed["bootstrap"]["tofu_posture"] = "registry_bootstrap_warn"
         with self.assertRaises(validate.ValidationFailure):
             self.run_gate(behavior=changed)
+
+
+class TakeoverClosedSetTextTests(unittest.TestCase):
+    """Closed-set prose pins reject predicate, boundary, and scope drift."""
+
+    def setUp(self) -> None:
+        self.environments = (validate.ROOT / "protocol" / "environments.md").read_text(encoding="utf-8")
+        self.manager = (validate.ROOT / "profiles" / "manager.md").read_text(encoding="utf-8")
+        self.cli = (validate.ROOT / "cli" / "curator.md").read_text(encoding="utf-8")
+
+    def run_gate(self, environments=None, manager=None, cli=None) -> None:
+        validate.validate_takeover_closed_set_text(
+            environments_text=self.environments if environments is None else environments,
+            manager_text=self.manager if manager is None else manager,
+            cli_text=self.cli if cli is None else cli,
+        )
+
+    def mutated(self, text: str, old: str, new: str) -> str:
+        self.assertEqual(text.count(old), 1)
+        mutated = text.replace(old, new, 1)
+        self.assertNotEqual(mutated, text)
+        return mutated
+
+    def replace_sentence(self, text: str, sentence: str, replacement: str) -> str:
+        pattern = re.compile(r"\s+".join(re.escape(word) for word in sentence.split()))
+        self.assertEqual(len(pattern.findall(text)), 1)
+        return pattern.sub(replacement, text, count=1)
+
+    def test_published_inputs_pass(self) -> None:
+        self.run_gate()
+
+    def test_carrier_enumeration_pins_the_five_in_order(self) -> None:
+        section95 = validate.markdown_h3_section(self.environments, "### 9.5 Onboarding", label="environments.md")
+        self.assertEqual(
+            validate.takeover_carrying_operations(section95),
+            ["profile install", "profile use", "profile sync", "profile update", "env resolve --repair"],
+        )
+        self.assertEqual(
+            validate.takeover_trigger_operations(section95),
+            validate.takeover_carrying_operations(section95),
+        )
+
+    def test_sixth_carrier_fails(self) -> None:
+        text = self.mutated(
+            self.environments,
+            "`profile update`, and `env resolve --repair` — and on no other",
+            "`profile update`, `profile import`, and `env resolve --repair` — and on no other",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "takeover carriers are"):
+            self.run_gate(environments=text)
+
+    def test_dropped_carrier_fails(self) -> None:
+        text = self.mutated(
+            self.environments,
+            "`profile use`, `profile\nsync`, `profile update`, and `env resolve --repair`",
+            "`profile use`, `profile update`, and `env resolve --repair`",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "takeover carriers are"):
+            self.run_gate(environments=text)
+
+    def test_reordered_carriers_fail(self) -> None:
+        text = self.mutated(
+            self.environments,
+            "`profile install`, `profile use`, `profile\nsync`",
+            "`profile use`, `profile install`, `profile\nsync`",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "takeover carriers are"):
+            self.run_gate(environments=text)
+
+    def test_trigger_list_widened_fails(self) -> None:
+        text = self.mutated(
+            self.environments,
+            "`env resolve --repair`. Read-only commands",
+            "`env resolve --repair`, `profile import`. Read-only commands",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "onboarding triggers name"):
+            self.run_gate(environments=text)
+
+    def test_deleted_carrier_sentence_fails(self) -> None:
+        text = self.mutated(self.environments, "— and on no other\noperation", "— sometimes")
+        with self.assertRaisesRegex(validate.ValidationFailure, "no closed takeover-carrier enumeration"):
+            self.run_gate(environments=text)
+
+    def test_fail_open_predicate_mutation_fails(self) -> None:
+        text = self.mutated(
+            self.environments,
+            "are outside this closed set and fail closed on\n",
+            "are outside this closed set and fail open on\n",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "section 9.5.*pinned takeover sentence"):
+            self.run_gate(environments=text)
+
+    def test_inside_predicate_mutation_fails(self) -> None:
+        text = self.mutated(
+            self.environments,
+            "are outside this closed set and fail closed on",
+            "are inside this closed set and fail closed on",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "section 9.5.*pinned takeover sentence"):
+            self.run_gate(environments=text)
+
+    def test_excluded_subject_swap_fails(self) -> None:
+        text = self.mutated(
+            self.environments,
+            "By design, `profile import` activation",
+            "By design, `profile sync` activation",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "section 9.5.*pinned takeover sentence"):
+            self.run_gate(environments=text)
+
+    def test_renamed_heading_fails(self) -> None:
+        text = self.mutated(self.environments, "### 9.5 Onboarding\n", "### 9.5 Onboarding-renamed\n")
+        with self.assertRaisesRegex(validate.ValidationFailure, "has no ### 9.5 Onboarding section"):
+            self.run_gate(environments=text)
+
+    def test_lowercase_sentence_split_fails(self) -> None:
+        text = self.mutated(
+            self.environments,
+            "are outside this closed set and fail closed on",
+            "are outside this closed set. on fail closed on",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "section 9.5.*pinned takeover sentence"):
+            self.run_gate(environments=text)
+
+    def test_section_95_sentence_moved_to_section_94_fails(self) -> None:
+        without_sentence = self.replace_sentence(self.environments, validate.TAKEOVER_EXCLUSION_95, "")
+        moved = self.mutated(
+            without_sentence,
+            "then retry the blocked global operation. `profile sync`",
+            "then retry the blocked global operation. "
+            + validate.TAKEOVER_EXCLUSION_95
+            + " `profile sync`",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "section 9.5.*pinned takeover sentence"):
+            self.run_gate(environments=moved)
+
+    def test_whitespace_wrapping_of_pinned_sentence_passes(self) -> None:
+        wrapped = "\n".join(validate.TAKEOVER_EXCLUSION_95.split())
+        text = self.replace_sentence(self.environments, validate.TAKEOVER_EXCLUSION_95, wrapped)
+        self.run_gate(environments=text)
+
+    def test_section_94_mirror_predicate_mutation_fails(self) -> None:
+        text = self.mutated(
+            self.environments,
+            "operations carry no takeover flag: they are outside the section\n9.5 closed set",
+            "operations carry no takeover flag: they are inside the section\n9.5 closed set",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "section 9.4.*pinned takeover sentence"):
+            self.run_gate(environments=text)
+
+    def test_section_96_missing_recovery_fails(self) -> None:
+        text = self.mutated(
+            self.environments,
+            "then retry activation rather than `profile\nimport`. The import writes",
+            "then retry activation. The import writes",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "section 9.6.*pinned takeover sentence"):
+            self.run_gate(environments=text)
+
+    def test_manager_fail_open_mutation_fails(self) -> None:
+        text = self.mutated(self.manager, "and fail closed on", "and fail open on")
+        with self.assertRaisesRegex(validate.ValidationFailure, "section 12.3.*pinned takeover sentence"):
+            self.run_gate(manager=text)
+
+    def test_manager_sentence_deleted_fails(self) -> None:
+        text = self.replace_sentence(self.manager, validate.TAKEOVER_EXCLUSION_MANAGER, "")
+        with self.assertRaisesRegex(validate.ValidationFailure, "section 12.3.*pinned takeover sentence"):
+            self.run_gate(manager=text)
+
+    def test_import_row_gaining_takeover_fails(self) -> None:
+        text = self.mutated(
+            self.cli,
+            "curator profile import [--as <name>] [--allow-lossy] [--use]`",
+            "curator profile import [--as <name>] [--allow-lossy] [--use] [--takeover]`",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "carries a takeover flag"):
+            self.run_gate(cli=text)
+
+    def test_global_row_gaining_takeover_fails(self) -> None:
+        text = self.mutated(
+            self.cli,
+            "` | Manage global scope",
+            " [--takeover]` | Manage global scope",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "carries a takeover flag"):
+            self.run_gate(cli=text)
+
+    def test_missing_sections_fail_closed(self) -> None:
+        with self.assertRaisesRegex(validate.ValidationFailure, "has no ### 9.4"):
+            self.run_gate(environments="# environments without the sections\n")
+        with self.assertRaisesRegex(validate.ValidationFailure, "has no ### 12.3"):
+            self.run_gate(manager="# manager without the section\n")
+        with self.assertRaisesRegex(validate.ValidationFailure, "names no profile import"):
+            self.run_gate(cli="# cli without the rows\n")
 
 
 if __name__ == "__main__":

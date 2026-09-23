@@ -2694,7 +2694,15 @@ Takeover of a specific unmanaged file outside onboarding is a flag carried
 by the mutating operation performing it, never an operation of its own: the
 manager takes over only the files the carrying operation would write, under
 the environments section 9.5 notice and backup; without the flag the
-section 12.2 ledger discipline fails the operation rather than overwrite. A
+section 12.2 ledger discipline fails the operation rather than overwrite.
+`Profile import` activation and the environments §9.4 `global add` and
+`global install` operations carry no takeover flag: they are outside the
+environments §9.5 closed set and fail closed on
+`environment_surface_unmanaged_conflict` exactly as environments §8.3
+states; recover activation by running `profile use --takeover` or
+`profile sync --takeover`, then retry activation rather than `profile
+import`, and recover a blocked global operation by running `profile sync
+--takeover` or `profile use --takeover`, then retry that operation. A
 manager SHOULD report a surface repaired repeatedly within an
 implementation-defined window as a suspected external writer under
 `environment_foreign_manager_suspected`.

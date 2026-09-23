@@ -2451,7 +2451,12 @@ the unchanged closure, audit, build, and runtime machinery; the resolved
 skills materialize into that profile's managed homes and — for the current
 profile of each scope — the in-place adapter surfaces under the manager §5
 discipline. Global skill operations act on the current profile and accept
-`--profile <name>` and `--all-profiles`. `profile sync` re-materializes
+`--profile <name>` and `--all-profiles`. The `global add` and `global
+install` operations carry no takeover flag: they are outside the section
+9.5 closed set and fail closed on
+`environment_surface_unmanaged_conflict` exactly as section 8.3 states;
+recover by running `profile sync --takeover` or `profile use --takeover`,
+then retry the blocked global operation. `profile sync` re-materializes
 every installed profile across every registered adapter and participating
 target from the locks it finds; it is the actualization path when a new
 adapter or target is registered on the machine. A lock it cannot read is
@@ -2628,6 +2633,13 @@ with `environment_surface_unmanaged_conflict` rather than overwrite.
 Every takeover write is a section 8.3.1 write: the operator's
 authorization covers replacing the directory entry after backup, never
 opening the link's target for writing.
+By design, `profile import` activation and section 9.4 `global add` and
+`global install` are outside this closed set and fail closed on
+`environment_surface_unmanaged_conflict` exactly as section 8.3 states;
+recover activation by running `profile use --takeover` or
+`profile sync --takeover`, then retry activation rather than `profile
+import`, and recover a blocked global operation by running `profile sync
+--takeover` or `profile use --takeover`, then retry that operation.
 Authentication is never part of onboarding, takeover, or import: credential
 files stay where the section 7.4 passthrough expects them, untouched.
 
@@ -2725,7 +2737,12 @@ The assembled directory then installs through section 9.1 exactly as an
 operator-supplied `path` source — snapshot copy, state-hash pin,
 resolution of the pinned skills, always-strict audit; a blocking finding,
 `context-secret-material` included, fails the import like any install.
-Activation follows the section 9.1 rules without magic. The import writes
+Activation follows the section 9.1 rules without magic. That activation
+carries no takeover flag: it is outside the section 9.5 closed set and
+fails closed on `environment_surface_unmanaged_conflict` exactly as
+section 8.3 states; recover by running `profile use --takeover` or
+`profile sync --takeover`, then retry activation rather than `profile
+import`. The import writes
 nothing into any native home by itself: replacing native files remains the
 section 9.5 takeover path with its notice and backup. The import is a
 `path` root for the section 4 boundary contract: its directory passes the

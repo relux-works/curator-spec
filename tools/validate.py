@@ -4201,6 +4201,148 @@ def validate_system_config_v2_schema(
         )
 
 
+TAKEOVER_CARRYING_OPERATIONS = (
+    "profile install",
+    "profile use",
+    "profile sync",
+    "profile update",
+    "env resolve --repair",
+)
+
+# These full sentences are pinned in their owning sections. Whitespace
+# normalization permits Markdown wrapping without making the predicates,
+# subjects, recovery meaning, or section placement token-presence checks.
+TAKEOVER_EXCLUSION_95 = (
+    "By design, `profile import` activation and section 9.4 `global add` and `global install` are "
+    "outside this closed set and fail closed on `environment_surface_unmanaged_conflict` exactly as "
+    "section 8.3 states; recover activation by running `profile use --takeover` or `profile sync "
+    "--takeover`, then retry activation rather than `profile import`, and recover a blocked global "
+    "operation by running `profile sync --takeover` or `profile use --takeover`, then retry that operation."
+)
+
+TAKEOVER_EXCLUSION_94 = (
+    "The `global add` and `global install` operations carry no takeover flag: they are outside the "
+    "section 9.5 closed set and fail closed on `environment_surface_unmanaged_conflict` exactly as "
+    "section 8.3 states; recover by running `profile sync --takeover` or `profile use --takeover`, "
+    "then retry the blocked global operation."
+)
+
+TAKEOVER_EXCLUSION_96 = (
+    "That activation carries no takeover flag: it is outside the section 9.5 closed set and fails "
+    "closed on `environment_surface_unmanaged_conflict` exactly as section 8.3 states; recover by "
+    "running `profile use --takeover` or `profile sync --takeover`, then retry activation rather "
+    "than `profile import`."
+)
+
+TAKEOVER_EXCLUSION_MANAGER = (
+    "`Profile import` activation and the environments §9.4 `global add` and `global install` "
+    "operations carry no takeover flag: they are outside the environments §9.5 closed set and fail "
+    "closed on `environment_surface_unmanaged_conflict` exactly as environments §8.3 states; recover "
+    "activation by running `profile use --takeover` or `profile sync --takeover`, then retry activation "
+    "rather than `profile import`, and recover a blocked global operation by running `profile sync "
+    "--takeover` or `profile use --takeover`, then retry that operation."
+)
+
+
+def squash_prose(text: str) -> str:
+    """Collapse every whitespace run to one space so wrapped prose matches."""
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def markdown_h3_section(text: str, heading: str, *, label: str) -> str:
+    """Return an exact H3 section, ending at its next same-or-higher heading."""
+    lines = text.splitlines(keepends=True)
+    matches = [index for index, line in enumerate(lines) if line.rstrip("\r\n").strip() == heading]
+    if len(matches) != 1:
+        raise ValidationFailure(f"{label} has no {heading} section")
+    start = matches[0]
+    depth = len(heading) - len(heading.lstrip("#"))
+    if depth != 3:
+        raise ValidationFailure(f"{label} section pin is not an H3 heading: {heading}")
+    for end in range(start + 1, len(lines)):
+        candidate = lines[end].rstrip("\r\n")
+        match = re.match(r"^(#{1,6})(?:[ \t]+|$)", candidate)
+        if match is not None and len(match.group(1)) <= depth:
+            return "".join(lines[start + 1 : end])
+    return "".join(lines[start + 1 :])
+
+
+def takeover_carrying_operations(section95: str) -> list[str]:
+    """The backticked operations of the §9.5 closed-carrier sentence, in order."""
+    match = re.search(
+        r"The flag is accepted on exactly (.*?) and on no other operation",
+        squash_prose(section95),
+    )
+    if match is None:
+        raise ValidationFailure("environments.md section 9.5 states no closed takeover-carrier enumeration")
+    return BACKTICKED.findall(match.group(1))
+
+
+def takeover_trigger_operations(section95: str) -> list[str]:
+    """The backticked operations of the §9.5 onboarding-trigger sentence, in order."""
+    match = re.search(
+        r"triggered only by .*?— (.*?)\. Read-only commands",
+        squash_prose(section95),
+    )
+    if match is None:
+        raise ValidationFailure("environments.md section 9.5 states no onboarding-trigger enumeration")
+    return BACKTICKED.findall(match.group(1))
+
+
+def require_exact_takeover_sentence(section: str, expected: str, *, label: str) -> None:
+    """Require one whitespace-normalized exact sentence in its owning section."""
+    normalized = squash_prose(section)
+    pinned = squash_prose(expected)
+    if normalized.count(pinned) != 1:
+        raise ValidationFailure(f"{label} does not contain exactly one pinned takeover sentence")
+
+
+def validate_cli_takeover_rows(cli_text: str) -> None:
+    """The import and global CLI rows carry no takeover flag."""
+    import_rows = [line for line in cli_text.splitlines() if "curator profile import" in line]
+    if not import_rows:
+        raise ValidationFailure("cli/curator.md names no profile import command")
+    global_rows = [line for line in cli_text.splitlines() if "curator global" in line]
+    if not global_rows:
+        raise ValidationFailure("cli/curator.md names no global command")
+    for line in [*import_rows, *global_rows]:
+        if "--takeover" in line:
+            raise ValidationFailure(f"cli/curator.md row carries a takeover flag it must not: {line.strip()[:80]}")
+
+
+def validate_takeover_closed_set_text(
+    environments_text: str | None = None,
+    manager_text: str | None = None,
+    cli_text: str | None = None,
+) -> None:
+    """Pin the five §9.5 carriers and exact exclusion clauses in their sections."""
+    if environments_text is None:
+        environments_text = (ROOT / "protocol" / "environments.md").read_text(encoding="utf-8")
+    if manager_text is None:
+        manager_text = (ROOT / "profiles" / "manager.md").read_text(encoding="utf-8")
+    if cli_text is None:
+        cli_text = (ROOT / "cli" / "curator.md").read_text(encoding="utf-8")
+    section94 = markdown_h3_section(environments_text, "### 9.4 Profile-scoped skills and migration", label="environments.md")
+    section95 = markdown_h3_section(environments_text, "### 9.5 Onboarding", label="environments.md")
+    section96 = markdown_h3_section(environments_text, "### 9.6 Onboarding import", label="environments.md")
+    carrying = takeover_carrying_operations(section95)
+    if carrying != list(TAKEOVER_CARRYING_OPERATIONS):
+        raise ValidationFailure(
+            f"section 9.5 takeover carriers are {carrying!r}; want {list(TAKEOVER_CARRYING_OPERATIONS)!r}"
+        )
+    triggers = takeover_trigger_operations(section95)
+    if triggers != carrying:
+        raise ValidationFailure(
+            f"section 9.5 onboarding triggers name {triggers!r} but the takeover carriers name {carrying!r}"
+        )
+    require_exact_takeover_sentence(section95, TAKEOVER_EXCLUSION_95, label="environments.md section 9.5")
+    require_exact_takeover_sentence(section94, TAKEOVER_EXCLUSION_94, label="environments.md section 9.4")
+    require_exact_takeover_sentence(section96, TAKEOVER_EXCLUSION_96, label="environments.md section 9.6")
+    section123 = markdown_h3_section(manager_text, "### 12.3 Profile lifecycle", label="profiles/manager.md")
+    require_exact_takeover_sentence(section123, TAKEOVER_EXCLUSION_MANAGER, label="profiles/manager.md section 12.3")
+    validate_cli_takeover_rows(cli_text)
+
+
 def validate_local_links() -> None:
     for path in sorted(ROOT.rglob("*.md")):
         if ".git" in path.parts:
@@ -10670,6 +10812,7 @@ def main() -> int:
         validate_system_config_v2_schema,
         validate_umbrella_provider_vectors,
         validate_security_posture_vectors,
+        validate_takeover_closed_set_text,
         validate_local_links,
     ]
     try:
