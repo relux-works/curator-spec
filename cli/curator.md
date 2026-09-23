@@ -27,17 +27,17 @@ identifiers.
 | `curator skill check <dir> [--locale <code>] [--json]` | Validate one package |
 | `curator global init\|add\|remove\|list\|status\|install\|update\|upgrade [--profile <name>\|--all-profiles]` | Manage global scope; under the environments capability skill operations act on the current profile unless `--profile` or `--all-profiles` selects otherwise |
 | `curator hybrid add\|remove\|list\|status` | Manage hybrid scope |
-| `curator profile install <git-url\|path> [--directory <dir>] [--range <range>\|--tag <tag>\|--revision <commit>] [--as <name>] [--use] [--confirm-system-delta] [--takeover]` | Install one root context package as a profile — resolve its closure, audit every member always-strict, write the lock; a reinstall that re-resolves as `profile update` (section 9.1) prints the resolved-version delta and runs the same confirmation gate, confirmed per-run by `--confirm-system-delta`; `--range latest` when no requirement is given; `--use` takes no name and activates the installed root; first install activates and says so; `[--takeover]` takes over the unmanaged files the install would write (section 9.5 notice, section 8.3 backup); without it the write fails with `environment_surface_unmanaged_conflict` |
+| `curator profile install <git-url\|path> [--directory <dir>] [--range <range>\|--tag <tag>\|--revision <commit>] [--as <name>] [--use] [--confirm-system-delta] [--takeover]` | Install one root context package as a profile — resolve its closure, audit every member always-strict, write the lock; a reinstall that re-resolves as `profile update` (section 9.1) prints the resolved-version delta and runs the same confirmation gate, confirmed per-run by `--confirm-system-delta`; `--range latest` when no requirement is given; `--use` takes no name and activates the installed root; first install activates and says so; see the takeover note below. |
 | `curator profile import [--as <name>] [--allow-lossy] [--use]` | Reassemble the section 9.5 inventory into a context-package-shaped directory and install it through the ordinary `path` pipeline; the profile is named `imported` unless `--as` supplies a name; a lossy import stops with `environment_import_lossy` and the loss list unless the per-operation consent flag re-reports the list as warnings, and machine configuration never pre-records consent; activation follows the section 9.1 rules — `--use` takes no name, and a first install activates and says so |
 | `curator profile list` | List installed profiles: name, root package, source identity, declared requirement (`range`, `tag`, or `revision` as written), root version, lock hash, and per-scope current markers |
-| `curator profile use <name> [--env <env-id>] [--target <target-id>] [--takeover]` | Switch the machine or scoped current profile, re-materialize in-place surfaces, and re-point the command shims on a machine-scope switch; a partial scope is reported, never recorded; `[--takeover]` takes over the unmanaged files the switch would write (section 9.5 notice, section 8.3 backup); without it the write fails with `environment_surface_unmanaged_conflict` |
-| `curator profile use --clear --env <env-id>\|--target <target-id> [--takeover]` | Drop a scoped current profile and re-materialize the scope from the machine default; `[--takeover]` takes over the unmanaged files the re-materialization would write (section 9.5 notice, section 8.3 backup); without it the write fails with `environment_surface_unmanaged_conflict` |
-| `curator profile update [<name>\|--all] [--confirm-system-delta] [--takeover]` | Re-resolve the root and overlays from their declared requirements; print the resolved-version delta before the lock is published; a blocking finding on a new member leaves the old lock in place; a delta that introduces or changes a `class: system` module or MCP declaration warns with `profile_update_system_delta` under revision A and refuses with `profile_update_confirmation_required` under revision B unless the per-run `--confirm-system-delta` is given, and no configuration knob pre-confirms it; managed homes become stale for explicit repair; `[--takeover]` takes over the unmanaged files the update would write (section 9.5 notice, section 8.3 backup); without it the write fails with `environment_surface_unmanaged_conflict` |
+| `curator profile use <name> [--env <env-id>] [--target <target-id>] [--takeover]` | Switch the machine or scoped current profile, re-materialize in-place surfaces, and re-point the command shims on a machine-scope switch; a partial scope is reported, never recorded; see the takeover note below. |
+| `curator profile use --clear --env <env-id>\|--target <target-id> [--takeover]` | Drop a scoped current profile and re-materialize the scope from the machine default; see the takeover note below. |
+| `curator profile update [<name>\|--all] [--confirm-system-delta] [--takeover]` | Re-resolve the root and overlays from their declared requirements; print the resolved-version delta before the lock is published; a blocking finding on a new member leaves the old lock in place; a delta that introduces or changes a `class: system` module or MCP declaration warns with `profile_update_system_delta` under revision A and refuses with `profile_update_confirmation_required` under revision B unless the per-run `--confirm-system-delta` is given, and no configuration knob pre-confirms it; managed homes become stale for explicit repair; see the takeover note below. |
 | `curator profile remove <name> [--purge]` | Remove a profile that is current in no scope and an overlay of none; managed homes are retained as orphans unless `--purge` removes them with markers and backups |
-| `curator profile sync [--takeover]` | Re-materialize every installed profile across every registered adapter and participating target from its lock; `[--takeover]` takes over the unmanaged files the sync would write (section 9.5 notice, section 8.3 backup); without it the write fails with `environment_surface_unmanaged_conflict` |
+| `curator profile sync [--takeover]` | Re-materialize every installed profile across every registered adapter and participating target from its lock; see the takeover note below. |
 | `curator profile compose <profile> add\|remove\|list [<source> --range\|--tag\|--revision <ref>] [--weight <n>]` | Informative: edit the machine `overlays.<profile>` list of `manager-config` schema 2; the lock moves only on `profile update` |
 | `curator env config show\|set\|unset [<knob> [<value>]]` | Informative: read or edit one environments section 12.1 knob of `manager-config` schema 2 by its table name; a locked knob refuses with the system-file warning |
-| `curator env resolve <env-id> [--profile <name>] [--repair] [--takeover] [--format json\|env\|shell]` | Verify the managed home lock-free and print a `launch-env-fragment-v1`; a stale home emits no fragment without `--repair`, which repairs from the store under the mutation lock; `[--takeover]` applies only with `--repair`, taking over the unmanaged files the repair would write (section 9.5 notice, section 8.3 backup); without it the write fails with `environment_surface_unmanaged_conflict` |
+| `curator env resolve <env-id> [--profile <name>] [--repair] [--takeover] [--format json\|env\|shell]` | Verify the managed home lock-free and print a `launch-env-fragment-v1`; a stale home emits no fragment without `--repair`, which repairs from the store under the mutation lock; see the takeover note below. |
 | `curator env status [--check] [--json]` | Report the profile × environment × surface matrix read-only, with the passthrough liveness, seed, shadowing, target consent, tool release, backup, and orphan rows |
 | `curator env unmanage [--restore-backups] [--env <env-id>] [--target <target-id>]` | Return in-place surfaces to native ownership: recorded surfaces removed, the newest backup generation restored under `--restore-backups`, the scope's current profile cleared |
 | `curator env backups scrub [--older-than <days>]` | Remove backup generations on explicit request; nothing else removes a backup |
@@ -50,6 +50,17 @@ identifiers.
 | `curator hook approve <path>` | Record approval for one project env file (`.agents/env.sh` or `.agents/env.ps1`): stores the absolute path with the digest of its current bytes as `approved_by: operator`; re-run after the file changes |
 | `curator hook approvals` | List every shell-hook approval record read-only (path, digest, approver, time) |
 | `curator hook revoke <path>` | Remove the shell-hook approval record for one absolute path |
+
+**Takeover note:** Takeover is not an operation of its own: the explicit takeover
+flag is carried by a mutating operation and covers only the specific unmanaged
+files that carrying operation would write — it never selects a scope of its own.
+The flag is accepted on exactly the mutating operations
+named in environments section 9.5 as onboarding triggers — `profile install`,
+`profile use`, `profile sync`, `profile update`, and `env resolve --repair` —
+and on no other operation. A carrying operation that meets unmanaged files
+outside onboarding performs the same notice and backup as onboarding when the
+flag is given; without the flag, section 8.3 applies and the operation fails
+with `environment_surface_unmanaged_conflict` rather than overwrite. For `env resolve`, `--takeover` applies only with `--repair`.
 
 Exit code 0 is success, including a syntax-only check that emitted only
 warnings. Exit code 1 is an operation failure, security-policy block, partial
@@ -194,6 +205,9 @@ curator profile use personal
 curator profile use companyA --env claude_code
 curator profile use --clear --env claude_code
 
+# Retry a profile switch after an unmanaged-file conflict.
+curator profile use companyA --env claude_code --takeover
+
 # Move the lock; remove a profile and its managed homes.
 curator profile update
 curator profile remove personal --purge
@@ -215,11 +229,6 @@ curator run codex_cli --permissions native -- exec "run tests"
 
 # Hand in-place surfaces back to native ownership, restoring the newest backup.
 curator env unmanage --restore-backups --env pi
-
-# Where unmanaged files block the switch, --takeover takes over the files
-# the operation would write, with the onboarding notice and backup;
-# without it the write fails.
-curator profile use companyA --env claude_code --takeover
 ```
 
 ## External repository lifecycle

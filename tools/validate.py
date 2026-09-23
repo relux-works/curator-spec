@@ -4209,6 +4209,26 @@ TAKEOVER_CARRYING_OPERATIONS = (
     "env resolve --repair",
 )
 
+CLI_TAKEOVER_ROW_COUNTS = {
+    "profile install": 1,
+    "profile use <name>": 1,
+    "profile use --clear": 1,
+    "profile update": 1,
+    "profile sync": 1,
+    "env resolve --repair": 1,
+}
+CLI_TAKEOVER_ROW_CARRIERS = {
+    "profile install": "profile install",
+    "profile use <name>": "profile use",
+    "profile use --clear": "profile use",
+    "profile update": "profile update",
+    "profile sync": "profile sync",
+    "env resolve --repair": "env resolve --repair",
+}
+CLI_TAKEOVER_ROW_POINTER = "see the takeover note below."
+CLI_TAKEOVER_NOTE_LABEL = "**Takeover note:**"
+CLI_TAKEOVER_ENV_RESOLVE_SCOPE = "For `env resolve`, `--takeover` applies only with `--repair`."
+
 # These full sentences are pinned in their owning sections. Whitespace
 # normalization permits Markdown wrapping without making the predicates,
 # subjects, recovery meaning, or section placement token-presence checks.
@@ -4289,6 +4309,25 @@ def takeover_trigger_operations(section95: str) -> list[str]:
     return BACKTICKED.findall(match.group(1))
 
 
+def takeover_cli_clause(section95: str) -> str:
+    """Copy the §9.5 takeover clause with its source-relative pointer made explicit."""
+    normalized = squash_prose(section95)
+    match = re.search(
+        r"Takeover is not an operation of its own:.*?and on no other operation\. "
+        r"A carrying operation that meets unmanaged files outside onboarding performs the same notice "
+        r"and backup as onboarding when the flag is given; without the flag, section 8\.3 applies and "
+        r"the operation fails with `environment_surface_unmanaged_conflict` rather than overwrite\.",
+        normalized,
+    )
+    if match is None:
+        raise ValidationFailure("environments.md section 9.5 states no complete CLI takeover and write-coverage clause")
+    clause = match.group(0)
+    source_pointer = "named above as onboarding triggers"
+    if clause.count(source_pointer) != 1:
+        raise ValidationFailure("environments.md section 9.5 has no unique source-relative onboarding-trigger pointer")
+    return clause.replace(source_pointer, "named in environments section 9.5 as onboarding triggers")
+
+
 def require_exact_takeover_sentence(section: str, expected: str, *, label: str) -> None:
     """Require one whitespace-normalized exact sentence in its owning section."""
     normalized = squash_prose(section)
@@ -4297,8 +4336,8 @@ def require_exact_takeover_sentence(section: str, expected: str, *, label: str) 
         raise ValidationFailure(f"{label} does not contain exactly one pinned takeover sentence")
 
 
-def validate_cli_takeover_rows(cli_text: str) -> None:
-    """The import and global CLI rows carry no takeover flag."""
+def validate_cli_takeover_rows(cli_text: str, carrying: list[str], clause: str) -> None:
+    """Pin the CLI carrier rows and note while excluding import/global rows."""
     import_rows = [line for line in cli_text.splitlines() if "curator profile import" in line]
     if not import_rows:
         raise ValidationFailure("cli/curator.md names no profile import command")
@@ -4308,6 +4347,82 @@ def validate_cli_takeover_rows(cli_text: str) -> None:
     for line in [*import_rows, *global_rows]:
         if "--takeover" in line:
             raise ValidationFailure(f"cli/curator.md row carries a takeover flag it must not: {line.strip()[:80]}")
+
+    lines = cli_text.splitlines()
+    try:
+        commands_heading = lines.index("## Commands")
+    except ValueError as error:
+        raise ValidationFailure("cli/curator.md has no Commands table for the takeover note") from error
+    table_lines: list[int] = []
+    command_rows: list[tuple[str, str]] = []
+    for index in range(commands_heading + 1, len(lines)):
+        line = lines[index]
+        if not line.startswith("|"):
+            if table_lines:
+                break
+            if line.strip():
+                break
+            continue
+        table_lines.append(index)
+        row = re.match(r"^\|\s*`([^`]*)`\s*\|\s*(.*?)\s*\|\s*$", line)
+        if row is not None:
+            command_rows.append((row.group(1), row.group(2).strip()))
+    if not table_lines or not command_rows:
+        raise ValidationFailure("cli/curator.md has no parseable Commands table for takeover carriers")
+
+    # The complete clause must appear once, immediately under the table, and
+    # match the carrier, notice, backup, and refusal rules in environments §9.5.
+    cursor = table_lines[-1] + 1
+    while cursor < len(lines) and not lines[cursor].strip():
+        cursor += 1
+    note_lines: list[str] = []
+    while cursor < len(lines) and lines[cursor].strip():
+        note_lines.append(lines[cursor].strip())
+        cursor += 1
+    note_paragraph = " ".join(note_lines)
+    if not note_paragraph.startswith(CLI_TAKEOVER_NOTE_LABEL):
+        raise ValidationFailure("cli/curator.md does not place the takeover note immediately below the Commands table")
+    note_clause = note_paragraph[len(CLI_TAKEOVER_NOTE_LABEL) :].strip()
+    expected_note = f"{clause} {CLI_TAKEOVER_ENV_RESOLVE_SCOPE}"
+    if squash_prose(note_clause) != squash_prose(expected_note):
+        raise ValidationFailure("cli/curator.md takeover note does not match the complete environments §9.5 clause and env resolve repair scope")
+    if squash_prose(cli_text).count(clause) != 1:
+        raise ValidationFailure("cli/curator.md must state the §9.5 takeover clause exactly once")
+
+    if set(CLI_TAKEOVER_ROW_CARRIERS.values()) != set(carrying):
+        raise ValidationFailure("CLI takeover rows do not map to the §9.5 carrier set")
+    actual_counts: dict[str, int] = {}
+    for command, behavior in command_rows:
+        if "--takeover" not in command:
+            continue
+        if "[--takeover]" not in command:
+            raise ValidationFailure(f"CLI takeover carrier is not shown as an optional flag: {command}")
+        if command.startswith("curator profile install "):
+            row_key = "profile install"
+        elif command.startswith("curator profile use <name>"):
+            row_key = "profile use <name>"
+        elif command.startswith("curator profile use --clear"):
+            row_key = "profile use --clear"
+        elif command.startswith("curator profile update "):
+            row_key = "profile update"
+        elif command.startswith("curator profile sync "):
+            row_key = "profile sync"
+        elif command.startswith("curator env resolve "):
+            if "[--repair]" not in command:
+                raise ValidationFailure("CLI env resolve takeover carrier is not scoped to --repair")
+            row_key = "env resolve --repair"
+        else:
+            raise ValidationFailure(f"CLI command row adds --takeover outside the §9.5 carrier set: {command}")
+        actual_counts[row_key] = actual_counts.get(row_key, 0) + 1
+        if not behavior.lower().endswith(CLI_TAKEOVER_ROW_POINTER):
+            raise ValidationFailure(f"CLI takeover row does not point to the note: {command}")
+        before_pointer = behavior[: -len(CLI_TAKEOVER_ROW_POINTER)].lower()
+        if re.search(r"\btakeover\b|\btakes over\b", before_pointer):
+            raise ValidationFailure(f"CLI takeover row repeats the clause instead of using only a pointer: {command}")
+    if actual_counts != CLI_TAKEOVER_ROW_COUNTS:
+        raise ValidationFailure(
+            f"CLI takeover row carriers/counts are {actual_counts!r}; want {CLI_TAKEOVER_ROW_COUNTS!r}"
+        )
 
 
 def validate_takeover_closed_set_text(
@@ -4340,7 +4455,7 @@ def validate_takeover_closed_set_text(
     require_exact_takeover_sentence(section96, TAKEOVER_EXCLUSION_96, label="environments.md section 9.6")
     section123 = markdown_h3_section(manager_text, "### 12.3 Profile lifecycle", label="profiles/manager.md")
     require_exact_takeover_sentence(section123, TAKEOVER_EXCLUSION_MANAGER, label="profiles/manager.md section 12.3")
-    validate_cli_takeover_rows(cli_text)
+    validate_cli_takeover_rows(cli_text, carrying, takeover_cli_clause(section95))
 
 
 def validate_local_links() -> None:

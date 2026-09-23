@@ -563,6 +563,13 @@ Versioning for the complete specification set.
 
 ### Changed
 
+- Editorial: the CLI guide now states the complete §9.5 takeover carrier
+  clause once below its command table, including the §9.5 notice, backup, and
+  no-flag failure wording, with each carrier row pointing to it; the
+  `env resolve` scope is stated with the note, and the example is grouped with
+  `profile use`. The validator pins the note to environments §9.5. No
+  protocol rule changed.
+
 - Closed the environments §9.5 takeover closed-set question for `profile
   import` activation and the §9.4 global operations by text, keeping the
   five-member carrier set (orchestrator decision 2026-09-22,

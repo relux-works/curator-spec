@@ -6395,6 +6395,74 @@ class TakeoverClosedSetTextTests(unittest.TestCase):
         with self.assertRaisesRegex(validate.ValidationFailure, "section 12.3.*pinned takeover sentence"):
             self.run_gate(manager=text)
 
+    def test_cli_note_matches_the_complete_section_95_clause(self) -> None:
+        section95 = validate.markdown_h3_section(self.environments, "### 9.5 Onboarding", label="environments.md")
+        clause = validate.takeover_cli_clause(section95)
+        expected_note = f"{clause} {validate.CLI_TAKEOVER_ENV_RESOLVE_SCOPE}"
+        self.assertEqual(validate.squash_prose(self.cli).count(validate.squash_prose(expected_note)), 1)
+        self.run_gate()
+
+    def test_cli_note_dangling_reference_mutant_fails(self) -> None:
+        text = self.mutated(
+            self.cli,
+            "named in environments section 9.5 as onboarding triggers",
+            "named above as onboarding triggers",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "takeover note does not match"):
+            self.run_gate(cli=text)
+
+    def test_cli_note_without_closed_set_fails(self) -> None:
+        text = self.mutated(self.cli, "and on no other operation.", "and on other operations.")
+        with self.assertRaisesRegex(validate.ValidationFailure, "takeover note does not match"):
+            self.run_gate(cli=text)
+
+    def test_cli_note_missing_write_coverage_and_conflict_rule_fails(self) -> None:
+        text = self.replace_sentence(
+            self.cli,
+            "A carrying operation that meets unmanaged files outside onboarding performs the same notice and backup as onboarding when the flag is given; without the flag, section 8.3 applies and the operation fails with `environment_surface_unmanaged_conflict` rather than overwrite.",
+            "",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "takeover note does not match"):
+            self.run_gate(cli=text)
+
+    def test_cli_note_drop_of_carrier_fails(self) -> None:
+        text = self.mutated(self.cli, ", `profile sync`", "")
+        with self.assertRaisesRegex(validate.ValidationFailure, "takeover note does not match"):
+            self.run_gate(cli=text)
+
+    def test_cli_note_requires_env_resolve_repair_scope(self) -> None:
+        text = self.mutated(
+            self.cli,
+            f" {validate.CLI_TAKEOVER_ENV_RESOLVE_SCOPE}",
+            "",
+        )
+        with self.assertRaisesRegex(validate.ValidationFailure, "takeover note does not match"):
+            self.run_gate(cli=text)
+
+    def test_cli_carrier_row_without_flag_fails(self) -> None:
+        line = next(line for line in self.cli.splitlines() if line.startswith("| `curator profile sync "))
+        changed = line.replace(" [--takeover]`", "`")
+        text = self.mutated(self.cli, line, changed)
+        with self.assertRaisesRegex(validate.ValidationFailure, "row carriers/counts"):
+            self.run_gate(cli=text)
+
+    def test_cli_env_resolve_takeover_row_requires_repair(self) -> None:
+        line = next(line for line in self.cli.splitlines() if line.startswith("| `curator env resolve "))
+        changed = line.replace("[--repair] ", "", 1)
+        text = self.mutated(self.cli, line, changed)
+        with self.assertRaisesRegex(validate.ValidationFailure, "not scoped to --repair"):
+            self.run_gate(cli=text)
+
+    def test_cli_carrier_row_cannot_repeat_takeover_clause(self) -> None:
+        line = next(line for line in self.cli.splitlines() if line.startswith("| `curator profile sync "))
+        changed = line.replace(
+            "; see the takeover note below.",
+            "; the flag takes over unmanaged files; see the takeover note below.",
+        )
+        text = self.mutated(self.cli, line, changed)
+        with self.assertRaisesRegex(validate.ValidationFailure, "repeats the clause"):
+            self.run_gate(cli=text)
+
     def test_import_row_gaining_takeover_fails(self) -> None:
         text = self.mutated(
             self.cli,
