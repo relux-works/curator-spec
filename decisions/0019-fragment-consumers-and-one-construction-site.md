@@ -12,6 +12,12 @@ it amends [Decision 0013](0013-execution-ownership-and-launch-plans.md)
 Decisions 1, 5, 6.3 and 6.5 and the `curator run` paragraph of
 [environments](../protocol/environments.md) §10.1.
 
+Revised 2026-09-24 to align with Decision 0021 (proposed, filed
+separately): primary sessions enter through `curator run`, so
+task-board's session daemon hosts a composed plan and consumes no
+fragment. task-board remains a fragment consumer for its tracked
+children only.
+
 ## Context
 
 Decision 0013 Decision 1 fixes four planes and one composer: Curator
@@ -25,18 +31,22 @@ the M2 class of defect". Decision 6.3 has the launcher append the
 system-prompt and MCP channel flags itself, and environments §10.1
 restates that the launcher is the single composer of a launch.
 
-Two more processes now need the same fragment. task-board launches
+Another process now needs the same fragment. task-board launches
 tracked child agents in exec mode, with a process group, deadlines, an
 abort fence, a run manifest, exit classification, limit observation,
-retries, worktrees and goal directives. Its session daemon launches
-board-bound primary sessions through the module's
-`LaunchModeManagedSession`. Both must run the agent in the profile's
-managed home with the profile's MCP set, so both must apply the
-fragment's channels. The operator decided that there is no headless
-`curator run`: tracked children stay with their process owner.
+retries, worktrees and goal directives. The children must run in the
+profile's managed home with the profile's MCP set, so task-board must
+apply the fragment's channels. The operator decided that there is no
+headless `curator run`: tracked children stay with their process owner.
+task-board's session daemon today builds board-bound primary sessions
+itself through the module's `LaunchModeManagedSession`, which would make
+it a third consumer; Decision 0021 instead routes primary sessions
+through `curator run` and leaves the daemon hosting a plan that is
+already composed.
 
-Read literally, the current text leaves each of these owners to spell
-MCP and system-prompt flags beside the launcher. Three spellings of
+Read literally, the current text leaves task-board to spell MCP and
+system-prompt flags beside the launcher, and its session daemon a third
+time for as long as it builds primary sessions. Separate spellings of
 `--mcp-config <file> --strict-mcp-config` or `-p curator-mcp` drift, and
 one forgotten strictness flag lets the machine's own MCP servers leak
 into a child: the M2 class again, now across repositories.
@@ -66,13 +76,14 @@ the fragment itself:
   through an environment variable.
 
 The system plugin of each harness spells these channels in every launch
-mode (interactive, exec and managed session), together with model,
-effort and permission mode, and resolves conflicts between them in one
-place. For example, a tool that accepts a single profile flag gives it
-to the MCP channel and receives a custom model provider as configuration
-overrides instead. The order rule of Decision 0013 Decision 6.3 moves
-with the spelling: channel flags precede the native arguments, which
-remain the consumer's to append verbatim after the plan's argv.
+mode (interactive and exec, and managed session while a consumer still
+uses it), together with model, effort and permission mode, and resolves
+conflicts between them in one place. For example, a tool that accepts a
+single profile flag gives it to the MCP channel and receives a custom
+model provider as configuration overrides instead. The order rule of
+Decision 0013 Decision 6.3 moves with the spelling: channel flags
+precede the native arguments, which remain the consumer's to append
+verbatim after the plan's argv.
 
 ### 2. Several fragment consumers
 
@@ -82,12 +93,14 @@ member, and owns everything else about its process. The consumers are:
 
 - `curator-run`, the human's interactive door, for untracked execution
   and for the `ax start --launch-plan` handoff of Decision 0013
-  Decision 3;
-- task-board, for tracked child agents in exec mode;
-- task-board's session daemon, for board-bound primary sessions in the
-  managed-session mode.
+  Decision 3, including the hand-off of primary sessions to a session
+  host under Decision 0021;
+- task-board, for tracked child agents in exec mode.
 
-A consumer never spells a channel or a harness flag. Each consumer's
+A session host, task-board's session daemon included, receives a
+composed plan and is not a fragment consumer: it resolves no fragment
+and spells no channel. A consumer never spells a channel or a harness
+flag. Each consumer's
 fragment parser keeps running the fragment conformance vectors, as the
 current text requires.
 
@@ -113,9 +126,9 @@ current text requires.
 
 - A strictness flag such as `--strict-mcp-config` has one owner and one
   set of per-harness golden tests; no consumer can forget it.
-- `curator-run`, task-board and its session daemon build identical
-  channel flags from the same fragment, so an interactive launch, a
-  tracked child and a primary session of one profile see the same MCP
+- `curator-run` and task-board build identical channel flags from the
+  same fragment, so an interactive launch, a hosted primary session
+  (Decision 0021) and a tracked child of one profile see the same MCP
   set.
 - Each consumer can assert in its own test suite that no harness flag is
   spelled outside the module, extending the guard task-board already
@@ -129,8 +142,9 @@ current text requires.
 ## Alternatives considered
 
 - **Each process owner spells its own channels.** This is what the
-  current text implies once task-board and its session daemon consume
-  fragments. Rejected: three spellings of one channel drift, and a
+  current text implies once task-board (and, before Decision 0021, its
+  session daemon) consumes fragments. Rejected: separate spellings of
+  one channel drift, and a
   missing strictness flag leaks machine MCP servers into a child (the M2
   class of Decision 0013).
 - **`curator-run` as the only launcher, headless children included.**
