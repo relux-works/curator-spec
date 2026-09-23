@@ -417,6 +417,7 @@ func TestEnvironmentSchemaCasesCoverTheClosedSurfaces(t *testing.T) {
 		"agent-mcp-v1.schema.json":                agentMCPSchemaExamples(validAgentMCPV1()),
 		"context-lock-v1.schema.json":             contextLockSchemaExamples(validContextLockV1()),
 		"agent-environment-marker-v1.schema.json": environmentMarkerSchemaExamples(validEnvironmentMarkerV1()),
+		"agent-environment-marker-v2.schema.json": environmentMarkerV2SchemaExamples(validEnvironmentMarkerV2()),
 		"launch-env-fragment-v1.schema.json":      launchEnvFragmentSchemaExamples(validLaunchEnvFragmentV1()),
 		"launch-env-fragment-v2.schema.json":      launchEnvFragmentV2SchemaExamples(validLaunchEnvFragmentV2()),
 	} {

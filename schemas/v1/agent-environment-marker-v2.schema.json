@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/v1/agent-environment-marker-v2.schema.json",
+  "title": ".agent-environment.json schema 2",
+  "type": "object",
+  "required": ["version", "profile", "members", "precedence", "mode", "surfaces"],
+  "properties": {
+    "version": {"const": 2},
+    "profile": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["name", "root", "kind", "lock_sha256", "source", "requirement"],
+          "properties": {
+            "name": {"$ref": "common.schema.json#/$defs/identifier"},
+            "root": {"$ref": "common.schema.json#/$defs/identifier"},
+            "kind": {"const": "git"},
+            "lock_sha256": {"$ref": "common.schema.json#/$defs/hex256"},
+            "source": {"$ref": "context-lock-v1.schema.json#/$defs/sourceIdentity"},
+            "requirement": {"$ref": "#/$defs/requirement"},
+            "directory": {"$ref": "common.schema.json#/$defs/portablePath"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["name", "root", "kind", "lock_sha256"],
+          "properties": {
+            "name": {"$ref": "common.schema.json#/$defs/identifier"},
+            "root": {"$ref": "common.schema.json#/$defs/identifier"},
+            "kind": {"const": "local"},
+            "lock_sha256": {"$ref": "common.schema.json#/$defs/hex256"}
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["name", "root", "kind", "lock_sha256", "source_path"],
+          "properties": {
+            "name": {"$ref": "common.schema.json#/$defs/identifier"},
+            "root": {"$ref": "common.schema.json#/$defs/identifier"},
+            "kind": {"const": "path"},
+            "lock_sha256": {"$ref": "common.schema.json#/$defs/hex256"},
+            "source_path": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+            "imported_from_native": {"const": true}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "members": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/member"}
+    },
+    "precedence": {"$ref": "#/$defs/precedence"},
+    "mode": {"enum": ["managed-home", "linked", "copied"]},
+    "surfaces": {
+      "type": "object",
+      "properties": {
+        "mcp": {"$ref": "#/$defs/surfaceEntry"},
+        "root-context": {"$ref": "#/$defs/rootContextSurfaceEntry"},
+        "skills": {"$ref": "#/$defs/surfaceEntry"},
+        "system-prompt": {"$ref": "#/$defs/surfaceEntry"}
+      },
+      "additionalProperties": false
+    },
+    "passthrough": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["isolation", "strategy", "source_role", "backend", "backend_version", "provenance"],
+        "properties": {
+          "path": {"$ref": "common.schema.json#/$defs/portablePath"},
+          "isolation": {"enum": ["shared", "isolated"]},
+          "strategy": {"enum": ["per-home-keychain", "file-link", "keyring-preferred", "ambient", "in-place"]},
+          "source_role": {"enum": ["native", "managed"]},
+          "backend": {"enum": ["file", "keychain", "ambient"]},
+          "backend_version": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+          "provenance": {"enum": ["provisioned", "repaired", "migrated"]}
+        },
+        "allOf": [
+          {
+            "if": {
+              "anyOf": [
+                {"properties": {"strategy": {"const": "ambient"}}, "required": ["strategy"]},
+                {"properties": {"backend": {"const": "ambient"}}, "required": ["backend"]},
+                {
+                  "properties": {
+                    "strategy": {"const": "per-home-keychain"},
+                    "isolation": {"const": "isolated"}
+                  },
+                  "required": ["strategy", "isolation"]
+                }
+              ]
+            },
+            "then": {"not": {"required": ["path"]}},
+            "else": {"required": ["path"]}
+          }
+        ],
+        "additionalProperties": false
+      }
+    },
+    "seeds": {"$ref": "common.schema.json#/$defs/pathSet"},
+    "seeded_projects": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
+    },
+    "seed_links": {"$ref": "common.schema.json#/$defs/pathSet"},
+    "codex_seed_record": {
+      "type": "object",
+      "required": ["revision", "native_mcp_servers"],
+      "properties": {
+        "revision": {"enum": ["A", "B"]},
+        "native_mcp_servers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"mode": {"const": "copied"}}, "required": ["mode"]},
+      "then": {
+        "properties": {
+          "surfaces": {"additionalProperties": {"not": {"required": ["copies"]}}}
+        }
+      },
+      "else": {
+        "properties": {
+          "surfaces": {"additionalProperties": {"required": ["copies"]}}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"mode": {"const": "managed-home"}}, "required": ["mode"]},
+      "then": {"required": ["passthrough", "seeds"]},
+      "else": {
+        "properties": {
+          "passthrough": false,
+          "seeds": false,
+          "seeded_projects": false,
+          "seed_links": false,
+          "codex_seed_record": false
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "requirement": {
+      "type": "object",
+      "properties": {
+        "range": {"$ref": "agent-context-v1.schema.json#/$defs/range"},
+        "tag": {"$ref": "common.schema.json#/$defs/gitRefName"},
+        "revision": {"$ref": "common.schema.json#/$defs/commit"}
+      },
+      "additionalProperties": false,
+      "minProperties": 1,
+      "maxProperties": 1
+    },
+    "precedence": {
+      "type": "object",
+      "required": ["winner", "placement"],
+      "properties": {
+        "winner": {"enum": ["higher-weight", "lower-weight"]},
+        "placement": {"enum": ["winner-last", "winner-first"]}
+      },
+      "additionalProperties": false
+    },
+    "member": {
+      "type": "object",
+      "required": ["name", "version", "weight", "overlay"],
+      "properties": {
+        "name": {"$ref": "common.schema.json#/$defs/identifier"},
+        "version": {"$ref": "agent-context-v1.schema.json#/$defs/packageVersion"},
+        "commit": {"$ref": "common.schema.json#/$defs/commit"},
+        "state_sha256": {"$ref": "common.schema.json#/$defs/hex256"},
+        "weight": {"$ref": "agent-context-v1.schema.json#/$defs/weight"},
+        "overlay": {"type": "boolean"},
+        "source_path": {"$ref": "common.schema.json#/$defs/nonEmptyString"}
+      },
+      "additionalProperties": false,
+      "oneOf": [
+        {"required": ["commit"], "not": {"anyOf": [{"required": ["state_sha256"]}, {"required": ["source_path"]}]}},
+        {"required": ["state_sha256"], "not": {"required": ["commit"]}}
+      ]
+    },
+    "rootContextSurfaceEntry": {
+      "type": "object",
+      "required": ["paths", "form", "content_sha256"],
+      "properties": {
+        "paths": {"$ref": "common.schema.json#/$defs/pathSet"},
+        "form": {"enum": ["monolithic", "referenced"]},
+        "content_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+        "copies": {"$ref": "#/$defs/copies"}
+      },
+      "additionalProperties": false
+    },
+    "surfaceEntry": {
+      "type": "object",
+      "required": ["paths", "content_sha256"],
+      "properties": {
+        "paths": {"$ref": "common.schema.json#/$defs/pathSet"},
+        "content_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+        "copies": {"$ref": "#/$defs/copies"}
+      },
+      "additionalProperties": false
+    },
+    "copies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "reason"],
+        "properties": {
+          "path": {"$ref": "common.schema.json#/$defs/portablePath"},
+          "reason": {"enum": ["symlink-fallback", "claude-code-root-context"]}
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

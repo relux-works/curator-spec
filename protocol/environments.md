@@ -1492,21 +1492,37 @@ reported, never silent: `env status` (and `resolve`) report it with
 `environment_credential_conflict`-class wording (curator follow-up
 F-C1). On the operator Mac, ~/.curator/environments/default/pi/auth.json points to ~/.pi/auth.json; that target does not exist, the real credential is ~/.pi/agent/auth.json, and env status does not show the dangling passthrough as detached. env status and resolve report dangling or mis-targeted credential links as detached, with environment_credential_conflict-class wording instead of silence.
 
-**Credential record.** From the marker revision Decision 0017 choice
-5 defines (follow-up), every passthrough record carries the effective
-`isolation` mode it was linked under, its strategy, its `source_role`
-(`native` when the bytes live in the native home, `managed` when they
-live in the managed home), its `backend` (`file`, `keychain`, or
-`ambient`), the `backend_version` tool release the write behavior was
-verified on, and its `provenance` (`provisioned`, `repaired`, or
-`migrated`). Strategies with no linkable entry — macOS
-per-home-keychain under `isolated`, `ambient` — record without a
-path. A schema-1 marker records `path` and `strategy` only and is
-never rewritten to add the record. Records publish under the
-manager-home mutation lock through a same-directory temporary file and
-atomic rename with journal protection; rollback restores the preceding
-marker. Backup discovery and general backups MUST NOT follow auth
-symlinks and MUST NOT archive credential bytes.
+**Credential record.** Decision 0017 choice 5 defines the schema-2
+credential record in `agent-environment-marker-v2.schema.json`
+(`schemas/v1/agent-environment-marker-v2.schema.json`). Every schema-2
+passthrough record MUST carry `isolation` (the effective `shared` or
+`isolated` mode), `strategy`, `source_role` (`native` when the
+bytes are owned by the native home, `managed` when they are owned by
+the managed home), `backend` (`file`, `keychain`, or `ambient`),
+`backend_version` (the non-empty verified tool release), and
+`provenance` (`provisioned`, `repaired`, or `migrated`). A
+linkless record MUST omit `path`: this applies to the `ambient`
+strategy or backend and to `per-home-keychain` when `isolation` is
+`isolated`. Every other passthrough record MUST carry its home-relative
+`path`. Schema 2 encodes these requirements and rejects additional
+record members.
+
+A schema-1 marker retains passthrough entries with `path` and
+`strategy` only; the manager MUST NOT rewrite it solely to add the
+schema-2 credential record. If a successful manager-home mutation
+already requires publishing a replacement marker for another state
+change, that publication MUST use schema 2 and include the complete
+credential records. There is no standalone marker-upgrade write. If the
+mutation rolls back, journal recovery MUST restore the exact preceding
+marker bytes, including its schema version.
+
+Marker publication MUST occur under the manager-home mutation lock in
+the same journal-protected transaction as the mutation. The manager
+MUST write the complete marker to a temporary file in the marker's
+directory and atomically rename it into place; rollback MUST restore the
+preceding marker. Backup discovery MUST inspect auth paths with
+`lstat` and MUST NOT follow auth symlinks. Backups MUST NOT archive
+credential bytes or traverse a symlink to credential bytes.
 
 Passthrough entries are excluded from surface content hashes and drift
 detection, are never copied into the profile store, and are never audited
@@ -1865,13 +1881,18 @@ the current profile of each scope, both homes and whether each has been
 provisioned. An operator picks one door per environment for daily work; a
 `--isolated-home` flag that would change the answer is not in revision 1.
 
-### 8.2 Environment marker, schema 1
+### 8.2 Environment marker, schemas 1 and 2
 
 Every in-place surface set and every managed home carries a per-home
-**environment marker**, `.agent-environment.json`, a strict schema-1 object
-beside the managed surfaces. The marker records:
+**environment marker**, `.agent-environment.json`, beside the managed
+surfaces. Its supported wire formats are the strict schema-1 object
+(`agent-environment-marker-v1.schema.json`) and the strict schema-2
+object (`agent-environment-marker-v2.schema.json`). Newly created
+markers MUST use schema 2. Existing schema-1 markers remain supported;
+the only upgrade rule is the otherwise-required marker publication
+stated in section 7.4. The marker records:
 
-- `version` — exactly `1`;
+- `version` — exactly `1` for schema 1 or `2` for schema 2;
 - `profile` — the profile `name`, the `root` package name, its source
   `kind` (exactly `git`, `local`, or `path`), and `lock_sha256`, the lock
   hash of section 1.3. A `git` root additionally records its canonical
@@ -1899,8 +1920,10 @@ beside the managed surfaces. The marker records:
   section 5.8 MCP file keyed `mcp`; only `root-context` carries a `form`.
   Surface keys are sorted;
   required arrays are present even when empty;
-- for a managed home, the recorded `passthrough` entries with their section
-  7.4 strategy, and the recorded provisioning `seeds` by home-relative path;
+- for a managed home, the recorded `passthrough` entries and
+  provisioning `seeds` by home-relative path: schema 1 entries carry
+  `path` and `strategy`, while schema 2 entries carry the complete
+  section 7.4 credential record and carry `path` only when linkable;
 - for a managed `claude_code` home, `seeded_projects`: the sorted list of
   literal launch-directory paths whose project entry section 7.4 has
   written into the managed `.claude.json`, so that resolve can tell a
@@ -2099,6 +2122,13 @@ row's diagnostic, never a local restatement:
 | passthrough entry | the recorded link is missing, replaced, or retargeted: `environment_passthrough_detached` — a missing link, or a directory at the entry path, is re-linked by `--repair`; a regular file or an unexpected retarget is `environment_credential_conflict` at repair, never removed or re-pointed | `environment_passthrough_unreadable` — non-current, currency unknown, never "detached"; repair leaves the entry untouched | 7.4 |
 | recorded surface | `environment_surface_missing` | `environment_surface_unreadable` — non-current, currency unknown | 8.4 |
 | inventory candidate | not detected — never in the loss list | a loss with reason; a lossy import stops with `environment_import_lossy` unless consented; onboarding stops before its first write while the inventory is incomplete | 9.5, 9.6 |
+
+Auth-path discovery is no-follow: backup discovery MUST use
+`lstat` on each auth path and MUST NOT follow an auth symlink. If a link
+target must be identified for the section 7.4 liveness check, the manager
+MAY read the link text but MUST NOT open or traverse the target for
+discovery or backup. Credential paths and bytes MUST NOT be archived.
+An `lstat` or required `readlink` failure is unreadable, never absence.
 
 Boundary verification precedes readability classification: on the section
 10.1 verification order (enclosing boundary, then entries, then pin hashes,
@@ -3600,8 +3630,9 @@ The following surfaces of this document are conformance-vector surfaces,
 with schemas and vectors delivered separately (`schemas/v1/`, positive and
 negative vectors, and byte-exact determinism vectors). Schemas:
 `agent-context-v1` (section 2), `agent-mcp-v1` (section 2.2),
-`context-lock-v1` (section 1.3), the rewritten `agent-environment-marker-v1`
-(section 8.2), the rewritten `launch-env-fragment-v1` (section 10.2)
+`context-lock-v1` (section 1.3), `agent-environment-marker-v1` and
+`agent-environment-marker-v2` (section 8.2), the rewritten
+`launch-env-fragment-v1` (section 10.2)
 — which requires `argument` on every `flag` descriptor and `name` exactly
 when `argument` is `name`; the Decision 0012 §9 worked example, which omits
 `argument` on its system-prompt descriptors, is read as pre-revision —

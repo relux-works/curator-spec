@@ -500,6 +500,141 @@
     "valid": false
   },
   {
+    "instance": "agent-environment-marker-v1/invalid-passthrough-credential-record.json",
+    "schema": "agent-environment-marker-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/valid.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/valid-file-link.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v2/valid-keyring-preferred-file.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v2/valid-keyring-preferred-ambient.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v2/valid-per-home-keychain-isolated.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v2/valid-ambient.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v2/valid-in-place.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-missing-isolation.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-missing-strategy.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-missing-source-role.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-missing-backend.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-missing-backend-version.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-missing-provenance.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-unknown-backend.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-unknown-provenance.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-unknown-isolation.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-unknown-source-role.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-empty-backend-version.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-unknown-strategy.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-path-on-ambient-strategy.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-path-on-ambient-backend.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-path-on-isolated-per-home-keychain.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-missing-path-on-file-link.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-missing-path-on-keyring-preferred-file.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v2/invalid-unknown-field.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
     "instance": "agent-mcp-v1/valid.json",
     "schema": "agent-mcp-v1.schema.json",
     "valid": true

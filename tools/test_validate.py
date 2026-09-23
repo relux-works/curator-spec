@@ -10,6 +10,7 @@ import shlex
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 MODULE_PATH = Path(__file__).with_name("validate.py")
@@ -23,6 +24,35 @@ def swapped(values: list, first: int, second: int) -> list:
     result = list(values)
     result[first], result[second] = result[second], result[first]
     return result
+
+
+class SchemaRegistryCacheTests(unittest.TestCase):
+    def test_schema_documents_are_cached_by_content_and_changes_are_rechecked(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            schema_dir = Path(directory)
+            schema_path = schema_dir / "cache-test.schema.json"
+            schema = {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "$id": f"urn:cache-test:{schema_dir.name}",
+                "type": "object",
+            }
+            schema_path.write_text(json.dumps(schema), encoding="utf-8")
+            check_schema = validate.Draft202012Validator.check_schema
+
+            with patch.object(validate, "SCHEMAS", schema_dir), patch.object(
+                validate.Draft202012Validator,
+                "check_schema",
+                wraps=check_schema,
+            ) as checked:
+                validate.schema_registry()
+                validate.schema_registry()
+                self.assertEqual(checked.call_count, 1)
+
+                schema["type"] = "unknown-json-schema-type"
+                schema_path.write_text(json.dumps(schema), encoding="utf-8")
+                with self.assertRaises(validate.ValidationFailure):
+                    validate.schema_registry()
+                self.assertEqual(checked.call_count, 2)
 
 
 class WireSemanticValidationTests(unittest.TestCase):

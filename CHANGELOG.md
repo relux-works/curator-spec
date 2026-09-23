@@ -7,6 +7,23 @@ Versioning for the complete specification set.
 
 ### Added
 
+- STORY-260922-188t6n (TASK-260922-1nf6o6, F-S1): add
+  `agent-environment-marker-v2.schema.json` with the six-field
+  credential record (`isolation`, `strategy`, `source_role`,
+  `backend`, `backend_version`, `provenance`) and conditional
+  linkless paths. Schema 1 remains valid and unchanged; existing schema-1
+  markers upgrade only when a successful mutation already requires marker
+  publication, and rollback restores the preceding marker. Normative
+  publication, backup `lstat`, and no-credential-archive rules are in
+  environments §§7.4/8.4.1 and manager §§12.4/12.5. Adds schema cases;
+  frozen v1 protocol schemas remain unchanged. The spec validator caches
+  successful schema meta-checks by canonical content and rechecks changed
+  schemas. Curator follow-up leaf:
+  **Publish schema-2 credential records in the environment manager**
+  (manager-side publication, schema id
+  `agent-environment-marker-v2.schema.json`, six exact fields above,
+  path omitted for linkless records, and the upgrade rule above).
+
 - STORY-260922-188t6n (TASK-260922-1hla8q, F-S2): fix the Decision
   0018 choice-7 transport left open at adoption. The minimum transport
   version token is `launch-env-fragment-v2` — a launcher establishes

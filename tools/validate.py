@@ -23,6 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCHEMAS = ROOT / "schemas" / "v1"
 SUITE = ROOT / "conformance" / "v1"
 REVIEWS = ROOT / "reviews"
+_VALID_SCHEMA_DOCUMENTS: set[bytes] = set()
 SAFE_INTEGER = 9_007_199_254_740_991
 PROTOCOL_VERSION = "1.0.0-rc.9"
 RC8_PROTOCOL_VERSION = "1.0.0-rc.8"
@@ -167,10 +168,13 @@ def schema_registry() -> tuple[Registry, dict[str, Path]]:
     paths: dict[str, Path] = {}
     for path in sorted(SCHEMAS.glob("*.json")):
         document = load_json(path)
-        try:
-            Draft202012Validator.check_schema(document)
-        except SchemaError as exc:
-            raise ValidationFailure(f"{path}: invalid Draft 2020-12 schema: {exc.message}") from exc
+        schema_content = ccj1_bytes(document)
+        if schema_content not in _VALID_SCHEMA_DOCUMENTS:
+            try:
+                Draft202012Validator.check_schema(document)
+            except SchemaError as exc:
+                raise ValidationFailure(f"{path}: invalid Draft 2020-12 schema: {exc.message}") from exc
+            _VALID_SCHEMA_DOCUMENTS.add(schema_content)
         schema_id = document.get("$id")
         if not isinstance(schema_id, str) or not schema_id:
             raise ValidationFailure(f"{path}: schema has no $id")
@@ -751,7 +755,10 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
                         return "required_by names a package outside the lock"
                     if member.get("name") in required_by:
                         return "required_by names the member itself"
-    elif schema_name == "agent-environment-marker-v1.schema.json":
+    elif schema_name in (
+        "agent-environment-marker-v1.schema.json",
+        "agent-environment-marker-v2.schema.json",
+    ):
         surfaces = instance.get("surfaces")
         if isinstance(surfaces, dict):
             keys = list(surfaces)

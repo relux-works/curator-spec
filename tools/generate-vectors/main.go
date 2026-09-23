@@ -2635,6 +2635,9 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	environmentMarker := validEnvironmentMarkerV1()
 	cases["agent-environment-marker-v1.schema.json"] = schemaCase{environmentMarker, without(environmentMarker, "surfaces")}
 	additionalCases["agent-environment-marker-v1.schema.json"] = environmentMarkerSchemaExamples(environmentMarker)
+	environmentMarkerV2 := validEnvironmentMarkerV2()
+	cases["agent-environment-marker-v2.schema.json"] = schemaCase{environmentMarkerV2, without(environmentMarkerV2, "surfaces")}
+	additionalCases["agent-environment-marker-v2.schema.json"] = environmentMarkerV2SchemaExamples(environmentMarkerV2)
 	launchFragment := validLaunchEnvFragmentV1()
 	cases["launch-env-fragment-v1.schema.json"] = schemaCase{launchFragment, without(launchFragment, "env")}
 	additionalCases["launch-env-fragment-v1.schema.json"] = launchEnvFragmentSchemaExamples(launchFragment)

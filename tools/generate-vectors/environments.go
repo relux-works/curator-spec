@@ -1213,6 +1213,14 @@ func validEnvironmentMarkerV1() map[string]any {
 	}
 }
 
+// validEnvironmentMarkerV2 is the schema-2 form of the positive environment
+// marker example. The unchanged marker members are inherited from schema 1.
+func validEnvironmentMarkerV2() map[string]any {
+	marker := deepCloneMap(validEnvironmentMarkerV1())
+	marker["version"] = 2
+	return marker
+}
+
 func withProfile(valid map[string]any, profile map[string]any) map[string]any {
 	out := cloneMap(valid)
 	out["profile"] = profile
@@ -1261,6 +1269,13 @@ func environmentMarkerSchemaExamples(valid map[string]any) []schemaExample {
 	codexSeed["codex_seed_record"] = map[string]any{"revision": "B", "native_mcp_servers": []any{"figma", "gh"}}
 	codexSeedEmpty := cloneMap(valid)
 	codexSeedEmpty["codex_seed_record"] = map[string]any{"revision": "A", "native_mcp_servers": []any{}}
+	v2Credential := map[string]any{
+		"path": "auth.json", "isolation": "shared", "strategy": "file-link",
+		"source_role": "native", "backend": "file", "backend_version": "0.153.2",
+		"provenance": "provisioned",
+	}
+	credentialOnV1 := deepCloneMap(valid)
+	credentialOnV1["passthrough"] = []any{deepCloneMap(v2Credential)}
 
 	return []schemaExample{
 		{name: "valid-local-profile", valid: true, instance: localProfile},
@@ -1321,6 +1336,76 @@ func environmentMarkerSchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-codex-seed-record-names-member", valid: false, instance: withField(valid, "codex_seed_record", map[string]any{"revision": "B", "native_mcp_servers": []any{"figma", ""}})},
 		{name: "invalid-codex-seed-record-names-not-array", valid: false, instance: withField(valid, "codex_seed_record", map[string]any{"revision": "B", "native_mcp_servers": "figma"})},
 		{name: "invalid-codex-seed-record-on-linked-home", valid: false, instance: withField(linked, "codex_seed_record", map[string]any{"revision": "B", "native_mcp_servers": []any{"figma"}})},
+		{name: "invalid-passthrough-credential-record", valid: false, instance: credentialOnV1},
+	}
+}
+
+// environmentMarkerV2SchemaExamples covers each strategy, both keyring-
+// preferred path branches, every required record member, and linkless path
+// rejection for ambient and isolated per-home-keychain records.
+func environmentMarkerV2SchemaExamples(valid map[string]any) []schemaExample {
+	record := func(strategy, isolation, sourceRole, backend, backendVersion, provenance, path string) map[string]any {
+		entry := map[string]any{
+			"isolation": isolation, "strategy": strategy, "source_role": sourceRole,
+			"backend": backend, "backend_version": backendVersion, "provenance": provenance,
+		}
+		if path != "" {
+			entry["path"] = path
+		}
+		return entry
+	}
+	withRecord := func(entry map[string]any) map[string]any {
+		marker := deepCloneMap(valid)
+		marker["passthrough"] = []any{entry}
+		return marker
+	}
+	fileLink := record("file-link", "shared", "native", "file", "0.153.2", "provisioned", "auth.json")
+	keyringFile := record("keyring-preferred", "shared", "native", "file", "0.153.2", "provisioned", "auth.json")
+	keyringAmbient := record("keyring-preferred", "shared", "native", "ambient", "0.153.2", "provisioned", "")
+	perHomeKeychain := record("per-home-keychain", "isolated", "managed", "keychain", "2.1.261", "provisioned", "")
+	ambient := record("ambient", "shared", "native", "ambient", "2.1.261", "provisioned", "")
+	inPlace := record("in-place", "shared", "native", "file", "0.153.2", "repaired", "auth.json")
+
+	missing := func(member string) map[string]any {
+		entry := deepCloneMap(fileLink)
+		delete(entry, member)
+		return entry
+	}
+	withField := func(entry map[string]any, field string, value any) map[string]any {
+		out := deepCloneMap(entry)
+		out[field] = value
+		return out
+	}
+	withoutPath := func(entry map[string]any) map[string]any {
+		out := deepCloneMap(entry)
+		delete(out, "path")
+		return out
+	}
+	return []schemaExample{
+		{name: "valid-file-link", valid: true, instance: withRecord(fileLink)},
+		{name: "valid-keyring-preferred-file", valid: true, instance: withRecord(keyringFile)},
+		{name: "valid-keyring-preferred-ambient", valid: true, instance: withRecord(keyringAmbient)},
+		{name: "valid-per-home-keychain-isolated", valid: true, instance: withRecord(perHomeKeychain)},
+		{name: "valid-ambient", valid: true, instance: withRecord(ambient)},
+		{name: "valid-in-place", valid: true, instance: withRecord(inPlace)},
+		{name: "invalid-missing-isolation", valid: false, instance: withRecord(missing("isolation"))},
+		{name: "invalid-missing-strategy", valid: false, instance: withRecord(missing("strategy"))},
+		{name: "invalid-missing-source-role", valid: false, instance: withRecord(missing("source_role"))},
+		{name: "invalid-missing-backend", valid: false, instance: withRecord(missing("backend"))},
+		{name: "invalid-missing-backend-version", valid: false, instance: withRecord(missing("backend_version"))},
+		{name: "invalid-missing-provenance", valid: false, instance: withRecord(missing("provenance"))},
+		{name: "invalid-unknown-backend", valid: false, instance: withRecord(withField(fileLink, "backend", "unknown"))},
+		{name: "invalid-unknown-provenance", valid: false, instance: withRecord(withField(fileLink, "provenance", "copied"))},
+		{name: "invalid-unknown-isolation", valid: false, instance: withRecord(withField(fileLink, "isolation", "machine"))},
+		{name: "invalid-unknown-source-role", valid: false, instance: withRecord(withField(fileLink, "source_role", "system"))},
+		{name: "invalid-empty-backend-version", valid: false, instance: withRecord(withField(fileLink, "backend_version", ""))},
+		{name: "invalid-unknown-strategy", valid: false, instance: withRecord(withField(fileLink, "strategy", "hardlink"))},
+		{name: "invalid-path-on-ambient-strategy", valid: false, instance: withRecord(record("ambient", "shared", "native", "file", "2.1.261", "provisioned", "auth.json"))},
+		{name: "invalid-path-on-ambient-backend", valid: false, instance: withRecord(withField(keyringAmbient, "path", "auth.json"))},
+		{name: "invalid-path-on-isolated-per-home-keychain", valid: false, instance: withRecord(withField(perHomeKeychain, "path", "auth.json"))},
+		{name: "invalid-missing-path-on-file-link", valid: false, instance: withRecord(withoutPath(fileLink))},
+		{name: "invalid-missing-path-on-keyring-preferred-file", valid: false, instance: withRecord(withoutPath(keyringFile))},
+		{name: "invalid-unknown-field", valid: false, instance: withRecord(withField(fileLink, "owner", "unexpected"))},
 	}
 }
 

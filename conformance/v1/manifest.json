@@ -645,6 +645,10 @@
       "sha256": "sha256:89dfbe49ca1b3ef81d664b5141c454c1fcca51a2d20c8c011ca55d56cb9206f5"
     },
     {
+      "path": "schema-cases/agent-environment-marker-v1/invalid-passthrough-credential-record.json",
+      "sha256": "sha256:6ca158719b182dac34e2530ad53d1d2fb2e8360caeb1538dc73231b656720219"
+    },
+    {
       "path": "schema-cases/agent-environment-marker-v1/invalid-passthrough-unknown-strategy.json",
       "sha256": "sha256:5307222f1a7f55bced62b88fc3a3184b48b78e380d8b9795deba5e325de4f7ff"
     },
@@ -795,6 +799,110 @@
     {
       "path": "schema-cases/agent-environment-marker-v1/valid.json",
       "sha256": "sha256:bbd4e9b9b9d2a30ae516f6c699603bafbc2e26edb2e1173b9d733bbda0b06c49"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-empty-backend-version.json",
+      "sha256": "sha256:138cb9b95e1622d9583b55af3c8db8e2ef5d08efcc48bf62e0865252998b0578"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-missing-backend-version.json",
+      "sha256": "sha256:d6a310c910c55db030484c3ca98bcc3c870a7623a4ae5df77a1c121915f0d1ca"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-missing-backend.json",
+      "sha256": "sha256:a3d57f3af2c539ab9a40b14a34ae7ba71f8ecb99ed3bf7b1f05abe4582cb5c17"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-missing-isolation.json",
+      "sha256": "sha256:a74cb6d36dc38c9c3711e755ead521f0243f79cb17a5b7bdd826040784f02a0f"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-missing-path-on-file-link.json",
+      "sha256": "sha256:463e0446aee7ce001a5c2c34170cbe220951c4138e30341f5cedff71e672bd64"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-missing-path-on-keyring-preferred-file.json",
+      "sha256": "sha256:1460f18aba8bcf7acef3eef3adb9c2a9cfdaf4faa8e72dce18075fcc4d645c31"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-missing-provenance.json",
+      "sha256": "sha256:1947668d0dfd0808dbfd8c400cffc8c5377612ad0ddd1d8fe584657be6bdb14f"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-missing-source-role.json",
+      "sha256": "sha256:0ea58ee8e8b787045048efed1ea86b4eda526dd5b15db007148d6da0e9473bc6"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-missing-strategy.json",
+      "sha256": "sha256:c94e91dd0ada59fb89f33531c7cda682b5dfdfe05e404b589cfac0e7a6fb1207"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-path-on-ambient-backend.json",
+      "sha256": "sha256:bf5bd6fbe3a804aa501c7fd034a7122d0df85ede3597663028e7ad19e74cf373"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-path-on-ambient-strategy.json",
+      "sha256": "sha256:5059139872afa12615678262e141a56ab4875aedc21889f4545b98804920b342"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-path-on-isolated-per-home-keychain.json",
+      "sha256": "sha256:0d8391aad5e09527d8c72d16f6b232f0f74c3e43267b0d2151f82daa4ba9b342"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-unknown-backend.json",
+      "sha256": "sha256:b3b7aaf57f9355d9853a798baa112ca20f4a19aa95352a874d95d5b4e68cd1dd"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-unknown-field.json",
+      "sha256": "sha256:8c5c580be615663ba0203ee76f543efd76f44364834c7abf53a3c1313a6a2436"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-unknown-isolation.json",
+      "sha256": "sha256:88070b95ed57a1a3d41dca02684bd19f1499b2af60ce5baab6ec48365a7d80b9"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-unknown-provenance.json",
+      "sha256": "sha256:37a8da0fb00d81d5fc8bbc41c59130774af4416080880ab7c9858d59fd1b1124"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-unknown-source-role.json",
+      "sha256": "sha256:7075328290c8281dea43a7ad926e8c6693380f6bb521b715e6096204b4c6b9da"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid-unknown-strategy.json",
+      "sha256": "sha256:bfa0ca9c04e7632e6d0d0303c9386b30df3d8d07a6e5874c4e1cf22b171ea25e"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/invalid.json",
+      "sha256": "sha256:496dc070b0688426fd9562e7fca5d0e6a3836f23d04ddd65ba5b74c2468485f5"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/valid-ambient.json",
+      "sha256": "sha256:27b463d83c06179f3d4c8ae64627d7a70707a410a94e1066e300c7d807e64035"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/valid-file-link.json",
+      "sha256": "sha256:3e30e6004ff7bd0f9a7cc68af08512a93ad4785db845bc36f4ca6518b783b234"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/valid-in-place.json",
+      "sha256": "sha256:40fb2f758dd8490c43bac3875de7b4c0c8daf9529724160c259395a4b78d5806"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/valid-keyring-preferred-ambient.json",
+      "sha256": "sha256:297f33ec5612e1f908cd940de3182c0c866661947670c74de8659d30586ab32b"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/valid-keyring-preferred-file.json",
+      "sha256": "sha256:cc0ef8ecd220a63a5b7948865d48d740b5264cb81ff5a661bcacaa208bcda510"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/valid-per-home-keychain-isolated.json",
+      "sha256": "sha256:b195234e805a7515239670043063e4318c1bfab304c693272e26f96e14672130"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v2/valid.json",
+      "sha256": "sha256:037a297fe69976d6a1956e785b23ff07592c8908e7edb025885b6e1e2857f4a7"
     },
     {
       "path": "schema-cases/agent-mcp-v1/invalid-command-absolute-path.json",
@@ -2982,7 +3090,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:464af01ccb873bc1c219dda4f2a3f28e5e9a236ecd97166f959b9e49bfd96241"
+      "sha256": "sha256:bff81eb96ea8aece6487d6e375d4dad7f178ea4966f61aff0fad219a0db47148"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",

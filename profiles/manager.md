@@ -2762,7 +2762,14 @@ environments §7.4 under the manager lock, never silent inside `--repair`.
 Materialization, refresh, switch, and garbage collection MUST
 NOT create, rewrite, or delete a credential file beyond maintaining the
 declared passthrough links themselves: the operator-owned credential
-boundary of section 1, applied to environment homes.
+boundary of section 1, applied to environment homes. Credential-record
+publication follows environments §7.4 and uses
+`agent-environment-marker-v2.schema.json`. A schema-1 marker is not
+upgraded solely to add the record; when an otherwise-required successful
+mutation publishes a replacement marker, it MUST publish schema 2 with
+the complete record. Rollback restores the preceding marker exactly.
+Backup discovery and backups use the environments §8.4.1 no-follow and
+no-archive rules.
 
 | Condition | Diagnostic (environments §7.7) |
 |---|---|
@@ -2817,7 +2824,12 @@ provisions or repairs the home from the store entries the lock names as one
 journaled transaction — re-materializing managed surfaces, re-linking
 absent passthrough links, reconciling XDG seeds, adding the launch
 directory's project entry — never touching environment-owned mutable
-state, unmanaged files, seeds, or backups. A link path that holds a
+state, unmanaged files, seeds, or backups. A schema-1 marker remains
+schema 1 during reads and operations that do not otherwise publish a
+replacement marker. When this repair already requires marker publication,
+the successful transaction MUST publish schema 2 and its complete
+credential records (environments §7.4); rollback restores the preceding
+marker, including its version and bytes. A link path that holds a
 regular file or an unexpected symlink target is
 `environment_credential_conflict`: the repair stops with the diagnostic
 and emits no fragment (environments §10.1). Repair restores managed
