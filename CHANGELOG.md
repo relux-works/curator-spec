@@ -7,6 +7,17 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Filed draft Decision 0019 (proposed — not adopted, no normative
+  change): fragment consumers and one construction site. Processes
+  other than `curator-run` (task-board for tracked children, its
+  session daemon for board-bound primary sessions) consume the launch
+  environment fragment themselves, while the harness argv and the
+  context channels (MCP configuration, system prompt, home) are
+  spelled only by the `agents-management` launch plane through a
+  typed `LaunchRequest` context member. At adoption it would amend
+  Decision 0013 Decisions 1, 5, 6.3 and 6.5 and the environments
+  §10.1 `curator run` paragraph.
+
 - STORY-260922-188t6n (TASK-260922-1nf6o6, F-S1): add
   `agent-environment-marker-v2.schema.json` with the six-field
   credential record (`isolation`, `strategy`, `source_role`,
