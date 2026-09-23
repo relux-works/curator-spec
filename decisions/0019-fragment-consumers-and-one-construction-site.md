@@ -12,8 +12,9 @@ it amends [Decision 0013](0013-execution-ownership-and-launch-plans.md)
 Decisions 1, 5, 6.3 and 6.5 and the `curator run` paragraph of
 [environments](../protocol/environments.md) §10.1.
 
-Revised 2026-09-24 to align with Decision 0021 (proposed, filed
-separately): primary sessions enter through `curator run`, so
+Revised 2026-09-24 to align with
+[Decision 0021](0021-sessions-enter-through-curator-run.md) (proposed):
+primary sessions enter through `curator run`, so
 task-board's session daemon hosts a composed plan and consumes no
 fragment. task-board remains a fragment consumer for its tracked
 children only.

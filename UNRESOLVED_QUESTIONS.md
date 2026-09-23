@@ -39,11 +39,12 @@ leaves.
 ## Filed proposals
 
 These decision drafts are **proposed — not adopted** (0014–0016 from
-migration workstream B7, 0019 from the launch-profile work). Filing does
-not authorize implementation, normative changes, workarounds, or draft
-landing.
+migration workstream B7, 0019 and 0021 from the launch-profile work).
+Filing does not authorize implementation, normative changes, workarounds,
+or draft landing.
 
 - [Decision 0014: tool-configuration surfaces](decisions/0014-tool-configuration-surfaces.md)
 - [Decision 0015: per-project policy and profile selection](decisions/0015-per-project-policy.md)
 - [Decision 0016: skill command roots in managed homes](decisions/0016-managed-home-command-roots.md)
 - [Decision 0019: fragment consumers and one construction site](decisions/0019-fragment-consumers-and-one-construction-site.md)
+- [Decision 0021: sessions enter through curator run and are hosted through the ax contract](decisions/0021-sessions-enter-through-curator-run.md)

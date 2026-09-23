@@ -7,6 +7,18 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Filed draft Decision 0021 (proposed — not adopted, no normative
+  change): sessions enter through `curator run` and are hosted through
+  the `ax` contract. `curator run` becomes the one interactive entry
+  point; with the `ax` integration configured, every session is hosted
+  from birth by whatever implements `ax start --launch-plan`
+  (task-board's session daemon through a bridge until an `ax`
+  implementation ships). A per-launch `--untracked` is honoured when the
+  operator's `ax.json` enables the integration and refused when the
+  machine's does. task-board's interactive commands become aliases and
+  its `--native-home` mode is withdrawn. At adoption it would amend
+  Decision 0013 Decisions 1 and 6.4 and launcher §3 and §4.6.
+
 - Filed draft Decision 0019 (proposed — not adopted, no normative
   change): fragment consumers and one construction site. task-board
   consumes the launch environment fragment itself for its tracked
