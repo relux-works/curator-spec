@@ -2486,6 +2486,12 @@ func TestSystemConfigV2IsSchemaOnePlusTheLockableEnvironmentsKeys(t *testing.T) 
 	if environments["additionalProperties"] != false {
 		t.Fatal("system config v2 environments object is not closed")
 	}
+	isolation := environments["properties"].(map[string]any)["isolation"].(map[string]any)
+	profileValues := isolation["additionalProperties"].(map[string]any)
+	modeValues := profileValues["additionalProperties"].(map[string]any)
+	if got := modeValues["enum"]; !reflect.DeepEqual(got, []any{"shared", "isolated"}) {
+		t.Fatalf("system config v2 isolation directions = %#v, want shared and isolated", got)
+	}
 	locked := system["properties"].(map[string]any)["locked"].(map[string]any)["items"].(map[string]any)["enum"].([]any)
 	want := []any{"audit_registries", "disable_builtin_registries", "allowed_sources", "audit", "security_posture"}
 	for _, key := range systemConfigV2LockableKeys {
@@ -2525,6 +2531,40 @@ func TestSystemConfigV2IsSchemaOnePlusTheLockableEnvironmentsKeys(t *testing.T) 
 		if _, ok := valid["environments"].(map[string]any)[key]; !ok {
 			t.Fatalf("the positive system-config-v2 case omits lockable key %s", key)
 		}
+	}
+	validIsolation := valid["environments"].(map[string]any)["isolation"].(map[string]any)["companyA"].(map[string]any)
+	if validIsolation["claude_code"] != "shared" || validIsolation["codex_cli"] != "shared" {
+		t.Fatalf("baseline valid system-config-v2 isolation must retain the shared direction: %#v", validIsolation)
+	}
+	examples := systemConfigV2SchemaExamples(valid)
+	wantDirectionCases := map[string]bool{
+		"valid-isolation-shared-direction":    true,
+		"valid-isolation-isolated-direction":  true,
+		"invalid-isolation-unknown-direction": false,
+		"invalid-isolation-both-directions":   false,
+		"invalid-isolation-value":             false,
+	}
+	caseIsolation := map[string]string{
+		"valid-isolation-shared-direction":   "shared",
+		"valid-isolation-isolated-direction": "isolated",
+	}
+	for _, example := range examples {
+		if wantValid, ok := wantDirectionCases[example.name]; ok {
+			if example.valid != wantValid {
+				t.Fatalf("system-config-v2 case %s valid = %t, want %t", example.name, example.valid, wantValid)
+			}
+			if wantMode, positive := caseIsolation[example.name]; positive {
+				instance := example.instance.(map[string]any)
+				mode := instance["environments"].(map[string]any)["isolation"].(map[string]any)["companyA"].(map[string]any)["claude_code"]
+				if mode != wantMode {
+					t.Fatalf("system-config-v2 case %s isolation mode = %#v, want %q", example.name, mode, wantMode)
+				}
+			}
+			delete(wantDirectionCases, example.name)
+		}
+	}
+	if len(wantDirectionCases) > 0 {
+		t.Fatalf("system-config-v2 direction cases missing: %#v", wantDirectionCases)
 	}
 }
 

@@ -8,7 +8,9 @@ The unreleased environments 1.1 batch carries `manager-config-v2`: schema 1
 plus one closed `environments` object of the environments section 12.1 knobs;
 and `system-config-v2`: `system-config-v1` plus one closed `environments`
 object of exactly the section 12.2 lockable keys, which `locked` may name as
-`environments.<key>`. Both schema-1 files are byte-frozen and stay valid.
+`environments.<key>`. Its `isolation.<profile>.<env-id>` entries admit both
+`shared` and `isolated` lock directions with the manager §1 whole-map
+replacement semantics. Both schema-1 files are byte-frozen and stay valid.
 
 Rc.9 carries `agent-skill-v8`, `csk-skill-v8`, `install-marker-v4`, and
 conformance claim v5. Rc.8 carries `assurance-policy-v1`,

@@ -3090,7 +3090,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:bff81eb96ea8aece6487d6e375d4dad7f178ea4966f61aff0fad219a0db47148"
+      "sha256": "sha256:87f9a7641cf0e1511f91d4033f6366c669649442c4c356e49315e63493f917ff"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -4349,12 +4349,16 @@
       "sha256": "sha256:7449d84c9c3a3473e08211b59fea16f139205223e054a6ac428a3089fdb95ed4"
     },
     {
-      "path": "schema-cases/system-config-v2/invalid-isolation-isolated-direction.json",
-      "sha256": "sha256:c6f4c4f3f7c86ae4bbe07c807ab9ba000dcbd2d535a00f99457b49b2015b33d7"
+      "path": "schema-cases/system-config-v2/invalid-isolation-both-directions.json",
+      "sha256": "sha256:84b10e2b18fed4ccfdc33568dc4c9296b2537ba77124bf87b2e6de109c8ec3f0"
     },
     {
       "path": "schema-cases/system-config-v2/invalid-isolation-profile-grammar.json",
       "sha256": "sha256:ff8581b56032135439424510f1ffcd7e779366af1a1e9c8d85ed10c3f2e61419"
+    },
+    {
+      "path": "schema-cases/system-config-v2/invalid-isolation-unknown-direction.json",
+      "sha256": "sha256:358a14160353f8b4cb449454c793a2c897137951ebf729b190bc0176f3f3ce9b"
     },
     {
       "path": "schema-cases/system-config-v2/invalid-isolation-value.json",
@@ -4487,6 +4491,14 @@
     {
       "path": "schema-cases/system-config-v2/valid-empty-environments.json",
       "sha256": "sha256:291d41a946ada058ae118082c113cff83e54e70a0dd294c1dd3f70996aacf578"
+    },
+    {
+      "path": "schema-cases/system-config-v2/valid-isolation-isolated-direction.json",
+      "sha256": "sha256:c6f4c4f3f7c86ae4bbe07c807ab9ba000dcbd2d535a00f99457b49b2015b33d7"
+    },
+    {
+      "path": "schema-cases/system-config-v2/valid-isolation-shared-direction.json",
+      "sha256": "sha256:e6389b2328085137a88d1ddde6869cd2299d05183cb6897e1dd85193ec5b6abc"
     },
     {
       "path": "schema-cases/system-config-v2/valid-minimal.json",

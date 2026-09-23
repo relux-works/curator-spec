@@ -1723,9 +1723,10 @@ identifier not declared by the registry is `environment_target_unknown`.
 | declared shadowing path exists (non-current; current warning under `shadow_acknowledged`) | `environment_shadowing_path_present` |
 | `isolated` configured for `opencode`, or for `claude_code` on macOS below the pinned release | `environment_isolated_unsupported` |
 | `shared` configured for `claude_code` on macOS at or above the pinned release | `environment_shared_unsupported` |
+| profile explicitly requests `shared` for a profile × environment whose system lock requires `isolated` (refusal; names the profile, environment, and system policy source) | `environment_isolation_lock_conflict` |
 | recorded passthrough entry is no longer a symlink to the native entry (non-current) | `environment_passthrough_detached` |
 | recorded passthrough entry whose link state cannot be established — `lstat` or `readlink` fails with permission, I/O, or path errors (non-current, currency unknown; never "detached") | `environment_passthrough_unreadable` |
-| recorded passthrough link path holds a regular file or a symlink to an unexpected target at repair (refusal, no fragment; never removed or re-pointed) | `environment_credential_conflict` |
+| recorded passthrough link path holds a regular file or a symlink to an unexpected target at repair, or an isolated system lock engages while a provisioned home still has a recorded shared passthrough (refusal, no fragment; the latter directs to explicit migration and never unlinks silently) | `environment_credential_conflict` |
 | credential strategy cannot be established — native storage selector outside the verified set (refusal, no fragment) | `environment_credential_unsupported` |
 | provisioning seed exists but cannot be read — a native-home file or a named XDG entry | `environment_seed_unreadable` |
 | unrecorded entry in a managed `opencode` parent shadows an allowlisted operator entry (warning) | `environment_seed_shadowed` |
@@ -3208,7 +3209,8 @@ that no reader mistakes the surfacing rows for an execution sandbox.
 | recorded surface file unreadable at resolve (no fragment; non-current, currency unknown; never "missing", never a stale-home reason; `--repair` does not re-materialize it) | `environment_surface_unreadable` |
 | lock file unreadable or malformed at resolve (no fragment; non-current, currency unknown; never `profile_unknown`; never rebuilt from — section 8.4.1, lock row) | `environment_store_untrusted` |
 | recorded passthrough entry unreadable at resolve (no fragment; non-current, currency unknown; never "detached", never a stale-home reason; `--repair` does not re-link it) | `environment_passthrough_unreadable` |
-| recorded passthrough link path holds a regular file or an unexpected symlink target under `--repair` (no fragment; without `--repair` the same state is the stale-home reason above) | `environment_credential_conflict` |
+| profile explicitly requests `shared` for a profile × environment whose system lock requires `isolated` (refusal; no fragment) | `environment_isolation_lock_conflict` |
+| recorded passthrough link path holds a regular file or an unexpected symlink target under `--repair`, or an isolated system lock engages while a provisioned home still has a recorded shared passthrough (no fragment; the latter directs to explicit migration and never unlinks silently) | `environment_credential_conflict` |
 | native credential storage selector outside the verified set at provisioning or repair (no fragment) | `environment_credential_unsupported` |
 | store entry, lock, or marker file fails the §4 protected-boundary contract or its pin hash, or a `path` source directory fails its §4 boundary checks, at resolve (no fragment; non-current) | `environment_store_untrusted` |
 | enclosing boundary (environments root or store root) cannot be proven at resolve (no fragment; non-current; nothing rebuilt) | `environment_store_untrusted` |
@@ -3611,8 +3613,23 @@ use` of any other profile in the machine scope a configuration error under
 the manager §1 locked-key rules, and `env status` reports the requirement;
 a locked `overlays_allowed: false` empties every overlay list with the
 manager §1 warning. The manager §1 credential rule stands: no key that
-selects or constrains credential material is lockable, and `isolation` is
-lockable only in the direction of `shared`. `transitive_system_modules`
+selects or constrains credential material is lockable. `isolation` remains
+the credential-store-sharing knob from §12.1 and is lockable in either
+direction, `shared` or `isolated`; `system-config-v2` admits exactly those
+two values. A locked `environments.isolation` replaces the full
+profile-by-environment map under manager §1 rule 2. Each profile ×
+environment entry in that system map forces its declared direction: `shared`
+forces shared credential-store mode, and `isolated` forces isolated
+credential-store mode. A silent profile value resolves to the locked
+direction. For a profile and environment locked to `isolated`, an explicit
+profile request for `shared` is refused with
+`environment_isolation_lock_conflict`, naming the profile, environment, and
+system policy source. If that lock engages for an already-provisioned home
+whose marker still records a shared passthrough, the manager refuses use
+with `environment_credential_conflict`, leaves the link and credential bytes
+untouched, and directs the operator to the explicit inspect → plan → apply
+migration in manager §12.4 (Curator follow-up F-C2). The manager MUST NOT
+silently unlink or migrate the passthrough. `transitive_system_modules`
 is lockable only in the direction of `error`: a system file MUST lock
 `transitive_system_modules` only to `error`, and `system_module_waivers`
 MUST NOT be lockable — a lock MUST NOT admit a transitive package's system
@@ -3692,8 +3709,11 @@ S6-planted `curator-run`, the manager-published and managed directory
 refusals under both revisions, the unreadable-root failures under both
 revisions, and the missing case — with the
 `provider_directories` grammar pinned by the `manager-config-v2` and
-`system-config-v2` schema cases; the section 12.1 `permissions`
-per-profile mode grammar with the `native`-alone system direction case
+`system-config-v2` schema cases; the section 12.1 `isolation`
+profile-by-environment grammar with positive `shared` and `isolated`
+system-lock cases and negative unknown and both-direction values, plus the
+section 12.1 `permissions` per-profile mode grammar with the `native`-alone
+system direction case
 (`vectors/manager-config-v2.json` and the `manager-config-v2` /
 `system-config-v2` schema cases); the section 1.4 signer-verification cases
 (`vectors/environments-source-signers.json`) — an allowlisted ssh tag

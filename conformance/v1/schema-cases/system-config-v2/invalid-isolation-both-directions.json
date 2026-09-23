@@ -1,0 +1,62 @@
+{
+  "allowed_sources": [
+    "https://github.com/example/"
+  ],
+  "audit": {},
+  "environments": {
+    "isolation": {
+      "companyA": {
+        "claude_code": [
+          "shared",
+          "isolated"
+        ]
+      }
+    },
+    "mcp_package_allowlist": [
+      "https://github.com/example/figma-devmode-mcp"
+    ],
+    "overlays_allowed": false,
+    "passable_env_names": [
+      "FIGMA_API_KEY",
+      "GITHUB_TOKEN"
+    ],
+    "permissions": {
+      "companyA": "native"
+    },
+    "precedence": {
+      "placement": "winner-first",
+      "winner": "lower-weight"
+    },
+    "provider_directories": [
+      "/usr/local/lib/curator/providers"
+    ],
+    "require_current_profile": "companyA",
+    "require_source_signers": true,
+    "source_signers": {
+      "github.com/example/context": [
+        {
+          "key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2A5GK operator@example",
+          "type": "ssh"
+        }
+      ]
+    },
+    "transitive_system_modules": "error"
+  },
+  "locked": [
+    "audit",
+    "allowed_sources",
+    "environments.overlays_allowed",
+    "environments.precedence",
+    "environments.mcp_package_allowlist",
+    "environments.passable_env_names",
+    "environments.require_current_profile",
+    "environments.transitive_system_modules",
+    "environments.isolation",
+    "environments.provider_directories",
+    "environments.source_signers",
+    "environments.require_source_signers",
+    "environments.permissions"
+  ],
+  "preferred_locale": "en",
+  "schema_version": 2
+}

@@ -150,9 +150,11 @@ The suite contains:
 - the `system-config` schema-2 surface: `schema-cases/system-config-v2` with
   every environments section 12.2 lockable key present and named in
   `locked`, the minimal, empty-`environments`, and schema-1-`locked`
-  positives, one negative per closed-object rule (an unknown or unlockable
+  positives, positive `shared` and `isolated` direction cases for the
+  `isolation` lock, and negative unknown-direction and both-directions values;
+  one negative per closed-object rule (an unknown or unlockable
   `environments` knob), per section 12.1 value grammar including the
-  `isolated` and `yolo` directions section 12.2 does not lock, per `locked` entry
+  `yolo` direction section 12.2 does not lock, per `locked` entry
   outside the section 12.2 set (an unknown, unlockable, bare, or unprefixed
   key and a duplicate), and a schema-1 rejection.
   `schema-cases/system-config-v1` is byte-frozen;

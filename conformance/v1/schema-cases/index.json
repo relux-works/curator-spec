@@ -4985,7 +4985,22 @@
     "valid": false
   },
   {
-    "instance": "system-config-v2/invalid-isolation-isolated-direction.json",
+    "instance": "system-config-v2/valid-isolation-shared-direction.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "system-config-v2/valid-isolation-isolated-direction.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "system-config-v2/invalid-isolation-unknown-direction.json",
+    "schema": "system-config-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "system-config-v2/invalid-isolation-both-directions.json",
     "schema": "system-config-v2.schema.json",
     "valid": false
   },

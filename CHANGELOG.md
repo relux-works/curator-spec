@@ -45,6 +45,19 @@ Versioning for the complete specification set.
   mode resolution, transport, provenance) and the curator emission
   follow-up (manager-side v2 emission). Frozen v1 protocol schemas
   untouched; the v1 fragment file is untouched and stays valid.
+- STORY-260922-188t6n (TASK-260922-1ejkxv, F-S3): extend the
+  `system-config-v2` `environments.isolation` lock to both `shared` and
+  `isolated`, retaining manager §1 whole-map locked-list semantics.
+  An explicit `shared` profile request under an isolated lock is refused
+  with `environment_isolation_lock_conflict`; silence resolves to the
+  locked direction. An existing shared passthrough refuses with
+  `environment_credential_conflict` and points to the explicit F-C2
+  inspect → plan → apply migration (`TASK-260922-1t2w1q`); the manager
+  never silently unlinks or migrates it. Adds focused positive and
+  negative schema cases and exact-direction generator checks. Frozen v1
+  protocol schemas remain unchanged. Curator enforcement follow-up:
+  **Enforce the isolated environment lock in the environment manager**
+  (`environments.isolation`, `environment_isolation_lock_conflict`).
 - STORY-260921-3z0fgr: adopt decisions 0017 (environment credential
   modes) and 0018 (`curator run` permission interface), both proposed
   2026-09-16 and adopted 2026-09-21 with every open question resolved

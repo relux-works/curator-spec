@@ -94,8 +94,12 @@ user configuration:
    Operator credential selections — the `build_ssh` scopes among them — are
    never lockable: section 12.2 makes credential material operator-owned, and
    a system file MUST NOT select or constrain it; `environments.isolation`
-   is lockable only in the direction of `shared`, and schema 2 admits no
-   other value there; `environments.transitive_system_modules` is lockable
+   is lockable in either direction, `shared` or `isolated`, and schema 2
+   admits exactly those values. The full profile-by-environment map keeps
+   the manager §1 replacement semantics in rule 2. Under an isolated lock,
+   an explicit profile request for `shared` is refused as specified in
+   environments §12.2; silence resolves to the locked value.
+   `environments.transitive_system_modules` is lockable
    only in the direction of `error`, and schema 2 admits no other value
    there; `environments.require_source_signers` is lockable only in the
    direction of `true`, and schema 2 admits no other value there;
@@ -2767,6 +2771,12 @@ removing nothing — when the link path holds a regular file or a symlink
 to an unexpected target (environments §7.4). A mode change of a
 provisioned home is the explicit inspect → plan → apply migration of
 environments §7.4 under the manager lock, never silent inside `--repair`.
+An isolated system lock does not migrate an already-provisioned shared
+passthrough: the manager refuses use with `environment_credential_conflict`
+and points the operator to that explicit migration. A profile that explicitly
+requests `shared` under the isolated lock is refused with
+`environment_isolation_lock_conflict`; silence resolves to `isolated`
+(environments §12.2).
 Materialization, refresh, switch, and garbage collection MUST
 NOT create, rewrite, or delete a credential file beyond maintaining the
 declared passthrough links themselves: the operator-owned credential
@@ -2783,8 +2793,9 @@ no-archive rules.
 |---|---|
 | `isolated` configured for `opencode`, for `claude_code` on macOS below the pinned release, or for `codex_cli` under native `keyring` or `auto` storage | `environment_isolated_unsupported` |
 | `shared` configured for `claude_code` on macOS at or above the pinned release | `environment_shared_unsupported` |
+| profile explicitly requests `shared` for a profile × environment whose system lock requires `isolated` (refusal; no fragment) | `environment_isolation_lock_conflict` |
 | recorded passthrough entry is no longer a symlink to the native entry (non-current) | `environment_passthrough_detached` |
-| recorded passthrough link path holds a regular file or an unexpected symlink target at repair (refusal, no fragment) | `environment_credential_conflict` |
+| recorded passthrough link path holds a regular file or an unexpected symlink target at repair, or an isolated system lock engages while a provisioned home still has a recorded shared passthrough (refusal; no fragment; directs to explicit migration) | `environment_credential_conflict` |
 | native credential storage selector outside the verified set (refusal, no fragment) | `environment_credential_unsupported` |
 
 ### 12.5 `env resolve`
@@ -2889,7 +2900,8 @@ in this profile launches.
 | recorded surface file unreadable at resolve (no fragment; non-current, currency unknown) | `environment_surface_unreadable` |
 | lock file unreadable or malformed at resolve (no fragment; non-current, currency unknown; never rebuilt from) | `environment_store_untrusted` |
 | recorded passthrough entry unreadable at resolve (no fragment; non-current, currency unknown) | `environment_passthrough_unreadable` |
-| recorded passthrough link path holds a regular file or an unexpected symlink target under `--repair` (no fragment) | `environment_credential_conflict` |
+| profile explicitly requests `shared` for a profile × environment whose system lock requires `isolated` (refusal; no fragment) | `environment_isolation_lock_conflict` |
+| recorded passthrough link path holds a regular file or an unexpected symlink target under `--repair`, or an isolated system lock engages while a provisioned home still has a recorded shared passthrough (no fragment; the latter directs to explicit migration and never unlinks silently) | `environment_credential_conflict` |
 | store entry, lock, or marker file fails the environments §4 protected-boundary contract or its pin hash at resolve (no fragment; non-current) | `environment_store_untrusted` |
 | enclosing boundary cannot be proven at resolve (no fragment; non-current; nothing rebuilt) | `environment_store_untrusted` |
 | repair could not acquire the mutation lock within the bounded wait | `environment_lock_unavailable` |

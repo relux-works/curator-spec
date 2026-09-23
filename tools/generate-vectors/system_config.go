@@ -11,9 +11,9 @@ var systemConfigV2LockableKeys = []string{
 
 // systemConfigV2EveryKey sets every §12.2 lockable knob to a non-default value
 // so that the positive case exercises every grammar the schema encodes.
-// `isolation` is `shared` only, `transitive_system_modules` is `error`
-// only, `require_source_signers` is `true` only, and `permissions` is
-// `native` only: §12.2 makes each lockable in that direction alone.
+// `isolation` admits `shared` and `isolated`; `transitive_system_modules` is
+// `error` only, `require_source_signers` is `true` only, and `permissions` is
+// `native` only: §12.2 limits each of those locks to the stated directions.
 func systemConfigV2EveryKey() map[string]any {
 	return map[string]any{
 		"overlays_allowed":          false,
@@ -100,7 +100,10 @@ func systemConfigV2SchemaExamples(valid map[string]any) []schemaExample {
 		{name: "invalid-require-current-profile-grammar", instance: withKnob("require_current_profile", "")},
 		{name: "invalid-transitive-system-modules-drop-direction", instance: withKnob("transitive_system_modules", "drop")},
 		{name: "invalid-transitive-system-modules-value", instance: withKnob("transitive_system_modules", "quarantine")},
-		{name: "invalid-isolation-isolated-direction", instance: withKnob("isolation", map[string]any{"companyA": map[string]any{"claude_code": "isolated"}})},
+		{name: "valid-isolation-shared-direction", valid: true, instance: withKnob("isolation", map[string]any{"companyA": map[string]any{"claude_code": "shared"}})},
+		{name: "valid-isolation-isolated-direction", valid: true, instance: withKnob("isolation", map[string]any{"companyA": map[string]any{"claude_code": "isolated"}})},
+		{name: "invalid-isolation-unknown-direction", instance: withKnob("isolation", map[string]any{"companyA": map[string]any{"claude_code": "automatic"}})},
+		{name: "invalid-isolation-both-directions", instance: withKnob("isolation", map[string]any{"companyA": map[string]any{"claude_code": []any{"shared", "isolated"}}})},
 		{name: "invalid-isolation-value", instance: withKnob("isolation", map[string]any{"companyA": map[string]any{"codex_cli": "private"}})},
 		{name: "invalid-isolation-profile-grammar", instance: withKnob("isolation", map[string]any{"Company A": map[string]any{"codex_cli": "shared"}})},
 		{name: "invalid-permissions-yolo-direction", instance: withKnob("permissions", map[string]any{"companyA": "yolo"})},

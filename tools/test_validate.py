@@ -5270,14 +5270,23 @@ class SystemConfigV2SchemaTests(unittest.TestCase):
         with self.assertRaisesRegex(validate.ValidationFailure, "overlays_allowed does not take its grammar"):
             self.run_gate(schema=self.mutated(inline))
 
-    def test_isolation_admitting_isolated_fails(self) -> None:
+    def test_isolation_admitting_an_unknown_direction_fails(self) -> None:
         def widen(s):
             node = s
             for segment in self.ISOLATION_ENUM[:-1]:
                 node = node[segment]
-            node["enum"] = ["shared", "isolated"]
-        with self.assertRaisesRegex(validate.ValidationFailure, "permits shared alone"):
+            node["enum"] = ["shared", "isolated", "automatic"]
+        with self.assertRaisesRegex(validate.ValidationFailure, "permits exactly shared and isolated"):
             self.run_gate(schema=self.mutated(widen))
+
+    def test_isolation_must_admit_both_directions(self) -> None:
+        def narrow(s):
+            node = s
+            for segment in self.ISOLATION_ENUM[:-1]:
+                node = node[segment]
+            node["enum"] = ["shared"]
+        with self.assertRaisesRegex(validate.ValidationFailure, "permits exactly shared and isolated"):
+            self.run_gate(schema=self.mutated(narrow))
 
     def test_transitive_system_modules_admitting_drop_fails(self) -> None:
         def widen(s):

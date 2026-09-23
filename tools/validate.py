@@ -4101,7 +4101,7 @@ def validate_system_config_v2_schema(
     knob other than `isolation`, `transitive_system_modules`,
     `require_source_signers`, and `permissions` takes its grammar from the
     `manager-config-v2` environments object by reference, so the two
-    schemas cannot drift; `isolation` admits `shared` alone,
+    schemas cannot drift; `isolation` admits `shared` and `isolated`,
     `transitive_system_modules` admits `error` alone,
     `require_source_signers` admits `true` alone, and `permissions`
     admits `native` alone (section 12.2: each lockable only in that
@@ -4159,8 +4159,10 @@ def validate_system_config_v2_schema(
         if not isinstance(node, dict) or segment not in node:
             raise ValidationFailure("system-config-v2 states no closed isolation value set")
         node = node[segment]
-    if node != ["shared"]:
-        raise ValidationFailure(f"system-config-v2 isolation admits {node!r}; section 12.2 permits shared alone")
+    if node != ["shared", "isolated"]:
+        raise ValidationFailure(
+            f"system-config-v2 isolation admits {node!r}; section 12.2 permits exactly shared and isolated"
+        )
     node = schema
     for segment in SYSTEM_CONFIG_TRANSITIVE_ENUM_PATH:
         if not isinstance(node, dict) or segment not in node:
