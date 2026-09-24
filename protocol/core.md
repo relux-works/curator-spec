@@ -293,6 +293,12 @@ interpreter. It hashes a manager-pinned tree that stays unchanged through the
 last child exit, while an interpreter installation is host-owned and
 legitimately mutated between two invocations of the same command.
 
+For this policy, a hard-link substitution is a hard link that causes resolution
+to select a file identity other than the platform-owned executable the manager
+intended. A multiply-linked executable target MUST be rejected except for the
+narrow Windows `exec` case below. That exception does not apply to interpreter
+identities: `python3-v1` and `node-v1` retain the hard-link rejection above.
+
 The shebang line, the file extension, and the Windows file association are
 inert under this policy and MUST NOT select the executed program. No further
 interpreter identifier is admitted in protocol 1.0. `bash-v1` and
@@ -335,6 +341,18 @@ section 4.3 is unchanged for every command that has not opted in.
   manager cannot resolve is absent from the built `PATH` and MUST be reported;
   it MUST NOT be resolved from the caller's `PATH` at launch or by the
   interpreter at run time.
+- On Windows, a platform-owned executable resolved for a declared `exec` name
+  is not a hard-link substitution solely because it has additional hard links
+  only when all of these conditions hold: the manager resolves the name through
+  its default Windows executable search list only; the manager derives
+  canonical `%SystemRoot%\System32` from its own captured `SystemRoot`; the
+  resolved target is physically below that canonical directory; and every
+  additional hard-link name belongs to the platform component store under that same
+  `%SystemRoot%\WinSxS`. The manager MUST reject this exception if any
+  condition is false or cannot be established. Symlink and reparse-point
+  rejection is unchanged, every other multiply-linked target MUST remain
+  rejected, and this exception MUST NOT be applied to the `python3-v1` or
+  `node-v1` interpreter executable.
 - `filesystem` always derives an operation-private runtime area: a private
   temporary root, a private configuration root, a private cache root, and a
   manager-selected working directory, all resolved independently of package

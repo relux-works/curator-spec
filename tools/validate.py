@@ -1273,6 +1273,98 @@ def validate_script_host_execution_policy(vector: Any = None) -> None:
         if opt_in[name].get("accepted") is not False:
             raise ValidationFailure(f"invalid script opt-in {name} is accepted")
 
+    if vector.get("hard_link_substitution_definition") != (
+        "a hard link that makes resolution select an identity other than the "
+        "platform-owned executable the manager intended"
+    ):
+        raise ValidationFailure("script hard-link substitution definition drifted")
+    expected_identity_cases = {
+        "windows-system32-exec-platform-owned-component-store-hardlinks": {
+            "name": "windows-system32-exec-platform-owned-component-store-hardlinks",
+            "platform": "windows", "use": "declared-exec-name",
+            "resolution": "manager-default-windows-search-list",
+            "system_root": "manager-captured",
+            "target": "physically-below-canonical-systemroot-system32",
+            "platform_owned": True,
+            "additional_links": "systemroot-winsxs-component-store-only",
+            "accepted": True,
+            "reason": "bounded-windows-system32-winsxs-exception",
+        },
+        "windows-exec-outside-system32-hardlinks": {
+            "name": "windows-exec-outside-system32-hardlinks",
+            "platform": "windows", "use": "declared-exec-name",
+            "resolution": "manager-default-windows-search-list",
+            "system_root": "manager-captured",
+            "target": "outside-canonical-systemroot-system32",
+            "platform_owned": True,
+            "additional_links": "systemroot-winsxs-component-store-only",
+            "accepted": False, "reason": "target-not-below-system32",
+        },
+        "windows-exec-noncomponent-store-hardlinks": {
+            "name": "windows-exec-noncomponent-store-hardlinks",
+            "platform": "windows", "use": "declared-exec-name",
+            "resolution": "manager-default-windows-search-list",
+            "system_root": "manager-captured",
+            "target": "physically-below-canonical-systemroot-system32",
+            "platform_owned": True,
+            "additional_links": "not-platform-component-store-or-unknown",
+            "accepted": False, "reason": "extra-links-not-only-component-store",
+        },
+        "windows-exec-nondefault-search-hardlinks": {
+            "name": "windows-exec-nondefault-search-hardlinks",
+            "platform": "windows", "use": "declared-exec-name",
+            "resolution": "caller-path-or-package-controlled",
+            "system_root": "manager-captured",
+            "target": "physically-below-canonical-systemroot-system32",
+            "platform_owned": True,
+            "additional_links": "systemroot-winsxs-component-store-only",
+            "accepted": False, "reason": "not-manager-default-search",
+        },
+        "windows-exec-uncaptured-systemroot-hardlinks": {
+            "name": "windows-exec-uncaptured-systemroot-hardlinks",
+            "platform": "windows", "use": "declared-exec-name",
+            "resolution": "manager-default-windows-search-list",
+            "system_root": "caller-or-package-value",
+            "target": "physically-below-system32-from-uncaptured-value",
+            "platform_owned": True,
+            "additional_links": "systemroot-winsxs-component-store-only",
+            "accepted": False, "reason": "systemroot-not-manager-captured",
+        },
+        "windows-exec-unowned-file-hardlinks": {
+            "name": "windows-exec-unowned-file-hardlinks",
+            "platform": "windows", "use": "declared-exec-name",
+            "resolution": "manager-default-windows-search-list",
+            "system_root": "manager-captured",
+            "target": "physically-below-canonical-systemroot-system32",
+            "platform_owned": False,
+            "additional_links": "systemroot-winsxs-component-store-only",
+            "accepted": False, "reason": "target-not-platform-owned",
+        },
+        "windows-python3-interpreter-hardlinks": {
+            "name": "windows-python3-interpreter-hardlinks",
+            "platform": "windows", "use": "interpreter",
+            "interpreter": "python3-v1",
+            "resolution": "closed-interpreter-resolution", "system_root": None,
+            "target": "resolved-interpreter-target", "platform_owned": True,
+            "additional_links": "one-or-more-extra-hard-links",
+            "accepted": False,
+            "reason": "interpreter-hard-link-rejection-unchanged",
+        },
+        "windows-node-interpreter-hardlinks": {
+            "name": "windows-node-interpreter-hardlinks",
+            "platform": "windows", "use": "interpreter",
+            "interpreter": "node-v1",
+            "resolution": "closed-interpreter-resolution", "system_root": None,
+            "target": "resolved-interpreter-target", "platform_owned": True,
+            "additional_links": "one-or-more-extra-hard-links",
+            "accepted": False,
+            "reason": "interpreter-hard-link-rejection-unchanged",
+        },
+    }
+    identity_cases = named_cases(vector.get("executable_identity_cases"), "script executable identity")
+    if identity_cases != expected_identity_cases:
+        raise ValidationFailure("script executable identity cases widen or drift from the hard-link bounds")
+
     derivation = named_cases(vector.get("capability_derivation_cases"), "script derivation")
     absent = derivation.get("all-fields-absent-deny-by-default", {}).get("derived", {})
     if (

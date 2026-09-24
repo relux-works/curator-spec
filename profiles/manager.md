@@ -779,6 +779,21 @@ only controls whose absence rejects an invocation:
 - termination and joining of the complete worker domain before the invocation
   returns.
 
+Here, hard-link substitution means a hard link that causes resolution to select
+a file identity other than the platform-owned executable the manager intended.
+A multiply-linked executable target MUST be rejected except for the narrow
+Windows `exec` case: a platform-owned executable resolved for a declared
+`exec` name may have additional hard links without being a substitution only
+when all of these conditions hold: the manager resolves the name through its
+default Windows executable search list only; the manager derives canonical
+`%SystemRoot%\System32` from its own captured `SystemRoot`; the resolved target
+is physically below that canonical directory; and every additional hard-link
+name belongs to the platform component store under that same
+`%SystemRoot%\WinSxS`. The manager MUST reject this exception if any condition
+is false or cannot be established. It MUST reject every other multiply-linked
+target. This allowance applies only to declared `exec` names; the
+`python3-v1` and `node-v1` interpreter hard-link rejection is unchanged.
+
 Protocol Core section 4.1.1 states the criterion for manager ownership of an
 environment name and leaves the reserved set to this profile. A name in that
 set is manager-owned: an `env_read` entry naming one MUST NOT pass the
