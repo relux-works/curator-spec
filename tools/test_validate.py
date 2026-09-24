@@ -56,6 +56,47 @@ class SchemaRegistryCacheTests(unittest.TestCase):
                 self.assertEqual(checked.call_count, 2)
 
 
+class ManifestDependencyDirectoryDraftTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.DRAFT_SUITE / "manifest-dependency-directories.json"
+        )
+
+    def test_draft_schema_cases_and_directory_vectors_are_valid(self) -> None:
+        validate.validate_draft_source_schemas()
+        validate.validate_manifest_dependency_directory_vectors(self.vector)
+
+    def test_audit_identity_cannot_drop_selected_directory(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = next(
+            item for item in changed["resolution_cases"]
+            if item["name"] == "valid-subfolder-dependency"
+        )
+        case["expected"]["audit_package"]["directory"] = "skills/another"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_manifest_dependency_directory_vectors(changed)
+
+    def test_parent_escape_mutant_is_not_admitted(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = next(
+            item for item in changed["directory_grammar_cases"]
+            if item["name"] == "parent-escape"
+        )
+        case["valid"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_manifest_dependency_directory_vectors(changed)
+
+    def test_diamond_narrowing_mutant_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = next(
+            item for item in changed["resolution_cases"]
+            if item["name"] == "diamond-different-directories-same-repository"
+        )
+        case["expected"]["provider_order"] = ["shared", "frontend", "backend", "app"]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_manifest_dependency_directory_vectors(changed)
+
+
 class WireSemanticValidationTests(unittest.TestCase):
     def test_manifest_requires_exact_declared_repository_selection(self) -> None:
         valid = {

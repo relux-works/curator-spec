@@ -19,6 +19,7 @@ its own revision. Existing core definitions are reused by relative references.
 | `install-marker-v5` | Installed package/lock identity and runtime/build references |
 | `build-receipt-v3` | Package-bound wrapper around existing closed build inputs |
 | `source-audit-v1` | Machine audit report binding, not a registry attestation |
+| `agent-skill-v9` / `csk-skill-v9` | Opt-in manifest directory selection for transitive skill dependencies |
 
 The [source contract](../../protocol/skillfile-sources.md) defines semantic
 requirements beyond schema checks: normalized repository identity, alias

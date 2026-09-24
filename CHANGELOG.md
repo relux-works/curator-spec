@@ -7,6 +7,15 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Unreleased, opt-in core manifest schema 9 adds optional
+  `dependencies.skills.*.directory` selection at the dependency's pinned
+  repository ref. It reuses Skillfile schema-2 directory grammar, normalizes
+  omitted directory to `.`, and binds package, closure, lock, local audit
+  and marker-v5 identity to that directory. Schemas 1 through 8 and the rc.9
+  suite remain unchanged; draft vectors cover path rejection, missing package
+  folders and manifests, root compatibility, and same-repository diamond
+  unification.
+
 - Filed draft Decision 0021 (proposed — not adopted, no normative
   change): sessions enter through `curator run` and are hosted through
   the `ax` contract. `curator run` becomes the one interactive entry

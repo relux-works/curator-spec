@@ -151,7 +151,9 @@ For each operation the manager performs these phases in order:
    tree before reading a build-cache entry or starting any Go process;
 4. parse and validate both manifest names according to Protocol Core section
    4, validate link-free disjoint runtime roots, build roots, and source
-   directories, and derive every artifact-relative path from its command name;
+   directories, resolve schema-9 dependency directories under the core §4.4
+   rules and the shared Skillfile selector grammar, and derive every
+   artifact-relative path from its command name;
 5. exclude every build root as a whole subtree from agent context before
    locale rendering and from commit-keyed runtime copying, identically for a
    real build, cache hit, and dry run;
@@ -159,8 +161,10 @@ For each operation the manager performs these phases in order:
    validated raw snapshot, including a package-provided root
    `.csk-install.json`, and freeze that snapshot instance until its last build
    child exits;
-7. build the provider-first dependency closure, apply source allowlists and
-   snapshot checks, validate every skill package, reject command, shim,
+7. build the provider-first dependency closure using the full package identity
+   (canonical source, commit, and normalized selected directory), apply source
+   allowlists and snapshot checks, validate every selected skill package,
+   reject command, shim,
    portable-path, case-folding, and platform-path collisions, and verify system,
    legacy command, and MCP requirements;
 8. run source-audit policy, resolve trusted registries and attestations, reject
@@ -186,6 +190,12 @@ Audit and registry gates therefore precede both persistent cache lookup and
 compilation. Neither a cache hit nor a dry run may bypass source validation,
 static context exclusion, build-source hashing, closure construction, collision
 checks, audit, attestation, revocation, or moved-tag evaluation.
+
+For a schema-9 dependency, the normalized selected directory is part of the
+local audit subject and audit-cache key. A shared repository snapshot does not
+permit reuse of package validation or audit decisions between directories.
+The lock and marker package identity MUST carry the same directory; see core
+§§4.4, 7, and 10 and the source extension's shared package identity rules.
 
 ### 2.2 Closed `go-v1` toolchain and process graph
 
@@ -1095,6 +1105,13 @@ Decisions are `allow`, `warn`, `block`, or `require_pin`:
 Pins record content hash, operator identity, reason, and creation time. Pins do
 not override local or registry revocation.
 
+For schema-9 skill dependencies, each local audit record binds the package
+identity including normalized directory, and audit-cache reuse requires exact
+package identity equality. The same repository commit selected at two paths
+therefore receives separate package audit decisions. Registry records retain
+their source/content matching rules and do not substitute for the local
+package-specific audit record.
+
 Script execution policy is part of the audit record. For every script command
 the record carries the effective execution-policy identity or its absence, so a
 reviewer can separate enforced commands from declared-only ones and a registry
@@ -1406,6 +1423,12 @@ MUST be mutually exclusive.
 Read-only status validates marker schema, recomputes content hashes, reports
 manifest and activation drift, and MAY re-resolve registry attestations. A
 check mode returns non-zero for drift without mutating state.
+
+A schema-9 dependency installation uses marker v5, with the marker's
+`package.directory` and lock binding equal to the normalized core §4.4
+selection. Status compares that package identity exactly; marker v4 cannot
+establish currentness for a schema-9 installation. Source-audit records and
+their cache keys retain the same directory as required by sections 2.1 and 7.
 
 `curator status` and, where the environments capability is implemented,
 `curator env status` list, per configured registry, the persisted

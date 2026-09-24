@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/draft-sources-v1/csk-skill-v9.schema.json",
+  "title": "csk-skill.json schema 9 (draft)",
+  "$defs": {
+    "skillRequirementV9": {
+      "type": "object",
+      "required": [
+        "git",
+        "ref"
+      ],
+      "properties": {
+        "git": {
+          "$ref": "../v1/../v1/common.schema.json#/$defs/nonEmptyString"
+        },
+        "ref": {
+          "$ref": "../v1/../v1/common.schema.json#/$defs/ref"
+        },
+        "mode": {
+          "enum": [
+            "full",
+            "runtime",
+            "context"
+          ],
+          "default": "full"
+        },
+        "commands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "../v1/../v1/common.schema.json#/$defs/identifier"
+          },
+          "uniqueItems": true
+        },
+        "directory": {
+          "$ref": "source-types-v1.schema.json#/$defs/directory"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "commands"
+            ]
+          },
+          "then": {
+            "properties": {
+              "mode": {
+                "const": "runtime"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "dependenciesV6": {
+      "type": "object",
+      "properties": {
+        "commands": {
+          "$ref": "../v1/../v1/common.schema.json#/$defs/dependenciesV5/properties/commands"
+        },
+        "skills": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/skillRequirementV9"
+          }
+        },
+        "mcp_servers": {
+          "$ref": "../v1/../v1/common.schema.json#/$defs/dependenciesV5/properties/mcp_servers"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "schema_version",
+    "capabilities"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 9
+    },
+    "runtime_roots": {
+      "$ref": "../v1/common.schema.json#/$defs/pathSet"
+    },
+    "build_roots": {
+      "$ref": "../v1/common.schema.json#/$defs/pathSet"
+    },
+    "build_repositories": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "$ref": "../v1/common.schema.json#/$defs/identifier"
+      },
+      "additionalProperties": {
+        "$ref": "../v1/common.schema.json#/$defs/buildRepositoryV1"
+      }
+    },
+    "commands": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "../v1/common.schema.json#/$defs/identifier"
+      },
+      "additionalProperties": {
+        "$ref": "../v1/common.schema.json#/$defs/commandV8"
+      }
+    },
+    "capabilities": {
+      "$ref": "../v1/common.schema.json#/$defs/capabilities"
+    },
+    "dependencies": {
+      "$ref": "#/$defs/dependenciesV6"
+    }
+  },
+  "additionalProperties": false
+}
