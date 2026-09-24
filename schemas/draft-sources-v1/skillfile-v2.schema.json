@@ -116,23 +116,7 @@
                 "$ref": "../v1/common.schema.json#/$defs/identifier"
               },
               "directory": {
-                "oneOf": [
-                  {
-                    "const": "."
-                  },
-                  {
-                    "allOf": [
-                      {
-                        "$ref": "../v1/common.schema.json#/$defs/portablePath"
-                      },
-                      {
-                        "not": {
-                          "pattern": "(?:^|/)[^/]*[ .](?:/|$)|[*?\\[\\]]"
-                        }
-                      }
-                    ]
-                  }
-                ]
+                "$ref": "source-types-v1.schema.json#/$defs/directory"
               }
             },
             "required": [
@@ -149,23 +133,7 @@
                 "$ref": "../v1/common.schema.json#/$defs/identifier"
               },
               "directory": {
-                "oneOf": [
-                  {
-                    "const": "."
-                  },
-                  {
-                    "allOf": [
-                      {
-                        "$ref": "../v1/common.schema.json#/$defs/portablePath"
-                      },
-                      {
-                        "not": {
-                          "pattern": "(?:^|/)[^/]*[ .](?:/|$)|[*?\\[\\]]"
-                        }
-                      }
-                    ]
-                  }
-                ]
+                "$ref": "source-types-v1.schema.json#/$defs/directory"
               },
               "include": {
                 "type": "array",

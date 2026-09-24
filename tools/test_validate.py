@@ -56,6 +56,47 @@ class SchemaRegistryCacheTests(unittest.TestCase):
                 self.assertEqual(checked.call_count, 2)
 
 
+class ManifestDependencyDirectoryDraftTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.DRAFT_SUITE / "manifest-dependency-directories.json"
+        )
+
+    def test_draft_schema_cases_and_directory_vectors_are_valid(self) -> None:
+        validate.validate_draft_source_schemas()
+        validate.validate_manifest_dependency_directory_vectors(self.vector)
+
+    def test_audit_identity_cannot_drop_selected_directory(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = next(
+            item for item in changed["resolution_cases"]
+            if item["name"] == "valid-subfolder-dependency"
+        )
+        case["expected"]["audit_package"]["directory"] = "skills/another"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_manifest_dependency_directory_vectors(changed)
+
+    def test_parent_escape_mutant_is_not_admitted(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = next(
+            item for item in changed["directory_grammar_cases"]
+            if item["name"] == "parent-escape"
+        )
+        case["valid"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_manifest_dependency_directory_vectors(changed)
+
+    def test_diamond_narrowing_mutant_is_rejected(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = next(
+            item for item in changed["resolution_cases"]
+            if item["name"] == "diamond-different-directories-same-repository"
+        )
+        case["expected"]["provider_order"] = ["shared", "frontend", "backend", "app"]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_manifest_dependency_directory_vectors(changed)
+
+
 class WireSemanticValidationTests(unittest.TestCase):
     def test_manifest_requires_exact_declared_repository_selection(self) -> None:
         valid = {
@@ -509,6 +550,34 @@ class WireSemanticValidationTests(unittest.TestCase):
                 item["capability_derivation_cases"],
                 "all-fields-absent-deny-by-default",
             )["derived"].__setitem__("exec", ["inherited-path"]),
+            "System32 exception escapes physical target bound": lambda item: case(
+                item["executable_identity_cases"],
+                "windows-system32-exec-platform-owned-component-store-hardlinks",
+            ).__setitem__("target", "outside-canonical-systemroot-system32"),
+            "System32 exception escapes component-store bound": lambda item: case(
+                item["executable_identity_cases"],
+                "windows-system32-exec-platform-owned-component-store-hardlinks",
+            ).__setitem__("additional_links", "arbitrary-hard-links"),
+            "System32 exception uses caller SystemRoot": lambda item: case(
+                item["executable_identity_cases"],
+                "windows-system32-exec-platform-owned-component-store-hardlinks",
+            ).__setitem__("system_root", "caller-or-package-value"),
+            "System32 exception applies through nondefault search": lambda item: case(
+                item["executable_identity_cases"],
+                "windows-system32-exec-platform-owned-component-store-hardlinks",
+            ).__setitem__("resolution", "caller-path-or-package-controlled"),
+            "System32 exception admits an unowned target": lambda item: case(
+                item["executable_identity_cases"],
+                "windows-system32-exec-platform-owned-component-store-hardlinks",
+            ).__setitem__("platform_owned", False),
+            "Python interpreter gains System32 exception": lambda item: case(
+                item["executable_identity_cases"],
+                "windows-python3-interpreter-hardlinks",
+            ).__setitem__("accepted", True),
+            "Node interpreter gains System32 exception": lambda item: case(
+                item["executable_identity_cases"],
+                "windows-node-interpreter-hardlinks",
+            ).__setitem__("accepted", True),
             "legacy script loses declared-only label": lambda item: case(
                 item["audit_label_cases"], "schema7-script"
             ).__setitem__("labels", []),

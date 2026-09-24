@@ -1,0 +1,367 @@
+{
+  "schema_version": 1,
+  "directory_grammar_cases": [
+    {
+      "name": "root-selector",
+      "input": ".",
+      "valid": true
+    },
+    {
+      "name": "portable-subfolder",
+      "input": "skills/developer",
+      "valid": true
+    },
+    {
+      "name": "empty",
+      "input": "",
+      "valid": false
+    },
+    {
+      "name": "absolute",
+      "input": "/skills/developer",
+      "valid": false
+    },
+    {
+      "name": "parent-escape",
+      "input": "../developer",
+      "valid": false
+    },
+    {
+      "name": "parent-component",
+      "input": "skills/../developer",
+      "valid": false
+    },
+    {
+      "name": "backslash",
+      "input": "skills\\developer",
+      "valid": false
+    },
+    {
+      "name": "drive-prefix",
+      "input": "C:/skills/developer",
+      "valid": false
+    },
+    {
+      "name": "glob",
+      "input": "skills/*",
+      "valid": false
+    }
+  ],
+  "resolution_cases": [
+    {
+      "name": "valid-subfolder-dependency",
+      "dependency": {
+        "name": "developer",
+        "git": "https://github.com/example/role-skills.git",
+        "ref": {
+          "kind": "revision",
+          "value": "0123456789abcdef0123456789abcdef01234567"
+        },
+        "directory": "skills/developer"
+      },
+      "snapshot": {
+        "directories": [
+          "skills",
+          "skills/developer"
+        ],
+        "files": [
+          "skills/developer/SKILL.md"
+        ],
+        "frontmatter_names": {
+          "skills/developer/SKILL.md": "developer"
+        }
+      },
+      "expected": {
+        "status": "accepted",
+        "normalized_directory": "skills/developer",
+        "identity": {
+          "kind": "network-git",
+          "repository": "github.com/example/role-skills",
+          "commit": {
+            "object_format": "sha1",
+            "hex": "0123456789abcdef0123456789abcdef01234567"
+          },
+          "directory": "skills/developer"
+        },
+        "lock_directory": "skills/developer",
+        "audit_package": {
+          "kind": "network-git",
+          "repository": "github.com/example/role-skills",
+          "commit": {
+            "object_format": "sha1",
+            "hex": "0123456789abcdef0123456789abcdef01234567"
+          },
+          "directory": "skills/developer"
+        },
+        "marker_schema_version": 5,
+        "marker_skill_schema_version": 9
+      }
+    },
+    {
+      "name": "absent-directory-selects-root",
+      "dependency": {
+        "name": "developer",
+        "git": "https://github.com/example/role-skills.git",
+        "ref": {
+          "kind": "revision",
+          "value": "0123456789abcdef0123456789abcdef01234567"
+        }
+      },
+      "snapshot": {
+        "directories": [],
+        "files": [
+          "SKILL.md"
+        ],
+        "frontmatter_names": {
+          "SKILL.md": "developer"
+        }
+      },
+      "expected": {
+        "status": "accepted",
+        "normalized_directory": ".",
+        "identity": {
+          "kind": "network-git",
+          "repository": "github.com/example/role-skills",
+          "commit": {
+            "object_format": "sha1",
+            "hex": "0123456789abcdef0123456789abcdef01234567"
+          },
+          "directory": "."
+        },
+        "lock_directory": ".",
+        "audit_package": {
+          "kind": "network-git",
+          "repository": "github.com/example/role-skills",
+          "commit": {
+            "object_format": "sha1",
+            "hex": "0123456789abcdef0123456789abcdef01234567"
+          },
+          "directory": "."
+        },
+        "marker_schema_version": 5,
+        "marker_skill_schema_version": 9
+      }
+    },
+    {
+      "name": "explicit-root-selects-root",
+      "dependency": {
+        "name": "developer",
+        "git": "https://github.com/example/role-skills.git",
+        "ref": {
+          "kind": "revision",
+          "value": "0123456789abcdef0123456789abcdef01234567"
+        },
+        "directory": "."
+      },
+      "snapshot": {
+        "directories": [],
+        "files": [
+          "SKILL.md"
+        ],
+        "frontmatter_names": {
+          "SKILL.md": "developer"
+        }
+      },
+      "expected": {
+        "status": "accepted",
+        "normalized_directory": ".",
+        "identity": {
+          "kind": "network-git",
+          "repository": "github.com/example/role-skills",
+          "commit": {
+            "object_format": "sha1",
+            "hex": "0123456789abcdef0123456789abcdef01234567"
+          },
+          "directory": "."
+        },
+        "lock_directory": ".",
+        "audit_package": {
+          "kind": "network-git",
+          "repository": "github.com/example/role-skills",
+          "commit": {
+            "object_format": "sha1",
+            "hex": "0123456789abcdef0123456789abcdef01234567"
+          },
+          "directory": "."
+        },
+        "marker_schema_version": 5,
+        "marker_skill_schema_version": 9
+      }
+    },
+    {
+      "name": "missing-folder",
+      "dependency": {
+        "name": "developer",
+        "git": "https://github.com/example/role-skills.git",
+        "ref": {
+          "kind": "revision",
+          "value": "0123456789abcdef0123456789abcdef01234567"
+        },
+        "directory": "skills/missing"
+      },
+      "snapshot": {
+        "directories": [
+          "skills"
+        ],
+        "files": [],
+        "frontmatter_names": {}
+      },
+      "expected": {
+        "status": "rejected",
+        "reason": "directory-missing"
+      }
+    },
+    {
+      "name": "folder-without-skill-md",
+      "dependency": {
+        "name": "developer",
+        "git": "https://github.com/example/role-skills.git",
+        "ref": {
+          "kind": "revision",
+          "value": "0123456789abcdef0123456789abcdef01234567"
+        },
+        "directory": "skills/no-manifest"
+      },
+      "snapshot": {
+        "directories": [
+          "skills",
+          "skills/no-manifest"
+        ],
+        "files": [],
+        "frontmatter_names": {}
+      },
+      "expected": {
+        "status": "rejected",
+        "reason": "skill-md-missing"
+      }
+    },
+    {
+      "name": "symlinked-directory-escape",
+      "dependency": {
+        "name": "developer",
+        "git": "https://github.com/example/role-skills.git",
+        "ref": {
+          "kind": "revision",
+          "value": "0123456789abcdef0123456789abcdef01234567"
+        },
+        "directory": "skills/escape"
+      },
+      "snapshot": {
+        "directories": [
+          "skills",
+          "skills/escape"
+        ],
+        "files": [],
+        "frontmatter_names": {},
+        "symlinks": {
+          "skills/escape": "../outside"
+        }
+      },
+      "expected": {
+        "status": "rejected",
+        "reason": "directory-escapes-repository"
+      }
+    },
+    {
+      "name": "diamond-different-directories-same-repository",
+      "repository": "github.com/example/role-skills",
+      "commit": "0123456789abcdef0123456789abcdef01234567",
+      "requirements": [
+        {
+          "requirer": "app",
+          "name": "frontend",
+          "directory": "skills/frontend"
+        },
+        {
+          "requirer": "app",
+          "name": "backend",
+          "directory": "skills/backend"
+        },
+        {
+          "requirer": "frontend",
+          "name": "shared",
+          "directory": "skills/shared"
+        },
+        {
+          "requirer": "backend",
+          "name": "shared",
+          "directory": "skills/shared"
+        }
+      ],
+      "snapshot": {
+        "directories": [
+          "skills",
+          "skills/backend",
+          "skills/frontend",
+          "skills/shared"
+        ],
+        "skill_names": {
+          "skills/backend": "backend",
+          "skills/frontend": "frontend",
+          "skills/shared": "shared"
+        }
+      },
+      "expected": {
+        "status": "accepted",
+        "provider_order": [
+          "shared",
+          "backend",
+          "frontend",
+          "app"
+        ],
+        "repository_acquisitions": 1,
+        "package_identities": [
+          {
+            "kind": "network-git",
+            "repository": "github.com/example/role-skills",
+            "commit": {
+              "object_format": "sha1",
+              "hex": "0123456789abcdef0123456789abcdef01234567"
+            },
+            "directory": "skills/backend"
+          },
+          {
+            "kind": "network-git",
+            "repository": "github.com/example/role-skills",
+            "commit": {
+              "object_format": "sha1",
+              "hex": "0123456789abcdef0123456789abcdef01234567"
+            },
+            "directory": "skills/frontend"
+          },
+          {
+            "kind": "network-git",
+            "repository": "github.com/example/role-skills",
+            "commit": {
+              "object_format": "sha1",
+              "hex": "0123456789abcdef0123456789abcdef01234567"
+            },
+            "directory": "skills/shared"
+          }
+        ],
+        "shared_package_nodes": 1
+      }
+    },
+    {
+      "name": "same-name-different-directory-conflicts",
+      "repository": "github.com/example/role-skills",
+      "commit": "0123456789abcdef0123456789abcdef01234567",
+      "requirements": [
+        {
+          "requirer": "app",
+          "name": "shared",
+          "directory": "skills/shared-a"
+        },
+        {
+          "requirer": "app",
+          "name": "shared",
+          "directory": "skills/shared-b"
+        }
+      ],
+      "expected": {
+        "status": "rejected",
+        "reason": "package-identity-conflict"
+      }
+    }
+  ]
+}

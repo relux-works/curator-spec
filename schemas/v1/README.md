@@ -19,6 +19,10 @@ conformance claim v5. Rc.8 carries `assurance-policy-v1`,
 conformance claim v4. These are new closed objects; no prior schema is widened
 or reinterpreted.
 
+The unreleased manifest schema-9 directory amendment is isolated in the
+[draft source namespace](../draft-sources-v1/README.md). Schemas 1 through 8
+and the rc.9 conformance corpus remain unchanged.
+
 The R1/P1 page-boundary revision carries `records-response-v2` and
 `log-response-v2`: each v1 envelope plus one REQUIRED `boundary` member whose
 value is a `registry-snapshot-v1` object, `additionalProperties: false`
@@ -81,7 +85,8 @@ canonical skill-manifest schemas. The corresponding `csk-skill-*` schemas are
 the legacy filenames with byte-equivalent versioned meaning.
 
 Manifest schema selection is exact: the integer `schema_version` selects the
-same-numbered schema. Schemas 1 through 6 do not acquire schema-7
+same-numbered schema. Draft schema 9 lives only in `schemas/draft-sources-v1`
+and is accepted only by explicit opt-in. Schemas 1 through 6 do not acquire schema-7
 `build_repositories` or `go-repository-v1` meaning. Schema 7 adds those fields
 without changing the earlier schemas or their generated fixtures. Schemas 1
 through 7 do not acquire schema-8 `execution_policy`, `interpreter`, or
@@ -160,6 +165,9 @@ difference, so every marker-v3 build-record rule — explicit receipt schema
 version, explicit `execution_policy`, `build_source` present exactly when a
 local `go-v1` build is active — applies unchanged. Markers v1, v2, and v3 keep
 their frozen shapes and their existing manifest-version bands.
+
+The unreleased draft marker v5 also records schema-9 package directories and
+the lock binding; it does not change marker v1 through v4.
 
 ## Manifest schema 8: declared first-party module roots
 

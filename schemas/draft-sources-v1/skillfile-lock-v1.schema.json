@@ -28,23 +28,7 @@
             ]
           },
           "directory": {
-            "oneOf": [
-              {
-                "const": "."
-              },
-              {
-                "allOf": [
-                  {
-                    "$ref": "../v1/common.schema.json#/$defs/portablePath"
-                  },
-                  {
-                    "not": {
-                      "pattern": "(?:^|/)[^/]*[ .](?:/|$)|[*?\\[\\]]"
-                    }
-                  }
-                ]
-              }
-            ]
+            "$ref": "source-types-v1.schema.json#/$defs/directory"
           },
           "package": {
             "$ref": "source-types-v1.schema.json#/$defs/package"

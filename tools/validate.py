@@ -21,7 +21,9 @@ from referencing import Registry, Resource
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMAS = ROOT / "schemas" / "v1"
+DRAFT_SCHEMAS = ROOT / "schemas" / "draft-sources-v1"
 SUITE = ROOT / "conformance" / "v1"
+DRAFT_SUITE = ROOT / "conformance" / "draft-sources-v1"
 REVIEWS = ROOT / "reviews"
 _VALID_SCHEMA_DOCUMENTS: set[bytes] = set()
 SAFE_INTEGER = 9_007_199_254_740_991
@@ -1272,6 +1274,98 @@ def validate_script_host_execution_policy(vector: Any = None) -> None:
     for name in ("interpreter-without-policy", "policy-without-interpreter", "unknown-policy"):
         if opt_in[name].get("accepted") is not False:
             raise ValidationFailure(f"invalid script opt-in {name} is accepted")
+
+    if vector.get("hard_link_substitution_definition") != (
+        "a hard link that makes resolution select an identity other than the "
+        "platform-owned executable the manager intended"
+    ):
+        raise ValidationFailure("script hard-link substitution definition drifted")
+    expected_identity_cases = {
+        "windows-system32-exec-platform-owned-component-store-hardlinks": {
+            "name": "windows-system32-exec-platform-owned-component-store-hardlinks",
+            "platform": "windows", "use": "declared-exec-name",
+            "resolution": "manager-default-windows-search-list",
+            "system_root": "manager-captured",
+            "target": "physically-below-canonical-systemroot-system32",
+            "platform_owned": True,
+            "additional_links": "systemroot-winsxs-component-store-only",
+            "accepted": True,
+            "reason": "bounded-windows-system32-winsxs-exception",
+        },
+        "windows-exec-outside-system32-hardlinks": {
+            "name": "windows-exec-outside-system32-hardlinks",
+            "platform": "windows", "use": "declared-exec-name",
+            "resolution": "manager-default-windows-search-list",
+            "system_root": "manager-captured",
+            "target": "outside-canonical-systemroot-system32",
+            "platform_owned": True,
+            "additional_links": "systemroot-winsxs-component-store-only",
+            "accepted": False, "reason": "target-not-below-system32",
+        },
+        "windows-exec-noncomponent-store-hardlinks": {
+            "name": "windows-exec-noncomponent-store-hardlinks",
+            "platform": "windows", "use": "declared-exec-name",
+            "resolution": "manager-default-windows-search-list",
+            "system_root": "manager-captured",
+            "target": "physically-below-canonical-systemroot-system32",
+            "platform_owned": True,
+            "additional_links": "not-platform-component-store-or-unknown",
+            "accepted": False, "reason": "extra-links-not-only-component-store",
+        },
+        "windows-exec-nondefault-search-hardlinks": {
+            "name": "windows-exec-nondefault-search-hardlinks",
+            "platform": "windows", "use": "declared-exec-name",
+            "resolution": "caller-path-or-package-controlled",
+            "system_root": "manager-captured",
+            "target": "physically-below-canonical-systemroot-system32",
+            "platform_owned": True,
+            "additional_links": "systemroot-winsxs-component-store-only",
+            "accepted": False, "reason": "not-manager-default-search",
+        },
+        "windows-exec-uncaptured-systemroot-hardlinks": {
+            "name": "windows-exec-uncaptured-systemroot-hardlinks",
+            "platform": "windows", "use": "declared-exec-name",
+            "resolution": "manager-default-windows-search-list",
+            "system_root": "caller-or-package-value",
+            "target": "physically-below-system32-from-uncaptured-value",
+            "platform_owned": True,
+            "additional_links": "systemroot-winsxs-component-store-only",
+            "accepted": False, "reason": "systemroot-not-manager-captured",
+        },
+        "windows-exec-unowned-file-hardlinks": {
+            "name": "windows-exec-unowned-file-hardlinks",
+            "platform": "windows", "use": "declared-exec-name",
+            "resolution": "manager-default-windows-search-list",
+            "system_root": "manager-captured",
+            "target": "physically-below-canonical-systemroot-system32",
+            "platform_owned": False,
+            "additional_links": "systemroot-winsxs-component-store-only",
+            "accepted": False, "reason": "target-not-platform-owned",
+        },
+        "windows-python3-interpreter-hardlinks": {
+            "name": "windows-python3-interpreter-hardlinks",
+            "platform": "windows", "use": "interpreter",
+            "interpreter": "python3-v1",
+            "resolution": "closed-interpreter-resolution", "system_root": None,
+            "target": "resolved-interpreter-target", "platform_owned": True,
+            "additional_links": "one-or-more-extra-hard-links",
+            "accepted": False,
+            "reason": "interpreter-hard-link-rejection-unchanged",
+        },
+        "windows-node-interpreter-hardlinks": {
+            "name": "windows-node-interpreter-hardlinks",
+            "platform": "windows", "use": "interpreter",
+            "interpreter": "node-v1",
+            "resolution": "closed-interpreter-resolution", "system_root": None,
+            "target": "resolved-interpreter-target", "platform_owned": True,
+            "additional_links": "one-or-more-extra-hard-links",
+            "accepted": False,
+            "reason": "interpreter-hard-link-rejection-unchanged",
+        },
+    }
+    identity_cases = named_cases(vector.get("executable_identity_cases"), "script executable identity")
+    if identity_cases != expected_identity_cases:
+        raise ValidationFailure("script executable identity cases widen or drift from the hard-link bounds")
 
     derivation = named_cases(vector.get("capability_derivation_cases"), "script derivation")
     absent = derivation.get("all-fields-absent-deny-by-default", {}).get("derived", {})
@@ -3221,6 +3315,308 @@ def validate_registry_bootstrap_vectors(client: Any = None, behavior: Any = None
             )
 
 
+def draft_schema_registry() -> tuple[Registry, dict[str, Path]]:
+    documents: dict[str, Any] = {}
+    paths: dict[str, Path] = {}
+    for schema_dir in (SCHEMAS, DRAFT_SCHEMAS):
+        for path in sorted(schema_dir.glob("*.json")):
+            document = load_json(path)
+            try:
+                Draft202012Validator.check_schema(document)
+            except SchemaError as exc:
+                raise ValidationFailure(
+                    f"{path}: invalid Draft 2020-12 schema: {exc.message}"
+                ) from exc
+            schema_id = document.get("$id")
+            if not isinstance(schema_id, str) or not schema_id or schema_id in documents:
+                raise ValidationFailure(f"{path}: missing or duplicate schema $id")
+            documents[schema_id] = document
+            paths[path.name] = path
+    registry = Registry().with_resources(
+        (schema_id, Resource.from_contents(document))
+        for schema_id, document in documents.items()
+    )
+    return registry, paths
+
+
+def validate_draft_source_schemas() -> None:
+    registry, paths = draft_schema_registry()
+    draft_names = {path.name for path in DRAFT_SCHEMAS.glob("*.json")}
+    index = load_json(DRAFT_SUITE / "index.json")
+    coverage: dict[str, set[bool]] = {}
+    for case in index:
+        schema_name = case.get("schema")
+        if schema_name not in draft_names:
+            raise ValidationFailure(
+                f"draft schema case names unknown schema {schema_name!r}"
+            )
+        instance_path = DRAFT_SUITE / case["instance"]
+        instance = load_json(instance_path)
+        valid = not list(
+            Draft202012Validator(
+                load_json(paths[schema_name]), registry=registry
+            ).iter_errors(instance)
+        )
+        if valid is not case.get("valid"):
+            raise ValidationFailure(
+                f"{instance_path}: expected valid={case.get('valid')}, got {valid}"
+            )
+        coverage.setdefault(schema_name, set()).add(valid)
+    required = draft_names - {"source-types-v1.schema.json"}
+    if set(coverage) != required or any(value != {True, False} for value in coverage.values()):
+        raise ValidationFailure("draft schemas require both indexed positive and negative cases")
+
+    identity = load_json(DRAFT_SCHEMAS / "source-types-v1.schema.json")
+    shared_directory_ref = "source-types-v1.schema.json#/$defs/directory"
+    skillfile = load_json(DRAFT_SCHEMAS / "skillfile-v2.schema.json")
+    selectors = skillfile["properties"]["skills"]["items"]["oneOf"]
+    for selector in selectors[1:]:
+        if selector["properties"]["directory"] != {"$ref": shared_directory_ref}:
+            raise ValidationFailure("Skillfile schema 2 does not reuse the selected-directory grammar")
+    lock = load_json(DRAFT_SCHEMAS / "skillfile-lock-v1.schema.json")
+    if lock["properties"]["members"]["items"]["properties"]["directory"] != {
+        "$ref": shared_directory_ref
+    }:
+        raise ValidationFailure("Skillfile lock does not reuse the selected-directory grammar")
+    source_directory = identity["$defs"]["directory"]
+    manifest = load_json(DRAFT_SCHEMAS / "agent-skill-v9.schema.json")
+    legacy_manifest = load_json(DRAFT_SCHEMAS / "csk-skill-v9.schema.json")
+    requirement_directory_ref = manifest["$defs"]["skillRequirementV9"]["properties"]["directory"]
+    if requirement_directory_ref != {"$ref": shared_directory_ref}:
+        raise ValidationFailure("manifest schema 9 does not reuse the Skillfile directory grammar")
+    for member in ("$id", "title"):
+        manifest.pop(member, None)
+        legacy_manifest.pop(member, None)
+    if manifest != legacy_manifest:
+        raise ValidationFailure("canonical and legacy schema-9 manifests differ beyond identity metadata")
+
+    previous, previous_paths = schema_registry()
+    old_manifest = load_json(previous_paths["agent-skill-v8.schema.json"])
+    old_dependency = {
+        "git": "https://github.com/example/role-skills.git",
+        "ref": {"kind": "revision", "value": "0123456789abcdef0123456789abcdef01234567"},
+    }
+    old_valid = {
+        "schema_version": 8,
+        "capabilities": {},
+        "dependencies": {"skills": {"developer": old_dependency}},
+    }
+    old_with_directory = {
+        **old_valid,
+        "dependencies": {
+            "skills": {
+                "developer": {**old_dependency, "directory": "skills/developer"}
+            }
+        },
+    }
+    if list(Draft202012Validator(old_manifest, registry=previous).iter_errors(old_valid)):
+        raise ValidationFailure("schema 8 no longer accepts an existing root dependency")
+    if not list(
+        Draft202012Validator(old_manifest, registry=previous).iter_errors(old_with_directory)
+    ):
+        raise ValidationFailure("schema 8 acquired the schema-9 directory member")
+    if not source_directory:
+        raise ValidationFailure("shared selected-directory definition is empty")
+
+
+def validate_manifest_dependency_directory_vectors(vector: Any = None) -> None:
+    if vector is None:
+        vector = load_json(DRAFT_SUITE / "manifest-dependency-directories.json")
+    if not isinstance(vector, dict) or vector.get("schema_version") != 1:
+        raise ValidationFailure("manifest dependency directory vectors require schema version 1")
+
+    registry, paths = draft_schema_registry()
+    source_types = load_json(paths["source-types-v1.schema.json"])
+    directory_schema = source_types["$defs"]["directory"]
+    directory_validator = Draft202012Validator(
+        {"$ref": f"{source_types['$id']}#/$defs/directory"}, registry=registry
+    )
+    grammar_cases = named_cases(
+        vector.get("directory_grammar_cases"), "manifest dependency directory grammar"
+    )
+    required_grammar = {
+        "root-selector", "portable-subfolder", "empty", "absolute",
+        "parent-escape", "parent-component", "backslash", "drive-prefix", "glob",
+    }
+    if set(grammar_cases) != required_grammar:
+        raise ValidationFailure("manifest dependency directory grammar cases are not the closed required set")
+    for name, case in grammar_cases.items():
+        actual = not list(directory_validator.iter_errors(case.get("input")))
+        if actual is not case.get("valid"):
+            raise ValidationFailure(
+                f"manifest dependency directory grammar case {name} has the wrong result"
+            )
+
+    cases = named_cases(
+        vector.get("resolution_cases"), "manifest dependency directory resolution"
+    )
+    required_cases = {
+        "valid-subfolder-dependency",
+        "absent-directory-selects-root",
+        "explicit-root-selects-root",
+        "missing-folder",
+        "folder-without-skill-md",
+        "symlinked-directory-escape",
+        "diamond-different-directories-same-repository",
+        "same-name-different-directory-conflicts",
+    }
+    if set(cases) != required_cases:
+        raise ValidationFailure("manifest dependency directory resolution cases are not the closed required set")
+
+    expected_repository = "github.com/example/role-skills"
+    expected_commit = "0123456789abcdef0123456789abcdef01234567"
+    for name in (
+        "valid-subfolder-dependency",
+        "absent-directory-selects-root",
+        "explicit-root-selects-root",
+    ):
+        case = cases[name]
+        dependency = case.get("dependency")
+        snapshot = case.get("snapshot")
+        expected = case.get("expected")
+        if not isinstance(dependency, dict) or not isinstance(snapshot, dict) or not isinstance(expected, dict):
+            raise ValidationFailure(f"manifest dependency directory case {name} is incomplete")
+        selected_name = dependency.get("name")
+        declared = dependency.get("directory", ".")
+        normalized = "." if declared == "." else declared
+        if name == "valid-subfolder-dependency" and normalized != "skills/developer":
+            raise ValidationFailure("valid subfolder dependency does not select its declared package folder")
+        if name != "valid-subfolder-dependency" and normalized != ".":
+            raise ValidationFailure(f"manifest dependency directory case {name} does not select the repository root")
+        selected_dir = normalized
+        manifest_path = "SKILL.md" if selected_dir == "." else f"{selected_dir}/SKILL.md"
+        files = snapshot.get("files")
+        names = snapshot.get("frontmatter_names")
+        directories = snapshot.get("directories")
+        if (
+            not isinstance(files, list)
+            or manifest_path not in files
+            or not isinstance(names, dict)
+            or names.get(manifest_path) != selected_name
+            or not isinstance(directories, list)
+            or (selected_dir != "." and selected_dir not in directories)
+        ):
+            raise ValidationFailure(f"manifest dependency directory case {name} has no matching selected SKILL.md")
+        expected_identity = {
+            "kind": "network-git",
+            "repository": expected_repository,
+            "commit": {"object_format": "sha1", "hex": expected_commit},
+            "directory": normalized,
+        }
+        if (
+            expected.get("status") != "accepted"
+            or expected.get("normalized_directory") != normalized
+            or expected.get("identity") != expected_identity
+            or expected.get("lock_directory") != normalized
+            or expected.get("audit_package") != expected_identity
+            or expected.get("marker_schema_version") != 5
+            or expected.get("marker_skill_schema_version") != 9
+        ):
+            raise ValidationFailure(f"manifest dependency directory case {name} loses directory identity")
+    if cases["absent-directory-selects-root"]["expected"] != cases["explicit-root-selects-root"]["expected"]:
+        raise ValidationFailure("absent and explicit root dependency directories do not have equal identity")
+
+    for name, reason in (
+        ("missing-folder", "directory-missing"),
+        ("folder-without-skill-md", "skill-md-missing"),
+        ("symlinked-directory-escape", "directory-escapes-repository"),
+    ):
+        case = cases[name]
+        dependency = case.get("dependency")
+        snapshot = case.get("snapshot")
+        expected = case.get("expected")
+        if not isinstance(dependency, dict) or not isinstance(snapshot, dict) or not isinstance(expected, dict):
+            raise ValidationFailure(f"manifest dependency directory rejection {name} is incomplete")
+        directory = dependency.get("directory")
+        if expected.get("status") != "rejected" or expected.get("reason") != reason:
+            raise ValidationFailure(f"manifest dependency directory rejection {name} has the wrong outcome")
+        directories = snapshot.get("directories", [])
+        files = snapshot.get("files", [])
+        if name == "missing-folder" and directory in directories:
+            raise ValidationFailure("missing-folder vector includes the selected directory")
+        if name == "folder-without-skill-md" and (
+            directory not in directories or f"{directory}/SKILL.md" in files
+        ):
+            raise ValidationFailure("folder-without-skill-md vector does not isolate the missing manifest")
+        if name == "symlinked-directory-escape":
+            links = snapshot.get("symlinks", {})
+            if directory not in directories or links.get(directory) != "../outside":
+                raise ValidationFailure("symlinked-directory-escape vector does not contain an escaping link")
+
+    diamond = cases["diamond-different-directories-same-repository"]
+    requirements = diamond.get("requirements")
+    expected = diamond.get("expected")
+    if (
+        diamond.get("repository") != expected_repository
+        or diamond.get("commit") != expected_commit
+        or not isinstance(requirements, list)
+        or not isinstance(expected, dict)
+    ):
+        raise ValidationFailure("directory dependency diamond identity is incomplete")
+    package_requirements: dict[str, set[str]] = {}
+    prerequisites: dict[str, set[str]] = {}
+    for requirement in requirements:
+        if not isinstance(requirement, dict):
+            raise ValidationFailure("directory dependency diamond has a malformed requirement")
+        name, directory, requirer = (
+            requirement.get("name"), requirement.get("directory"), requirement.get("requirer")
+        )
+        if not isinstance(name, str) or not isinstance(directory, str) or not isinstance(requirer, str):
+            raise ValidationFailure("directory dependency diamond requirement lacks name, directory, or requirer")
+        package_requirements.setdefault(name, set()).add(directory)
+        if requirer != "app":
+            prerequisites.setdefault(requirer, set()).add(name)
+    package_nodes = set(package_requirements)
+    completed: set[str] = set()
+    order: list[str] = []
+    while package_nodes - completed:
+        ready = sorted(
+            node for node in package_nodes - completed
+            if prerequisites.get(node, set()) <= completed
+        )
+        if not ready:
+            raise ValidationFailure("directory dependency diamond is cyclic")
+        selected = ready[0]
+        order.append(selected)
+        completed.add(selected)
+    order.append("app")
+    wanted_identities = [
+        {
+            "kind": "network-git",
+            "repository": expected_repository,
+            "commit": {"object_format": "sha1", "hex": expected_commit},
+            "directory": directory,
+        }
+        for directory in ("skills/backend", "skills/frontend", "skills/shared")
+    ]
+    if (
+        expected.get("status") != "accepted"
+        or expected.get("provider_order") != order
+        or expected.get("provider_order") != ["shared", "backend", "frontend", "app"]
+        or expected.get("repository_acquisitions") != 1
+        or expected.get("package_identities") != wanted_identities
+        or expected.get("shared_package_nodes") != 1
+        or package_requirements.get("frontend") != {"skills/frontend"}
+        or package_requirements.get("backend") != {"skills/backend"}
+        or package_requirements.get("shared") != {"skills/shared"}
+    ):
+        raise ValidationFailure("directory dependency diamond does not unify by full package identity")
+
+    conflict = cases["same-name-different-directory-conflicts"]
+    conflict_requirements = conflict.get("requirements")
+    conflict_expected = conflict.get("expected")
+    if (
+        not isinstance(conflict_requirements, list)
+        or len(conflict_requirements) != 2
+        or {item.get("name") for item in conflict_requirements if isinstance(item, dict)} != {"shared"}
+        or len({item.get("directory") for item in conflict_requirements if isinstance(item, dict)}) != 2
+        or not isinstance(conflict_expected, dict)
+        or conflict_expected.get("status") != "rejected"
+        or conflict_expected.get("reason") != "package-identity-conflict"
+    ):
+        raise ValidationFailure("same-name different-directory conflict is not rejected")
+
+
 def validate_vector_semantics() -> None:
     ledger = load_json(SUITE / "expected" / "adapter-ledger.json")
     require_sorted_unique(ledger["entries"], "adapter ledger entries")
@@ -3250,6 +3646,8 @@ def validate_vector_semantics() -> None:
             for name, payload in files.items()
         ):
             raise ValidationFailure("skill-manifest resolution files must map paths to text")
+
+    validate_manifest_dependency_directory_vectors()
 
     valid_ccj = load_json(SUITE / "vectors" / "canonical-valid.json")
     if not valid_ccj or any(not item.get("canonical_utf8") for item in valid_ccj):
@@ -10903,6 +11301,7 @@ def validate_security_posture_vectors(vector: Any = None) -> None:
 def main() -> int:
     checks = [
         validate_schemas,
+        validate_draft_source_schemas,
         validate_repository_descriptor_identity,
         validate_manifest,
         validate_review_evidence,

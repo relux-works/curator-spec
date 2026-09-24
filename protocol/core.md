@@ -161,7 +161,10 @@ current installation.
 to exactly one of `agent-skill-v1.schema.json` through
 `agent-skill-v8.schema.json`. The legacy filename `csk-skill.json` has exactly
 the same object shape and schema-version semantics through
-`csk-skill-v8.schema.json`.
+`csk-skill-v8.schema.json`. The unreleased, opt-in schema 9 is defined by
+[`agent-skill-v9.schema.json`](../schemas/draft-sources-v1/agent-skill-v9.schema.json)
+and its legacy-name equivalent in the draft source namespace; it is not part
+of rc.9.
 
 Readers resolve manifests in this order:
 
@@ -185,10 +188,14 @@ Readers resolve manifests in this order:
 | 6 | declarative compiled commands and context-excluded `build_roots` |
 | 7 | first-class external build repositories and `go-repository-v1` |
 | 8 | opt-in `script-worker-v1` script execution policy and declared first-party module roots |
+| 9 (draft, opt-in) | optional subdirectory selection for transitive skill dependencies |
 
 Version gates are downward: a field introduced by a later version MUST be
 rejected in an earlier one. Schema 1 preserves its deployed extension behavior;
-schemas 2 through 8 reject unknown fields. Schema 1 through 5 MUST reject
+schemas 2 through 8 reject unknown fields. Draft schema 9 rejects unknown fields
+and adds only the `directory` skill-dependency member. Schemas 4 through 8 MUST
+reject that member, and earlier schemas keep their existing dependency meaning.
+Schema 1 through 5 MUST reject
 `build_roots`, a command with `type: "build"`, and every build-only field.
 Schema 1 through 6 MUST reject `build_repositories`, `repository`, `target`,
 and `go-repository-v1`. Schema 1 through 7 MUST reject `modules` at the top
@@ -293,6 +300,12 @@ interpreter. It hashes a manager-pinned tree that stays unchanged through the
 last child exit, while an interpreter installation is host-owned and
 legitimately mutated between two invocations of the same command.
 
+For this policy, a hard-link substitution is a hard link that causes resolution
+to select a file identity other than the platform-owned executable the manager
+intended. A multiply-linked executable target MUST be rejected except for the
+narrow Windows `exec` case below. That exception does not apply to interpreter
+identities: `python3-v1` and `node-v1` retain the hard-link rejection above.
+
 The shebang line, the file extension, and the Windows file association are
 inert under this policy and MUST NOT select the executed program. No further
 interpreter identifier is admitted in protocol 1.0. `bash-v1` and
@@ -335,6 +348,18 @@ section 4.3 is unchanged for every command that has not opted in.
   manager cannot resolve is absent from the built `PATH` and MUST be reported;
   it MUST NOT be resolved from the caller's `PATH` at launch or by the
   interpreter at run time.
+- On Windows, a platform-owned executable resolved for a declared `exec` name
+  is not a hard-link substitution solely because it has additional hard links
+  only when all of these conditions hold: the manager resolves the name through
+  its default Windows executable search list only; the manager derives
+  canonical `%SystemRoot%\System32` from its own captured `SystemRoot`; the
+  resolved target is physically below that canonical directory; and every
+  additional hard-link name belongs to the platform component store under that same
+  `%SystemRoot%\WinSxS`. The manager MUST reject this exception if any
+  condition is false or cannot be established. Symlink and reparse-point
+  rejection is unchanged, every other multiply-linked target MUST remain
+  rejected, and this exception MUST NOT be applied to the `python3-v1` or
+  `node-v1` interpreter executable.
 - `filesystem` always derives an operation-private runtime area: a private
   temporary root, a private configuration root, a private cache root, and a
   manager-selected working directory, all resolved independently of package
@@ -1111,11 +1136,40 @@ the schema defaults above remain the declared-only reading.
 migration warning.
 
 Each `dependencies.skills` entry contains `git`, exact `ref`, activation
-`mode`, and OPTIONAL command narrowing. `ref.kind` is `tag` or `revision`;
+`mode`, and OPTIONAL command narrowing. Schema 9 additionally permits OPTIONAL
+`directory`, selecting the skill package below the dependency repository at
+the pinned ref. This member is accepted only by an implementation that opts
+into draft manifest schema 9. Its grammar and containment rules are exactly the Skillfile
+schema-2 individual selector rules in
+[`skillfile-sources.md` section 1](skillfile-sources.md#1-acquisition-and-selection);
+the JSON Schemas share one definition. The selected directory MUST resolve to a
+real, link-free directory containing that package's `SKILL.md`, whose
+frontmatter name matches the dependency key. An absent `directory` means
+`.`, the repository root, preserving every earlier schema's meaning.
+
+The selected package identity is the canonical repository identity, resolved
+full commit, and normalized selected directory (`.` for an absent or explicit
+root selector). The directory is part of closure unification: repeated
+requirements for the same name, repository, commit, and directory unify;
+different refs resolving to that same tuple also unify. A requirement for the
+same skill name and commit from another repository or another directory
+conflicts. Distinct skill names selected from different directories of one
+repository at one commit are distinct closure nodes; managers MAY share the
+repository snapshot but MUST validate, install, lock, and audit each selected
+package independently.
+
+Any dependency lock or install identity MUST record the normalized directory.
+The package identity and lock member directory MUST agree. A local source-audit
+record MUST bind that same package identity, so an audit result for one
+directory cannot be reused for another directory merely because repository and
+commit match. Registry attestations retain their existing repository/content
+matching rules and do not replace the per-package audit decision.
+
+`ref.kind` is `tag` or `revision`;
 branch and range syntax is forbidden. `mode` is `full` (default), `runtime`, or
 `context`. `commands` is valid only in runtime mode, is non-empty when present,
 and names exported script or build commands of the provider. Build commands are
-available only from schema 6 or 7 providers; schemas 1 through 5 retain
+available only from schemas 6 through 8 providers and draft schema 9; schemas 1 through 5 retain
 script-only command narrowing. Duplicates are rejected.
 
 Each `dependencies.mcp_servers` entry requires a non-empty `hint`, MAY document
@@ -1418,9 +1472,10 @@ cannot be obtained and audited.
 Direct declarations enter as `full` requirements from synthetic consumer
 `<project>`. Processing a provider adds its skill requirements.
 
-Within one closure, one skill name MUST resolve to exactly one commit and one
-canonical source identity. Different identities or commits fail with every
-relevant requirement chain. Different refs resolving to one commit unify.
+Within one closure, one skill name MUST resolve to exactly one commit, one
+canonical source identity, and one normalized selected directory. Different
+repositories, commits, or directories fail with every relevant requirement
+chain. Different refs resolving to the same complete package identity unify.
 Cycles fail and name the cycle.
 
 Activation is edge-based. Context is active when any incoming edge is `full`
@@ -1710,11 +1765,15 @@ garbage-collection paths remain implementation-specific.
 
 The following writer-version rules describe legacy installations. The opt-in
 [source extension](skillfile-sources.md) requires marker schema 5 for every
-Skillfile schema-2 installation and preserves these legacy read meanings.
+Skillfile schema-2 installation. A manager that accepts manifest schema 9
+MUST also support marker schema 5 and use it for every schema-9 installation
+mutation, because marker v4 cannot represent the dependency package directory.
+The source extension preserves these legacy read meanings.
 
 Every installed closure node has `.csk-install.json`. Managers supporting
 schema 7 MUST read marker schemas 1, 2, and 3, and managers supporting schema 8
-MUST read marker schemas 1, 2, 3, and 4. They MUST write marker schema 2 for
+MUST read marker schemas 1, 2, 3, and 4. A manager supporting schema 9 MUST
+read marker schemas 1 through 5. They MUST write marker schema 2 for
 schema 1 through 6 installation mutations, marker schema 3 for schema 7
 installation mutations, and marker schema 4 for schema 8 installation
 mutations. They MAY continue to regard a valid marker-v1 installation as
@@ -1766,7 +1825,9 @@ rules. An enforced `script-worker-v1` script command produces no build entry
 and adds no marker member: schema 8 changes which manifests a marker may
 describe, not what a marker records. Markers v1, v2, and v3 keep their frozen
 shapes and their existing manifest-version bands, so a schema-8 installation
-is recorded by marker v4 alone.
+is recorded by marker v4 alone. Schema 9 is recorded only by marker v5, whose
+`package.directory` and lock binding preserve the selected dependency package
+identity.
 
 `locale` is always present and is a string or `null`. Required set-like arrays
 are always arrays, including when empty.

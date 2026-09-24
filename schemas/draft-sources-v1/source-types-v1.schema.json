@@ -59,23 +59,7 @@
               "$ref": "../v1/common.schema.json#/$defs/lockedCommit"
             },
             "directory": {
-              "oneOf": [
-                {
-                  "const": "."
-                },
-                {
-                  "allOf": [
-                    {
-                      "$ref": "../v1/common.schema.json#/$defs/portablePath"
-                    },
-                    {
-                      "not": {
-                        "pattern": "(?:^|/)[^/]*[ .](?:/|$)|[*?\\[\\]]"
-                      }
-                    }
-                  ]
-                }
-              ]
+              "$ref": "#/$defs/directory"
             }
           },
           "required": [

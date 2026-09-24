@@ -388,7 +388,108 @@
     "record_version": "script-capability-evidence-v1",
     "result_only": true
   },
+  "executable_identity_cases": [
+    {
+      "accepted": true,
+      "additional_links": "systemroot-winsxs-component-store-only",
+      "name": "windows-system32-exec-platform-owned-component-store-hardlinks",
+      "platform": "windows",
+      "platform_owned": true,
+      "reason": "bounded-windows-system32-winsxs-exception",
+      "resolution": "manager-default-windows-search-list",
+      "system_root": "manager-captured",
+      "target": "physically-below-canonical-systemroot-system32",
+      "use": "declared-exec-name"
+    },
+    {
+      "accepted": false,
+      "additional_links": "systemroot-winsxs-component-store-only",
+      "name": "windows-exec-outside-system32-hardlinks",
+      "platform": "windows",
+      "platform_owned": true,
+      "reason": "target-not-below-system32",
+      "resolution": "manager-default-windows-search-list",
+      "system_root": "manager-captured",
+      "target": "outside-canonical-systemroot-system32",
+      "use": "declared-exec-name"
+    },
+    {
+      "accepted": false,
+      "additional_links": "not-platform-component-store-or-unknown",
+      "name": "windows-exec-noncomponent-store-hardlinks",
+      "platform": "windows",
+      "platform_owned": true,
+      "reason": "extra-links-not-only-component-store",
+      "resolution": "manager-default-windows-search-list",
+      "system_root": "manager-captured",
+      "target": "physically-below-canonical-systemroot-system32",
+      "use": "declared-exec-name"
+    },
+    {
+      "accepted": false,
+      "additional_links": "systemroot-winsxs-component-store-only",
+      "name": "windows-exec-nondefault-search-hardlinks",
+      "platform": "windows",
+      "platform_owned": true,
+      "reason": "not-manager-default-search",
+      "resolution": "caller-path-or-package-controlled",
+      "system_root": "manager-captured",
+      "target": "physically-below-canonical-systemroot-system32",
+      "use": "declared-exec-name"
+    },
+    {
+      "accepted": false,
+      "additional_links": "systemroot-winsxs-component-store-only",
+      "name": "windows-exec-uncaptured-systemroot-hardlinks",
+      "platform": "windows",
+      "platform_owned": true,
+      "reason": "systemroot-not-manager-captured",
+      "resolution": "manager-default-windows-search-list",
+      "system_root": "caller-or-package-value",
+      "target": "physically-below-system32-from-uncaptured-value",
+      "use": "declared-exec-name"
+    },
+    {
+      "accepted": false,
+      "additional_links": "systemroot-winsxs-component-store-only",
+      "name": "windows-exec-unowned-file-hardlinks",
+      "platform": "windows",
+      "platform_owned": false,
+      "reason": "target-not-platform-owned",
+      "resolution": "manager-default-windows-search-list",
+      "system_root": "manager-captured",
+      "target": "physically-below-canonical-systemroot-system32",
+      "use": "declared-exec-name"
+    },
+    {
+      "accepted": false,
+      "additional_links": "one-or-more-extra-hard-links",
+      "interpreter": "python3-v1",
+      "name": "windows-python3-interpreter-hardlinks",
+      "platform": "windows",
+      "platform_owned": true,
+      "reason": "interpreter-hard-link-rejection-unchanged",
+      "resolution": "closed-interpreter-resolution",
+      "system_root": null,
+      "target": "resolved-interpreter-target",
+      "use": "interpreter"
+    },
+    {
+      "accepted": false,
+      "additional_links": "one-or-more-extra-hard-links",
+      "interpreter": "node-v1",
+      "name": "windows-node-interpreter-hardlinks",
+      "platform": "windows",
+      "platform_owned": true,
+      "reason": "interpreter-hard-link-rejection-unchanged",
+      "resolution": "closed-interpreter-resolution",
+      "system_root": null,
+      "target": "resolved-interpreter-target",
+      "use": "interpreter"
+    }
+  ],
   "execution_policy": "script-worker-v1",
+  "hard_link_substitution_definition": "a hard link that makes resolution select an identity other than the platform-owned executable the manager intended",
   "interpreters": [
     "node-v1",
     "python3-v1"

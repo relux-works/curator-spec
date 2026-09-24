@@ -7,6 +7,15 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Unreleased, opt-in core manifest schema 9 adds optional
+  `dependencies.skills.*.directory` selection at the dependency's pinned
+  repository ref. It reuses Skillfile schema-2 directory grammar, normalizes
+  omitted directory to `.`, and binds package, closure, lock, local audit
+  and marker-v5 identity to that directory. Schemas 1 through 8 and the rc.9
+  suite remain unchanged; draft vectors cover path rejection, missing package
+  folders and manifests, root compatibility, and same-repository diamond
+  unification.
+
 - Filed draft Decision 0021 (proposed — not adopted, no normative
   change): sessions enter through `curator run` and are hosted through
   the `ax` contract. `curator run` becomes the one interactive entry
@@ -597,6 +606,16 @@ Versioning for the complete specification set.
   schema cases. Specified for `STORY-260910-6bo7ej`.
 
 ### Changed
+
+- Defines hard-link substitution as a link that changes the resolved file
+  identity from the platform-owned executable the manager intended. For script
+  `exec` names, only a platform-owned Windows executable resolved through the
+  manager's default search list, physically below canonical
+  `%SystemRoot%\System32` derived from the manager's captured `SystemRoot`,
+  with every additional link in that root's `WinSxS` component store, is
+  exempt. Every other multiply-linked target remains rejected; the `python3-v1`
+  and `node-v1` interpreter rule is unchanged. Core, manager, and generated
+  script execution conformance cases carry the same bounds.
 
 - Editorial: the CLI guide now states the complete §9.5 takeover carrier
   clause once below its command table, including the §9.5 notice, backup, and

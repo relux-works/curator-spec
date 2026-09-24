@@ -8,6 +8,9 @@ required outcomes. `index.json` lists structural positives and negatives;
 `semantic-cases.json` records required downstream resolver/filesystem/security
 outcomes (`v2-*` cases cover transport revision 2: port, mirror and alias
 positives plus undeclared-mirror, unknown-alias and policy-misuse refusals).
+`manifest-dependency-directories.json` covers schema-9 subfolder selection,
+root-default identity, missing package paths, audit/lock identity and
+same-repository diamond unification.
 These hand-authored draft files are not generator-owned rc.9 outputs.
 
 ## Specification checks

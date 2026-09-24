@@ -54,7 +54,7 @@
     "skill_schema_version": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 8
+      "maximum": 9
     },
     "package": {
       "$ref": "source-types-v1.schema.json#/$defs/package"

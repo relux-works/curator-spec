@@ -18,6 +18,9 @@ name; it is not a path relative to the project. Schema 2 preserves `project`,
 `agents`, `locale` and legacy skill entries by reference to schema 1. No
 on-disk migration is implicit. Unsupported versions fail with an upgrade error.
 Skill manifest versions remain independent and need no collection-specific edit.
+The shared package identity and audit rules in this document also govern
+manifest schema 9 dependency directories under core section 4.4; accepting that
+manifest field does not make Skillfile schema 2 mandatory.
 
 `sources` is an optional map of case-sensitive aliases to acquisition objects:
 
@@ -48,6 +51,13 @@ Resolve symlinks before containment checks; an escaping selector always fails.
 Explicit source paths may point outside the project; selectors may not escape
 that chosen source. An individual name MUST equal validated SKILL.md metadata
 and the resolved skill manifest identity, where that manifest declares one.
+
+These are the canonical directory grammar and containment rules for selected
+skill packages. A manifest schema-9 `dependencies.skills` entry reuses them
+for its repository-relative `directory`; see [core section 4.4](core.md#44-dependencies).
+In both forms the selected path is relative to the acquired repository or
+source root, and the resolved package directory must contain its own
+`SKILL.md`.
 
 Collections enumerate immediate child directories only. `include` is a
 non-empty unique list of literal portable folder identifiers or `*`; `exclude`
@@ -140,6 +150,12 @@ A package identity is the disjoint union in source-types schema 1:
   name exactly as in schema 1. This is a scoped configured-root identity, not
   a network trust identity; existing Git commit semantics remain unchanged.
 
+For a schema-9 transitive dependency, the package's directory is the manifest
+selection normalized to `.` when absent. Distinct directories of one Git
+repository at one commit are distinct package identities; the same directory
+selected repeatedly for one skill name is one identity and unifies under core
+section 7.
+
 Git snapshots retain existing raw-object and integrity requirements. Every
 member from one Git alias uses the same resolved commit. A local collection
 freezes each package and the expanded membership together in one transaction.
@@ -188,7 +204,9 @@ of a local package still obey manager section 11; local skill acquisition does
 not turn their committed-HEAD substitutions into dirty-byte snapshots.
 
 For schema-2 installations write marker schema 5, regardless of skill manifest
-version. Its `package` replaces legacy `source/git/ref_kind/ref/commit` fields;
+version. A core schema-9 installation also writes marker 5, including when its
+root project still uses Skillfile schema 1. Its `package` replaces legacy
+`source/git/ref_kind/ref/commit` fields;
 its `lock_sha256` binds the installed selection and declared ref through the
 validated lock and matching manifest. The following migration is exhaustive;
 fields not replaced here retain core section 10 meaning, including applicability,
@@ -198,7 +216,7 @@ requiredness and canonical set ordering.
 |---|---|
 | `schema_version` | `5` |
 | `source`, `git`, `ref_kind`, `ref`, `commit` | Effective `package`; declaration/ref selection in the manifest and bound lock. Never infer these from a transport endpoint. |
-| `skill_schema_version` | Actual manifest version, 1 through 8 |
+| `skill_schema_version` | Actual manifest version, 1 through 9 |
 | `name`, `content_sha256`, `locale`, `agents`, `commands`, `dependencies`, `runtime_roots`, `build_roots`, `installed_at`, `files` | Retained, required |
 | `build_source`, `requirements`, `mcp_servers`, `activation`, `requirers` | Retained with existing conditional/optional meaning |
 | `attestation` | Retained registry/status/optional key ID summary for eligible Git packages; forbidden for `local-snapshot` |
@@ -285,6 +303,13 @@ canary, revocation and required assurance gates cannot be bypassed by a pin.
 Network-Git members may use existing registry evidence only with exact name,
 canonical repository, commit and context hash matching. No registry redesign
 or new signed record format is implied.
+
+For a schema-9 dependency, the source-audit record's package identity carries
+the normalized selected directory. Audit-cache equality includes the complete
+package identity, so a decision for another directory in the same repository
+and commit is not reusable. Registry records keep their existing repository
+and content matching rules; they do not replace this package-specific audit
+record.
 
 Assurance permits, execution receipts and checkpoints retain their versioned
 shapes: bind the exact receipt-3 build input digest in `build_input_sha256`.
