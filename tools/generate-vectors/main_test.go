@@ -1661,6 +1661,28 @@ func TestScriptWorkerConformanceContract(t *testing.T) {
 			t.Fatalf("invalid opt-in %s is accepted: %#v", name, optIn[name])
 		}
 	}
+	if vector["hard_link_substitution_definition"] != "a hard link that makes resolution select an identity other than the platform-owned executable the manager intended" {
+		t.Fatalf("script hard-link substitution definition drifted: %v", vector["hard_link_substitution_definition"])
+	}
+	identityCases := namedObjects(t, vector["executable_identity_cases"])
+	wantIdentityCases := map[string]map[string]any{
+		"windows-system32-exec-platform-owned-component-store-hardlinks": {"name": "windows-system32-exec-platform-owned-component-store-hardlinks", "platform": "windows", "use": "declared-exec-name", "resolution": "manager-default-windows-search-list", "system_root": "manager-captured", "target": "physically-below-canonical-systemroot-system32", "platform_owned": true, "additional_links": "systemroot-winsxs-component-store-only", "accepted": true, "reason": "bounded-windows-system32-winsxs-exception"},
+		"windows-exec-outside-system32-hardlinks":                        {"name": "windows-exec-outside-system32-hardlinks", "platform": "windows", "use": "declared-exec-name", "resolution": "manager-default-windows-search-list", "system_root": "manager-captured", "target": "outside-canonical-systemroot-system32", "platform_owned": true, "additional_links": "systemroot-winsxs-component-store-only", "accepted": false, "reason": "target-not-below-system32"},
+		"windows-exec-noncomponent-store-hardlinks":                      {"name": "windows-exec-noncomponent-store-hardlinks", "platform": "windows", "use": "declared-exec-name", "resolution": "manager-default-windows-search-list", "system_root": "manager-captured", "target": "physically-below-canonical-systemroot-system32", "platform_owned": true, "additional_links": "not-platform-component-store-or-unknown", "accepted": false, "reason": "extra-links-not-only-component-store"},
+		"windows-exec-nondefault-search-hardlinks":                       {"name": "windows-exec-nondefault-search-hardlinks", "platform": "windows", "use": "declared-exec-name", "resolution": "caller-path-or-package-controlled", "system_root": "manager-captured", "target": "physically-below-canonical-systemroot-system32", "platform_owned": true, "additional_links": "systemroot-winsxs-component-store-only", "accepted": false, "reason": "not-manager-default-search"},
+		"windows-exec-uncaptured-systemroot-hardlinks":                   {"name": "windows-exec-uncaptured-systemroot-hardlinks", "platform": "windows", "use": "declared-exec-name", "resolution": "manager-default-windows-search-list", "system_root": "caller-or-package-value", "target": "physically-below-system32-from-uncaptured-value", "platform_owned": true, "additional_links": "systemroot-winsxs-component-store-only", "accepted": false, "reason": "systemroot-not-manager-captured"},
+		"windows-exec-unowned-file-hardlinks":                            {"name": "windows-exec-unowned-file-hardlinks", "platform": "windows", "use": "declared-exec-name", "resolution": "manager-default-windows-search-list", "system_root": "manager-captured", "target": "physically-below-canonical-systemroot-system32", "platform_owned": false, "additional_links": "systemroot-winsxs-component-store-only", "accepted": false, "reason": "target-not-platform-owned"},
+		"windows-python3-interpreter-hardlinks":                          {"name": "windows-python3-interpreter-hardlinks", "platform": "windows", "use": "interpreter", "interpreter": "python3-v1", "resolution": "closed-interpreter-resolution", "system_root": nil, "target": "resolved-interpreter-target", "platform_owned": true, "additional_links": "one-or-more-extra-hard-links", "accepted": false, "reason": "interpreter-hard-link-rejection-unchanged"},
+		"windows-node-interpreter-hardlinks":                             {"name": "windows-node-interpreter-hardlinks", "platform": "windows", "use": "interpreter", "interpreter": "node-v1", "resolution": "closed-interpreter-resolution", "system_root": nil, "target": "resolved-interpreter-target", "platform_owned": true, "additional_links": "one-or-more-extra-hard-links", "accepted": false, "reason": "interpreter-hard-link-rejection-unchanged"},
+	}
+	if len(identityCases) != len(wantIdentityCases) {
+		t.Fatalf("script executable identity case count = %d, want %d", len(identityCases), len(wantIdentityCases))
+	}
+	for name, want := range wantIdentityCases {
+		if got := identityCases[name]; !reflect.DeepEqual(got, want) {
+			t.Fatalf("script executable identity case %s = %#v, want %#v", name, got, want)
+		}
+	}
 
 	derivation := namedObjects(t, vector["capability_derivation_cases"])
 	absent := derivation["all-fields-absent-deny-by-default"]["derived"].(map[string]any)

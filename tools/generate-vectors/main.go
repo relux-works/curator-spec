@@ -1792,10 +1792,21 @@ func writeScriptHostExecutionPolicyVectors(dir string) {
 	}
 
 	writeJSON(filepath.Join(dir, "script-host-execution-policy.json"), map[string]any{
-		"schema_version":   1,
-		"protocol_version": protocolVersion,
-		"execution_policy": scriptExecutionPolicy,
-		"interpreters":     []any{"node-v1", "python3-v1"},
+		"schema_version":                    1,
+		"protocol_version":                  protocolVersion,
+		"execution_policy":                  scriptExecutionPolicy,
+		"interpreters":                      []any{"node-v1", "python3-v1"},
+		"hard_link_substitution_definition": "a hard link that makes resolution select an identity other than the platform-owned executable the manager intended",
+		"executable_identity_cases": []any{
+			map[string]any{"name": "windows-system32-exec-platform-owned-component-store-hardlinks", "platform": "windows", "use": "declared-exec-name", "resolution": "manager-default-windows-search-list", "system_root": "manager-captured", "target": "physically-below-canonical-systemroot-system32", "platform_owned": true, "additional_links": "systemroot-winsxs-component-store-only", "accepted": true, "reason": "bounded-windows-system32-winsxs-exception"},
+			map[string]any{"name": "windows-exec-outside-system32-hardlinks", "platform": "windows", "use": "declared-exec-name", "resolution": "manager-default-windows-search-list", "system_root": "manager-captured", "target": "outside-canonical-systemroot-system32", "platform_owned": true, "additional_links": "systemroot-winsxs-component-store-only", "accepted": false, "reason": "target-not-below-system32"},
+			map[string]any{"name": "windows-exec-noncomponent-store-hardlinks", "platform": "windows", "use": "declared-exec-name", "resolution": "manager-default-windows-search-list", "system_root": "manager-captured", "target": "physically-below-canonical-systemroot-system32", "platform_owned": true, "additional_links": "not-platform-component-store-or-unknown", "accepted": false, "reason": "extra-links-not-only-component-store"},
+			map[string]any{"name": "windows-exec-nondefault-search-hardlinks", "platform": "windows", "use": "declared-exec-name", "resolution": "caller-path-or-package-controlled", "system_root": "manager-captured", "target": "physically-below-canonical-systemroot-system32", "platform_owned": true, "additional_links": "systemroot-winsxs-component-store-only", "accepted": false, "reason": "not-manager-default-search"},
+			map[string]any{"name": "windows-exec-uncaptured-systemroot-hardlinks", "platform": "windows", "use": "declared-exec-name", "resolution": "manager-default-windows-search-list", "system_root": "caller-or-package-value", "target": "physically-below-system32-from-uncaptured-value", "platform_owned": true, "additional_links": "systemroot-winsxs-component-store-only", "accepted": false, "reason": "systemroot-not-manager-captured"},
+			map[string]any{"name": "windows-exec-unowned-file-hardlinks", "platform": "windows", "use": "declared-exec-name", "resolution": "manager-default-windows-search-list", "system_root": "manager-captured", "target": "physically-below-canonical-systemroot-system32", "platform_owned": false, "additional_links": "systemroot-winsxs-component-store-only", "accepted": false, "reason": "target-not-platform-owned"},
+			map[string]any{"name": "windows-python3-interpreter-hardlinks", "platform": "windows", "use": "interpreter", "interpreter": "python3-v1", "resolution": "closed-interpreter-resolution", "system_root": nil, "target": "resolved-interpreter-target", "platform_owned": true, "additional_links": "one-or-more-extra-hard-links", "accepted": false, "reason": "interpreter-hard-link-rejection-unchanged"},
+			map[string]any{"name": "windows-node-interpreter-hardlinks", "platform": "windows", "use": "interpreter", "interpreter": "node-v1", "resolution": "closed-interpreter-resolution", "system_root": nil, "target": "resolved-interpreter-target", "platform_owned": true, "additional_links": "one-or-more-extra-hard-links", "accepted": false, "reason": "interpreter-hard-link-rejection-unchanged"},
+		},
 		"opt_in_cases": []any{
 			map[string]any{"name": "schema8-explicit-opt-in", "manifest_schema": 8, "execution_policy": scriptExecutionPolicy, "interpreter": "python3-v1", "mode": "enforced", "accepted": true},
 			map[string]any{"name": "schema8-absent-policy", "manifest_schema": 8, "execution_policy": nil, "interpreter": nil, "mode": "declared-only", "accepted": true},

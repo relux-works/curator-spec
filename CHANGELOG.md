@@ -604,6 +604,16 @@ Versioning for the complete specification set.
   alias ports fail closed. Added distinguishing registry, marker and transport
   conformance vectors; frozen release artifacts remain unchanged.
 
+- Defines hard-link substitution as a link that changes the resolved file
+  identity from the platform-owned executable the manager intended. For script
+  `exec` names, only a platform-owned Windows executable resolved through the
+  manager's default search list, physically below canonical
+  `%SystemRoot%\System32` derived from the manager's captured `SystemRoot`,
+  with every additional link in that root's `WinSxS` component store, is
+  exempt. Every other multiply-linked target remains rejected; the `python3-v1`
+  and `node-v1` interpreter rule is unchanged. Core, manager, and generated
+  script execution conformance cases carry the same bounds.
+
 - Editorial: the CLI guide now states the complete §9.5 takeover carrier
   clause once below its command table, including the §9.5 notice, backup, and
   no-flag failure wording, with each carrier row pointing to it; the
