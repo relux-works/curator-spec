@@ -456,21 +456,18 @@ Versioning for the complete specification set.
   byte fixtures, exact manager-state records, a forged project-supplied
   record the hook must ignore, and the §8.7 downstream execution
   binding).
-- Opt-in Skillfile sources revision 1: backwards-compatible project schema 2,
-  local/Git acquisition, individual and collection selection, frozen package
-  identities, physical input/output guards and full runtime/build contracts.
-- Separately scoped repository transport revision 1 with stable identity and
-  bounded operator-owned endpoint/authentication policy. Draft schemas and
-  conformance vectors are isolated from rc.9 release artifacts; no manager
-  implementation or release qualification is claimed.
-- Repository transport revision 2 (unreleased, opt-in): non-default endpoint
-  ports, operator-declared mirrors with exact-key `mirror_of` attestation and
-  operator-declared host aliases via source-policy schema 2, an additive
-  superset of unchanged schema 1. Canonical `host/path` stays the only portable
-  identity; new fail-closed classes `repository_mirror_undeclared` and
-  `repository_alias_unknown`; draft schemas and conformance vectors are
-  isolated from rc.9 release artifacts; no manager implementation or release
-  qualification is claimed.
+- Accepted Skillfile sources revision 1 and repository transport revisions 1
+  and 2 (Decision 0022): project-scope Skillfile schema 2, local/Git
+  acquisition, individual and collection selection, frozen package identities,
+  physical input/output guards, complete runtime/build rules, and bounded
+  operator-owned endpoint/authentication policy with ports, declared mirrors
+  and host aliases. Managers implementing the extension enable it by default;
+  managers may omit the schema-2 capability and then return the upgrade error.
+  Machine-global scope follows environments §9.4 profile locks. Lock replay
+  re-materializes a missing path snapshot from current bytes only when package
+  identity and content hash match, and fetches Git/repository members at the
+  locked commit without re-resolving refs or rewriting the lock. The dedicated
+  schema and vector namespace remains separate from `conformance/v1`.
 - Amended draft Decision 0018 (proposed — not adopted, no normative
   change): the `curator run` permission mode is configured (launcher
   `defaults.json` v2 member, environments §12.1 per-profile knob, CLI
@@ -598,7 +595,7 @@ Versioning for the complete specification set.
 
 ### Changed
 
-- Clarified draft Skillfile-source residuals: positive registry evidence
+- Clarified Skillfile-source security requirements: positive registry evidence
   requires the exact name/repository/commit/raw package-tree hash tuple while
   verified matching revocations remain deny-wins under advisory policy;
   marker-v5 local build records reject raw external-only members (including

@@ -1,19 +1,21 @@
-# Unreleased source-extension conformance
+# Skillfile source and repository transport conformance
 
-This corpus supplements the frozen rc.9 suite and is not a released
-conformance claim. [The source contract](../../protocol/skillfile-sources.md)
-and [transport amendment](../../protocol/repository-transport.md) define its
+This dedicated corpus specifies the accepted source and transport revisions
+separately from the frozen `conformance/v1` suite. [The source contract](../../protocol/skillfile-sources.md)
+and [transport protocol](../../protocol/repository-transport.md) define its
 required outcomes. `index.json` lists structural positives and negatives;
 `snapshot-cases.json` contains concrete byte inventories and expected hashes;
 `semantic-cases.json` records required downstream resolver/filesystem/security
 outcomes (`v2-*` cases cover transport revision 2: port, mirror and alias
-positives plus undeclared-mirror, unknown-alias and policy-misuse refusals).
-These hand-authored draft files are not generator-owned rc.9 outputs.
+positives plus undeclared-mirror, unknown-alias and policy-misuse refusals). It
+also records moved-tag lock replay and machine-global/project-scope schema-2
+requirements from the source protocol. These hand-authored vectors remain in
+this namespace rather than the generated `conformance/v1` corpus.
 
 ## Specification checks
 
 From the repository root, with `requirements-dev.txt` installed, run this exact
-standalone command. It compiles all draft and referenced schemas, checks every
+standalone command. It compiles all extension and referenced schemas, checks every
 indexed positive/negative, recomputes inventory hashes, and verifies that runtime
 and build edits preserve SKILL.md bytes but change full package identity. It
 prints measured counts and exits nonzero on failure.
@@ -25,15 +27,15 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 root = Path.cwd()
-suite = root / 'conformance/draft-sources-v1'
+suite = root / 'conformance/skillfile-sources-v1'
 schemas = {}
 resources = []
-for directory in ['schemas/v1', 'schemas/draft-sources-v1']:
+for directory in ['schemas/v1', 'schemas/skillfile-sources-v1']:
     for path in (root / directory).glob('*.json'):
         document = json.loads(path.read_text())
         Draft202012Validator.check_schema(document)
         resources.append((document['$id'], Resource.from_contents(document)))
-        if directory.endswith('draft-sources-v1'):
+        if directory.endswith('skillfile-sources-v1'):
             schemas[path.name] = document
 registry = Registry().with_resources(resources)
 cases = json.loads((suite / 'index.json').read_text())

@@ -73,7 +73,7 @@ two protocol paths that map to one platform path and fail before writing.
 
 ## 3. Skill packages
 
-The unreleased opt-in [source extension](skillfile-sources.md) additionally
+The accepted optional [source extension](skillfile-sources.md) additionally
 admits frozen local filesystem packages for Skillfile schema 2. The definition
 below remains the legacy acquisition contract.
 
@@ -1128,8 +1128,8 @@ Writers MUST NOT create this legacy form.
 
 ## 5. Project manifests
 
-The unreleased opt-in [Skillfile sources revision 1](skillfile-sources.md)
-adds project schema 2 and package snapshot identities. The rules below remain
+The accepted [Skillfile sources revision 1](skillfile-sources.md) adds
+project schema 2 and package snapshot identities. The rules below remain
 the unchanged legacy lane; do not infer the extension from a schema-1 file.
 
 `Skillfile.json` conforms to `skillfile-v1.schema.json`. It contains unique
@@ -1173,8 +1173,8 @@ MUST make the installation non-current.
 
 ### 6.1 Canonical source identity
 
-The separately scoped unreleased [repository transport amendment](repository-transport.md)
-uses this identity foundation with admitted machine endpoint policy. It does
+The accepted [repository transport revisions 1 and 2](repository-transport.md)
+use this identity foundation with admitted machine endpoint policy. It does
 not broaden the endpoint grammar of any existing acquisition lane.
 
 Network git sources use a canonical identity. Local paths and `file:` URLs have
@@ -1524,7 +1524,7 @@ child exit. The logical identity also records normalized `go_version` and
 
 ## 9. Compiled-artifact cache and receipts
 
-For the unreleased Skillfile schema-2 lane, [source extension section 4](skillfile-sources.md)
+For the Skillfile schema-2 lane, [source extension section 4](skillfile-sources.md)
 wraps these unchanged driver inputs in receipt schema 3 with package identity.
 The legacy lane continues to use the receipt versions below.
 
@@ -1708,7 +1708,7 @@ garbage-collection paths remain implementation-specific.
 
 ## 10. Install markers
 
-The following writer-version rules describe legacy installations. The opt-in
+The following writer-version rules describe legacy installations. The
 [source extension](skillfile-sources.md) requires marker schema 5 for every
 Skillfile schema-2 installation and preserves these legacy read meanings.
 

@@ -236,8 +236,10 @@ receipt cache key is the CCJ-1 digest of the input that carries its execution
 policy, are enforced by `tools/validate.py` and covered by deterministic
 generated cases.
 
-## Unreleased source-extension namespace
+## Accepted source-extension namespace
 
-The [draft source schemas](../draft-sources-v1/README.md) add Skillfile schema 2
-and new identity-bearing records without changing the published schemas here.
-They remain an opt-in working contract, outside the rc.9 release corpus.
+The [skillfile-sources-v1 schemas](../skillfile-sources-v1/README.md) add
+Skillfile schema 2 and new identity-bearing records without changing the
+established definitions in this directory. The Curator orchestrator verified
+the corpus references only definitions here that have remained unchanged since
+rc.10, preserving partial-client independence.

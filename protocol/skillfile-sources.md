@@ -1,16 +1,25 @@
-# Skillfile sources revision 1 (unreleased)
+# Skillfile sources revision 1
 
-This is the normative, opt-in `skillfile-sources-v1` extension. It is an
-unreleased working specification, not part of the rc.9 release or a claim that
-any manager implements it. It extends core sections 3, 5–6 and 8–10 and manager sections
-2–3 and 7 only for Skillfile schema 2. The separately scoped transport amendment is
-[repository transport revisions 1 and 2](repository-transport.md).
-Schemas live in [the draft source namespace](../schemas/draft-sources-v1/README.md).
-A reader MUST explicitly support the extension before accepting schema 2.
+This accepted, optional extension defines project-scope Skillfile schema 2.
+A manager MAY omit the project-scope extension; schema 2 MUST then fail with
+the upgrade error. A manager that implements the extension accepts Skillfile
+schema 2 and MUST implement this complete revision. Implementing managers
+enable the extension by default; no operator switch is part of the contract.
+It extends core sections 3, 5–6 and 8–10 and manager sections 2–3 and 7 only
+for Skillfile schema 2. The separately scoped, accepted
+[repository transport revisions 1 and 2](repository-transport.md) define its
+machine endpoint behavior. Schemas live in the dedicated
+[skillfile-sources-v1 namespace](../schemas/skillfile-sources-v1/README.md).
 All other core, registry, audit, assurance and manager requirements remain in
-force. Existing schema and release artifacts are unchanged.
+force. Definitions reused from `schemas/v1` are unchanged.
 
 ## 1. Acquisition and selection
+
+This revision defines project-scope Skillfiles. Machine-global Skillfiles
+follow [environments §9.4 profile locks](environments.md#94-profile-scoped-skills-and-migration)
+when the manager implements that capability. A manager without machine-global
+profile-lock capability MUST keep machine-global Skillfiles on schema 1 and
+MUST reject schema 2 in that scope with the upgrade error.
 
 Skillfile schema 1 retains its exact meaning. In particular, legacy `source`
 is a path below the manager-configured source root, defaulting to the skill
@@ -163,10 +172,19 @@ CCJ-1 SHA-256 of the lock with only `lock_sha256` omitted.
 Initial explicit resolve/install creates the lock after all gates succeed.
 Update/refresh is the only way to replace refs, admitted bytes or membership.
 Launch and status never rescan collections, advance branches or replace a local
-snapshot. Installation with an existing lock consumes the locked snapshot;
-unavailable snapshots fail with `source_snapshot_unavailable`, and changed
-manifest hashes fail with `source_lock_stale`. Do not silently recreate a local
-snapshot from current bytes. Machine-private bindings record canonical physical
+snapshot. Installation with an existing lock consumes the locked snapshot. If that
+snapshot is missing from the manager's store, the manager MUST re-materialize
+it from the declared source: a `git` or `repository` member MUST be fetched by
+the locked commit object ID, with its object format and commit verified, and a
+`path` member MUST be materialized from its current bytes. During Git replay, the
+manager MUST NOT resolve, verify or require the declared tag or branch; a moved
+ref does not change the locked commit. The manager MUST accept the materialized
+result only when its package identity and `content_sha256` equal the lock;
+otherwise it MUST fail with `source_snapshot_changed`.
+`source_snapshot_unavailable` is reserved for a declared source that cannot be
+reached or read. Re-materialization MUST NOT rewrite the lock or replace a
+snapshot already present in the store. Changed manifest hashes MUST still fail
+with `source_lock_stale`. Machine-private bindings record canonical physical
 source location and root-input configuration for refresh; changes require
 explicit refresh and never reinterpret an existing lock. Rebinding the same
 bytes on another machine preserves package identity. Shared manifests with
@@ -336,6 +354,8 @@ Required stable error classes are `source_alias_unknown`, `source_selection_inva
 and `source_lock_stale`. Report the selector/member and reason without secrets.
 Selection, snapshot, closure, audit or publication failure changes neither the
 previous lock nor installed state. Schema failures precede filesystem/network
-work. The [draft vectors](../conformance/draft-sources-v1/README.md) distinguish
-structural checks from filesystem, resolver and execution requirements. Passing
-schema cases is not evidence of a local installation or native containment.
+work. The [dedicated vectors](../conformance/skillfile-sources-v1/README.md) distinguish
+structural checks from filesystem, resolver and execution requirements. They
+include moved-tag lock replay through a listed mirror and machine-global schema-2
+refusal/project-scope acceptance without profile locks. Passing schema cases is
+not evidence of a local installation or native containment.

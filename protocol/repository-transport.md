@@ -1,17 +1,17 @@
-# Repository transport revisions 1 and 2 (unreleased)
+# Repository transport revisions 1 and 2
 
-This normative opt-in `repository-transport-v1` amendment is separate from
-[local source acquisition](skillfile-sources.md). It specifies machine endpoint
-selection for new Skillfile sources and for existing Git acquisition lanes only
-when the manager explicitly supports this amendment. It does not change legacy
-wire schemas or broaden a lane's admitted endpoint grammar. It is not a
-published release or an implementation claim.
+This accepted protocol specifies machine endpoint selection separately from
+[local source acquisition](skillfile-sources.md). It applies to new Skillfile
+sources and to the existing Git acquisition lanes stated below. A manager that
+implements Skillfile sources revision 1 MUST implement repository transport
+revisions 1 and 2 together. They are enabled by default for that capability;
+no operator switch selects or disables either revision. This protocol does not
+change legacy wire schemas or broaden a lane's admitted endpoint grammar.
 
 Revision 1 is specified in sections 1–3 below and is unchanged by revision 2.
-Revision 2 (sections 4–7) is a separately scoped normative opt-in
-`repository-transport-v2` amendment deciding the advanced endpoint mappings
-that revision 1 left undecided. A reader MUST explicitly support each revision
-it accepts; revision 1 support alone MUST NOT accept revision 2 policy.
+Revision 2 (sections 4–7) decides the advanced endpoint mappings that revision
+1 left undecided. A manager implementing this protocol MUST implement both
+revisions in full.
 
 ## 1. Identity and declarations
 
@@ -67,7 +67,7 @@ only after a positively classified availability/authentication failure:
 | Operator authentication method unavailable or explicit authentication rejection (HTTP 401/403, SSH authentication rejection) | Allowed by `availability-auth` only |
 | TLS certificate or SSH host-key validation failure | Forbidden |
 | Wrong identity, redirects/remapping, malformed/unreadable policy | Forbidden |
-| Missing/moved ref, missing commit, object/hash/integrity mismatch | Forbidden |
+| Missing or moved selected ref during source resolution or explicit refresh/upgrade; missing locked commit during replay; object/hash/integrity mismatch | Forbidden |
 | Audit denial, revocation, canary, assurance or capability failure | Forbidden |
 | Unclassified failure, ambiguous HTTP 404, partial/malformed response | Forbidden |
 
@@ -80,12 +80,20 @@ and terminate acquisition without alternate network traffic or a cache shortcut.
 
 ## 3. Security and external builds
 
-Allowlist/trust checks use stable identity before acquisition. Successful
-acquisition still must verify the full locked object-format/commit, exact tag
-when declared, objects, snapshot and audit evidence. Same commit bytes alone
-never establish repository equivalence. Transport choice is not part of the
-portable Skillfile lock or package identity. Store sanitized endpoint provenance
-in machine-private operation diagnostics, separately from portable identity.
+Allowlist/trust checks use stable identity before acquisition. During source
+resolution and explicit refresh/upgrade, which read the declared ref, successful
+acquisition MUST verify the resolved object format and commit, exact declared tag
+objects when a tag is selected, objects, snapshot and audit evidence. Lock replay
+under Skillfile sources §3 is a separate operation: if a `git` or `repository`
+member's snapshot is absent, the manager fetches the locked commit by object ID,
+verifies its object format and commit, and MUST NOT resolve, verify or require the
+declared tag or branch. Replay is bound by the locked package identity and
+`content_sha256`; a mismatch fails closed. A moved ref is not a replay failure.
+These replay rules also apply when the locked commit is fetched from a listed
+mirror. Same commit bytes alone never establish repository equivalence. Transport
+choice is not part of the portable Skillfile lock or package identity. Store
+sanitized endpoint provenance in machine-private operation diagnostics,
+separately from portable identity.
 
 User Git/SSH configuration is usable only through explicit operator admission.
 This revision supports endpoint URLs and authentication-provider selection only;
@@ -119,15 +127,14 @@ open items are tracked in
 Revision 2 decides the advanced endpoint mappings that revision 1 left
 undecided: explicit non-default ports on listed endpoints, operator-declared
 mirrors, and operator-declared host aliases. It specifies machine endpoint
-properties only; like revision 1 it applies to new Skillfile sources and to
-existing Git acquisition lanes only when the manager explicitly supports this
-amendment. For the strict external-build lane (manager section 11) only the
-port-free, alias-free subset applies: endpoints with an explicit port (URL
-port or alias port) or an `alias` field are refused there with the lane's
-grammar diagnostic (section 7) and are admitted only for Skillfile source
-acquisition, while mirror endpoints without ports or aliases are ordinary
-section 11.2 URLs and remain admissible with identical verification. It is
-not a published release or an implementation claim.
+properties only. These rules apply to new Skillfile sources and to the existing
+Git acquisition lanes implemented under this protocol. For the strict
+external-build lane (manager section 11) only the port-free, alias-free subset
+applies: endpoints with an explicit port (URL port or alias port) or an `alias`
+field are refused there with the lane's grammar diagnostic (section 7) and are
+admitted only for Skillfile source acquisition, while mirror endpoints without
+ports or aliases are ordinary section 11.2 URLs and remain admissible with
+identical verification.
 
 Source-policy schema 2 (`source-policy-v2.schema.json`,
 `schema_version: 2`) is a new file and an additive superset of schema 1: every
@@ -201,12 +208,15 @@ host differs from the key host) MUST NOT be combined with an `alias` at
 all — such an endpoint fails `repository_policy_invalid`, since its URL
 host would be neither identity nor connection address. Mirrors are
 ordinary endpoints once declared: a mirror MAY be first in list order,
-and `pin`/`fallback` semantics are unchanged from revision 1. The manager
-MUST verify the locked commit and exact tag objects for a mirror
-identically to revision 1, and MUST NOT infer, generate, or discover
-mirrors: no generated URLs, no probing, no redirect-following to an
-unlisted host. A mirror attestation authorizes the resolved connection
-host only.
+and `pin`/`fallback` semantics are unchanged from revision 1. For source
+resolution and explicit refresh/upgrade, the manager verifies a mirror's selected
+commit and declared tag objects exactly as it does for a primary endpoint. On lock
+replay, mirror endpoints follow §3: fetch the locked commit by object ID, verify
+its object format and commit, then verify the locked package identity and
+`content_sha256`; do not resolve, verify or require the declared tag or branch.
+A moved ref is not a replay failure. The manager MUST NOT infer, generate or
+discover mirrors: no generated URLs, no probing, no redirect-following to an
+unlisted host. A mirror attestation authorizes the resolved connection host only.
 
 Host aliases are declared only in the operator-owned `aliases` table mapping
 an alias name to `{host, port?, authentication}`: a concrete target host, an
@@ -321,7 +331,7 @@ compiler inheritance. Existing committed-HEAD development substitutions
 keep their own rules and strict-audit rejection.
 
 Conformance vectors live under
-[the draft source namespace](../conformance/draft-sources-v1/README.md):
+[the skillfile-sources-v1 corpus](../conformance/skillfile-sources-v1/README.md):
 schema cases in `schema-cases/source-policy-v2/` (four positives: port,
 declared mirror, alias resolution, revision-1 shape under schema 2; nine
 negatives: unknown top-level member, out-of-range port, SSH upper-bound
@@ -337,5 +347,4 @@ indexed in `index.json`, and `semantic-cases.json` cases
 `v2-alias-auth-mismatch`, `v2-alias-chain`, `v2-double-port`,
 `v2-spurious-mirror-of`, `v2-mirror-of-mismatch`,
 `v2-v1-reader-rejects-v2-policy`, `v2-external-build-port-refused` and
-`v2-external-build-alias-refused` (refusal). No manager implementation or
-release qualification is claimed.
+`v2-external-build-alias-refused` (refusal).

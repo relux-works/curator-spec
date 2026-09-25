@@ -1,9 +1,10 @@
 # Authoring local, Git and collection sources
 
-These examples target the unreleased Skillfile schema 2 contract, not the
-current CLI. No local v2 installation is claimed. The normative rules are in
-[Skillfile sources](../protocol/skillfile-sources.md) and the separate
-[transport amendment](../protocol/repository-transport.md).
+These examples describe the accepted Skillfile schema 2 contract. A manager
+may omit the optional project-scope capability and then returns the upgrade
+error for schema 2. The normative rules are in
+[Skillfile sources](../protocol/skillfile-sources.md) and the accepted
+[repository transport revisions](../protocol/repository-transport.md).
 
 ## Keep authored inputs separate
 
@@ -115,9 +116,9 @@ and locked commit stay identical. Configure the named authentication providers
 through the manager's existing operator mechanism. Never put secrets in these
 objects. TLS, host-key, integrity, ref and audit failures forbid fallback.
 
-Revision 2 (`schema_version: 2`, only on a manager that explicitly supports
-it) adds non-default ports, declared mirrors and host aliases as
-machine-policy endpoint properties. The canonical identity, declaration and
+Source-policy schema 2 adds non-default ports, declared mirrors and host
+aliases as machine-policy endpoint properties. Managers implementing Skillfile
+sources revision 1 implement both accepted transport revisions by default. The canonical identity, declaration and
 lock stay identical:
 
 ```json

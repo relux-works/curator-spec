@@ -1,12 +1,12 @@
-# Unreleased source extension schemas
+# Skillfile source and repository transport schemas
 
-These Draft 2020-12 schemas belong to `skillfile-sources-v1` and the separately
-scoped `repository-transport-v1` and `repository-transport-v2` amendments.
-The directory is a draft namespace,
-not a new protocol release. It keeps the rc.9 schema corpus and generated
-release identities byte-frozen. The `v1` in this directory versions the
-extension namespace; each wire object's filename and `schema_version` identify
-its own revision. Existing core definitions are reused by relative references.
+These accepted Draft 2020-12 schemas define `skillfile-sources-v1` and the
+separately scoped `repository-transport-v1` and `repository-transport-v2`
+revisions. This dedicated namespace keeps its extension schemas separate from
+the established `schemas/v1` definitions. The `v1` in this directory versions
+the extension namespace; each wire object's filename and `schema_version`
+identify its own revision. Existing core definitions are reused by relative
+references and remain unchanged.
 
 | Schema | Wire role |
 |---|---|
@@ -28,7 +28,7 @@ verification and endpoint failure classification. The
 [transport contract](../../protocol/repository-transport.md) defines the
 independent machine connection policy. Schemas alone prove none of those
 filesystem or authorization properties. Run the
-[draft validation command](../../conformance/draft-sources-v1/README.md) in
+[corpus validation command](../../conformance/skillfile-sources-v1/README.md) in
 addition to the existing suite.
 
 Marker v5 retains v4 attestation and legacy substitution evidence with explicit
