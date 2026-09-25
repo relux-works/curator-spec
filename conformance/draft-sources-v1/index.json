@@ -373,6 +373,36 @@
   },
   {
     "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-local-repository-null.json",
+    "valid": false,
+    "comment": "Local go-v1 raw JSON arm rejects the external-only repository member even when null"
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-local-substituted-null.json",
+    "valid": false,
+    "comment": "Local go-v1 raw JSON arm rejects the external-only substituted member even when null"
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-local-substitution-null.json",
+    "valid": false,
+    "comment": "Local go-v1 raw JSON arm rejects the external-only substitution member even when null"
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-declared-tag-empty.json",
+    "valid": false,
+    "comment": "A present external declared_tag must be a non-empty Git ref name"
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-external-declared-tag-invalid-refname.json",
+    "valid": false,
+    "comment": "A present external declared_tag must satisfy the Git ref-name grammar"
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
     "instance": "schema-cases/install-marker-v5/invalid-attestation-missing-status.json",
     "valid": false
   },

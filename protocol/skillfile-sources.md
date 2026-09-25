@@ -173,6 +173,17 @@ bytes on another machine preserves package identity. Shared manifests with
 absolute paths remain intentionally machine-specific, but locks do not copy
 those paths into identity fields.
 
+For an explicit refresh of an existing network-Git checkout, the manager MUST
+resolve the current source-policy endpoint plan before network I/O and MUST
+send every refresh fetch to an endpoint connection target resolved by that
+plan. A checkout's persisted `remote.origin.url` is machine-private state; it
+MUST NOT select, replace, or bypass the current endpoint plan, even when the
+checkout is reused. When no policy entry applies, use the declaration's
+endpoint once under repository-transport revision 1; a logical declaration
+without an entry fails with `repository_endpoint_unavailable`. An unreadable
+or invalid policy, or failure of all permitted current endpoint attempts,
+MUST fail without changing the prior lock or installed state.
+
 ## 4. Runtime, builds, audit and persistent records
 
 Local acquisition feeds the complete existing package pipeline. Context
@@ -210,8 +221,24 @@ requiredness and canonical set ordering.
 registry evidence and MUST equal its registry, status and key ID (including key
 absence). Both `network-git` and legacy `configured-git` packages may record it
 only when existing registry rules establish the exact canonical repository,
-name, commit and context hash. A configured source path alone is not a registry
-identity. This summary is not authorization: signed records and current trust,
+name, commit and content hash. For a schema-2 network-Git member, a
+non-revoked record MUST NOT provide positive evidence or an attestation unless
+all four values match: canonical package name, canonical repository identity,
+locked commit, and registry artifact content hash. This is a conjunctive
+grant; matching only content, or only repository and commit, does not grant
+positive evidence. The compared registry `content_sha256` is the SHA-256 of
+the raw frozen package tree under registry §3 hashing rules. It is not the
+lock member's projected context `content_sha256`.
+
+For schema-2 network-Git members, revocation retains registry §3's broader
+artifact match: a verified `revoked` record matches when either its artifact
+content hash equals the raw frozen package-tree hash, or its canonical
+repository identity and commit both match. Registry §4 is deny-wins, so such a
+matching revocation MUST block the member under advisory as well as strict
+registry policy, even when its name or other grant dimensions do not match.
+Exact positive matching MUST NOT narrow this revocation check. A configured
+source path alone is not a registry identity.
+The marker summary is not authorization: signed records and current trust,
 revocation, freshness and assurance policy MUST still be checked when required.
 A missing, unreadable, malformed, stale or mismatching required evidence record
 MUST NOT become an unattested successful installation or current status.
@@ -262,6 +289,13 @@ external build_source and descriptor_target, as well as the common fields.
 Only receipt_schema_version changes to 3. External substitution shape, commit
 length, exact-tag provenance and all cross-field equality rules remain intact.
 An external record MUST NOT omit these fields in favor of a receipt hash alone.
+The local `go-v1` record is a closed raw JSON arm: no member defined only by
+the `go-repository-v1` arm may be present, including with JSON `null` (for
+example, `repository`, `declared_tag`, `substituted`, or `substitution`).
+Presence is invalid even when decoding would otherwise collapse `null` to an
+absent zero value. In a `go-repository-v1` record, `declared_tag` is optional;
+when present it MUST be a non-empty Git ref name, and null, empty, or
+ref-name-invalid values MUST be rejected.
 Compare the record with receipt-3 `input.build` under the existing external
 receipt-input rules; compare receipt-3 `input.package` with marker `package`.
 Receipt/cache hashes are recomputed over the new wrapper, not copied from v4.

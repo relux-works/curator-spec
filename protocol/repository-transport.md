@@ -236,6 +236,15 @@ MUST NOT name aliases. User `~/.ssh/config` Host aliases, `insteadOf`,
 `ProxyCommand`, `core.sshCommand`, helpers, include files and environment
 overrides remain NOT imported.
 
+An endpoint written in SCP-like form (`[user@]host:path`) has no URI port
+position. If its named alias supplies a port, the manager MUST fail with
+`repository_policy_invalid` before network I/O. Converting it to an SSH URI
+would require a `~/` remote-path convention that some SSH front ends do not
+accept, so the manager MUST NOT guess that rendering or risk changing the
+target path. An SSH URI endpoint MAY use an alias port; its connection target
+is the SSH URI with the resolved alias host and port, while the repository
+identity remains the entry key.
+
 ## 6. Revision 2 resolution, failure classes and attempt bounds
 
 Resolution for a schema-2 entry runs in this order, with every structural
@@ -264,7 +273,7 @@ these fail-closed rows (zero attempts, no fallback, no cache shortcut):
 |---|---|
 | Resolved connection host differs from the key host without `mirror_of` | `repository_mirror_undeclared`, forbidden |
 | `alias` names no entry in the policy alias table | `repository_alias_unknown`, forbidden |
-| `mirror_of` or alias misuse (`mirror_of` mismatch, spurious attestation, mirror URL combined with an alias, embedded alias host, chained alias, double port, authentication mismatch, pin mismatch) | `repository_policy_invalid`, forbidden |
+| `mirror_of` or alias misuse (`mirror_of` mismatch, spurious attestation, mirror URL combined with an alias, embedded alias host, chained alias, double port, authentication mismatch, pin mismatch, SCP-like endpoint with alias port) | `repository_policy_invalid`, forbidden |
 
 Mirror, port and alias properties add no fallback-allowed class: a declared
 mirror or aliased endpoint that fails with an availability/authentication

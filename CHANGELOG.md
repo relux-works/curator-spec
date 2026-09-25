@@ -598,6 +598,15 @@ Versioning for the complete specification set.
 
 ### Changed
 
+- Clarified draft Skillfile-source residuals: positive registry evidence
+  requires the exact name/repository/commit/raw package-tree hash tuple while
+  verified matching revocations remain deny-wins under advisory policy;
+  marker-v5 local build records reject raw external-only members (including
+  null) and external `declared_tag` values outside Git ref-name grammar; and
+  explicit refresh uses current resolved endpoints. SCP-like endpoints with
+  alias ports fail closed. Added distinguishing registry, marker and transport
+  conformance vectors; frozen release artifacts remain unchanged.
+
 - Editorial: the CLI guide now states the complete §9.5 takeover carrier
   clause once below its command table, including the §9.5 notice, backup, and
   no-flag failure wording, with each carrier row pointing to it; the
