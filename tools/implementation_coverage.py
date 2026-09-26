@@ -10,8 +10,8 @@ schema-8 surface while opening none of it.
 `.github/ci/implementation-coverage.tsv` is this repository's own answer to the
 second question, and this module enforces it in three parts:
 
-    families  every artefact the ledger declares is still published by
-              `conformance/v1/manifest.json`;
+    families  every core artefact the selected implementation declares is
+              still published by its declared core suite's `manifest.json`;
     go        every `go` row was observed PASSING in a real `go test -json`
               stream, with no skip of the case or any of its subtests;
     pytest    every `manager` row was observed PASSING in a real pytest
@@ -162,12 +162,16 @@ def missing_artifacts(
     return tuple(missing)
 
 
-def check_families(rows: Sequence[Row], suite: Path) -> list[str]:
-    """Fail when this suite stopped publishing what the ledger claims is read."""
+def check_families(
+    rows: Sequence[Row], suite: Path, implementation: str | None = None
+) -> list[str]:
+    """Fail when this suite stopped publishing what the selected rows read."""
     paths = published_paths(suite)
     report: list[str] = []
     failures: list[str] = []
     for row in rows:
+        if implementation is not None and row.implementation != implementation:
+            continue
         missing = missing_artifacts(row.artifacts, paths)
         if missing:
             failures.append(
@@ -178,6 +182,9 @@ def check_families(rows: Sequence[Row], suite: Path) -> list[str]:
             report.append(f"served  {row.implementation}\t{row.identity}")
     if failures:
         raise CoverageError("\n".join(failures))
+    if not report:
+        selected = f" for {implementation}" if implementation else ""
+        raise CoverageError(f"the coverage ledger declares no served rows{selected}")
     return report
 
 
@@ -312,9 +319,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     families = subparsers.add_parser(
-        "families", help="assert this suite still publishes every declared artefact"
+        "families",
+        help="assert the selected implementation's core artefacts are published",
     )
     families.add_argument("--root", type=Path, default=DEFAULT_SUITE)
+    families.add_argument(
+        "--implementation",
+        choices=IMPLEMENTATIONS,
+        help="check only this implementation's declared artefacts",
+    )
 
     go = subparsers.add_parser(
         "go", help="assert every declared Go case was observed passing"
@@ -330,7 +343,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         rows = load_ledger(args.ledger)
         if args.command == "families":
-            report = check_families(rows, args.root)
+            # The per-implementation roots can intentionally differ: curator
+            # consumes the candidate core while cocoaskills is qualified
+            # against the released core it declares support for.
+            report = check_families(rows, args.root, args.implementation)
         elif args.command == "go":
             report = check_go(rows, args.stream)
         else:

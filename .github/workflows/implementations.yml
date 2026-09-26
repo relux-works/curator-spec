@@ -31,25 +31,38 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: relux-works/curator
-          # relux-works/curator main at PR 37, the commit that stopped treating
-          # a family's presence in the conformance root as evidence that
-          # anything read it. It declares the schema-8 artefacts its packages
-          # consume and adds `internal/scriptpolicy`; qualified against this
-          # suite by candidate dispatch 32689488293.
-          ref: a3abcf3468b4854904313295672eef6f7d8826fd
+          # Curator 0a628621 classifies executable_identity_cases and the
+          # hard_link_substitution_definition added by PR #88. Keep this pin
+          # in lockstep with that suite erratum and its production consumer.
+          ref: 0a62862130fd6cbd9db8b246da63fdb5aecdfaaf
           path: implementations/go
           submodules: true
+          # The Go suite does not use the board state. Excluding its deep paths
+          # avoids Windows checkout path-length failures while retaining all
+          # implementation sources and declared submodules.
+          sparse-checkout: |
+            /*
+            !/.task-board/
+          sparse-checkout-cone-mode: false
 
       - name: Checkout Python manager
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: ivanopcode/cocoaskills
-          # ivanopcode/cocoaskills main at PR 43, the mirror of curator PR 37
-          # on the Python side. Its schema-8 consumer is root-derived, so it
-          # decides real behaviour against whatever suite this job publishes;
-          # qualified against this suite by candidate run 32756144649.
-          ref: 3ecca1dba9f8831e1617b7466c17ecc8a2957d3f
+          # cocoaskills 4a88aa0e is pinned to the accepted skillfile-sources-v1
+          # corpus. Its declared scope is core v1.0.0-rc.10 plus that draft
+          # corpus and schemas from this candidate; it does not claim rc.11-rc.12.
+          ref: 4a88aa0e47ab2b34ded16162cec7f97d0c7cf6f1
           path: implementations/manager
+
+      - name: Checkout Python manager core v1.0.0-rc.10
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: relux-works/curator-spec
+          # The Python client declares support through rc.10. Keep its core
+          # checks on that released corpus while Go checks the full candidate.
+          ref: v1.0.0-rc.10
+          path: implementations/manager-core
 
       - name: Checkout registry service
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -72,12 +85,18 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e "./implementations/manager[dev]" -e "./implementations/registry[dev]"
 
-      # The presence half of the coverage contract. Every artefact
-      # `.github/ci/implementation-coverage.tsv` claims a pinned implementation
-      # reads must still be published by this suite, so a family cannot be
-      # deleted while the ledger keeps claiming it is consumed.
-      - name: Require this suite to publish every declared artefact
-        run: python tools/implementation_coverage.py families --root conformance/v1
+      # Each client's declared artefacts are checked against its own core
+      # root: curator gets the full candidate, cocoaskills gets released rc.10.
+      - name: Require curator's candidate core artefacts
+        run: >-
+          python tools/implementation_coverage.py families
+          --implementation go --root conformance/v1
+
+      - name: Require cocoaskills rc.10 core artefacts
+        run: >-
+          python tools/implementation_coverage.py families
+          --implementation manager
+          --root implementations/manager-core/conformance/v1
 
       # The stream is captured rather than piped so the gate below reads the
       # run it is gating, and this step still reports `go test`'s own status.
@@ -103,17 +122,17 @@ jobs:
           python tools/implementation_coverage.py go
           --stream implementations/go/go-test.json
 
-      # The Python manager's own presence ledger, run against this suite. It
-      # fails when this root serves the schema-8 consumer only partly, so a
-      # half-published surface cannot run quieter instead of failing.
-      - name: Require the Python manager's declared artefacts
+      # The Python manager's own presence ledger is also checked against its
+      # declared rc.10 core corpus, not the newer candidate core.
+      - name: Require the Python manager's rc.10 core artefacts
         run: >-
           python implementations/manager/.github/scripts/candidate_consumption.py
-          require --root conformance/v1
+          require --root implementations/manager-core/conformance/v1
 
-      - name: Python manager schema-8 consumption
+      - name: Python manager rc.10 schema-8 consumption
         working-directory: implementations/manager
         env:
+          CURATOR_CONFORMANCE_ROOT: ${{ github.workspace }}/implementations/manager-core/conformance/v1
           CSK_REQUIRE_FULL_CANDIDATE_ROOT: "1"
         run: >-
           python -m pytest -q tests/test_schema8_candidate_conformance.py
@@ -124,19 +143,25 @@ jobs:
           python tools/implementation_coverage.py pytest
           --results implementations/manager/manager-schema8-results.xml
 
+      # The draft test reads CSK_DRAFT_SOURCES_SUITE_ROOT and resolves
+      # schemas/v1 plus schemas/skillfile-sources-v1 from the candidate checkout
+      # two levels above that suite path. This feeds both corpus and schemas
+      # from this candidate. cocoaskills declares this POSIX-only draft lane;
+      # its own workflow excludes Windows for this suite.
+      - name: Python manager candidate skillfile-sources-v1 consumption
+        if: runner.os != 'Windows'
+        working-directory: implementations/manager
+        env:
+          CSK_DRAFT_SOURCES_SUITE_ROOT: ${{ github.workspace }}/conformance/skillfile-sources-v1
+        run: >-
+          python -m pytest -q tests/test_draft_sources_conformance.py
+          --junitxml=manager-skillfile-sources-results.xml
+
       # NOTE ON THE PYTHON MANAGER'S RELEASED-SUITE MODULE.
-      # `tests/test_protocol_conformance.py` used to run here against this
-      # repository's own root. At this pin it authenticates ONE immutable
-      # suite -- protocol `1.0.0-rc.6`, manifest `sha256:12e58b82...` -- and
-      # refuses every other root by design; it could be pointed at this
-      # repository's moving root only while the previous pin performed no
-      # authentication at all, which is the same false-green the schema-8
-      # coverage contract above exists to remove. That module keeps running
-      # against the suite it names in that implementation's own CI, and it
-      # returns to this job when its released suite pin advances to rc.9 --
-      # the step the landing order schedules after rc.9 is published. Until
-      # then the schema-8 consumption steps above, plus the root-independent
-      # lifecycle selection below, are what this job asserts about that pin.
+      # `tests/test_protocol_conformance.py` authenticates its own immutable
+      # rc.6 suite and rejects arbitrary roots. It is not the cross-implementation
+      # qualification here: the schema-8 cases above use the manager's declared
+      # rc.10 core, and the draft-source cases use the candidate corpus and schemas.
       - name: Python manager lifecycle behavior
         run: >-
           python -m pytest -q

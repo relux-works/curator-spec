@@ -595,6 +595,13 @@ Versioning for the complete specification set.
 
 ### Changed
 
+- Updated the Implementations workflow to pin curator 0a628621 in lockstep
+  with PR #88's executable identity and hard-link erratum, require curator's
+  production consumer-map case, and sparse-checkout curator without
+  `.task-board/` for Windows. Qualified cocoaskills 4a88aa0e against its
+  declared core v1.0.0-rc.10 plus the candidate skillfile-sources-v1 corpus
+  and schemas, while keeping the draft suite on its supported POSIX lanes.
+
 - Clarified Skillfile-source security requirements: positive registry evidence
   requires the exact name/repository/commit/raw package-tree hash tuple while
   verified matching revocations remain deny-wins under advisory policy;

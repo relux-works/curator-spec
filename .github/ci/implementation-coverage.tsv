@@ -7,13 +7,21 @@
 # family's PRESENCE in the conformance root was never evidence that anything
 # opened it.
 #
-# This table is the specification's own statement of the other half. It names,
-# per pinned implementation, the cases that must be OBSERVED PASSING against
-# this repository's in-tree suite, and the root artefacts each of them reads:
+# This table is the specification's own statement of the other half. The
+# implementation-specific claims below record each client's corpus boundary:
 #
-#   * `tools/implementation_coverage.py families` fails when this repository
-#     stops publishing an artefact a row declares, so a family cannot be
-#     deleted from the suite while the ledger still claims it is consumed;
+#   * curator 0a628621 (`go`) consumes this candidate's full `conformance/v1`;
+#   * cocoaskills 4a88aa0e (`manager`) consumes core `conformance/v1` from
+#     v1.0.0-rc.10. Its accepted `skillfile-sources-v1` corpus and schemas come
+#     from this candidate and are exercised in the workflow's separate draft
+#     conformance step. It does not claim support for later core revisions.
+#
+# The rows below name the cases that must be OBSERVED PASSING for those
+# implementations, and the root artefacts each case reads:
+#
+#   * `tools/implementation_coverage.py families --implementation <name>` fails
+#     when that implementation's declared core root stops publishing an
+#     artefact its rows name, so one client's corpus cannot hide another's gap;
 #   * `tools/implementation_coverage.py go` fails when a `go` row is not
 #     observed passing in that runner's real `go test -json` stream. A rename,
 #     a deletion, a package dropped from the invocation, a `-run` filter
@@ -25,8 +33,10 @@
 #
 # The ledger is deliberately owned HERE rather than deferred to each
 # implementation's own consumption ledger: an implementation that renames or
-# drops a schema-8 consumer must fail this repository's landing gate, not
-# merely its own.
+# drops a declared consumer must fail this repository's landing gate, not
+# merely its own. The workflow selects the implementation's corpus root when
+# checking families, so one client's supported boundary cannot be widened by
+# another client's candidate suite.
 #
 # Columns are TAB separated:
 #   implementation  identity  artefacts  behaviour
@@ -43,9 +53,10 @@ go	internal/skillspec.TestReleasedSchemaCases	schema-cases/index.json,schema-cas
 go	internal/marker.TestReadAuthoritativeMarkerV4SchemaCases	schema-cases/index.json,schema-cases/install-marker-v4	every published install-marker-v4 case is read back through the marker reader
 go	internal/moduleroots.TestModuleRootVectors	vectors/module-roots.json	every published module-roots case drives declaration, containment and the declared/effective replace bijection to its own failure boundary
 go	internal/scriptpolicy.TestScriptHostExecutionPolicySectionsAreAllClassified	vectors/script-host-execution-policy.json	every top-level section of the published script-worker family is classified, so a section this specification adds cannot be ignored
+go	internal/scriptpolicy.TestScriptHostExecutionPolicyProductionConsumersCoverAllCases	vectors/script-host-execution-policy.json	every published behavioral case, including executable identity, maps to a production row and the hard-link substitution definition is present
 go	internal/scriptpolicy.TestScriptExecutionPolicyIdentityMatchesTheSuite	vectors/script-host-execution-policy.json	the closed policy identity and interpreter set the implementation hard-codes are read back from the suite's own bytes
 go	internal/scriptpolicy.TestScriptExecutionOptInCases	vectors/script-host-execution-policy.json	every published opt-in case decides manifest acceptance and the enforced/declared-only classification
-go	internal/scriptpolicy.TestARefusalPrecedesEveryWorkerSurface	vectors/script-host-execution-policy.json	every enforced shape the suite declares is refused before any worker surface
+go	internal/scriptpolicy.TestPreflightRefusalCases	vectors/script-host-execution-policy.json	the mandatory-control-unavailable install and invocation shapes refuse before starting a worker, while the three non-refusal shapes succeed
 manager	tests/test_schema8_candidate_conformance.py::test_every_declared_schema8_artefact_is_published	schema-cases/index.json	the presence ledger is decided against this suite's manifest inside the run that consumes it
 manager	tests/test_schema8_candidate_conformance.py::test_both_manifest_families_are_consumed_in_full	schema-cases/agent-skill-v8,schema-cases/csk-skill-v8	every published agent-skill-v8 and csk-skill-v8 case is collected, and neither family is empty
 manager	tests/test_schema8_candidate_conformance.py::test_schema8_manifest_case	schema-cases/agent-skill-v8,schema-cases/csk-skill-v8	every published schema-8 manifest case decides acceptance through the real skill-spec loader

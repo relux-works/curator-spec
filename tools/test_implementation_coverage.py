@@ -11,6 +11,7 @@ import implementation_coverage as coverage
 
 
 SOURCE_ROOT = Path(__file__).resolve().parents[1]
+WORKFLOW = SOURCE_ROOT / ".github" / "workflows" / "implementations.yml"
 
 GO_ROW = (
     "go\tinternal/scriptpolicy.TestScriptExecutionOptInCases\t"
@@ -55,6 +56,45 @@ class LedgerShapeTests(unittest.TestCase):
         rows = coverage.load_ledger()
         self.assertTrue(rows)
         self.assertEqual({row.implementation for row in rows}, {"go", "manager"})
+
+    def test_shipped_ledger_tracks_curator_main_script_policy_consumers(self) -> None:
+        identities = {
+            row.identity
+            for row in coverage.load_ledger()
+            if row.implementation == "go"
+        }
+        self.assertIn(
+            "internal/scriptpolicy.TestScriptHostExecutionPolicyProductionConsumersCoverAllCases",
+            identities,
+        )
+        self.assertIn("internal/scriptpolicy.TestPreflightRefusalCases", identities)
+        self.assertNotIn(
+            "internal/scriptpolicy.TestARefusalPrecedesEveryWorkerSurface",
+            identities,
+        )
+
+    def test_cocoaskills_partial_client_lane_uses_rc10_and_candidate_draft_sources(self) -> None:
+        workflow = WORKFLOW.read_text(encoding="utf-8")
+        ledger = coverage.DEFAULT_LEDGER.read_text(encoding="utf-8")
+        self.assertIn("ref: 4a88aa0e47ab2b34ded16162cec7f97d0c7cf6f1", workflow)
+        self.assertIn("ref: v1.0.0-rc.10", workflow)
+        self.assertIn("path: implementations/manager-core", workflow)
+        self.assertIn(
+            r"CURATOR_CONFORMANCE_ROOT: ${{ github.workspace }}/implementations/manager-core/conformance/v1",
+            workflow,
+        )
+        self.assertIn(
+            r"CSK_DRAFT_SOURCES_SUITE_ROOT: ${{ github.workspace }}/conformance/skillfile-sources-v1",
+            workflow,
+        )
+        self.assertIn("python tools/implementation_coverage.py families", workflow)
+        self.assertIn("--implementation manager", workflow)
+        self.assertIn("schemas/v1 plus schemas/skillfile-sources-v1", workflow)
+        self.assertIn("python -m pytest -q tests/test_draft_sources_conformance.py", workflow)
+        self.assertIn("if: runner.os != 'Windows'", workflow)
+        self.assertIn("cocoaskills 4a88aa0e", ledger)
+        self.assertIn("v1.0.0-rc.10", ledger)
+        self.assertIn("skillfile-sources-v1", ledger)
 
     def test_comments_and_blank_lines_are_not_rows(self) -> None:
         rows = coverage.load_ledger(self.write(LEDGER + "\n#  trailing note\n"))
@@ -139,10 +179,23 @@ class FamilyTests(unittest.TestCase):
             coverage.check_families(coverage.load_ledger(self.ledger), self.suite)
 
     def test_the_shipped_ledger_is_served_by_the_shipped_suite(self) -> None:
+        go_rows = tuple(row for row in coverage.load_ledger() if row.implementation == "go")
         report = coverage.check_families(
-            coverage.load_ledger(), SOURCE_ROOT / "conformance" / "v1"
+            coverage.load_ledger(), SOURCE_ROOT / "conformance" / "v1", "go"
         )
-        self.assertEqual(len(report), len(coverage.load_ledger()))
+        self.assertEqual(len(report), len(go_rows))
+
+    def test_implementation_filter_does_not_require_another_clients_corpus(self) -> None:
+        self.publish("vectors/module-roots.json")
+        report = coverage.check_families(
+            coverage.load_ledger(self.ledger), self.suite, "manager"
+        )
+        self.assertEqual(report, [
+            "served  manager\ttests/test_schema8_candidate_conformance.py::test_module_root_case"
+        ])
+        with self.assertRaises(coverage.CoverageError) as caught:
+            coverage.check_families(coverage.load_ledger(self.ledger), self.suite, "go")
+        self.assertIn("vectors/script-host-execution-policy.json", str(caught.exception))
 
 
 class GoStreamTests(unittest.TestCase):
@@ -310,7 +363,13 @@ class CommandLineTests(unittest.TestCase):
     def test_families_returns_zero_for_the_shipped_suite(self) -> None:
         self.assertEqual(
             self.run_quietly(
-                ["families", "--root", str(SOURCE_ROOT / "conformance" / "v1")]
+                [
+                    "families",
+                    "--implementation",
+                    "go",
+                    "--root",
+                    str(SOURCE_ROOT / "conformance" / "v1"),
+                ]
             ),
             0,
         )
