@@ -269,3 +269,18 @@ Rc.9 and earlier release metadata remain byte-frozen. The rc.13 candidate
 metadata records rc.9 as the preceding protocol release, and the signed
 v1.0.0-rc.13 tag is created only on the release-prep merge commit after its
 required checks pass.
+
+## Partial-client baseline: rc.10 core plus skillfile-sources-v1
+
+Partial clients (for example cocoaskills) may implement core `v1.0.0-rc.10`
+plus `skillfile-sources-v1`. Every reused `$ref` from
+`schemas/skillfile-sources-v1` into `schemas/v1` must resolve to a definition
+byte-identical to the one at the `v1.0.0-rc.10` tag. Specification CI checks
+this baseline and the protocol's cross-clause citations:
+`protocol/skillfile-sources.md` and `protocol/repository-transport.md` must
+not cite a core, registry, manager, or environments clause introduced after
+rc.10. The sole exception is the exact conditional sentence in
+`protocol/skillfile-sources.md` stating that machine-global Skillfiles follow
+environments §9.4 profile locks when the manager implements that capability.
+The gate keys this exception to that file and sentence; the same citation
+without its condition, and every other post-rc.10 citation, fail.

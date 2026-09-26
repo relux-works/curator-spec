@@ -43,6 +43,9 @@ jobs:
       - name: Validate schemas, cases, manifest, and local links
         run: python tools/validate.py
 
+      - name: Check Skillfile-source independence from rc.10
+        run: python tools/verify_skillfile_sources_independence.py
+
       - name: Test stable release gate
         run: python -B -m unittest discover -s tools -p 'test_*.py'
 

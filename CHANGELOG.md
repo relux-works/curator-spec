@@ -3,6 +3,17 @@
 All notable protocol changes are recorded here. Versions follow Semantic
 Versioning for the complete specification set.
 
+## Unreleased
+
+### Added
+
+- Gate `skillfile-sources-v1` schema references and protocol citations against
+  the `v1.0.0-rc.10` core baseline, preserving partial-client independence in
+  Specification CI. Its sole conditional-citation exception is the exact
+  environments §9.4 profile-lock sentence in `protocol/skillfile-sources.md`;
+  the same citation without its condition and every other post-rc.10 citation
+  fail the gate.
+
 ## 1.0.0-rc.13 - 2026-09-26
 
 ### Added
