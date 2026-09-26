@@ -29,7 +29,9 @@ become the standard.
    archive with SHA-256 checksums.
 
 Release CI verifies the tag against `maintainers.allowed_signers` before
-packaging. Its exact target must be contained in the protected default branch
+packaging. The allowlist trusts `oparin@me.com` (maintainer) and
+`bot@relux.works` (automation signer authorized by the operator on
+2026-09-26). Its exact target must be contained in the protected default branch
 and must either carry a signature from the same allowlist or be a
 GitHub-verified merge commit created by that protected-branch workflow. The
 maintainer-signed tag explicitly authorizes the exact target in both cases.
