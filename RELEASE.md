@@ -71,7 +71,9 @@ approve changes; CI enforces the mechanically verifiable items.
 - [ ] Neither report has an open critical or high finding.
 - [ ] Only `reviews/` changed after each report's `reviewed_commit`.
 - [ ] The release commit and annotated `v1.0.0` tag verify against
-  `maintainers.allowed_signers`.
+  `maintainers.allowed_signers`. Trusted principals are `oparin@me.com`
+  (maintainer) and `bot@relux.works` (automation signer authorized by the
+  operator on 2026-09-26).
 - [ ] Release archives, SHA-256 checksums, and build-provenance attestations are
   present and immutable.
 
