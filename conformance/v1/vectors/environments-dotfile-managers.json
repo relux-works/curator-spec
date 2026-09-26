@@ -455,7 +455,7 @@
     "linux",
     "windows"
   ],
-  "protocol_version": "1.0.0-rc.9",
+  "protocol_version": "1.0.0-rc.13",
   "rule": "environments section 9.5 dotfile-manager state table",
   "schema_version": 1,
   "table": [

@@ -834,7 +834,18 @@ func TestRC8ReleaseMetadataRemainsByteFrozen(t *testing.T) {
 	}
 }
 
-func TestRC9ReleaseMetadataPinsSuiteWithoutClaimFabrication(t *testing.T) {
+func TestRC9ReleaseMetadataRemainsByteFrozen(t *testing.T) {
+	root := repositoryRoot(t)
+	metadata, err := os.ReadFile(filepath.Join(root, "release", "1.0.0-rc.9.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := sha256Identity(metadata); got != rc9ReleaseMetadataSHA256 {
+		t.Fatalf("historical rc.9 metadata digest = %s, want %s", got, rc9ReleaseMetadataSHA256)
+	}
+}
+
+func TestRC13ReleaseMetadataPinsCoreAndAcceptedSourceSuites(t *testing.T) {
 	root := repositoryRoot(t)
 	manifest, err := os.ReadFile(filepath.Join(root, "conformance", "v1", "manifest.json"))
 	if err != nil {
@@ -842,28 +853,42 @@ func TestRC9ReleaseMetadataPinsSuiteWithoutClaimFabrication(t *testing.T) {
 	}
 	sum := sha256.Sum256(manifest)
 	manifestIdentity := "sha256:" + hex.EncodeToString(sum[:])
-	metadata := readObject(t, filepath.Join(root, "release", "1.0.0-rc.9.json"))
+	metadata := readObject(t, filepath.Join(root, "release", "1.0.0-rc.13.json"))
 	if metadata["protocol_version"] != protocolVersion {
-		t.Fatalf("rc.9 release protocol_version = %v, want %s", metadata["protocol_version"], protocolVersion)
+		t.Fatalf("rc.13 release protocol_version = %v, want %s", metadata["protocol_version"], protocolVersion)
 	}
 	pin := metadata["candidate_protocol_pin"].(map[string]any)
 	downstream := metadata["downstream_consumption"].(map[string]any)
 	if pin["manifest_sha256"] != manifestIdentity || downstream["required_manifest_sha256"] != manifestIdentity {
-		t.Fatalf("rc.9 release does not pin manifest %s", manifestIdentity)
+		t.Fatalf("rc.13 release does not pin core manifest %s", manifestIdentity)
+	}
+	sourceManifest, err := os.ReadFile(filepath.Join(root, "conformance", "skillfile-sources-v1", "manifest.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	sourceIdentity := sha256Identity(sourceManifest)
+	sourcePin := metadata["skillfile_sources_v1"].(map[string]any)
+	compatibleCore := sourcePin["compatible_core"].(map[string]any)
+	if sourcePin["manifest_path"] != "conformance/skillfile-sources-v1/manifest.json" ||
+		sourcePin["manifest_sha256"] != sourceIdentity ||
+		compatibleCore["tag"] != "v1.0.0-rc.10" ||
+		compatibleCore["manifest_sha256"] != rc10CoreManifestSHA256 {
+		t.Fatalf("rc.13 source-suite pin is incomplete or not separately tied to rc.10: %#v", sourcePin)
 	}
 	history := metadata["historical_release"].(map[string]any)
-	if history["protocol_version"] != "1.0.0-rc.8" ||
-		history["metadata_sha256"] != rc8ReleaseMetadataSHA256 ||
-		history["source_commit"] != rc8SourceCommit ||
+	if history["protocol_version"] != conformanceClaimV5ProtocolVersion ||
+		history["metadata_path"] != "release/1.0.0-rc.9.json" ||
+		history["metadata_sha256"] != rc9ReleaseMetadataSHA256 ||
+		history["source_commit"] != rc9SourceCommit ||
 		history["immutable"] != true {
-		t.Fatalf("rc.9 historical rc.8 identity is invalid: %#v", history)
+		t.Fatalf("rc.13 historical rc.9 identity is invalid: %#v", history)
 	}
 	claim := metadata["claim_v5"].(map[string]any)
 	claims, ok := claim["claims_emitted"].([]any)
-	if claim["claim_protocol_version"] != protocolVersion ||
+	if claim["claim_protocol_version"] != conformanceClaimV5ProtocolVersion ||
 		claim["schema"] != "schemas/v1/conformance-claim-v5.schema.json" ||
 		!ok || len(claims) != 0 {
-		t.Fatalf("rc.9 release fabricates claim evidence: %#v", claim)
+		t.Fatalf("rc.13 release fabricates claim evidence: %#v", claim)
 	}
 }
 
@@ -907,7 +932,7 @@ func TestAssuranceModesAreClosedFailClosedAndNonAliasing(t *testing.T) {
 		}
 	}
 	if claims := vector["release_claims"].([]any); len(claims) != 0 {
-		t.Fatalf("rc.9 fabricates verified claims: %#v", claims)
+		t.Fatalf("rc.13 fabricates verified claims: %#v", claims)
 	}
 }
 

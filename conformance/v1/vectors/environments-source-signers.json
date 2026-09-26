@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "protocol_version": "1.0.0-rc.9",
+  "protocol_version": "1.0.0-rc.13",
   "capability": "agent-environments",
   "capability_revision": 1,
   "rule": "source signer allowlist and update-delta confirmation (sections 1.4, 9.2, 12)",

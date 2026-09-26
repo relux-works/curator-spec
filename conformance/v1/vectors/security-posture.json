@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "protocol_version": "1.0.0-rc.9",
+  "protocol_version": "1.0.0-rc.13",
   "capability": "security-posture",
   "findings": [
     "S1",

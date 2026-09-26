@@ -1,0 +1,557 @@
+{
+  "files": [
+    {
+      "path": "conformance/skillfile-sources-v1/README.md",
+      "sha256": "sha256:dd3621a7c57d43cf54ce04dd52e0f7b596661455b9ef8ce35440f8b2bc1cef9b"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/index.json",
+      "sha256": "sha256:654707af529bffc5104e92e98d4ab6fb910163b187861152bfd7fa769d852575"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/build-receipt-v3/invalid-kind.json",
+      "sha256": "sha256:4934f9d47028c095e8ffa488c8bda3c43bd9d18415ca1281c83a6686bb6f4aae"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/build-receipt-v3/invalid-policy.json",
+      "sha256": "sha256:cdf4abf438fc77afc21f743b4ac50b3d2ef785ac94669f6a1a7becdcfabec512"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/build-receipt-v3/invalid-unknown-top-level.json",
+      "sha256": "sha256:af8d8fffa8456032d9f56fe213a234308898561f234fcda1a6457df1ece21738"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/build-receipt-v3/valid.json",
+      "sha256": "sha256:4249b5735724a5166e526089077ea62728a6f3c96b263ad73c5a70f48c50e411"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-attestation-empty-registry.json",
+      "sha256": "sha256:f80e420ad30a28a4baef5293d961834099e47503a3686bccb689011957ab6276"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-attestation-extra.json",
+      "sha256": "sha256:bb63fa02e88aa2a56c9bba11df4936915e672d5a017a6ccd8167df3f4fe9fbcd"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-attestation-key.json",
+      "sha256": "sha256:b698fa90e4b5a677cbc24e35cd6df6b88eb70fa56d9e5282101d169ae7d4e167"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-attestation-missing-status.json",
+      "sha256": "sha256:a4795fd5fdca54f11dc14045ca5080009861b72fb501e35188da1a70ea18d428"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-attestation-unknown-status.json",
+      "sha256": "sha256:bae4b063a73e75eb50bbd1ee40ce2b7fc567e022f791cbd364ce499c550a2337"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-bad-commit.json",
+      "sha256": "sha256:6232fa03b2d9acad28267305b3090be5b83c9b4c557a7269ade882d6685f9d83"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-declared-tag-empty.json",
+      "sha256": "sha256:1e2b49af312149703652b6c94e5dbfb3a40f87a5bef52416c157a72349521e6f"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-declared-tag-invalid-refname.json",
+      "sha256": "sha256:97389264d7b8382c837784523394f1c13ac93ee320b703816c748acf9021ecfe"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-legacy-receipt.json",
+      "sha256": "sha256:b5324e41cd741a7c61628c5eca4c248ecb5f6cc4915f559fca4d32773291e500"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-artifact_path.json",
+      "sha256": "sha256:f27b6ffda972ceee1c2dbce81e6071cacb5b8553357b09a3cf873a99e66a646e"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-artifact_sha256.json",
+      "sha256": "sha256:f0cc3b7fec33698de477b91328894d73afc74d9f851f5c87ffd23aa7f9bf1385"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-build_source.json",
+      "sha256": "sha256:a910dd070a5954984dbd4b44c0ffd56e6f5b4307937946f6e4be8987625a6713"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-cache_key.json",
+      "sha256": "sha256:d8cf9f3ecd5f8e13641779371a4ea9c06a2f827ab954797c351f95884ec58b84"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-commit.json",
+      "sha256": "sha256:b435021f54bb1488bc97e62f0cd538b60fc18243e3d32be3c03ad31b0a79728d"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-declared_identity.json",
+      "sha256": "sha256:7e667a8a1fd67e6d489237434455ccf8fe8955e44e51d17c65a1e78d5026bc28"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-declared_locked_commit.json",
+      "sha256": "sha256:061e454ff257eda7e4b445465d014182fb74f51fa5ccf0a8d867e3cfc0a8321f"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-descriptor_target.json",
+      "sha256": "sha256:5a044fbc98d93659de5c0a75e13492f4b66b89fcf19bd732080554749e6b56ce"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-driver.json",
+      "sha256": "sha256:3250ee7a0939cc630345f087c07712a295c345446b576ae0f64967290d9096b7"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-effective_identity.json",
+      "sha256": "sha256:05530ae838c84694af657cb698945549ffe0e5cc3c471b96c816c7a3a7a58fe5"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-execution_policy.json",
+      "sha256": "sha256:60637e44f99918e6e02a5fd762cc65773036b52c9c4a1deeabf8680648f6f23d"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-object_format.json",
+      "sha256": "sha256:b773aa1f9c01b27b5c7487ba63da77d86633bbc8fe068ffb9e024d3d65d73545"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-receipt_schema_version.json",
+      "sha256": "sha256:9edc7e0d90d960803419b7a9dd8cbfe9a27285bf5f6f2004db3866d639af5e85"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-receipt_sha256.json",
+      "sha256": "sha256:3f4fc91490e1d7f6266986a249b0b6bd545fc0ed848f64a0da95033326194e9e"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-repository.json",
+      "sha256": "sha256:7c0c91f1ead49a44c2ffc54f5bfab8762dca76c610b5c3949a7ab36c6a850dee"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-substituted.json",
+      "sha256": "sha256:0e40fc4015bf35cb14cca18f73c67c5a358e2311ccc7435d2ce6393d348fd52a"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-missing-substitution.json",
+      "sha256": "sha256:66cf8f4742b2c739d83abe94e3ce6de6825e6cca62d8f218a2c45dc54f81f5a4"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-external-unexpected-substitution.json",
+      "sha256": "sha256:3cf7fc285604ccf53c2dfeb7bd6f189d3b7051348aa9129b44b890c2f193dccd"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-fake-commit.json",
+      "sha256": "sha256:c7f2e6cb7c32e47d5521a0b9e556969db69628ce4bd2b0622e01f1d5e6c94e98"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-local-attestation.json",
+      "sha256": "sha256:8292e14cae474e5de8189ae3bbcefcf6aadd91b89da87542ef161b220e13bc32"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-local-repository-null.json",
+      "sha256": "sha256:dd60b49d78202d3bdfd2ad186f6fa38141b33d5c93699ab85c82da7656819a91"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-local-substituted-null.json",
+      "sha256": "sha256:0cabc196ec825bd4354b1657810d3a28838e0d6fc02324f088300a683b74d734"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-local-substituted.json",
+      "sha256": "sha256:63c03d92cad08c80072ea00ce85f41f294df85c0f171864729da7ec53884c6d4"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-local-substitution-null.json",
+      "sha256": "sha256:3516ae179ec8644ce9644e407a3bb7c843c026eabf50ef9798e06e5aa138f8fa"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-substitution-boolean.json",
+      "sha256": "sha256:990b509bdcb2e1eb252733572a5f0c2f2fe256e7b7c927bbe55be197c521a99d"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-substitution-empty.json",
+      "sha256": "sha256:bb8ded2f0df4d42b3ac294c7f1f19ee37189b8147d7035e7a602343c72dd091b"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-unknown-top-level.json",
+      "sha256": "sha256:dcf0ce677bff6a961d14d97a4263b3fceb3a13faed5840b654f41a2390d814d5"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/valid-attested-configured.json",
+      "sha256": "sha256:e9f1e80949b28e91bf1af54183098d375d4fac53533ec68e046ae0ac604162d2"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/valid-attested-network.json",
+      "sha256": "sha256:3c45d63d8e46905792a5fbf7a94c14150ec03bcd9e9117f448b439c3eb1b699d"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/valid-deprecated-network.json",
+      "sha256": "sha256:2538532c24cc6ccecbf4c7393ede9c6f9a240657e153be6071f754857c132261"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/valid-external-substitution.json",
+      "sha256": "sha256:b0f0d70dc335f46384ad3a03dd28e122ea6bbe47960cd8045877997591f33d5a"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/valid-legacy-substitution.json",
+      "sha256": "sha256:d3279b7fb166f177daa580359e77202187c978c5f278959cb6622a20cad90df9"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/valid-local-mixed-builds.json",
+      "sha256": "sha256:984d95744e492c965a1245d84aa976f2ae14434045a4dbff9b779ce86de89630"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/valid-no-builds.json",
+      "sha256": "sha256:5c5002d0457c9eddf162113008875261423f09c054ded9df82c2c1282765f161"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/valid.json",
+      "sha256": "sha256:0d26f65031caf466217d192303c0196982aeede9faaf4440cff699cc05d9333a"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/local-snapshot-v1/invalid-algorithm.json",
+      "sha256": "sha256:4e927ab70268d9fc0a4db30529f6339814a8d411df1cb2fb41c8b65a6ff6b549"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/local-snapshot-v1/invalid-unknown-top-level.json",
+      "sha256": "sha256:d4a5921a44821f739f9e0ffc950614683355eac706fe4b541c89ee19f70442e2"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/local-snapshot-v1/valid.json",
+      "sha256": "sha256:ab530341bc5d50c4069981603ad2a5cc975abda957a9c30eece2c64f6e4821fa"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-lock-v1/invalid-commit-format.json",
+      "sha256": "sha256:54d2e4ebca07335f088f757433782287ca463d4e1e45b41bf0df15da6ba881d8"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-lock-v1/invalid-configured-escape.json",
+      "sha256": "sha256:5f0af4a654afc5979a3924fa45f341542de654ea4db7dd088ea43103df89379c"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-lock-v1/invalid-fake-commit.json",
+      "sha256": "sha256:c037ccdd11cf84aa2492aed07be8d4dc725e445bd34be34ae9ea760037810085"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-lock-v1/invalid-unknown-top-level.json",
+      "sha256": "sha256:79730aa0bb621a2c05f54625bfb5fcd0994ce80f7700048d994d838e2f179ad6"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-lock-v1/valid-configured-git.json",
+      "sha256": "sha256:fe69fa386641d0f70eda164f87be0e04be77273d0074375703d0a1411399723d"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-lock-v1/valid-git.json",
+      "sha256": "sha256:d5c5d87db858bb5ccdfacff88392b6dd08d0bd63945f80c639aaae19a8fcc596"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-lock-v1/valid.json",
+      "sha256": "sha256:2807faa0a7c7ca6d6a7bcd46342e5920e744ac5756329bba1c8e0dbecb8330e1"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-directory-0.json",
+      "sha256": "sha256:c734a90c50619b2b13b389030cabd7d0d5d259430a0f14d4b1f3ab50121a7246"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-directory-1.json",
+      "sha256": "sha256:a928f977644c19dd2c6f7f7223bd370d2d6df65964182731c9e00c3d5483bf7f"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-directory-10.json",
+      "sha256": "sha256:c5e89127383dc4af6ca8040556452c4f8f5ee31189da63764c58b29682596577"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-directory-11.json",
+      "sha256": "sha256:9cdcc14555513a4e1511c06b62482cc684fbfdf16a8a924ee28b673b3de46dd6"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-directory-12.json",
+      "sha256": "sha256:f8ecfe293e4c233e569fb64fed36078e5402faccc8aea3e33e556f84b7d42333"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-directory-13.json",
+      "sha256": "sha256:cf8465b94f9a4f69053faac77ef2d68eef424ce3e9a60a39da3a049e76a30697"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-directory-2.json",
+      "sha256": "sha256:4e9c79de7b17e53a62fd74528095743fcc536bef967730c1e9a868d7f217e9b2"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-directory-3.json",
+      "sha256": "sha256:1f566db688c3000ca9119e67c17707631341ca562928062cb5d51e1bafe30f85"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-directory-4.json",
+      "sha256": "sha256:d8d177d5ef26b3e5aa8df01af7087462d774917b14a83d122bc9ab10c1942762"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-directory-5.json",
+      "sha256": "sha256:7e4922bd837c4e0bedf46e3f4f7a9d11ab151b59cf3598b96255dbd41328412c"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-directory-6.json",
+      "sha256": "sha256:01901d2e5329a8d661aafad2106f2737a8c74920fa7aa6a4b69c0a1264c66bce"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-directory-7.json",
+      "sha256": "sha256:b932d5592dd46c0d9738bcb2211f74508a3b88b83aef59902027a6e7f578f99b"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-directory-8.json",
+      "sha256": "sha256:1e9b658d8233c89674f4ba6021fbcdd92161020bced8379007aa64f1b9c5b7fb"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-directory-9.json",
+      "sha256": "sha256:1591df0dd03d5d900f90817aa7e5b7867b18da377aef381d3385518e62d4afa1"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-duplicate.json",
+      "sha256": "sha256:9bf1dd34ea279f7a5e7b02363fa88354161012119d464dceebec0c0984751dd0"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-empty.json",
+      "sha256": "sha256:9ca8630bf91460f70a6a070d426e58a55481e633756356e41a091670e3fe357e"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-mixed-collection.json",
+      "sha256": "sha256:e3052cd31e0a09fa85d3f40e846b058162f6cfb8256b0f2131c98a1664dc54bd"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-mixed-git.json",
+      "sha256": "sha256:664daa1da82237c667140cfd61582a3427255d40fec2bff406070d0f85dba086"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-mixed-ref.json",
+      "sha256": "sha256:d3fbd6d23833bf489a67f64b620d4d720ec9c1a1d4e1290d7eaa38941bd11498"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-mixed-source.json",
+      "sha256": "sha256:85d404db77256b547a799f9642911e3a3bd77ba7d7dde35d5ae5c14e110212c1"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-partial.json",
+      "sha256": "sha256:dcf8ed12f8339611af7bf93d1e5fef3928d98a066f9179d03467abbc8464bc90"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-path.json",
+      "sha256": "sha256:b65545a59b94c94e76f2ad464b001f66ba6543bef2777dd3998c82e5e2b31dc6"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-recursive.json",
+      "sha256": "sha256:7894bf46e8c121e09b07009ded27ccb9d4f4b0abfbbe6dd171f3555b51e74486"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-source-0.json",
+      "sha256": "sha256:d174a4e749e2e8831a66186b3b3a2b7df0e08289ebb430897cb10dbdd1e7d471"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-source-1.json",
+      "sha256": "sha256:59892d40eb8584a4ab5c8d18998c32dbfe6ecceb49237f5e4503db39228fe094"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-source-2.json",
+      "sha256": "sha256:f0b5cd5ab20ed76f976d174a7fda78c33135f377bd25448916e62bb5ea43d7f6"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-source-3.json",
+      "sha256": "sha256:484023e4262e62d75e4fe609bcb0b4cf4af1640134ff50212fcaee9f805c233b"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-source-4.json",
+      "sha256": "sha256:fb285c34eb9cabddae4a480589e4d581b31c5470fa5c772c55db33ffa1280098"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-source-5.json",
+      "sha256": "sha256:47bdc9ebd29a7bc5331f69ec73992fb57609b145278aeeaf0e23181924793e45"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-source-6.json",
+      "sha256": "sha256:3d334eca8ab07e47ddb41754b54090177d7dbcae91e27e2d9e378ac29f9d7787"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-source-7.json",
+      "sha256": "sha256:17d26094e124aea32875d59e7b49b49775b722ecaddce99a16a14c2e56148835"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-source-8.json",
+      "sha256": "sha256:8993f2bd092ee9365088fd44da065401c63721ef2486cdf2687e351b2a12e2d4"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-source-9.json",
+      "sha256": "sha256:093c43252f0778795856620df46d0ade2117a9e6845422b099f054099ccb306a"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-unknown.json",
+      "sha256": "sha256:3c97eae28fc38ab958d91e65f4afc83ae5839ed75f1259f9a56a221e28d6830d"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-wildcard-exclude.json",
+      "sha256": "sha256:147d03c915994071e895b43c3b02a173e35071050c1ef87709fb4fcc07f3644d"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/valid-absolute.json",
+      "sha256": "sha256:e2ebdbcafd213362cab2f2e8b5eb7bba0abb7e70d5f461c898e5f3daaca815c7"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/valid-https.json",
+      "sha256": "sha256:78de47cab44545a585933435528aa7da01f269dda572f650162af17868358723"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/valid-legacy-only.json",
+      "sha256": "sha256:ee5d21856c9825d17df185fdd565e4eeef9e14439842dc4fece0f3461d4daa7b"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/valid-mixed.json",
+      "sha256": "sha256:15194d5ebadc4b1602df08f7e026404d34f0ef04a7c02fbfc5851bca0faa1c84"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/valid-relative.json",
+      "sha256": "sha256:a3bb55be1b152ce5e41062a42ffbf7328b40099cd8ebc9454d234ff3cee3801b"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/valid-ssh.json",
+      "sha256": "sha256:b27bbb269e404c53d3946062a2e69d166e5a764d6aee576574aa0a2601189776"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-audit-v1/invalid-decision.json",
+      "sha256": "sha256:0d0d5bb25e4084187a500d7d487d8664d616eaa84fabf1936a922d4a963af75e"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-audit-v1/invalid-no-evidence.json",
+      "sha256": "sha256:86da032b288461e5cd22dcdf0e8b57e27294817d3f47e2a401f4010c608841d4"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-audit-v1/invalid-unknown-top-level.json",
+      "sha256": "sha256:35caed1cdd9927d5c369c167abf95be5c900c17f152020ac4823d7ea503dd90f"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-audit-v1/valid.json",
+      "sha256": "sha256:4877ffd7c5a34b6e601d44fff2b79dd0d89127603ddd9158d0a9c83ddc03748a"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v1/invalid-fallback.json",
+      "sha256": "sha256:085076969730dc5d7e5c00056e290f8da078bcc40ffa76af2667373288222cba"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v1/invalid-helper.json",
+      "sha256": "sha256:c5aaf8699194f3cddc0a11e56c872ce3ce79e97193e34940a9e206ea2e463c8d"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v1/invalid-too-many.json",
+      "sha256": "sha256:00d13f7c6479d9f4dc30a99ecd2cabbbd482565fef68c29b5708d086327b5fae"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v1/invalid-unknown-top-level.json",
+      "sha256": "sha256:08891f094b92e8ab28f8a34c4ad1204f85f7f544b5a8208665a8ec9fbb5033b7"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v1/valid.json",
+      "sha256": "sha256:1234c2333e64935e6a962a99118994418cf9cad6f6458e676de45dc03a6dd10d"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v2/invalid-alias-missing-auth.json",
+      "sha256": "sha256:c84e10c76e6342d74049312138795f770c7f9f1539d96fde63b95618295e9000"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v2/invalid-alias-name.json",
+      "sha256": "sha256:f2d487136d9dcc869060ae9039dc2a3ac3a8b6d959a1fb8a55c077c328e862f1"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v2/invalid-alias-port-string.json",
+      "sha256": "sha256:5909d3c855a7942a3ee2362383124cff5ab98f6a6b3a9030005eac5374da95b5"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v2/invalid-endpoint-extra.json",
+      "sha256": "sha256:6a55b50bf352e05a95310b05ce90c79b2b4943eddfebcb199cee9aa308c9fc0d"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v2/invalid-mirror-of-pattern.json",
+      "sha256": "sha256:f8094e4706279933ce5d3f031c24ed5efe608a7f43c3b048b723bf1692c73d95"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v2/invalid-port-leading-zero.json",
+      "sha256": "sha256:4131c4082a5fc04c332ba0e19dc8535f82e6d6e2288940b4c053b18ace612db2"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v2/invalid-port-range-ssh.json",
+      "sha256": "sha256:f7d25da8f8a7d891d50332ce7ed2f5535ec403339c6dcfb5a1c160e74d199451"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v2/invalid-port-range.json",
+      "sha256": "sha256:5a67c6cab7ddfb248f59e0050ab5aa69189b6c8f76d7cb89f3953bf22482a2d7"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v2/invalid-unknown-top-level.json",
+      "sha256": "sha256:b4e7b83fde158d83bad2746cf2fd7fc86161af4a310f98c0c30a21bd25688b2a"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v2/valid-alias.json",
+      "sha256": "sha256:9f23c38e4b5009c6d3745659c140e39bb076af53fb73360eeffd9b6d13db6d53"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v2/valid-mirror.json",
+      "sha256": "sha256:4a1838b11bd92a2d329873dfeae48ed651ebb2cdd73bc9a63f7d0046063cf678"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v2/valid-port.json",
+      "sha256": "sha256:10c39319e2e72fa6fef7ebece2941052fee1c817bb046d174c94609949423cbd"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v2/valid-v1-shape.json",
+      "sha256": "sha256:12f7ba49d3d0447f990ed7699e7f874dd8abec04b04b0b9fd6e4b7910b0cf0fa"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/semantic-cases.json",
+      "sha256": "sha256:12ae1318a25a96a21333bccb65b07fcd70b8bb1bf165bbd4b006f092806488c8"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/snapshot-cases.json",
+      "sha256": "sha256:1922256efe21f934b667ec913f34a2af3b16004ecb00c63ee8712eacaf347999"
+    },
+    {
+      "path": "docs/skillfile-sources.md",
+      "sha256": "sha256:a8e32a7a657795baec989baa12f61aae7676065d550a30e4066e0a884aa7d9f6"
+    },
+    {
+      "path": "protocol/repository-transport.md",
+      "sha256": "sha256:d7ca91bf07ca9c1ccd40914ffbf1e8c42e00abb512d2be2a76d495565a04d54e"
+    },
+    {
+      "path": "protocol/skillfile-sources.md",
+      "sha256": "sha256:f31eb9178edc877d8ec8c3456dbd77fb999bd0af77fb0108a209d0e805d21483"
+    },
+    {
+      "path": "schemas/skillfile-sources-v1/README.md",
+      "sha256": "sha256:33f1192658d3f0e93a414de8c5c0efff0e66920a5cfc24bff4a5a3b20af4a601"
+    },
+    {
+      "path": "schemas/skillfile-sources-v1/build-receipt-v3.schema.json",
+      "sha256": "sha256:92821ea9901ea1cd8d7f2c448fbfa5b71d70ee408c717ef34d5f9ab2e8d3dfb3"
+    },
+    {
+      "path": "schemas/skillfile-sources-v1/install-marker-v5.schema.json",
+      "sha256": "sha256:8510cf629b510bc7216cd9e88055d3d253511c1339e823e51b1e6edb60e31fd2"
+    },
+    {
+      "path": "schemas/skillfile-sources-v1/local-snapshot-v1.schema.json",
+      "sha256": "sha256:2ab2e2783ad86bcc7891166b6d492ac93f73d3ad36513ae86a62d4db2e79cff4"
+    },
+    {
+      "path": "schemas/skillfile-sources-v1/skillfile-lock-v1.schema.json",
+      "sha256": "sha256:c730f00a82ff9360c68217ca0db04907372066f60f26375827bea8125faa9251"
+    },
+    {
+      "path": "schemas/skillfile-sources-v1/skillfile-v2.schema.json",
+      "sha256": "sha256:75b0b444edec99f87506689b91c5a03295b6dd402a2e09dd12b26746ab92c8fd"
+    },
+    {
+      "path": "schemas/skillfile-sources-v1/source-audit-v1.schema.json",
+      "sha256": "sha256:fef6d707fd47ee7ffea61a312006452842a3be1990fd739f35a6784bb2fe02fb"
+    },
+    {
+      "path": "schemas/skillfile-sources-v1/source-policy-v1.schema.json",
+      "sha256": "sha256:1381dcd65a4d9039c4dc8a3f4345c988a50c5741c9e30846a4df83248b6d2c62"
+    },
+    {
+      "path": "schemas/skillfile-sources-v1/source-policy-v2.schema.json",
+      "sha256": "sha256:7f61a8ce7ebd83e54d73a2897fe468444d47546870a1ab1d549b7947faf7ebec"
+    },
+    {
+      "path": "schemas/skillfile-sources-v1/source-types-v1.schema.json",
+      "sha256": "sha256:2facd5672aaa7eaaa428e700080d50d7900237ed980b10b47d5602c212f87d49"
+    }
+  ],
+  "suite": "skillfile-sources-v1"
+}

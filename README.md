@@ -1,8 +1,8 @@
 # Curator Protocol Specification
 
-**Version:** 1.0.0-rc.9
+**Version:** 1.0.0-rc.13
 
-**Date:** 2026-08-23
+**Date:** 2026-09-26
 
 **Status:** Draft release candidate
 
@@ -80,8 +80,9 @@ and vectors remain in their own namespace; they are not merged into
   in the conformance README linked above. Store local logs in `.temp/`.
 - Go: `go test ./tools/...` tests specification tooling;
   `go run ./tools/generate-vectors -root .` regenerates the released corpus
-  under `conformance/v1/` and its release metadata. Do not use regeneration
-  to fold accepted source-extension vectors into the frozen `conformance/v1` corpus.
+  under `conformance/v1/`, its release metadata, and the independent
+  `conformance/skillfile-sources-v1/manifest.json` pin. It does not fold the
+  accepted source-extension vectors into the core corpus.
 - Make: `make validate` runs the existing Python/Go checks;
   `make regenerate-check` checks generator reproducibility against Git.
 
@@ -108,16 +109,19 @@ own result stream and against this suite's published manifest.
 
 ## Release status
 
-`1.0.0-rc.9` is a draft candidate. Portable remains the default CLI-only mode.
+`1.0.0-rc.13` is a draft candidate. Portable remains the default CLI-only mode.
 Verified mode is explicit, requires the platform-neutral
 `host-execution-provider-v1` contract, and fails before execution rather than
 silently downgrading. Provider binaries are separately installed trusted host
 components and are never skill-vendored artifacts. This candidate specifies
 the common contract for macOS, Linux, and Windows but ships no provider and
-emits no verified platform claim. Exact candidate-suite identity is recorded in
-[`release/1.0.0-rc.9.json`](release/1.0.0-rc.9.json); rc.8 and earlier release
-metadata remain byte-frozen historical evidence. Review evidence is published
-under [`reviews/`](reviews/). See
+emits no verified platform claim. Exact core-suite and accepted
+skillfile-sources-v1 identities are recorded in
+[`release/1.0.0-rc.13.json`](release/1.0.0-rc.13.json). The source suite is
+separately pinnable and remains consumable with core v1.0.0-rc.10; it does not
+add a manifest schema v9 `directory` field to the core suite. Rc.9 and earlier
+release metadata remain byte-frozen historical evidence. Review evidence is
+published under [`reviews/`](reviews/). See
 [COMPATIBILITY.md](COMPATIBILITY.md),
 [SECURITY.md](SECURITY.md), and [GOVERNANCE.md](GOVERNANCE.md).
 

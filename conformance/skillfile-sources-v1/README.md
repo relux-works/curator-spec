@@ -1,7 +1,10 @@
 # Skillfile source and repository transport conformance
 
 This dedicated corpus specifies the accepted source and transport revisions
-separately from the frozen `conformance/v1` suite. [The source contract](../../protocol/skillfile-sources.md)
+separately from the core `conformance/v1` suite. The generated
+[`manifest.json`](manifest.json) pins this corpus, its schemas, and protocol
+documents independently; release metadata records that pin and its rc.10 core
+compatibility baseline. [The source contract](../../protocol/skillfile-sources.md)
 and [transport protocol](../../protocol/repository-transport.md) define its
 required outcomes. `index.json` lists structural positives and negatives;
 `snapshot-cases.json` contains concrete byte inventories and expected hashes;

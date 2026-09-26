@@ -4546,27 +4546,27 @@
     },
     {
       "path": "vectors/conformance-claim-v3-qualification.json",
-      "sha256": "sha256:aefa6ee21c70cb46e5552f3fd608849d0f69b0ea034428f81eacd00d9d1fffe1"
+      "sha256": "sha256:a601d4b561332b98ffbcc40c295bc7925f7cff1bd50bc892b6b31d6411075826"
     },
     {
       "path": "vectors/context-detectors.json",
-      "sha256": "sha256:c2121ee654643a4f2896c15faf9eb46c770cf1e649a12160eb4ef68b643074c0"
+      "sha256": "sha256:e6cd7b1ef381afdabb533ad4530fd531931280c1ccda544a6f1f39d4b0de4d1f"
     },
     {
       "path": "vectors/context-versions.json",
-      "sha256": "sha256:4eac87963ac86c6e56d418a9e33cf0375cf7670619f560d97763e51fbb05c6b6"
+      "sha256": "sha256:bfbfb84be9a56d8af38aff70f089d5b11074f38e22d3b1861051007727330fb0"
     },
     {
       "path": "vectors/environments-codex-seed.json",
-      "sha256": "sha256:d7a6e24f783b72eecd5bed3e13db5ab7a0a286bca10289b8034a73d3f36b750f"
+      "sha256": "sha256:e8fefe0f7eb8fe5692d3a5858367fbe3254f79c7acd4144635f726a35d081c83"
     },
     {
       "path": "vectors/environments-dotfile-managers.json",
-      "sha256": "sha256:9c883a3dbc8f3210450adf9f9c23439c1289fa7aedefbe8e89d9cd3a6453edc4"
+      "sha256": "sha256:2a1501ea4af0f34955b3df8588a91c39acc4ee0649be3e044c74d61460f64d2e"
     },
     {
       "path": "vectors/environments-env-passthrough.json",
-      "sha256": "sha256:1953748e548d4f335f9defa4baa1524998d29dab4bf36647fb8c8bcbdcabf6db"
+      "sha256": "sha256:14af7a2647807280522ffc6d51d6607418c32408861932a59dc0f42d36381155"
     },
     {
       "path": "vectors/environments-path-kind-admission.json",
@@ -4574,11 +4574,11 @@
     },
     {
       "path": "vectors/environments-read-failure.json",
-      "sha256": "sha256:b3efcf7d3f2b1521fc4c889f4c2280367079a25a36d98661b0121eb78bc81977"
+      "sha256": "sha256:d46cf7f5ca619bf0f9b6993d77171c2f95912f6f2b43bcc3c9b1043371a8a87d"
     },
     {
       "path": "vectors/environments-source-signers.json",
-      "sha256": "sha256:fb59e44c33183fc5cf7c698c65038f49a8f1e2d2404137c80cb6d252d46f8d9c"
+      "sha256": "sha256:672c5e1a3dd28e493dbdaf7e120df422d7449c6df923e2b39931d0e517a54e10"
     },
     {
       "path": "vectors/environments-store-boundary.json",
@@ -4586,15 +4586,15 @@
     },
     {
       "path": "vectors/environments-write-nofollow.json",
-      "sha256": "sha256:c28e72bc698d852864ee98237c6f8962e7cfa75daecbc60638fd354bfaa9044c"
+      "sha256": "sha256:f29c25c0f25f763a37718eff0f4b1d8b065d41ec1eb290a03961f3bb854e89b0"
     },
     {
       "path": "vectors/environments.json",
-      "sha256": "sha256:08b3ad8fcd89c35389328c142d8fb8329c86b2d0ef73d444ccf47d62736e2f51"
+      "sha256": "sha256:569423d3f19454fa821be512d7d2252520edf641749855cbcb5b7439fec98115"
     },
     {
       "path": "vectors/external-repository-acquisition.json",
-      "sha256": "sha256:df29609d2b29dd07d4b3ebedda229fe554142bf3e4457375b57c5aa44d3b403a"
+      "sha256": "sha256:e8fb4420bb1d17322a50a4a87fa2dfc4ac87991afb59cab784549fd0bd35e0f1"
     },
     {
       "path": "vectors/external-repository-lifecycle.json",
@@ -4602,7 +4602,7 @@
     },
     {
       "path": "vectors/go-host-execution-policy.json",
-      "sha256": "sha256:a4995233b78042f4bc290510efcbb7d350d23247e25f1213743b2d57a97e7efd"
+      "sha256": "sha256:7ad40f1158fd086e5f255628f92059971fcbbfe15f15b034c0c2cde81e97a718"
     },
     {
       "path": "vectors/identifiers.json",
@@ -4626,7 +4626,7 @@
     },
     {
       "path": "vectors/module-roots.json",
-      "sha256": "sha256:3c8a3ba5986723e6179205e2be779ceb766b0b05e011f4f62121be5defa22d1b"
+      "sha256": "sha256:b435878ac0c181fa655f0f3f23af400bbff969a6232e686b7ceece59df3c54b3"
     },
     {
       "path": "vectors/portable-paths.json",
@@ -4650,15 +4650,15 @@
     },
     {
       "path": "vectors/script-host-execution-policy.json",
-      "sha256": "sha256:7b6f5b406fde44e55ef666dd8dd465dfad138c213f0e79f6fd6968d0628b7f9f"
+      "sha256": "sha256:ae9373879fbdc780cabaadb8ccd2a8ad2b1802f2c8caa56861163547fd4d9d00"
     },
     {
       "path": "vectors/security-posture.json",
-      "sha256": "sha256:708a9da9dde0ba05300ef3e5ad3087e2ee81add0338b7a5e9c59e085759cbcbd"
+      "sha256": "sha256:1195bd85d46e877f1388bc8d7e07069a59bbc2ea9021bec22661f68f8460e0fa"
     },
     {
       "path": "vectors/shell-hook-trust.json",
-      "sha256": "sha256:ce0d3c593aa52973c21834222e2d85ad101ad5f070e1978e1e015badd0b41fcd"
+      "sha256": "sha256:5aae6282a7d20705cced934e811da9135dfa7e222c7411b212b1f73288c0238c"
     },
     {
       "path": "vectors/skill-manifest-resolution.json",
@@ -4666,7 +4666,7 @@
     },
     {
       "path": "vectors/snapshot-acquisition.json",
-      "sha256": "sha256:98b2533f96e378b525c22c9c2f8be59da3c8a0de386670e99496c911d64e03ec"
+      "sha256": "sha256:3c8b36fd7b7b188c216f67e4761f5635d5e32a6b167f66563d01f9acdcab7aab"
     },
     {
       "path": "vectors/source-identities.json",
@@ -4674,10 +4674,10 @@
     },
     {
       "path": "vectors/umbrella-provider-resolution.json",
-      "sha256": "sha256:ece3c85bf95f0c20ead30cf07c6acd653773802a3e0586f60791368ab2ae4e37"
+      "sha256": "sha256:5758af70c9231261892ba102fe018ca1d9efad636e4443db7b0e61a4d768b332"
     }
   ],
   "generated_at": "2026-07-13T00:00:00Z",
   "generator": "tools/generate-vectors",
-  "protocol_version": "1.0.0-rc.9"
+  "protocol_version": "1.0.0-rc.13"
 }

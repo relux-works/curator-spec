@@ -42,7 +42,7 @@
       "name": "byte-exact-snapshot"
     }
   ],
-  "protocol_version": "1.0.0-rc.9",
+  "protocol_version": "1.0.0-rc.13",
   "rule": "environments.md section 1.2: a snapshot produced from a commit contains, for every regular-file entry of the commit's tree, exactly the committed blob bytes; working-tree conversion and attribute-driven archive processing never alter, add, or omit an entry",
   "schema_version": 1
 }

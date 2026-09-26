@@ -23,13 +23,14 @@ import (
 )
 
 const (
-	protocolVersion                   = "1.0.0-rc.9"
+	protocolVersion                   = "1.0.0-rc.13"
+	conformanceClaimV5ProtocolVersion = "1.0.0-rc.9"
 	conformanceClaimV1ProtocolVersion = "1.0.0-rc.3"
 	conformanceClaimV2ProtocolVersion = "1.0.0-rc.4"
 	conformanceClaimV3ProtocolVersion = "1.0.0-rc.5"
 	conformanceClaimV4ProtocolVersion = "1.0.0-rc.8"
 	conformanceClaimV2CreatedAt       = "2026-07-20T00:00:00Z"
-	rc9CreatedAt                      = "2026-08-23T00:00:00Z"
+	rc13CreatedAt                     = "2026-09-26T00:00:00Z"
 	fixedCommit                       = "0123456789abcdef0123456789abcdef01234567"
 	fixedTime                         = "2026-07-13T00:00:00Z"
 	genesis                           = "0000000000000000000000000000000000000000000000000000000000000000"
@@ -41,6 +42,9 @@ const (
 	rc7SourceCommit                   = "99f70947d6f2447366d6c996127b73eca37a9159"
 	rc8ReleaseMetadataSHA256          = "sha256:293f101d10665061aa049efa72141f9e3c5d608bbde300e882f6e3e095e31ede"
 	rc8SourceCommit                   = "f8c405aa3ad0a39d260c2ed93684e55c5a346359"
+	rc9ReleaseMetadataSHA256          = "sha256:a0c58ff5e44bc93c013e4c7526573c2fc7e2467a67455b6898647db6a0879f82"
+	rc9SourceCommit                   = "0ed5c691e9208eea52f21db2fc05e226ce3516fd"
+	rc10CoreManifestSHA256            = "sha256:803918bf8672f76cf990985e51db213b826674cd5bb54fbf47731b8404b44403"
 
 	// portableExecutionPolicy is the only execution-policy identity that
 	// protocol 1.0 defines for go-v1 and go-repository-v1.
@@ -201,7 +205,8 @@ func main() {
 	writeSchemaCases(suite, marker, ledger, audited, snapshot, entries[0], bundle, pinned)
 	writeExternalRepositoryExpected(expected, marker)
 	writeManifest(suite)
-	writeRC9ReleaseMetadata(*root, suite)
+	skillfileSourcesManifestSHA256 := writeSkillfileSourcesManifest(*root)
+	writeRC13ReleaseMetadata(*root, suite, skillfileSourcesManifestSHA256)
 }
 
 // writeModuleRootVectors emits the filesystem and build-graph cases that JSON
@@ -2211,25 +2216,25 @@ func writeAssuranceVectors(dir string) {
 	})
 }
 
-func writeRC9ReleaseMetadata(root, suite string) {
+func writeRC13ReleaseMetadata(root, suite, skillfileSourcesManifestSHA256 string) {
 	manifest, err := os.ReadFile(filepath.Join(suite, "manifest.json"))
 	must(err)
 	digest := sha256.Sum256(manifest)
 	pin := "sha256:" + hex.EncodeToString(digest[:])
-	writeJSON(filepath.Join(root, "release", "1.0.0-rc.9.json"), map[string]any{
+	writeJSON(filepath.Join(root, "release", "1.0.0-rc.13.json"), map[string]any{
 		"protocol_version": protocolVersion,
-		"created_at":       rc9CreatedAt,
+		"created_at":       rc13CreatedAt,
 		"candidate_protocol_pin": map[string]any{
 			"suite_root":      "conformance/v1",
 			"manifest_sha256": pin,
 		},
-		"source_baseline_commit": rc8SourceCommit,
-		"legacy_release":         "1.0.0-rc.8",
+		"source_baseline_commit": rc9SourceCommit,
+		"legacy_release":         conformanceClaimV5ProtocolVersion,
 		"historical_release": map[string]any{
-			"protocol_version": "1.0.0-rc.8",
-			"metadata_path":    "release/1.0.0-rc.8.json",
-			"metadata_sha256":  rc8ReleaseMetadataSHA256,
-			"source_commit":    rc8SourceCommit,
+			"protocol_version": conformanceClaimV5ProtocolVersion,
+			"metadata_path":    "release/1.0.0-rc.9.json",
+			"metadata_sha256":  rc9ReleaseMetadataSHA256,
+			"source_commit":    rc9SourceCommit,
 			"immutable":        true,
 		},
 		"assurance": map[string]any{
@@ -2249,12 +2254,81 @@ func writeRC9ReleaseMetadata(root, suite string) {
 			"required_manifest_sha256":       pin,
 			"committed_release_pin_advanced": false,
 		},
+		"skillfile_sources_v1": map[string]any{
+			"manifest_path":   "conformance/skillfile-sources-v1/manifest.json",
+			"manifest_sha256": skillfileSourcesManifestSHA256,
+			"compatible_core": map[string]any{
+				"tag":             "v1.0.0-rc.10",
+				"manifest_sha256": rc10CoreManifestSHA256,
+			},
+		},
 		"claim_v5": map[string]any{
-			"claim_protocol_version": protocolVersion,
+			"claim_protocol_version": conformanceClaimV5ProtocolVersion,
 			"schema":                 "schemas/v1/conformance-claim-v5.schema.json",
 			"claims_emitted":         []any{},
 		},
 	})
+}
+
+// writeSkillfileSourcesManifest pins the accepted source-extension suite and
+// its schemas independently of the generated conformance/v1 core suite.
+func writeSkillfileSourcesManifest(root string) string {
+	const manifestPath = "conformance/skillfile-sources-v1/manifest.json"
+	inputs := []string{
+		"protocol/skillfile-sources.md",
+		"protocol/repository-transport.md",
+		"docs/skillfile-sources.md",
+		"schemas/skillfile-sources-v1",
+		"conformance/skillfile-sources-v1",
+	}
+	files := make([]string, 0)
+	for _, input := range inputs {
+		path := filepath.Join(root, filepath.FromSlash(input))
+		info, err := os.Stat(path)
+		must(err)
+		if !info.IsDir() {
+			payload, readErr := os.ReadFile(path)
+			must(readErr)
+			sum := sha256.Sum256(payload)
+			files = append(files, input+"\tsha256:"+hex.EncodeToString(sum[:]))
+			continue
+		}
+		must(filepath.WalkDir(path, func(path string, entry os.DirEntry, walkErr error) error {
+			if walkErr != nil {
+				return walkErr
+			}
+			if entry.IsDir() || !entry.Type().IsRegular() {
+				return nil
+			}
+			rel, relErr := filepath.Rel(root, path)
+			if relErr != nil {
+				return relErr
+			}
+			rel = filepath.ToSlash(rel)
+			if rel == manifestPath {
+				return nil
+			}
+			payload, readErr := os.ReadFile(path)
+			if readErr != nil {
+				return readErr
+			}
+			sum := sha256.Sum256(payload)
+			files = append(files, rel+"\tsha256:"+hex.EncodeToString(sum[:]))
+			return nil
+		}))
+	}
+	sort.Strings(files)
+	entries := make([]any, 0, len(files))
+	for _, line := range files {
+		parts := strings.SplitN(line, "\t", 2)
+		entries = append(entries, map[string]any{"path": parts[0], "sha256": parts[1]})
+	}
+	manifest := map[string]any{"suite": "skillfile-sources-v1", "files": entries}
+	writeJSON(filepath.Join(root, filepath.FromSlash(manifestPath)), manifest)
+	payload, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(manifestPath)))
+	must(err)
+	sum := sha256.Sum256(payload)
+	return "sha256:" + hex.EncodeToString(sum[:])
 }
 
 type treeFixtureEntry struct {
@@ -2629,10 +2703,10 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	cases["conformance-claim-v4.schema.json"] = schemaCase{claimV4, invalidClaimV4}
 	claimV5 := cloneMap(claimV4)
 	claimV5["schema_version"] = 5
-	claimV5["protocol_version"] = protocolVersion
+	claimV5["protocol_version"] = conformanceClaimV5ProtocolVersion
 	invalidClaimV5 := cloneMap(invalidClaimV4)
 	invalidClaimV5["schema_version"] = 5
-	invalidClaimV5["protocol_version"] = protocolVersion
+	invalidClaimV5["protocol_version"] = conformanceClaimV5ProtocolVersion
 	cases["conformance-claim-v5.schema.json"] = schemaCase{claimV5, invalidClaimV5}
 	agentContext := validAgentContextV1()
 	cases["agent-context-v1.schema.json"] = schemaCase{agentContext, without(agentContext, "name")}

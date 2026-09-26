@@ -590,7 +590,7 @@
       "unreadable_dirs": []
     }
   ],
-  "protocol_version": "1.0.0-rc.9",
+  "protocol_version": "1.0.0-rc.13",
   "revision_a_profile": "warning release: PATH selects, outside trust roots warns with subcommand_provider_outside_trust_roots",
   "revision_b_profile": "flip release: trust roots only, PATH probe diagnostic, refused with subcommand_provider_untrusted",
   "rule": "umbrella provider trust roots (section 11)",

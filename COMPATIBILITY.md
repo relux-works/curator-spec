@@ -178,12 +178,13 @@ Install marker schema 4 is written for skills installed from a schema-8
 manifest. Marker schemas 1 through 3 keep their exact bytes and their existing
 readers, and a manager reads back an older marker without rewriting it.
 
-Rc.9 supersedes rc.8 as the live suite manifest pin without changing one byte
-of rc.8. `release/1.0.0-rc.8.json` and the `v1.0.0-rc.8` tag stay exactly as
-published; `release/1.0.0-rc.9.json` records rc.8's metadata digest as its
-historical predecessor rather than replacing it. A consumer pinned to rc.8
-therefore keeps its qualification and advances by an explicit pin change, never
-implicitly.
+At release, rc.9 superseded rc.8 as the live suite manifest pin without
+changing one byte of rc.8. `release/1.0.0-rc.8.json` and the
+`v1.0.0-rc.8` tag stay exactly as published;
+`release/1.0.0-rc.9.json` records rc.8's metadata digest as its historical
+predecessor rather than replacing it. Rc.13 now owns the live suite pin. A
+consumer pinned to rc.8 therefore keeps its qualification and advances by an
+explicit pin change, never implicitly.
 
 ## Manager configuration schema 2
 
@@ -246,3 +247,25 @@ identity; their security semantics are preserved. Revision 2 admits non-default
 ports, declared mirrors and operator host aliases as machine-policy endpoint
 properties; reusable alias registries and user-configuration import remain
 unsupported. The source schemas and vectors stay separate from `conformance/v1`.
+
+## Rc.13 release boundary
+
+Rc.13 advances the generated core suite and its release metadata while keeping
+the accepted Skillfile source and repository transport revisions in their own
+`skillfile-sources-v1` suite. Its independent manifest covers the accepted
+protocol documents, schemas, and vectors; release metadata pins that manifest
+separately and records compatibility with the v1.0.0-rc.10 core manifest. The
+Python manager's scope remains partial: rc.10 core plus this source suite.
+
+The core suite does not add manifest schema v9 or a `directory` field to a
+skill manifest. The source extension's collection-directory selector remains
+in its separately versioned Skillfile schema. Rc.13 also includes the script
+host hard-link correction: only the specified Windows System32 executable
+case is exempt from the hard-link refusal; interpreter rules are unchanged.
+Implementation CI checks each manager's declared claim against its own suite
+root and observed consumer cases.
+
+Rc.9 and earlier release metadata remain byte-frozen. The rc.13 candidate
+metadata records rc.9 as the preceding protocol release, and the signed
+v1.0.0-rc.13 tag is created only on the release-prep merge commit after its
+required checks pass.

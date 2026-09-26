@@ -2857,6 +2857,6 @@
     }
   ],
   "part_rule": "every part ends with exactly one LF; the document is the parts joined with exactly one additional LF between adjacent parts",
-  "protocol_version": "1.0.0-rc.9",
+  "protocol_version": "1.0.0-rc.13",
   "schema_version": 1
 }

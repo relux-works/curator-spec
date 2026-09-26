@@ -173,7 +173,7 @@
       ]
     }
   ],
-  "protocol_version": "1.0.0-rc.9",
+  "protocol_version": "1.0.0-rc.13",
   "s4_profiles": [
     "s4-enforce",
     "s4-warn"

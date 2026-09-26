@@ -799,6 +799,6 @@
       "worker_started": true
     }
   ],
-  "protocol_version": "1.0.0-rc.9",
+  "protocol_version": "1.0.0-rc.13",
   "schema_version": 1
 }

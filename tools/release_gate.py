@@ -39,7 +39,8 @@ RETIRED_DESCRIPTOR_STEM = "curator" + "-build"
 # The schema-6 build-source digest algorithm namespace shares the retired stem
 # but is a different, byte-frozen identifier.
 BUILD_SOURCE_ALGORITHM_NAMESPACE = RETIRED_DESCRIPTOR_STEM + "-source"
-PROTOCOL_VERSION = "1.0.0-rc.9"
+PROTOCOL_VERSION = "1.0.0-rc.13"
+RC9_PROTOCOL_VERSION = "1.0.0-rc.9"
 RC8_PROTOCOL_VERSION = "1.0.0-rc.8"
 RC7_PROTOCOL_VERSION = "1.0.0-rc.7"
 RC6_PROTOCOL_VERSION = "1.0.0-rc.6"
@@ -60,12 +61,19 @@ RC8_RELEASE_METADATA_SHA256 = (
     "sha256:293f101d10665061aa049efa72141f9e3c5d608bbde300e882f6e3e095e31ede"
 )
 RC8_SOURCE_COMMIT = "f8c405aa3ad0a39d260c2ed93684e55c5a346359"
+RC9_RELEASE_METADATA_SHA256 = (
+    "sha256:a0c58ff5e44bc93c013e4c7526573c2fc7e2467a67455b6898647db6a0879f82"
+)
+RC9_SOURCE_COMMIT = "0ed5c691e9208eea52f21db2fc05e226ce3516fd"
+RC10_CORE_MANIFEST_SHA256 = (
+    "sha256:803918bf8672f76cf990985e51db213b826674cd5bb54fbf47731b8404b44403"
+)
 CLAIM_PROTOCOL_VERSIONS = {
     1: "1.0.0-rc.3",
     2: "1.0.0-rc.4",
     3: RC5_PROTOCOL_VERSION,
     4: RC8_PROTOCOL_VERSION,
-    5: PROTOCOL_VERSION,
+    5: RC9_PROTOCOL_VERSION,
 }
 CLAIM_HISTORY_FROZEN_SHA256 = {
     "schemas/v1/conformance-claim-v1.schema.json": "c9f49460618ccc8b1d7d2dfaf760fc6ad3a53a870a6685a685ddc148d3c87b3f",
@@ -518,22 +526,49 @@ def validate_protocol_artifacts(version: str) -> None:
 
     validate_assurance_release_surface()
 
-    release = load_json(ROOT / "release" / "1.0.0-rc.9.json")
+    rc9_metadata_path = ROOT / "release" / "1.0.0-rc.9.json"
+    if sha256_identity(rc9_metadata_path) != RC9_RELEASE_METADATA_SHA256:
+        raise ReleaseFailure("published rc.9 release metadata changed")
+    rc9 = load_json(rc9_metadata_path)
+    rc9_history = rc9.get("historical_release", {})
+    rc9_claim = rc9.get("claim_v5", {})
+    rc9_pin = rc9.get("candidate_protocol_pin", {})
+    rc9_downstream = rc9.get("downstream_consumption", {})
+    if (
+        rc9.get("protocol_version") != RC9_PROTOCOL_VERSION
+        or rc9.get("source_baseline_commit") != RC8_SOURCE_COMMIT
+        or rc9.get("legacy_release") != RC8_PROTOCOL_VERSION
+        or not isinstance(rc9_history, dict)
+        or rc9_history.get("protocol_version") != RC8_PROTOCOL_VERSION
+        or rc9_history.get("metadata_path") != "release/1.0.0-rc.8.json"
+        or rc9_history.get("metadata_sha256") != RC8_RELEASE_METADATA_SHA256
+        or rc9_history.get("source_commit") != RC8_SOURCE_COMMIT
+        or rc9_history.get("immutable") is not True
+        or not isinstance(rc9_claim, dict)
+        or rc9_claim.get("claim_protocol_version") != RC9_PROTOCOL_VERSION
+        or not isinstance(rc9_pin, dict)
+        or rc9_pin.get("manifest_sha256") != RC10_CORE_MANIFEST_SHA256
+        or not isinstance(rc9_downstream, dict)
+        or rc9_downstream.get("required_manifest_sha256") != RC10_CORE_MANIFEST_SHA256
+    ):
+        raise ReleaseFailure("rc.9 metadata does not preserve its published suite identity")
+
+    release = load_json(ROOT / "release" / f"{PROTOCOL_VERSION}.json")
     history = release.get("historical_release", {})
     claim = release.get("claim_v5", {})
     assurance = release.get("assurance", {})
     if (
         release.get("protocol_version") != PROTOCOL_VERSION
-        or release.get("source_baseline_commit") != RC8_SOURCE_COMMIT
-        or release.get("legacy_release") != RC8_PROTOCOL_VERSION
+        or release.get("source_baseline_commit") != RC9_SOURCE_COMMIT
+        or release.get("legacy_release") != RC9_PROTOCOL_VERSION
         or not isinstance(history, dict)
-        or history.get("protocol_version") != RC8_PROTOCOL_VERSION
-        or history.get("metadata_path") != "release/1.0.0-rc.8.json"
-        or history.get("metadata_sha256") != RC8_RELEASE_METADATA_SHA256
-        or history.get("source_commit") != RC8_SOURCE_COMMIT
+        or history.get("protocol_version") != RC9_PROTOCOL_VERSION
+        or history.get("metadata_path") != "release/1.0.0-rc.9.json"
+        or history.get("metadata_sha256") != RC9_RELEASE_METADATA_SHA256
+        or history.get("source_commit") != RC9_SOURCE_COMMIT
         or history.get("immutable") is not True
         or not isinstance(claim, dict)
-        or claim.get("claim_protocol_version") != PROTOCOL_VERSION
+        or claim.get("claim_protocol_version") != RC9_PROTOCOL_VERSION
         or claim.get("schema") != "schemas/v1/conformance-claim-v5.schema.json"
         or claim.get("claims_emitted") != []
         or not isinstance(assurance, dict)
@@ -544,8 +579,9 @@ def validate_protocol_artifacts(version: str) -> None:
         or assurance.get("skill_vendored_provider_allowed") is not False
     ):
         raise ReleaseFailure(
-            "rc.9 metadata rewrites rc.8 evidence or fabricates a verified claim"
+            "rc.13 metadata rewrites rc.9 evidence or fabricates a verified claim"
         )
+    validate_skillfile_sources_manifest(release)
 
     validate_manager_lifecycle_release_surface()
     validate_shared_fixture_marker_release_surface()
@@ -576,6 +612,69 @@ def validate_protocol_artifacts(version: str) -> None:
             raise ReleaseFailure(
                 f"decision 0007 is stale: missing {required_text!r}"
             )
+
+
+def validate_skillfile_sources_manifest(release: dict[str, Any]) -> None:
+    manifest_path = ROOT / "conformance" / "skillfile-sources-v1" / "manifest.json"
+    manifest = load_json(manifest_path)
+    if (
+        not isinstance(manifest, dict)
+        or set(manifest) != {"suite", "files"}
+        or manifest.get("suite") != "skillfile-sources-v1"
+    ):
+        raise ReleaseFailure("skillfile-sources-v1 manifest has the wrong identity")
+
+    expected_paths: set[str] = set()
+    roots = (
+        ROOT / "protocol" / "skillfile-sources.md",
+        ROOT / "protocol" / "repository-transport.md",
+        ROOT / "docs" / "skillfile-sources.md",
+        ROOT / "schemas" / "skillfile-sources-v1",
+        ROOT / "conformance" / "skillfile-sources-v1",
+    )
+    for path in roots:
+        if not path.exists():
+            raise ReleaseFailure(f"skillfile-sources-v1 suite input is missing: {path}")
+        candidates = path.rglob("*") if path.is_dir() else (path,)
+        for candidate in candidates:
+            if not candidate.is_file() or candidate.is_symlink() or candidate == manifest_path:
+                continue
+            expected_paths.add(candidate.relative_to(ROOT).as_posix())
+
+    entries = manifest.get("files")
+    if not isinstance(entries, list):
+        raise ReleaseFailure("skillfile-sources-v1 manifest files must be an array")
+    paths: list[str] = []
+    for entry in entries:
+        if not isinstance(entry, dict) or set(entry) != {"path", "sha256"}:
+            raise ReleaseFailure("skillfile-sources-v1 manifest entry is malformed")
+        path = entry["path"]
+        digest = entry["sha256"]
+        if not isinstance(path, str) or not isinstance(digest, str):
+            raise ReleaseFailure("skillfile-sources-v1 manifest entry is malformed")
+        if path not in expected_paths:
+            raise ReleaseFailure(f"skillfile-sources-v1 manifest lists an out-of-scope path: {path}")
+        paths.append(path)
+        target = ROOT / path
+        if not target.is_file() or sha256_identity(target) != digest:
+            raise ReleaseFailure(f"skillfile-sources-v1 manifest digest mismatch: {path}")
+    if paths != sorted(paths) or len(paths) != len(set(paths)) or set(paths) != expected_paths:
+        raise ReleaseFailure("skillfile-sources-v1 manifest inventory is incomplete or unsorted")
+
+    metadata_pin = release.get("skillfile_sources_v1")
+    expected_manifest_sha256 = sha256_identity(manifest_path)
+    if (
+        not isinstance(metadata_pin, dict)
+        or metadata_pin.get("manifest_path")
+        != "conformance/skillfile-sources-v1/manifest.json"
+        or metadata_pin.get("manifest_sha256") != expected_manifest_sha256
+        or metadata_pin.get("compatible_core")
+        != {
+            "tag": "v1.0.0-rc.10",
+            "manifest_sha256": RC10_CORE_MANIFEST_SHA256,
+        }
+    ):
+        raise ReleaseFailure("rc.13 metadata does not pin the accepted source suite separately")
 
 
 def validate_conformance_claim(path: Path, version: str) -> None:

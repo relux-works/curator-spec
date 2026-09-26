@@ -393,7 +393,7 @@
     }
   ],
   "placeholder_rule": "a match whose body, after the class's placeholder_prefix, is one repeated character or ends in EXAMPLE is a placeholder and is not reported",
-  "protocol_version": "1.0.0-rc.9",
+  "protocol_version": "1.0.0-rc.13",
   "schema_version": 1,
   "scope": [
     "context/**",

@@ -36,7 +36,7 @@
     ".agents/env.ps1"
   ],
   "finding": "S6",
-  "protocol_version": "1.0.0-rc.9",
+  "protocol_version": "1.0.0-rc.13",
   "rollout_profiles": [
     {
       "description": "Revision A warning release: sources unapproved and changed files but emits the diagnostic with a migration hint naming curator hook approve <path>; shipped first",

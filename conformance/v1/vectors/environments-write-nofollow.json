@@ -288,7 +288,7 @@
     "replaced",
     "refused"
   ],
-  "protocol_version": "1.0.0-rc.9",
+  "protocol_version": "1.0.0-rc.13",
   "rule": "protocol/environments.md section 8.3.1: a materialization, takeover, repair, or backup write replaces the directory entry (operation-private temp file plus rename) and MUST NOT follow a symlink at the target path or at any path component below the managed root that the manager did not create in this operation. link_points 'outside' means outside the managed root (hence outside the profile store, the section 9.5 foreign-manager stop); link_points 'store' means into the profile store.",
   "schema_version": 1,
   "target_kinds": [

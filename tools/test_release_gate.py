@@ -272,8 +272,8 @@ class StableReleaseGateTests(unittest.TestCase):
                 release_gate.validate_version(version)
 
 
-class ProtocolRC9ReleaseGateTests(unittest.TestCase):
-    VERSION = "1.0.0-rc.9"
+class ProtocolRC13ReleaseGateTests(unittest.TestCase):
+    VERSION = "1.0.0-rc.13"
 
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -310,8 +310,36 @@ class ProtocolRC9ReleaseGateTests(unittest.TestCase):
             self.fail(f"manifest does not list {relative}")
         self._write_json(manifest_path, manifest)
 
-    def test_accepts_complete_rc9_artifact_set(self) -> None:
+    def test_accepts_complete_rc13_artifact_set(self) -> None:
         release_gate.validate_protocol_artifacts(self.VERSION)
+
+    def test_rejects_changed_published_rc9_release_metadata(self) -> None:
+        path = self.root / "release" / "1.0.0-rc.9.json"
+        metadata = json.loads(path.read_text(encoding="utf-8"))
+        metadata["created_at"] = "2026-09-26T00:00:00Z"
+        self._write_json(path, metadata)
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "published rc.9 release metadata changed"
+        ):
+            release_gate.validate_protocol_artifacts(self.VERSION)
+
+    def test_rejects_changed_skillfile_sources_suite_member(self) -> None:
+        path = self.root / "protocol" / "skillfile-sources.md"
+        path.write_text(path.read_text(encoding="utf-8") + "\nDrift.\n", encoding="utf-8")
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "skillfile-sources-v1 manifest digest mismatch"
+        ):
+            release_gate.validate_protocol_artifacts(self.VERSION)
+
+    def test_rejects_skillfile_sources_release_pin_drift(self) -> None:
+        path = self.root / "release" / f"{self.VERSION}.json"
+        metadata = json.loads(path.read_text(encoding="utf-8"))
+        metadata["skillfile_sources_v1"]["manifest_sha256"] = "sha256:" + "0" * 64
+        self._write_json(path, metadata)
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure, "does not pin the accepted source suite separately"
+        ):
+            release_gate.validate_protocol_artifacts(self.VERSION)
 
     def test_release_gate_rejects_every_assurance_relational_mutation(self) -> None:
         path = self.root / "conformance" / "v1" / "vectors" / "assurance-modes.json"
@@ -443,14 +471,14 @@ class ProtocolRC9ReleaseGateTests(unittest.TestCase):
         ):
             release_gate.validate_protocol_artifacts(self.VERSION)
 
-    def test_rejects_rc9_history_rewriting_rc8_identity(self) -> None:
+    def test_rejects_rc13_history_rewriting_rc9_identity(self) -> None:
         path = self.root / "release" / f"{self.VERSION}.json"
         metadata = json.loads(path.read_text(encoding="utf-8"))
         metadata["historical_release"]["metadata_sha256"] = "sha256:" + "0" * 64
         self._write_json(path, metadata)
         with self.assertRaisesRegex(
             release_gate.ReleaseFailure,
-            "rewrites rc.8 evidence or fabricates a verified claim",
+            "rewrites rc.9 evidence or fabricates a verified claim",
         ):
             release_gate.validate_protocol_artifacts(self.VERSION)
 
@@ -463,7 +491,7 @@ class ProtocolRC9ReleaseGateTests(unittest.TestCase):
         ):
             release_gate.validate_conformance_claim(path, "1.0.0-rc.6")
 
-    def test_rejects_stale_rc8_suite_pin(self) -> None:
+    def test_rejects_stale_rc13_suite_pin(self) -> None:
         path = self.root / "release" / f"{self.VERSION}.json"
         metadata = json.loads(path.read_text(encoding="utf-8"))
         metadata["candidate_protocol_pin"]["manifest_sha256"] = (
@@ -475,7 +503,7 @@ class ProtocolRC9ReleaseGateTests(unittest.TestCase):
         ):
             release_gate.validate_version(self.VERSION)
 
-    def test_rejects_rc8_silent_downgrade_or_claim_fabrication(self) -> None:
+    def test_rejects_rc13_silent_downgrade_or_claim_fabrication(self) -> None:
         path = self.root / "release" / f"{self.VERSION}.json"
         base = json.loads(path.read_text(encoding="utf-8"))
         for field, value in (

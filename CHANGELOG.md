@@ -3,7 +3,7 @@
 All notable protocol changes are recorded here. Versions follow Semantic
 Versioning for the complete specification set.
 
-## Unreleased
+## 1.0.0-rc.13 - 2026-09-26
 
 ### Added
 
@@ -467,7 +467,10 @@ Versioning for the complete specification set.
   re-materializes a missing path snapshot from current bytes only when package
   identity and content hash match, and fetches Git/repository members at the
   locked commit without re-resolving refs or rewriting the lock. The dedicated
-  schema and vector namespace remains separate from `conformance/v1`.
+  schema and vector namespace remains separate from `conformance/v1`; its
+  generated manifest and release metadata pin it independently, with the
+  Python manager's declared partial scope consumable against the rc.10 core
+  suite. No manifest schema v9 `directory` field is added to the core suite.
 - Amended draft Decision 0018 (proposed — not adopted, no normative
   change): the `curator run` permission mode is configured (launcher
   `defaults.json` v2 member, environments §12.1 per-profile knob, CLI
@@ -595,12 +598,15 @@ Versioning for the complete specification set.
 
 ### Changed
 
-- Updated the Implementations workflow to pin curator 0a628621 in lockstep
-  with PR #88's executable identity and hard-link erratum, require curator's
-  production consumer-map case, and sparse-checkout curator without
-  `.task-board/` for Windows. Qualified cocoaskills 4a88aa0e against its
-  declared core v1.0.0-rc.10 plus the candidate skillfile-sources-v1 corpus
-  and schemas, while keeping the draft suite on its supported POSIX lanes.
+- Advanced the generated core suite, release metadata, README version, and
+  compatibility record to v1.0.0-rc.13 while preserving rc.9 and earlier
+  release metadata as frozen history.
+- Updated the Implementations workflow to check each manager against its
+  declared claim and pin curator 0a628621 in lockstep with PR #88's executable
+  identity and hard-link erratum. It requires curator's production
+  consumer-map case, and qualifies cocoaskills 4a88aa0e against its declared
+  core v1.0.0-rc.10 plus the separately pinned skillfile-sources-v1 corpus and
+  schemas on its supported POSIX lanes.
 
 - Clarified Skillfile-source security requirements: positive registry evidence
   requires the exact name/repository/commit/raw package-tree hash tuple while

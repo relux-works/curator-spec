@@ -1358,6 +1358,50 @@ class SharedFixtureMarkerTests(unittest.TestCase):
             validate.validate_shared_fixture_markers(self.expected)
 
 
+class SkillfileSourcesSuiteManifestTests(unittest.TestCase):
+    def run_validation(self) -> tuple[int, str]:
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+            status = validate.main()
+        return status, stderr.getvalue()
+
+    def test_source_contract_bytes_are_pinned_through_main(self) -> None:
+        path = validate.ROOT / "protocol" / "skillfile-sources.md"
+        original = path.read_bytes()
+        try:
+            path.write_bytes(original + b"\nSuite-pin mutation.\n")
+            status, stderr = self.run_validation()
+            self.assertEqual(status, 1)
+            self.assertIn("skillfile-sources-v1 manifest digest mismatch", stderr)
+        finally:
+            path.write_bytes(original)
+
+    def test_manifest_cannot_omit_a_case_even_with_a_recomputed_release_pin(self) -> None:
+        manifest_path = validate.ROOT / "conformance" / "skillfile-sources-v1" / "manifest.json"
+        release_path = validate.ROOT / "release" / f"{validate.PROTOCOL_VERSION}.json"
+        originals = {path: path.read_bytes() for path in (manifest_path, release_path)}
+        try:
+            manifest = json.loads(originals[manifest_path].decode("utf-8"))
+            manifest["files"] = manifest["files"][1:]
+            manifest_bytes = (json.dumps(manifest, indent=2) + "\n").encode("utf-8")
+            manifest_path.write_bytes(manifest_bytes)
+            release = json.loads(originals[release_path].decode("utf-8"))
+            release["skillfile_sources_v1"]["manifest_sha256"] = (
+                "sha256:" + hashlib.sha256(manifest_bytes).hexdigest()
+            )
+            release_path.write_bytes(
+                (json.dumps(release, indent=2) + "\n").encode("utf-8")
+            )
+            status, stderr = self.run_validation()
+            self.assertEqual(status, 1)
+            self.assertIn("skillfile-sources-v1 manifest inventory is incomplete", stderr)
+        finally:
+            for path, payload in originals.items():
+                path.write_bytes(payload)
+            for path, payload in originals.items():
+                self.assertEqual(path.read_bytes(), payload)
+
+
 class WorkflowRegenerationScopeTests(unittest.TestCase):
     GENERATED_FILE_INVENTORY = (
         "conformance/v1",
@@ -1366,6 +1410,8 @@ class WorkflowRegenerationScopeTests(unittest.TestCase):
         "release/1.0.0-rc.7.json",
         "release/1.0.0-rc.8.json",
         "release/1.0.0-rc.9.json",
+        "release/1.0.0-rc.13.json",
+        "conformance/skillfile-sources-v1/manifest.json",
     )
 
     def regeneration_diff_scope(self, path: Path) -> tuple[str, ...]:
@@ -4138,14 +4184,14 @@ class WriteNofollowVectorTests(unittest.TestCase):
         """Run the real validate.main() against a substituted on-disk corpus.
 
         The mutated vector is written to the worktree with the manifest and
-        rc.9 pins recomputed around it, so the only failing check can be the
+        rc.13 pins recomputed around it, so the only failing check can be the
         nofollow gate itself; all three files are restored byte-identical
         afterwards.
         """
         vector_path = validate.SUITE / "vectors" / "environments-write-nofollow.json"
         manifest_path = validate.SUITE / "manifest.json"
-        rc9_path = validate.ROOT / "release" / "1.0.0-rc.9.json"
-        originals = {path: path.read_bytes() for path in (vector_path, manifest_path, rc9_path)}
+        rc13_path = validate.ROOT / "release" / "1.0.0-rc.13.json"
+        originals = {path: path.read_bytes() for path in (vector_path, manifest_path, rc13_path)}
         try:
             vector_bytes = (json.dumps(vector, indent=2, sort_keys=True) + "\n").encode("utf-8")
             vector_path.write_bytes(vector_bytes)
@@ -4155,11 +4201,11 @@ class WriteNofollowVectorTests(unittest.TestCase):
                     entry["sha256"] = "sha256:" + hashlib.sha256(vector_bytes).hexdigest()
             manifest_bytes = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8")
             manifest_path.write_bytes(manifest_bytes)
-            release = json.loads(originals[rc9_path].decode("utf-8"))
+            release = json.loads(originals[rc13_path].decode("utf-8"))
             manifest_digest = "sha256:" + hashlib.sha256(manifest_bytes).hexdigest()
             release["candidate_protocol_pin"]["manifest_sha256"] = manifest_digest
             release["downstream_consumption"]["required_manifest_sha256"] = manifest_digest
-            rc9_path.write_bytes((json.dumps(release, indent=2, sort_keys=True) + "\n").encode("utf-8"))
+            rc13_path.write_bytes((json.dumps(release, indent=2, sort_keys=True) + "\n").encode("utf-8"))
             stdout, stderr = io.StringIO(), io.StringIO()
             with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
                 status = validate.main()
@@ -4308,14 +4354,14 @@ class DotfileManagersVectorTests(unittest.TestCase):
         """Run the real validate.main() against a substituted on-disk corpus.
 
         The mutated vector is written to the worktree with the manifest and
-        rc.9 pins recomputed around it, so the only failing check can be the
+        rc.13 pins recomputed around it, so the only failing check can be the
         dotfile-managers gate itself; all three files are restored
         byte-identical afterwards.
         """
         vector_path = validate.SUITE / self.VECTOR_PATH
         manifest_path = validate.SUITE / "manifest.json"
-        rc9_path = validate.ROOT / "release" / "1.0.0-rc.9.json"
-        originals = {path: path.read_bytes() for path in (vector_path, manifest_path, rc9_path)}
+        rc13_path = validate.ROOT / "release" / "1.0.0-rc.13.json"
+        originals = {path: path.read_bytes() for path in (vector_path, manifest_path, rc13_path)}
         try:
             vector_bytes = (json.dumps(vector, indent=2, sort_keys=True) + "\n").encode("utf-8")
             vector_path.write_bytes(vector_bytes)
@@ -4325,11 +4371,11 @@ class DotfileManagersVectorTests(unittest.TestCase):
                     entry["sha256"] = "sha256:" + hashlib.sha256(vector_bytes).hexdigest()
             manifest_bytes = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8")
             manifest_path.write_bytes(manifest_bytes)
-            release = json.loads(originals[rc9_path].decode("utf-8"))
+            release = json.loads(originals[rc13_path].decode("utf-8"))
             manifest_digest = "sha256:" + hashlib.sha256(manifest_bytes).hexdigest()
             release["candidate_protocol_pin"]["manifest_sha256"] = manifest_digest
             release["downstream_consumption"]["required_manifest_sha256"] = manifest_digest
-            rc9_path.write_bytes((json.dumps(release, indent=2, sort_keys=True) + "\n").encode("utf-8"))
+            rc13_path.write_bytes((json.dumps(release, indent=2, sort_keys=True) + "\n").encode("utf-8"))
             stdout, stderr = io.StringIO(), io.StringIO()
             with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
                 status = validate.main()
@@ -4541,14 +4587,14 @@ class ReadFailureVectorTests(unittest.TestCase):
         """Run the real validate.main() against a substituted on-disk corpus.
 
         The mutated vector is written to the worktree with the manifest and
-        rc.9 pins recomputed around it, so the only failing check can be the
+        rc.13 pins recomputed around it, so the only failing check can be the
         read-failure gate itself; all three files are restored byte-identical
         afterwards.
         """
         vector_path = validate.SUITE / "vectors" / "environments-read-failure.json"
         manifest_path = validate.SUITE / "manifest.json"
-        rc9_path = validate.ROOT / "release" / "1.0.0-rc.9.json"
-        originals = {path: path.read_bytes() for path in (vector_path, manifest_path, rc9_path)}
+        rc13_path = validate.ROOT / "release" / "1.0.0-rc.13.json"
+        originals = {path: path.read_bytes() for path in (vector_path, manifest_path, rc13_path)}
         try:
             vector_bytes = (json.dumps(vector, indent=2, sort_keys=True) + "\n").encode("utf-8")
             vector_path.write_bytes(vector_bytes)
@@ -4558,11 +4604,11 @@ class ReadFailureVectorTests(unittest.TestCase):
                     entry["sha256"] = "sha256:" + hashlib.sha256(vector_bytes).hexdigest()
             manifest_bytes = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8")
             manifest_path.write_bytes(manifest_bytes)
-            release = json.loads(originals[rc9_path].decode("utf-8"))
+            release = json.loads(originals[rc13_path].decode("utf-8"))
             manifest_digest = "sha256:" + hashlib.sha256(manifest_bytes).hexdigest()
             release["candidate_protocol_pin"]["manifest_sha256"] = manifest_digest
             release["downstream_consumption"]["required_manifest_sha256"] = manifest_digest
-            rc9_path.write_bytes((json.dumps(release, indent=2, sort_keys=True) + "\n").encode("utf-8"))
+            rc13_path.write_bytes((json.dumps(release, indent=2, sort_keys=True) + "\n").encode("utf-8"))
             stdout, stderr = io.StringIO(), io.StringIO()
             with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
                 status = validate.main()

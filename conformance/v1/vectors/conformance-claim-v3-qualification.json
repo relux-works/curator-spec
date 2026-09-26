@@ -16,7 +16,7 @@
       "status": "pending-downstream-native-evidence"
     }
   ],
-  "protocol_version": "1.0.0-rc.9",
+  "protocol_version": "1.0.0-rc.13",
   "rules": [
     {
       "name": "schema-valid-is-not-qualified",
