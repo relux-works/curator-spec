@@ -31,10 +31,11 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: relux-works/curator
-          # Curator 0a628621 classifies executable_identity_cases and the
-          # hard_link_substitution_definition added by PR #88. Keep this pin
-          # in lockstep with that suite erratum and its production consumer.
-          ref: 0a62862130fd6cbd9db8b246da63fdb5aecdfaaf
+          # Curator 80fd617f classifies executable_identity_cases and the
+          # hard_link_substitution_definition added by PR #88, and accepts the
+          # rc.13 release label on the unchanged script-worker-v1 identity
+          # (TASK-260926-4hd81z). Keep this pin in lockstep with the suite.
+          ref: 80fd617fe6cc08ae7c9d5ee615431f1fb7a9b0e7
           path: implementations/go
           submodules: true
           # The Go suite does not use the board state. Excluding its deep paths
