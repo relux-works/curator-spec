@@ -9829,6 +9829,134 @@ def validate_environments_read_failure_vectors(vector: Any = None) -> None:
         _validate_read_failure_case(name, case)
 
 
+GLOBAL_LOCK_PUBLICATION_OPERATIONS = ("global add", "global install")
+GLOBAL_LOCK_PUBLICATION_CARRIERS = (
+    "profile install",
+    "profile use",
+    "profile sync",
+    "profile update",
+    "env resolve --repair",
+)
+GLOBAL_LOCK_PUBLICATION_SURFACE = "codex_cli/.agent-context/skills/new-skill/SKILL.md"
+GLOBAL_LOCK_PUBLICATION_ORDER = [
+    "resolve-and-audit-candidate",
+    "publish-referenced-store-entries",
+    "publish-extended-profile-lock",
+    "materialize-in-place-surfaces",
+]
+
+
+def validate_environments_global_lock_publication_vectors(vector: Any = None) -> None:
+    """The environments §9.4 global lock-publication and takeover-recovery vectors."""
+    if vector is None:
+        vector = load_json(SUITE / "vectors" / "environments-global-lock-publication.json")
+    if not isinstance(vector, dict) or set(vector) != {
+        "schema_version", "protocol_version", "capability", "capability_revision",
+        "rule", "global_operations", "takeover_carriers", "cases",
+    }:
+        raise ValidationFailure("environments-global-lock-publication vector has an open or incomplete shape")
+    if (
+        vector.get("schema_version") != 1
+        or vector.get("protocol_version") != PROTOCOL_VERSION
+        or vector.get("capability") != "agent-environments"
+        or vector.get("capability_revision") != 1
+    ):
+        raise ValidationFailure("environments-global-lock-publication vector has the wrong capability identity")
+    if vector.get("rule") != (
+        "protocol/environments.md section 9.4 and profiles/manager.md sections 2.5, 2.6, and 12.3"
+    ):
+        raise ValidationFailure("environments-global-lock-publication vector cites the wrong normative rules")
+    if vector.get("global_operations") != list(GLOBAL_LOCK_PUBLICATION_OPERATIONS):
+        raise ValidationFailure("environments-global-lock-publication operations are not the closed global pair")
+    if vector.get("takeover_carriers") != list(GLOBAL_LOCK_PUBLICATION_CARRIERS):
+        raise ValidationFailure("environments-global-lock-publication widens the takeover carrier set")
+
+    success_cases = [
+        {
+            "name": "global-add-publishes-lock-before-materialization",
+            "operation": "global add",
+            "profile_lock_before": "old",
+            "takeover_flag": False,
+            "events": GLOBAL_LOCK_PUBLICATION_ORDER,
+            "expected": {
+                "diagnostic": None,
+                "in_place_surfaces_after": "extended-skill-set",
+                "outcome": "materialized",
+                "profile_lock_after": "extended",
+            },
+        },
+        {
+            "name": "global-install-publishes-lock-before-materialization",
+            "operation": "global install",
+            "profile_lock_before": "old",
+            "takeover_flag": False,
+            "events": GLOBAL_LOCK_PUBLICATION_ORDER,
+            "expected": {
+                "diagnostic": None,
+                "in_place_surfaces_after": "extended-skill-set",
+                "outcome": "materialized",
+                "profile_lock_after": "extended",
+            },
+        },
+    ]
+    conflict_cases = []
+    for name, operation in (
+        ("global-add-conflict-retains-extended-lock", "global add"),
+        ("global-install-conflict-retains-extended-lock", "global install"),
+    ):
+        conflict_cases.append({
+            "name": name,
+            "operation": operation,
+            "profile_lock_before": "old",
+            "takeover_flag": False,
+            "conflict_surface": GLOBAL_LOCK_PUBLICATION_SURFACE,
+            "events": GLOBAL_LOCK_PUBLICATION_ORDER,
+            "expected": {
+                "outcome": "conflict",
+                "diagnostic": "environment_surface_unmanaged_conflict",
+                "diagnostic_surface": GLOBAL_LOCK_PUBLICATION_SURFACE,
+                "profile_lock_after": "extended",
+                "referenced_store_entries_after": "retained",
+                "in_place_surfaces_after": "pre-operation",
+                "conflict_surface_after": "unmanaged-preimage",
+                "other_mutable_state_after": "pre-operation",
+                "journal_disposition": "retain-lock-rollback-surfaces",
+            },
+        })
+    recovery_case = {
+        "name": "profile-sync-takeover-recovers-global-conflict",
+        "operation": "profile sync --takeover",
+        "depends_on_case": "global-install-conflict-retains-extended-lock",
+        "profile_lock_before": "extended",
+        "takeover_flag": True,
+        "events": [
+            "read-extended-profile-lock",
+            "back-up-conflicting-unmanaged-surface",
+            "materialize-all-in-place-surfaces-from-lock",
+        ],
+        "expected": {
+            "outcome": "materialized",
+            "diagnostic": None,
+            "profile_lock_after": "extended",
+            "materialized_from": "extended-profile-lock",
+            "in_place_surfaces_after": "extended-skill-set",
+            "conflict_surface_after": "managed-from-extended-lock",
+            "backup_before_replacement": True,
+        },
+    }
+    expected_cases = {
+        case["name"]: case for case in (*success_cases, *conflict_cases, recovery_case)
+    }
+    cases = named_cases(vector.get("cases"), "environments global lock-publication")
+    if set(cases) != set(expected_cases):
+        raise ValidationFailure("environments-global-lock-publication case inventory is not exact")
+    for name, expected in expected_cases.items():
+        if cases[name] != expected:
+            raise ValidationFailure(
+                f"environments-global-lock-publication case {name} does not match the ordering and recovery rule"
+            )
+
+
 UMBRELLA_PROVIDER_DIAGNOSTICS = {
     "subcommand_provider_missing",
     "subcommand_provider_untrusted",
@@ -11115,6 +11243,7 @@ def main() -> int:
         validate_environments_write_nofollow_vectors,
         validate_environments_dotfile_managers_vectors,
         validate_environments_read_failure_vectors,
+        validate_environments_global_lock_publication_vectors,
         validate_registry_page_boundary_vectors,
         validate_registry_checkpoint_vectors,
         validate_registry_bootstrap_vectors,

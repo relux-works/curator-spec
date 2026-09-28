@@ -4569,6 +4569,10 @@
       "sha256": "sha256:14af7a2647807280522ffc6d51d6607418c32408861932a59dc0f42d36381155"
     },
     {
+      "path": "vectors/environments-global-lock-publication.json",
+      "sha256": "sha256:ad82da00fb9c70919e85c2022c1d36028219101601702ef131b6439181d14165"
+    },
+    {
       "path": "vectors/environments-path-kind-admission.json",
       "sha256": "sha256:708476ab6d581d71baea986b1bf6cb581b38ea6f530fe8a721c4a2cbbdf6f110"
     },

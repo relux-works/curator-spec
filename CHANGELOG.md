@@ -7,6 +7,11 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Specify that global add/install publish the extended profile lock before
+  in-place materialization and retain it on
+  `environment_surface_unmanaged_conflict`, with transactional surface
+  rollback and sync takeover recovery. Add ordering, lock-preservation,
+  and `profile sync --takeover` recovery vectors.
 - Gate `skillfile-sources-v1` schema references and protocol citations against
   the `v1.0.0-rc.10` core baseline, preserving partial-client independence in
   Specification CI. Its sole conditional-citation exception is the exact

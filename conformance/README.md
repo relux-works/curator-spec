@@ -137,7 +137,11 @@ The suite contains:
   (`vectors/context-detectors.json`: positive and negative cases per closed
   pattern class, MCP `args` and `url` in scope, the scoped waiver that clears
   only its own span at its pin, the unpinnable case, and the
-  `context-system-module-present` warning);
+  `context-system-module-present` warning); and the section 9.4 global
+  lock-publication vector family (`vectors/environments-global-lock-publication.json`):
+  both global operations publish before surface materialization, each retains
+  its extended lock on an unmanaged conflict, and `profile sync --takeover`
+  materializes the preserved skill set with the existing closed carrier set;
 - the `manager-config` schema-2 surface: `schema-cases/manager-config-v2`
   with every environments section 12.1 knob present, one negative per
   closed-object rule and per value grammar, and a schema-1 rejection, plus
