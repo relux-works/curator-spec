@@ -4830,6 +4830,89 @@ class ReadFailureVectorTests(unittest.TestCase):
             validate.validate_environments_read_failure_vectors(changed)
 
 
+class GlobalLockPublicationVectorTests(unittest.TestCase):
+    """Global profile locks publish before materialization and survive conflicts."""
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.SUITE / "vectors" / "environments-global-lock-publication.json"
+        )
+
+    def case(self, name: str, vector=None) -> dict:
+        for item in (vector or self.vector)["cases"]:
+            if item["name"] == name:
+                return item
+        raise AssertionError(f"global-lock-publication case {name} is missing")
+
+    def test_published_vector_passes(self) -> None:
+        validate.validate_environments_global_lock_publication_vectors(self.vector)
+
+    def test_materialization_before_lock_publication_fails(self) -> None:
+        for name in (
+            "global-add-publishes-lock-before-materialization",
+            "global-install-publishes-lock-before-materialization",
+            "global-add-conflict-retains-extended-lock",
+            "global-install-conflict-retains-extended-lock",
+        ):
+            with self.subTest(case=name):
+                changed = copy.deepcopy(self.vector)
+                case = self.case(name, changed)
+                case["events"] = list(reversed(case["events"]))
+                with self.assertRaises(validate.ValidationFailure):
+                    validate.validate_environments_global_lock_publication_vectors(changed)
+
+    def test_unmanaged_conflict_cannot_roll_back_lock_or_keep_partial_surfaces(self) -> None:
+        for member, value in (
+            ("profile_lock_after", "old"),
+            ("in_place_surfaces_after", "partially-materialized"),
+            ("other_mutable_state_after", "changed"),
+            ("conflict_surface_after", "overwritten"),
+        ):
+            with self.subTest(member=member):
+                changed = copy.deepcopy(self.vector)
+                case = self.case("global-add-conflict-retains-extended-lock", changed)
+                case["expected"][member] = value
+                with self.assertRaises(validate.ValidationFailure):
+                    validate.validate_environments_global_lock_publication_vectors(changed)
+
+    def test_conflict_must_name_the_surface_and_use_the_stable_diagnostic(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        case = self.case("global-install-conflict-retains-extended-lock", changed)
+        case["expected"]["diagnostic_surface"] = "codex_cli/.agent-context/skills/other/SKILL.md"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_global_lock_publication_vectors(changed)
+
+    def test_sync_takeover_must_read_and_materialize_the_preserved_lock(self) -> None:
+        for member, value in (
+            ("operation", "profile sync"),
+            ("profile_lock_before", "old"),
+            ("takeover_flag", False),
+            ("depends_on_case", "global-add-publishes-lock-before-materialization"),
+            ("events", ["materialize-all-in-place-surfaces-from-lock"]),
+        ):
+            with self.subTest(member=member):
+                changed = copy.deepcopy(self.vector)
+                case = self.case("profile-sync-takeover-recovers-global-conflict", changed)
+                case[member] = value
+                with self.assertRaises(validate.ValidationFailure):
+                    validate.validate_environments_global_lock_publication_vectors(changed)
+
+    def test_each_global_operation_has_a_conflict_case(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["cases"] = [
+            item for item in changed["cases"]
+            if item["name"] != "global-install-conflict-retains-extended-lock"
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_global_lock_publication_vectors(changed)
+
+    def test_global_operations_do_not_join_the_takeover_carrier_set(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["takeover_carriers"].append("global add")
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_environments_global_lock_publication_vectors(changed)
+
+
 class UmbrellaProviderVectorTests(unittest.TestCase):
     """The environments §11 trust-root gate must fail closed.
 
@@ -6435,12 +6518,10 @@ class TakeoverClosedSetTextTests(unittest.TestCase):
 
     def test_section_95_sentence_moved_to_section_94_fails(self) -> None:
         without_sentence = self.replace_sentence(self.environments, validate.TAKEOVER_EXCLUSION_95, "")
-        moved = self.mutated(
+        moved = self.replace_sentence(
             without_sentence,
-            "then retry the blocked global operation. `profile sync`",
-            "then retry the blocked global operation. "
-            + validate.TAKEOVER_EXCLUSION_95
-            + " `profile sync`",
+            validate.TAKEOVER_EXCLUSION_94,
+            validate.TAKEOVER_EXCLUSION_94 + " " + validate.TAKEOVER_EXCLUSION_95,
         )
         with self.assertRaisesRegex(validate.ValidationFailure, "section 9.5.*pinned takeover sentence"):
             self.run_gate(environments=moved)

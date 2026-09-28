@@ -565,7 +565,8 @@ remain until all target swaps and the consumer ledger are durable. Recording
 the consumer last prevents a failed installation from advertising state that
 was not installed and prevents concurrent projects from losing ledger updates.
 
-If cache publication or any target swap fails, the manager keeps the home lock
+Except for the handled profile-global conflict outcome below, if cache
+publication or any target swap fails, the manager keeps the home lock
 and restores journaled targets in exact reverse commit order. Before restoring
 a target it requires the current digest to equal the journal's desired digest;
 a mismatch is implementation corruption and MUST NOT overwrite unknown state.
@@ -574,6 +575,21 @@ fresh locked mark proves that no valid marker or journal references it.
 Retaining an unreferenced immutable entry is always safe. Existing valid cache
 entries are never modified during rollback, and the built artifact is never a
 rollback program or verifier.
+
+For environments `global add` and `global install` (section 12.3), the
+candidate profile lock and its referenced immutable store entries publish
+before the first in-place surface swap. If a surface write meets
+`environment_surface_unmanaged_conflict`, the manager MUST durably record
+that handled disposition in the journal before reporting it, restore every
+in-place surface already swapped by the invocation in reverse commit order,
+leave the conflicting unmanaged surface untouched, retain the published
+profile lock and its referenced entries, and restore every other mutable
+target to its pre-operation value. It then completes the journal under the
+same home lock and reports the diagnostic with the conflicting surface
+identified. This outcome changes no surface or other mutable state; the
+published lock and referenced immutable entries are the only retained
+operation state. Every other failure uses the ordinary all-target rollback
+above, including restoring the previous profile lock.
 
 After a successful commit the manager durably removes backups and marks or
 removes the journal, then runs runtime, snapshot, and compiled-artifact cache GC
@@ -602,6 +618,13 @@ targets in exact reverse order. Backups are retained until recovery or rollback
 succeeds. No transaction releases the home lock between its first target swap
 and durable success or reverse rollback, so recovery cannot overwrite a later
 project's successful commit or lose a consumer-ledger update.
+
+If an incomplete journal records the handled environments profile-global
+`environment_surface_unmanaged_conflict` disposition from section 2.5,
+recovery MUST finish rolling back the in-place surface targets and other
+mutable targets while retaining the published profile lock and its referenced
+immutable entries, then complete the journal. It MUST NOT restore the previous
+profile lock for this recorded disposition.
 
 Repair uses the same immutable-source validation, context exclusion,
 build-source digest, closure, audit and registry gates, fixed toolchain and
@@ -2689,6 +2712,20 @@ The machine-global skill scope is profile-scoped (environments §9.4): a
 profile's skill set is the `skill` members of its lock, and the global skill
 commands write direct declarations into the current profile's lock through
 the same resolution, accepting `--profile <name>` and `--all-profiles`.
+
+For every profile selected by `global add` or `global install`, the manager
+MUST publish the resolved extended profile lock, together with any immutable
+store entries it names, before materializing in-place surfaces from that
+lock. If an in-place write meets
+`environment_surface_unmanaged_conflict`, it MUST apply the lock-retaining
+journal outcome in section 2.5: restore any surfaces already written,
+preserve the extended lock and its referenced entries, leave the unmanaged
+surface and all other mutable state unchanged, and report the diagnostic
+naming the surface. The conflict outcome leaves the extended lock available
+to `profile sync --takeover` or `profile use --takeover` before the operator
+retries the global operation. Other failures use the ordinary all-target
+rollback in section 2.5.
+
 `profile sync` re-materializes every installed profile across every
 registered adapter and participating target from the locks it finds — the
 actualization path when a new adapter or target is registered. The

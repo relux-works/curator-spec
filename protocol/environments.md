@@ -2457,12 +2457,29 @@ install` operations carry no takeover flag: they are outside the section
 9.5 closed set and fail closed on
 `environment_surface_unmanaged_conflict` exactly as section 8.3 states;
 recover by running `profile sync --takeover` or `profile use --takeover`,
-then retry the blocked global operation. `profile sync` re-materializes
-every installed profile across every registered adapter and participating
-target from the locks it finds; it is the actualization path when a new
-adapter or target is registered on the machine. A lock it cannot read is
-not "not found" (section 8.4.1, lock row): the profile is reported as
-`environment_store_untrusted` and left unmaterialized.
+then retry the blocked global operation.
+
+For each selected profile, `global add` and `global install` MUST install
+the immutable store entries named by the resolved closure and publish the
+extended profile lock before attempting any in-place surface materialization.
+This is the global-operation order in manager sections 2.5 and 12.3, matching
+the publish-before-rematerialize order for `profile update` in section 9.2,
+steps 4–5. If an in-place write meets
+`environment_surface_unmanaged_conflict`, the manager MUST keep the
+published extended lock and its referenced store entries, restore any
+in-place surfaces already written by that invocation to their pre-operation
+state, leave every other mutable manager state at its pre-operation value,
+and report the diagnostic naming the conflicting surface. The unmanaged
+surface itself remains untouched. This handled conflict does not roll back
+the extended lock; other failures follow the ordinary transaction rollback
+rule in manager section 2.5.
+
+`profile sync` re-materializes every installed profile across every
+registered adapter and participating target from the locks it finds; it is
+the actualization path when a new adapter or target is registered on the
+machine. A lock it cannot read is not "not found" (section 8.4.1, lock
+row): the profile is reported as `environment_store_untrusted` and left
+unmaterialized.
 
 **Commands.** Skill commands reach a shell through the manager's forwarding
 shims in one user-bin directory (manager §12.1; core §12.1). That directory

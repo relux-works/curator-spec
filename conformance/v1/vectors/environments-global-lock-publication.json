@@ -1,0 +1,125 @@
+{
+  "capability": "agent-environments",
+  "capability_revision": 1,
+  "cases": [
+    {
+      "events": [
+        "resolve-and-audit-candidate",
+        "publish-referenced-store-entries",
+        "publish-extended-profile-lock",
+        "materialize-in-place-surfaces"
+      ],
+      "expected": {
+        "diagnostic": null,
+        "in_place_surfaces_after": "extended-skill-set",
+        "outcome": "materialized",
+        "profile_lock_after": "extended"
+      },
+      "name": "global-add-publishes-lock-before-materialization",
+      "operation": "global add",
+      "profile_lock_before": "old",
+      "takeover_flag": false
+    },
+    {
+      "events": [
+        "resolve-and-audit-candidate",
+        "publish-referenced-store-entries",
+        "publish-extended-profile-lock",
+        "materialize-in-place-surfaces"
+      ],
+      "expected": {
+        "diagnostic": null,
+        "in_place_surfaces_after": "extended-skill-set",
+        "outcome": "materialized",
+        "profile_lock_after": "extended"
+      },
+      "name": "global-install-publishes-lock-before-materialization",
+      "operation": "global install",
+      "profile_lock_before": "old",
+      "takeover_flag": false
+    },
+    {
+      "conflict_surface": "codex_cli/.agent-context/skills/new-skill/SKILL.md",
+      "events": [
+        "resolve-and-audit-candidate",
+        "publish-referenced-store-entries",
+        "publish-extended-profile-lock",
+        "materialize-in-place-surfaces"
+      ],
+      "expected": {
+        "conflict_surface_after": "unmanaged-preimage",
+        "diagnostic": "environment_surface_unmanaged_conflict",
+        "diagnostic_surface": "codex_cli/.agent-context/skills/new-skill/SKILL.md",
+        "in_place_surfaces_after": "pre-operation",
+        "journal_disposition": "retain-lock-rollback-surfaces",
+        "other_mutable_state_after": "pre-operation",
+        "outcome": "conflict",
+        "profile_lock_after": "extended",
+        "referenced_store_entries_after": "retained"
+      },
+      "name": "global-add-conflict-retains-extended-lock",
+      "operation": "global add",
+      "profile_lock_before": "old",
+      "takeover_flag": false
+    },
+    {
+      "conflict_surface": "codex_cli/.agent-context/skills/new-skill/SKILL.md",
+      "events": [
+        "resolve-and-audit-candidate",
+        "publish-referenced-store-entries",
+        "publish-extended-profile-lock",
+        "materialize-in-place-surfaces"
+      ],
+      "expected": {
+        "conflict_surface_after": "unmanaged-preimage",
+        "diagnostic": "environment_surface_unmanaged_conflict",
+        "diagnostic_surface": "codex_cli/.agent-context/skills/new-skill/SKILL.md",
+        "in_place_surfaces_after": "pre-operation",
+        "journal_disposition": "retain-lock-rollback-surfaces",
+        "other_mutable_state_after": "pre-operation",
+        "outcome": "conflict",
+        "profile_lock_after": "extended",
+        "referenced_store_entries_after": "retained"
+      },
+      "name": "global-install-conflict-retains-extended-lock",
+      "operation": "global install",
+      "profile_lock_before": "old",
+      "takeover_flag": false
+    },
+    {
+      "depends_on_case": "global-install-conflict-retains-extended-lock",
+      "events": [
+        "read-extended-profile-lock",
+        "back-up-conflicting-unmanaged-surface",
+        "materialize-all-in-place-surfaces-from-lock"
+      ],
+      "expected": {
+        "backup_before_replacement": true,
+        "conflict_surface_after": "managed-from-extended-lock",
+        "diagnostic": null,
+        "in_place_surfaces_after": "extended-skill-set",
+        "materialized_from": "extended-profile-lock",
+        "outcome": "materialized",
+        "profile_lock_after": "extended"
+      },
+      "name": "profile-sync-takeover-recovers-global-conflict",
+      "operation": "profile sync --takeover",
+      "profile_lock_before": "extended",
+      "takeover_flag": true
+    }
+  ],
+  "global_operations": [
+    "global add",
+    "global install"
+  ],
+  "protocol_version": "1.0.0-rc.13",
+  "rule": "protocol/environments.md section 9.4 and profiles/manager.md sections 2.5, 2.6, and 12.3",
+  "schema_version": 1,
+  "takeover_carriers": [
+    "profile install",
+    "profile use",
+    "profile sync",
+    "profile update",
+    "env resolve --repair"
+  ]
+}
