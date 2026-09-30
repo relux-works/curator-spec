@@ -7,6 +7,9 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Add an informative "Threat review for a new build driver" checklist to
+  `docs/external-build-repositories.md`, citing the normative clause behind
+  each item. No new requirement, vector, or schema.
 - Resolve K1 by defining the length-delimited `curator-content-v2` framing,
   versioning content identities across markers, locks, audit state and registry
   records, and requiring equal framing versions for registry matches. Add

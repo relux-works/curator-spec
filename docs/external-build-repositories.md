@@ -152,3 +152,61 @@ future driver/platform tuple requires a versioned claim schema plus immutable
 native evidence against the pinned suite. macOS and Windows external-driver
 qualification remains pending downstream native runs, and Linux is explicitly
 excluded until `TASK-260728-1skseh` passes.
+
+## Threat review for a new build driver
+
+This checklist is informative. It restates no new requirement; each item
+points at the normative clause a reviewer must see satisfied, and a future
+driver is admitted only through its own closed identifier and independent
+review under [`protocol/core.md` §12.3](../protocol/core.md#123-future-closed-driver-admission).
+Rust, Swift, Kotlin/JVM, C/C++, and .NET are not generic equivalents of
+`go-repository-v1`: none is admitted today, and each would need a separately
+versioned driver whose contract answers every item below for its own build
+scripts, plugins, macros, dependency resolution, network, and native inputs.
+
+- [ ] **Network during build.** Dependency resolution and compilation are
+  offline and vendor-only; the portable policy's `network: "none"` is a fixed
+  configuration, not kernel denial (§4.2 dependency paragraph, §4.2.1
+  mechanism table, §12.3 "offline dependency" item).
+- [ ] **Source and toolchain read-only exposure.** The frozen snapshot and the
+  fingerprinted toolchain are never written and are re-verified after the last
+  child exits; only the selected build root is compiler-visible (§4.2 process
+  paragraph, §4.2.1 mandatory controls, §4.2.2 "Only the selected build root").
+- [ ] **Write roots.** Every user, configuration, cache, temporary, staging,
+  and output root is operation-private and resolved independently of package
+  data (§4.2.1 mandatory controls; deferred `private-build-root-only-writes`).
+- [ ] **Process tree and resource bounds.** A fixed manager-selected graph, one
+  worker session, bounded deadline/output/artifact, domain teardown, and the
+  exhaustive native-control inventory (§4.2.1; deferred
+  `hard-aggregate-descendant-resource-bounds`).
+- [ ] **Executable allowlist and argv provenance.** Only fingerprinted,
+  identity-verified programs start; every argument vector is manager-fixed and
+  never shell-joined; package data selects no program, argv, flag, tag, or
+  output (§4.2, §4.2.1 "Package-controlled bytes", §4.2.2 command-key
+  paragraph, [decision 0005](../decisions/0005-external-build-repositories.md#manifest-and-descriptor-ownership)).
+- [ ] **Environment scrubbing.** The environment starts empty, uses private
+  roots and an empty `PATH`, pins every language-specific control variable,
+  and never carries source credentials (§4.2 environment paragraphs, §12.2).
+- [ ] **Cache identity inputs.** Driver, toolchain identity, native target,
+  `curator-build-source-v1`, effective source and substitution state, and the
+  execution-policy identity enter the hashed input; host capability evidence
+  does not (§8.1, §8.2, §9.2, §9.3, §4.2.1 "result-only").
+- [ ] **Receipt fields.** A new driver needs its own receipt and marker schema
+  versions; `cache_key` and `receipt_sha256` are recomputed, never trusted as
+  opaque (§9.2, §10, §12.3 receipt/marker/cache item).
+- [ ] **Symlink and hard-link handling.** Snapshots admit only directories and
+  regular files; links, special files, and unsafe layouts fail closed before
+  any cache lookup or compiler step (§6.5, §8.1).
+- [ ] **Substitution and dry-run behaviour.** Declared and effective identities
+  are both recorded, strict audit rejects substitutions, and a
+  coverage-claiming dry run follows the full admission order while publishing
+  nothing (§6.4, §6.5 ordering paragraph, and
+  [Development substitutions](#development-substitutions) above).
+- [ ] **Fail-closed ordering.** Admission → audit → cache → compiler: snapshot
+  admission and every per-subject audit gate succeed before artifact-cache
+  lookup, and every cache/compiler failure leaves live state unchanged; an
+  unknown driver never falls back (§6.5, §4.2.2 driver paragraph, §12.1,
+  §12.3 last paragraph).
+- [ ] **Signing and execution policy.** No package-controlled signing; a
+  hardened execution profile needs a new policy identity, claim schema, and
+  vectors rather than widening `manager-worker-v1` (§12.2, §12.3).
