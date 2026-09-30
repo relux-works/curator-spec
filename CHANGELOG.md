@@ -18,6 +18,13 @@ Versioning for the complete specification set.
   environments §9.4 profile-lock sentence in `protocol/skillfile-sources.md`;
   the same citation without its condition and every other post-rc.10 citation
   fail the gate.
+- Clarify the S5 §10.1 repair persistence bound: a passing store entry is
+  replayed whenever a stale home is repaired, with pin verification and the
+  operator-owned protected-state boundary remaining the accepted limit. Add a
+  §7.8 row stating that Claude's strict MCP channel excludes other
+  configuration when supplied, while Codex's profile layer merges over a
+  manager-owned base. No conformance vector changed because no requirement
+  changed.
 
 ## 1.0.0-rc.13 - 2026-09-26
 

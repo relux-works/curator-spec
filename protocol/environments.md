@@ -1762,6 +1762,13 @@ per-adapter residual — is closed in this table:
 | `opencode` | the documented merge order applies — remote, global, `OPENCODE_CONFIG`, project `opencode.json`, `.opencode/`, `OPENCODE_CONFIG_CONTENT`, managed — so project-level servers remain and a same-named project entry overrides the managed one: recorded residual, not prevented |
 | `pi` | none: no channel, no MCP configuration in a managed launch |
 
+The Claude/Codex asymmetry is a runtime guarantee with a manager-owned
+boundary:
+
+| Pair | Runtime enforcement | Manager responsibility |
+|---|---|---|
+| `claude_code` / `codex_cli` | With the declared `--mcp-config` and `--strict-mcp-config` flags, Claude Code ignores every other MCP configuration and exposes exactly the profile's set. Codex accepts one `-p curator-mcp` layer and merges it over the base; `-p` does not suppress base `mcp_servers`, so the runtime does not enforce a profile-only set by itself. | The launcher's existing channel rules apply Claude's strict descriptor and require a pre-exec stat of the Codex layer file (above). The manager owns Codex's seeded base under section 7.4: revision A can retain native servers and warns, while revision B strips them. A profile-only Codex set therefore depends on the manager's revision-B seed. |
+
 The launch set is what the tool offers the agent at launch under a managed
 launch through the channel above.
 
@@ -2856,8 +2863,18 @@ replaces directory entries and refuses with
 the manager does not own.
 A store entry is re-applied only after that entry passed
 the section 4 contract and its pin hash: a non-trusted entry is never
-re-applied, so `env resolve --repair` is not persistence for a tampered
-store (audit note E7). Failure classes split (section 4): an enclosing
+re-applied. When `env resolve --repair` finds a stale home, it re-materializes
+the passing store bytes; repeated launches that need repair replay those bytes
+and can therefore provide persistence for a payload admitted by the active
+lock pin. An attacker who can write the store and establish a matching
+attacker-selected pin can have those bytes restored on each such launch. The
+accepted S5 bound is the operator-owned protected-state and pin contract
+(section 4): a store write that fails the boundary or pin check is rejected and
+takes the specified rebuild-or-failure path, while the protocol does not
+authenticate same-operator writes or protect against an attacker who controls
+the operator's store and lock authority. The pin is the persistence boundary;
+S5 does not promise independent freshness or revocation (audit note E7).
+Failure classes split (section 4): an enclosing
 boundary that cannot be proven refuses every mutating operation before its
 first write — nothing is rebuilt, because there is no protected place to
 rebuild into, and the operator repairs the boundary out of band; an
