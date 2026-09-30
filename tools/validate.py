@@ -11414,6 +11414,133 @@ def validate_security_posture_vectors(vector: Any = None) -> None:
         )
 
 
+SNAPSHOT_RETENTION_REASONS = (
+    "reachable",
+    "reference_uncertain",
+    "grace",
+    "keep_last",
+    "newer_than",
+    "unreachable",
+)
+SNAPSHOT_RETENTION_COMMIT = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
+SNAPSHOT_RETENTION_TIME = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+
+
+def snapshot_retention_seconds(value: Any, where: str) -> int:
+    """Parse one RFC 3339 UTC second-precision instant into epoch seconds."""
+    import datetime
+
+    if not isinstance(value, str) or not SNAPSHOT_RETENTION_TIME.match(value):
+        raise ValidationFailure(f"{where} is not an RFC 3339 UTC instant with second precision")
+    parsed = datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=datetime.timezone.utc)
+    return int(parsed.timestamp())
+
+
+def snapshot_retention_decide(case: dict) -> list[dict]:
+    """The manager profile section 10.1 decision rule, as a reference model."""
+    now = snapshot_retention_seconds(case["now"], "now")
+    policy = case["policy"]
+    keep_last = policy["keep_last"] or 0
+    older_than = policy["older_than_seconds"]
+    window: set[tuple[str, str]] = set()
+    by_source: dict[str, list[dict]] = {}
+    for entry in case["entries"]:
+        by_source.setdefault(entry["source"], []).append(entry)
+    for source, entries in by_source.items():
+        ordered = sorted(
+            entries,
+            key=lambda e: (-snapshot_retention_seconds(e["last_used_at"], "last_used_at"), e["commit"].encode()),
+        )
+        window.update((source, e["commit"]) for e in ordered[:keep_last])
+    decided = []
+    for entry in sorted(case["entries"], key=lambda e: (e["source"].encode(), e["commit"].encode())):
+        age = now - snapshot_retention_seconds(entry["last_used_at"], "last_used_at")
+        if entry["reachable"]:
+            reason = "reachable"
+        elif not case["reference_set_certain"]:
+            reason = "reference_uncertain"
+        elif age < case["grace_seconds"]:
+            reason = "grace"
+        elif (entry["source"], entry["commit"]) in window:
+            reason = "keep_last"
+        elif older_than is not None and age <= older_than:
+            reason = "newer_than"
+        else:
+            reason = "unreachable"
+        decided.append(
+            {
+                "action": "remove" if reason == "unreachable" else "retain",
+                "commit": entry["commit"],
+                "reason": reason,
+                "source": entry["source"],
+            }
+        )
+    return decided
+
+
+def validate_snapshot_retention_vectors(vector: Any = None) -> None:
+    """`vectors/snapshot-retention.json`: manager profile section 10.1.
+
+    Every case's expected plan must be exactly what the section 10.1 rule
+    derives from its inputs, and the cases together must exercise every
+    reason, so a vector edit cannot pin a decision the rule does not make.
+    """
+    if vector is None:
+        vector = load_json(SUITE / "vectors" / "snapshot-retention.json")
+    if not isinstance(vector, dict) or vector.get("capability") != "snapshot-retention":
+        raise ValidationFailure("snapshot-retention vector has the wrong capability identity")
+    if vector.get("reasons") != list(SNAPSHOT_RETENTION_REASONS):
+        raise ValidationFailure("snapshot-retention reasons are not the closed ordered six-reason set")
+    if vector.get("actions") != ["retain", "remove"]:
+        raise ValidationFailure("snapshot-retention actions are not the closed two-action set")
+    cases = vector.get("cases")
+    if not isinstance(cases, list) or not cases:
+        raise ValidationFailure("snapshot-retention cases are not a non-empty list")
+    names: set[str] = set()
+    seen_reasons: set[str] = set()
+    for case in cases:
+        name = case.get("name") if isinstance(case, dict) else None
+        if not isinstance(name, str) or not name or name in names:
+            raise ValidationFailure(f"snapshot-retention case name {name!r} is missing or duplicated")
+        names.add(name)
+        if set(case) != {"name", "now", "grace_seconds", "reference_set_certain", "policy", "entries", "expected"}:
+            raise ValidationFailure(f"snapshot-retention case {name} members are not the closed set")
+        policy = case["policy"]
+        if not isinstance(policy, dict) or set(policy) != {"keep_last", "older_than_seconds"}:
+            raise ValidationFailure(f"snapshot-retention case {name} policy is not the closed two-member shape")
+        for member in ("keep_last", "older_than_seconds"):
+            value = policy[member]
+            if value is not None and (type(value) is not int or value < 0):
+                raise ValidationFailure(f"snapshot-retention case {name} {member} is not null or a non-negative integer")
+        if type(case["grace_seconds"]) is not int or case["grace_seconds"] < 0:
+            raise ValidationFailure(f"snapshot-retention case {name} grace_seconds is not a non-negative integer")
+        if type(case["reference_set_certain"]) is not bool:
+            raise ValidationFailure(f"snapshot-retention case {name} reference_set_certain is not a boolean")
+        snapshot_retention_seconds(case["now"], f"snapshot-retention case {name} now")
+        keys: set[tuple[str, str]] = set()
+        for entry in case["entries"]:
+            if not isinstance(entry, dict) or set(entry) != {"source", "commit", "last_used_at", "reachable"}:
+                raise ValidationFailure(f"snapshot-retention case {name} entry is not the closed four-member shape")
+            if not isinstance(entry["source"], str) or not entry["source"]:
+                raise ValidationFailure(f"snapshot-retention case {name} entry source is empty")
+            if not isinstance(entry["commit"], str) or not SNAPSHOT_RETENTION_COMMIT.match(entry["commit"]):
+                raise ValidationFailure(f"snapshot-retention case {name} entry commit is not a full lowercase commit")
+            if type(entry["reachable"]) is not bool:
+                raise ValidationFailure(f"snapshot-retention case {name} entry reachable is not a boolean")
+            snapshot_retention_seconds(entry["last_used_at"], f"snapshot-retention case {name} last_used_at")
+            key = (entry["source"], entry["commit"])
+            if key in keys:
+                raise ValidationFailure(f"snapshot-retention case {name} repeats entry {key}")
+            keys.add(key)
+        if case["expected"] != snapshot_retention_decide(case):
+            raise ValidationFailure(f"snapshot-retention case {name} expected plan does not follow section 10.1")
+        seen_reasons.update(item["reason"] for item in case["expected"])
+    if seen_reasons != set(SNAPSHOT_RETENTION_REASONS):
+        raise ValidationFailure(
+            f"snapshot-retention cases cover {sorted(seen_reasons)}; want every reason"
+        )
+
+
 def main() -> int:
     checks = [
         validate_released_schema_immutability,
@@ -11446,6 +11573,7 @@ def main() -> int:
         validate_system_config_v2_schema,
         validate_umbrella_provider_vectors,
         validate_security_posture_vectors,
+        validate_snapshot_retention_vectors,
         validate_takeover_closed_set_text,
         validate_local_links,
     ]

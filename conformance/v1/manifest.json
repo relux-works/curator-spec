@@ -5005,6 +5005,10 @@
       "sha256": "sha256:700033ebfe7288496c9e4579a5cc33b2053ae5fba5fa3ac0b2e161ae5d5ceff3"
     },
     {
+      "path": "vectors/snapshot-retention.json",
+      "sha256": "sha256:e0798c0b4d73df61910d170f776cecc2a49b750bb5653aa7563d13dc1072b713"
+    },
+    {
       "path": "vectors/source-identities.json",
       "sha256": "sha256:5a11e96878835217f5fa2bcf08f6644fa2e080df2fb7dd12c85b3a0ab5b44642"
     },

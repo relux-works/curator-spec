@@ -46,6 +46,7 @@ identifiers.
 | `curator audit --publish <record> --registry <url>` | Publish an auditor-signed record |
 | `curator repair [target] [--all] [--audit [advisory\|strict]]` | rc.5 command contract: reacquire, audit, and restore non-current managed state |
 | `curator gc` | Collect unreferenced machine state |
+| `curator cache prune [--keep-last <n>] [--older-than <duration>] [--dry-run] [--json]` | Apply manager profile section 10.1 snapshot-cache retention: remove unreachable commit-keyed snapshots outside the grace period, the per-source keep-last window, and the age window; `--dry-run` prints the same plan and removes nothing; `--json` prints the section 10.1 retention report |
 | `curator shell-init [auto\|zsh\|bash\|powershell] [--install] [--no-global]` | Print or cache optional shell integration |
 | `curator hook approve <path>` | Record approval for one project env file (`.agents/env.sh` or `.agents/env.ps1`): stores the absolute path with the digest of its current bytes as `approved_by: operator`; re-run after the file changes |
 | `curator hook approvals` | List every shell-hook approval record read-only (path, digest, approver, time) |
@@ -68,6 +69,14 @@ multi-target failure, or `status --check` result containing any non-current or
 unknown item. Exit code 2 is invalid command syntax or flag use. Scripts should
 use `--json` where available and inspect each result's stable `code` rather
 than parse human text.
+
+`cache prune` takes `--older-than` as a Go duration or a whole number of days
+(`72h`, `14d`). Without `--keep-last` or `--older-than`, it removes every
+unreachable snapshot outside the grace period, which Curator documents as 24
+hours. An uncertain reference set removes nothing and exits 1 after printing
+the plan, so an operator can repair the unreadable marker or lock that caused
+it. Sizes are allocated bytes, with logical bytes alongside. On APFS, clones
+can make both overstate what a removal frees.
 
 `bootstrap --if-missing` is intended for repository bootstrap commands. It
 returns success without parsing or rewriting an existing configuration and is
