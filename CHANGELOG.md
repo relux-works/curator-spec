@@ -7,6 +7,17 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Resolve K1 by defining the length-delimited `curator-content-v2` framing,
+  versioning content identities across markers, locks, audit state and registry
+  records, and requiring equal framing versions for registry matches. Add
+  `install-marker-v5`, `context-lock-v2`, `audit-record-v2`,
+  `agent-environment-marker-v3`, `registry-log-entry-v2`,
+  `registry-bundle-v2`, `manager-config-v3`, and `log-response-v3`; add the
+  source-extension `skillfile-lock-v2`, `install-marker-v6`, and
+  `source-audit-v2` shapes. Keep every schema in rc.13 byte-frozen, add the
+  collision/empty/ordinary/mismatch vectors, and specify the blocking NUL
+  guard for v1 readers.
+
 - Specify that global add/install publish the extended profile lock before
   in-place materialization and retain it on
   `environment_surface_unmanaged_conflict`, with transactional surface

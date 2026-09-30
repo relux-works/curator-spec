@@ -485,13 +485,13 @@ func TestSnapshotAcquisitionVectorIsTheRawFixtureHash(t *testing.T) {
 	if strings.Join(files, ",") != strings.Join(want, ",") {
 		t.Fatalf("fixture inventory = %v, want %v", files, want)
 	}
-	hash := contentHash(fixture, files)
+	hash := contentHashV2(fixture, files)
 	if item["expected_sha256"] != hash || string(expectedText) != hash+"\n" {
 		t.Fatalf("expected hash %s is not the raw fixture content hash %s", item["expected_sha256"], hash)
 	}
 	// Hashing without .gitattributes must not alias: the attribute file is a
 	// regular file of the committed tree and is part of the snapshot.
-	if contentHash(fixture, files[1:]) == hash {
+	if contentHashV2(fixture, files[1:]) == hash {
 		t.Fatal("content hash ignores .gitattributes")
 	}
 	read := func(name string) []byte {

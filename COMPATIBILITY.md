@@ -186,7 +186,7 @@ predecessor rather than replacing it. Rc.13 now owns the live suite pin. A
 consumer pinned to rc.8 therefore keeps its qualification and advances by an
 explicit pin change, never implicitly.
 
-## Manager configuration schema 2
+## Manager configuration schemas 2 and 3
 
 `manager-config-v2.schema.json` is additive: it is schema 1 plus one closed
 `environments` object carrying exactly the `protocol/environments.md` section
@@ -196,8 +196,13 @@ exact meaning — it declares no `environments` object, so every knob takes its
 section 12.1 default — and a manager that does not implement the environments
 capability keeps reading schema 1 unchanged. Readers reject an unknown
 `schema_version` explicitly: a schema-1 reader rejects a schema-2 file rather
-than ignoring `environments`, and a schema-2 reader rejects `schema_version`
-3 or above rather than inferring newer knobs.
+than ignoring `environments`.
+
+`manager-config-v3.schema.json` preserves every schema-2 member and adds the
+optional `hash_version: 2` member to a state-hash waiver. A schema-2 reader
+rejects a schema-3 file rather than ignoring that member; a schema-3 reader
+uses the exact versioned waiver shape and does not infer fields from later
+schema versions. Both schemas keep the environments section 12.1 grammar.
 
 ## System configuration schema 2
 

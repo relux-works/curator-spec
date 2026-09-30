@@ -152,6 +152,50 @@ func TestManagerConfigV2FixturesCoverEveryKnob(t *testing.T) {
 	}
 }
 
+func TestManagerConfigV3VersionsStateHashWaivers(t *testing.T) {
+	root := repositoryRoot(t)
+	v2 := readObject(t, filepath.Join(root, "schemas", "v1", "manager-config-v2.schema.json"))
+	v3 := readObject(t, filepath.Join(root, "schemas", "v1", "manager-config-v3.schema.json"))
+	if v2["properties"].(map[string]any)["schema_version"].(map[string]any)["const"] != json.Number("2") {
+		t.Fatalf("manager-config-v2 must keep schema version 2")
+	}
+	if v3["properties"].(map[string]any)["schema_version"].(map[string]any)["const"] != json.Number("3") {
+		t.Fatalf("manager-config-v3 must select schema version 3")
+	}
+	v2Waiver := v2["$defs"].(map[string]any)["secretMaterialWaiver"].(map[string]any)
+	v2Properties := v2Waiver["properties"].(map[string]any)
+	if _, exists := v2Properties["hash_version"]; exists {
+		t.Fatalf("manager-config-v2 must preserve its released waiver shape")
+	}
+	v3Waiver := v3["$defs"].(map[string]any)["secretMaterialWaiver"].(map[string]any)
+	v3Properties := v3Waiver["properties"].(map[string]any)
+	if !equalJSON(v3Properties["hash_version"], map[string]any{"const": json.Number("2")}) {
+		t.Fatalf("manager-config-v3 hash_version must be exactly 2, got %#v", v3Properties["hash_version"])
+	}
+	if !equalJSON(v2["$defs"].(map[string]any)["environments"], v3["$defs"].(map[string]any)["environments"]) {
+		t.Fatalf("manager-config-v3 must preserve the v2 environments grammar")
+	}
+	if len(managerConfigV3SchemaExamples(validManagerConfigV2())) != 3 {
+		t.Fatalf("manager-config-v3 must publish the three state-waiver cases")
+	}
+}
+
+func TestLogResponseV3IsTheFirstEnvelopeWithV2Entries(t *testing.T) {
+	root := repositoryRoot(t)
+	v2 := readObject(t, filepath.Join(root, "schemas", "v1", "log-response-v2.schema.json"))
+	v3 := readObject(t, filepath.Join(root, "schemas", "v1", "log-response-v3.schema.json"))
+	ref := func(schema map[string]any) string {
+		entries := schema["properties"].(map[string]any)["entries"].(map[string]any)
+		return entries["items"].(map[string]any)["$ref"].(string)
+	}
+	if ref(v2) != "registry-log-entry-v1.schema.json" {
+		t.Fatalf("released log-response-v2 must keep v1 entries, got %q", ref(v2))
+	}
+	if ref(v3) != "registry-log-entry-v2.schema.json" {
+		t.Fatalf("log-response-v3 must reference v2 entries, got %q", ref(v3))
+	}
+}
+
 func equalJSON(left, right any) bool {
 	leftBytes, err := json.Marshal(left)
 	if err != nil {

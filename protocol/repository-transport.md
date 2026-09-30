@@ -87,8 +87,9 @@ objects when a tag is selected, objects, snapshot and audit evidence. Lock repla
 under Skillfile sources §3 is a separate operation: if a `git` or `repository`
 member's snapshot is absent, the manager fetches the locked commit by object ID,
 verifies its object format and commit, and MUST NOT resolve, verify or require the
-declared tag or branch. Replay is bound by the locked package identity and
-`content_sha256`; a mismatch fails closed. A moved ref is not a replay failure.
+declared tag or branch. Replay is bound by the locked package identity and the
+exact `(hash_version, content_sha256)` pair; a mismatch fails closed. A v1 lock
+with no `hash_version` means version 1. A moved ref is not a replay failure.
 These replay rules also apply when the locked commit is fetched from a listed
 mirror. Same commit bytes alone never establish repository equivalence. Transport
 choice is not part of the portable Skillfile lock or package identity. Store
@@ -212,8 +213,9 @@ and `pin`/`fallback` semantics are unchanged from revision 1. For source
 resolution and explicit refresh/upgrade, the manager verifies a mirror's selected
 commit and declared tag objects exactly as it does for a primary endpoint. On lock
 replay, mirror endpoints follow §3: fetch the locked commit by object ID, verify
-its object format and commit, then verify the locked package identity and
-`content_sha256`; do not resolve, verify or require the declared tag or branch.
+its object format and commit, then verify the locked package identity and the
+exact `(hash_version, content_sha256)` pair; do not resolve, verify or require
+the declared tag or branch.
 A moved ref is not a replay failure. The manager MUST NOT infer, generate or
 discover mirrors: no generated URLs, no probing, no redirect-following to an
 unlisted host. A mirror attestation authorizes the resolved connection host only.

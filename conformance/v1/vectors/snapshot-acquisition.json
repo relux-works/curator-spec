@@ -10,7 +10,7 @@
         "The `subst.txt` entry MUST still contain the literal text `$Format:%H$` and `$Format:%h$`; the `crlf.txt` entry MUST contain CRLF line endings; the `mixed.txt` entry MUST contain both LF and CRLF line endings."
       ],
       "expected": "expected/byte-exact-snapshot_sha256.txt",
-      "expected_sha256": "sha256:500ea934403d10a2a0b6b7e8874790e489ee002328d3dc0edbda2fe5be2bced0",
+      "expected_sha256": "sha256:ecca17aacc80360a390b2403016f71e04a29e5d46c6643b77a5ee77b47186a9e",
       "files": [
         {
           "bytes": 35,

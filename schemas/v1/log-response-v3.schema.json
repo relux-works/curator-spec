@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/v1/log-response-v3.schema.json",
+  "title": "Registry log response with page boundary and version-2 entries",
+  "type": "object",
+  "required": [
+    "entries",
+    "next_cursor",
+    "boundary"
+  ],
+  "properties": {
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "registry-log-entry-v2.schema.json"
+      },
+      "maxItems": 1000
+    },
+    "next_cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "boundary": {
+      "$ref": "registry-snapshot-v1.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

@@ -116,12 +116,12 @@ func main() {
 	must(os.MkdirAll(vectors, 0o755))
 
 	snapshotFiles := regularFiles(fixture)
-	snapshotHash := contentHash(fixture, snapshotFiles)
+	snapshotHash := contentHashV1(fixture, snapshotFiles)
 	writeText(filepath.Join(expected, "snapshot_sha256.txt"), snapshotHash+"\n")
 
 	selected := selectedContextFiles(fixture)
 	writeJSON(filepath.Join(expected, "context_files.json"), selected)
-	contextHash := contentHash(fixture, selected)
+	contextHash := contentHashV1(fixture, selected)
 	writeText(filepath.Join(expected, "context_sha256.txt"), contextHash+"\n")
 
 	marker := map[string]any{
@@ -137,6 +137,8 @@ func main() {
 	writeJSON(filepath.Join(expected, "marker.json"), marker)
 	writeJSON(filepath.Join(expected, "marker-v2.json"), sharedFixtureMarkerV2(marker))
 	writeJSON(filepath.Join(expected, "install-marker-v4.json"), validInstallMarkerV4(marker))
+	markerV5 := validInstallMarkerV5(marker, contentHashV2(fixture, selected))
+	writeJSON(filepath.Join(expected, "install-marker-v5.json"), markerV5)
 	ledger := map[string]any{"schema_version": 1, "entries": []any{"golden-skill"}}
 	writeJSON(filepath.Join(expected, "adapter-ledger.json"), ledger)
 
@@ -188,6 +190,7 @@ func main() {
 	writeJSON(filepath.Join(expected, "registry", "bundle.json"), bundle)
 
 	writeCanonicalVectors(vectors)
+	writeContentHashV2Vectors(vectors)
 	writeBehaviorVectors(vectors, snapshotHash)
 	writeSkillManifestResolutionVectors(vectors)
 	writeManagerConfigVectors(vectors, pinned)
@@ -529,8 +532,8 @@ func writeRegistryServiceVectors(dir string) {
 		record("beta-mirror", "beta", sourceB, commitB, hashA, "audited"),
 	}
 	writeJSON(filepath.Join(dir, "registry-service.json"), map[string]any{
-		"artifact_key": []any{"name", "source_identity", "commit", "content_sha256"},
-		"sort_key":     []any{"name", "source_identity", "commit", "content_sha256"},
+		"artifact_key": []any{"name", "source_identity", "commit", "hash_version", "content_sha256"},
+		"sort_key":     []any{"name", "source_identity", "commit", "hash_version", "content_sha256"},
 		"records":      records,
 		"query_cases": []any{
 			map[string]any{
@@ -2464,6 +2467,8 @@ func lifecycleCase(name, state string, code any, compilerStarted bool, orderedPh
 }
 
 func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry, bundle map[string]any, pinned string) {
+	caseRoot := filepath.Join(suite, "schema-cases")
+	must(os.MkdirAll(caseRoot, 0o755))
 	validSkill := func(version int) map[string]any {
 		obj := map[string]any{"schema_version": version, "commands": map[string]any{}}
 		if version >= 2 {
@@ -2568,16 +2573,52 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	additionalCases["install-marker-v2.schema.json"] = installMarkerV2SchemaExamples(markerV2)
 	markerV3 := validInstallMarkerV3(marker)
 	cases["install-marker-v3.schema.json"] = schemaCase{markerV3, without(markerV3, "builds")}
-	additionalCases["install-marker-v3.schema.json"] = installMarkerBuildRecordSchemaExamples(markerV3)
+	additionalCases["install-marker-v3.schema.json"] = append(installMarkerBuildRecordSchemaExamples(markerV3), schemaExample{
+		name: "invalid-hash-version-on-frozen-marker", valid: false, instance: withField(markerV3, "hash_version", 2),
+	})
 	markerV4 := validInstallMarkerV4(marker)
 	cases["install-marker-v4.schema.json"] = schemaCase{markerV4, without(markerV4, "builds")}
-	additionalCases["install-marker-v4.schema.json"] = installMarkerBuildRecordSchemaExamples(markerV4)
+	additionalCases["install-marker-v4.schema.json"] = append(installMarkerBuildRecordSchemaExamples(markerV4), schemaExample{
+		name: "invalid-hash-version-on-frozen-marker", valid: false, instance: withField(markerV4, "hash_version", 2),
+	})
+	fixture := filepath.Join(suite, "fixtures", "skill")
+	markerV5 := validInstallMarkerV5(marker, contentHashV2(fixture, selectedContextFiles(fixture)))
+	cases["install-marker-v5.schema.json"] = schemaCase{markerV5, without(markerV5, "builds")}
+	additionalCases["install-marker-v5.schema.json"] = append(installMarkerBuildRecordSchemaExamples(markerV5),
+		schemaExample{name: "invalid-missing-hash-version", valid: false, instance: without(markerV5, "hash_version")},
+		schemaExample{name: "invalid-wrong-hash-version", valid: false, instance: withField(markerV5, "hash_version", 1)},
+	)
 	cases["adapter-ledger-v1.schema.json"] = schemaCase{ledger, map[string]any{"schema_version": 1, "entries": []any{"CON"}}}
 	cases["audit-record-v1.schema.json"] = schemaCase{audited, without(audited, "sig")}
+	additionalCases["audit-record-v1.schema.json"] = []schemaExample{{
+		name: "invalid-hash-version-on-frozen-record", valid: false, instance: withField(audited, "hash_version", 2),
+	}}
+	seed := make([]byte, ed25519.SeedSize)
+	for index := range seed {
+		seed[index] = byte(index)
+	}
+	private := ed25519.NewKeyFromSeed(seed)
+	auditedV2Body := cloneMap(audited)
+	delete(auditedV2Body, "sig")
+	auditedV2Body["schema_version"] = 2
+	auditedV2Body["hash_version"] = 2
+	auditedV2Body["content_sha256"] = contentHashV2Bytes(map[string][]byte{"audit.txt": []byte("v2 audit\n")})
+	auditedV2 := sign(auditedV2Body, private, private.Public().(ed25519.PublicKey))
+	logEntryV2 := buildLog([]map[string]any{auditedV2})[0]
+	bundleV2 := map[string]any{"schema_version": 2, "records": []any{audited, auditedV2}, "snapshot": snapshot, "public_key": pinned}
+	cases["audit-record-v2.schema.json"] = schemaCase{auditedV2, without(auditedV2, "hash_version")}
+	additionalCases["audit-record-v2.schema.json"] = []schemaExample{{
+		name: "invalid-v1-hash-version", valid: false, instance: withField(auditedV2, "hash_version", 1),
+	}}
 	cases["signature-envelope-v1.schema.json"] = schemaCase{audited["sig"], map[string]any{"algorithm": "rsa", "key_id": "bad", "signature": "bad"}}
 	cases["registry-snapshot-v1.schema.json"] = schemaCase{snapshot, without(snapshot, "head")}
 	cases["registry-log-entry-v1.schema.json"] = schemaCase{logEntry, map[string]any{"seq": 0}}
+	additionalCases["registry-log-entry-v1.schema.json"] = []schemaExample{{
+		name: "invalid-v2-record-in-frozen-entry", valid: false, instance: withField(logEntry, "record", auditedV2),
+	}}
+	cases["registry-log-entry-v2.schema.json"] = schemaCase{logEntryV2, without(logEntryV2, "record")}
 	cases["registry-bundle-v1.schema.json"] = schemaCase{bundle, without(bundle, "snapshot")}
+	cases["registry-bundle-v2.schema.json"] = schemaCase{bundleV2, without(bundleV2, "snapshot")}
 	cases["manager-config-v1.schema.json"] = schemaCase{
 		map[string]any{
 			"schema_version": 1, "skills_root": "/tmp/skills", "preferred_locale": nil,
@@ -2590,6 +2631,10 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	managerConfigV2 := validManagerConfigV2()
 	cases["manager-config-v2.schema.json"] = schemaCase{managerConfigV2, map[string]any{"schema_version": 2, "projects": map[string]any{}}}
 	additionalCases["manager-config-v2.schema.json"] = managerConfigV2SchemaExamples(managerConfigV2)
+	managerConfigV3 := cloneMap(managerConfigV2)
+	managerConfigV3["schema_version"] = 3
+	cases["manager-config-v3.schema.json"] = schemaCase{managerConfigV3, map[string]any{"schema_version": 3, "projects": map[string]any{}}}
+	additionalCases["manager-config-v3.schema.json"] = managerConfigV3SchemaExamples(managerConfigV2)
 	cases["system-config-v1.schema.json"] = schemaCase{map[string]any{"schema_version": 1, "locked": []any{"audit"}, "audit": map[string]any{}, "preferred_locale": "en"}, map[string]any{"schema_version": 1, "locked": []any{"skills_root"}}}
 	systemConfigV2 := validSystemConfigV2()
 	cases["system-config-v2.schema.json"] = schemaCase{systemConfigV2, map[string]any{"schema_version": 2, "locked": []any{"skills_root"}}}
@@ -2604,7 +2649,10 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	cases["records-response-v2.schema.json"] = schemaCase{map[string]any{"records": []any{audited}, "next_cursor": nil, "boundary": snapshot}, recordsV1}
 	logV1 := map[string]any{"entries": []any{logEntry}, "next_cursor": nil}
 	cases["log-response-v1.schema.json"] = schemaCase{logV1, map[string]any{"entries": []any{map[string]any{"seq": 0}}, "next_cursor": nil}}
-	cases["log-response-v2.schema.json"] = schemaCase{map[string]any{"entries": []any{logEntry}, "next_cursor": nil, "boundary": snapshot}, logV1}
+	logResponseV2 := map[string]any{"entries": []any{logEntry}, "next_cursor": nil, "boundary": snapshot}
+	cases["log-response-v2.schema.json"] = schemaCase{logResponseV2, map[string]any{"entries": []any{logEntry}, "next_cursor": nil}}
+	logResponseV3 := map[string]any{"entries": []any{logEntryV2}, "next_cursor": nil, "boundary": snapshot}
+	cases["log-response-v3.schema.json"] = schemaCase{logResponseV3, map[string]any{"entries": []any{logEntryV2}, "next_cursor": nil}}
 	cases["submission-response-v1.schema.json"] = schemaCase{map[string]any{"seq": 1, "entry_hash": logEntry["entry_hash"]}, map[string]any{"seq": 0, "entry_hash": "bad"}}
 	cases["error-response-v1.schema.json"] = schemaCase{map[string]any{"error": map[string]any{"code": "invalid_record", "message": "invalid record", "details": map[string]any{}}}, map[string]any{"detail": "invalid"}}
 	cases["conformance-claim-v1.schema.json"] = schemaCase{
@@ -2716,13 +2764,29 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	additionalCases["agent-mcp-v1.schema.json"] = agentMCPSchemaExamples(agentMCP)
 	contextLock := validContextLockV1()
 	cases["context-lock-v1.schema.json"] = schemaCase{contextLock, without(contextLock, "root")}
-	additionalCases["context-lock-v1.schema.json"] = contextLockSchemaExamples(contextLock)
+	additionalCases["context-lock-v1.schema.json"] = append(contextLockSchemaExamples(contextLock), schemaExample{
+		name: "invalid-hash-version-on-frozen-lock", valid: false, instance: withField(contextLock, "hash_version", 2),
+	})
+	contextLockV2 := validContextLockV2()
+	cases["context-lock-v2.schema.json"] = schemaCase{contextLockV2, without(contextLockV2, "root")}
+	additionalCases["context-lock-v2.schema.json"] = []schemaExample{
+		{name: "invalid-missing-hash-version", valid: false, instance: without(contextLockV2, "hash_version")},
+		{name: "invalid-wrong-hash-version", valid: false, instance: withField(contextLockV2, "hash_version", 1)},
+	}
 	environmentMarker := validEnvironmentMarkerV1()
 	cases["agent-environment-marker-v1.schema.json"] = schemaCase{environmentMarker, without(environmentMarker, "surfaces")}
 	additionalCases["agent-environment-marker-v1.schema.json"] = environmentMarkerSchemaExamples(environmentMarker)
 	environmentMarkerV2 := validEnvironmentMarkerV2()
 	cases["agent-environment-marker-v2.schema.json"] = schemaCase{environmentMarkerV2, without(environmentMarkerV2, "surfaces")}
-	additionalCases["agent-environment-marker-v2.schema.json"] = environmentMarkerV2SchemaExamples(environmentMarkerV2)
+	additionalCases["agent-environment-marker-v2.schema.json"] = append(environmentMarkerV2SchemaExamples(environmentMarkerV2), schemaExample{
+		name: "invalid-hash-version-on-frozen-marker", valid: false, instance: withField(environmentMarkerV2, "hash_version", 2),
+	})
+	environmentMarkerV3 := validEnvironmentMarkerV3()
+	cases["agent-environment-marker-v3.schema.json"] = schemaCase{environmentMarkerV3, without(environmentMarkerV3, "surfaces")}
+	additionalCases["agent-environment-marker-v3.schema.json"] = append(environmentMarkerV2SchemaExamples(environmentMarkerV3),
+		schemaExample{name: "invalid-missing-hash-version", valid: false, instance: without(environmentMarkerV3, "hash_version")},
+		schemaExample{name: "invalid-wrong-hash-version", valid: false, instance: withField(environmentMarkerV3, "hash_version", 1)},
+	)
 	launchFragment := validLaunchEnvFragmentV1()
 	cases["launch-env-fragment-v1.schema.json"] = schemaCase{launchFragment, without(launchFragment, "env")}
 	additionalCases["launch-env-fragment-v1.schema.json"] = launchEnvFragmentSchemaExamples(launchFragment)
@@ -3341,6 +3405,14 @@ func validInstallMarkerV4(markerV1 map[string]any) map[string]any {
 	return marker
 }
 
+func validInstallMarkerV5(markerV1 map[string]any, contentHash string) map[string]any {
+	marker := validInstallMarkerV4(markerV1)
+	marker["schema_version"] = 5
+	marker["hash_version"] = 2
+	marker["content_sha256"] = contentHash
+	return marker
+}
+
 func installMarkerBuildRecordSchemaExamples(validMarker map[string]any) []schemaExample {
 	externalOnly := markerWithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(true))
 	externalOnlyUnsubstituted := markerWithExternalRecord(validMarker, validBuildRecordV2ForMarkerV3(false))
@@ -3815,7 +3887,7 @@ type toolchainRecord struct {
 func writeBuildDriverVectors(dir, fixture, expected string, markerV1 map[string]any) {
 	fixtureFiles := regularFiles(fixture)
 	contextFiles := selectedContextFiles(fixture)
-	contextHash := contentHash(fixture, contextFiles)
+	contextHash := contentHashV1(fixture, contextFiles)
 	fixtureRecords := buildSourceRecords(fixture, fixtureFiles)
 	fixtureBuildSourceBytes := frameBuildSource(fixtureRecords)
 	fixtureBuildSourceHash := sha256Identity(fixtureBuildSourceBytes)
@@ -4419,19 +4491,129 @@ func underRoot(path string, roots []string) bool {
 	return false
 }
 
-func contentHash(root string, files []string) string {
+func contentHashV1(root string, files []string) string {
+	payloads := make(map[string][]byte, len(files))
+	for _, rel := range files {
+		payload, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(rel)))
+		must(err)
+		payloads[rel] = payload
+	}
+	return contentHashV1Bytes(payloads)
+}
+
+func contentHashV1Bytes(files map[string][]byte) string {
+	paths := make([]string, 0, len(files))
+	for path := range files {
+		paths = append(paths, path)
+	}
+	sort.Slice(paths, func(i, j int) bool { return bytes.Compare([]byte(paths[i]), []byte(paths[j])) < 0 })
 	digest := sha256.New()
-	for index, rel := range files {
+	for index, rel := range paths {
 		if index > 0 {
 			_, _ = digest.Write([]byte{0})
 		}
 		_, _ = digest.Write([]byte(rel))
 		_, _ = digest.Write([]byte{0})
+		_, _ = digest.Write(files[rel])
+	}
+	return "sha256:" + hex.EncodeToString(digest.Sum(nil))
+}
+
+func contentHashV2(root string, files []string) string {
+	payloads := make(map[string][]byte, len(files))
+	for _, rel := range files {
 		payload, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(rel)))
 		must(err)
+		payloads[rel] = payload
+	}
+	return contentHashV2Bytes(payloads)
+}
+
+func contentHashV2Bytes(files map[string][]byte) string {
+	paths := make([]string, 0, len(files))
+	for path := range files {
+		paths = append(paths, path)
+	}
+	sort.Slice(paths, func(i, j int) bool { return bytes.Compare([]byte(paths[i]), []byte(paths[j])) < 0 })
+	digest := sha256.New()
+	_, _ = digest.Write([]byte("curator-content-v2\x00"))
+	var length [8]byte
+	for _, path := range paths {
+		pathBytes := []byte(path)
+		payload := files[path]
+		_, _ = digest.Write([]byte{'F'})
+		binary.BigEndian.PutUint64(length[:], uint64(len(pathBytes)))
+		_, _ = digest.Write(length[:])
+		_, _ = digest.Write(pathBytes)
+		binary.BigEndian.PutUint64(length[:], uint64(len(payload)))
+		_, _ = digest.Write(length[:])
 		_, _ = digest.Write(payload)
 	}
 	return "sha256:" + hex.EncodeToString(digest.Sum(nil))
+}
+
+func writeContentHashV2Vectors(dir string) {
+	collidingOne := map[string][]byte{"a": []byte("one\x00b\x00two")}
+	collidingTwo := map[string][]byte{"a": []byte("one"), "b": []byte("two")}
+	ordinary := map[string][]byte{"README.md": []byte("curator\n"), "src/main.go": []byte("package main\n")}
+	nestedNUL := map[string][]byte{"deep/third/bytes.bin": []byte("before\x00after")}
+	collision := func(name string, files map[string][]byte) map[string]any {
+		entries := make([]any, 0, len(files))
+		paths := make([]string, 0, len(files))
+		for path := range files {
+			paths = append(paths, path)
+		}
+		sort.Slice(paths, func(i, j int) bool { return bytes.Compare([]byte(paths[i]), []byte(paths[j])) < 0 })
+		for _, path := range paths {
+			entries = append(entries, map[string]any{"path": path, "bytes_utf8": string(files[path])})
+		}
+		return map[string]any{"name": name, "files": entries, "v1_sha256": contentHashV1Bytes(files), "v2_sha256": contentHashV2Bytes(files)}
+	}
+	ordinaryFiles := func(files map[string][]byte) []any {
+		entries := make([]any, 0, len(files))
+		paths := make([]string, 0, len(files))
+		for path := range files {
+			paths = append(paths, path)
+		}
+		sort.Slice(paths, func(i, j int) bool { return bytes.Compare([]byte(paths[i]), []byte(paths[j])) < 0 })
+		for _, path := range paths {
+			entries = append(entries, map[string]any{"path": path, "bytes_utf8": string(files[path])})
+		}
+		return entries
+	}
+	writeJSON(filepath.Join(dir, "content-hashes-v2.json"), map[string]any{
+		"schema_version": 1,
+		"framing": map[string]any{
+			"domain_prefix_utf8":    "curator-content-v2",
+			"domain_terminator_hex": "00",
+			"file_record_tag_hex":   "46",
+			"path_length":           "uint64be-octets",
+			"bytes_length":          "uint64be-octets",
+		},
+		"colliding_v1_pair": map[string]any{
+			"construction":     "v1 encodes path || NUL || bytes and joins records with NUL: one file a=one NUL b NUL two and two files a=one, b=two produce the same byte string",
+			"trees":            []any{collision("one-file-embedded-record", collidingOne), collision("two-file-records", collidingTwo)},
+			"v1_hashes_equal":  contentHashV1Bytes(collidingOne) == contentHashV1Bytes(collidingTwo),
+			"v2_hashes_differ": contentHashV2Bytes(collidingOne) != contentHashV2Bytes(collidingTwo),
+		},
+		"empty_tree": map[string]any{
+			"files": []any{}, "v2_sha256": contentHashV2Bytes(map[string][]byte{}),
+		},
+		"ordinary_tree": map[string]any{
+			"files": ordinaryFiles(ordinary), "v1_sha256": contentHashV1Bytes(ordinary), "v2_sha256": contentHashV2Bytes(ordinary),
+		},
+		"registry_version_mismatch": map[string]any{
+			"record":   map[string]any{"hash_version": 1, "content_sha256": "sha256:" + strings.Repeat("0", 64)},
+			"computed": map[string]any{"hash_version": 2, "content_sha256": "sha256:" + strings.Repeat("0", 64)},
+			"matches":  false,
+			"reason":   "equal_digest_text_does_not_override_unequal_framing_versions",
+		},
+		"nested_nul": map[string]any{
+			"file": ordinaryFiles(nestedNUL)[0], "directory_depth": 2,
+			"v1_reader": "blocking-opaque-finding", "v2_treatment": "ordinary-file-byte",
+			"v2_sha256": contentHashV2Bytes(nestedNUL),
+		},
+	})
 }
 
 func sign(body map[string]any, private ed25519.PrivateKey, public ed25519.PublicKey) map[string]any {

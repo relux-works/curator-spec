@@ -1,0 +1,29 @@
+{
+  "entries": [
+    {
+      "entry_hash": "c22f9a609c645cea6aa253d385df2a3caf8d0fe8bd2b75ab33893739742ac1bc",
+      "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "record": {
+        "audit": {
+          "auditor": "golden",
+          "note": "заметка",
+          "sequence": 1
+        },
+        "commit": "0123456789abcdef0123456789abcdef01234567",
+        "content_sha256": "sha256:933592b5b4fac5f7d285676f07280b1c0a537079391cb5a0a6da0bea261b5c41",
+        "hash_version": 2,
+        "name": "golden-skill",
+        "schema_version": 2,
+        "sig": {
+          "algorithm": "ed25519",
+          "key_id": "56475aa75463474c",
+          "signature": "921/eWEhYxRUQg+gPxvjOHgxoMDXMvm7PKDFuL8jRKeDAioNq5EdVvKj4rz/iBMQdX2KTu6l/kQjIfQotsLBBQ=="
+        },
+        "source_identity": "git.example.com/skills/golden-skill",
+        "status": "audited"
+      },
+      "seq": 1
+    }
+  ],
+  "next_cursor": null
+}

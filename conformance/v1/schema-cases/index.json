@@ -635,6 +635,151 @@
     "valid": false
   },
   {
+    "instance": "agent-environment-marker-v2/invalid-hash-version-on-frozen-marker.json",
+    "schema": "agent-environment-marker-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/valid.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/valid-file-link.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v3/valid-keyring-preferred-file.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v3/valid-keyring-preferred-ambient.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v3/valid-per-home-keychain-isolated.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v3/valid-ambient.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v3/valid-in-place.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-missing-isolation.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-missing-strategy.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-missing-source-role.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-missing-backend.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-missing-backend-version.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-missing-provenance.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-unknown-backend.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-unknown-provenance.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-unknown-isolation.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-unknown-source-role.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-empty-backend-version.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-unknown-strategy.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-path-on-ambient-strategy.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-path-on-ambient-backend.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-path-on-isolated-per-home-keychain.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-missing-path-on-file-link.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-missing-path-on-keyring-preferred-file.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-unknown-field.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-missing-hash-version.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "agent-environment-marker-v3/invalid-wrong-hash-version.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": false
+  },
+  {
     "instance": "agent-mcp-v1/valid.json",
     "schema": "agent-mcp-v1.schema.json",
     "valid": true
@@ -1790,6 +1935,26 @@
     "valid": false
   },
   {
+    "instance": "audit-record-v1/invalid-hash-version-on-frozen-record.json",
+    "schema": "audit-record-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "audit-record-v2/valid.json",
+    "schema": "audit-record-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "audit-record-v2/invalid.json",
+    "schema": "audit-record-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "audit-record-v2/invalid-v1-hash-version.json",
+    "schema": "audit-record-v2.schema.json",
+    "valid": false
+  },
+  {
     "instance": "build-receipt-v1/valid.json",
     "schema": "build-receipt-v1.schema.json",
     "valid": true
@@ -2292,6 +2457,31 @@
   {
     "instance": "context-lock-v1/invalid-members-duplicate.json",
     "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v1/invalid-hash-version-on-frozen-lock.json",
+    "schema": "context-lock-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v2/valid.json",
+    "schema": "context-lock-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "context-lock-v2/invalid.json",
+    "schema": "context-lock-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v2/invalid-missing-hash-version.json",
+    "schema": "context-lock-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "context-lock-v2/invalid-wrong-hash-version.json",
+    "schema": "context-lock-v2.schema.json",
     "valid": false
   },
   {
@@ -3580,6 +3770,11 @@
     "valid": false
   },
   {
+    "instance": "install-marker-v3/invalid-hash-version-on-frozen-marker.json",
+    "schema": "install-marker-v3.schema.json",
+    "valid": false
+  },
+  {
     "instance": "install-marker-v4/valid.json",
     "schema": "install-marker-v4.schema.json",
     "valid": true
@@ -3712,6 +3907,156 @@
   {
     "instance": "install-marker-v4/invalid-package-signing.json",
     "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v4/invalid-hash-version-on-frozen-marker.json",
+    "schema": "install-marker-v4.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/valid.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v5/invalid.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/valid-empty-builds.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v5/valid-external-only-substituted.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v5/valid-external-only-unsubstituted.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v5/valid-local-only.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v5/valid-network-substitution-tag.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v5/valid-network-substitution-branch.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v5/valid-network-sha1-revision.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v5/valid-network-sha256-revision.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v5/valid-sha256-external.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v5/valid-untagged-external.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "install-marker-v5/invalid-missing-local-build-source.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-external-only-build-source.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-local-receipt-version.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-external-receipt-version.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-external-object-width.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-external-declared-effective-mismatch.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-marker-local-identity-kind-mismatch.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-marker-network-identity-kind-mismatch.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-marker-sha1-effective-revision-width.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-marker-sha256-effective-revision-width.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-local-hardened-execution-policy.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-external-hardened-execution-policy.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-local-missing-execution-policy.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-external-missing-execution-policy.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-package-signing.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-missing-hash-version.json",
+    "schema": "install-marker-v5.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "install-marker-v5/invalid-wrong-hash-version.json",
+    "schema": "install-marker-v5.schema.json",
     "valid": false
   },
   {
@@ -4052,6 +4397,16 @@
   {
     "instance": "log-response-v2/invalid.json",
     "schema": "log-response-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "log-response-v3/valid.json",
+    "schema": "log-response-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "log-response-v3/invalid.json",
+    "schema": "log-response-v3.schema.json",
     "valid": false
   },
   {
@@ -4600,6 +4955,31 @@
     "valid": false
   },
   {
+    "instance": "manager-config-v3/valid.json",
+    "schema": "manager-config-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v3/invalid.json",
+    "schema": "manager-config-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v3/valid-v2-state-hash-waiver.json",
+    "schema": "manager-config-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "manager-config-v3/invalid-waiver-hash-version.json",
+    "schema": "manager-config-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "manager-config-v3/invalid-v3-state-waiver-commit-length.json",
+    "schema": "manager-config-v3.schema.json",
+    "valid": false
+  },
+  {
     "instance": "provider-capability-receipt-v1/valid.json",
     "schema": "provider-capability-receipt-v1.schema.json",
     "valid": true
@@ -4645,6 +5025,16 @@
     "valid": false
   },
   {
+    "instance": "registry-bundle-v2/valid.json",
+    "schema": "registry-bundle-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "registry-bundle-v2/invalid.json",
+    "schema": "registry-bundle-v2.schema.json",
+    "valid": false
+  },
+  {
     "instance": "registry-log-entry-v1/valid.json",
     "schema": "registry-log-entry-v1.schema.json",
     "valid": true
@@ -4652,6 +5042,21 @@
   {
     "instance": "registry-log-entry-v1/invalid.json",
     "schema": "registry-log-entry-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "registry-log-entry-v1/invalid-v2-record-in-frozen-entry.json",
+    "schema": "registry-log-entry-v1.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "registry-log-entry-v2/valid.json",
+    "schema": "registry-log-entry-v2.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "registry-log-entry-v2/invalid.json",
+    "schema": "registry-log-entry-v2.schema.json",
     "valid": false
   },
   {

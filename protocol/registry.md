@@ -93,17 +93,26 @@ configured registries are detected after this canonicalization.
 
 ## 3. Audit records
 
-Records conform to `audit-record-v1.schema.json`. New writers include
-`schema_version: 1`; readers treat an absent version as legacy schema 1 through
-protocol 1.x. Required artifact fields are non-empty `name`,
-`source_identity`, full lowercase hexadecimal `commit`, `content_sha256`, and
-`status`. `status` is `audited`, `revoked`, `deprecated`, or `pending`.
+Legacy records conform to `audit-record-v1.schema.json`. New legacy-version-1
+writers include `schema_version: 1`; readers treat an absent version as
+schema 1 through protocol 1.x. A v1 record has no `hash_version` and therefore
+carries framing version 1. New records using content framing v2 conform to
+`audit-record-v2.schema.json`, include `schema_version: 2` and REQUIRED
+`hash_version: 2`, and carry `content_sha256` as the SHA-256 digest from core
+§8. The record's schema version and content-hash framing version are separate
+values. Required artifact fields are non-empty `name`, `source_identity`, full
+lowercase hexadecimal `commit`, `content_sha256`, and `status`. `status` is
+`audited`, `revoked`, `deprecated`, or `pending`.
 
 `audit` contains CCJ-1-compatible metadata. `endorsements` retain prior
 signature envelopes and an endorser identifier. The outer registry signature
 covers endorsements.
 
-A record matches an artifact when either:
+A record is eligible to match an artifact only when its content-hash framing
+version equals the artifact's framing version. A record with a different
+`hash_version` MUST NOT match by either content or source identity, even if its
+digest bytes, canonical source identity, or commit are equal. For eligible
+versions, a record matches an artifact when either:
 
 - `content_sha256` equals the computed artifact content hash; or
 - both canonical `source_identity` and resolved `commit` equal the artifact.
@@ -112,9 +121,9 @@ Content equality intentionally permits one audited tree mirrored from another
 source. Policy may forbid that through source allowlists.
 
 The registry-service latest-record projection uses the exact artifact key
-`(name, source_identity, commit, content_sha256)`. Matching and federation do
-not collapse records with different content hashes merely because their source
-identity and commit agree.
+`(name, source_identity, commit, hash_version, content_sha256)`. Matching and
+federation do not collapse records with different framing versions or content
+hashes merely because their source identity and commit agree.
 
 ## 4. Federation
 
@@ -304,9 +313,11 @@ lists, per mirror group, whether the last comparison agreed or diverged
 
 ## 6. Transparency log and Merkle tree
 
-Log entries conform to `registry-log-entry-v1.schema.json`. Sequence numbers
-start at 1 and are contiguous. Genesis previous hash is 64 ASCII zeroes. For
-entry `i`:
+Legacy log entries conform to `registry-log-entry-v1.schema.json`. Entries
+that carry a version-2 audit record conform to
+`registry-log-entry-v2.schema.json`, which accepts historical v1 records and
+v2 records. Sequence numbers start at 1 and are contiguous. Genesis previous
+hash is 64 ASCII zeroes. For entry `i`:
 
 ```text
 entry_hash = SHA256(ASCII(prev_hash) || CCJ-1(record))
@@ -326,8 +337,10 @@ append-only; deletion or in-place replacement is forbidden.
 
 ## 7. Authenticated offline bundles
 
-Bundles conform to `registry-bundle-v1.schema.json`. The container has no
-independent trust anchor. Its authenticity is the composition of:
+Legacy bundles conform to `registry-bundle-v1.schema.json`; bundles that
+carry v2 records conform to `registry-bundle-v2.schema.json`, whose record
+list accepts both v1 and v2 records. The container has no independent trust
+anchor. Its authenticity is the composition of:
 
 - every record signature verifying against the configured upstream key set;
 - the snapshot signature verifying against that same set;
@@ -339,7 +352,7 @@ The embedded `public_key` is informational and MUST NOT bootstrap trust. An
 importer rejects the whole bundle before mutation when any check fails. It then
 countersigns each imported record with its local registry key, preserving the
 upstream signature as an `upstream-import` endorsement, and appends in order.
-Repeated import of the same upstream `(source_identity, commit,
+Repeated import of the same upstream `(source_identity, commit, hash_version,
 content_sha256, status, signature)` is idempotent.
 
 ## 8. Cache and offline behavior
@@ -393,17 +406,21 @@ log envelope treats the v2 `boundary` member as ignorable under this rule.
 | `/v1/meta` | GET | `registry-meta-response-v1.schema.json` |
 | `/v1/records` | GET | `records-response-v2.schema.json` |
 | `/v1/snapshot` | GET | registry snapshot schema |
-| `/v1/log` | GET | `log-response-v2.schema.json` |
+| `/v1/log` | GET | `log-response-v3.schema.json` |
 | `/v1/records` | POST | `submission-response-v1.schema.json` |
 
-`/v1/records` GET accepts URL-encoded `source_identity`, `commit`, and
-`content_sha256`; at least identity plus commit or content hash is REQUIRED. It
-also accepts `limit` (default 100, range 1 through 1000) and opaque `cursor`.
+`/v1/records` GET accepts URL-encoded `source_identity`, `commit`,
+`content_sha256`, and `hash_version`. At least identity plus commit or content
+hash is REQUIRED. When `content_sha256` is supplied without `hash_version`,
+the query selects framing version 1 for compatibility; a version-2 query MUST
+include `hash_version=2`. `hash_version` without `content_sha256` is invalid.
+The query also accepts `limit` (default 100, range 1 through 1000) and opaque
+`cursor`.
 When more than one filter form is supplied, all supplied filters are
 conjunctive. `source_identity` and `commit` appear together or not at all.
 Results contain the latest matching record per exact artifact key,
-deterministic by `name`, `source_identity`, `commit`, and `content_sha256`, plus
-`next_cursor` string or `null`.
+deterministic by `name`, `source_identity`, `commit`, `hash_version`, and
+`content_sha256`, plus `next_cursor` string or `null`.
 The response schema validates the pagination envelope and requires each item
 to be an object. Clients validate each item independently against the audit
 record schema; a malformed item is ignored with a warning as required by
@@ -414,7 +431,11 @@ are ascending by sequence. A cursor is bound to its original query and expires
 no sooner than the advertised cache TTL. The first page of either endpoint
 captures one committed signed snapshot boundary; all cursor pages are evaluated
 at that same boundary according to the registry-service profile, and every
-page carries that boundary on the wire as section 9.3 requires. Unknown,
+page carries that boundary on the wire as section 9.3 requires. Log responses
+use `log-response-v3.schema.json`, whose entries reference
+`registry-log-entry-v2.schema.json` and may therefore contain either a
+historical v1 audit record or a v2 audit record. The frozen
+`log-response-v2.schema.json` continues to reference v1 log entries. Unknown,
 repeated, unpaired, or present-but-empty query parameters return
 `400 invalid_query`.
 

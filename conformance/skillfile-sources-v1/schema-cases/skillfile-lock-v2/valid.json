@@ -1,0 +1,18 @@
+{
+  "schema_version": 2,
+  "manifest_sha256": "sha256:b9b161ebadcac2d76b211fcfb38b74da89f62fc5b605e614588732555784f989",
+  "members": [
+    {
+      "name": "review",
+      "selection": 0,
+      "directory": "agents/skills/review",
+      "package": {
+        "kind": "local-snapshot",
+        "snapshot": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "content_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    }
+  ],
+  "lock_sha256": "sha256:0f132d880c5b9661876c48083e0751815adaa4c84301428b6362d88f601deb36",
+  "hash_version": 2
+}

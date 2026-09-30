@@ -1453,23 +1453,58 @@ in length.
 
 ## 8. Content hashes
 
-The Curator content hash is calculated over regular files excluding the marker
-itself. For each selected file in sorted protocol-path order, append:
+Content-hash framing version 1 is retained only for compatibility with frozen
+objects and previously written state. It selects regular files excluding the
+marker itself, encodes each record as `UTF8(path) || 0x00 || file_bytes`, joins
+records in sorted protocol-path order with one additional `0x00`, and hashes
+the result with SHA-256. The empty v1 tree hashes the empty byte string.
+
+New content identities use framing version 2. The input set is the same set of
+regular files, excluding the marker itself. Encode each protocol path as UTF-8
+without normalization, and sort paths by unsigned bytewise lexicographic order
+of those encoded bytes. Initialize the SHA-256 input with exact ASCII
+`curator-content-v2` followed by one `0x00` byte. For each regular file in
+that order, append exactly:
 
 ```text
-UTF8(path) || 0x00 || file_bytes
+ASCII("F") || uint64be(len(path_bytes)) || path_bytes ||
+uint64be(len(file_bytes)) || file_bytes
 ```
 
-Join adjacent records with one additional `0x00`, hash the resulting byte
-string with SHA-256, encode lowercase hexadecimal, and prefix `sha256:`. The
-empty tree hashes the empty byte string. File mode, owner, timestamp, and
+`F` is the single ASCII octet `0x46` identifying a regular-file record.
+`uint64be(n)` is the unsigned 64-bit representation of `n` in network byte
+order; both lengths count octets. No separator is added between fields or
+records. Directories, including empty directories, have no record. A symbolic
+link is not a regular file, MUST NOT be followed or dereferenced for this
+algorithm, and has no record; the applicable acquisition rules still decide
+whether a tree containing one is admissible. Hard-linked regular files are
+records by each protocol path. File mode, owner, timestamp, and
 filesystem-native separator are not hashed. Readers MUST reject duplicate
-protocol paths rather than hash one arbitrarily.
+encoded protocol paths rather than choose one arbitrarily.
+
+Hashing the empty v2 tree hashes only the domain prefix and its terminating
+`0x00`. Encode the SHA-256 digest as lowercase hexadecimal and prefix it with
+`sha256:`. A content identity is the pair `(hash_version, digest)`: version 1
+selects the legacy framing above and version 2 selects this framing. A frozen
+object that has no `hash_version` member has version 1. New content-hash
+carriers MUST record `hash_version: 2`; an implementation MUST NOT put a v2
+digest in a frozen v1 shape or infer its version from the digest bytes. Every
+comparison of content identities MUST compare both the framing version and
+the digest. Thus a v1 identity and a v2 identity are unequal even when their
+SHA-256 digest strings happen to be identical.
+
+**Interim rule for v1 readers.** Before a v1 reader computes or trusts a v1
+identity, it MUST inspect every regular file in the skill or context snapshot,
+at every directory depth, for byte `0x00`. If any such file contains `0x00`,
+the reader MUST report a blocking opaque finding and MUST NOT hash, omit, or
+otherwise treat that file as absent. The rule applies regardless of the file's
+directory or name. It is a compatibility guard for v1 framing; v2 hashes file
+bytes, including `0x00`, as ordinary data.
 
 ### 8.1 Build-source identity
 
-The installed-tree `content_sha256` above remains unchanged and excludes root
-`.csk-install.json`. It MUST NOT be used as compiled-artifact identity.
+The installed-tree content hash above excludes root `.csk-install.json`. It
+MUST NOT be used as compiled-artifact identity.
 Compiled commands instead bind the fully validated immutable raw snapshot with
 algorithm identifier `curator-build-source-v1`, including every regular file
 and any package-provided root `.csk-install.json`.
@@ -1727,17 +1762,17 @@ garbage-collection paths remain implementation-specific.
 ## 10. Install markers
 
 The following writer-version rules describe legacy installations. The
-[source extension](skillfile-sources.md) requires marker schema 5 for every
+[source extension](skillfile-sources.md) requires marker schema 6 for every
 Skillfile schema-2 installation and preserves these legacy read meanings.
 
 Every installed closure node has `.csk-install.json`. Managers supporting
-schema 7 MUST read marker schemas 1, 2, and 3, and managers supporting schema 8
-MUST read marker schemas 1, 2, 3, and 4. They MUST write marker schema 2 for
-schema 1 through 6 installation mutations, marker schema 3 for schema 7
-installation mutations, and marker schema 4 for schema 8 installation
-mutations. They MAY continue to regard a valid marker-v1 installation as
-current for a schema 1 through 5 package. Marker v1 and v2 retain their
-existing shapes and meanings.
+schema 7 MUST read marker schemas 1, 2, 3, and 5, and managers supporting
+schema 8 MUST read marker schemas 1, 2, 3, 4, and 5. Markers 2, 3, and 4 retain their
+historical writer bands and meanings; markers 1 through 4 carry framing
+version 1, and their frozen schemas do not acquire a `hash_version` member.
+Current writers MUST use marker schema 5 with framing version 2 for every
+installation mutation that writes a core marker. They MAY continue to regard
+a valid marker-v1 installation as current for a schema 1 through 5 package.
 
 Marker v2 permits `skill_schema_version` through 6 and requires sorted
 `build_roots` and a `builds` object, including empty values for installations
@@ -1784,7 +1819,17 @@ rules. An enforced `script-worker-v1` script command produces no build entry
 and adds no marker member: schema 8 changes which manifests a marker may
 describe, not what a marker records. Markers v1, v2, and v3 keep their frozen
 shapes and their existing manifest-version bands, so a schema-8 installation
-is recorded by marker v4 alone.
+was recorded by marker v4 alone under framing version 1.
+
+Marker v5 is the current core marker for content-hash framing version 2. It
+retains marker-v4 fields and build-record rules, changes `schema_version` to
+5, permits `skill_schema_version` values 1 through 8, and adds the REQUIRED
+top-level member `hash_version: 2`. That member versions the marker's
+`content_sha256`; it does not version receipt, artifact, lock, or build-source
+hashes, which keep their separately specified identities. A writer using
+framing version 2 MUST write marker v5. A marker v5 MUST NOT omit
+`hash_version` or use another value. The source-extension marker v6 carries
+the same `hash_version: 2` requirement.
 
 `locale` is always present and is a string or `null`. Required set-like arrays
 are always arrays, including when empty.
@@ -1797,8 +1842,9 @@ member order and whitespace are not significant.
 
 An installation is current only when the marker schema is supported; ref kind,
 ref, commit, locale, agents, activation, substitution, MCP findings, and
-attestation match the effective plan; and the installed content hash matches
-`content_sha256`. For a build-enabled marker, currentness additionally requires
+attestation match the effective plan; and the installed content identity —
+both `hash_version` and `content_sha256`, with frozen markers interpreted as
+version 1 — matches. For a build-enabled marker, currentness additionally requires
 the declared local build roots and static context exclusion to match; every
 available local or external protected snapshot's `build_source` to match the
 effective plan and receipt input; each logical cache key and manager-derived

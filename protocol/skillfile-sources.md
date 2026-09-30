@@ -158,7 +158,11 @@ A context hash is still computed by core section 8 and is not a substitute for
 the local inventory digest: script-only and build-only changes change package
 identity even when SKILL.md and projected context remain byte-identical.
 
-`Skillfile.lock.json` uses skillfile-lock schema 1. `manifest_sha256` is the
+`Skillfile.lock.json` schema 1 is the frozen legacy lock format and its
+`content_sha256` fields use framing version 1. Current writers use
+`skillfile-lock-v2.schema.json`, which adds REQUIRED top-level
+`hash_version: 2`; that member versions every member `content_sha256` in the
+lock. `manifest_sha256` is the
 CCJ-1 SHA-256 of the entire parsed declaring Skillfile, including declared paths;
 it excludes no manifest fields. Machine-resolved absolute paths and endpoint
 choices MUST NOT enter the lock. `members` records the resolved full closure,
@@ -179,7 +183,9 @@ the locked commit object ID, with its object format and commit verified, and a
 `path` member MUST be materialized from its current bytes. During Git replay, the
 manager MUST NOT resolve, verify or require the declared tag or branch; a moved
 ref does not change the locked commit. The manager MUST accept the materialized
-result only when its package identity and `content_sha256` equal the lock;
+result only when its package identity and the pair `(hash_version,
+content_sha256)` equal the lock; a v1 lock without `hash_version` means
+version 1. A v1 reader MUST NOT equate a v1 lock member to a v2 identity;
 otherwise it MUST fail with `source_snapshot_changed`.
 `source_snapshot_unavailable` is reserved for a declared source that cannot be
 reached or read. Re-materialization MUST NOT rewrite the lock or replace a
@@ -216,8 +222,10 @@ bootstrap or prebuilt binary-distribution route is added. External repositories
 of a local package still obey manager section 11; local skill acquisition does
 not turn their committed-HEAD substitutions into dirty-byte snapshots.
 
-For schema-2 installations write marker schema 5, regardless of skill manifest
-version. Its `package` replaces legacy `source/git/ref_kind/ref/commit` fields;
+The legacy schema-2 installation marker is schema 5 and carries a framing-
+version-1 content hash. Current writers write marker schema 6, regardless of
+skill manifest version. Its `package` replaces legacy
+`source/git/ref_kind/ref/commit` fields;
 its `lock_sha256` binds the installed selection and declared ref through the
 validated lock and matching manifest. The following migration is exhaustive;
 fields not replaced here retain core section 10 meaning, including applicability,
@@ -235,14 +243,20 @@ requiredness and canonical set ordering.
 | `builds` | Retained driver-specific records below, with receipt version 3 |
 | No predecessor | Required `package` and `lock_sha256` |
 
+Marker v5 remains the frozen framing-version-1 shape. Marker v6 retains its
+fields and rules, changes `schema_version` to `6`, and adds REQUIRED
+`hash_version: 2` for `content_sha256`. Its `lock_sha256` remains the CCJ-1
+digest of the lock and is not covered by `hash_version`.
+
 `attestation` MUST be present exactly when the effective plan selects existing
 registry evidence and MUST equal its registry, status and key ID (including key
 absence). Both `network-git` and legacy `configured-git` packages may record it
 only when existing registry rules establish the exact canonical repository,
 name, commit and content hash. For a schema-2 network-Git member, a
 non-revoked record MUST NOT provide positive evidence or an attestation unless
-all four values match: canonical package name, canonical repository identity,
-locked commit, and registry artifact content hash. This is a conjunctive
+all content-identity dimensions match: canonical package name, canonical
+repository identity, locked commit, registry `hash_version`, and registry
+artifact content hash. This is a conjunctive
 grant; matching only content, or only repository and commit, does not grant
 positive evidence. The compared registry `content_sha256` is the SHA-256 of
 the raw frozen package tree under registry §3 hashing rules. It is not the
@@ -260,7 +274,10 @@ The marker summary is not authorization: signed records and current trust,
 revocation, freshness and assurance policy MUST still be checked when required.
 A missing, unreadable, malformed, stale or mismatching required evidence record
 MUST NOT become an unattested successful installation or current status.
-`source-audit-v1` supplements this evidence; it does not replace it.
+`source-audit-v1` is the frozen framing-version-1 audit object. Current
+version-2 audits use `source-audit-v2`, with REQUIRED `hash_version: 2` for
+`content_sha256`; source-audit records remain supplementary evidence and do
+not replace signed registry records.
 
 Top-level `substituted` applies only to unchanged legacy individual entries with
 an admitted operator development substitution. Its value MUST equal the

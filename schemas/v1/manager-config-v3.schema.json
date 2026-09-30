@@ -1,0 +1,709 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/v1/manager-config-v3.schema.json",
+  "title": "Curator manager logical configuration schema 3",
+  "description": "Schema 2 plus optional hash_version: 2 on secret_material_waivers when the pin is a content framing version-2 state hash. All schema-2 members keep their schema-2 meaning.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "skills_root",
+    "projects"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 3
+    },
+    "skills_root": {
+      "$ref": "manager-config-v1.schema.json#/properties/skills_root"
+    },
+    "default_agents": {
+      "$ref": "manager-config-v1.schema.json#/properties/default_agents"
+    },
+    "preferred_locale": {
+      "$ref": "manager-config-v1.schema.json#/properties/preferred_locale"
+    },
+    "adapter_mode": {
+      "$ref": "manager-config-v1.schema.json#/properties/adapter_mode"
+    },
+    "worktree_alias_pattern": {
+      "$ref": "manager-config-v1.schema.json#/properties/worktree_alias_pattern"
+    },
+    "projects": {
+      "$ref": "manager-config-v1.schema.json#/properties/projects"
+    },
+    "allowed_sources": {
+      "$ref": "manager-config-v1.schema.json#/properties/allowed_sources"
+    },
+    "audit": {
+      "$ref": "manager-config-v1.schema.json#/properties/audit"
+    },
+    "audit_registries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/registry"
+      }
+    },
+    "disable_builtin_registries": {
+      "$ref": "manager-config-v1.schema.json#/properties/disable_builtin_registries"
+    },
+    "security_posture": {
+      "enum": [
+        "permissive",
+        "hardened"
+      ],
+      "default": "permissive"
+    },
+    "environments": {
+      "$ref": "#/$defs/environments"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "registry": {
+      "type": "object",
+      "required": [
+        "name",
+        "url"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^[Hh][Tt][Tt][Pp][Ss]?://[^\\s]+$",
+          "maxLength": 4096
+        },
+        "public_keys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:ed25519:)?[A-Za-z0-9+/]{43}=$"
+          },
+          "uniqueItems": true,
+          "default": []
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "bootstrap_checkpoint": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "mirror_group": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        }
+      },
+      "additionalProperties": false
+    },
+    "profileNameOrNull": {
+      "oneOf": [
+        {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "versionRange": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^[0-9A-Za-z.*<>=^~| -]+$"
+    },
+    "overlay": {
+      "type": "object",
+      "required": [
+        "source"
+      ],
+      "properties": {
+        "source": {
+          "$ref": "common.schema.json#/$defs/nonEmptyString"
+        },
+        "range": {
+          "$ref": "#/$defs/versionRange"
+        },
+        "tag": {
+          "$ref": "common.schema.json#/$defs/gitRefName"
+        },
+        "revision": {
+          "$ref": "common.schema.json#/$defs/commit"
+        },
+        "directory": {
+          "$ref": "common.schema.json#/$defs/portablePath"
+        },
+        "weight": {
+          "$ref": "common.schema.json#/$defs/nonNegativeSafeInteger"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "allOf": [
+              {
+                "properties": {
+                  "source": {
+                    "pattern": "^[A-Za-z][A-Za-z0-9+.-]+://"
+                  }
+                }
+              },
+              {
+                "not": {
+                  "properties": {
+                    "source": {
+                      "pattern": "^([Ss][Ss][Hh]|[Gg][Ii][Tt]|[Hh][Tt][Tt][Pp][Ss]?)://"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "then": false
+        },
+        {
+          "if": {
+            "allOf": [
+              {
+                "properties": {
+                  "source": {
+                    "pattern": "^[^/\\s]*:"
+                  }
+                }
+              },
+              {
+                "not": {
+                  "properties": {
+                    "source": {
+                      "pattern": "^[A-Za-z][A-Za-z0-9+.-]+://"
+                    }
+                  }
+                }
+              },
+              {
+                "not": {
+                  "properties": {
+                    "source": {
+                      "pattern": "^[A-Za-z]:[\\\\/]"
+                    }
+                  }
+                }
+              },
+              {
+                "not": {
+                  "properties": {
+                    "source": {
+                      "pattern": "^(?:[^/:\\s@]+@)?[A-Za-z0-9][A-Za-z0-9.-]*:[^/\\s\\\\]"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "then": false
+        },
+        {
+          "if": {
+            "anyOf": [
+              {
+                "properties": {
+                  "source": {
+                    "pattern": "^([Ss][Ss][Hh]|[Gg][Ii][Tt]|[Hh][Tt][Tt][Pp][Ss]?)://"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "source": {
+                    "pattern": "^(?:[^/:\\s@]+@)?[A-Za-z0-9][A-Za-z0-9.-]*:[^/\\s\\\\]"
+                  }
+                }
+              }
+            ]
+          },
+          "then": {
+            "oneOf": [
+              {
+                "required": [
+                  "range"
+                ]
+              },
+              {
+                "required": [
+                  "tag"
+                ]
+              },
+              {
+                "required": [
+                  "revision"
+                ]
+              }
+            ]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "range"
+                  ]
+                },
+                {
+                  "required": [
+                    "tag"
+                  ]
+                },
+                {
+                  "required": [
+                    "revision"
+                  ]
+                },
+                {
+                  "required": [
+                    "directory"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "precedence": {
+      "type": "object",
+      "properties": {
+        "winner": {
+          "enum": [
+            "higher-weight",
+            "lower-weight"
+          ],
+          "default": "higher-weight"
+        },
+        "placement": {
+          "enum": [
+            "winner-last",
+            "winner-first"
+          ],
+          "default": "winner-last"
+        }
+      },
+      "additionalProperties": false
+    },
+    "systemPromptFiles": {
+      "type": "object",
+      "properties": {
+        "pi": {
+          "enum": [
+            "off",
+            "append",
+            "replace"
+          ],
+          "default": "off"
+        }
+      },
+      "additionalProperties": false
+    },
+    "target": {
+      "type": "object",
+      "properties": {
+        "participation": {
+          "enum": [
+            "auto",
+            "off",
+            "enabled"
+          ],
+          "default": "auto"
+        },
+        "consented": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "xdgEntryName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^[^/\\\\\\u0000-\\u001f\\u007f]+$",
+      "not": {
+        "enum": [
+          ".",
+          "..",
+          "opencode"
+        ]
+      }
+    },
+    "shadowAcknowledgement": {
+      "type": "object",
+      "required": [
+        "env",
+        "path"
+      ],
+      "properties": {
+        "env": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "path": {
+          "$ref": "common.schema.json#/$defs/nonEmptyString"
+        }
+      },
+      "additionalProperties": false
+    },
+    "systemModuleWaiver": {
+      "type": "object",
+      "required": [
+        "package",
+        "reason"
+      ],
+      "properties": {
+        "package": {
+          "$ref": "common.schema.json#/$defs/identifier"
+        },
+        "reason": {
+          "$ref": "common.schema.json#/$defs/nonEmptyString"
+        }
+      },
+      "additionalProperties": false
+    },
+    "secretMaterialWaiver": {
+      "type": "object",
+      "required": [
+        "pin",
+        "file",
+        "span",
+        "reason"
+      ],
+      "properties": {
+        "pin": {
+          "$ref": "common.schema.json#/$defs/commit"
+        },
+        "file": {
+          "$ref": "common.schema.json#/$defs/portablePath"
+        },
+        "span": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "$ref": "common.schema.json#/$defs/nonNegativeSafeInteger"
+          }
+        },
+        "reason": {
+          "$ref": "common.schema.json#/$defs/nonEmptyString"
+        },
+        "hash_version": {
+          "const": 2
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "hash_version"
+            ]
+          },
+          "then": {
+            "properties": {
+              "pin": {
+                "$ref": "common.schema.json#/$defs/hex256"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "sourceSigner": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "ssh",
+            "gpg"
+          ]
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^(ssh-ed25519|ssh-rsa|ecdsa-sha2-nistp256|ecdsa-sha2-nistp384|ecdsa-sha2-nistp521|sk-ssh-ed25519@openssh\\.com|sk-ecdsa-sha2-nistp256@openssh\\.com) [A-Za-z0-9+/]+={0,2}( [^\\n]*)?$"
+        },
+        "fingerprint": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 40,
+          "pattern": "^[0-9A-F]{40}$"
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "const": "ssh"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "key"
+            ],
+            "properties": {
+              "fingerprint": false
+            }
+          },
+          "else": {
+            "required": [
+              "fingerprint"
+            ],
+            "properties": {
+              "key": false
+            }
+          }
+        }
+      ]
+    },
+    "environments": {
+      "type": "object",
+      "properties": {
+        "current_profile": {
+          "$ref": "#/$defs/profileNameOrNull",
+          "default": null
+        },
+        "scoped_current": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "default": {}
+        },
+        "overlays": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/overlay"
+            }
+          },
+          "default": {}
+        },
+        "overlay_default_weight": {
+          "$ref": "common.schema.json#/$defs/nonNegativeSafeInteger",
+          "default": 1000
+        },
+        "overlays_allowed": {
+          "type": "boolean",
+          "default": true
+        },
+        "precedence": {
+          "$ref": "#/$defs/precedence",
+          "default": {
+            "winner": "higher-weight",
+            "placement": "winner-last"
+          }
+        },
+        "forms": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "additionalProperties": {
+            "enum": [
+              "monolithic",
+              "referenced"
+            ]
+          },
+          "default": {}
+        },
+        "system_prompt_files": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/systemPromptFiles"
+          },
+          "default": {}
+        },
+        "targets": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/target"
+          },
+          "default": {}
+        },
+        "isolation": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "propertyNames": {
+              "$ref": "common.schema.json#/$defs/identifier"
+            },
+            "additionalProperties": {
+              "enum": [
+                "shared",
+                "isolated"
+              ]
+            }
+          },
+          "default": {}
+        },
+        "permissions": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "additionalProperties": {
+            "enum": [
+              "native",
+              "yolo"
+            ]
+          },
+          "default": {}
+        },
+        "xdg_seed_allowlist": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/xdgEntryName"
+          },
+          "uniqueItems": true,
+          "default": [
+            "git",
+            "gh",
+            "ssh"
+          ]
+        },
+        "passable_env_names": {
+          "oneOf": [
+            {
+              "$ref": "common.schema.json#/$defs/identifierSet"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": []
+        },
+        "mcp_package_allowlist": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/nonEmptyString"
+          },
+          "uniqueItems": true,
+          "default": []
+        },
+        "shadow_acknowledged": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/shadowAcknowledgement"
+          },
+          "default": []
+        },
+        "secret_material_waivers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/secretMaterialWaiver"
+          },
+          "default": []
+        },
+        "transitive_system_modules": {
+          "enum": [
+            "drop",
+            "error"
+          ],
+          "default": "drop"
+        },
+        "system_module_waivers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/systemModuleWaiver"
+          },
+          "default": []
+        },
+        "backup_retention": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "default": 5
+        },
+        "require_current_profile": {
+          "$ref": "#/$defs/profileNameOrNull",
+          "default": null
+        },
+        "in_place_mode": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/identifier"
+          },
+          "additionalProperties": {
+            "enum": [
+              "linked",
+              "copied"
+            ]
+          },
+          "default": {}
+        },
+        "provider_directories": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "anyOf": [
+              {
+                "pattern": "^/"
+              },
+              {
+                "pattern": "^[A-Za-z]:[\\\\/]"
+              }
+            ]
+          },
+          "uniqueItems": true,
+          "default": []
+        },
+        "source_signers": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/nonEmptyString"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/sourceSigner"
+            },
+            "uniqueItems": true
+          },
+          "default": {}
+        },
+        "require_source_signers": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

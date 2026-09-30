@@ -6,7 +6,7 @@
     },
     {
       "path": "conformance/skillfile-sources-v1/index.json",
-      "sha256": "sha256:654707af529bffc5104e92e98d4ab6fb910163b187861152bfd7fa769d852575"
+      "sha256": "sha256:05b2d5c471850fe77b461e92a6d4d709f26fcd661360aae810bd156f32716124"
     },
     {
       "path": "conformance/skillfile-sources-v1/schema-cases/build-receipt-v3/invalid-kind.json",
@@ -137,6 +137,10 @@
       "sha256": "sha256:c7f2e6cb7c32e47d5521a0b9e556969db69628ce4bd2b0622e01f1d5e6c94e98"
     },
     {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-hash-version-on-frozen-marker.json",
+      "sha256": "sha256:fc5b686d38c9666ffeee1eb2c962ae2e2b00f139323c93d0fd0bd70aa015c2f1"
+    },
+    {
       "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v5/invalid-local-attestation.json",
       "sha256": "sha256:8292e14cae474e5de8189ae3bbcefcf6aadd91b89da87542ef161b220e13bc32"
     },
@@ -201,6 +205,14 @@
       "sha256": "sha256:0d26f65031caf466217d192303c0196982aeede9faaf4440cff699cc05d9333a"
     },
     {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v6/invalid-missing-hash-version.json",
+      "sha256": "sha256:d648afb423614adfac8ac233c3a65cb6a4e676bd2204b288c625f431ee99dd19"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/install-marker-v6/valid.json",
+      "sha256": "sha256:b1030ea838aa26e379eb07184f98f2e6c3e29f3fe5c3a73d0666b702bbc6ec75"
+    },
+    {
       "path": "conformance/skillfile-sources-v1/schema-cases/local-snapshot-v1/invalid-algorithm.json",
       "sha256": "sha256:4e927ab70268d9fc0a4db30529f6339814a8d411df1cb2fb41c8b65a6ff6b549"
     },
@@ -225,6 +237,10 @@
       "sha256": "sha256:c037ccdd11cf84aa2492aed07be8d4dc725e445bd34be34ae9ea760037810085"
     },
     {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-lock-v1/invalid-hash-version-on-frozen-lock.json",
+      "sha256": "sha256:229c8357ecd3f563e2500deeb2441c572a39cc2a2d48be62b5649f69fa766f39"
+    },
+    {
       "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-lock-v1/invalid-unknown-top-level.json",
       "sha256": "sha256:79730aa0bb621a2c05f54625bfb5fcd0994ce80f7700048d994d838e2f179ad6"
     },
@@ -239,6 +255,18 @@
     {
       "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-lock-v1/valid.json",
       "sha256": "sha256:2807faa0a7c7ca6d6a7bcd46342e5920e744ac5756329bba1c8e0dbecb8330e1"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-lock-v2/invalid-missing-hash-version.json",
+      "sha256": "sha256:ff6112e1c10f1f65d732efd3932c66000afbcdcdc09b50b59b985702a017abe0"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-lock-v2/invalid-wrong-hash-version.json",
+      "sha256": "sha256:cb66fbc38cfad725e91ce59a730c15577ca01c971e36b75e916f99923c501ea2"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-lock-v2/valid.json",
+      "sha256": "sha256:07effc87baeaa5d0b1d33215d224c29c4a16711de44104312b708a3d8f104fd9"
     },
     {
       "path": "conformance/skillfile-sources-v1/schema-cases/skillfile-v2/invalid-directory-0.json",
@@ -409,6 +437,10 @@
       "sha256": "sha256:0d0d5bb25e4084187a500d7d487d8664d616eaa84fabf1936a922d4a963af75e"
     },
     {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-audit-v1/invalid-hash-version-on-frozen-audit.json",
+      "sha256": "sha256:0d1e1bb3259b756379e93f978d7fcd27dd78bf6b3f76310b3760d0cc347b61aa"
+    },
+    {
       "path": "conformance/skillfile-sources-v1/schema-cases/source-audit-v1/invalid-no-evidence.json",
       "sha256": "sha256:86da032b288461e5cd22dcdf0e8b57e27294817d3f47e2a401f4010c608841d4"
     },
@@ -419,6 +451,14 @@
     {
       "path": "conformance/skillfile-sources-v1/schema-cases/source-audit-v1/valid.json",
       "sha256": "sha256:4877ffd7c5a34b6e601d44fff2b79dd0d89127603ddd9158d0a9c83ddc03748a"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-audit-v2/invalid-wrong-hash-version.json",
+      "sha256": "sha256:97e8defabad9bf281f2e3f1df1441e786dd19422089b793d087076191b571bf0"
+    },
+    {
+      "path": "conformance/skillfile-sources-v1/schema-cases/source-audit-v2/valid.json",
+      "sha256": "sha256:6a3710809afcd7bac84df4921500d214628f5f584963737163e5a9dffd75c239"
     },
     {
       "path": "conformance/skillfile-sources-v1/schema-cases/source-policy-v1/invalid-fallback.json",
@@ -506,15 +546,15 @@
     },
     {
       "path": "protocol/repository-transport.md",
-      "sha256": "sha256:d7ca91bf07ca9c1ccd40914ffbf1e8c42e00abb512d2be2a76d495565a04d54e"
+      "sha256": "sha256:3a246ba27cf6f31a3156c5ba5afda18997c9b56bc8decd503d9ba1efe06974da"
     },
     {
       "path": "protocol/skillfile-sources.md",
-      "sha256": "sha256:f31eb9178edc877d8ec8c3456dbd77fb999bd0af77fb0108a209d0e805d21483"
+      "sha256": "sha256:a151314cf09b729fd5a19a3a977578930ff3f226d7186de6f566ffdfd09bdb6e"
     },
     {
       "path": "schemas/skillfile-sources-v1/README.md",
-      "sha256": "sha256:33f1192658d3f0e93a414de8c5c0efff0e66920a5cfc24bff4a5a3b20af4a601"
+      "sha256": "sha256:f6ab4406c44ef4bafdb2b5e219e7ec0a7a266c4169a53294b8d04734a70a2f1a"
     },
     {
       "path": "schemas/skillfile-sources-v1/build-receipt-v3.schema.json",
@@ -525,6 +565,10 @@
       "sha256": "sha256:8510cf629b510bc7216cd9e88055d3d253511c1339e823e51b1e6edb60e31fd2"
     },
     {
+      "path": "schemas/skillfile-sources-v1/install-marker-v6.schema.json",
+      "sha256": "sha256:97c2073cb832c183d737b3122462bc6c124f4d9387ca4844c9482bbeeee18620"
+    },
+    {
       "path": "schemas/skillfile-sources-v1/local-snapshot-v1.schema.json",
       "sha256": "sha256:2ab2e2783ad86bcc7891166b6d492ac93f73d3ad36513ae86a62d4db2e79cff4"
     },
@@ -533,12 +577,20 @@
       "sha256": "sha256:c730f00a82ff9360c68217ca0db04907372066f60f26375827bea8125faa9251"
     },
     {
+      "path": "schemas/skillfile-sources-v1/skillfile-lock-v2.schema.json",
+      "sha256": "sha256:436cb99d288e0ab56bc7fa8485b847a806544353e493ed2e4ac0a982b26b9247"
+    },
+    {
       "path": "schemas/skillfile-sources-v1/skillfile-v2.schema.json",
       "sha256": "sha256:75b0b444edec99f87506689b91c5a03295b6dd402a2e09dd12b26746ab92c8fd"
     },
     {
       "path": "schemas/skillfile-sources-v1/source-audit-v1.schema.json",
       "sha256": "sha256:fef6d707fd47ee7ffea61a312006452842a3be1990fd739f35a6784bb2fe02fb"
+    },
+    {
+      "path": "schemas/skillfile-sources-v1/source-audit-v2.schema.json",
+      "sha256": "sha256:7229affdf93bbce24dc1a4541413b439958c2a4e1249587a236363d80b48d25e"
     },
     {
       "path": "schemas/skillfile-sources-v1/source-policy-v1.schema.json",

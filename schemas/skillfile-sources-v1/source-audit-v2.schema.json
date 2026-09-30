@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/skillfile-sources-v1/source-audit-v2.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "package": {
+      "$ref": "source-types-v1.schema.json#/$defs/package"
+    },
+    "content_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    },
+    "decision": {
+      "enum": [
+        "allow",
+        "warn",
+        "block",
+        "require_pin"
+      ]
+    },
+    "policy_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    },
+    "evidence_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    },
+    "created_at": {
+      "$ref": "../v1/common.schema.json#/$defs/timestamp"
+    },
+    "hash_version": {
+      "const": 2
+    }
+  },
+  "required": [
+    "schema_version",
+    "hash_version",
+    "package",
+    "content_sha256",
+    "decision",
+    "policy_sha256",
+    "evidence_sha256",
+    "created_at"
+  ],
+  "additionalProperties": false
+}

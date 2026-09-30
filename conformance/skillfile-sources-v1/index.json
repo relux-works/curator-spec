@@ -610,5 +610,55 @@
     "schema": "source-policy-v2.schema.json",
     "instance": "schema-cases/source-policy-v2/invalid-port-range-ssh.json",
     "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-hash-version-on-frozen-marker.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/invalid-missing-hash-version.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/valid.json",
+    "valid": true
+  },
+  {
+    "schema": "skillfile-lock-v1.schema.json",
+    "instance": "schema-cases/skillfile-lock-v1/invalid-hash-version-on-frozen-lock.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-lock-v2.schema.json",
+    "instance": "schema-cases/skillfile-lock-v2/invalid-missing-hash-version.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-lock-v2.schema.json",
+    "instance": "schema-cases/skillfile-lock-v2/invalid-wrong-hash-version.json",
+    "valid": false
+  },
+  {
+    "schema": "skillfile-lock-v2.schema.json",
+    "instance": "schema-cases/skillfile-lock-v2/valid.json",
+    "valid": true
+  },
+  {
+    "schema": "source-audit-v1.schema.json",
+    "instance": "schema-cases/source-audit-v1/invalid-hash-version-on-frozen-audit.json",
+    "valid": false
+  },
+  {
+    "schema": "source-audit-v2.schema.json",
+    "instance": "schema-cases/source-audit-v2/invalid-wrong-hash-version.json",
+    "valid": false
+  },
+  {
+    "schema": "source-audit-v2.schema.json",
+    "instance": "schema-cases/source-audit-v2/valid.json",
+    "valid": true
   }
 ]

@@ -19,9 +19,10 @@ variable, and system-config path. It MUST document them and MUST keep its
 caches, runtime store, audit state, and global/hybrid state below that home.
 Different implementations do not share machine-local state by default.
 
-The logical user configuration conforms to `manager-config-v1.schema.json` —
-or to `manager-config-v2.schema.json`, its additive successor for a manager
-that implements section 12 — and contains a source root, project
+The logical user configuration conforms to `manager-config-v1.schema.json`,
+`manager-config-v2.schema.json`, or `manager-config-v3.schema.json`. Schema 2
+adds the section-12 configuration surface; schema 3 preserves that surface and
+versions content-hash state waivers. Each contains a source root, project
 registrations, manager defaults, source allowlist, audit policy, and pinned
 registries. The configuration file SHOULD be
 readable and writable only by its owner where the platform supports
@@ -66,8 +67,8 @@ inside `audit_registries`, so the existing `audit_registries` system lock
 covers them; no new lock key exists.
 
 Machine security posture is one closed top-level knob, `security_posture`,
-carried by `manager-config-v2` next to `audit` (schema 2 only;
-`manager-config-v1` is frozen without it). Its values are closed to exactly
+carried by `manager-config-v2` and its schema-3 successor next to `audit`
+(`manager-config-v1` is frozen without it). Its values are closed to exactly
 `permissive` and `hardened`, and its default is `permissive` under rollout
 revision A and `hardened` under rollout revision B (section 7.1). The posture
 selects the effective defaults of the audit, registry-policy, and allowlist
@@ -1102,7 +1103,8 @@ configuration produces a checkout-trust warning.
 Source audit is a machine-local policy layer. Detectors and analysis backends
 may differ; decisions do not.
 
-For each snapshot a manager computes the raw-tree content hash, runs a static
+For each snapshot a manager computes the raw-tree content identity using core
+§8, runs a static
 canary, runs deterministic detectors, optionally invokes a configured backend,
 and records findings. A canary failure always blocks. Cloud backends receive
 only sources classified public by explicit policy; other egress attempts block.
@@ -1117,8 +1119,14 @@ Decisions are `allow`, `warn`, `block`, or `require_pin`:
 - backend failure blocks in strict mode and warns in advisory mode;
 - `block` and `require_pin` fail installation.
 
-Pins record content hash, operator identity, reason, and creation time. Pins do
-not override local or registry revocation.
+New audit verdict state and pins MUST record `hash_version: 2` alongside the
+content digest. A pin records the content identity, operator identity, reason,
+and creation time; a verdict cache key includes the complete
+`(hash_version, content_sha256)` pair. Historical persisted state without
+`hash_version` means framing version 1 and MUST NOT authorize a version-2
+snapshot. Pins do not override local or registry revocation.
+Persisted state-hash waivers use `manager-config-v3.schema.json`, which admits
+`hash_version: 2`; `manager-config-v2` remains frozen without that member.
 
 Script execution policy is part of the audit record. For every script command
 the record carries the effective execution-policy identity or its absence, so a
@@ -2372,11 +2380,12 @@ complete environments conformance-vector set (environments §13); there is no
 partial claim.
 
 Every machine-configuration surface this section names is a knob of the
-closed environments §12.1 table, carried by `manager-config-v2.schema.json`
-under one `environments` object. A manager implementing this capability
-reads schema 2 with the section 1 discipline unchanged — unknown fields are
-rejected, schema defaults apply before use, and a knob that is absent takes
-the environments §12.1 default — and keeps reading a schema-1 file, which
+closed environments §12.1 table, carried under one `environments` object by
+`manager-config-v2.schema.json` and its schema-3 successor. A manager
+implementing this capability reads schema 2 or 3 with the section 1 discipline
+unchanged — unknown fields are rejected, schema defaults apply before use,
+and a knob that is absent takes the environments §12.1 default — and keeps
+reading a schema-1 file, which
 declares no `environments` object and therefore every default. No knob is
 read from a package, a profile, a lock, or an implementation-private file.
 The section 1 `locked` set is extended for such a manager by exactly the
