@@ -50,6 +50,10 @@ safe backup/restore according to `profiles/registry-service.md`.
 ## 3. Shared suite
 
 `conformance/v1/manifest.json` lists every normative vector and SHA-256 digest.
+`vectors/content-hashes-v2.json` is the core §8 framing vector: it includes the
+v1 colliding-tree construction and v2 separation, the empty tree, an exact
+ordinary-tree digest, nested NUL handling, and a registry framing-version
+mismatch.
 The suite contains:
 
 - valid and invalid examples for every JSON Schema;
@@ -112,7 +116,8 @@ The suite contains:
   freshness/checkpoint binding, provider packaging denial, and zero released
   verified claims;
 - the agent-environments revision-1 surfaces under the Decision 0012 model:
-  valid and invalid `agent-context.json`, `agent-mcp.json`, `context-lock-v1`,
+  valid and invalid `agent-context.json`, `agent-mcp.json`, `context-lock-v1`
+  and `context-lock-v2`,
   `.agent-environment.json`, and `launch-env-fragment-v1` examples (one
   violated rule per negative case, unknown-member rejection for every closed
   object); the section 1.4 version and range family
@@ -151,6 +156,10 @@ The suite contains:
   defaults, and the schema-1 rejection of an `environments` object.
   `vectors/manager-config.json` stays the byte-frozen schema-1 family the
   pinned schema-1 readers consume;
+- the `manager-config-v3` schema cases: a valid state-hash waiver with
+  `hash_version: 2`, an invalid waiver version, and a version-2 state waiver
+  with a commit-length pin. The schema-2 waiver cases stay on the frozen
+  schema-2 shape;
 - the `system-config` schema-2 surface: `schema-cases/system-config-v2` with
   every environments section 12.2 lockable key present and named in
   `locked`, the minimal, empty-`environments`, and schema-1-`locked`

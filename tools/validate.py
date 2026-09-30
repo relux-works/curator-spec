@@ -7,6 +7,7 @@ import base64
 import hashlib
 import json
 import re
+import subprocess
 import sys
 import tomllib
 import urllib.parse
@@ -131,6 +132,88 @@ def load_json(path: Path) -> Any:
         )
     except (UnicodeError, json.JSONDecodeError) as exc:
         raise ValidationFailure(f"{path}: invalid JSON: {exc}") from exc
+
+
+def validate_released_schema_immutability() -> None:
+    """Require every schema shipped by the latest release tag to remain byte-identical."""
+    tag = f"v{PROTOCOL_VERSION}"
+    listed = subprocess.run(
+        ["git", "ls-tree", "-r", "-z", tag, "--", "schemas"],
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if listed.returncode != 0:
+        detail = listed.stderr.decode("utf-8", errors="replace").strip()
+        raise ValidationFailure(f"cannot inspect released schemas at {tag}: {detail}")
+
+    schema_blobs: list[tuple[str, str]] = []
+    try:
+        for record in listed.stdout.split(b"\0"):
+            if not record:
+                continue
+            metadata, raw_path = record.split(b"\t", 1)
+            _mode, object_type, object_id = metadata.split(b" ")
+            relative = raw_path.decode("utf-8")
+            if relative.endswith(".schema.json"):
+                if object_type != b"blob":
+                    raise ValidationFailure(f"released schema {relative} at {tag} is not a blob")
+                schema_blobs.append((relative, object_id.decode("ascii")))
+    except (UnicodeError, ValueError) as exc:
+        raise ValidationFailure(f"cannot parse released schema inventory at {tag}") from exc
+    if not schema_blobs:
+        raise ValidationFailure(f"no released schemas found at {tag}")
+
+    historical = subprocess.run(
+        ["git", "cat-file", "--batch"],
+        cwd=ROOT,
+        input=("\n".join(object_id for _path, object_id in schema_blobs) + "\n").encode("ascii"),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if historical.returncode != 0:
+        detail = historical.stderr.decode("utf-8", errors="replace").strip()
+        raise ValidationFailure(f"cannot read released schemas at {tag}: {detail}")
+
+    changed: list[str] = []
+    cursor = 0
+    for relative, expected_object_id in schema_blobs:
+        header_end = historical.stdout.find(b"\n", cursor)
+        if header_end < 0:
+            raise ValidationFailure(f"incomplete released schema stream at {tag}")
+        header = historical.stdout[cursor:header_end].split(b" ")
+        if len(header) != 3 or header[0].decode("ascii", errors="replace") != expected_object_id or header[1] != b"blob":
+            raise ValidationFailure(f"malformed released schema stream for {relative} at {tag}")
+        try:
+            byte_count = int(header[2])
+        except ValueError as exc:
+            raise ValidationFailure(f"malformed released schema size for {relative} at {tag}") from exc
+        payload_start = header_end + 1
+        payload_end = payload_start + byte_count
+        if byte_count < 0 or payload_end >= len(historical.stdout) or historical.stdout[payload_end : payload_end + 1] != b"\n":
+            raise ValidationFailure(f"truncated released schema bytes for {relative} at {tag}")
+        expected = historical.stdout[payload_start:payload_end]
+        cursor = payload_end + 1
+
+        current_path = ROOT / relative
+        if not current_path.is_file():
+            changed.append(relative)
+            continue
+        try:
+            current = current_path.read_bytes()
+        except OSError as exc:
+            raise ValidationFailure(f"cannot read current schema {relative}: {exc}") from exc
+        if current != expected:
+            changed.append(relative)
+    if cursor != len(historical.stdout):
+        raise ValidationFailure(f"released schema stream has trailing bytes at {tag}")
+
+    if changed:
+        raise ValidationFailure(
+            f"released schema bytes differ from {tag}: {', '.join(changed)}"
+        )
 
 
 def ccj1_bytes(value: Any) -> bytes:
@@ -688,7 +771,7 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
                     error = validate_effective_source(declared, effective)
                     if error is not None:
                         return error
-    elif schema_name in {"install-marker-v3.schema.json", "install-marker-v4.schema.json"}:
+    elif schema_name in {"install-marker-v3.schema.json", "install-marker-v4.schema.json", "install-marker-v5.schema.json"}:
         builds = instance.get("builds", {})
         if not isinstance(builds, dict):
             return None
@@ -742,7 +825,7 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
             ]
             if len(paths) != len(set(paths)):
                 return "module paths must be unique across the manifest"
-    elif schema_name == "context-lock-v1.schema.json":
+    elif schema_name in {"context-lock-v1.schema.json", "context-lock-v2.schema.json"}:
         members = instance.get("members")
         if isinstance(members, list) and all(isinstance(member, dict) for member in members):
             keys = [(member.get("kind"), member.get("name")) for member in members]
@@ -766,6 +849,7 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
     elif schema_name in (
         "agent-environment-marker-v1.schema.json",
         "agent-environment-marker-v2.schema.json",
+        "agent-environment-marker-v3.schema.json",
     ):
         surfaces = instance.get("surfaces")
         if isinstance(surfaces, dict):
@@ -3459,7 +3543,7 @@ def validate_vector_semantics() -> None:
         raise ValidationFailure("canonical-invalid vectors do not cover all CCJ-1 rejection classes")
 
     service = load_json(SUITE / "vectors" / "registry-service.json")
-    expected_key = ["name", "source_identity", "commit", "content_sha256"]
+    expected_key = ["name", "source_identity", "commit", "hash_version", "content_sha256"]
     if service.get("artifact_key") != expected_key or service.get("sort_key") != expected_key:
         raise ValidationFailure("registry-service artifact and sort keys are incomplete")
     records = service.get("records")
@@ -5310,7 +5394,7 @@ def resolve_closure(case_input: dict[str, Any]) -> tuple[dict[str, Any], list[di
             member["version"] = semver_text(sel["version"])
         members.append(member)
     members.sort(key=lambda member: (member["kind"], member["name"]))
-    return {"schema_version": 1, "root": root, "members": members}, warnings
+    return {"schema_version": 2, "hash_version": 2, "root": root, "members": members}, warnings
 
 
 def validate_context_version_vectors(vector: Any = None, suite_root: Path | None = None) -> None:
@@ -5386,15 +5470,15 @@ def validate_context_version_vectors(vector: Any = None, suite_root: Path | None
     if required_pairs - {(case.get("range"), case.get("version")) for case in satisfies_cases}:
         raise ValidationFailure("context-versions satisfies_cases lost a prerelease rule case")
 
-    lock_schema = load_json(SCHEMAS / "context-lock-v1.schema.json")
+    lock_schema = load_json(SCHEMAS / "context-lock-v2.schema.json")
     registry, _ = schema_registry()
     lock_validator = Draft202012Validator(lock_schema, registry=registry)
 
     def check_lock(lock: Any, label: str) -> None:
         errors = list(lock_validator.iter_errors(lock))
         if errors:
-            raise ValidationFailure(f"{label}: lock is not a valid context-lock-v1: {errors[0].message}")
-        semantic = validate_wire_semantics("context-lock-v1.schema.json", lock)
+            raise ValidationFailure(f"{label}: lock is not a valid context-lock-v2: {errors[0].message}")
+        semantic = validate_wire_semantics("context-lock-v2.schema.json", lock)
         if semantic is not None:
             raise ValidationFailure(f"{label}: {semantic}")
 
@@ -5705,8 +5789,117 @@ def environment_case_files(case: dict[str, Any]) -> dict[str, bytes]:
 
 
 def environment_content_hash(files: dict[str, bytes]) -> str:
-    records = [path.encode("utf-8") + b"\x00" + files[path] for path in sorted(files)]
+    digest = hashlib.sha256()
+    digest.update(b"curator-content-v2\x00")
+    for path in sorted(files, key=lambda value: value.encode("utf-8")):
+        path_bytes = path.encode("utf-8")
+        payload = files[path]
+        digest.update(b"F")
+        digest.update(len(path_bytes).to_bytes(8, "big"))
+        digest.update(path_bytes)
+        digest.update(len(payload).to_bytes(8, "big"))
+        digest.update(payload)
+    return "sha256:" + digest.hexdigest()
+
+
+def _content_hash_v1(files: dict[str, bytes]) -> str:
+    records = [path.encode("utf-8") + b"\x00" + files[path] for path in sorted(files, key=lambda value: value.encode("utf-8"))]
     return "sha256:" + hashlib.sha256(b"\x00".join(records)).hexdigest()
+
+
+def validate_content_hash_v2_vectors(vector: Any = None, suite_root: Path | None = None) -> None:
+    """Recompute v1/v2 framing and the version-aware registry match vector."""
+    root = SUITE if suite_root is None else Path(suite_root)
+    if vector is None:
+        vector = load_json(root / "vectors" / "content-hashes-v2.json")
+    if vector.get("schema_version") != 1:
+        raise ValidationFailure("content-hashes-v2 vector has the wrong schema version")
+    framing = vector.get("framing")
+    if framing != {
+        "domain_prefix_utf8": "curator-content-v2",
+        "domain_terminator_hex": "00",
+        "file_record_tag_hex": "46",
+        "path_length": "uint64be-octets",
+        "bytes_length": "uint64be-octets",
+    }:
+        raise ValidationFailure("content-hashes-v2 framing description is stale")
+
+    def files_for(entries: Any, label: str) -> dict[str, bytes]:
+        if not isinstance(entries, list):
+            raise ValidationFailure(f"{label} files must be a list")
+        files: dict[str, bytes] = {}
+        for entry in entries:
+            if not isinstance(entry, dict) or not isinstance(entry.get("path"), str) or not isinstance(entry.get("bytes_utf8"), str):
+                raise ValidationFailure(f"{label} has a malformed file entry")
+            path = entry["path"]
+            if path in files:
+                raise ValidationFailure(f"{label} repeats path {path!r}")
+            files[path] = entry["bytes_utf8"].encode("utf-8")
+        if list(files) != sorted(files, key=lambda value: value.encode("utf-8")):
+            raise ValidationFailure(f"{label} paths are not in canonical UTF-8 byte order")
+        return files
+
+    collisions = vector.get("colliding_v1_pair")
+    if not isinstance(collisions, dict) or not isinstance(collisions.get("trees"), list) or len(collisions["trees"]) != 2:
+        raise ValidationFailure("content-hashes-v2 must carry exactly the colliding v1 pair")
+    trees = []
+    for item in collisions["trees"]:
+        if not isinstance(item, dict):
+            raise ValidationFailure("content-hashes-v2 collision tree is malformed")
+        files = files_for(item.get("files"), f"collision tree {item.get('name')!r}")
+        if item.get("v1_sha256") != _content_hash_v1(files):
+            raise ValidationFailure(f"collision tree {item.get('name')!r} has a stale v1 digest")
+        if item.get("v2_sha256") != environment_content_hash(files):
+            raise ValidationFailure(f"collision tree {item.get('name')!r} has a stale v2 digest")
+        trees.append(files)
+    legacy_preimage = lambda files: b"\x00".join(
+        path.encode("utf-8") + b"\x00" + files[path]
+        for path in sorted(files, key=lambda value: value.encode("utf-8"))
+    )
+    if legacy_preimage(trees[0]) != legacy_preimage(trees[1]) or _content_hash_v1(trees[0]) != _content_hash_v1(trees[1]):
+        raise ValidationFailure("the documented pair does not collide under v1 framing")
+    if environment_content_hash(trees[0]) == environment_content_hash(trees[1]):
+        raise ValidationFailure("the colliding v1 pair aliases under v2 framing")
+    if collisions.get("v1_hashes_equal") is not True or collisions.get("v2_hashes_differ") is not True:
+        raise ValidationFailure("content-hashes-v2 collision outcomes are not asserted")
+
+    empty = vector.get("empty_tree")
+    if not isinstance(empty, dict) or empty.get("files") != [] or empty.get("v2_sha256") != environment_content_hash({}):
+        raise ValidationFailure("content-hashes-v2 empty-tree digest is stale")
+    ordinary = vector.get("ordinary_tree")
+    if not isinstance(ordinary, dict):
+        raise ValidationFailure("content-hashes-v2 ordinary tree is missing")
+    ordinary_files = files_for(ordinary.get("files"), "ordinary tree")
+    if not ordinary_files or ordinary.get("v1_sha256") != _content_hash_v1(ordinary_files):
+        raise ValidationFailure("content-hashes-v2 ordinary v1 digest is stale")
+    if ordinary.get("v2_sha256") != environment_content_hash(ordinary_files):
+        raise ValidationFailure("content-hashes-v2 ordinary v2 digest is stale")
+
+    mismatch = vector.get("registry_version_mismatch")
+    if not isinstance(mismatch, dict):
+        raise ValidationFailure("content-hashes-v2 registry mismatch case is missing")
+    record, computed = mismatch.get("record"), mismatch.get("computed")
+    if not isinstance(record, dict) or not isinstance(computed, dict):
+        raise ValidationFailure("content-hashes-v2 registry mismatch identities are malformed")
+    if record.get("hash_version") != 1 or computed.get("hash_version") != 2 or record.get("content_sha256") != computed.get("content_sha256"):
+        raise ValidationFailure("registry mismatch case must isolate unequal versions with equal digest text")
+    want_match = record["hash_version"] == computed["hash_version"] and record["content_sha256"] == computed["content_sha256"]
+    if mismatch.get("matches") is not want_match or want_match:
+        raise ValidationFailure("registry records must match only with an equal framing version and digest")
+
+    nested = vector.get("nested_nul")
+    if not isinstance(nested, dict) or not isinstance(nested.get("file"), dict):
+        raise ValidationFailure("content-hashes-v2 nested NUL case is missing")
+    nested_file = nested["file"]
+    nested_files = files_for([nested_file], "nested NUL")
+    path = nested_file["path"]
+    payload = nested_files[path]
+    if b"\x00" not in payload or path.count("/") != nested.get("directory_depth"):
+        raise ValidationFailure("nested NUL case does not place NUL data at the asserted directory depth")
+    if nested.get("v1_reader") != "blocking-opaque-finding" or nested.get("v2_treatment") != "ordinary-file-byte":
+        raise ValidationFailure("nested NUL case does not state the v1 reader block and v2 byte rule")
+    if nested.get("v2_sha256") != environment_content_hash(nested_files):
+        raise ValidationFailure("nested NUL case has a stale v2 digest")
 
 
 def validate_environment_vectors(vector: Any = None, suite_root: Path | None = None) -> None:
@@ -5723,14 +5916,14 @@ def validate_environment_vectors(vector: Any = None, suite_root: Path | None = N
         raise ValidationFailure("environments vector has the wrong capability identity")
 
     registry, _ = schema_registry()
-    lock_validator = Draft202012Validator(load_json(SCHEMAS / "context-lock-v1.schema.json"), registry=registry)
+    lock_validator = Draft202012Validator(load_json(SCHEMAS / "context-lock-v2.schema.json"), registry=registry)
 
     def check_lock(case: dict[str, Any], label: str) -> dict[str, Any]:
         lock = case.get("lock")
         errors = list(lock_validator.iter_errors(lock))
         if errors:
-            raise ValidationFailure(f"{label}: lock is not a valid context-lock-v1: {errors[0].message}")
-        semantic = validate_wire_semantics("context-lock-v1.schema.json", lock)
+            raise ValidationFailure(f"{label}: lock is not a valid context-lock-v2: {errors[0].message}")
+        semantic = validate_wire_semantics("context-lock-v2.schema.json", lock)
         if semantic is not None:
             raise ValidationFailure(f"{label}: {semantic}")
         if case.get("lock_sha256") != ccj1_sha256(lock):
@@ -11223,6 +11416,7 @@ def validate_security_posture_vectors(vector: Any = None) -> None:
 
 def main() -> int:
     checks = [
+        validate_released_schema_immutability,
         validate_schemas,
         validate_repository_descriptor_identity,
         validate_manifest,
@@ -11238,6 +11432,7 @@ def main() -> int:
         validate_environments_path_kind_admission_vectors,
         validate_context_version_vectors,
         validate_context_detector_vectors,
+        validate_content_hash_v2_vectors,
         validate_snapshot_acquisition_vectors,
         validate_shell_hook_trust_vectors,
         validate_environments_write_nofollow_vectors,

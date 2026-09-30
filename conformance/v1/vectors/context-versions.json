@@ -3,9 +3,10 @@
   "capability_revision": 1,
   "lock_cases": [
     {
-      "byte_length": 228,
-      "ccj1_bytes": "{\"members\":[{\"commit\":\"0123456789abcdef0123456789abcdef01234567\",\"kind\":\"context\",\"name\":\"solo\",\"overlay\":false,\"required_by\":[],\"source\":\"github.com/example/solo\",\"version\":\"1.0.0\",\"weight\":0}],\"root\":\"solo\",\"schema_version\":1}",
+      "byte_length": 245,
+      "ccj1_bytes": "{\"hash_version\":2,\"members\":[{\"commit\":\"0123456789abcdef0123456789abcdef01234567\",\"kind\":\"context\",\"name\":\"solo\",\"overlay\":false,\"required_by\":[],\"source\":\"github.com/example/solo\",\"version\":\"1.0.0\",\"weight\":0}],\"root\":\"solo\",\"schema_version\":2}",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "0123456789abcdef0123456789abcdef01234567",
@@ -19,15 +20,16 @@
           }
         ],
         "root": "solo",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:30c37a9ccbcb2110263956f41714922b517d3b653dbcf37fbeb85e399964cf8f",
+      "lock_sha256": "sha256:cff21252ab4e12a3a8b0652be94dbd8a90113113434a34b38edf3bff5a224c0a",
       "name": "minimal-single-root"
     },
     {
-      "byte_length": 414,
-      "ccj1_bytes": "{\"members\":[{\"kind\":\"context\",\"name\":\"authoring\",\"overlay\":false,\"required_by\":[],\"state_sha256\":\"cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd\",\"version\":\"0.1.0\",\"weight\":0},{\"commit\":\"8888888888888888888888888888888888888888\",\"kind\":\"skill\",\"name\":\"pdf\",\"overlay\":false,\"required_by\":[\"authoring\"],\"source\":\"github.com/relux-works/skill-pdf\",\"weight\":0}],\"root\":\"authoring\",\"schema_version\":1}",
+      "byte_length": 431,
+      "ccj1_bytes": "{\"hash_version\":2,\"members\":[{\"kind\":\"context\",\"name\":\"authoring\",\"overlay\":false,\"required_by\":[],\"state_sha256\":\"cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd\",\"version\":\"0.1.0\",\"weight\":0},{\"commit\":\"8888888888888888888888888888888888888888\",\"kind\":\"skill\",\"name\":\"pdf\",\"overlay\":false,\"required_by\":[\"authoring\"],\"source\":\"github.com/relux-works/skill-pdf\",\"weight\":0}],\"root\":\"authoring\",\"schema_version\":2}",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "kind": "context",
@@ -51,15 +53,16 @@
           }
         ],
         "root": "authoring",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:1956ae0778f7079c0c40c3cf5ad1bc89230ad758fdf682d8ce422829e159b2be",
+      "lock_sha256": "sha256:96c46196fe318f031a079fa8022f5526992ee28b31ce2d61ba04a4a5b55533ea",
       "name": "path-root-with-skill"
     },
     {
-      "byte_length": 2752,
-      "ccj1_bytes": "{\"members\":[{\"commit\":\"1111111111111111111111111111111111111111\",\"kind\":\"context\",\"name\":\"companyA-root-context-core\",\"overlay\":false,\"required_by\":[\"companyA-root-context-developers-core\",\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/companyA/root-context-core\",\"version\":\"3.2.1\",\"weight\":0},{\"commit\":\"3333333333333333333333333333333333333333\",\"kind\":\"context\",\"name\":\"companyA-root-context-developers-core\",\"overlay\":false,\"required_by\":[\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/companyA/root-context-developers-core\",\"version\":\"1.6.0\",\"weight\":20},{\"commit\":\"4444444444444444444444444444444444444444\",\"directory\":\"contexts/figma\",\"kind\":\"context\",\"name\":\"companyA-root-context-developers-figma\",\"overlay\":false,\"required_by\":[\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/companyA/root-contexts\",\"version\":\"1.1.0\",\"weight\":40},{\"commit\":\"5555555555555555555555555555555555555555\",\"kind\":\"context\",\"name\":\"companyA-root-context-developers-ios\",\"overlay\":false,\"required_by\":[\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/companyA/root-context-developers-ios\",\"version\":\"2.4.2\",\"weight\":60},{\"commit\":\"6666666666666666666666666666666666666666\",\"kind\":\"context\",\"name\":\"companyA-root-context-ios-developer-umbrella\",\"overlay\":false,\"required_by\":[],\"source\":\"github.com/companyA/root-context-ios-developer-umbrella\",\"version\":\"2.3.0\",\"weight\":100},{\"commit\":\"2222222222222222222222222222222222222222\",\"kind\":\"context\",\"name\":\"companyA-root-context-organizational-structure\",\"overlay\":false,\"required_by\":[\"companyA-root-context-core\"],\"source\":\"github.com/companyA/root-context-organizational-structure\",\"version\":\"1.0.4\",\"weight\":10},{\"kind\":\"context\",\"name\":\"personal\",\"overlay\":true,\"required_by\":[],\"state_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"version\":\"0.3.0\",\"weight\":1000},{\"commit\":\"7777777777777777777777777777777777777777\",\"kind\":\"mcp\",\"name\":\"figma-devmode\",\"overlay\":false,\"required_by\":[\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/companyA/mcp-figma-devmode\",\"version\":\"1.2.0\",\"weight\":0},{\"commit\":\"8888888888888888888888888888888888888888\",\"kind\":\"skill\",\"name\":\"pdf\",\"overlay\":false,\"required_by\":[\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/relux-works/skill-pdf\",\"version\":\"1.2.5\",\"weight\":0},{\"commit\":\"9999999999999999999999999999999999999999\",\"kind\":\"skill\",\"name\":\"swiftui\",\"overlay\":false,\"required_by\":[\"companyA-root-context-developers-ios\",\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/relux-works/skill-swiftui\",\"version\":\"4.3.0\",\"weight\":0}],\"root\":\"companyA-root-context-ios-developer-umbrella\",\"schema_version\":1}",
+      "byte_length": 2769,
+      "ccj1_bytes": "{\"hash_version\":2,\"members\":[{\"commit\":\"1111111111111111111111111111111111111111\",\"kind\":\"context\",\"name\":\"companyA-root-context-core\",\"overlay\":false,\"required_by\":[\"companyA-root-context-developers-core\",\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/companyA/root-context-core\",\"version\":\"3.2.1\",\"weight\":0},{\"commit\":\"3333333333333333333333333333333333333333\",\"kind\":\"context\",\"name\":\"companyA-root-context-developers-core\",\"overlay\":false,\"required_by\":[\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/companyA/root-context-developers-core\",\"version\":\"1.6.0\",\"weight\":20},{\"commit\":\"4444444444444444444444444444444444444444\",\"directory\":\"contexts/figma\",\"kind\":\"context\",\"name\":\"companyA-root-context-developers-figma\",\"overlay\":false,\"required_by\":[\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/companyA/root-contexts\",\"version\":\"1.1.0\",\"weight\":40},{\"commit\":\"5555555555555555555555555555555555555555\",\"kind\":\"context\",\"name\":\"companyA-root-context-developers-ios\",\"overlay\":false,\"required_by\":[\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/companyA/root-context-developers-ios\",\"version\":\"2.4.2\",\"weight\":60},{\"commit\":\"6666666666666666666666666666666666666666\",\"kind\":\"context\",\"name\":\"companyA-root-context-ios-developer-umbrella\",\"overlay\":false,\"required_by\":[],\"source\":\"github.com/companyA/root-context-ios-developer-umbrella\",\"version\":\"2.3.0\",\"weight\":100},{\"commit\":\"2222222222222222222222222222222222222222\",\"kind\":\"context\",\"name\":\"companyA-root-context-organizational-structure\",\"overlay\":false,\"required_by\":[\"companyA-root-context-core\"],\"source\":\"github.com/companyA/root-context-organizational-structure\",\"version\":\"1.0.4\",\"weight\":10},{\"kind\":\"context\",\"name\":\"personal\",\"overlay\":true,\"required_by\":[],\"state_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"version\":\"0.3.0\",\"weight\":1000},{\"commit\":\"7777777777777777777777777777777777777777\",\"kind\":\"mcp\",\"name\":\"figma-devmode\",\"overlay\":false,\"required_by\":[\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/companyA/mcp-figma-devmode\",\"version\":\"1.2.0\",\"weight\":0},{\"commit\":\"8888888888888888888888888888888888888888\",\"kind\":\"skill\",\"name\":\"pdf\",\"overlay\":false,\"required_by\":[\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/relux-works/skill-pdf\",\"version\":\"1.2.5\",\"weight\":0},{\"commit\":\"9999999999999999999999999999999999999999\",\"kind\":\"skill\",\"name\":\"swiftui\",\"overlay\":false,\"required_by\":[\"companyA-root-context-developers-ios\",\"companyA-root-context-ios-developer-umbrella\"],\"source\":\"github.com/relux-works/skill-swiftui\",\"version\":\"4.3.0\",\"weight\":0}],\"root\":\"companyA-root-context-ios-developer-umbrella\",\"schema_version\":2}",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "1111111111111111111111111111111111111111",
@@ -181,9 +184,9 @@
           }
         ],
         "root": "companyA-root-context-ios-developer-umbrella",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:f1eed19d2bd6ed2ee15da02fa0b3ef3c214208b13f5681612a42495884424b80",
+      "lock_sha256": "sha256:0522b43f31c7ee63f80b3ae59776e61612d89d192931461ae26ed9d44d7dd533",
       "name": "worked-example"
     }
   ],
@@ -658,6 +661,7 @@
       "description": "Decision 0012 section 9: joint ranges, a root weights map, an edge weight, a path overlay at the default weight, and skill and MCP members",
       "expected": {
         "lock": {
+          "hash_version": 2,
           "members": [
             {
               "commit": "1111111111111111111111111111111111111111",
@@ -779,9 +783,9 @@
             }
           ],
           "root": "companyA-root-context-ios-developer-umbrella",
-          "schema_version": 1
+          "schema_version": 2
         },
-        "lock_sha256": "sha256:f1eed19d2bd6ed2ee15da02fa0b3ef3c214208b13f5681612a42495884424b80",
+        "lock_sha256": "sha256:0522b43f31c7ee63f80b3ae59776e61612d89d192931461ae26ed9d44d7dd533",
         "warnings": []
       },
       "input": {
@@ -1173,6 +1177,7 @@
       "description": "lib is selected at 2.0.0 first; plugin then adds <2 and lib re-selects downward to the highest remaining candidate not above its previous selection",
       "expected": {
         "lock": {
+          "hash_version": 2,
           "members": [
             {
               "commit": "e05eda9cb52a85002e2c5f1c55fc4452c675f71c",
@@ -1211,9 +1216,9 @@
             }
           ],
           "root": "root",
-          "schema_version": 1
+          "schema_version": 2
         },
-        "lock_sha256": "sha256:867bfb27412bb2219e4a03a61e9d00e3713a674278e2ace93d39eaaade0b952c",
+        "lock_sha256": "sha256:116699504b1d87167ac9b08807e90e05b68e0af05080ce9af8c7d039b4628dd3",
         "warnings": []
       },
       "input": {
@@ -1303,6 +1308,7 @@
       "description": "helper lowers app to 1.0.0 and then leaves the closure when app@1.1.0's requirement on it is dropped; app keeps the lowered selection although the constraint that lowered it is gone",
       "expected": {
         "lock": {
+          "hash_version": 2,
           "members": [
             {
               "commit": "1af44d7a355574a647ec5bd7df8fc37cd7f4c872",
@@ -1340,9 +1346,9 @@
             }
           ],
           "root": "root",
-          "schema_version": 1
+          "schema_version": 2
         },
-        "lock_sha256": "sha256:ef000ab867ed858efe05673a8dac3ea00402629410a79cd40423301bfb7dc062",
+        "lock_sha256": "sha256:f07a785af9e7c6d674145ec67a0427db75ef11ce6295c28bb9831b3cf395ffd6",
         "warnings": []
       },
       "input": {
@@ -1457,6 +1463,7 @@
       "description": "a prerelease satisfies a range only when a primitive names a prerelease on the same major.minor.patch",
       "expected": {
         "lock": {
+          "hash_version": 2,
           "members": [
             {
               "commit": "5ff8d1b26ba5f83dde66dd501f9fabc766ef8ea1",
@@ -1482,9 +1489,9 @@
             }
           ],
           "root": "root",
-          "schema_version": 1
+          "schema_version": 2
         },
-        "lock_sha256": "sha256:347fb0294ffd66e3353e835e5ee2cc1b8e3fa963bb142d9a5307fe74ed10f5d9",
+        "lock_sha256": "sha256:773c26a7f0734868963f477c42231b7d95dbc7625a9c9c7d485c607edbe1696c",
         "warnings": []
       },
       "input": {
@@ -1549,6 +1556,7 @@
       "description": "latest is * and selects the highest stable version, never a prerelease of the bound",
       "expected": {
         "lock": {
+          "hash_version": 2,
           "members": [
             {
               "commit": "53137eb24aaf23ca2297a4b2fa7151206ddecf01",
@@ -1562,9 +1570,9 @@
             }
           ],
           "root": "root",
-          "schema_version": 1
+          "schema_version": 2
         },
-        "lock_sha256": "sha256:cebef03dfa72df1f3901a74b83361ed092db0fca8258fe4e9d0fff4df6a2c9e5",
+        "lock_sha256": "sha256:eafb84c725c58a32460fa05900cfdc11b86771e7aaa1f2965fc36fd5148da9d1",
         "warnings": []
       },
       "input": {
@@ -1609,6 +1617,7 @@
       "description": "a tag, a revision peeling to the same commit, and a range that admits its version unify on one commit",
       "expected": {
         "lock": {
+          "hash_version": 2,
           "members": [
             {
               "commit": "d0d44043b0c3a8f48821779854a87e237e629c93",
@@ -1660,9 +1669,9 @@
             }
           ],
           "root": "root",
-          "schema_version": 1
+          "schema_version": 2
         },
-        "lock_sha256": "sha256:6a11167ad0d06243e13c9cddb7312b504eb9bfc71a1e94ac503dacc3c12f1180",
+        "lock_sha256": "sha256:9396de13f55de148ded882a749b660fa645e72c3061395bbc87c5ef5ef931f3a",
         "warnings": []
       },
       "input": {
@@ -1965,6 +1974,7 @@
       "description": "a || disjunction selects the highest candidate satisfying any member",
       "expected": {
         "lock": {
+          "hash_version": 2,
           "members": [
             {
               "commit": "ed382be0d4a68f04a92f808cef2de765e7084900",
@@ -1990,9 +2000,9 @@
             }
           ],
           "root": "root",
-          "schema_version": 1
+          "schema_version": 2
         },
-        "lock_sha256": "sha256:82057a550c953e8b10da8f29e738941bcfb2fea6a6755fcd795bb5bcfb7fc331",
+        "lock_sha256": "sha256:e310729ddf3839df3e7ba9ddc55fc252a1812d1d29044149089dbb17100e9da2",
         "warnings": []
       },
       "input": {
@@ -2069,6 +2079,7 @@
       "description": "an install with no requirement flag applies --range latest, which is *",
       "expected": {
         "lock": {
+          "hash_version": 2,
           "members": [
             {
               "commit": "f9cb2b0db429c348ffcc6df308d97798f089734b",
@@ -2082,9 +2093,9 @@
             }
           ],
           "root": "root",
-          "schema_version": 1
+          "schema_version": 2
         },
-        "lock_sha256": "sha256:69ebf74625925c3dff75255a544defa4f5b294642fec3776327707253a637493",
+        "lock_sha256": "sha256:686fdcc2c02387a92fd8e55e14915a7bd6e1759c4dd5145491655c30c1de3d88",
         "warnings": []
       },
       "input": {
@@ -2170,6 +2181,7 @@
       "description": "a root pinned by a tag that is not a version takes the manifest version at that commit",
       "expected": {
         "lock": {
+          "hash_version": 2,
           "members": [
             {
               "commit": "f75cd473a430f069238f4a506538fc870eb7ec1d",
@@ -2183,9 +2195,9 @@
             }
           ],
           "root": "root",
-          "schema_version": 1
+          "schema_version": 2
         },
-        "lock_sha256": "sha256:547ff72167cc2c9fcdfbdd5b9adcb4aaf1e1b0bc9fbc828056ba3cc5a6028176",
+        "lock_sha256": "sha256:3901e00c1401c921701591862611763dc33d85b6f85a59ae03019b7c85281cd0",
         "warnings": []
       },
       "input": {
@@ -2280,6 +2292,7 @@
       "description": "a skill manifest's own exact dependencies enter as fixed candidates; the skill version is the highest version tag peeling to the pinned commit",
       "expected": {
         "lock": {
+          "hash_version": 2,
           "members": [
             {
               "commit": "53137eb24aaf23ca2297a4b2fa7151206ddecf01",
@@ -2318,9 +2331,9 @@
             }
           ],
           "root": "root",
-          "schema_version": 1
+          "schema_version": 2
         },
-        "lock_sha256": "sha256:7af7f22f94a6f044c035d4fc465ffd5c5665bac2465b421225de462b1bc6c2de",
+        "lock_sha256": "sha256:2da6ddd7febf676719899258403df5cdfbbda58ad632f52a171fa393eba4a964",
         "warnings": []
       },
       "input": {
@@ -2506,6 +2519,7 @@
       "description": "the same disagreement is a warning when the root's weights map names the member; the root has the final word",
       "expected": {
         "lock": {
+          "hash_version": 2,
           "members": [
             {
               "commit": "d0d44043b0c3a8f48821779854a87e237e629c93",
@@ -2556,9 +2570,9 @@
             }
           ],
           "root": "root",
-          "schema_version": 1
+          "schema_version": 2
         },
-        "lock_sha256": "sha256:56124665abfbd7434b943581e69164b2826dea245a57db7461de3a917701d49b",
+        "lock_sha256": "sha256:2e763a2e083ec4fac2219ee89d89f326070b5282ec9eedb8248aa89384e04d1a",
         "warnings": [
           {
             "diagnostic": "context_weight_conflict",
@@ -2939,6 +2953,7 @@
       "description": "a git overlay joins the closure with its declared weight; a member that is both an overlay and a requirement takes the overlay's weight",
       "expected": {
         "lock": {
+          "hash_version": 2,
           "members": [
             {
               "commit": "53137eb24aaf23ca2297a4b2fa7151206ddecf01",
@@ -2964,9 +2979,9 @@
             }
           ],
           "root": "root",
-          "schema_version": 1
+          "schema_version": 2
         },
-        "lock_sha256": "sha256:11c12641b8f6c0cf2d4b7557cfa3c14b3ba5bc971d9d1dda74b48beef2b1bde4",
+        "lock_sha256": "sha256:72f3cf42c6ee3a8d19043f7883b2cce82e121a2448ee7e5c0cbfc3821be6a168",
         "warnings": []
       },
       "input": {

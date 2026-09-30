@@ -257,6 +257,33 @@ func managerConfigV2SchemaExamples(valid map[string]any) []schemaExample {
 	}
 }
 
+func managerConfigV3SchemaExamples(valid map[string]any) []schemaExample {
+	withStateWaiver := func(pin string, hashVersion int) map[string]any {
+		config := deepCloneMap(valid)
+		config["schema_version"] = 3
+		environments := config["environments"].(map[string]any)
+		environments["secret_material_waivers"] = []any{map[string]any{
+			"pin": pin, "hash_version": hashVersion, "file": "context/root.md",
+			"span": []any{1, 2}, "reason": "reviewed v2 state digest",
+		}}
+		return config
+	}
+	return []schemaExample{
+		{
+			name: "valid-v2-state-hash-waiver", valid: true,
+			instance: withStateWaiver(strings.Repeat("ab", 32), 2),
+		},
+		{
+			name:     "invalid-waiver-hash-version",
+			instance: withStateWaiver(strings.Repeat("ab", 32), 1),
+		},
+		{
+			name:     "invalid-v3-state-waiver-commit-length",
+			instance: withStateWaiver(strings.Repeat("ab", 20), 2),
+		},
+	}
+}
+
 // managerConfigV2Vectors extends `vectors/manager-config.json` for schema 2.
 // `expected.environments` is the effective knob set after schema defaults are
 // applied, so a reader proves it fills exactly the §12.1 defaults.

@@ -902,7 +902,7 @@ func resolveClosure(input resolutionInput) resolutionResult {
 		}
 		return members[i]["name"].(string) < members[j]["name"].(string)
 	})
-	lock := map[string]any{"schema_version": 1, "root": input.Root, "members": mapsToAny(members)}
+	lock := map[string]any{"schema_version": 2, "hash_version": 2, "root": input.Root, "members": mapsToAny(members)}
 	if warnings == nil {
 		warnings = []map[string]any{}
 	}
@@ -1375,14 +1375,16 @@ func satisfiesCases() []any {
 // lock, SHA-256, spelled sha256:<hex>.
 func lockCanonicalizationCases() []any {
 	minimal := map[string]any{
-		"schema_version": 1,
+		"schema_version": 2,
+		"hash_version":   2,
 		"root":           "solo",
 		"members": []any{
 			map[string]any{"kind": "context", "name": "solo", "source": "github.com/example/solo", "version": "1.0.0", "commit": fixedCommit, "weight": 0, "required_by": []any{}, "overlay": false},
 		},
 	}
 	pathRoot := map[string]any{
-		"schema_version": 1,
+		"schema_version": 2,
+		"hash_version":   2,
 		"root":           "authoring",
 		"members": []any{
 			map[string]any{"kind": "context", "name": "authoring", "version": "0.1.0", "state_sha256": strings.Repeat("cd", 32), "weight": 0, "required_by": []any{}, "overlay": false},

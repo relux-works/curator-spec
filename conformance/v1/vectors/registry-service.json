@@ -3,6 +3,7 @@
     "name",
     "source_identity",
     "commit",
+    "hash_version",
     "content_sha256"
   ],
   "cache_cases": [
@@ -411,6 +412,7 @@
     "name",
     "source_identity",
     "commit",
+    "hash_version",
     "content_sha256"
   ],
   "transaction_cases": [

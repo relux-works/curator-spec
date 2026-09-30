@@ -7,9 +7,10 @@
       "emitted_order": [
         "companyA"
       ],
-      "expected_bytes": "<!--\ncurator-root-context-v2\nroot: companyA 2.3.0 commit 0123456789abcdef0123456789abcdef01234567\nmember: companyA 2.3.0 commit 0123456789abcdef0123456789abcdef01234567 weight 100\nprecedence: winner=higher-weight placement=winner-last\nlock: sha256:597e3f01c2c943a72ae1263fe9bc6d9c018fb057d08cc1a278f3f3e89514ba02\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
+      "expected_bytes": "<!--\ncurator-root-context-v2\nroot: companyA 2.3.0 commit 0123456789abcdef0123456789abcdef01234567\nmember: companyA 2.3.0 commit 0123456789abcdef0123456789abcdef01234567 weight 100\nprecedence: winner=higher-weight placement=winner-last\nlock: sha256:e0a02a8af32564afc6997098fb5c34f7c88e54f60ba98d8cdfaa9144937b067d\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
       "line_count": 9,
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "0123456789abcdef0123456789abcdef01234567",
@@ -23,15 +24,15 @@
           }
         ],
         "root": "companyA",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:597e3f01c2c943a72ae1263fe9bc6d9c018fb057d08cc1a278f3f3e89514ba02",
+      "lock_sha256": "sha256:e0a02a8af32564afc6997098fb5c34f7c88e54f60ba98d8cdfaa9144937b067d",
       "name": "single-root",
       "precedence": {
         "placement": "winner-last",
         "winner": "higher-weight"
       },
-      "sha256": "sha256:9357a01c45af56d04916d3068820cc636c10eb0f99e8c6866da15608a70f9808"
+      "sha256": "sha256:67e516d52003e716dad8535f28cb84da4ce98ba8e3095a8c9e52a2d8efce71c2"
     },
     {
       "emitted_order": [
@@ -39,9 +40,10 @@
         "emptyoverlay",
         "personal"
       ],
-      "expected_bytes": "<!--\ncurator-root-context-v2\nroot: companyA 2.3.0 commit 0123456789abcdef0123456789abcdef01234567\nmember: companyA 2.3.0 commit 0123456789abcdef0123456789abcdef01234567 weight 100\nmember: emptyoverlay 0.1.0 commit 1111111111111111111111111111111111111111 weight 1000 overlay\nmember: personal 0.3.0 state sha256:abababababababababababababababababababababababababababababababab weight 1000 overlay\nprecedence: winner=higher-weight placement=winner-last\nlock: sha256:0fe12b40d26c79ba3e2d2b80a0a55772ff7b53f09df0e007174d7d662a6c4230\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
+      "expected_bytes": "<!--\ncurator-root-context-v2\nroot: companyA 2.3.0 commit 0123456789abcdef0123456789abcdef01234567\nmember: companyA 2.3.0 commit 0123456789abcdef0123456789abcdef01234567 weight 100\nmember: emptyoverlay 0.1.0 commit 1111111111111111111111111111111111111111 weight 1000 overlay\nmember: personal 0.3.0 state sha256:abababababababababababababababababababababababababababababababab weight 1000 overlay\nprecedence: winner=higher-weight placement=winner-last\nlock: sha256:73b7fb44e544e5628c708ebd9729e20db59dce1f6ef625cb3a8a7605e48cb749\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
       "line_count": 11,
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "0123456789abcdef0123456789abcdef01234567",
@@ -74,15 +76,15 @@
           }
         ],
         "root": "companyA",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:0fe12b40d26c79ba3e2d2b80a0a55772ff7b53f09df0e007174d7d662a6c4230",
+      "lock_sha256": "sha256:73b7fb44e544e5628c708ebd9729e20db59dce1f6ef625cb3a8a7605e48cb749",
       "name": "composed-overlays-default",
       "precedence": {
         "placement": "winner-last",
         "winner": "higher-weight"
       },
-      "sha256": "sha256:00a0bd713c3b04fa8409764ba2b9354ad131a8e627db81a553594ee92d5ac817"
+      "sha256": "sha256:3a04722ca814e121dbb4f4c61a10674995e433036b0f8f73ff0dcc6142927ff3"
     },
     {
       "emitted_order": [
@@ -93,9 +95,10 @@
         "umbrella",
         "personal"
       ],
-      "expected_bytes": "<!--\ncurator-root-context-v2\nroot: umbrella 2.3.0 commit 6666666666666666666666666666666666666666\nmember: core 3.2.1 commit 1111111111111111111111111111111111111111 weight 0\nmember: org 1.0.4 commit 2222222222222222222222222222222222222222 weight 10\nmember: figma 1.1.0 commit 4444444444444444444444444444444444444444 weight 60\nmember: ios 2.4.2 commit 5555555555555555555555555555555555555555 weight 60\nmember: umbrella 2.3.0 commit 6666666666666666666666666666666666666666 weight 100\nmember: personal 0.3.0 state sha256:abababababababababababababababababababababababababababababababab weight 1000 overlay\nprecedence: winner=lower-weight placement=winner-first\nlock: sha256:b8448aa1a92c5f1993616900ce51335bc88cc1c960ea7f5c8cc71f229840de06\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
+      "expected_bytes": "<!--\ncurator-root-context-v2\nroot: umbrella 2.3.0 commit 6666666666666666666666666666666666666666\nmember: core 3.2.1 commit 1111111111111111111111111111111111111111 weight 0\nmember: org 1.0.4 commit 2222222222222222222222222222222222222222 weight 10\nmember: figma 1.1.0 commit 4444444444444444444444444444444444444444 weight 60\nmember: ios 2.4.2 commit 5555555555555555555555555555555555555555 weight 60\nmember: umbrella 2.3.0 commit 6666666666666666666666666666666666666666 weight 100\nmember: personal 0.3.0 state sha256:abababababababababababababababababababababababababababababababab weight 1000 overlay\nprecedence: winner=lower-weight placement=winner-first\nlock: sha256:686914601bdf8ff08185c29d047aec406e452eb2028bdb7018eed18576c4e859\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
       "line_count": 14,
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "1111111111111111111111111111111111111111",
@@ -167,23 +170,24 @@
           }
         ],
         "root": "umbrella",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:b8448aa1a92c5f1993616900ce51335bc88cc1c960ea7f5c8cc71f229840de06",
+      "lock_sha256": "sha256:686914601bdf8ff08185c29d047aec406e452eb2028bdb7018eed18576c4e859",
       "name": "composed-winner-lower-placement-first",
       "precedence": {
         "placement": "winner-first",
         "winner": "lower-weight"
       },
-      "sha256": "sha256:b5e91e543d765e3480b9b1fb142f640d8dfa85c1533c4906713d69a209ce8788"
+      "sha256": "sha256:a3edd24b20d377c9071fb17bb83e0309e057fd79a65f43e5abdfa1efcc970d13"
     },
     {
       "emitted_order": [
         "default"
       ],
-      "expected_bytes": "<!--\ncurator-root-context-v2\nroot: default 0.0.0 state sha256:abababababababababababababababababababababababababababababababab\nmember: default 0.0.0 state sha256:abababababababababababababababababababababababababababababababab weight 0\nprecedence: winner=higher-weight placement=winner-last\nlock: sha256:caacb56869e330648fccce796b951be982e157cbcd58ba8e46fe3e8c178bbd38\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
+      "expected_bytes": "<!--\ncurator-root-context-v2\nroot: default 0.0.0 state sha256:abababababababababababababababababababababababababababababababab\nmember: default 0.0.0 state sha256:abababababababababababababababababababababababababababababababab weight 0\nprecedence: winner=higher-weight placement=winner-last\nlock: sha256:2457593d7438b0dfa20c8e88386cbbbc2c512c1cfd45d92b0d6867f243499b88\ngenerated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)\nnotice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead\n-->\n",
       "line_count": 9,
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "kind": "context",
@@ -196,15 +200,15 @@
           }
         ],
         "root": "default",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:caacb56869e330648fccce796b951be982e157cbcd58ba8e46fe3e8c178bbd38",
+      "lock_sha256": "sha256:2457593d7438b0dfa20c8e88386cbbbc2c512c1cfd45d92b0d6867f243499b88",
       "name": "local-state-pin",
       "precedence": {
         "placement": "winner-last",
         "winner": "higher-weight"
       },
-      "sha256": "sha256:14514addc545bb423801a2c1bb0ad149d8a899b6ec7697ab33c39542a818bbe3"
+      "sha256": "sha256:f51302c5a899576b2f622f6e75e54ad7d3e0208d6e8522c098962f9ddf53cb2a"
     }
   ],
   "header_type_line": "curator-root-context-v2",
@@ -220,11 +224,12 @@
           "bytes": 693,
           "expected": "expected/environments/monolithic-claude-code/CLAUDE.md",
           "path": "CLAUDE.md",
-          "sha256": "sha256:46867545f46551c96bc191154943cb63ea2a18bab3d4b5d3a4a36acc13bcf8c9"
+          "sha256": "sha256:cf2c4ee9b5fe734cfa1d21b3402bdf8fb90e1888f23139a073aa6c0931a95e3d"
         }
       ],
       "form": "monolithic",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "0123456789abcdef0123456789abcdef01234567",
@@ -238,9 +243,9 @@
           }
         ],
         "root": "companyA",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:597e3f01c2c943a72ae1263fe9bc6d9c018fb057d08cc1a278f3f3e89514ba02",
+      "lock_sha256": "sha256:e0a02a8af32564afc6997098fb5c34f7c88e54f60ba98d8cdfaa9144937b067d",
       "name": "monolithic-claude-code",
       "packages": {
         "companyA": {
@@ -274,7 +279,7 @@
         "winner": "higher-weight"
       },
       "surface": "root-context",
-      "surface_sha256": "sha256:1630dc07115a62631435e42ecd2173cf84a370840494333de60f2725888bb0fe"
+      "surface_sha256": "sha256:226555f6cbf21d3595c59232a7df8c6481836cb68525a3114f6e05d8dc92f1d5"
     },
     {
       "emitted_order": [
@@ -287,11 +292,12 @@
           "bytes": 660,
           "expected": "expected/environments/monolithic-codex-selector-excluded/AGENTS.md",
           "path": "AGENTS.md",
-          "sha256": "sha256:adf3710ece4480a4cba731416e0372849de6c3ae6deaa82c9c73d20885e03110"
+          "sha256": "sha256:abb167e6386bbb5c309dd940e38edfdcd2275b1fd3fa24f4560e2c8200e1f308"
         }
       ],
       "form": "monolithic",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "0123456789abcdef0123456789abcdef01234567",
@@ -305,9 +311,9 @@
           }
         ],
         "root": "companyA",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:597e3f01c2c943a72ae1263fe9bc6d9c018fb057d08cc1a278f3f3e89514ba02",
+      "lock_sha256": "sha256:e0a02a8af32564afc6997098fb5c34f7c88e54f60ba98d8cdfaa9144937b067d",
       "name": "monolithic-codex-selector-excluded",
       "packages": {
         "companyA": {
@@ -341,7 +347,7 @@
         "winner": "higher-weight"
       },
       "surface": "root-context",
-      "surface_sha256": "sha256:a65fb8b20eb4c071a6e43ab7aae9d9d1dff2bf844293624a5630f63d21f0d3cf"
+      "surface_sha256": "sha256:9599a54e73b01a5e2807f739db3533db32eb1e7badfb039d7a5c50e171537b74"
     },
     {
       "emitted_order": [
@@ -356,11 +362,12 @@
           "bytes": 981,
           "expected": "expected/environments/monolithic-composed-no-chapter/CLAUDE.md",
           "path": "CLAUDE.md",
-          "sha256": "sha256:c08300351715917c8783eea1653ef588710842f6b5d459930fcd3fa76b3b9d7f"
+          "sha256": "sha256:4c81572b6b864fc41df47e0cc9450f2157fb9cd8d17de9d1c5522903b18f2999"
         }
       ],
       "form": "monolithic",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "0123456789abcdef0123456789abcdef01234567",
@@ -393,9 +400,9 @@
           }
         ],
         "root": "companyA",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:0fe12b40d26c79ba3e2d2b80a0a55772ff7b53f09df0e007174d7d662a6c4230",
+      "lock_sha256": "sha256:73b7fb44e544e5628c708ebd9729e20db59dce1f6ef625cb3a8a7605e48cb749",
       "name": "monolithic-composed-no-chapter",
       "packages": {
         "companyA": {
@@ -447,7 +454,7 @@
         "winner": "higher-weight"
       },
       "surface": "root-context",
-      "surface_sha256": "sha256:718de2b77294605c56c64f2142e46463c3ba3636b071ef04d7a0a67c6739c9f1"
+      "surface_sha256": "sha256:5939c17d1799acd8bb2f3d89397911184160e30309383602aeaa6a60c196573e"
     },
     {
       "emitted_order": [
@@ -460,11 +467,12 @@
           "bytes": 574,
           "expected": "expected/environments/monolithic-zero-modules/CLAUDE.md",
           "path": "CLAUDE.md",
-          "sha256": "sha256:13476bc7b8578fde1bcdde8491be51314d33a518ace295e76db922d0ae9a005d"
+          "sha256": "sha256:7dc327909cc9bde941dddb0ebf502c28858c8a4d66e1693d80274ea2f71789db"
         }
       ],
       "form": "monolithic",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "1111111111111111111111111111111111111111",
@@ -478,9 +486,9 @@
           }
         ],
         "root": "emptyoverlay",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:f4b1cbe58b3250c5d0526e2af9b7e22efcc428f407e94069acc9656c33bdcaa7",
+      "lock_sha256": "sha256:066e6e53d8f215774d253ad00865224660f48f825b15388c90eda8307abe186a",
       "name": "monolithic-zero-modules",
       "packages": {
         "emptyoverlay": {
@@ -493,7 +501,7 @@
         "winner": "higher-weight"
       },
       "surface": "root-context",
-      "surface_sha256": "sha256:b2321e7e28a115aaef26720fe2c01c9805aeb30bf00f83d1f74536cd154d5710"
+      "surface_sha256": "sha256:73724e0fc18996e428337f18335f11239283cdda741869068999c77c9f9b5f16"
     },
     {
       "emitted_order": [
@@ -507,11 +515,12 @@
           "bytes": 665,
           "expected": "expected/environments/monolithic-zero-modules-composed/CLAUDE.md",
           "path": "CLAUDE.md",
-          "sha256": "sha256:495a60c6384ea9f1e451a9b00ea2cdbde00543264bf98fcec6091c7511bb8d5f"
+          "sha256": "sha256:ad9eb705a551e1d1df9ac447c10b2ea3328f06702eb7d0e9f1e6b3748efb4dc7"
         }
       ],
       "form": "monolithic",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "1111111111111111111111111111111111111111",
@@ -535,9 +544,9 @@
           }
         ],
         "root": "emptyoverlay",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:379d1d76f13d8489cbea9bc8db768bd57faa183e505ce1f9a67d9bb70068d19f",
+      "lock_sha256": "sha256:dd662391336955bf00bd79d258a5ade5fb8d4267d1e4e49e1bd354edebb5b30d",
       "name": "monolithic-zero-modules-composed",
       "packages": {
         "emptyoverlay": {
@@ -554,7 +563,7 @@
         "winner": "higher-weight"
       },
       "surface": "root-context",
-      "surface_sha256": "sha256:b3bbf2c1d6295d7d40906ce3e55fd636e6243e13d5c9ec9779e181172d5f97a9"
+      "surface_sha256": "sha256:5e2e25b8ee8e379d450486ebf5b95c3dec07678bd1b7bfb9db986bbda60624c2"
     },
     {
       "emitted_order": [
@@ -592,11 +601,12 @@
           "bytes": 935,
           "expected": "expected/environments/referenced-claude-code-composed/CLAUDE.md",
           "path": "CLAUDE.md",
-          "sha256": "sha256:9678bad8e1f5cd51524682accb9a0e5881b2ea40b92431db9ae9396e01831185"
+          "sha256": "sha256:859f433641393155a88de4d00d190aa22dcb8904d65cc229566bdc6fa016902d"
         }
       ],
       "form": "referenced",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "0123456789abcdef0123456789abcdef01234567",
@@ -619,9 +629,9 @@
           }
         ],
         "root": "companyA",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:0305581b4f24d74ce271f9809d24f77b794b5ef9ad004bcc5c398fa2ea2e54ab",
+      "lock_sha256": "sha256:8c5bbca87744959090345236e6947047c65475b533ff90fd25c1f01d261a8df6",
       "name": "referenced-claude-code-composed",
       "packages": {
         "companyA": {
@@ -669,7 +679,7 @@
         "winner": "higher-weight"
       },
       "surface": "root-context",
-      "surface_sha256": "sha256:abc4451ef4b0970349df4fff2d8f3f0ee03a94581ddcd543ca3d0df4ce212ba6"
+      "surface_sha256": "sha256:92bffbbbae099f76c2358fb37416624fc7267e01cc4cdaaf10e3db759e8ea1ee"
     },
     {
       "emitted_order": [
@@ -694,7 +704,7 @@
           "bytes": 565,
           "expected": "expected/environments/referenced-opencode/AGENTS.md",
           "path": "AGENTS.md",
-          "sha256": "sha256:9357a01c45af56d04916d3068820cc636c10eb0f99e8c6866da15608a70f9808"
+          "sha256": "sha256:67e516d52003e716dad8535f28cb84da4ce98ba8e3095a8c9e52a2d8efce71c2"
         },
         {
           "bytes": 110,
@@ -705,6 +715,7 @@
       ],
       "form": "referenced",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "0123456789abcdef0123456789abcdef01234567",
@@ -718,9 +729,9 @@
           }
         ],
         "root": "companyA",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:597e3f01c2c943a72ae1263fe9bc6d9c018fb057d08cc1a278f3f3e89514ba02",
+      "lock_sha256": "sha256:e0a02a8af32564afc6997098fb5c34f7c88e54f60ba98d8cdfaa9144937b067d",
       "name": "referenced-opencode",
       "packages": {
         "companyA": {
@@ -754,7 +765,7 @@
         "winner": "higher-weight"
       },
       "surface": "root-context",
-      "surface_sha256": "sha256:1584040fac129921bb6b829b7cdf1c24d28d68a57394dabb7332bc19c3efd86d"
+      "surface_sha256": "sha256:871e90cf624b601e8888daac96b7fd072be8b499c6c2ba9880aa86af0ac3890d"
     },
     {
       "emitted_order": [
@@ -767,7 +778,7 @@
           "bytes": 574,
           "expected": "expected/environments/referenced-opencode-zero-modules/AGENTS.md",
           "path": "AGENTS.md",
-          "sha256": "sha256:13476bc7b8578fde1bcdde8491be51314d33a518ace295e76db922d0ae9a005d"
+          "sha256": "sha256:7dc327909cc9bde941dddb0ebf502c28858c8a4d66e1693d80274ea2f71789db"
         },
         {
           "bytes": 20,
@@ -778,6 +789,7 @@
       ],
       "form": "referenced",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "1111111111111111111111111111111111111111",
@@ -791,9 +803,9 @@
           }
         ],
         "root": "emptyoverlay",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:f4b1cbe58b3250c5d0526e2af9b7e22efcc428f407e94069acc9656c33bdcaa7",
+      "lock_sha256": "sha256:066e6e53d8f215774d253ad00865224660f48f825b15388c90eda8307abe186a",
       "name": "referenced-opencode-zero-modules",
       "packages": {
         "emptyoverlay": {
@@ -806,7 +818,7 @@
         "winner": "higher-weight"
       },
       "surface": "root-context",
-      "surface_sha256": "sha256:932ac2905c18ad8f450784afe216943f1789415ced08f335a2a4731cb966c526"
+      "surface_sha256": "sha256:994da49df0c49bdc22f566d5a25c039d0f95be32db6532057cd25e0204c7972e"
     },
     {
       "emitted_order": [
@@ -817,6 +829,7 @@
       "files": [],
       "form": "monolithic",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "4444444444444444444444444444444444444444",
@@ -830,9 +843,9 @@
           }
         ],
         "root": "nocontext",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:ffc964fe7695cd6a3a69b9d4a54c81c7fa425054e89929945eec16e9c54b3460",
+      "lock_sha256": "sha256:812b1bd956230c376c95ab90eeae820aa2c5a8c3ca4ee2804497379bd7acaad4",
       "name": "no-context-directory",
       "packages": {
         "nocontext": {
@@ -872,6 +885,7 @@
         }
       ],
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "0123456789abcdef0123456789abcdef01234567",
@@ -894,9 +908,9 @@
           }
         ],
         "root": "companyA",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:0305581b4f24d74ce271f9809d24f77b794b5ef9ad004bcc5c398fa2ea2e54ab",
+      "lock_sha256": "sha256:8c5bbca87744959090345236e6947047c65475b533ff90fd25c1f01d261a8df6",
       "machine_policy": {
         "system_module_waivers": [],
         "transitive_system_modules": "drop"
@@ -948,7 +962,7 @@
         "winner": "higher-weight"
       },
       "surface": "system-prompt",
-      "surface_sha256": "sha256:89b93eb04b83fe8737f804aab3326e7d4cf2b51ba95d95c4e2d288562f0e2407",
+      "surface_sha256": "sha256:2fdccee2e9305156fcf591093b9d79f7758e703c3e4933b8757b80e36d31b976",
       "warnings": []
     },
     {
@@ -961,6 +975,7 @@
       "file_written": false,
       "files": [],
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "3333333333333333333333333333333333333333",
@@ -974,9 +989,9 @@
           }
         ],
         "root": "selective",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:55375161b381d5a50903a004d938e1c989d7e4889c88eb523f6210bf1304abe9",
+      "lock_sha256": "sha256:dff39ae73d14087f297f471255c23d739490dd2f47df6cf3dbdc2cfe6e1b6b1e",
       "machine_policy": {
         "system_module_waivers": [],
         "transitive_system_modules": "drop"
@@ -1031,6 +1046,7 @@
         }
       ],
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "9999999999999999999999999999999999999999",
@@ -1056,9 +1072,9 @@
           }
         ],
         "root": "sysroot",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:af4de85c692abfb471d37cc313854a4045a7f0f429df857d8dac66426f3e3d9b",
+      "lock_sha256": "sha256:c0cbf4bf3191c0441c1ca1f69e6a7038d47fbc755f4c95f5532424cd2c5aa9e9",
       "machine_policy": {
         "system_module_waivers": [],
         "transitive_system_modules": "drop"
@@ -1099,7 +1115,7 @@
         "winner": "higher-weight"
       },
       "surface": "system-prompt",
-      "surface_sha256": "sha256:a48ba73f90d5c05517029ea285d80bd4e01a3554b890df8e82dab0e9bc3df547",
+      "surface_sha256": "sha256:63adae9c1bb235ac32409dc4e0b6a587e5aeeccf900c0f289e3c71ca631c5681",
       "warnings": []
     },
     {
@@ -1135,6 +1151,7 @@
         }
       ],
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -1172,9 +1189,9 @@
           }
         ],
         "root": "sysroot",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:0e037aa6091690c15e04a0179e0836d112b0fe0ecdc53866db5c151f4ffa011a",
+      "lock_sha256": "sha256:b397cd5caeed9ef65cc0215cbe97643dbfd6bdf0f61d7b1c0b66ec44724d3e53",
       "machine_policy": {
         "system_module_waivers": [],
         "transitive_system_modules": "drop"
@@ -1225,7 +1242,7 @@
         "winner": "higher-weight"
       },
       "surface": "system-prompt",
-      "surface_sha256": "sha256:a48ba73f90d5c05517029ea285d80bd4e01a3554b890df8e82dab0e9bc3df547",
+      "surface_sha256": "sha256:63adae9c1bb235ac32409dc4e0b6a587e5aeeccf900c0f289e3c71ca631c5681",
       "warnings": [
         {
           "diagnostic": "context_system_module_dropped",
@@ -1263,6 +1280,7 @@
       "file_written": false,
       "files": [],
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -1300,9 +1318,9 @@
           }
         ],
         "root": "sysroot",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:0e037aa6091690c15e04a0179e0836d112b0fe0ecdc53866db5c151f4ffa011a",
+      "lock_sha256": "sha256:b397cd5caeed9ef65cc0215cbe97643dbfd6bdf0f61d7b1c0b66ec44724d3e53",
       "machine_policy": {
         "system_module_waivers": [],
         "transitive_system_modules": "error"
@@ -1387,6 +1405,7 @@
         }
       ],
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -1424,9 +1443,9 @@
           }
         ],
         "root": "sysroot",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:0e037aa6091690c15e04a0179e0836d112b0fe0ecdc53866db5c151f4ffa011a",
+      "lock_sha256": "sha256:b397cd5caeed9ef65cc0215cbe97643dbfd6bdf0f61d7b1c0b66ec44724d3e53",
       "machine_policy": {
         "system_module_waivers": [
           {
@@ -1482,7 +1501,7 @@
         "winner": "higher-weight"
       },
       "surface": "system-prompt",
-      "surface_sha256": "sha256:1c4b33439ebd588ff375e1f97532de2a3ff3ff748eaa021ff2267cbfed96f795",
+      "surface_sha256": "sha256:12d09dcdfac539c8cfcdb1e1239d9d4f30a8c3b7014681fadeb2d72779809429",
       "warnings": []
     },
     {
@@ -1518,6 +1537,7 @@
         }
       ],
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -1566,9 +1586,9 @@
           }
         ],
         "root": "sysroot",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:8ac1e5570204426f10a643f4a058777aef542a0c9ec1ae2e2e912294c6b03aa0",
+      "lock_sha256": "sha256:3c334c59a538035cb69f25f3accaebc63d47ac88056b186d3afeb30f788189ce",
       "machine_policy": {
         "system_module_waivers": [],
         "transitive_system_modules": "drop"
@@ -1628,7 +1648,7 @@
         "winner": "higher-weight"
       },
       "surface": "system-prompt",
-      "surface_sha256": "sha256:1c4b33439ebd588ff375e1f97532de2a3ff3ff748eaa021ff2267cbfed96f795",
+      "surface_sha256": "sha256:12d09dcdfac539c8cfcdb1e1239d9d4f30a8c3b7014681fadeb2d72779809429",
       "warnings": []
     },
     {
@@ -1647,11 +1667,12 @@
           "bytes": 1333,
           "expected": "expected/environments/weights-winner-higher-placement-last/CLAUDE.md",
           "path": "CLAUDE.md",
-          "sha256": "sha256:c2703d8b0e827e2ab3cab9d2bc8485096c27e6eb103a589387f75a2aab8839d1"
+          "sha256": "sha256:5525844e9f74482b8e63b4e40867f1258b6a57004dfdc92ef00823b1f7f1e3f3"
         }
       ],
       "form": "monolithic",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "1111111111111111111111111111111111111111",
@@ -1723,9 +1744,9 @@
           }
         ],
         "root": "umbrella",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:b8448aa1a92c5f1993616900ce51335bc88cc1c960ea7f5c8cc71f229840de06",
+      "lock_sha256": "sha256:686914601bdf8ff08185c29d047aec406e452eb2028bdb7018eed18576c4e859",
       "name": "weights-winner-higher-placement-last",
       "packages": {
         "core": {
@@ -1793,7 +1814,7 @@
         "winner": "higher-weight"
       },
       "surface": "root-context",
-      "surface_sha256": "sha256:3875ed87c1889813574acaa156be5a323d4f0bebc46ba6ae8adad19a21699c69"
+      "surface_sha256": "sha256:f45c11310a01b80ad0258a6e4a6052a701718477b95d2546b6f2842c0adbd2dd"
     },
     {
       "emitted_order": [
@@ -1811,11 +1832,12 @@
           "bytes": 1332,
           "expected": "expected/environments/weights-winner-lower-placement-last/CLAUDE.md",
           "path": "CLAUDE.md",
-          "sha256": "sha256:ba74b7fd122864f54bd5a30777cb89c75f14df80aae398811c54203bf545c4a4"
+          "sha256": "sha256:5d40860ce6d7a90e65ae5bc4e49ab5235b928a9ba7035ec1fc2f45bb4ccc4581"
         }
       ],
       "form": "monolithic",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "1111111111111111111111111111111111111111",
@@ -1887,9 +1909,9 @@
           }
         ],
         "root": "umbrella",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:b8448aa1a92c5f1993616900ce51335bc88cc1c960ea7f5c8cc71f229840de06",
+      "lock_sha256": "sha256:686914601bdf8ff08185c29d047aec406e452eb2028bdb7018eed18576c4e859",
       "name": "weights-winner-lower-placement-last",
       "packages": {
         "core": {
@@ -1957,7 +1979,7 @@
         "winner": "lower-weight"
       },
       "surface": "root-context",
-      "surface_sha256": "sha256:979baa3206c285efa6e7d85fe9be5694061395fbdc5e1958d3ebd083fdd26782"
+      "surface_sha256": "sha256:a7687195721668e12f220d1c7d152a117af374901ba5b26ab0e5987b1e280026"
     },
     {
       "emitted_order": [
@@ -1975,11 +1997,12 @@
           "bytes": 1334,
           "expected": "expected/environments/weights-winner-higher-placement-first/CLAUDE.md",
           "path": "CLAUDE.md",
-          "sha256": "sha256:f5f3322bfa22be7e1e696d7bde765cffda004e82e288dc988846f60d70b3342b"
+          "sha256": "sha256:9fcaa4bf8a8ddf909479596bcbfa19fee23186264c8efa93cb3b0195f80a8618"
         }
       ],
       "form": "monolithic",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "1111111111111111111111111111111111111111",
@@ -2051,9 +2074,9 @@
           }
         ],
         "root": "umbrella",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:b8448aa1a92c5f1993616900ce51335bc88cc1c960ea7f5c8cc71f229840de06",
+      "lock_sha256": "sha256:686914601bdf8ff08185c29d047aec406e452eb2028bdb7018eed18576c4e859",
       "name": "weights-winner-higher-placement-first",
       "packages": {
         "core": {
@@ -2121,7 +2144,7 @@
         "winner": "higher-weight"
       },
       "surface": "root-context",
-      "surface_sha256": "sha256:c4bcb9f3149c68df7913a65e0be028c8cd3bea6d869c22f981807b0a6fe0d5f8"
+      "surface_sha256": "sha256:d22426408decebb28b6bd521259cb5e329bc6ff09efaaef32079493ef38cd4a2"
     },
     {
       "emitted_order": [
@@ -2139,11 +2162,12 @@
           "bytes": 1333,
           "expected": "expected/environments/weights-winner-lower-placement-first/CLAUDE.md",
           "path": "CLAUDE.md",
-          "sha256": "sha256:92ff20ed5a6c3b56b3868ff42fa1b30a9f9709a8b357bc82aa89ef6c2729c060"
+          "sha256": "sha256:4bc65ec747851bc8090bc161af79e91cbaa3c56df9c16bd0c3077cce27a40328"
         }
       ],
       "form": "monolithic",
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "1111111111111111111111111111111111111111",
@@ -2215,9 +2239,9 @@
           }
         ],
         "root": "umbrella",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:b8448aa1a92c5f1993616900ce51335bc88cc1c960ea7f5c8cc71f229840de06",
+      "lock_sha256": "sha256:686914601bdf8ff08185c29d047aec406e452eb2028bdb7018eed18576c4e859",
       "name": "weights-winner-lower-placement-first",
       "packages": {
         "core": {
@@ -2285,7 +2309,7 @@
         "winner": "lower-weight"
       },
       "surface": "root-context",
-      "surface_sha256": "sha256:4d2e1389c63e30d46b6a8142be69372d0da6324bbb0f09f3a4cbf86cd95153be"
+      "surface_sha256": "sha256:c8d1282eb1a3df2e7dd694afb16ae04d30bb53faa91fa0c972a51f5f0d551153"
     },
     {
       "emitted_order": [
@@ -2307,6 +2331,7 @@
         }
       ],
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "0123456789abcdef0123456789abcdef01234567",
@@ -2356,9 +2381,9 @@
           }
         ],
         "root": "companyA",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:ec2e330ca2a8fb8aa7c7856f0fd0b8614e0f912f41e67de5f5a696e441d79bfb",
+      "lock_sha256": "sha256:86c9399b847c93477d5635d6fc0c748e7b6f3224454833577918c566da758a5c",
       "mcp_servers": {
         "codex-only": {
           "args": [],
@@ -2430,7 +2455,7 @@
         "winner": "higher-weight"
       },
       "surface": "mcp",
-      "surface_sha256": "sha256:21a9d2680dde8801971bfb815615be5407da4ebb57f0fe90904217c3e09d4553"
+      "surface_sha256": "sha256:c09f905816cc37eb2fca7e834f327427e3721ca0a8ee474a038ffb861e455fc6"
     },
     {
       "emitted_order": [
@@ -2450,6 +2475,7 @@
         }
       ],
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "0123456789abcdef0123456789abcdef01234567",
@@ -2499,9 +2525,9 @@
           }
         ],
         "root": "companyA",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:ec2e330ca2a8fb8aa7c7856f0fd0b8614e0f912f41e67de5f5a696e441d79bfb",
+      "lock_sha256": "sha256:86c9399b847c93477d5635d6fc0c748e7b6f3224454833577918c566da758a5c",
       "mcp_servers": {
         "codex-only": {
           "args": [],
@@ -2573,7 +2599,7 @@
         "winner": "higher-weight"
       },
       "surface": "mcp",
-      "surface_sha256": "sha256:3406a9175de60bfae427b368f5f7c53113ba5ce60a0b6dd4c241ba53242794dc"
+      "surface_sha256": "sha256:c11f76408fabeacfe510b2ecd67bbbf81e5b44308b76225f429b3417b469b255"
     },
     {
       "emitted_order": [
@@ -2595,6 +2621,7 @@
         }
       ],
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "0123456789abcdef0123456789abcdef01234567",
@@ -2644,9 +2671,9 @@
           }
         ],
         "root": "companyA",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:ec2e330ca2a8fb8aa7c7856f0fd0b8614e0f912f41e67de5f5a696e441d79bfb",
+      "lock_sha256": "sha256:86c9399b847c93477d5635d6fc0c748e7b6f3224454833577918c566da758a5c",
       "mcp_servers": {
         "codex-only": {
           "args": [],
@@ -2718,7 +2745,7 @@
         "winner": "higher-weight"
       },
       "surface": "mcp",
-      "surface_sha256": "sha256:e647f1a13a1ab9083bc200f2d1a7ef8bfb129a67d096cb9abcc37f0f3fc33a63"
+      "surface_sha256": "sha256:8490d95c5bf0a29cb52684ba07ec248ef16f570a3172f90c4931ff77d20c52b5"
     },
     {
       "emitted_order": [
@@ -2731,6 +2758,7 @@
       "file_written": false,
       "files": [],
       "lock": {
+        "hash_version": 2,
         "members": [
           {
             "commit": "0123456789abcdef0123456789abcdef01234567",
@@ -2780,9 +2808,9 @@
           }
         ],
         "root": "companyA",
-        "schema_version": 1
+        "schema_version": 2
       },
-      "lock_sha256": "sha256:ec2e330ca2a8fb8aa7c7856f0fd0b8614e0f912f41e67de5f5a696e441d79bfb",
+      "lock_sha256": "sha256:86c9399b847c93477d5635d6fc0c748e7b6f3224454833577918c566da758a5c",
       "mcp_servers": {
         "codex-only": {
           "args": [],

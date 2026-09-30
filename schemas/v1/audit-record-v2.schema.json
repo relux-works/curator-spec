@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/v1/audit-record-v2.schema.json",
+  "title": "Curator audit record schema 2",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "hash_version",
+    "name",
+    "source_identity",
+    "commit",
+    "content_sha256",
+    "status",
+    "sig"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "name": {
+      "$ref": "common.schema.json#/$defs/identifier"
+    },
+    "source_identity": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]*/[^\\s\\\\:%?#]+(?:/[^\\s\\\\:%?#]+)*$",
+      "maxLength": 4096
+    },
+    "commit": {
+      "$ref": "common.schema.json#/$defs/commit"
+    },
+    "content_sha256": {
+      "$ref": "common.schema.json#/$defs/sha256"
+    },
+    "status": {
+      "enum": [
+        "audited",
+        "revoked",
+        "deprecated",
+        "pending"
+      ]
+    },
+    "audit": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "common.schema.json#/$defs/canonicalValue"
+      }
+    },
+    "endorsements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "endorser",
+          "sig"
+        ],
+        "properties": {
+          "endorser": {
+            "$ref": "common.schema.json#/$defs/nonEmptyString"
+          },
+          "sig": {
+            "$ref": "common.schema.json#/$defs/signature"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "sig": {
+      "$ref": "common.schema.json#/$defs/signature"
+    },
+    "hash_version": {
+      "const": 2
+    }
+  },
+  "additionalProperties": false
+}

@@ -12,6 +12,7 @@ package main
 import (
 	"bytes"
 	"crypto/sha256"
+	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
 	"os"
@@ -229,7 +230,7 @@ func environmentFixtureClosure(names ...string) environmentClosure {
 	return closure
 }
 
-// environmentLock renders the closure as its context-lock-v1 object: members
+// environmentLock renders the closure as its current context-lock-v2 object: members
 // sorted by (kind, name), required_by derived from the requirement edges.
 func environmentLock(closure environmentClosure) map[string]any {
 	requiredBy := map[string][]string{}
@@ -268,7 +269,7 @@ func environmentLock(closure environmentClosure) map[string]any {
 		}
 		members = append(members, entry)
 	}
-	return map[string]any{"schema_version": 1, "root": closure.root, "members": members}
+	return map[string]any{"schema_version": 2, "hash_version": 2, "root": closure.root, "members": members}
 }
 
 // environmentEmittedOrder computes the section 5 emitted order of the
@@ -679,13 +680,17 @@ func environmentSurfaceHash(files map[string]string) string {
 	}
 	sort.Strings(paths)
 	digest := sha256.New()
-	for index, path := range paths {
-		if index > 0 {
-			digest.Write([]byte{0})
-		}
-		digest.Write([]byte(path))
-		digest.Write([]byte{0})
-		digest.Write([]byte(files[path]))
+	_, _ = digest.Write([]byte("curator-content-v2\x00"))
+	var length [8]byte
+	for _, path := range paths {
+		_, _ = digest.Write([]byte{'F'})
+		binary.BigEndian.PutUint64(length[:], uint64(len([]byte(path))))
+		_, _ = digest.Write(length[:])
+		_, _ = digest.Write([]byte(path))
+		payload := []byte(files[path])
+		binary.BigEndian.PutUint64(length[:], uint64(len(payload)))
+		_, _ = digest.Write(length[:])
+		_, _ = digest.Write(payload)
 	}
 	return "sha256:" + hex.EncodeToString(digest.Sum(nil))
 }
@@ -1095,6 +1100,16 @@ func validContextLockV1() map[string]any {
 	if result.err != nil {
 		panic("worked example does not resolve: " + result.err.diagnostic)
 	}
+	result.lock["schema_version"] = 1
+	delete(result.lock, "hash_version")
+	return result.lock
+}
+
+func validContextLockV2() map[string]any {
+	result := resolveClosure(workedExampleInput())
+	if result.err != nil {
+		panic("worked example does not resolve: " + result.err.diagnostic)
+	}
 	return result.lock
 }
 
@@ -1218,6 +1233,13 @@ func validEnvironmentMarkerV1() map[string]any {
 func validEnvironmentMarkerV2() map[string]any {
 	marker := deepCloneMap(validEnvironmentMarkerV1())
 	marker["version"] = 2
+	return marker
+}
+
+func validEnvironmentMarkerV3() map[string]any {
+	marker := deepCloneMap(validEnvironmentMarkerV2())
+	marker["version"] = 3
+	marker["hash_version"] = 2
 	return marker
 }
 
@@ -1628,7 +1650,7 @@ func orderedSurfaceObject(order []string, surfaces map[string]any) *orderedObjec
 // fixture tree, .gitattributes included — it is a regular file of that tree.
 func writeSnapshotAcquisitionVectors(dir, fixture, expected string) {
 	files := regularFiles(fixture)
-	hash := contentHash(fixture, files)
+	hash := contentHashV2(fixture, files)
 	writeText(filepath.Join(expected, "byte-exact-snapshot_sha256.txt"), hash+"\n")
 	entries := make([]any, 0, len(files))
 	for _, rel := range files {

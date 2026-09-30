@@ -162,8 +162,8 @@ NOT install a snapshot of it.
 
 ### 1.3 The lock is the identity
 
-Resolution (section 1.4) produces the profile **lock**: a strict schema-1
-object, `context-lock-v1`, naming the root and listing every closure member
+Resolution (section 1.4) produces the profile **lock**: a strict schema-2
+object, `context-lock-v2`, naming the root and listing every closure member
 — context packages, skills, and MCP declarations, the root and the overlays
 among them. Each member records its `kind` (exactly `context`, `mcp`, or
 `skill`), `name`, canonical source identity (`source`; absent for a `path`
@@ -179,9 +179,17 @@ bytewise. A `path` member's source path stays in machine configuration and
 the environment marker; it never enters the lock, so the lock hash is the
 same on every machine that locks the same bytes.
 
+The frozen `context-lock-v1` shape remains readable as framing version 1.
+`context-lock-v2` adds REQUIRED top-level `hash_version: 2`, which applies to
+each member's `state_sha256`. New writers MUST use the v2 lock and MUST record
+the unprefixed 64-character lowercase hexadecimal digest from core §8 in
+`state_sha256`. An absent `hash_version` in a v1 lock means version 1; a v1
+lock MUST NOT be interpreted as carrying a v2 identity.
+
 The lock is machine state below the manager home, never repository content.
 Its CCJ-1 bytes ([`registry.md`](registry.md) §1) hashed with SHA-256 are
-the **lock hash**, spelled `sha256:<64 lowercase hex>`. The lock hash is the
+the **lock hash**, spelled `sha256:<64 lowercase hex>`. This CCJ-1 lock hash is
+not a core content hash and is not versioned by `hash_version`. The lock hash is the
 profile's **effective pin** everywhere this document binds a profile to an
 identity: the generation header (section 5.1), the environment marker
 (section 8.2), the launch fragment (section 10.2), `profile list` (section
@@ -1081,6 +1089,12 @@ surface. Identical (lock, precedence policy, environment, form) MUST yield
 an identical surface hash on every platform; this equality is a
 conformance-vector surface.
 
+Current writers use framing version 2 for every snapshot state hash and
+materialized surface hash. The environment marker records `hash_version: 2`,
+which applies to all of its `state_sha256` and surface `content_sha256` members.
+Marker schemas 1 and 2 have no `hash_version` and retain framing-version-1
+meaning.
+
 ### 5.7 Diagnostics
 
 | Condition | Diagnostic |
@@ -1889,18 +1903,23 @@ the current profile of each scope, both homes and whether each has been
 provisioned. An operator picks one door per environment for daily work; a
 `--isolated-home` flag that would change the answer is not in revision 1.
 
-### 8.2 Environment marker, schemas 1 and 2
+### 8.2 Environment marker, schemas 1 through 3
 
 Every in-place surface set and every managed home carries a per-home
 **environment marker**, `.agent-environment.json`, beside the managed
 surfaces. Its supported wire formats are the strict schema-1 object
-(`agent-environment-marker-v1.schema.json`) and the strict schema-2
-object (`agent-environment-marker-v2.schema.json`). Newly created
-markers MUST use schema 2. Existing schema-1 markers remain supported;
-the only upgrade rule is the otherwise-required marker publication
-stated in section 7.4. The marker records:
+(`agent-environment-marker-v1.schema.json`), schema-2 object
+(`agent-environment-marker-v2.schema.json`), and schema-3 object
+(`agent-environment-marker-v3.schema.json`). Current writers MUST use schema
+3 and include `hash_version: 2`. Schema-1 and schema-2 markers remain
+supported as framing version 1; their existing upgrade rule is the
+otherwise-required marker publication stated in section 7.4. The marker
+records:
 
-- `version` — exactly `1` for schema 1 or `2` for schema 2;
+- `version` — exactly `1`, `2`, or `3` for the corresponding schema;
+- `hash_version` — REQUIRED with value `2` in schema 3; absent in schemas 1
+  and 2, which means framing version 1. It versions every snapshot-state and
+  materialized-surface content hash in the marker, not the CCJ-1 `lock_sha256`;
 - `profile` — the profile `name`, the `root` package name, its source
   `kind` (exactly `git`, `local`, or `path`), and `lock_sha256`, the lock
   hash of section 1.3. A `git` root additionally records its canonical
@@ -3579,7 +3598,7 @@ knob is absent.
 | `passable_env_names` | list of identifiers, or `null` for explicit unbounded | `[]` | 2.2, 10.3 |
 | `mcp_package_allowlist` | list of canonical source identities | empty (permits all, warned) | 2.2 |
 | `shadow_acknowledged` | list of `{ env, path }` | empty | 7.5, 12 |
-| `secret_material_waivers` | list of `{ pin, file, span: [start, end], reason }` | empty | 9.1 |
+| `secret_material_waivers` | list of `{ pin, hash_version?, file, span: [start, end], reason }` | empty | 9.1 |
 | `transitive_system_modules` | `drop`, `error` | `drop` | 3, 5.5 |
 | `system_module_waivers` | list of `{ package, reason }` | empty | 3, 5.5 |
 | `backup_retention` | non-negative integer, `0` = unlimited | `5` | 8.3 |
@@ -3603,8 +3622,12 @@ not defaults.
 A `secret_material_waivers.pin` is spelled as the member's pin exactly as
 the lock (section 1.3) and the marker (section 8.2) record it: bare
 lowercase hex, 40 characters for a `commit` pin or 64 for a
-`state_sha256` pin, with no `sha256:` prefix — the grammar
-`manager-config-v2` enforces.
+`state_sha256` pin, with no `sha256:` prefix. For a version-2 state hash, the
+waiver also carries `hash_version: 2`; when absent, `hash_version` means 1.
+A commit pin MUST NOT carry `hash_version`. The grammar
+`manager-config-v3` enforces the versioned state-hash form. The frozen
+`manager-config-v2` waiver shape has no `hash_version` member and retains its
+version-1 interpretation.
 
 A `system_module_waivers` entry carries `package`, a portable identifier
 (core §2) naming a `context` member of the lock, and `reason`, free text
@@ -3698,8 +3721,9 @@ The following surfaces of this document are conformance-vector surfaces,
 with schemas and vectors delivered separately (`schemas/v1/`, positive and
 negative vectors, and byte-exact determinism vectors). Schemas:
 `agent-context-v1` (section 2), `agent-mcp-v1` (section 2.2),
-`context-lock-v1` (section 1.3), `agent-environment-marker-v1` and
-`agent-environment-marker-v2` (section 8.2), the rewritten
+`context-lock-v1` and `context-lock-v2` (section 1.3),
+`agent-environment-marker-v1`, `agent-environment-marker-v2`, and
+`agent-environment-marker-v3` (section 8.2), the rewritten
 `launch-env-fragment-v1` (section 10.2)
 — which requires `argument` on every `flag` descriptor and `name` exactly
 when `argument` is `name`; the Decision 0012 §9 worked example, which omits

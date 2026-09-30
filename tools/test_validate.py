@@ -56,6 +56,27 @@ class SchemaRegistryCacheTests(unittest.TestCase):
                 self.assertEqual(checked.call_count, 2)
 
 
+class ReleasedSchemaImmutabilityTests(unittest.TestCase):
+    def test_unchanged_latest_release_schemas_pass(self) -> None:
+        validate.validate_released_schema_immutability()
+
+    def test_released_schema_byte_drift_is_rejected_through_main(self) -> None:
+        relative = "schemas/v1/log-response-v2.schema.json"
+        path = validate.ROOT / relative
+        original = path.read_bytes()
+        stdout, stderr = io.StringIO(), io.StringIO()
+        try:
+            path.write_bytes(original + b"\n")
+            with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                status = validate.main()
+        finally:
+            path.write_bytes(original)
+
+        self.assertEqual(status, 1)
+        self.assertIn("released schema bytes differ", stderr.getvalue())
+        self.assertIn(relative, stderr.getvalue())
+
+
 class WireSemanticValidationTests(unittest.TestCase):
     def test_manifest_requires_exact_declared_repository_selection(self) -> None:
         valid = {
@@ -3682,6 +3703,54 @@ class ContextDetectorVectorTests(unittest.TestCase):
         case["files"]["agent-context.json"] = '{"schema_version":2,"name":"companyA","version":"1.0.0"}\n'
         with self.assertRaises(validate.ValidationFailure):
             validate.validate_context_detector_vectors(changed)
+
+
+class ContentHashV2VectorTests(unittest.TestCase):
+    """The framing vector must preserve byte boundaries and the version gate."""
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.SUITE / "vectors" / "content-hashes-v2.json"
+        )
+
+    def test_published_vector_passes(self) -> None:
+        validate.validate_content_hash_v2_vectors()
+
+    def test_colliding_pair_must_assert_distinct_v2_hashes(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["colliding_v1_pair"]["v2_hashes_differ"] = False
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_content_hash_v2_vectors(changed)
+
+    def test_empty_tree_digest_is_exact(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["empty_tree"]["v2_sha256"] = "sha256:" + "0" * 64
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_content_hash_v2_vectors(changed)
+
+    def test_ordinary_tree_digest_is_exact(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["ordinary_tree"]["v2_sha256"] = "sha256:" + "0" * 64
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_content_hash_v2_vectors(changed)
+
+    def test_registry_record_with_wrong_version_does_not_match(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["registry_version_mismatch"]["matches"] = True
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_content_hash_v2_vectors(changed)
+
+    def test_equal_version_digest_match_is_not_misreported_as_a_mismatch(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["registry_version_mismatch"]["computed"]["hash_version"] = 1
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_content_hash_v2_vectors(changed)
+
+    def test_nested_nul_is_blocking_for_v1_reader(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["nested_nul"]["v1_reader"] = "warning"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_content_hash_v2_vectors(changed)
 
 
 class SnapshotAcquisitionVectorTests(unittest.TestCase):
