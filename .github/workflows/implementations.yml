@@ -31,11 +31,12 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: relux-works/curator
-          # Curator 80fd617f classifies executable_identity_cases and the
-          # hard_link_substitution_definition added by PR #88, and accepts the
-          # rc.13 release label on the unchanged script-worker-v1 identity
-          # (TASK-260926-4hd81z). Keep this pin in lockstep with the suite.
-          ref: 80fd617fe6cc08ae7c9d5ee615431f1fb7a9b0e7
+          # Curator 71360fcb drives the frozen-shape hash_version negatives and
+          # keys its exact published-case counts by suite manifest digest, so it
+          # passes against both rc.13 and this content-hash-v2 suite; the new v2
+          # families are owned known gaps (TASK-260930-12i5zr, TASK-260917-2tx81l).
+          # Keep this pin in lockstep with the suite.
+          ref: 71360fcbf052462a29ddaa4dbb800dceb016fac0
           path: implementations/go
           submodules: true
           # The Go suite does not use the board state. Excluding its deep paths
