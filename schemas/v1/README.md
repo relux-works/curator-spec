@@ -12,6 +12,22 @@ object of exactly the section 12.2 lockable keys, which `locked` may name as
 `shared` and `isolated` lock directions with the manager §1 whole-map
 replacement semantics. Both schema-1 files are byte-frozen and stay valid.
 
+Core content-hash framing version 2 uses the `curator-content-v2\0` domain
+prefix and length-delimited regular-file records. The frozen v1 wire shapes
+retain v1 meaning and do not gain fields. Current carriers use explicit
+`hash_version: 2`: `install-marker-v5`, `context-lock-v2`,
+`agent-environment-marker-v3`, `audit-record-v2`, `registry-log-entry-v2`,
+and `registry-bundle-v2`. `manager-config-v3` carries `hash_version: 2` on a
+state-hash waiver; `manager-config-v2` remains byte-frozen without it. The
+`log-response-v3` envelope references `registry-log-entry-v2` and the frozen
+`log-response-v2` continues to reference v1 entries. The skillfile-sources
+carriers `skillfile-lock-v2`, `install-marker-v6`, and `source-audit-v2` adopt
+`hash_version` in follow-up TASK-260930-3ny11n. In legacy frozen shapes, an absent version
+means 1; no reader may compare identities across versions. The
+`content-hashes-v2.json` vector pins the v1 collision, its v2 split, the empty
+tree, an ordinary exact digest, a NUL byte at nested depth, and a registry
+version mismatch.
+
 Rc.9 carries `agent-skill-v8`, `csk-skill-v8`, `install-marker-v4`, and
 conformance claim v5. Rc.8 carries `assurance-policy-v1`,
 `verified-provider-v1`, `provider-capability-receipt-v1`,
@@ -35,13 +51,18 @@ identifier) — `additionalProperties: false` unchanged. The schema-1 file is
 byte-frozen and stays valid; a schema-1 reader rejects both members as
 unknown fields. No other member is added, widened, or reinterpreted.
 
+`manager-config-v3` is a new closed schema that preserves the schema-2
+configuration surface and adds `hash_version: 2` to a state-hash waiver. The
+schema-2 file remains byte-frozen and rejects the new member; version-2 state
+hashes in waivers are accepted only by schema 3.
+
 The agent-environments capability of `protocol/environments.md` (revision 1,
-the Decision 0012 model) carries five closed objects: `agent-context-v1` for
+the Decision 0012 model) carries versioned closed objects: `agent-context-v1` for
 the package manifest `agent-context.json` (section 2, with the section 1.4
 range grammar as a pattern), `agent-mcp-v1` for the MCP declaration
-`agent-mcp.json` (section 2.2), `context-lock-v1` for the profile lock
-(section 1.3), `agent-environment-marker-v1` for the per-home
-`.agent-environment.json` ledger (section 8.2), and `launch-env-fragment-v1`
+`agent-mcp.json` (section 2.2), `context-lock-v1` and `context-lock-v2` for the profile lock
+(section 1.3), `agent-environment-marker-v1` through
+`agent-environment-marker-v3` for the per-home `.agent-environment.json` ledger (section 8.2), and `launch-env-fragment-v1`
 for the `env resolve` output (section 10.2, which requires `argument` on every
 `flag` descriptor and `name` exactly when `argument` is `name`).
 `profilefile-v1` and `context-manifest-v1` are withdrawn with the shapes they
@@ -154,12 +175,14 @@ neither widens nor narrows their existing shape.
 
 ### Install markers
 
-A schema-8 installation records `install-marker-v4.schema.json`. Marker v4 is
-marker v3 with `schema_version` 4 and `skill_schema_version` 8 and no other
-difference, so every marker-v3 build-record rule — explicit receipt schema
-version, explicit `execution_policy`, `build_source` present exactly when a
-local `go-v1` build is active — applies unchanged. Markers v1, v2, and v3 keep
-their frozen shapes and their existing manifest-version bands.
+A schema-8 installation written under the previous framing records
+`install-marker-v4.schema.json`. Marker v4 is marker v3 with `schema_version`
+4 and `skill_schema_version` 8 and no other difference, so every marker-v3
+build-record rule — explicit receipt schema version, explicit
+`execution_policy`, `build_source` present exactly when a local `go-v1` build
+is active — applies unchanged. Markers v1 through v4 keep their frozen
+framing-version-1 shapes. Current writers use marker v5 with
+`hash_version: 2` for core installations.
 
 ## Manifest schema 8: declared first-party module roots
 

@@ -3352,7 +3352,7 @@ func TestBuildDriverContextSelectionExcludesOnlyDeclaredBuildRoots(t *testing.T)
 			t.Fatalf("script fixture context selection changed at %d: %q != %v", index, name, published[index])
 		}
 	}
-	if got, want := contentHash(scriptFixture, selected), strings.TrimSpace(string(mustReadFile(t, filepath.Join(root, "conformance", "v1", "expected", "context_sha256.txt")))); got != want {
+	if got, want := contentHashV1(scriptFixture, selected), strings.TrimSpace(string(mustReadFile(t, filepath.Join(root, "conformance", "v1", "expected", "context_sha256.txt")))); got != want {
 		t.Fatalf("script fixture context hash = %s, want %s", got, want)
 	}
 }

@@ -1,0 +1,83 @@
+{
+  "colliding_v1_pair": {
+    "construction": "v1 encodes path || NUL || bytes and joins records with NUL: one file a=one NUL b NUL two and two files a=one, b=two produce the same byte string",
+    "trees": [
+      {
+        "files": [
+          {
+            "bytes_utf8": "one\u0000b\u0000two",
+            "path": "a"
+          }
+        ],
+        "name": "one-file-embedded-record",
+        "v1_sha256": "sha256:c518e668673099905d1dd12ce983ff9447008f4e87829dfcfe1316a52114970c",
+        "v2_sha256": "sha256:576c3d373a5b48e95cbd87c736f55a3f6bcfa9f5c789186bb6ea775fcd23551c"
+      },
+      {
+        "files": [
+          {
+            "bytes_utf8": "one",
+            "path": "a"
+          },
+          {
+            "bytes_utf8": "two",
+            "path": "b"
+          }
+        ],
+        "name": "two-file-records",
+        "v1_sha256": "sha256:c518e668673099905d1dd12ce983ff9447008f4e87829dfcfe1316a52114970c",
+        "v2_sha256": "sha256:de107e6a5f86b44a79e035761d78ceba8fc125cde23520d4268ac11b214a28d4"
+      }
+    ],
+    "v1_hashes_equal": true,
+    "v2_hashes_differ": true
+  },
+  "empty_tree": {
+    "files": [],
+    "v2_sha256": "sha256:f34a9d36a24a41168189f7ac17fc4fd0fb0a7b7c15ce1065fa4a2409d48c0c12"
+  },
+  "framing": {
+    "bytes_length": "uint64be-octets",
+    "domain_prefix_utf8": "curator-content-v2",
+    "domain_terminator_hex": "00",
+    "file_record_tag_hex": "46",
+    "path_length": "uint64be-octets"
+  },
+  "nested_nul": {
+    "directory_depth": 2,
+    "file": {
+      "bytes_utf8": "before\u0000after",
+      "path": "deep/third/bytes.bin"
+    },
+    "v1_reader": "blocking-opaque-finding",
+    "v2_sha256": "sha256:7a02fafc05a0e2eb24f219d73a38194512675f95b6b072089a5ede5c0da135f1",
+    "v2_treatment": "ordinary-file-byte"
+  },
+  "ordinary_tree": {
+    "files": [
+      {
+        "bytes_utf8": "curator\n",
+        "path": "README.md"
+      },
+      {
+        "bytes_utf8": "package main\n",
+        "path": "src/main.go"
+      }
+    ],
+    "v1_sha256": "sha256:d27c6999649d9211b267c2c3e4a51ccbaff2cd03a168a52ff86f2221c9136758",
+    "v2_sha256": "sha256:55150544f675ac2ff1a88407e6231a7f93c5a78a75e1b3f183463ae78d9a95cf"
+  },
+  "registry_version_mismatch": {
+    "computed": {
+      "content_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "hash_version": 2
+    },
+    "matches": false,
+    "reason": "equal_digest_text_does_not_override_unequal_framing_versions",
+    "record": {
+      "content_sha256": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "hash_version": 1
+    }
+  },
+  "schema_version": 1
+}

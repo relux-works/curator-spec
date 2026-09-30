@@ -17,19 +17,21 @@ identifiers and authorization bindings MUST survive restart consistently with
 the durable state.
 
 An artifact key is the exact tuple `(name, source_identity, commit,
-content_sha256)`. Its current record at log boundary `B` is the matching entry
+hash_version, content_sha256)`. Its current record at log boundary `B` is the matching entry
 with the greatest sequence number not greater than `B`. Records with the same
-name, source, and commit but different content hashes are distinct artifact
-keys and MUST remain visible. This preserves evidence of a source or build
-equivocation.
+name, source, and commit but different framing versions or content hashes are
+distinct artifact keys and MUST remain visible. This preserves evidence of a
+source or build equivocation.
 
 For `GET /v1/records`, all supplied filters are conjunctive. Supplying
 `source_identity` requires `commit`, and the pair selects exact equality on
 both fields. When `content_sha256` is also supplied, a record MUST satisfy the
-identity pair and the content hash. A content hash without an identity pair is
-valid. Results are the current records for matching artifact keys, ordered by
-`name`, `source_identity`, `commit`, then `content_sha256`, using Unicode scalar
-ordering for strings.
+identity pair and the exact `(hash_version, content_sha256)` pair. An omitted
+query `hash_version` means version 1 for compatibility; version-2 queries MUST
+send `hash_version=2`. A content hash without an identity pair is valid.
+Results are the current records for matching artifact keys, ordered by
+`name`, `source_identity`, `commit`, `hash_version`, then `content_sha256`,
+using Unicode scalar ordering for strings.
 
 ## 2. Stable pagination and cursors
 
@@ -290,6 +292,11 @@ views only when they meet in one client, which MAY compare `merkle_root`
 values at a shared `log_size` across a configured mirror group and report a
 difference as `registry_view_divergence` without changing resolution
 (registry protocol §5.1); there is no service-side quorum.
+
+The `/v1/log` success response uses `log-response-v3.schema.json` so its
+`registry-log-entry-v2` entries can carry v1 or v2 audit records. The frozen
+`log-response-v2` envelope remains valid for clients that consume only v1
+entries.
 
 ## 11. Conformance
 

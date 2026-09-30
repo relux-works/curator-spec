@@ -8,7 +8,7 @@ member: ios 2.4.2 commit 5555555555555555555555555555555555555555 weight 60
 member: org 1.0.4 commit 2222222222222222222222222222222222222222 weight 10
 member: core 3.2.1 commit 1111111111111111111111111111111111111111 weight 0
 precedence: winner=lower-weight placement=winner-last
-lock: sha256:b8448aa1a92c5f1993616900ce51335bc88cc1c960ea7f5c8cc71f229840de06
+lock: sha256:686914601bdf8ff08185c29d047aec406e452eb2028bdb7018eed18576c4e859
 generated: Curator Protocol environments revision 1 (https://github.com/relux-works/curator-spec)
 notice: generated file; direct edits are unsupported and are detected as drift; update the source profile repository or its composed profiles instead
 -->
