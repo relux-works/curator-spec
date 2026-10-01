@@ -5,6 +5,15 @@ Versioning for the complete specification set.
 
 ## Unreleased
 
+### Changed
+
+- Record the operator's adoption of
+  [Decision 0019](decisions/0019-fragment-consumers-and-one-construction-site.md)
+  and [Decision 0021](decisions/0021-sessions-enter-through-curator-run.md)
+  on 2026-10-01. Add amendment backlinks in Decision 0013 and update the
+  decision status index. Preserve proposal and normative text; protocol
+  and launcher specification amendments remain follow-ups.
+
 ### Added
 
 - Add an informative "Threat review for a new build driver" checklist to

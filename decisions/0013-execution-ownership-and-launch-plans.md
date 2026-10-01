@@ -4,6 +4,12 @@
 
 Proposed 2026-09-05. Draft for review; nothing here is normative yet.
 
+Amends: [Decision 0019](0019-fragment-consumers-and-one-construction-site.md),
+adopted 2026-10-01 by the operator, amends Decisions 1, 5, 6.3 and 6.5;
+[Decision 0021](0021-sessions-enter-through-curator-run.md), adopted
+2026-10-01 by the operator, amends Decisions 1 and 6.4. This adoption
+record preserves the proposal text below; normative revisions are follow-ups.
+
 Numbering: Decision 0011 is reserved by the swift-driver draft
 (`decisions/0011-swift-driver-pair.md` on the unlanded branch
 `draft/TASK-260728-1yhuqi-swift-driver`, head `604d525`); Decision 0012

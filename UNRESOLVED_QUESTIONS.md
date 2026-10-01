@@ -36,15 +36,20 @@ leaves.
 - [Decision 0017: environment credential modes](decisions/0017-environment-credential-modes.md) — adopted 2026-09-21: options 1–3 as recommended, open questions 1–7 resolved.
 - [Decision 0018: curator run permission interface](decisions/0018-curator-run-permission-interface.md) — adopted 2026-09-21 with the 2026-09-16 amendment (TASK-260916-2fu85y, rev 2 after review): config-driven mode, interactive default `yolo` / headless default `native`, force-`native` lock, fail-closed legacy transport; open questions 1–7 resolved.
 
+The launch-profile decisions below were adopted 2026-10-01 by the operator.
+Their proposal text is preserved; normative amendments and their open
+questions remain follow-ups.
+
+- [Decision 0019: fragment consumers and one construction site](decisions/0019-fragment-consumers-and-one-construction-site.md) — adopted 2026-10-01 by the operator.
+- [Decision 0021: sessions enter through curator run and are hosted through the ax contract](decisions/0021-sessions-enter-through-curator-run.md) — adopted 2026-10-01 by the operator.
+
 ## Filed proposals
 
 These decision drafts are **proposed — not adopted** (0014–0016 from
-migration workstream B7, 0019 and 0021 from the launch-profile work).
+migration workstream B7).
 Filing does not authorize implementation, normative changes, workarounds,
 or draft landing.
 
 - [Decision 0014: tool-configuration surfaces](decisions/0014-tool-configuration-surfaces.md)
 - [Decision 0015: per-project policy and profile selection](decisions/0015-per-project-policy.md)
 - [Decision 0016: skill command roots in managed homes](decisions/0016-managed-home-command-roots.md)
-- [Decision 0019: fragment consumers and one construction site](decisions/0019-fragment-consumers-and-one-construction-site.md)
-- [Decision 0021: sessions enter through curator run and are hosted through the ax contract](decisions/0021-sessions-enter-through-curator-run.md)

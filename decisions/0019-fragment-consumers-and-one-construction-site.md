@@ -2,7 +2,7 @@
 
 ## Status
 
-Status: proposed — not adopted
+Status: adopted 2026-10-01 by the operator
 
 Proposed 2026-09-24. DRAFT for review. The operator chose this direction
 for the launch-profile work on 2026-09-23; adoption is a separate act in
