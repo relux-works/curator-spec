@@ -282,7 +282,9 @@ profile that carries it fails installation.
 ### 3. Environment adapter registry
 
 The manager §5 adapter table generalizes from one surface (skills) to an
-**environment adapter registry**. Revision 1 defines four adapters:
+**environment adapter registry**. The original revision-1 set defines four adapters;
+the 2026-10-01 Muse amendment adds the row below (normative details in
+[environments §7](../protocol/environments.md#7-environment-adapter-registry)):
 
 | Environment | Home mechanism | Home shape | Root context target | Skills target |
 |---|---|---|---|---|
@@ -290,11 +292,12 @@ The manager §5 adapter table generalizes from one surface (skills) to an
 | `codex_cli` | `CODEX_HOME=<home>` | variable names the home | `<home>/AGENTS.md` | `<home>/skills/` |
 | `opencode` | `XDG_CONFIG_HOME=<parent>` | tool reads `<parent>/opencode/` | `<home>/AGENTS.md` | `<home>/skills/` |
 | `pi` | `PI_CODING_AGENT_DIR=<home>` | variable names the home | `<home>/AGENTS.md` (the tool also honors agent-dir `APPEND_SYSTEM.md` — system-prompt append — and `SYSTEM.md` — full system-prompt replacement — both applied unconditionally when present; system-prompt rules in Decisions 2 and 6) | `<home>/skills/` |
+| `muse` | four XDG parents = `<home>/{config,data,state,cache}`; MUST NOT replace `HOME` | config/data use `muse/`; state/cache layout unverified | **unverified**, not admitted | `<home>/data/muse/skills/` (discovery **unverified**) |
 
 Each adapter normatively declares: the environment-variable name and whether
 it names the home or a parent; the home-relative path of every managed
 surface; the surfaces it supports per revision; the root-context forms of
-Decision 2 it supports (`monolithic` always; `referenced` where the tool has
+Decision 2 it supports (`monolithic` for verified root targets; `referenced` where the tool has
 a native reference mechanism) and its form default; its system-prompt
 override channel of Decision 2, when the tool has one; the credential
 passthrough entries of Decision 7; the materialization-mode default of
@@ -605,6 +608,13 @@ suite needs it. The launcher's own specification defines its flags, its
 document does not constrain them further.
 
 ### 7. Credentials and mutable state
+
+Muse amendment (2026-10-01): `shared` links `config/muse/auth.json` to
+the native auth file; refresh semantics remain unverified. Every resolve
+checks link identity and target liveness, repairs only safely absent links,
+and refuses forked files without copying credentials. The normative rule
+and profile-sourced settings/trust seeds are in
+[environments §7.4](../protocol/environments.md#74-credential-passthrough-provisioning-seeds-and-isolation).
 
 Credentials are never profile content and never managed surfaces. Each
 adapter declares its credential passthrough set — the auth entries a managed

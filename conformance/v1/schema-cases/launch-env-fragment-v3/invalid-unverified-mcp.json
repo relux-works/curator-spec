@@ -1,0 +1,39 @@
+{
+  "env": {
+    "XDG_CACHE_HOME": "/manager/environments/companyA/muse/cache",
+    "XDG_CONFIG_HOME": "/manager/environments/companyA/muse/config",
+    "XDG_DATA_HOME": "/manager/environments/companyA/muse/data",
+    "XDG_STATE_HOME": "/manager/environments/companyA/muse/state"
+  },
+  "environment": "muse",
+  "fragment": "launch-env-fragment-v3",
+  "mcp": {
+    "channels": [
+      {
+        "argument": "path",
+        "flag": "--mcp-config",
+        "kind": "flag",
+        "with": [
+          "--strict-mcp-config"
+        ]
+      }
+    ],
+    "env_names": [
+      "FIGMA_API_KEY"
+    ],
+    "path": "/manager/environments/companyA/claude_code/.agent-context/mcp/claude_code.json"
+  },
+  "permissions": {
+    "locked": false,
+    "mode": "native",
+    "source": "profile"
+  },
+  "precedence": {
+    "placement": "winner-last",
+    "winner": "higher-weight"
+  },
+  "profile": {
+    "lock_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "name": "companyA"
+  }
+}

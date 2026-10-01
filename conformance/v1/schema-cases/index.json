@@ -780,6 +780,11 @@
     "valid": false
   },
   {
+    "instance": "agent-environment-marker-v3/valid-muse-shared.json",
+    "schema": "agent-environment-marker-v3.schema.json",
+    "valid": true
+  },
+  {
     "instance": "agent-mcp-v1/valid.json",
     "schema": "agent-mcp-v1.schema.json",
     "valid": true
@@ -4377,6 +4382,186 @@
   {
     "instance": "launch-env-fragment-v2/invalid-permissions-missing-mode.json",
     "schema": "launch-env-fragment-v2.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/valid.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/valid-permissions-yolo-unlocked.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v3/valid-permissions-native-locked.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v3/valid-permissions-native-silent.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-permissions-absent.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-permissions-unknown-mode.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-permissions-yolo-locked.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-permissions-yolo-silent.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-permissions-locked-profile-source.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-permissions-global-unlocked.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-permissions-unknown-source.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-permissions-unknown-field.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-permissions-missing-mode.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/valid-claude_code.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-extra-parent-claude_code.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/valid-codex_cli.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-extra-parent-codex_cli.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/valid-opencode.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-extra-parent-opencode.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/valid-pi.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": true
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-extra-parent-pi.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-missing-XDG_CONFIG_HOME.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-wrong-parent-XDG_CONFIG_HOME.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-missing-XDG_DATA_HOME.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-wrong-parent-XDG_DATA_HOME.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-missing-XDG_STATE_HOME.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-wrong-parent-XDG_STATE_HOME.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-missing-XDG_CACHE_HOME.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-wrong-parent-XDG_CACHE_HOME.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-HOME-added.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-HOME-substitution.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-unverified-system-prompt.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-unverified-mcp.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-v2-token.json",
+    "schema": "launch-env-fragment-v3.schema.json",
+    "valid": false
+  },
+  {
+    "instance": "launch-env-fragment-v3/invalid-unknown-environment.json",
+    "schema": "launch-env-fragment-v3.schema.json",
     "valid": false
   },
   {

@@ -26,6 +26,12 @@ Numbering: the existing decision series ends at 0016; 0011 remains
 reserved as recorded in Decision 0013. This filing uses the next two
 unused numbers, 0017–0018.
 
+Muse amendment (2026-10-01): the `shared` strategy is a native `auth.json`
+file-link at `config/muse/auth.json`. Refresh writes are an open question;
+link identity and target liveness are checked at every resolve, and a
+forked regular file is refused without copy-back. See the normative
+[environments §7.4](../protocol/environments.md#74-credential-passthrough-provisioning-seeds-and-isolation).
+
 ## Context
 
 [Environments 1.1](../protocol/environments.md) §7.4 declares, per
