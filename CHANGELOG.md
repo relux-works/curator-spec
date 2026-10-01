@@ -7,6 +7,13 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Define snapshot-cache retention (manager profile section 10.1, #75): the
+  references that keep a commit-keyed snapshot reachable, fail-safe
+  uncertainty, a grace period, the operator `keep_last` and `older_than`
+  policy, dry-run parity, move-then-delete removal, and a retention report
+  with allocated and logical sizes. Add the `snapshot-retention` decision
+  vectors, their semantic check in `tools/validate.py`, and the informative
+  `curator cache prune` row.
 - Add an informative "Threat review for a new build driver" checklist to
   `docs/external-build-repositories.md`, citing the normative clause behind
   each item. No new requirement, vector, or schema.

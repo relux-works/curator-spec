@@ -1529,6 +1529,116 @@ An explicit per-knob opt-out that the profile permits (for example an
 explicit `audit.mode: advisory` under `hardened`) is reported with
 `explicit` provenance and never makes a row non-current.
 
+### 10.1 Snapshot-cache retention
+
+The commit-keyed snapshot store holds one immutable entry per source key and
+full commit (core section 9.4 fixes the key; the physical layout is
+implementation-specific). Reachability alone does not bound it: a machine that
+resolves many revisions of one source keeps one full tree per revision. This
+section defines when an entry may be removed, the operator retention policy,
+the dry-run obligation, and the retention report. The garbage-collection
+paragraph above applies unchanged; its snapshot sweep is this computation with
+no keep-last and no age policy.
+
+**Reachability.** An entry is reachable when its commit is named by any of:
+
+- a valid install marker of any supported schema in a registered consumer, the
+  global scope, or the hybrid scope;
+- a member of a valid source lock (`Skillfile.lock.json`) of a registered
+  consumer, the global scope, or the hybrid scope;
+- a member of a valid installed profile lock (context lock); or
+- an in-flight transaction journal, as core section 9.4 already requires.
+
+A manager MAY match a reference by commit alone, ignoring the source key;
+this over-retains and is always safe. It MUST NOT treat an entry as
+unreachable while any of these references names its commit. A reference
+source that exists but cannot be read, parsed, or proven link-free makes the
+reference set uncertain. While it is uncertain the manager MUST remove no entry
+and MUST report each otherwise-removable entry as retained with reason
+`reference_uncertain`. It MUST NOT infer reachability from receipt content,
+entry bytes, or an unvalidated partial record.
+
+**Retention policy.** Retention is an explicit per-invocation operator policy
+with two optional parameters. No package, project, profile, or configuration
+value selects it in this revision.
+
+- `keep_last` (integer `N >= 0`): per source key, the `N` entries with the
+  latest last-use time are retained, whether or not they are reachable.
+  Order is last-use time descending, then commit ascending by bytes.
+  Reachable entries count toward the `N`. `0` or absence adds no keep-last
+  retention.
+- `older_than` (duration `D >= 0`): an entry whose age is at most `D` is
+  retained. Age is the invocation time minus the entry's last-use time.
+  Absence adds no age retention.
+
+An entry's last-use time is the latest time the manager published it or
+served it to an operation. A manager that does not record serving uses the
+publication time.
+
+Independently of the policy, an entry younger than the manager's documented
+grace period is retained, because a concurrent resolution may have published it
+before recording any reference. An entry is removed only when it is
+unreachable, the reference set is certain, it is outside the grace period, it
+is outside the keep-last window, and it is older than `D` when `older_than` is
+given. Each entry has exactly one reason, taken from the first rule that
+applies, in this order:
+
+| Order | Reason | Action |
+|---|---|---|
+| 1 | `reachable` | retain |
+| 2 | `reference_uncertain` | retain |
+| 3 | `grace` | retain |
+| 4 | `keep_last` | retain |
+| 5 | `newer_than` | retain |
+| 6 | `unreachable` | remove |
+
+An entry that is unreachable but inside the keep-last or age window is
+therefore retained with reason `keep_last` or `newer_than`, never removed.
+
+**Execution.** The computation runs under the manager-home mutation lock,
+after recovery of incomplete transactions and after revalidating the snapshot
+store boundary, as garbage collection does. A dry run MUST NOT execute
+transaction recovery or cleanup that could delete state. Under the same lock,
+it MUST first inspect for pending recovery or cleanup; if any is pending or
+cannot be ruled out, it MUST refuse before computing a retention plan, remove
+nothing (including transaction targets and interrupted-removal leftovers),
+and exit 1 with a diagnostic explaining that a real invocation must complete
+recovery first. When no recovery or cleanup is pending, a dry run computes the
+same plan and removes nothing; its report differs from the real run only in
+`dry_run` and each entry's `removed` member. Interrupted-removal leftovers in
+the snapshot store are cleaned up only by a real run over a certain reference
+set; their presence alone does not require transaction recovery. Their report
+warnings describe the planned cleanup identically in dry and real runs. A removal MUST NOT leave a
+partially deleted tree at the entry's canonical location: the manager first
+moves the entry out of the store namespace, then deletes it. Retention never
+executes, adopts, re-authenticates, or repairs entry content.
+
+**Retention report.** A machine-readable report carries:
+
+- `dry_run` (boolean);
+- `policy`: `keep_last` and `older_than_seconds` (integer or `null` when absent)
+  and `grace_seconds` (integer);
+- `size_measure`: the literal `allocated`;
+- `entries`: one object per entry, ordered by source key then commit by bytes,
+  with `source`, `commit`, `last_used_at` (RFC 3339 UTC), `allocated_bytes`,
+  `logical_bytes`, `reachable` (boolean), `action` (`retain` or `remove`),
+  `reason` (one of the six reasons above), and `removed` (boolean);
+- `totals`: `entries`, `allocated_bytes`, `logical_bytes`, `remove_entries`,
+  `remove_allocated_bytes`, and `remove_logical_bytes`; and
+- `warnings`: human-readable strings, including every uncertainty.
+
+`allocated_bytes` is the storage the platform reports as allocated to the
+entry's regular files, each file identity counted once per entry. Where the
+platform reports no allocation, it equals `logical_bytes`, the sum of file
+lengths. Filesystems that share extents between files, such as APFS clones,
+can make both figures exceed what a removal returns. The allocated figure is
+reported because it is the closer bound.
+
+The `snapshot-retention` conformance family (`vectors/snapshot-retention.json`)
+pins the decision rule: given entries with last-use time and reachability,
+the reference-set certainty, the grace period, the invocation time, and a
+policy, each case fixes every entry's action and reason.
+
 ## 11. External repository manager profile
 
 The accepted [repository transport revisions 1 and 2](../protocol/repository-transport.md)

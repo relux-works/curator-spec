@@ -1,0 +1,736 @@
+{
+  "actions": [
+    "retain",
+    "remove"
+  ],
+  "capability": "snapshot-retention",
+  "cases": [
+    {
+      "entries": [],
+      "expected": [],
+      "grace_seconds": 86400,
+      "name": "empty-store",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": null,
+        "older_than_seconds": null
+      },
+      "reference_set_certain": true
+    },
+    {
+      "entries": [
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2026-09-27T12:00:00Z",
+          "reachable": true,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "last_used_at": "2026-09-27T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        }
+      ],
+      "expected": [
+        {
+          "action": "retain",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "reachable",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "remove",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "no-policy-removes-unreachable-outside-grace",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": null,
+        "older_than_seconds": null
+      },
+      "reference_set_certain": true
+    },
+    {
+      "entries": [
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2026-09-29T13:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "last_used_at": "2026-09-28T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        }
+      ],
+      "expected": [
+        {
+          "action": "retain",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "grace",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "remove",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "grace-retains-young-unreachable",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": null,
+        "older_than_seconds": null
+      },
+      "reference_set_certain": true
+    },
+    {
+      "entries": [
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2026-09-29T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        }
+      ],
+      "expected": [
+        {
+          "action": "remove",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "grace-boundary-age-equal-to-grace-is-removable",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": null,
+        "older_than_seconds": null
+      },
+      "reference_set_certain": true
+    },
+    {
+      "entries": [
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2026-10-01T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        }
+      ],
+      "expected": [
+        {
+          "action": "retain",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "grace",
+          "source": "github.com/example/skills"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "future-last-use-time-is-inside-grace",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": null,
+        "older_than_seconds": null
+      },
+      "reference_set_certain": true
+    },
+    {
+      "entries": [
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2026-09-20T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "last_used_at": "2026-09-21T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "cccccccccccccccccccccccccccccccccccccccc",
+          "last_used_at": "2026-09-22T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "dddddddddddddddddddddddddddddddddddddddd",
+          "last_used_at": "2026-09-23T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "last_used_at": "2026-08-31T12:00:00Z",
+          "reachable": false,
+          "source": "project-management"
+        }
+      ],
+      "expected": [
+        {
+          "action": "remove",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "remove",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "retain",
+          "commit": "cccccccccccccccccccccccccccccccccccccccc",
+          "reason": "keep_last",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "retain",
+          "commit": "dddddddddddddddddddddddddddddddddddddddd",
+          "reason": "keep_last",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "retain",
+          "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "reason": "keep_last",
+          "source": "project-management"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "keep-last-is-per-source",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": 2,
+        "older_than_seconds": null
+      },
+      "reference_set_certain": true
+    },
+    {
+      "entries": [
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2026-09-28T12:00:00Z",
+          "reachable": true,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "last_used_at": "2026-09-27T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "cccccccccccccccccccccccccccccccccccccccc",
+          "last_used_at": "2026-09-26T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        }
+      ],
+      "expected": [
+        {
+          "action": "retain",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "reachable",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "retain",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "reason": "keep_last",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "remove",
+          "commit": "cccccccccccccccccccccccccccccccccccccccc",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "keep-last-counts-reachable-entries",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": 2,
+        "older_than_seconds": null
+      },
+      "reference_set_certain": true
+    },
+    {
+      "entries": [
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2026-09-28T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "last_used_at": "2026-09-27T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        }
+      ],
+      "expected": [
+        {
+          "action": "remove",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "remove",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "keep-last-zero-adds-no-retention",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": 0,
+        "older_than_seconds": null
+      },
+      "reference_set_certain": true
+    },
+    {
+      "entries": [
+        {
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "last_used_at": "2026-09-25T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2026-09-25T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "cccccccccccccccccccccccccccccccccccccccc",
+          "last_used_at": "2026-09-25T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        }
+      ],
+      "expected": [
+        {
+          "action": "retain",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "keep_last",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "remove",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "remove",
+          "commit": "cccccccccccccccccccccccccccccccccccccccc",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "keep-last-tie-breaks-by-commit-bytes",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": 1,
+        "older_than_seconds": null
+      },
+      "reference_set_certain": true
+    },
+    {
+      "entries": [
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2026-09-27T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "last_used_at": "2026-09-20T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        }
+      ],
+      "expected": [
+        {
+          "action": "retain",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "newer_than",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "remove",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "older-than-retains-newer-entries",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": null,
+        "older_than_seconds": 604800
+      },
+      "reference_set_certain": true
+    },
+    {
+      "entries": [
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2026-09-23T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "last_used_at": "2026-09-23T11:59:59Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        }
+      ],
+      "expected": [
+        {
+          "action": "retain",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "newer_than",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "remove",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "older-than-boundary-age-equal-is-retained",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": null,
+        "older_than_seconds": 604800
+      },
+      "reference_set_certain": true
+    },
+    {
+      "entries": [
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2026-09-28T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "last_used_at": "2026-09-30T10:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        }
+      ],
+      "expected": [
+        {
+          "action": "remove",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "retain",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "reason": "grace",
+          "source": "github.com/example/skills"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "older-than-zero-adds-no-retention",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": null,
+        "older_than_seconds": 0
+      },
+      "reference_set_certain": true
+    },
+    {
+      "entries": [
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2026-09-20T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "last_used_at": "2026-09-10T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "cccccccccccccccccccccccccccccccccccccccc",
+          "last_used_at": "2026-09-26T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "9999999999999999999999999999999999999999",
+          "last_used_at": "2026-09-27T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "dddddddddddddddddddddddddddddddddddddddd",
+          "last_used_at": "2026-08-31T12:00:00Z",
+          "reachable": false,
+          "source": "project-management"
+        },
+        {
+          "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "last_used_at": "2026-08-21T12:00:00Z",
+          "reachable": false,
+          "source": "project-management"
+        }
+      ],
+      "expected": [
+        {
+          "action": "retain",
+          "commit": "9999999999999999999999999999999999999999",
+          "reason": "keep_last",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "remove",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "remove",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "retain",
+          "commit": "cccccccccccccccccccccccccccccccccccccccc",
+          "reason": "newer_than",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "retain",
+          "commit": "dddddddddddddddddddddddddddddddddddddddd",
+          "reason": "keep_last",
+          "source": "project-management"
+        },
+        {
+          "action": "remove",
+          "commit": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "reason": "unreachable",
+          "source": "project-management"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "both-policies-retain-the-union",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": 1,
+        "older_than_seconds": 432000
+      },
+      "reference_set_certain": true
+    },
+    {
+      "entries": [
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2025-08-26T12:00:00Z",
+          "reachable": true,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "last_used_at": "2025-08-26T12:00:00Z",
+          "reachable": true,
+          "source": "project-management"
+        }
+      ],
+      "expected": [
+        {
+          "action": "retain",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "reachable",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "retain",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "reason": "reachable",
+          "source": "project-management"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "reachable-is-never-removed",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": 0,
+        "older_than_seconds": 0
+      },
+      "reference_set_certain": true
+    },
+    {
+      "entries": [
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2026-08-31T12:00:00Z",
+          "reachable": true,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "last_used_at": "2026-08-31T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "cccccccccccccccccccccccccccccccccccccccc",
+          "last_used_at": "2026-08-01T12:00:00Z",
+          "reachable": false,
+          "source": "project-management"
+        }
+      ],
+      "expected": [
+        {
+          "action": "retain",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "reachable",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "retain",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "reason": "reference_uncertain",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "retain",
+          "commit": "cccccccccccccccccccccccccccccccccccccccc",
+          "reason": "reference_uncertain",
+          "source": "project-management"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "uncertain-reference-set-removes-nothing",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": null,
+        "older_than_seconds": null
+      },
+      "reference_set_certain": false
+    },
+    {
+      "entries": [
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2026-09-30T11:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "last_used_at": "2026-09-27T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        }
+      ],
+      "expected": [
+        {
+          "action": "retain",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "reference_uncertain",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "retain",
+          "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "reason": "reference_uncertain",
+          "source": "github.com/example/skills"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "uncertain-precedes-grace-and-keep-last",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": 1,
+        "older_than_seconds": null
+      },
+      "reference_set_certain": false
+    },
+    {
+      "entries": [
+        {
+          "commit": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "last_used_at": "2026-09-27T12:00:00Z",
+          "reachable": false,
+          "source": "github.com/example/skills"
+        },
+        {
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "last_used_at": "2026-09-27T12:00:00Z",
+          "reachable": true,
+          "source": "github.com/example/skills"
+        }
+      ],
+      "expected": [
+        {
+          "action": "retain",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "reason": "reachable",
+          "source": "github.com/example/skills"
+        },
+        {
+          "action": "remove",
+          "commit": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "reason": "unreachable",
+          "source": "github.com/example/skills"
+        }
+      ],
+      "grace_seconds": 86400,
+      "name": "sha256-object-format-commit",
+      "now": "2026-09-30T12:00:00Z",
+      "policy": {
+        "keep_last": null,
+        "older_than_seconds": null
+      },
+      "reference_set_certain": true
+    }
+  ],
+  "protocol_version": "1.0.0-rc.13",
+  "reasons": [
+    "reachable",
+    "reference_uncertain",
+    "grace",
+    "keep_last",
+    "newer_than",
+    "unreachable"
+  ],
+  "rule": "profiles/manager.md section 10.1: an entry is removed only when it is unreachable, the reference set is certain, its age is at least the grace period, it is outside the per-source keep-last window (publication time descending, then commit ascending by bytes; reachable entries count toward the window), and, when older_than_seconds is given, its age exceeds it. Each entry carries exactly one reason, from the first applicable rule: reachable, reference_uncertain, grace, keep_last, newer_than, unreachable. Age is now minus last_used_at in whole seconds. expected is ordered by source then commit by bytes.",
+  "schema_version": 1
+}

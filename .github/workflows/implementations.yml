@@ -31,12 +31,14 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: relux-works/curator
-          # Curator 71360fcb drives the frozen-shape hash_version negatives and
-          # keys its exact published-case counts by suite manifest digest, so it
-          # passes against both rc.13 and this content-hash-v2 suite; the new v2
-          # families are owned known gaps (TASK-260930-12i5zr, TASK-260917-2tx81l).
-          # Keep this pin in lockstep with the suite.
-          ref: 71360fcbf052462a29ddaa4dbb800dceb016fac0
+          # Curator d0e486f8 (relux-works/curator#101, branch b3-cache-prune)
+          # keys its exact published-case counts by suite manifest digest and
+          # knows this suite: the content-hash-v2 candidate plus
+          # snapshot-retention. It drives every snapshot-retention decision
+          # case and keeps the v2 families as owned known gaps
+          # (TASK-260930-12i5zr, TASK-260917-2tx81l). Keep this pin in
+          # lockstep with the suite.
+          ref: d0e486f8f900995b19aa6c3192d4e0309e5047d8
           path: implementations/go
           submodules: true
           # The Go suite does not use the board state. Excluding its deep paths
@@ -110,6 +112,7 @@ jobs:
           go test -count=1 -json \
             ./internal/interop ./internal/closure ./internal/skillspec \
             ./internal/marker ./internal/moduleroots ./internal/scriptpolicy \
+            ./internal/snapcache \
             > go-test.json
           status=$?
           set -e

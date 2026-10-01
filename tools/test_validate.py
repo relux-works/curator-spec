@@ -3824,6 +3824,61 @@ class SnapshotAcquisitionVectorTests(unittest.TestCase):
                 validate.validate_snapshot_acquisition_vectors(suite_root=root)
 
 
+class SnapshotRetentionVectorTests(unittest.TestCase):
+    """Negative shapes for the manager profile section 10.1 retention vector:
+    each edit pins a decision the rule does not make, so the gate must fail."""
+
+    def setUp(self) -> None:
+        self.vector = validate.load_json(
+            validate.SUITE / "vectors" / "snapshot-retention.json"
+        )
+
+    def case(self, name: str, vector=None) -> dict:
+        for item in (vector or self.vector)["cases"]:
+            if item["name"] == name:
+                return item
+        raise AssertionError(f"snapshot-retention case {name} is missing")
+
+    def test_published_vector_passes(self) -> None:
+        validate.validate_snapshot_retention_vectors()
+
+    def test_removing_a_reachable_entry_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        expected = self.case("reachable-is-never-removed", changed)["expected"][0]
+        expected["action"], expected["reason"] = "remove", "unreachable"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_snapshot_retention_vectors(changed)
+
+    def test_removing_under_uncertainty_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        expected = self.case("uncertain-reference-set-removes-nothing", changed)["expected"][2]
+        expected["action"], expected["reason"] = "remove", "unreachable"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_snapshot_retention_vectors(changed)
+
+    def test_keep_last_window_ignoring_reachable_entries_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        expected = self.case("keep-last-counts-reachable-entries", changed)["expected"][2]
+        expected["action"], expected["reason"] = "retain", "keep_last"
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_snapshot_retention_vectors(changed)
+
+    def test_open_policy_member_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        self.case("empty-store", changed)["policy"]["keep_first"] = 1
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_snapshot_retention_vectors(changed)
+
+    def test_dropping_a_reason_from_coverage_fails(self) -> None:
+        changed = copy.deepcopy(self.vector)
+        changed["cases"] = [
+            item for item in changed["cases"] if not item["name"].startswith("future-")
+            and item["name"] not in {"grace-retains-young-unreachable", "older-than-zero-adds-no-retention"}
+        ]
+        with self.assertRaises(validate.ValidationFailure):
+            validate.validate_snapshot_retention_vectors(changed)
+
+
 class ShellHookTrustVectorTests(unittest.TestCase):
     """Negative shapes for the section 8 trust-gate vector: each one narrows
     one rule (sourcing outcome, fixture digest, record shape, forged-record
