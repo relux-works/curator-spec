@@ -880,8 +880,19 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
         seeded = instance.get("seeded_projects")
         if isinstance(seeded, list) and seeded != sorted(seeded):
             return "seeded_projects must be sorted"
-    elif schema_name in ("launch-env-fragment-v1.schema.json", "launch-env-fragment-v2.schema.json"):
+    elif schema_name in ("launch-env-fragment-v1.schema.json", "launch-env-fragment-v2.schema.json", "launch-env-fragment-v3.schema.json"):
         environment = instance.get("environment")
+        if environment == "muse":
+            parents = instance.get("env", {})
+            config = parents.get("XDG_CONFIG_HOME", "")
+            home = config.removesuffix("/config")
+            if not home or parents != {
+                "XDG_CONFIG_HOME": home + "/config",
+                "XDG_DATA_HOME": home + "/data",
+                "XDG_STATE_HOME": home + "/state",
+                "XDG_CACHE_HOME": home + "/cache",
+            }:
+                return "Muse XDG variables must name one home's config/data/state/cache parents; HOME is forbidden"
         system_prompt = instance.get("system_prompt")
         if isinstance(system_prompt, dict) and environment in ENVIRONMENT_SYSTEM_PROMPT_CHANNELS:
             if system_prompt.get("channels") != ENVIRONMENT_SYSTEM_PROMPT_CHANNELS[environment]:
@@ -11414,6 +11425,83 @@ def validate_security_posture_vectors(vector: Any = None) -> None:
         )
 
 
+def validate_environments_muse_vectors(vector: Any = None) -> None:
+    """Cross-check Muse spec fixtures; does not run Muse or a manager.
+
+    Coverage is 16/16 declared link-state/resolve combinations, plus exact
+    registry/layout/fragment/marker checks. Refresh and loading probes remain
+    unknown; these fixtures establish specification consistency only.
+    """
+    if vector is None:
+        vector = load_json(SUITE / "vectors" / "environments-muse.json")
+    home = "/manager/environments/companyA/muse"
+    parents = {"XDG_CONFIG_HOME": home + "/config", "XDG_DATA_HOME": home + "/data",
+               "XDG_STATE_HOME": home + "/state", "XDG_CACHE_HOME": home + "/cache"}
+    registry = {
+        "environment": "muse", "tool_version": "1.4.1-R4503.1", "home_variables": parents,
+        "replace_HOME": False, "root_context_target": None, "root_context_verified": False,
+        "skills_target": "data/muse/skills", "skills_discovery_verified": False,
+        "refresh_semantics": "unverified", "isolation_gap": "foreign-personal-context",
+        "exec_yolo": ["--yolo"], "serve_yolo": ["--disable-sandbox", "--trust-workspace"],
+        "serve_session": {"method": "session/start", "approvalMode": "allowAll"},
+    }
+    fixtures = {"layout": "expected/environments-muse/muse-home-layout.json",
+                "fragment": "expected/environments-muse/muse-fragment.json",
+                "marker": "expected/environments-muse/muse-marker.json"}
+    if (set(vector) != {"schema_version", "protocol_version", "capability", "normative", "registry", "fixtures", "cases"}
+            or vector.get("schema_version") != 1 or vector.get("protocol_version") != PROTOCOL_VERSION
+            or vector.get("capability") != "agent-environments"
+            or vector.get("normative") != "protocol/environments.md sections 7.1, 7.4, and 10.2"
+            or vector.get("registry") != registry or vector.get("fixtures") != fixtures):
+        raise ValidationFailure("Muse vector registry or closed envelope differs from the specification")
+    seeds = ["config/muse/settings.json", "config/muse/trust.json"]
+    fixture_root = SUITE / "expected" / "environments-muse"
+    inventory = {path.relative_to(SUITE).as_posix() for path in fixture_root.rglob("*") if path.is_file()}
+    if inventory != set(fixtures.values()):
+        raise ValidationFailure("Muse fixture inventory does not match its referenced files")
+    layout = load_json(SUITE / fixtures["layout"])
+    if layout != {"home": home, "env": parents, "tool_directories": ["config/muse", "data/muse", "state", "cache"],
+                  "native_auth": "/operator/config/muse/auth.json", "managed_auth": "config/muse/auth.json",
+                  "link_kind": "file-link", "seeds": seeds, "HOME": "/operator", "HOME_replaced": False}:
+        raise ValidationFailure("Muse layout replaces HOME or changes XDG/auth/seed paths")
+    fragment = load_json(SUITE / fixtures["fragment"])
+    marker = load_json(SUITE / fixtures["marker"])
+    for schema_name, instance in [("launch-env-fragment-v3.schema.json", fragment),
+                                  ("agent-environment-marker-v3.schema.json", marker)]:
+        schema_registry_value, _ = schema_registry()
+        errors = list(Draft202012Validator(load_json(SCHEMAS / schema_name), registry=schema_registry_value).iter_errors(instance))
+        if errors or validate_wire_semantics(schema_name, instance):
+            raise ValidationFailure(f"Muse fixture violates {schema_name}")
+    if (fragment.get("environment") != "muse" or fragment.get("env") != parents
+            or fragment.get("permissions") != {"mode": "native", "locked": False, "source": "profile"}):
+        raise ValidationFailure("Muse fragment does not preserve its parents and native permissions")
+    if (marker.get("surfaces") != {} or marker.get("seeds") != seeds
+            or marker.get("passthrough") != [{"path": "config/muse/auth.json", "isolation": "shared",
+                "strategy": "file-link", "source_role": "native", "backend": "file",
+                "backend_version": "1.4.1-R4503.1", "provenance": "provisioned"}]):
+        raise ValidationFailure("Muse marker invents a surface or changes the credential/seed records")
+    states = ("live", "write-through-refresh", "missing-link", "temp-rename-fork", "retargeted-link",
+              "dangling-target", "metadata-unreadable", "target-unreadable")
+    cases = named_cases(vector.get("cases"), "Muse passthrough")
+    names = {state + "-" + operation for state in states for operation in ("resolve", "repair")}
+    if set(cases) != names:
+        raise ValidationFailure("Muse passthrough coverage is not 16/16 declared combinations")
+    for state in states:
+        for repair in (False, True):
+            name = state + ("-repair" if repair else "-resolve")
+            live = state in {"live", "write-through-refresh"}
+            unreadable = state in {"metadata-unreadable", "target-unreadable"}
+            relink = repair and state == "missing-link"
+            diagnostic = ("environment_passthrough_unreadable" if unreadable else "" if live or relink
+                          else "environment_credential_conflict" if repair else "environment_home_stale")
+            expected = {"status": "environment_passthrough_unreadable" if unreadable else "current" if live
+                        else "environment_passthrough_detached", "diagnostic": diagnostic,
+                        "action": "relink" if relink else "none", "emit_fragment": live or relink,
+                        "credential_bytes_changed": False}
+            if cases[name] != {"name": name, "state": state, "repair": repair, "expected": expected}:
+                raise ValidationFailure(f"Muse passthrough case {name} violates resolve/repair refusal")
+
+
 def main() -> int:
     checks = [
         validate_released_schema_immutability,
@@ -11425,6 +11513,7 @@ def main() -> int:
         validate_vector_semantics,
         validate_assurance_vectors,
         validate_environment_vectors,
+        validate_environments_muse_vectors,
         validate_environments_env_passthrough_vectors,
         validate_environments_source_signers_vectors,
         validate_environments_store_boundary_vectors,

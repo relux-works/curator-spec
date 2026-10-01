@@ -2506,12 +2506,15 @@ around it silently.
 
 A profile materializes into an environment in exactly one of the three
 modes of environments §8.1: `managed-home`, `linked`, or `copied`. Mode
-defaults are fixed there: the four adapters default to `linked` for their
+defaults are fixed there: the original four adapters default to `linked` for their
 in-place surfaces, secondary fixed-home targets default to `copied`, and
 managed homes always link from the profile store. The `in_place_mode.<env-id>`
 knob selects `linked` or `copied` for an adapter's in-place surfaces on
 this machine; an adapter MAY declare a different in-place default in the
-registry; profile data cannot select a mode. One per-surface exception
+registry; profile data cannot select a mode. Muse currently admits only
+the managed-home layout, with its unverified context surfaces and isolation
+gap bounded by environments §7.1; no Muse in-place or secondary target
+is admitted. One per-surface exception
 holds in every mode and every home and is not overridable by the registry
 or by any knob: the `claude_code` root-context surface is always a copied
 regular file, recorded as a copy with its reason in the marker so that hash

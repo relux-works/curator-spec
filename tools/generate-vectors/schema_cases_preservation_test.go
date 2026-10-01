@@ -39,12 +39,38 @@ func TestGeneratorPreservesHandAuthoredSchemaCases(t *testing.T) {
 	sentinel := filepath.Join(caseRoot, "hand-authored-sentinel-v1", "valid.json")
 	must(os.MkdirAll(filepath.Dir(sentinel), 0o755))
 	must(os.WriteFile(sentinel, []byte("{}\n"), 0o644))
+	// Remove the copied Muse family so a missing production call cannot be
+	// satisfied by pre-existing checkout fixtures.
+	for _, path := range []string{
+		"conformance/v1/vectors/environments-muse.json",
+		"conformance/v1/expected/environments-muse/muse-home-layout.json",
+		"conformance/v1/expected/environments-muse/muse-fragment.json",
+		"conformance/v1/expected/environments-muse/muse-marker.json",
+		"conformance/v1/schema-cases/launch-env-fragment-v3",
+		"conformance/v1/schema-cases/agent-environment-marker-v3/valid-muse-shared.json",
+	} {
+		must(os.RemoveAll(filepath.Join(root, path)))
+	}
 
 	cmd := exec.Command("go", "run", ".", "-root", root)
 	var out bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &out, &out
 	if err := cmd.Run(); err != nil {
 		t.Fatalf("generator failed: %v\n%s", err, out.String())
+	}
+	// Assert the real CLI entry emits the Muse family and schema cases,
+	// rather than proving only that an uncalled helper can emit them.
+	for _, path := range []string{
+		"conformance/v1/vectors/environments-muse.json",
+		"conformance/v1/expected/environments-muse/muse-home-layout.json",
+		"conformance/v1/expected/environments-muse/muse-fragment.json",
+		"conformance/v1/expected/environments-muse/muse-marker.json",
+		"conformance/v1/schema-cases/launch-env-fragment-v3/invalid-HOME-added.json",
+		"conformance/v1/schema-cases/agent-environment-marker-v3/valid-muse-shared.json",
+	} {
+		if _, err := os.Stat(filepath.Join(root, path)); err != nil {
+			t.Fatalf("generator CLI did not emit %s: %v", path, err)
+		}
 	}
 	for _, rel := range append(released, "hand-authored-sentinel-v1/valid.json") {
 		want, err := os.ReadFile(filepath.Join(repo, "conformance", "v1", "schema-cases", rel))
