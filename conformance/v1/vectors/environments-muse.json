@@ -1,0 +1,233 @@
+{
+  "capability": "agent-environments",
+  "cases": [
+    {
+      "expected": {
+        "action": "none",
+        "credential_bytes_changed": false,
+        "diagnostic": "",
+        "emit_fragment": true,
+        "status": "current"
+      },
+      "name": "live-resolve",
+      "repair": false,
+      "state": "live"
+    },
+    {
+      "expected": {
+        "action": "none",
+        "credential_bytes_changed": false,
+        "diagnostic": "",
+        "emit_fragment": true,
+        "status": "current"
+      },
+      "name": "live-repair",
+      "repair": true,
+      "state": "live"
+    },
+    {
+      "expected": {
+        "action": "none",
+        "credential_bytes_changed": false,
+        "diagnostic": "",
+        "emit_fragment": true,
+        "status": "current"
+      },
+      "name": "write-through-refresh-resolve",
+      "repair": false,
+      "state": "write-through-refresh"
+    },
+    {
+      "expected": {
+        "action": "none",
+        "credential_bytes_changed": false,
+        "diagnostic": "",
+        "emit_fragment": true,
+        "status": "current"
+      },
+      "name": "write-through-refresh-repair",
+      "repair": true,
+      "state": "write-through-refresh"
+    },
+    {
+      "expected": {
+        "action": "none",
+        "credential_bytes_changed": false,
+        "diagnostic": "environment_home_stale",
+        "emit_fragment": false,
+        "status": "environment_passthrough_detached"
+      },
+      "name": "missing-link-resolve",
+      "repair": false,
+      "state": "missing-link"
+    },
+    {
+      "expected": {
+        "action": "relink",
+        "credential_bytes_changed": false,
+        "diagnostic": "",
+        "emit_fragment": true,
+        "status": "environment_passthrough_detached"
+      },
+      "name": "missing-link-repair",
+      "repair": true,
+      "state": "missing-link"
+    },
+    {
+      "expected": {
+        "action": "none",
+        "credential_bytes_changed": false,
+        "diagnostic": "environment_home_stale",
+        "emit_fragment": false,
+        "status": "environment_passthrough_detached"
+      },
+      "name": "temp-rename-fork-resolve",
+      "repair": false,
+      "state": "temp-rename-fork"
+    },
+    {
+      "expected": {
+        "action": "none",
+        "credential_bytes_changed": false,
+        "diagnostic": "environment_credential_conflict",
+        "emit_fragment": false,
+        "status": "environment_passthrough_detached"
+      },
+      "name": "temp-rename-fork-repair",
+      "repair": true,
+      "state": "temp-rename-fork"
+    },
+    {
+      "expected": {
+        "action": "none",
+        "credential_bytes_changed": false,
+        "diagnostic": "environment_home_stale",
+        "emit_fragment": false,
+        "status": "environment_passthrough_detached"
+      },
+      "name": "retargeted-link-resolve",
+      "repair": false,
+      "state": "retargeted-link"
+    },
+    {
+      "expected": {
+        "action": "none",
+        "credential_bytes_changed": false,
+        "diagnostic": "environment_credential_conflict",
+        "emit_fragment": false,
+        "status": "environment_passthrough_detached"
+      },
+      "name": "retargeted-link-repair",
+      "repair": true,
+      "state": "retargeted-link"
+    },
+    {
+      "expected": {
+        "action": "none",
+        "credential_bytes_changed": false,
+        "diagnostic": "environment_home_stale",
+        "emit_fragment": false,
+        "status": "environment_passthrough_detached"
+      },
+      "name": "dangling-target-resolve",
+      "repair": false,
+      "state": "dangling-target"
+    },
+    {
+      "expected": {
+        "action": "none",
+        "credential_bytes_changed": false,
+        "diagnostic": "environment_credential_conflict",
+        "emit_fragment": false,
+        "status": "environment_passthrough_detached"
+      },
+      "name": "dangling-target-repair",
+      "repair": true,
+      "state": "dangling-target"
+    },
+    {
+      "expected": {
+        "action": "none",
+        "credential_bytes_changed": false,
+        "diagnostic": "environment_passthrough_unreadable",
+        "emit_fragment": false,
+        "status": "environment_passthrough_unreadable"
+      },
+      "name": "metadata-unreadable-resolve",
+      "repair": false,
+      "state": "metadata-unreadable"
+    },
+    {
+      "expected": {
+        "action": "none",
+        "credential_bytes_changed": false,
+        "diagnostic": "environment_passthrough_unreadable",
+        "emit_fragment": false,
+        "status": "environment_passthrough_unreadable"
+      },
+      "name": "metadata-unreadable-repair",
+      "repair": true,
+      "state": "metadata-unreadable"
+    },
+    {
+      "expected": {
+        "action": "none",
+        "credential_bytes_changed": false,
+        "diagnostic": "environment_passthrough_unreadable",
+        "emit_fragment": false,
+        "status": "environment_passthrough_unreadable"
+      },
+      "name": "target-unreadable-resolve",
+      "repair": false,
+      "state": "target-unreadable"
+    },
+    {
+      "expected": {
+        "action": "none",
+        "credential_bytes_changed": false,
+        "diagnostic": "environment_passthrough_unreadable",
+        "emit_fragment": false,
+        "status": "environment_passthrough_unreadable"
+      },
+      "name": "target-unreadable-repair",
+      "repair": true,
+      "state": "target-unreadable"
+    }
+  ],
+  "fixtures": {
+    "fragment": "expected/environments-muse/muse-fragment.json",
+    "layout": "expected/environments-muse/muse-home-layout.json",
+    "marker": "expected/environments-muse/muse-marker.json"
+  },
+  "normative": "protocol/environments.md sections 7.1, 7.4, and 10.2",
+  "protocol_version": "1.0.0-rc.13",
+  "registry": {
+    "environment": "muse",
+    "exec_yolo": [
+      "--yolo"
+    ],
+    "home_variables": {
+      "XDG_CACHE_HOME": "/manager/environments/companyA/muse/cache",
+      "XDG_CONFIG_HOME": "/manager/environments/companyA/muse/config",
+      "XDG_DATA_HOME": "/manager/environments/companyA/muse/data",
+      "XDG_STATE_HOME": "/manager/environments/companyA/muse/state"
+    },
+    "isolation_gap": "foreign-personal-context",
+    "refresh_semantics": "unverified",
+    "replace_HOME": false,
+    "root_context_target": null,
+    "root_context_verified": false,
+    "serve_session": {
+      "approvalMode": "allowAll",
+      "method": "session/start"
+    },
+    "serve_yolo": [
+      "--disable-sandbox",
+      "--trust-workspace"
+    ],
+    "skills_discovery_verified": false,
+    "skills_target": "data/muse/skills",
+    "tool_version": "1.4.1-R4503.1"
+  },
+  "schema_version": 1
+}

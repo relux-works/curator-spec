@@ -1267,6 +1267,7 @@ The closed revision-1 adapter set is exactly:
 | `codex_cli` | `CODEX_HOME=<home>` | variable names the home | `<home>/AGENTS.md` | `<home>/skills/` |
 | `opencode` | `XDG_CONFIG_HOME=<parent>` | tool reads `<parent>/opencode/` as the home | `<home>/AGENTS.md` | the manager §5 native surface (`~/.agents/skills`), unchanged in revision 1 |
 | `pi` | `PI_CODING_AGENT_DIR=<home>` | variable names the home | `<home>/AGENTS.md` | `<home>/skills/` |
+| `muse` | `XDG_CONFIG_HOME=<home>/config`, `XDG_DATA_HOME=<home>/data`, `XDG_STATE_HOME=<home>/state`, `XDG_CACHE_HOME=<home>/cache` (in this declared order) | `<home>` is the parent layout; config/data use `muse/` below each parent; internal state/cache layout unverified | **unverified** — no root-context target admitted | `<home>/data/muse/skills/` — location measured, native discovery **unverified** |
 
 `gemini`, `cursor`, and `windsurf` remain skills-only adapters under the
 unchanged manager §5 table in revision 1. Tools with no home-isolation
@@ -1307,6 +1308,39 @@ switch-visibility rule surfaces it, so `env status` carries a standing
 per-adapter note for `opencode` stating exactly that, until the skills
 surface moves into `<home>/skills/` under a later revision.
 
+**Muse evidence and isolation bound.** The Muse row is based on
+[Muse Code 1.4.1 (1.4.1-R4503.1), macOS arm64 measurements](https://github.com/relux-works/curator-spec/issues/117).
+The manager MUST set all four XDG parents exactly as above and MUST NOT
+replace `HOME`. Replacing `HOME`, or importing a credential instead of
+linking the native `auth.json`, can hang on a macOS Keychain UI prompt
+([muse-issues 005](https://github.com/relux-works/muse-issues)).
+Mutable tool state lives under `data/muse/` (`sessions/`,
+`session-index.db`, `skills/`, `plugins/`, `model-catalog/`, `memory/`
+and locks); config files and their locks live under `config/muse/`.
+State and cache use the other two XDG parents; their internal layouts
+are unverified. Unlike opencode, Muse retargets data and state too;
+opencode's ambient data/state rule above applies only to opencode.
+These generic XDG overrides also affect XDG-conforming child processes.
+No foreign XDG entries are seeded for Muse in this revision. Only the
+managed-home layout is admitted for Muse here; no native in-place or
+secondary fixed-home target is admitted while discovery is unverified.
+
+The root-context target and skills discovery are still open questions:
+the manager MUST NOT invent a root-context path or claim those surfaces
+are verified. Root-context materialization is unavailable for Muse until
+its target and loading semantics are measured and admitted in a later
+revision; it MUST NOT silently emit `AGENTS.md`. The measured skills
+location is recorded as a candidate, not proof that the tool loads it.
+With `HOME` unchanged Muse loads foreign personal rules and skills from
+other tools' native homes. This is a **known isolation gap**, not fixed by
+XDG retargeting or credential sharing; `muse serve` has no
+`--no-foreign-personal-context` flag
+([muse-issues 013](https://github.com/relux-works/muse-issues)).
+`env status` MUST carry a standing Muse note naming this gap and the
+unverified context surfaces. This adapter does not promise account or
+context isolation; fresh-login `isolated` operation is unverified and
+MUST be refused with `environment_isolated_unsupported` until verified.
+
 ### 7.2 Root-context forms
 
 | Environment | Forms supported | Default form |
@@ -1315,6 +1349,9 @@ surface moves into `<home>/skills/` under a later revision.
 | `codex_cli` | `monolithic` | `monolithic` |
 | `opencode` | `monolithic`, `referenced` | `monolithic` |
 | `pi` | `monolithic` | `monolithic` |
+
+Muse has no admitted root-context form while its target is unverified;
+a request to materialize that surface is `environment_form_unsupported`.
 
 The effective form is machine configuration with these defaults; profile
 data cannot select a form. Requesting `referenced` for an adapter that does
@@ -1342,6 +1379,9 @@ beside it.
 | `codex_cli` | `config-key`/`replace`: `model_instructions_file` |
 | `opencode` | none in revision 1 |
 | `pi` | `flag`/`append`: `--append-system-prompt` (`argument: path`, polymorphic — see below); `file`/`append`: `APPEND_SYSTEM.md`; `file`/`replace`: `SYSTEM.md` |
+
+Muse has no admitted system-prompt channel in this revision; the channel
+is **unverified**, and no active or inert system-prompt output is emitted.
 
 The `claude_code` flags are **verified** on Claude Code 2.1.261 (section
 7.9). The `pi` row is written from evidence: pi 0.84.2 has no
@@ -1397,6 +1437,29 @@ pinned release that the strategy answers to:
 | `codex_cli` | `auth.json` | `keyring-preferred`: where the operator's `config.toml` sets `cli_auth_credentials_store` to `keyring` the credential is ambient and no entry is linked; under `file` (the default) or `auto` the managed `auth.json` is a `file-link` — a symlink to the native file, re-checked by the liveness row. The manager assumes the keyring identity is operator-global (independent of `CODEX_HOME`) until a disposable-account scratch-`CODEX_HOME` probe proves per-home scoping, so under `keyring` or `auto` storage `isolated` is `environment_isolated_unsupported`. An absent `cli_auth_credentials_store` key means effective `file` storage, so `isolated` is admitted; a storage selector outside the verified `file`/`keyring`/`auto` set fails closed with `environment_credential_unsupported` | **verified** in-place: codex 0.153.2 rewrites `auth.json` by truncate-and-write on the same inode, mode 0600, never temp-and-rename (upstream `login/src/auth/storage.rs` for the path the binary names); `cli_auth_credentials_store = file|keyring|auto` **verified** in the embedded configuration docs |
 | `opencode` | none — auth lives in `XDG_DATA_HOME`, which the config swap never touches (section 7.1) | ambient | — |
 | `pi` | `auth.json` | `file-link` — the managed `auth.json` is a symlink to the native `~/.pi/agent/auth.json` (native root `~/.pi/agent`, not `~/.pi`), re-checked by the liveness row | **verified** in-place: pi 0.84.2 rewrites its agent-root `auth.json` with a single in-place write, mode 0600, under its own lockfile, never temp-and-rename (installed `core/auth-storage.js`) |
+| `muse` | `config/muse/auth.json` | `file-link` to the native effective `XDG_CONFIG_HOME/muse/auth.json` (default `~/.config/muse/auth.json`), determined from the operator environment **before** managed overrides | **unverified refresh**: the link survived four measured runs with no Keychain prompt and a real model turn; that does not establish token-refresh or login write semantics |
+
+**Muse refresh rule.** Issue #117 has no posted refresh probe result as
+of 2026-10-01. Keep the plain file-link for `shared` and treat refresh as
+an open question, never infer write-through from a surviving login turn.
+If a pinned refresh probe proves writes through the link, retain it. If
+refresh writes temp+rename, it can fork the managed credential; the manager
+MUST detect and repair or refuse at **every resolve**, including
+`--repair`, under the liveness rules below. Inspect the recorded link with
+`lstat` and `readlink`, compare its resolved target with the native auth
+path, and establish that the target exists as a regular file. A missing
+link, dangling native target, retargeted link, or regular file replacing
+the link is detached at status and refuses bare resolve with
+`environment_home_stale`. Repair re-links only an absent link whose native
+target is a readable regular file (or the empty-directory case below).
+A forked regular file, unexpected target, or dangling native target MUST
+refuse with `environment_credential_conflict`, emit no fragment, and
+preserve both stores' bytes. Failure to read metadata or establish target
+liveness is `environment_passthrough_unreadable`, never absence; repair
+leaves it untouched. No directory-link or copy-back strategy is admitted.
+Each tree has its own `.auth.json.lock`; concurrent refresh coordination
+between homes is unverified. These checks detect detachment at resolve,
+not refresh atomicity or race freedom during a running session.
 
 A per-file symlink is severed by any write-temp-then-rename refresh: the
 tool replaces the link itself with a regular file, and from that moment the
@@ -1561,6 +1624,16 @@ and are excluded from every surface hash. The enumerated seeds:
 | `codex_cli` | `config.toml` — copied under the seed rule below: revision A copies it whole (project trust, model, and MCP tables included); revision B copies every top-level member except `mcp_servers` (the `mcp_servers` table and every `mcp_servers.*` sub-table removed); the launch channel of section 7.8 layers the profile's MCP set over the seeded base in both revisions | that the copied file is parsed in the fresh home is **verified** (0.153.2); that a `projects.<path>.trust_level` entry does **not** lift the `exec` git wall is **verified** (section 7.9 `exec_flags`); that a whole-copy home lists the native `mcp_servers` entries is **verified** (0.153.2 — the revision-A and pre-rule behavior; revision B strips them); the remaining member shapes are **docs-confidence** |
 | `opencode` | none — the XDG seeds of section 7.1 are the analogous class | — |
 | `pi` | `settings.json`, `models.json` | that a fresh dir loses them and re-downloads its tool trees is **verified**; their shapes are docs-confidence |
+| `muse` | `config/muse/settings.json`, `config/muse/trust.json` — non-credential seeds from the profile, copied once into the managed layout and thereafter tool-owned | paths measured in 1.4.1; seed contents and first-run coverage **unverified** |
+
+Muse seeds are the explicit exception to the native-source seed class above:
+the root profile supplies optional regular files at the same
+`config/muse/settings.json` and `config/muse/trust.json` relative paths
+inside its snapshot. Overlays do not supply these seeds. They MUST NOT contain credentials or include
+`auth.json`; profile validation and secret detection apply to their source
+bytes. They are not managed mutable surfaces after provisioning. The
+regular-file, unreadable-versus-absent, and stop-before-first-write rules
+below apply equally to these profile-sourced seeds.
 
 **Codex seed MCP rule.** A whole-copy `codex_cli` seed inherits every
 native `mcp_servers` entry into the managed home, outside the profile's
@@ -1861,7 +1934,7 @@ A profile materializes into an environment in exactly one of three modes:
   content hashes, for surfaces or targets where symlinks are unreliable:
   secondary fixed-home targets, link-hostile tools, network filesystems.
 
-Mode defaults: the four adapters default to `linked` for their in-place
+Mode defaults: the original four adapters default to `linked` for their in-place
 surfaces; secondary fixed-home targets default to `copied`; managed homes
 link from the store. One per-surface exception holds in every mode and
 every home and is not overridable by the registry or by machine
@@ -2979,7 +3052,7 @@ that window, and the marker is a record, not a signature (section 8.2). The
 launcher MAY re-verify the recorded surface hashes immediately before exec
 under its own specification; nothing here requires it.
 
-`--format json` prints the `launch-env-fragment-v1` object as its CCJ-1
+`--format json` prints the supported launch environment fragment object as its CCJ-1
 bytes ([`registry.md`](registry.md) §1) followed by exactly one LF — the
 canonical form, so that the `works.relux.curator.fragment-digest` extension
 key (Decision 0013 Decision 6.4) is `sha256:` over exactly these bytes
@@ -3066,10 +3139,23 @@ composition cannot transport the plugin's inherited-name removals or
 `PATH` sanitization to ax's destination environment. Destination filtering
 by ax is unknown here; no ax field or implementation change is specified.
 
+**Muse permission interface (Decision 0018).** The measured 1.4.1
+interface is `muse exec --yolo` (disables approvals and sandboxing and
+trusts the workspace). `muse serve` exposes `--disable-sandbox` and
+`--trust-workspace`; approvals are selected separately per session by
+`session/start approvalMode` (for example `allowAll`). The serve flags
+alone do not establish approval bypass. `native` adds no bypass. These
+facts do not change permission precedence, the fleet force-`native` lock,
+or headless/CI/tracked silence (`native`). Provider flag spelling and
+wire-session mapping remain owned by agents-management; the launcher
+passes the resolved mode and MUST refuse an unsupported mapping with
+`permission_policy_unsupported`. A Muse registry row is not evidence that
+the interactive launch-plan builder supports Muse.
+
 ### 10.2 The launch environment fragment
 
-Two fragment revisions exist, `launch-env-fragment-v1` and
-`launch-env-fragment-v2`, named by the REQUIRED `fragment` member,
+Three fragment revisions exist, `launch-env-fragment-v1`,
+`launch-env-fragment-v2`, and `launch-env-fragment-v3`, named by the REQUIRED `fragment` member,
 which is the fragment's revision token. `launch-env-fragment-v2` is
 the minimum transport version token for the section 12.1 `permissions`
 profile level and the section 12.2 lock engagement (Decision 0018,
@@ -3150,6 +3236,19 @@ unknown kinds, and unknown semantics or argument values.
   launcher prepends to the child's `PATH`. Revision 1 never emits it
   (section 9.4); a reader MUST accept its absence and MUST reject any value
   outside the environments root.
+
+**`launch-env-fragment-v3`.** Revision v3 retains the v2 permissions
+contract and adds `muse` with exactly the four section 7.1 XDG variables.
+Their values MUST share one absolute `<home>` parent and end in
+`/config`, `/data`, `/state`, and `/cache`, respectively. `HOME` MUST NOT
+appear in a fragment or be replaced at launch. Muse has no `system_prompt`
+or `mcp` member while those channels are unverified. Other adapters retain
+their single home variable and v2 channel rules. Muse resolve emits v3;
+v1/v2 readers MUST reject its revision token and MUST NOT fall back to a
+single-variable fragment. Existing adapters may continue emitting their
+supported fragment revision. The new schema is
+`schemas/v1/launch-env-fragment-v3.schema.json`; released schemas v1/v2
+remain byte-identical.
 
 **`launch-env-fragment-v2`.** Revision v2 is revision v1 plus one
 REQUIRED member, `permissions`, a closed object carrying the resolved
@@ -3729,9 +3828,13 @@ negative vectors, and byte-exact determinism vectors). Schemas:
 when `argument` is `name`; the Decision 0012 §9 worked example, which omits
 `argument` on its system-prompt descriptors, is read as pre-revision —
 and `launch-env-fragment-v2` (section 10.2) — revision v1 plus the
-REQUIRED closed `permissions` member —
+REQUIRED closed `permissions` member — and `launch-env-fragment-v3`
+(section 10.2), adding Muse and its four XDG parents,
 each with positive and negative schema cases; `profilefile-v1` and
 `context-manifest-v1` with their cases are withdrawn. Vector families:
+the Muse registry row, managed-home layout, shared file-link liveness
+and repair/refusal, and no-HOME-replacement cases
+(`vectors/environments-muse.json`, sections 7.1, 7.4, and 10.2);
 version and range parsing (section 1.4, including the coercion table and
 the excluded forms); resolution (conflict, downward re-selection,
 prerelease admission, exact-constraint unification); lock canonicalization

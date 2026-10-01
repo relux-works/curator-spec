@@ -7,6 +7,13 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Add the Muse Code 1.4.1 environment adapter with four XDG parents and
+  no HOME replacement, profile settings/trust seeds, shared auth.json
+  file-link liveness and refresh-fork refusals. Record the unverified refresh
+  and context surfaces, permission interface, and foreign personal context
+  isolation gap. Add `launch-env-fragment-v3` and generated Muse vectors
+  with positive/negative cases; released schemas remain byte-identical.
+
 - Add an informative "Threat review for a new build driver" checklist to
   `docs/external-build-repositories.md`, citing the normative clause behind
   each item. No new requirement, vector, or schema.

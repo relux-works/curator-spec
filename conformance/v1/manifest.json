@@ -61,6 +61,18 @@
       "sha256": "sha256:5ec200cfb97f15ae1a379c071a4be7199db24719e20e47ee1ca54b9ee695d43b"
     },
     {
+      "path": "expected/environments-muse/muse-fragment.json",
+      "sha256": "sha256:85e1f30e707a356809a536c41cc44bb788e0219a7172252eeb99ad3c89a0be8e"
+    },
+    {
+      "path": "expected/environments-muse/muse-home-layout.json",
+      "sha256": "sha256:5832f7e2cb5df9eb361d10a8686926f3d952b21febe35b8184c66c76db2ce02a"
+    },
+    {
+      "path": "expected/environments-muse/muse-marker.json",
+      "sha256": "sha256:d9ab7f974426211972b8f141447f3c928e1ec926de9ec0b4fdf979107889ed4d"
+    },
+    {
       "path": "expected/environments/mcp-claude-code/.agent-context/mcp/claude_code.json",
       "sha256": "sha256:6401d3c58c6aaf2af44cbf66360f72d73b29b6f80bc604c0b13e97dfdbc477d9"
     },
@@ -1015,6 +1027,10 @@
     {
       "path": "schema-cases/agent-environment-marker-v3/valid-keyring-preferred-file.json",
       "sha256": "sha256:ce643989076aa9824ebc453bdaf627e6e81148a323c9b6d1efa5dc33bc509d43"
+    },
+    {
+      "path": "schema-cases/agent-environment-marker-v3/valid-muse-shared.json",
+      "sha256": "sha256:d9ab7f974426211972b8f141447f3c928e1ec926de9ec0b4fdf979107889ed4d"
     },
     {
       "path": "schema-cases/agent-environment-marker-v3/valid-per-home-keychain-isolated.json",
@@ -3246,7 +3262,7 @@
     },
     {
       "path": "schema-cases/index.json",
-      "sha256": "sha256:9fe9ae057f8761c75f781d207792402710c3b46d2499a33ae442759c630c4059"
+      "sha256": "sha256:215a88b38859b1a9e3584644877670a5e8508b6eeee6691b7107f265b6e431ef"
     },
     {
       "path": "schema-cases/install-marker-v1/invalid.json",
@@ -3959,6 +3975,150 @@
     {
       "path": "schema-cases/launch-env-fragment-v2/valid.json",
       "sha256": "sha256:af5a2706d82e6629d1d9d3b893457744b5d094ca8a7caae554dd1d738a9c8f62"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-HOME-added.json",
+      "sha256": "sha256:75d4ec51f4af25027908d7160cdf319ace3f00f8bfac98398cd078575e05b255"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-HOME-substitution.json",
+      "sha256": "sha256:472be420aad43c6b461472c308fc7802d307a00ffb4a4d71bafd727cc0775156"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-extra-parent-claude_code.json",
+      "sha256": "sha256:58e0fbec2cff8f567a7efe71a625949c17a504ce80121e301cca32d89a0ad50e"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-extra-parent-codex_cli.json",
+      "sha256": "sha256:2a5ab463910433d94c159ff4dcc385d052e3d35ad401f3ba3cbfe62e3eec6eb6"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-extra-parent-opencode.json",
+      "sha256": "sha256:22cc95ad3c33b0a6bd09c204be2ca7b70348fb530594441afdb4a8bb6270388f"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-extra-parent-pi.json",
+      "sha256": "sha256:63731da1f17749f9a214b330f2b2f2604638580429f3d6913516078fdbd26da7"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-missing-XDG_CACHE_HOME.json",
+      "sha256": "sha256:51d0652d0e1ab1901d1a733a20b54131eec3c90283320caa3c66cb86d7f39b5f"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-missing-XDG_CONFIG_HOME.json",
+      "sha256": "sha256:ce9eb93e967904160f81d3852e1d0a7354bd8c562ad8b04bf2e902261c8c1e07"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-missing-XDG_DATA_HOME.json",
+      "sha256": "sha256:35d62ef325befb4636b27259620001018144f9ca97a057f7cc6035b0759ba3fd"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-missing-XDG_STATE_HOME.json",
+      "sha256": "sha256:1e22f47705c2363341809cb467c1e94a85194f00d29cc757aea3c2399cc548d9"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-permissions-absent.json",
+      "sha256": "sha256:8438191e844d7398a20cb58f88e44bade35f082e0881a1a8c7a8dbfad3dc51d1"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-permissions-global-unlocked.json",
+      "sha256": "sha256:27baafd488947953da9bb8a7ed4671ba0364c8807e18bfa65043b7c8b68e1f7d"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-permissions-locked-profile-source.json",
+      "sha256": "sha256:b05c67af638e7d4ab7ff1d7735436a4132b512eb1437c85a171bdd30ce077404"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-permissions-missing-mode.json",
+      "sha256": "sha256:a75567aa5ee9eec13264dc087d322198ff31b49948b03245ed22f45627dff282"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-permissions-unknown-field.json",
+      "sha256": "sha256:94f979dea36c9a207ffad52bb35e241021b939105ae05f8cc0c397ad18e4bc7a"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-permissions-unknown-mode.json",
+      "sha256": "sha256:a465b9a93140ed48cd61172570c0841314e90cc9418405a5b53564c4d44db620"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-permissions-unknown-source.json",
+      "sha256": "sha256:9ce0f588f891cc947e39712954e5e93c84d3b2d31899ed29963a02167ebb2231"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-permissions-yolo-locked.json",
+      "sha256": "sha256:2429c3fe27ab1497fb810d6d0874a5d926be03977ff3b9d4679004f37a17479c"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-permissions-yolo-silent.json",
+      "sha256": "sha256:d3119485ada5a8ea385d17c50bd1bc374e77efcdb61af430b87f84c4e377ec86"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-unknown-environment.json",
+      "sha256": "sha256:8ba5e3213bc477a708d57fe5307b63298f8b93b03d8f31a0192af7381808597f"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-unverified-mcp.json",
+      "sha256": "sha256:7260a69ea19bd90cbd5028c86199256d5e6fa5d4c1b87f1260a581f1acb52ceb"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-unverified-system-prompt.json",
+      "sha256": "sha256:8b00c65555a01fcbb3b49f1dc19f5b07d773277be8d61643cf505d2a8d671891"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-v2-token.json",
+      "sha256": "sha256:a4a6b16fad2a998493d06e8d290af7daa3f9ba4cf043634e4401b7881bd42636"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-wrong-parent-XDG_CACHE_HOME.json",
+      "sha256": "sha256:62f999ab9e00f3f0b8c9532eef0e3e18d548de52de171e5384fb643d5fe104c3"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-wrong-parent-XDG_CONFIG_HOME.json",
+      "sha256": "sha256:be82cad653374c386016cc7b2c28dfffff68ab7b388825ff99ade5b459f10e51"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-wrong-parent-XDG_DATA_HOME.json",
+      "sha256": "sha256:36f3639663a51128460a2b961a4a4570ce385bf434e86a85a6a6045c8d975001"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid-wrong-parent-XDG_STATE_HOME.json",
+      "sha256": "sha256:41ec2d942dbdf88f990874d2a3bc22d00a043a439a2100c390e7cdac820da43a"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/invalid.json",
+      "sha256": "sha256:fa811f7d333fcecd883e0fb6df989aa81852846c0eab86d6300de7a3f2ee8fac"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/valid-claude_code.json",
+      "sha256": "sha256:d8eac302f667021d8f627601cc534e5e82ab68ad1ba8621dcb9665b851a0325f"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/valid-codex_cli.json",
+      "sha256": "sha256:be6965ab093d9905ed0164008298d9629b287e83397b24e08d2078c8c96f1dbb"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/valid-opencode.json",
+      "sha256": "sha256:2d7b4040df241f1a00db7c18c9716f3c4e3dcfe8b9d3c4e0c2718dec426b431f"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/valid-permissions-native-locked.json",
+      "sha256": "sha256:989a254d3c505cb0db3245209e8acf296f0b65b8f7d46ec9c717409fbf44b78c"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/valid-permissions-native-silent.json",
+      "sha256": "sha256:8be95214c89cbee72421e08092271734c45314907d43c17195c884c4178c7c51"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/valid-permissions-yolo-unlocked.json",
+      "sha256": "sha256:18a627e0a8d22c1257dec85a14eb2f2647a46de123e0d788eed2f593755bb1c8"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/valid-pi.json",
+      "sha256": "sha256:12d12a61e304401ae667958de478727c8d2e71d4b0f52968550664dc601cfa96"
+    },
+    {
+      "path": "schema-cases/launch-env-fragment-v3/valid.json",
+      "sha256": "sha256:85e1f30e707a356809a536c41cc44bb788e0219a7172252eeb99ad3c89a0be8e"
     },
     {
       "path": "schema-cases/log-response-v1/invalid.json",
@@ -4903,6 +5063,10 @@
     {
       "path": "vectors/environments-global-lock-publication.json",
       "sha256": "sha256:ad82da00fb9c70919e85c2022c1d36028219101601702ef131b6439181d14165"
+    },
+    {
+      "path": "vectors/environments-muse.json",
+      "sha256": "sha256:e4c3f52884751c6af96e43b73e9f80e1a1ac796f851013d5fb49974db1c754ed"
     },
     {
       "path": "vectors/environments-path-kind-admission.json",

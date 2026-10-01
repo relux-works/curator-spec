@@ -201,6 +201,7 @@ func main() {
 	writeExternalRepositoryVectors(vectors)
 	writeAssuranceVectors(vectors)
 	writeEnvironmentVectors(vectors, filepath.Join(expected, "environments"))
+	writeMuseEnvironmentVectors(vectors, filepath.Join(expected, "environments-muse"))
 	writeContextVersionVectors(vectors)
 	writeContextDetectorVectors(vectors)
 	writeSnapshotAcquisitionVectors(vectors, filepath.Join(suite, "fixtures", "byte-exact"), expected)
@@ -2793,6 +2794,10 @@ func writeSchemaCases(suite string, marker, ledger, audited, snapshot, logEntry,
 	launchFragmentV2 := validLaunchEnvFragmentV2()
 	cases["launch-env-fragment-v2.schema.json"] = schemaCase{launchFragmentV2, without(launchFragmentV2, "env")}
 	additionalCases["launch-env-fragment-v2.schema.json"] = launchEnvFragmentV2SchemaExamples(launchFragmentV2)
+	museFragment := validMuseFragment()
+	cases["launch-env-fragment-v3.schema.json"] = schemaCase{museFragment, without(museFragment, "env")}
+	additionalCases["launch-env-fragment-v3.schema.json"] = launchEnvFragmentV3SchemaExamples()
+	additionalCases["agent-environment-marker-v3.schema.json"] = append(additionalCases["agent-environment-marker-v3.schema.json"], schemaExample{name: "valid-muse-shared", valid: true, instance: museMarker()})
 
 	root := filepath.Join(suite, "schema-cases")
 	var index []any

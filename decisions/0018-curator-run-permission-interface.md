@@ -39,6 +39,14 @@ Numbering: the existing decision series ends at 0016; 0011 remains
 reserved as recorded in Decision 0013. This filing uses the next two
 unused numbers, 0017–0018.
 
+Muse interface recorded 2026-10-01 from
+[issue #117](https://github.com/relux-works/curator-spec/issues/117),
+Muse Code 1.4.1: `exec --yolo`; `serve --disable-sandbox` and
+`--trust-workspace`, with per-session `session/start approvalMode`
+(e.g. `allowAll`). Serve flags do not set the session approval mode.
+Provider spelling and wire mapping stay owned by agents-management;
+permission precedence and headless/CI/tracked `native` silence are unchanged.
+
 ## Context
 
 The launcher (`curator-agent-launcher` `b34e1e2`) accepts `--profile`,
