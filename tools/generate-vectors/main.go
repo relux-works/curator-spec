@@ -207,6 +207,7 @@ func main() {
 	writeUmbrellaProviderResolutionVectors(vectors)
 	writeSchemaCases(suite, marker, ledger, audited, snapshot, entries[0], bundle, pinned)
 	writeExternalRepositoryExpected(expected, marker)
+	writeSnapshotRetentionVectors(vectors)
 	writeManifest(suite)
 	skillfileSourcesManifestSHA256 := writeSkillfileSourcesManifest(*root)
 	writeRC13ReleaseMetadata(*root, suite, skillfileSourcesManifestSHA256)
