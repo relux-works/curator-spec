@@ -78,6 +78,13 @@ the plan, so an operator can repair the unreadable marker or lock that caused
 it. Sizes are allocated bytes, with logical bytes alongside. On APFS, clones
 can make both overstate what a removal frees.
 
+`cache prune --dry-run` never executes deleting transaction recovery or
+cleanup. If recovery or cleanup of a transaction journal is pending or cannot
+be ruled out, it refuses before computing the plan, removes nothing, and
+exits 1; a real invocation must complete recovery first. The no-deletion
+promise includes transaction targets and interrupted-removal leftovers.
+Uncertain references also prevent cleanup of snapshot-store leftovers.
+
 `bootstrap --if-missing` is intended for repository bootstrap commands. It
 returns success without parsing or rewriting an existing configuration and is
 mutually exclusive with `--force`.

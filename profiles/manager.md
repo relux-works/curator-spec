@@ -1597,9 +1597,18 @@ therefore retained with reason `keep_last` or `newer_than`, never removed.
 
 **Execution.** The computation runs under the manager-home mutation lock,
 after recovery of incomplete transactions and after revalidating the snapshot
-store boundary, as garbage collection does. A dry run computes the same plan
-under the same lock and removes nothing; its report differs from the real run
-only in `dry_run` and each entry's `removed` member. A removal MUST NOT leave a
+store boundary, as garbage collection does. A dry run MUST NOT execute
+transaction recovery or cleanup that could delete state. Under the same lock,
+it MUST first inspect for pending recovery or cleanup; if any is pending or
+cannot be ruled out, it MUST refuse before computing a retention plan, remove
+nothing (including transaction targets and interrupted-removal leftovers),
+and exit 1 with a diagnostic explaining that a real invocation must complete
+recovery first. When no recovery or cleanup is pending, a dry run computes the
+same plan and removes nothing; its report differs from the real run only in
+`dry_run` and each entry's `removed` member. Interrupted-removal leftovers in
+the snapshot store are cleaned up only by a real run over a certain reference
+set; their presence alone does not require transaction recovery. Their report
+warnings describe the planned cleanup identically in dry and real runs. A removal MUST NOT leave a
 partially deleted tree at the entry's canonical location: the manager first
 moves the entry out of the store namespace, then deletes it. Retention never
 executes, adopts, re-authenticates, or repairs entry content.
