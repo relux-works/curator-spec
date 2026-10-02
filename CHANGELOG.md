@@ -7,6 +7,8 @@ Versioning for the complete specification set.
 
 ### Changed
 
+- Restore the published rc.13 record and freeze tagged release history; track current suite digests in candidate metadata.
+
 - Record the operator's adoption of
   [Decision 0019](decisions/0019-fragment-consumers-and-one-construction-site.md)
   and [Decision 0021](decisions/0021-sessions-enter-through-curator-run.md)

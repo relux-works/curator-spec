@@ -216,6 +216,65 @@ def validate_released_schema_immutability() -> None:
         )
 
 
+def published_release_records() -> dict[str, tuple[str, bytes]]:
+    """Inventory records shipped by local release tags, preferring their own tag.
+
+    Some historical records (for example rc.6) have no version tag; their first
+    tagged snapshot is still published history. Missing Git evidence is fatal.
+    """
+    def git(*args: str) -> bytes:
+        result = subprocess.run(
+            ["git", *args], cwd=ROOT, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE, check=False,
+        )
+        if result.returncode != 0:
+            detail = result.stderr.decode("utf-8", errors="replace").strip()
+            raise ValidationFailure(f"cannot inspect published release records: {detail}")
+        return result.stdout
+
+    latest = f"v{PROTOCOL_VERSION}"
+    git("rev-parse", "--verify", f"refs/tags/{latest}^{{commit}}")
+    tags = git("tag", "--list", "v*", "--sort=version:refname").decode("utf-8").splitlines()
+    records: dict[str, str] = {}
+    for tag in tags:
+        if not re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?", tag):
+            continue
+        tree = git("ls-tree", "-r", "-z", f"refs/tags/{tag}", "--", "release")
+        for record in tree.split(b"\0"):
+            if not record:
+                continue
+            try:
+                metadata, raw_path = record.split(b"\t", 1)
+                mode, kind, _oid = metadata.split(b" ")
+                relative = raw_path.decode("utf-8")
+            except (UnicodeError, ValueError) as exc:
+                raise ValidationFailure(f"cannot parse release inventory at {tag}") from exc
+            if not re.fullmatch(r"release/[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?\.json", relative):
+                continue
+            if kind != b"blob" or mode not in (b"100644", b"100755"):
+                raise ValidationFailure(f"published release record {relative} at {tag} is not a regular blob")
+            records.setdefault(relative, tag)
+            if relative == f"release/{tag[1:]}.json":
+                records[relative] = tag
+    if records.get(f"release/{PROTOCOL_VERSION}.json") != latest:
+        raise ValidationFailure(f"no published release record found for {latest}")
+    return {
+        relative: (tag, git("show", f"refs/tags/{tag}:{relative}"))
+        for relative, tag in sorted(records.items())
+    }
+
+
+def validate_released_record_immutability() -> None:
+    """Compare raw bytes, including whitespace, for every tagged release record."""
+    for relative, (tag, expected) in published_release_records().items():
+        path = ROOT / relative
+        try:
+            if path.is_symlink() or path.read_bytes() != expected:
+                raise ValidationFailure(f"published release record bytes differ from {tag}: {relative}")
+        except OSError as exc:
+            raise ValidationFailure(f"cannot read published release record {relative}: {exc}") from exc
+
+
 def ccj1_bytes(value: Any) -> bytes:
     if isinstance(value, dict):
         value = dict(value)
@@ -1003,70 +1062,22 @@ def validate_manifest() -> None:
         raise ValidationFailure("rc.9 metadata does not preserve its published suite identity")
 
     skillfile_sources_manifest_sha256 = validate_skillfile_sources_manifest()
-    release = load_json(ROOT / f"release/{PROTOCOL_VERSION}.json")
-    manifest_digest = "sha256:" + hashlib.sha256(manifest_path.read_bytes()).hexdigest()
-    if release.get("protocol_version") != PROTOCOL_VERSION:
-        raise ValidationFailure("rc.13 release metadata identifies the wrong protocol version")
-    pin = release.get("candidate_protocol_pin", {})
-    if not isinstance(pin, dict) or pin.get("manifest_sha256") != manifest_digest:
-        raise ValidationFailure("rc.13 candidate pin does not match the suite manifest")
-    downstream = release.get("downstream_consumption", {})
+    try:
+        candidate = load_json(ROOT / "conformance" / "candidate.json")
+    except OSError as exc:
+        raise ValidationFailure(f"cannot read candidate metadata: {exc}") from exc
     if (
-        not isinstance(downstream, dict)
-        or downstream.get("required_manifest_sha256") != manifest_digest
-        or downstream.get("committed_release_pin_advanced") is not False
+        not isinstance(candidate, dict)
+        or candidate.get("status") != "candidate"
+        or set(candidate) != {"status", "core", "skillfile_sources_v1"}
     ):
-        raise ValidationFailure("rc.13 downstream consumption metadata is incomplete")
-    history = release.get("historical_release", {})
-    if (
-        not isinstance(history, dict)
-        or history.get("protocol_version") != RC9_PROTOCOL_VERSION
-        or history.get("metadata_path") != "release/1.0.0-rc.9.json"
-        or history.get("metadata_sha256") != RC9_RELEASE_METADATA_SHA256
-        or history.get("source_commit") != RC9_SOURCE_COMMIT
-        or history.get("immutable") is not True
-        or release.get("source_baseline_commit") != RC9_SOURCE_COMMIT
-        or release.get("legacy_release") != RC9_PROTOCOL_VERSION
+        raise ValidationFailure("candidate metadata has the wrong identity")
+    for name, path, digest in (
+        ("core", "conformance/v1/manifest.json", "sha256:" + hashlib.sha256(manifest_path.read_bytes()).hexdigest()),
+        ("skillfile_sources_v1", "conformance/skillfile-sources-v1/manifest.json", skillfile_sources_manifest_sha256),
     ):
-        raise ValidationFailure("rc.13 metadata does not preserve historical rc.9 evidence")
-    claim = release.get("claim_v5", {})
-    if (
-        not isinstance(claim, dict)
-        or claim.get("claim_protocol_version") != RC9_PROTOCOL_VERSION
-        or claim.get("schema") != "schemas/v1/conformance-claim-v5.schema.json"
-        or claim.get("claims_emitted") != []
-    ):
-        raise ValidationFailure("rc.13 metadata fabricates a claim-v5 platform claim")
-    suite_pin = release.get("skillfile_sources_v1", {})
-    if (
-        not isinstance(suite_pin, dict)
-        or suite_pin.get("manifest_path")
-        != "conformance/skillfile-sources-v1/manifest.json"
-        or suite_pin.get("manifest_sha256") != skillfile_sources_manifest_sha256
-        or suite_pin.get("compatible_core")
-        != {
-            "tag": "v1.0.0-rc.10",
-            "manifest_sha256": RC10_CORE_MANIFEST_SHA256,
-        }
-    ):
-        raise ValidationFailure("rc.13 metadata does not pin the accepted source suite separately")
-    execution = release.get("assurance", {})
-    if (
-        not isinstance(execution, dict)
-        or execution.get("default_mode") != "portable"
-        or execution.get("portable_policy") != "portable-cli-policy-v1"
-        or execution.get("portable_execution_policy") != PORTABLE_EXECUTION_POLICY
-        or execution.get("verified_policy") != "verified-provider-policy-v1"
-        or execution.get("verified_execution_policy") != "verified-provider-execution-v1"
-        or execution.get("verified_provider_contract") != "host-execution-provider-v1"
-        or execution.get("verified_implementations") != []
-        or execution.get("verified_platform_claims") != []
-        or execution.get("silent_downgrade_permitted") is not False
-        or execution.get("skill_vendored_provider_allowed") is not False
-    ):
-        raise ValidationFailure(
-            "rc.13 release metadata does not honestly record assurance availability"
-        )
+        if candidate.get(name) != {"manifest_path": path, "manifest_sha256": digest}:
+            raise ValidationFailure(f"candidate {name} pin does not match the suite manifest")
 
 
 def validate_skillfile_sources_manifest() -> str:
@@ -11502,8 +11513,9 @@ def validate_environments_muse_vectors(vector: Any = None) -> None:
                 raise ValidationFailure(f"Muse passthrough case {name} violates resolve/repair refusal")
 
 
-def main() -> int:
+def main(*, release_history_only: bool = False) -> int:
     checks = [
+        validate_released_record_immutability,
         validate_released_schema_immutability,
         validate_schemas,
         validate_repository_descriptor_identity,
@@ -11538,15 +11550,25 @@ def main() -> int:
         validate_takeover_closed_set_text,
         validate_local_links,
     ]
+    if release_history_only:
+        checks = [validate_released_record_immutability]
     try:
         for check in checks:
             check()
     except ValidationFailure as exc:
         print(f"validation failed: {exc}", file=sys.stderr)
         return 1
+    if release_history_only:
+        print("validated published release record bytes")
+        return 0
     print(f"validated {len(list(SCHEMAS.glob('*.json')))} schemas and {len(load_json(SUITE / 'manifest.json')['files'])} vector files")
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--release-history-only", action="store_true")
+    args = parser.parse_args()
+    raise SystemExit(main(release_history_only=args.release_history_only))

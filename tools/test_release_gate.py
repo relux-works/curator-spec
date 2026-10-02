@@ -282,7 +282,7 @@ class ProtocolRC13ReleaseGateTests(unittest.TestCase):
             SOURCE_ROOT,
             self.root,
             dirs_exist_ok=True,
-            ignore=shutil.ignore_patterns(".git", "__pycache__"),
+            ignore=shutil.ignore_patterns(".git", ".temp", ".venv", ".task-board", "__pycache__"),
         )
         self.root_patch = patch.object(release_gate, "ROOT", self.root)
         self.root_patch.start()
@@ -504,6 +504,14 @@ class ProtocolRC13ReleaseGateTests(unittest.TestCase):
             release_gate.validate_version(self.VERSION)
 
     def test_rejects_rc13_silent_downgrade_or_claim_fabrication(self) -> None:
+        # This publication-policy test uses rc.13's published corpus. The
+        # worktree corpus may have advanced independently as a new candidate.
+        manifest = subprocess.check_output(
+            ["git", "show", "v1.0.0-rc.13:conformance/v1/manifest.json"],
+            cwd=SOURCE_ROOT,
+        )
+        (self.root / "conformance" / "v1" / "manifest.json").write_bytes(manifest)
+        release_gate.validate_version(self.VERSION)
         path = self.root / "release" / f"{self.VERSION}.json"
         base = json.loads(path.read_text(encoding="utf-8"))
         for field, value in (
