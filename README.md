@@ -73,6 +73,12 @@ and vectors remain in their own namespace; they are not merged into
 
 ## Tools
 
+Published `release/<version>.json` records are byte-frozen against release
+tags. Regeneration updates [candidate metadata](conformance/candidate.json)
+with the current core and source-suite manifest digests, without selecting the
+next release version. Release preparation creates a new versioned record.
+Validation requires local release tags (fetch tags in shallow checkouts).
+
 - Python 3 with `python3 -m pip install -r requirements-dev.txt`: run
   `python3 tools/validate.py` and
   `python3 -B -m unittest discover -s tools -p "test_*.py"` for the existing

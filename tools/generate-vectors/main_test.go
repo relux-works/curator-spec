@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"reflect"
 	"runtime"
@@ -845,9 +846,12 @@ func TestRC9ReleaseMetadataRemainsByteFrozen(t *testing.T) {
 	}
 }
 
-func TestRC13ReleaseMetadataPinsCoreAndAcceptedSourceSuites(t *testing.T) {
+func TestRC13ReleaseMetadataPinsPublishedCoreAndAcceptedSourceSuites(t *testing.T) {
 	root := repositoryRoot(t)
-	manifest, err := os.ReadFile(filepath.Join(root, "conformance", "v1", "manifest.json"))
+	// Published metadata binds the tagged corpus, independently of today's candidate.
+	cmd := exec.Command("git", "show", "v1.0.0-rc.13:conformance/v1/manifest.json")
+	cmd.Dir = root
+	manifest, err := cmd.Output()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -862,7 +866,9 @@ func TestRC13ReleaseMetadataPinsCoreAndAcceptedSourceSuites(t *testing.T) {
 	if pin["manifest_sha256"] != manifestIdentity || downstream["required_manifest_sha256"] != manifestIdentity {
 		t.Fatalf("rc.13 release does not pin core manifest %s", manifestIdentity)
 	}
-	sourceManifest, err := os.ReadFile(filepath.Join(root, "conformance", "skillfile-sources-v1", "manifest.json"))
+	cmd = exec.Command("git", "show", "v1.0.0-rc.13:conformance/skillfile-sources-v1/manifest.json")
+	cmd.Dir = root
+	sourceManifest, err := cmd.Output()
 	if err != nil {
 		t.Fatal(err)
 	}

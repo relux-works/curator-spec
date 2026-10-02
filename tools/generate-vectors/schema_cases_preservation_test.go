@@ -31,6 +31,32 @@ func TestGeneratorPreservesHandAuthoredSchemaCases(t *testing.T) {
 			copyTree(t, filepath.Join(repo, name), filepath.Join(root, name))
 		}
 	}
+	// Freeze the complete release directory, including an unknown future version,
+	// so any generator write (even an identical-byte rewrite) is detected.
+	sentinelRelease := filepath.Join(root, "release", "9.0.0.json")
+	must(os.WriteFile(sentinelRelease, []byte("{}\n"), 0o644))
+	releaseEntries, err := os.ReadDir(filepath.Join(root, "release"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(releaseEntries) != 7 {
+		t.Fatalf("release coverage = %d/7", len(releaseEntries))
+	}
+	releaseBytes := map[string][]byte{}
+	releaseInfo := map[string]os.FileInfo{}
+	for _, entry := range releaseEntries {
+		path := filepath.Join(root, "release", entry.Name())
+		releaseBytes[path], err = os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		releaseInfo[path], err = os.Stat(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	candidatePath := filepath.Join(root, "conformance", "candidate.json")
+	must(os.Remove(candidatePath))
 	caseRoot := filepath.Join(root, "conformance", "v1", "schema-cases")
 	released := []string{
 		"agent-environment-marker-v1/valid-no-composition.json",
@@ -57,6 +83,49 @@ func TestGeneratorPreservesHandAuthoredSchemaCases(t *testing.T) {
 	cmd.Stdout, cmd.Stderr = &out, &out
 	if err := cmd.Run(); err != nil {
 		t.Fatalf("generator failed: %v\n%s", err, out.String())
+	}
+	for path, want := range releaseBytes {
+		got, err := os.ReadFile(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		info, err := os.Stat(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !bytes.Equal(got, want) || !info.ModTime().Equal(releaseInfo[path].ModTime()) {
+			t.Fatalf("generator rewrote release record %s", path)
+		}
+	}
+	candidate := readObject(t, candidatePath)
+	if candidate["status"] != "candidate" || len(candidate) != 3 {
+		t.Fatalf("candidate metadata claims a release: %#v", candidate)
+	}
+	for name, relative := range map[string]string{
+		"core":                 "conformance/v1/manifest.json",
+		"skillfile_sources_v1": "conformance/skillfile-sources-v1/manifest.json",
+	} {
+		manifest, err := os.ReadFile(filepath.Join(root, relative))
+		if err != nil {
+			t.Fatal(err)
+		}
+		pin := candidate[name].(map[string]any)
+		if pin["manifest_path"] != relative || pin["manifest_sha256"] != sha256Identity(manifest) {
+			t.Fatalf("candidate %s does not pin its manifest: %#v", name, pin)
+		}
+	}
+	// Regeneration must not silently repair missing publication evidence either.
+	rc13Path := filepath.Join(root, "release", "1.0.0-rc.13.json")
+	must(os.Remove(rc13Path))
+	cmd = exec.Command("go", "run", ".", "-root", root)
+	if output, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("second generator run failed: %v\n%s", err, output)
+	}
+	if _, err := os.Stat(rc13Path); !os.IsNotExist(err) {
+		t.Fatalf("generator recreated published rc.13 record: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(root, "release", "1.0.0-rc.14.json")); !os.IsNotExist(err) {
+		t.Fatalf("generator created an rc.14 record: %v", err)
 	}
 	// Assert the real CLI entry emits the Muse family and schema cases,
 	// rather than proving only that an uncalled helper can emit them.

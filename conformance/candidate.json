@@ -1,0 +1,11 @@
+{
+  "core": {
+    "manifest_path": "conformance/v1/manifest.json",
+    "manifest_sha256": "sha256:bd03456b92a7368d90ea74fe6953db10bc188588020683024a6a6b8735a40783"
+  },
+  "skillfile_sources_v1": {
+    "manifest_path": "conformance/skillfile-sources-v1/manifest.json",
+    "manifest_sha256": "sha256:061ec05ddb1746b72168d157f81d2930047cd62371ffa46cf585844da61ee6be"
+  },
+  "status": "candidate"
+}

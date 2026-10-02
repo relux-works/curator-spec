@@ -30,7 +30,6 @@ const (
 	conformanceClaimV3ProtocolVersion = "1.0.0-rc.5"
 	conformanceClaimV4ProtocolVersion = "1.0.0-rc.8"
 	conformanceClaimV2CreatedAt       = "2026-07-20T00:00:00Z"
-	rc13CreatedAt                     = "2026-09-26T00:00:00Z"
 	fixedCommit                       = "0123456789abcdef0123456789abcdef01234567"
 	fixedTime                         = "2026-07-13T00:00:00Z"
 	genesis                           = "0000000000000000000000000000000000000000000000000000000000000000"
@@ -210,7 +209,7 @@ func main() {
 	writeExternalRepositoryExpected(expected, marker)
 	writeManifest(suite)
 	skillfileSourcesManifestSHA256 := writeSkillfileSourcesManifest(*root)
-	writeRC13ReleaseMetadata(*root, suite, skillfileSourcesManifestSHA256)
+	writeCandidateMetadata(*root, suite, skillfileSourcesManifestSHA256)
 }
 
 // writeModuleRootVectors emits the filesystem and build-graph cases that JSON
@@ -2220,56 +2219,20 @@ func writeAssuranceVectors(dir string) {
 	})
 }
 
-func writeRC13ReleaseMetadata(root, suite, skillfileSourcesManifestSHA256 string) {
+// writeCandidateMetadata tracks the current corpus without creating or changing
+// a published release record. Release preparation owns release/<version>.json.
+func writeCandidateMetadata(root, suite, skillfileSourcesManifestSHA256 string) {
 	manifest, err := os.ReadFile(filepath.Join(suite, "manifest.json"))
 	must(err)
-	digest := sha256.Sum256(manifest)
-	pin := "sha256:" + hex.EncodeToString(digest[:])
-	writeJSON(filepath.Join(root, "release", "1.0.0-rc.13.json"), map[string]any{
-		"protocol_version": protocolVersion,
-		"created_at":       rc13CreatedAt,
-		"candidate_protocol_pin": map[string]any{
-			"suite_root":      "conformance/v1",
-			"manifest_sha256": pin,
-		},
-		"source_baseline_commit": rc9SourceCommit,
-		"legacy_release":         conformanceClaimV5ProtocolVersion,
-		"historical_release": map[string]any{
-			"protocol_version": conformanceClaimV5ProtocolVersion,
-			"metadata_path":    "release/1.0.0-rc.9.json",
-			"metadata_sha256":  rc9ReleaseMetadataSHA256,
-			"source_commit":    rc9SourceCommit,
-			"immutable":        true,
-		},
-		"assurance": map[string]any{
-			"default_mode":                    "portable",
-			"portable_policy":                 portableAssurancePolicy,
-			"portable_execution_policy":       portableExecutionPolicy,
-			"verified_policy":                 verifiedAssurancePolicy,
-			"verified_execution_policy":       verifiedExecutionPolicy,
-			"verified_provider_contract":      verifiedProviderContract,
-			"verified_implementations":        []any{},
-			"verified_platform_claims":        []any{},
-			"silent_downgrade_permitted":      false,
-			"skill_vendored_provider_allowed": false,
-		},
-		"downstream_consumption": map[string]any{
-			"environment":                    "CURATOR_CONFORMANCE_ROOT",
-			"required_manifest_sha256":       pin,
-			"committed_release_pin_advanced": false,
+	writeJSON(filepath.Join(root, "conformance", "candidate.json"), map[string]any{
+		"status": "candidate",
+		"core": map[string]any{
+			"manifest_path":   "conformance/v1/manifest.json",
+			"manifest_sha256": fmt.Sprintf("sha256:%x", sha256.Sum256(manifest)),
 		},
 		"skillfile_sources_v1": map[string]any{
 			"manifest_path":   "conformance/skillfile-sources-v1/manifest.json",
 			"manifest_sha256": skillfileSourcesManifestSHA256,
-			"compatible_core": map[string]any{
-				"tag":             "v1.0.0-rc.10",
-				"manifest_sha256": rc10CoreManifestSHA256,
-			},
-		},
-		"claim_v5": map[string]any{
-			"claim_protocol_version": conformanceClaimV5ProtocolVersion,
-			"schema":                 "schemas/v1/conformance-claim-v5.schema.json",
-			"claims_emitted":         []any{},
 		},
 	})
 }
