@@ -112,7 +112,7 @@
     "global add",
     "global install"
   ],
-  "protocol_version": "1.0.0-rc.13",
+  "protocol_version": "1.0.0-rc.14",
   "rule": "protocol/environments.md section 9.4 and profiles/manager.md sections 2.5, 2.6, and 12.3",
   "schema_version": 1,
   "takeover_carriers": [

@@ -11,7 +11,7 @@ regenerate:
 regenerate-check:
 	python3 tools/validate.py --release-history-only
 	go run ./tools/generate-vectors -root .
-	git diff --exit-code -- conformance/v1 conformance/candidate.json conformance/skillfile-sources-v1/manifest.json
+	git diff --exit-code -- conformance/v1 conformance/candidate.json conformance/skillfile-sources-v1/manifest.json release/1.0.0-rc.14.json
 
 release-check: validate regenerate-check
 	test -n "$(VERSION)"

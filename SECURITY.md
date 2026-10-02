@@ -12,6 +12,28 @@ updates before publication.
 
 ## Security model
 
+### Rc.14 security impact and claim boundary
+
+Rc.14's `curator-content-v2` length framing removes concatenation ambiguity.
+Versioned carrier identities and equal-version registry matching prevent v1/v2
+aliasing; v1 readers apply the blocking NUL-path guard. Released schemas remain
+unchanged, and the independent source suite retains its rc.10 baseline; its
+hash-v2 transition and B3 cache pruning remain deferred.
+
+Muse's shared auth file link requires liveness checks and refuses unsupported
+refresh forks. Refresh, context surfaces and foreign personal-context isolation
+remain unverified; the adapter is not evidence of fresh-login isolation. Profile
+lock publication precedes materialization, while conflict rollback preserves
+the published lock for explicit takeover recovery. The new-driver threat
+checklist is informative, and adopted Decisions 0019/0021 do not attest their
+pending implementation amendments.
+
+The [rc.14 record](release/1.0.0-rc.14.json) emits no unsupported implementation,
+verified platform or conformance claim. Scoped implementation CI establishes
+only the exercised declared scope, not full rc.14 conformance or immutable
+native provider evidence. Portable remains the default, verified mode remains
+explicit and fail-closed, and no reserved hardened execution policy is claimed.
+
 The protocol treats skill repositories, manifests, registry responses, cache
 entries, and bundles as untrusted input. Conforming implementations MUST apply
 the parsing limits and validation rules in the normative documents before

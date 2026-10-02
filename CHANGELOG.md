@@ -5,15 +5,21 @@ Versioning for the complete specification set.
 
 ## Unreleased
 
+## 1.0.0-rc.14 - 2026-10-02
+
 ### Changed
 
-- Restore the published rc.13 record and freeze tagged release history; track current suite digests in candidate metadata.
+- Restore the published rc.13 record and freeze tagged release history; track
+  current suite digests in candidate metadata (#122). Prepare rc.14 with its own
+  exact suite pin; unsupported implementation, platform and claim sets stay
+  empty. B3 cache pruning (#119) and source-suite content-hash v2
+  (TASK-260930-3ny11n) remain deferred.
 
 - Record the operator's adoption of
   [Decision 0019](decisions/0019-fragment-consumers-and-one-construction-site.md)
   and [Decision 0021](decisions/0021-sessions-enter-through-curator-run.md)
   on 2026-10-01. Add amendment backlinks in Decision 0013 and update the
-  decision status index. Preserve proposal and normative text; protocol
+  decision status index (#120). Preserve proposal and normative text; protocol
   and launcher specification amendments remain follow-ups.
 
 ### Added
@@ -23,11 +29,11 @@ Versioning for the complete specification set.
   file-link liveness and refresh-fork refusals. Record the unverified refresh
   and context surfaces, permission interface, and foreign personal context
   isolation gap. Add `launch-env-fragment-v3` and generated Muse vectors
-  with positive/negative cases; released schemas remain byte-identical.
+  with positive/negative cases; released schemas remain byte-identical (#121).
 
 - Add an informative "Threat review for a new build driver" checklist to
   `docs/external-build-repositories.md`, citing the normative clause behind
-  each item. No new requirement, vector, or schema.
+  each item. No new requirement, vector, or schema (#118).
 - Resolve K1 by defining the length-delimited `curator-content-v2` framing,
   versioning content identities across markers, locks, audit state and registry
   records, and requiring equal framing versions for registry matches. Add
@@ -38,26 +44,26 @@ Versioning for the complete specification set.
   and `source-audit-v2` adopt `hash_version` in follow-up TASK-260930-3ny11n.
   Keep every schema in rc.13 byte-frozen, add the
   collision/empty/ordinary/mismatch vectors, and specify the blocking NUL
-  guard for v1 readers.
+  guard for v1 readers (#116).
 
 - Specify that global add/install publish the extended profile lock before
   in-place materialization and retain it on
   `environment_surface_unmanaged_conflict`, with transactional surface
   rollback and sync takeover recovery. Add ordering, lock-preservation,
-  and `profile sync --takeover` recovery vectors.
+  and `profile sync --takeover` recovery vectors (#113).
 - Gate `skillfile-sources-v1` schema references and protocol citations against
   the `v1.0.0-rc.10` core baseline, preserving partial-client independence in
   Specification CI. Its sole conditional-citation exception is the exact
   environments §9.4 profile-lock sentence in `protocol/skillfile-sources.md`;
   the same citation without its condition and every other post-rc.10 citation
-  fail the gate.
+  fail the gate (#99).
 - Clarify the S5 §10.1 repair persistence bound: a passing store entry is
   replayed whenever a stale home is repaired, with pin verification and the
   operator-owned protected-state boundary remaining the accepted limit. Add a
   §7.8 row stating that Claude's strict MCP channel excludes other
   configuration when supplied, while Codex's profile layer merges over a
   manager-owned base. No conformance vector changed because no requirement
-  changed.
+  changed (#115).
 
 ## 1.0.0-rc.13 - 2026-09-26
 
