@@ -221,7 +221,7 @@
       "name": "semver-precedence"
     }
   ],
-  "protocol_version": "1.0.0-rc.13",
+  "protocol_version": "1.0.0-rc.14",
   "range_cases": [
     {
       "comparator_sets": [

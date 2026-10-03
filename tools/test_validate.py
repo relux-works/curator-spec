@@ -80,6 +80,22 @@ class ReleasedSchemaImmutabilityTests(unittest.TestCase):
 class ReleasedRecordImmutabilityTests(unittest.TestCase):
     RECORDS = tuple(f"release/1.0.0-rc.{number}.json" for number in (5, 6, 7, 8, 9, 13))
 
+    def test_rc14_candidate_keeps_rc13_as_published_history_anchor(self) -> None:
+        self.assertEqual(validate.PROTOCOL_VERSION, "1.0.0-rc.14")
+        self.assertEqual(validate.LATEST_RELEASED_PROTOCOL_VERSION, "1.0.0-rc.13")
+        self.assertNotIn("release/1.0.0-rc.14.json", validate.published_release_records())
+        validate.validate_released_schema_immutability()
+
+    def test_missing_published_baseline_tag_is_rejected(self) -> None:
+        with patch.object(validate, "LATEST_RELEASED_PROTOCOL_VERSION", "99.0.0"):
+            status, stderr = self.run_main()
+            with self.assertRaisesRegex(
+                validate.ValidationFailure, "cannot inspect released schemas at v99.0.0"
+            ):
+                validate.validate_released_schema_immutability()
+        self.assertEqual(status, 1)
+        self.assertIn("cannot inspect published release records", stderr)
+
     def run_main(self) -> tuple[int, str]:
         stdout, stderr = io.StringIO(), io.StringIO()
         with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
@@ -1540,6 +1556,7 @@ class WorkflowRegenerationScopeTests(unittest.TestCase):
         "conformance/v1",
         "conformance/candidate.json",
         "conformance/skillfile-sources-v1/manifest.json",
+        "release/1.0.0-rc.14.json",
     )
 
     def regeneration_diff_scope(self, path: Path) -> tuple[str, ...]:

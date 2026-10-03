@@ -31,13 +31,13 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: relux-works/curator
-          # Curator e4a6a8d5 keys its exact published-case counts by suite
-          # manifest digest, so it passes against rc.13, the content-hash-v2
-          # suite and this suite with the muse environment (TASK-261001-2yvag1:
-          # 16 link-state and 36 fragment-v3 rows). Historical v2 families stay
-          # owned known gaps (TASK-260930-12i5zr, TASK-260917-2tx81l).
+          # Curator 291688e4 keys its exact published-case counts by suite
+          # manifest digest and recognises this 1.0.0-rc.14 suite (TASK-261002-2ipeqa,
+          # carried as TASK-261003-1kcv6v). The one rc.14 case that needs
+          # curator-content-v2 writes stays an owned known gap until the curator
+          # cut-over (TASK-261002-1foyf3) enables the v2 writer.
           # Keep this pin in lockstep with the suite.
-          ref: e4a6a8d5df879183c4d8b5c648aa440bd50ff7dc
+          ref: 291688e4ed51c2619ca467e268943959f56a9124
           path: implementations/go
           submodules: true
           # The Go suite does not use the board state. Excluding its deep paths

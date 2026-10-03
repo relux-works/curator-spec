@@ -49,7 +49,7 @@ jobs:
           python -B -m unittest discover -s tools -p 'test_*.py'
           go test ./tools/...
           go run ./tools/generate-vectors -root .
-          git diff --exit-code -- conformance/v1 conformance/candidate.json conformance/skillfile-sources-v1/manifest.json
+          git diff --exit-code -- conformance/v1 conformance/candidate.json conformance/skillfile-sources-v1/manifest.json release/1.0.0-rc.14.json
           version="${GITHUB_REF_NAME#v}"
           python tools/release_gate.py --version "$version" --commit "$GITHUB_SHA"
 

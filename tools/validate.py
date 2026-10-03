@@ -26,7 +26,10 @@ SUITE = ROOT / "conformance" / "v1"
 REVIEWS = ROOT / "reviews"
 _VALID_SCHEMA_DOCUMENTS: set[bytes] = set()
 SAFE_INTEGER = 9_007_199_254_740_991
-PROTOCOL_VERSION = "1.0.0-rc.13"
+PROTOCOL_VERSION = "1.0.0-rc.14"
+# Release preparation advances the candidate before its tag exists. Historical
+# guards remain anchored to the latest published release until publication.
+LATEST_RELEASED_PROTOCOL_VERSION = "1.0.0-rc.13"
 RC9_PROTOCOL_VERSION = "1.0.0-rc.9"
 RC8_PROTOCOL_VERSION = "1.0.0-rc.8"
 RC7_PROTOCOL_VERSION = "1.0.0-rc.7"
@@ -136,7 +139,7 @@ def load_json(path: Path) -> Any:
 
 def validate_released_schema_immutability() -> None:
     """Require every schema shipped by the latest release tag to remain byte-identical."""
-    tag = f"v{PROTOCOL_VERSION}"
+    tag = f"v{LATEST_RELEASED_PROTOCOL_VERSION}"
     listed = subprocess.run(
         ["git", "ls-tree", "-r", "-z", tag, "--", "schemas"],
         cwd=ROOT,
@@ -232,7 +235,7 @@ def published_release_records() -> dict[str, tuple[str, bytes]]:
             raise ValidationFailure(f"cannot inspect published release records: {detail}")
         return result.stdout
 
-    latest = f"v{PROTOCOL_VERSION}"
+    latest = f"v{LATEST_RELEASED_PROTOCOL_VERSION}"
     git("rev-parse", "--verify", f"refs/tags/{latest}^{{commit}}")
     tags = git("tag", "--list", "v*", "--sort=version:refname").decode("utf-8").splitlines()
     records: dict[str, str] = {}
@@ -256,7 +259,7 @@ def published_release_records() -> dict[str, tuple[str, bytes]]:
             records.setdefault(relative, tag)
             if relative == f"release/{tag[1:]}.json":
                 records[relative] = tag
-    if records.get(f"release/{PROTOCOL_VERSION}.json") != latest:
+    if records.get(f"release/{LATEST_RELEASED_PROTOCOL_VERSION}.json") != latest:
         raise ValidationFailure(f"no published release record found for {latest}")
     return {
         relative: (tag, git("show", f"refs/tags/{tag}:{relative}"))

@@ -272,8 +272,34 @@ root and observed consumer cases.
 
 Rc.9 and earlier release metadata remain byte-frozen. The rc.13 candidate
 metadata records rc.9 as the preceding protocol release, and the signed
-v1.0.0-rc.13 tag is created only on the release-prep merge commit after its
-required checks pass.
+v1.0.0-rc.13 tag preserves the published release-prep bytes.
+
+## Rc.14 release boundary
+
+Rc.14 adds length-framed `curator-content-v2` identities and new carrier
+schemas without modifying any released schema. Writers record `hash_version`;
+registry matches require equal framing versions, and v1 readers reject NUL
+paths that could alias an unframed identity. The source-suite hash-v2 carriers
+remain deferred: `skillfile-sources-v1` keeps its exact manifest and rc.10 core
+baseline. B3 cache pruning is also deferred.
+
+Muse uses the new `launch-env-fragment-v3` with four XDG parents and preserved
+HOME. Earlier fragment and marker schemas retain their bytes and meaning.
+Global add/install publish the extended profile lock before materialization
+and keep it on unmanaged conflict; transactional rollback and explicit
+`profile sync --takeover` provide recovery. Repair persistence and MCP channel
+notes clarify the existing contract. Adoption of Decisions 0019/0021 records
+the operator's decision; their normative and launcher amendments remain
+follow-ups.
+
+The [rc.14 record](release/1.0.0-rc.14.json) pins the generated candidate suite.
+Rc.13 and all earlier published records remain byte-frozen. Implementation CI
+qualifies each pin's declared scope: Go consumes the candidate core, the Python
+manager consumes rc.10 core plus the unchanged source suite, and the registry
+consumes its registry profile. Green scoped runs do not establish full rc.14
+conformance, close declared implementation gaps, or provide native evidence.
+Unsupported implementation, platform and claim sets remain empty. Portable is
+the default; no reserved hardened execution policy is claimed.
 
 ## Partial-client baseline: rc.10 core plus skillfile-sources-v1
 

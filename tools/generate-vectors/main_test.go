@@ -858,8 +858,8 @@ func TestRC13ReleaseMetadataPinsPublishedCoreAndAcceptedSourceSuites(t *testing.
 	sum := sha256.Sum256(manifest)
 	manifestIdentity := "sha256:" + hex.EncodeToString(sum[:])
 	metadata := readObject(t, filepath.Join(root, "release", "1.0.0-rc.13.json"))
-	if metadata["protocol_version"] != protocolVersion {
-		t.Fatalf("rc.13 release protocol_version = %v, want %s", metadata["protocol_version"], protocolVersion)
+	if metadata["protocol_version"] != "1.0.0-rc.13" {
+		t.Fatalf("rc.13 release protocol_version = %v, want 1.0.0-rc.13", metadata["protocol_version"])
 	}
 	pin := metadata["candidate_protocol_pin"].(map[string]any)
 	downstream := metadata["downstream_consumption"].(map[string]any)
@@ -895,6 +895,35 @@ func TestRC13ReleaseMetadataPinsPublishedCoreAndAcceptedSourceSuites(t *testing.
 		claim["schema"] != "schemas/v1/conformance-claim-v5.schema.json" ||
 		!ok || len(claims) != 0 {
 		t.Fatalf("rc.13 release fabricates claim evidence: %#v", claim)
+	}
+}
+
+func TestRC14ReleaseMetadataPinsCandidateAndPreservesSourceBaseline(t *testing.T) {
+	root := repositoryRoot(t)
+	manifest, err := os.ReadFile(filepath.Join(root, "conformance", "v1", "manifest.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	metadata := readObject(t, filepath.Join(root, "release", "1.0.0-rc.14.json"))
+	if metadata["protocol_version"] != protocolVersion || metadata["created_at"] != releaseTime {
+		t.Fatalf("rc.14 version/date mismatch: %#v", metadata)
+	}
+	manifestObject := readObject(t, filepath.Join(root, "conformance", "v1", "manifest.json"))
+	if manifestObject["protocol_version"] != protocolVersion || manifestObject["generated_at"] != releaseTime {
+		t.Fatalf("rc.14 manifest version/date mismatch: %#v", manifestObject)
+	}
+	pin := metadata["candidate_protocol_pin"].(map[string]any)
+	downstream := metadata["downstream_consumption"].(map[string]any)
+	if pin["suite_root"] != "conformance/v1" || pin["manifest_sha256"] != sha256Identity(manifest) ||
+		downstream["required_manifest_sha256"] != sha256Identity(manifest) ||
+		downstream["committed_release_pin_advanced"] != false {
+		t.Fatalf("rc.14 does not pin the generated candidate: %#v", metadata)
+	}
+	historical := readObject(t, filepath.Join(root, "release", "1.0.0-rc.13.json"))
+	for _, field := range []string{"skillfile_sources_v1", "historical_release", "claim_v5", "assurance", "source_baseline_commit", "legacy_release"} {
+		if !reflect.DeepEqual(metadata[field], historical[field]) {
+			t.Fatalf("rc.14 changed the source baseline, historical identity or claim boundary: %s", field)
+		}
 	}
 }
 
@@ -938,7 +967,7 @@ func TestAssuranceModesAreClosedFailClosedAndNonAliasing(t *testing.T) {
 		}
 	}
 	if claims := vector["release_claims"].([]any); len(claims) != 0 {
-		t.Fatalf("rc.13 fabricates verified claims: %#v", claims)
+		t.Fatalf("current candidate fabricates verified claims: %#v", claims)
 	}
 }
 

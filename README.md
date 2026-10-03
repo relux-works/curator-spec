@@ -1,8 +1,8 @@
 # Curator Protocol Specification
 
-**Version:** 1.0.0-rc.13
+**Version:** 1.0.0-rc.14
 
-**Date:** 2026-09-26
+**Date:** 2026-10-02
 
 **Status:** Draft release candidate
 
@@ -115,7 +115,7 @@ own result stream and against this suite's published manifest.
 
 ## Release status
 
-`1.0.0-rc.13` is a draft candidate. Portable remains the default CLI-only mode.
+`1.0.0-rc.14` is a draft candidate. Portable remains the default CLI-only mode.
 Verified mode is explicit, requires the platform-neutral
 `host-execution-provider-v1` contract, and fails before execution rather than
 silently downgrading. Provider binaries are separately installed trusted host
@@ -123,11 +123,12 @@ components and are never skill-vendored artifacts. This candidate specifies
 the common contract for macOS, Linux, and Windows but ships no provider and
 emits no verified platform claim. Exact core-suite and accepted
 skillfile-sources-v1 identities are recorded in
-[`release/1.0.0-rc.13.json`](release/1.0.0-rc.13.json). The source suite is
+[`release/1.0.0-rc.14.json`](release/1.0.0-rc.14.json). The source suite is
 separately pinnable and remains consumable with core v1.0.0-rc.10; it does not
-add a manifest schema v9 `directory` field to the core suite. Rc.9 and earlier
-release metadata remain byte-frozen historical evidence. Review evidence is
-published under [`reviews/`](reviews/). See
+add a manifest schema v9 `directory` field to the core suite. Rc.13 and earlier
+release metadata remain byte-frozen historical evidence. Scoped implementation
+CI does not establish full rc.14 conformance or native platform claims.
+Review evidence is published under [`reviews/`](reviews/). See
 [COMPATIBILITY.md](COMPATIBILITY.md),
 [SECURITY.md](SECURITY.md), and [GOVERNANCE.md](GOVERNANCE.md).
 
