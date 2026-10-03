@@ -8,6 +8,7 @@ import io
 import json
 import re
 import shlex
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -78,12 +79,35 @@ class ReleasedSchemaImmutabilityTests(unittest.TestCase):
 
 
 class ReleasedRecordImmutabilityTests(unittest.TestCase):
-    RECORDS = tuple(f"release/1.0.0-rc.{number}.json" for number in (5, 6, 7, 8, 9, 13))
+    def expected_published_records(self) -> set[str]:
+        # Derive coverage independently from Git, including records first
+        # shipped under a later version's tag (for example rc.6 under rc.7).
+        tags = subprocess.check_output(
+            ["git", "tag", "--list", "v*"], cwd=validate.ROOT, text=True
+        ).splitlines()
+        records: set[str] = set()
+        for tag in tags:
+            if not re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?", tag):
+                continue
+            paths = subprocess.check_output(
+                ["git", "ls-tree", "-r", "--name-only", f"refs/tags/{tag}", "--", "release"],
+                cwd=validate.ROOT, text=True,
+            ).splitlines()
+            records.update(
+                path for path in paths
+                if re.fullmatch(r"release/[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?\.json", path)
+            )
+        return records
 
-    def test_rc14_candidate_keeps_rc13_as_published_history_anchor(self) -> None:
+    def test_active_version_keeps_rc13_as_published_history_anchor(self) -> None:
         self.assertEqual(validate.PROTOCOL_VERSION, "1.0.0-rc.14")
         self.assertEqual(validate.LATEST_RELEASED_PROTOCOL_VERSION, "1.0.0-rc.13")
-        self.assertNotIn("release/1.0.0-rc.14.json", validate.published_release_records())
+        records = validate.published_release_records()
+        self.assertEqual(records["release/1.0.0-rc.13.json"][0], "v1.0.0-rc.13")
+        active = f"release/{validate.PROTOCOL_VERSION}.json"
+        self.assertEqual(active in records, active in self.expected_published_records())
+        if active in records:
+            self.assertEqual(records[active][0], f"v{validate.PROTOCOL_VERSION}")
         validate.validate_released_schema_immutability()
 
     def test_missing_published_baseline_tag_is_rejected(self) -> None:
@@ -102,17 +126,39 @@ class ReleasedRecordImmutabilityTests(unittest.TestCase):
             status = validate.main()
         return status, stderr.getvalue()
 
-    def test_all_six_published_records_are_covered_and_unchanged(self) -> None:
+    def test_all_published_records_are_covered_and_unchanged(self) -> None:
         records = validate.published_release_records()
-        self.assertEqual(set(records), set(self.RECORDS))
+        self.assertEqual(set(records), self.expected_published_records())
         self.assertEqual(records["release/1.0.0-rc.13.json"][0], "v1.0.0-rc.13")
         self.assertEqual(records["release/1.0.0-rc.6.json"][0], "v1.0.0-rc.7")
+        for relative, (tag, expected) in records.items():
+            with self.subTest(relative=relative, tag=tag):
+                tagged = subprocess.check_output(
+                    ["git", "show", f"refs/tags/{tag}:{relative}"], cwd=validate.ROOT
+                )
+                self.assertEqual(expected, tagged)
+                self.assertEqual((validate.ROOT / relative).read_bytes(), tagged)
         validate.validate_released_record_immutability()
+
+    def test_active_record_may_change_only_while_unpublished_through_main(self) -> None:
+        relative = f"release/{validate.PROTOCOL_VERSION}.json"
+        published = relative in self.expected_published_records()
+        path = validate.ROOT / relative
+        original = path.read_bytes()
+        try:
+            path.write_bytes(original + b"\n")
+            status, stderr = self.run_main()
+            self.assertEqual(status, 1 if published else 0, stderr)
+            if published:
+                self.assertIn("published release record bytes differ", stderr)
+                self.assertIn(relative, stderr)
+        finally:
+            path.write_bytes(original)
 
     def test_every_published_record_byte_drift_is_rejected_through_main(self) -> None:
         # A whitespace-only mutant preserves the JSON value but changes history.
         # Cover older records too: an rc.13-only guard must fail this test.
-        for relative in self.RECORDS:
+        for relative in sorted(self.expected_published_records()):
             with self.subTest(relative=relative):
                 path = validate.ROOT / relative
                 original = path.read_bytes()

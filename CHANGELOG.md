@@ -9,6 +9,8 @@ Versioning for the complete specification set.
 
 ### Changed
 
+- Make release-history freeze tests cover all tagged records before and after the active version is tagged.
+
 - Restore the published rc.13 record and freeze tagged release history; track
   current suite digests in candidate metadata (#122). Prepare rc.14 with its own
   exact suite pin; unsupported implementation, platform and claim sets stay
