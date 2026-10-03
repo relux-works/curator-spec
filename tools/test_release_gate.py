@@ -272,8 +272,8 @@ class StableReleaseGateTests(unittest.TestCase):
                 release_gate.validate_version(version)
 
 
-class ProtocolRC13ReleaseGateTests(unittest.TestCase):
-    VERSION = "1.0.0-rc.13"
+class ProtocolRC14ReleaseGateTests(unittest.TestCase):
+    VERSION = "1.0.0-rc.14"
 
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -310,7 +310,7 @@ class ProtocolRC13ReleaseGateTests(unittest.TestCase):
             self.fail(f"manifest does not list {relative}")
         self._write_json(manifest_path, manifest)
 
-    def test_accepts_complete_rc13_artifact_set(self) -> None:
+    def test_accepts_complete_rc14_artifact_set(self) -> None:
         release_gate.validate_protocol_artifacts(self.VERSION)
 
     def test_rejects_changed_published_rc9_release_metadata(self) -> None:
@@ -471,7 +471,7 @@ class ProtocolRC13ReleaseGateTests(unittest.TestCase):
         ):
             release_gate.validate_protocol_artifacts(self.VERSION)
 
-    def test_rejects_rc13_history_rewriting_rc9_identity(self) -> None:
+    def test_rejects_rc14_history_rewriting_rc9_identity(self) -> None:
         path = self.root / "release" / f"{self.VERSION}.json"
         metadata = json.loads(path.read_text(encoding="utf-8"))
         metadata["historical_release"]["metadata_sha256"] = "sha256:" + "0" * 64
@@ -491,7 +491,7 @@ class ProtocolRC13ReleaseGateTests(unittest.TestCase):
         ):
             release_gate.validate_conformance_claim(path, "1.0.0-rc.6")
 
-    def test_rejects_stale_rc13_suite_pin(self) -> None:
+    def test_rejects_stale_rc14_suite_pin(self) -> None:
         path = self.root / "release" / f"{self.VERSION}.json"
         metadata = json.loads(path.read_text(encoding="utf-8"))
         metadata["candidate_protocol_pin"]["manifest_sha256"] = (
@@ -503,18 +503,13 @@ class ProtocolRC13ReleaseGateTests(unittest.TestCase):
         ):
             release_gate.validate_version(self.VERSION)
 
-    def test_rejects_rc13_silent_downgrade_or_claim_fabrication(self) -> None:
-        # This publication-policy test uses rc.13's published corpus. The
-        # worktree corpus may have advanced independently as a new candidate.
-        manifest = subprocess.check_output(
-            ["git", "show", "v1.0.0-rc.13:conformance/v1/manifest.json"],
-            cwd=SOURCE_ROOT,
-        )
-        (self.root / "conformance" / "v1" / "manifest.json").write_bytes(manifest)
+    def test_rejects_rc14_silent_downgrade_or_claim_fabrication(self) -> None:
         release_gate.validate_version(self.VERSION)
         path = self.root / "release" / f"{self.VERSION}.json"
         base = json.loads(path.read_text(encoding="utf-8"))
         for field, value in (
+            ("default_mode", "verified"),
+            ("portable_execution_policy", "hardened-worker-v1"),
             ("silent_downgrade_permitted", True),
             ("verified_implementations", ["unqualified"]),
             ("verified_platform_claims", ["linux"]),

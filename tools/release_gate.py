@@ -39,7 +39,7 @@ RETIRED_DESCRIPTOR_STEM = "curator" + "-build"
 # The schema-6 build-source digest algorithm namespace shares the retired stem
 # but is a different, byte-frozen identifier.
 BUILD_SOURCE_ALGORITHM_NAMESPACE = RETIRED_DESCRIPTOR_STEM + "-source"
-PROTOCOL_VERSION = "1.0.0-rc.13"
+PROTOCOL_VERSION = "1.0.0-rc.14"
 RC9_PROTOCOL_VERSION = "1.0.0-rc.9"
 RC8_PROTOCOL_VERSION = "1.0.0-rc.8"
 RC7_PROTOCOL_VERSION = "1.0.0-rc.7"
@@ -579,7 +579,7 @@ def validate_protocol_artifacts(version: str) -> None:
         or assurance.get("skill_vendored_provider_allowed") is not False
     ):
         raise ReleaseFailure(
-            "rc.13 metadata rewrites rc.9 evidence or fabricates a verified claim"
+            f"{PROTOCOL_VERSION} metadata rewrites rc.9 evidence or fabricates a verified claim"
         )
     validate_skillfile_sources_manifest(release)
 
@@ -674,7 +674,7 @@ def validate_skillfile_sources_manifest(release: dict[str, Any]) -> None:
             "manifest_sha256": RC10_CORE_MANIFEST_SHA256,
         }
     ):
-        raise ReleaseFailure("rc.13 metadata does not pin the accepted source suite separately")
+        raise ReleaseFailure(f"{PROTOCOL_VERSION} metadata does not pin the accepted source suite separately")
 
 
 def validate_conformance_claim(path: Path, version: str) -> None:

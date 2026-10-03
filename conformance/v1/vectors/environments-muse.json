@@ -200,7 +200,7 @@
     "marker": "expected/environments-muse/muse-marker.json"
   },
   "normative": "protocol/environments.md sections 7.1, 7.4, and 10.2",
-  "protocol_version": "1.0.0-rc.13",
+  "protocol_version": "1.0.0-rc.14",
   "registry": {
     "environment": "muse",
     "exec_yolo": [

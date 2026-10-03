@@ -23,7 +23,8 @@ import (
 )
 
 const (
-	protocolVersion                   = "1.0.0-rc.13"
+	protocolVersion                   = "1.0.0-rc.14"
+	releaseTime                       = "2026-10-02T00:00:00Z"
 	conformanceClaimV5ProtocolVersion = "1.0.0-rc.9"
 	conformanceClaimV1ProtocolVersion = "1.0.0-rc.3"
 	conformanceClaimV2ProtocolVersion = "1.0.0-rc.4"
@@ -4767,7 +4768,7 @@ func writeManifest(suite string) {
 		parts := strings.SplitN(line, "\t", 2)
 		entries = append(entries, map[string]any{"path": parts[0], "sha256": parts[1]})
 	}
-	writeJSON(filepath.Join(suite, "manifest.json"), map[string]any{"protocol_version": protocolVersion, "generated_at": fixedTime, "generator": "tools/generate-vectors", "files": entries})
+	writeJSON(filepath.Join(suite, "manifest.json"), map[string]any{"protocol_version": protocolVersion, "generated_at": releaseTime, "generator": "tools/generate-vectors", "files": entries})
 }
 
 func writeJSON(path string, value any) {

@@ -39,8 +39,8 @@ func TestGeneratorPreservesHandAuthoredSchemaCases(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(releaseEntries) != 7 {
-		t.Fatalf("release coverage = %d/7", len(releaseEntries))
+	if len(releaseEntries) != 8 {
+		t.Fatalf("release coverage = %d/8", len(releaseEntries))
 	}
 	releaseBytes := map[string][]byte{}
 	releaseInfo := map[string]os.FileInfo{}
@@ -116,7 +116,9 @@ func TestGeneratorPreservesHandAuthoredSchemaCases(t *testing.T) {
 	}
 	// Regeneration must not silently repair missing publication evidence either.
 	rc13Path := filepath.Join(root, "release", "1.0.0-rc.13.json")
+	rc14Path := filepath.Join(root, "release", "1.0.0-rc.14.json")
 	must(os.Remove(rc13Path))
+	must(os.Remove(rc14Path))
 	cmd = exec.Command("go", "run", ".", "-root", root)
 	if output, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("second generator run failed: %v\n%s", err, output)
@@ -124,8 +126,11 @@ func TestGeneratorPreservesHandAuthoredSchemaCases(t *testing.T) {
 	if _, err := os.Stat(rc13Path); !os.IsNotExist(err) {
 		t.Fatalf("generator recreated published rc.13 record: %v", err)
 	}
-	if _, err := os.Stat(filepath.Join(root, "release", "1.0.0-rc.14.json")); !os.IsNotExist(err) {
-		t.Fatalf("generator created an rc.14 record: %v", err)
+	if _, err := os.Stat(rc14Path); !os.IsNotExist(err) {
+		t.Fatalf("generator recreated candidate rc.14 record: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(root, "release", "1.0.0-rc.15.json")); !os.IsNotExist(err) {
+		t.Fatalf("generator created an rc.15 record: %v", err)
 	}
 	// Assert the real CLI entry emits the Muse family and schema cases,
 	// rather than proving only that an uncalled helper can emit them.
