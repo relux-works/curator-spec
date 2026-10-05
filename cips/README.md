@@ -98,3 +98,4 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0004](CIP-0004-shell-hook-without-sourcing-and-path-append.md) | Shell hook without sourcing and PATH append | Draft |
 | [CIP-0005](CIP-0005-audit-backends-and-cli-secret-transport.md) | Audit backends and CLI secret transport | Draft |
 | [CIP-0006](CIP-0006-legacy-provider-settings-and-mcp-opt-outs.md) | Legacy provider settings and MCP opt-outs | Draft |
+| [CIP-0007](CIP-0007-manager-provisioned-cli-tools.md) | Manager-provisioned CLI tools | Draft |
