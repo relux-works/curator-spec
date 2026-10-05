@@ -19,6 +19,18 @@ Implementation behavior alone is not sufficient evidence for a protocol
 change. Divergence opens a specification issue; implementations do not silently
 become the standard.
 
+## Proposals
+
+Design proposals for the protocol and its implementations are written as
+[Curator Improvement Proposals](cips/README.md), using the
+[CIP template](cips/TEMPLATE.md). The operator accepted the process in
+[CIP-0001](cips/CIP-0001-curator-improvement-proposals.md) on 2026-10-04.
+Research evidence stays in the implementation repository's `.research/`.
+A CIP proposes and argues; adoption of a protocol design produces Decision
+record(s) and the affected normative prose, schemas, and conformance vectors
+under this governance process. CIP acceptance alone does not amend the released
+specification or replace the change and release requirements above and below.
+
 ## Release process
 
 1. Update `CHANGELOG.md`, version metadata, schemas, and vector manifest.

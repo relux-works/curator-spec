@@ -71,6 +71,14 @@ declared mirrors and host aliases). See the
 and vectors remain in their own namespace; they are not merged into
 `conformance/v1`.
 
+## Proposals
+
+Protocol and implementation designs are recorded as
+[Curator Improvement Proposals](cips/README.md). Start with the
+[CIP template](cips/TEMPLATE.md) and the Accepted process in
+[CIP-0001](cips/CIP-0001-curator-improvement-proposals.md); adoption follows
+[GOVERNANCE.md](GOVERNANCE.md).
+
 ## Tools
 
 Published `release/<version>.json` records are byte-frozen against release
