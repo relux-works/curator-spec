@@ -21,8 +21,9 @@ and `registry-bundle-v2`. `manager-config-v3` carries `hash_version: 2` on a
 state-hash waiver; `manager-config-v2` remains byte-frozen without it. The
 `log-response-v3` envelope references `registry-log-entry-v2` and the frozen
 `log-response-v2` continues to reference v1 entries. The skillfile-sources
-carriers `skillfile-lock-v2`, `install-marker-v6`, and `source-audit-v2` adopt
-`hash_version` in follow-up TASK-260930-3ny11n. In legacy frozen shapes, an absent version
+carriers `skillfile-lock-v2` and `source-audit-v2` adopt `hash_version`, and
+the schema-9 `install-marker-v6` gains it, in follow-up TASK-260930-3ny11n.
+In legacy frozen shapes, an absent version
 means 1; no reader may compare identities across versions. The
 `content-hashes-v2.json` vector pins the v1 collision, its v2 split, the empty
 tree, an ordinary exact digest, a NUL byte at nested depth, and a registry
@@ -34,6 +35,10 @@ conformance claim v5. Rc.8 carries `assurance-policy-v1`,
 `execution-permit-v1`, `execution-receipt-v1`, `execution-checkpoint-v1`, and
 conformance claim v4. These are new closed objects; no prior schema is widened
 or reinterpreted.
+
+The unreleased manifest schema-9 directory amendment is isolated in the
+[draft source namespace](../draft-sources-v2/README.md). Schemas 1 through 8
+and the rc.14 conformance corpus remain unchanged.
 
 The R1/P1 page-boundary revision carries `records-response-v2` and
 `log-response-v2`: each v1 envelope plus one REQUIRED `boundary` member whose
@@ -102,7 +107,8 @@ canonical skill-manifest schemas. The corresponding `csk-skill-*` schemas are
 the legacy filenames with byte-equivalent versioned meaning.
 
 Manifest schema selection is exact: the integer `schema_version` selects the
-same-numbered schema. Schemas 1 through 6 do not acquire schema-7
+same-numbered schema. Draft schema 9 lives only in `schemas/draft-sources-v2`
+and is accepted only by explicit opt-in. Schemas 1 through 6 do not acquire schema-7
 `build_repositories` or `go-repository-v1` meaning. Schema 7 adds those fields
 without changing the earlier schemas or their generated fixtures. Schemas 1
 through 7 do not acquire schema-8 `execution_policy`, `interpreter`, or
@@ -183,6 +189,9 @@ build-record rule — explicit receipt schema version, explicit
 is active — applies unchanged. Markers v1 through v4 keep their frozen
 framing-version-1 shapes. Current writers use marker v5 with
 `hash_version: 2` for core installations.
+
+The unreleased draft marker v6 records schema-9 package directories
+and the lock binding; it does not change any released marker.
 
 ## Manifest schema 8: declared first-party module roots
 

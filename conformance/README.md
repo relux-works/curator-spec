@@ -276,3 +276,9 @@ its own namespace and is intentionally not merged into
 `conformance/v1/manifest.json`. Run its documented specification check
 separately; manager execution remains unverified until a real implementation
 entrypoint consumes the semantic cases.
+
+The separate [draft source corpus](draft-sources-v2/README.md) contains the
+unreleased manifest schema-9 dependency-directory amendment. It is not part
+of any release claim or candidate pin. Run its documented specification
+check separately; report manager execution as unverified until a real
+implementation entrypoint consumes the resolution cases.

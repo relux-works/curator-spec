@@ -1,0 +1,127 @@
+[
+  {
+    "schema": "agent-skill-v9.schema.json",
+    "instance": "schema-cases/agent-skill-v9/invalid-directory-absolute.json",
+    "valid": false
+  },
+  {
+    "schema": "agent-skill-v9.schema.json",
+    "instance": "schema-cases/agent-skill-v9/invalid-directory-backslash.json",
+    "valid": false
+  },
+  {
+    "schema": "agent-skill-v9.schema.json",
+    "instance": "schema-cases/agent-skill-v9/invalid-directory-empty.json",
+    "valid": false
+  },
+  {
+    "schema": "agent-skill-v9.schema.json",
+    "instance": "schema-cases/agent-skill-v9/invalid-directory-escape.json",
+    "valid": false
+  },
+  {
+    "schema": "agent-skill-v9.schema.json",
+    "instance": "schema-cases/agent-skill-v9/invalid-directory-glob.json",
+    "valid": false
+  },
+  {
+    "schema": "agent-skill-v9.schema.json",
+    "instance": "schema-cases/agent-skill-v9/invalid-directory-parent-component.json",
+    "valid": false
+  },
+  {
+    "schema": "agent-skill-v9.schema.json",
+    "instance": "schema-cases/agent-skill-v9/invalid.json",
+    "valid": false
+  },
+  {
+    "schema": "agent-skill-v9.schema.json",
+    "instance": "schema-cases/agent-skill-v9/valid-directory-absent.json",
+    "valid": true
+  },
+  {
+    "schema": "agent-skill-v9.schema.json",
+    "instance": "schema-cases/agent-skill-v9/valid-directory-root.json",
+    "valid": true
+  },
+  {
+    "schema": "agent-skill-v9.schema.json",
+    "instance": "schema-cases/agent-skill-v9/valid-directory-subfolder.json",
+    "valid": true
+  },
+  {
+    "schema": "agent-skill-v9.schema.json",
+    "instance": "schema-cases/agent-skill-v9/valid.json",
+    "valid": true
+  },
+  {
+    "schema": "csk-skill-v9.schema.json",
+    "instance": "schema-cases/csk-skill-v9/invalid-directory-absolute.json",
+    "valid": false
+  },
+  {
+    "schema": "csk-skill-v9.schema.json",
+    "instance": "schema-cases/csk-skill-v9/invalid-directory-backslash.json",
+    "valid": false
+  },
+  {
+    "schema": "csk-skill-v9.schema.json",
+    "instance": "schema-cases/csk-skill-v9/invalid-directory-empty.json",
+    "valid": false
+  },
+  {
+    "schema": "csk-skill-v9.schema.json",
+    "instance": "schema-cases/csk-skill-v9/invalid-directory-escape.json",
+    "valid": false
+  },
+  {
+    "schema": "csk-skill-v9.schema.json",
+    "instance": "schema-cases/csk-skill-v9/invalid-directory-glob.json",
+    "valid": false
+  },
+  {
+    "schema": "csk-skill-v9.schema.json",
+    "instance": "schema-cases/csk-skill-v9/invalid-directory-parent-component.json",
+    "valid": false
+  },
+  {
+    "schema": "csk-skill-v9.schema.json",
+    "instance": "schema-cases/csk-skill-v9/invalid.json",
+    "valid": false
+  },
+  {
+    "schema": "csk-skill-v9.schema.json",
+    "instance": "schema-cases/csk-skill-v9/valid-directory-absent.json",
+    "valid": true
+  },
+  {
+    "schema": "csk-skill-v9.schema.json",
+    "instance": "schema-cases/csk-skill-v9/valid-directory-root.json",
+    "valid": true
+  },
+  {
+    "schema": "csk-skill-v9.schema.json",
+    "instance": "schema-cases/csk-skill-v9/valid-directory-subfolder.json",
+    "valid": true
+  },
+  {
+    "schema": "csk-skill-v9.schema.json",
+    "instance": "schema-cases/csk-skill-v9/valid.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/valid.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/invalid.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-skill-schema-version-9.json",
+    "valid": false
+  }
+]

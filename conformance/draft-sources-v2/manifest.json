@@ -1,0 +1,137 @@
+{
+  "files": [
+    {
+      "path": "conformance/draft-sources-v2/README.md",
+      "sha256": "sha256:9e7e545129e301ae6d7a920317614e596da427a0a001d7ade3d0469907f416a9"
+    },
+    {
+      "path": "conformance/draft-sources-v2/index.json",
+      "sha256": "sha256:1a4e113834bc110e478b55584e037e678bfbff2b3dfee2811f64ba21023f3f46"
+    },
+    {
+      "path": "conformance/draft-sources-v2/manifest-dependency-directories.json",
+      "sha256": "sha256:cfc37ce63c8322e386cce8460ea866020d5017b11e2a06c95454e484ff54b24e"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/agent-skill-v9/invalid-directory-absolute.json",
+      "sha256": "sha256:35a7543cb9c6c3309daa3f61997500e6ff161e03b2041360e9e4cba454947b7e"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/agent-skill-v9/invalid-directory-backslash.json",
+      "sha256": "sha256:4bd973a4ff6a91fb08e5a9fb9d5e565bea0334c7c5c7b1276e9755221755658d"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/agent-skill-v9/invalid-directory-empty.json",
+      "sha256": "sha256:f4fa3de75ef27017713d63dc432da6ddf2976de279dcc2851056c18113efb5a4"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/agent-skill-v9/invalid-directory-escape.json",
+      "sha256": "sha256:aa6977b72c228e5e0f1175b8e7a268e2421a0cb0cbd1b67b460200e4332a0f5c"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/agent-skill-v9/invalid-directory-glob.json",
+      "sha256": "sha256:51e26dbf8003a5730819f34269a1278b6ef7b5cdb49aab57ae5695ab5fe7073c"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/agent-skill-v9/invalid-directory-parent-component.json",
+      "sha256": "sha256:35d4498e73d1d058263ecdc48ceae140bc42b860a1a898416244edb6eaa76361"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/agent-skill-v9/invalid.json",
+      "sha256": "sha256:0282ff1290b90081925f8a18be4a3c1dd86c51df883508e0f74e2285533f0ebe"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/agent-skill-v9/valid-directory-absent.json",
+      "sha256": "sha256:b046676baef4a667571ee9c60eb77781a76e7eedd3b5ccbe5d6a6e6dd56d87a5"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/agent-skill-v9/valid-directory-root.json",
+      "sha256": "sha256:f0b2a09a02f3e431e46737135b7d7282b56ce9dcd8f834c2ba963f4e7cf1567a"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/agent-skill-v9/valid-directory-subfolder.json",
+      "sha256": "sha256:96525b88d0f2d92b4ba0036ff9b60a94cfe14bc07af9caad096487d9466b4b16"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/agent-skill-v9/valid.json",
+      "sha256": "sha256:b08b365927d1e036a5e0254c8a8af5bea3758379f345a1b4e2963c12d9bf7784"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/csk-skill-v9/invalid-directory-absolute.json",
+      "sha256": "sha256:35a7543cb9c6c3309daa3f61997500e6ff161e03b2041360e9e4cba454947b7e"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/csk-skill-v9/invalid-directory-backslash.json",
+      "sha256": "sha256:4bd973a4ff6a91fb08e5a9fb9d5e565bea0334c7c5c7b1276e9755221755658d"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/csk-skill-v9/invalid-directory-empty.json",
+      "sha256": "sha256:f4fa3de75ef27017713d63dc432da6ddf2976de279dcc2851056c18113efb5a4"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/csk-skill-v9/invalid-directory-escape.json",
+      "sha256": "sha256:aa6977b72c228e5e0f1175b8e7a268e2421a0cb0cbd1b67b460200e4332a0f5c"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/csk-skill-v9/invalid-directory-glob.json",
+      "sha256": "sha256:51e26dbf8003a5730819f34269a1278b6ef7b5cdb49aab57ae5695ab5fe7073c"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/csk-skill-v9/invalid-directory-parent-component.json",
+      "sha256": "sha256:35d4498e73d1d058263ecdc48ceae140bc42b860a1a898416244edb6eaa76361"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/csk-skill-v9/invalid.json",
+      "sha256": "sha256:0282ff1290b90081925f8a18be4a3c1dd86c51df883508e0f74e2285533f0ebe"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/csk-skill-v9/valid-directory-absent.json",
+      "sha256": "sha256:b046676baef4a667571ee9c60eb77781a76e7eedd3b5ccbe5d6a6e6dd56d87a5"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/csk-skill-v9/valid-directory-root.json",
+      "sha256": "sha256:f0b2a09a02f3e431e46737135b7d7282b56ce9dcd8f834c2ba963f4e7cf1567a"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/csk-skill-v9/valid-directory-subfolder.json",
+      "sha256": "sha256:96525b88d0f2d92b4ba0036ff9b60a94cfe14bc07af9caad096487d9466b4b16"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/csk-skill-v9/valid.json",
+      "sha256": "sha256:b08b365927d1e036a5e0254c8a8af5bea3758379f345a1b4e2963c12d9bf7784"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v5/invalid-skill-schema-version-9.json",
+      "sha256": "sha256:d928486860e238484c431a0d6e3fa3f2d309d514c44142d059938e0c82f9dcdc"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid.json",
+      "sha256": "sha256:575d77d1235dc85c4c82ccabedff5fd995f6f86b08aedc40c8209a8cfbf78333"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/valid.json",
+      "sha256": "sha256:f9a0cc9caffca4b33a54337bb897b7e959a4ea0d5d097961d41dffec6a30f330"
+    },
+    {
+      "path": "protocol/skillfile-sources.md",
+      "sha256": "sha256:ff4ea2ccdf64805cc6d401e17658bda6491e17d7f256349b83ad3ac4ee2324b3"
+    },
+    {
+      "path": "schemas/draft-sources-v2/README.md",
+      "sha256": "sha256:98634447a1126a1feb01eca5f68de48cd3fc6306868295e18b8154b56d424d74"
+    },
+    {
+      "path": "schemas/draft-sources-v2/agent-skill-v9.schema.json",
+      "sha256": "sha256:bfdb2f31cccfc3b035145f134d98e7c1484e955b1abf27224b20489954880b0c"
+    },
+    {
+      "path": "schemas/draft-sources-v2/csk-skill-v9.schema.json",
+      "sha256": "sha256:6ba97786473e733f5155bdcdf2420b62cd6472255904d5ad49613e5c75f83e0f"
+    },
+    {
+      "path": "schemas/draft-sources-v2/install-marker-v6.schema.json",
+      "sha256": "sha256:483c23021791cdb914c567134f08ab247248915ac8b3bac658feb18140f9e584"
+    }
+  ],
+  "suite": "draft-sources-v2"
+}

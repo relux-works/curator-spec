@@ -1,0 +1,16 @@
+{
+  "schema_version": 9,
+  "capabilities": {},
+  "dependencies": {
+    "skills": {
+      "developer": {
+        "git": "https://github.com/example/role-skills.git",
+        "ref": {
+          "kind": "revision",
+          "value": "0123456789abcdef0123456789abcdef01234567"
+        },
+        "directory": "/skills/developer"
+      }
+    }
+  }
+}
