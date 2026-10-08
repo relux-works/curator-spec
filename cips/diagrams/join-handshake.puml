@@ -1,39 +1,47 @@
 @startuml join-handshake
 !theme plain
-title Join handshake, trust anchors only: what each side checks before anything is pinned, and what is pinned afterwards
+title Join handshake (revision 2): a server challenge, a signed canonical transcript, atomic invitation consumption; the out-of-band pin is the first anchor, DNSSEC/DANE a cross-check
 
-participant "Donor curator\n(remote-worker init)" as C
-database "DNS resolver\n(DNSSEC validating)" as R
+participant "Donor bridge identity\n(curator remote-worker init)" as C
+database "Trusted validating resolver\n(local, or validating stub over a protected channel)" as R
 participant "Join point\n(our host)" as JP
 actor "Operator" as OP
 participant "Registry / key keeper" as T
 
 note over C, T
   Anchors before first contact:
-  (a) the invitation, delivered over a second channel, names the root fingerprint and a one-time code;
-  (b) DNS under DNSSEC publishes TXT _swarma.<domain> = root fingerprint, SSHFP = our SSH host key, TLSA = the join point's TLS key.
-  Proof of possession: the self-signed certificate. Human check: the fingerprint read back over the second channel.
+  (a) the invitation, delivered over a second channel: root fingerprint, SSH host key fingerprint, join point certificate, one-use random code (>= 128 bits);
+  (b) when a trusted validator exists: DNSSEC-secure TXT _swarma.<domain> = root fingerprint, SSHFP = our SSH host key, TLSA = the join point's TLS key.
+  Proof of possession: the transcript signed over a SERVER challenge (not a client nonce).
+  Human check: the fingerprint read back over the second channel. No step downgrades on failure.
 end note
 
-C -> R: TXT _swarma, SSHFP, TLSA for the join point's domain (AD flag required)
-R --> C: records + DNSSEC validation state
-C -> C: compare TXT root fingerprint with the invitation's\n(both must match; one source is not enough)
-C -> JP: TLS; pin the server certificate against TLSA
-C -> JP: POST /cert {certificate, invitation_code, nonce}
-JP -> JP: code unused and unexpired? self-signature valid?\nsignature over the code valid? rate limit
-JP -> OP: show {code, fingerprint, name, role}
+C -> JP: POST /join/challenge {invitation_id}
+JP -> JP: invitation known, unexpired, not consumed? attempt counter
+JP --> C: server_challenge (5 min)
+C -> R: TXT _swarma, SSHFP, TLSA
+R --> C: records + validation state (secure | bogus | indeterminate)
+C -> C: secure: must equal the invitation; bogus: refuse; indeterminate: proceed on the pin, record it
+C -> C: transcript = canonical CBOR, domain-separated:\n{version, invitation_id, project, role, K_sig, K_enc, K_ssh, server_challenge, client_nonce, expires_at, algorithms}
+C -> JP: TLS pinned to the join point certificate (invitation; TLSA when secure)
+C -> JP: POST /join/cert {transcript, sig_K_sig(transcript), code}
+JP -> JP: code equal (constant time)? signature valid? challenge bound and fresh?\nconsume the invitation atomically -> tombstone(invitation_id, K_sig)\n(same K_sig retry -> same pending enrolment; other key -> refuse); rate limit
+JP -> OP: show {invitation_id, fingerprint, name, role}
 OP -> OP: read the fingerprint back with the human on the donor side
-OP -> T: pin K; root-signed admission; grants
-OP -> JP: release package for <code>
-C -> JP: POST /collect {signature over nonce by K}
-JP --> C: package (encrypted to K, signed by the operator)
-C -> C: decrypt via keyring; verify the operator signature against the root (DNS + invitation);\npin our SSH host key from the package AND cross-check it against SSHFP
+OP -> T: pin K_sig, K_enc, K_ssh; root-signed admission; grants (scope, expiry)
+OP -> OP: package: AEAD to K_enc with AAD = H(transcript); signed by the operator certificate (root-signed, scope onboard)
+OP -> JP: release package for <invitation_id>
+C -> JP: POST /join/challenge {invitation_id} (second challenge)
+C -> JP: POST /join/collect {invitation_id, sig_K_sig(second challenge)}
+JP --> C: package
+C -> C: decrypt with K_enc; verify operator cert chain to the pinned root;\nverify package signature; check AAD; pin our SSH host key from the package\nAND cross-check against the invitation (and SSHFP when secure)
 
 note over C, T
   Pinned afterwards:
-  on our side K in the registry and in authorized_keys of the workplace user;
-  on the donor side our root, our SSH host key, the binding digest, the pinned harness release.
-  Every later message: signed over exact bytes, fresh, replay-checked, grant-checked (ADM).
-  Rotation: our host key -> new SSHFP + "init --rotate-host" on every donor; K -> revoke + re-join.
+  on our side K_sig, K_enc, K_ssh in the registry and K_ssh in the root-owned authorized-keys file of the workplace user;
+  on the donor side our root, the operator certificate, our SSH host key, the binding digest, the qualified tuple, the policy generation.
+  Every later message: signed over exact bytes by K_sig on the donor, fresh, replay-checked, grant-checked (ADM).
+  Replay: cert/collect meet the tombstone; frames meet connection-scoped ids and op_key caches.
+  Rotation: our host key -> new SSHFP + "init --rotate-host" with a fresh invitation; operator cert -> root-signed record; K -> revoke + new enrolment.
 end note
 @enduml

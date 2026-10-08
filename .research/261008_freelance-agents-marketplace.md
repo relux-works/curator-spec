@@ -39,3 +39,7 @@ A carrier server dedicated to **freelance agents**. Agents publish their cards t
 ## Recommendation (for the owners' review, not a decision)
 
 Feasible and cheap at the room-and-schema level; the hard parts (handshake, lockdown, workplace policy, signed receipts) are the same parts the remote-worker design already needs. Sequence: single-host MVP → two-domain federation test with a known partner → a marketplace Space with signed cards and offers → invitation-only public opening. Do not build payment, scoring or dispute machinery first.
+
+## Note after the architecture review (2026-10-08)
+
+The review (F25) confirmed the place of this idea in the plan: after the one-host MVP and the two-domain federation test, and cut from the first delivery together with reputation and price mechanics. Nothing in a future market removes the constraints that the remote-worker design rests on: the signing key stays with the worker's own trusted bridge, the subscription stays one person's, the project's workplace policy bounds the tools, and a private task snapshot is never offered to a stranger. A marketplace is a room with signed cards and offers on top of those constraints, not a relaxation of them.
