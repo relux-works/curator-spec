@@ -1,0 +1,33 @@
+@startuml remote-worker-retire
+!theme plain
+title Retire a remote worker: both sides can end it alone; the identity stays pinned unless revoked
+
+actor "Operator (our side)" as OP
+participant "Registry / key keeper" as T
+participant "Dispatcher + helper\n(our host)" as D
+participant "Bridge" as BR
+actor "Donor (the machine's owner)" as ADM
+participant "curator remote-worker\n(donor)" as C
+participant "Privileged helper (donor)" as PH
+
+== our side ==
+OP -> T: revoke grants; optionally revoke K (root-signed record)
+OP -> D: drop workplace
+D -> D: stop processes; remove authorized_keys; archive home; delete user; remove firewall rules
+BR -> BR: next frame from K refused (revoked / no workplace); mailbox closed
+note right of BR: the donor's connection drops; its supervisor stops the harness\nand reports "retired by project"
+
+== donor side ==
+ADM -> C: curator remote-worker stop
+C -> C: end the harness user's processes; mark stopped; audit line
+ADM -> C: curator remote-worker revoke
+C -> C: delete keyring item (K), locked config, managed home, audit kept for the donor
+C -> PH: remove user, firewall rules, sandbox profile, units
+PH --> C: done
+C --> ADM: removed; nothing of the project remains on this machine
+
+note over OP, PH
+  Return: the same identity K may be given a new workplace later (new package, new init --rejoin)
+  unless K was revoked; a revoked K must re-join with a new key.
+end note
+@enduml

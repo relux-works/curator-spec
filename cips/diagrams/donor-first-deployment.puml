@@ -1,0 +1,51 @@
+@startuml donor-first-deployment
+!theme plain
+title Remote worker on a donor machine, first deployment: one invitation, one command; the private key stays in the keyring; the posture is locked by the donor (the machine's owner)
+
+actor "Donor (the machine's owner)" as ADM
+participant "curator remote-worker init\n(donor install)" as C
+participant "Privileged helper\n(sudoers: this binary only)" as PH
+participant "Harness OS user\nswarma-rw-<project>" as U
+database "OS keyring\n(of the harness user)" as KR
+database "DNS (DNSSEC)\nTXT _swarma, SSHFP, TLSA" as DNS
+participant "Join point\n(our host, HTTPS, two verbs)" as JP
+actor "Operator (our side)\nor orchestrator with onboard grant" as OP
+participant "Trust registry + key keeper\n(our host)" as T
+
+== 1. invitation ==
+OP -> ADM: invitation {join point, root fingerprint, one-time code,\nproject, role, expires} over a second channel
+
+== 2. local provisioning ==
+ADM -> C: curator remote-worker init <invitation>
+C -> DNS: resolve join point; require DNSSEC-validated TXT (root fingerprint), SSHFP, TLSA
+alt DNS unsigned or fingerprint differs from the invitation
+  C --> ADM: refused{dns_fingerprint_mismatch}
+else anchors agree
+  C -> PH: create user, home 0700, pf/nftables rules by UID,\nsandbox profile, quotas, launchd/systemd unit
+  PH --> C: uid
+  C -> KR: generate key pair inside the keyring (never exported)
+  C -> C: self-signed certificate {pubkey, name, role, contact, expires}\nsigned over the invitation code; show fingerprint to ADM
+end
+
+== 3. join ==
+C -> JP: POST cert (TLS pinned by TLSA / invitation)
+JP -> OP: new certificate for invitation <code>: fingerprint F
+OP -> ADM: read back F over the second channel
+alt F differs
+  OP -> JP: reject
+  JP --> C: refused
+else F matches
+  OP -> T: pin key as external identity; root signs admission "K admitted with role R";\ngrants: post to worker thread, read own mailbox, no delegation, expiry
+  OP -> OP: credential package {our root pubkey, host, SSH host key fingerprint,\nworkplace user, binding digest, pinned harness release, expiry}\nencrypted to K (X25519 + AEAD), signed by the operator
+  OP -> JP: package ready for <code>
+  C -> JP: collect (signed by K)
+  JP --> C: package
+  C -> KR: decrypt inside the keyring boundary
+  C -> C: verify operator signature against the root fingerprint (DNS + invitation);\nwrite LOCKED machine config: tool_posture=lockdown, permissions=remote-auto,\nmcp_package_allowlist=[swarma-remote-tools], passable_env_names=[], binding, pinned release;\ninstall the remote-tools declaration into profile remote-worker
+  C --> ADM: registered; waiting for tasks (status, stop, revoke available)
+end
+
+== 4. workplace on our host ==
+OP -> T: provision workplace for K (dispatcher, grant user.create):\nOS user, authorized_keys = K with restrict + forced command swarma-rb-exec, firewall by UID
+note right of T: see remote-worker-turn for the connection
+@enduml

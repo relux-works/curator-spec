@@ -1,0 +1,39 @@
+@startuml join-handshake
+!theme plain
+title Join handshake, trust anchors only: what each side checks before anything is pinned, and what is pinned afterwards
+
+participant "Donor curator\n(remote-worker init)" as C
+database "DNS resolver\n(DNSSEC validating)" as R
+participant "Join point\n(our host)" as JP
+actor "Operator" as OP
+participant "Registry / key keeper" as T
+
+note over C, T
+  Anchors before first contact:
+  (a) the invitation, delivered over a second channel, names the root fingerprint and a one-time code;
+  (b) DNS under DNSSEC publishes TXT _swarma.<domain> = root fingerprint, SSHFP = our SSH host key, TLSA = the join point's TLS key.
+  Proof of possession: the self-signed certificate. Human check: the fingerprint read back over the second channel.
+end note
+
+C -> R: TXT _swarma, SSHFP, TLSA for the join point's domain (AD flag required)
+R --> C: records + DNSSEC validation state
+C -> C: compare TXT root fingerprint with the invitation's\n(both must match; one source is not enough)
+C -> JP: TLS; pin the server certificate against TLSA
+C -> JP: POST /cert {certificate, invitation_code, nonce}
+JP -> JP: code unused and unexpired? self-signature valid?\nsignature over the code valid? rate limit
+JP -> OP: show {code, fingerprint, name, role}
+OP -> OP: read the fingerprint back with the human on the donor side
+OP -> T: pin K; root-signed admission; grants
+OP -> JP: release package for <code>
+C -> JP: POST /collect {signature over nonce by K}
+JP --> C: package (encrypted to K, signed by the operator)
+C -> C: decrypt via keyring; verify the operator signature against the root (DNS + invitation);\npin our SSH host key from the package AND cross-check it against SSHFP
+
+note over C, T
+  Pinned afterwards:
+  on our side K in the registry and in authorized_keys of the workplace user;
+  on the donor side our root, our SSH host key, the binding digest, the pinned harness release.
+  Every later message: signed over exact bytes, fresh, replay-checked, grant-checked (ADM).
+  Rotation: our host key -> new SSHFP + "init --rotate-host" on every donor; K -> revoke + re-join.
+end note
+@enduml

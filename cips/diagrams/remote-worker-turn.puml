@@ -1,0 +1,62 @@
+@startuml remote-worker-turn
+!theme plain
+title Remote worker turn: the harness has no local tools; the local MCP server carries every tool call and the mailbox over ONE SSH connection from the donor to our host; our host never connects back
+
+box "Donor machine (harness OS user, kernel sandbox, per-UID firewall)" #WhiteSmoke
+  participant "Supervisor\n(curator remote-worker run)" as SUP
+  participant "Harness\n(Claude / Codex / Muse, lockdown plan)" as H
+  participant "swarma-remote-tools\n(local stdio MCP server)" as MCP
+  participant "Egress proxy\n(provider API only)" as PX
+end box
+box "Our host" #WhiteSmoke
+  participant "sshd + forced command\nswarma-rb-exec (workplace user)" as RB
+  participant "Workplace\n(OS user or container backend)" as WP
+  participant "Bridge\n(broker, mailbox, M3)" as BR
+end box
+participant "Orchestrator" as O
+
+== standing connection ==
+MCP -> RB: ssh workplace-user@host, key K; host key pinned (package + SSHFP)
+RB --> MCP: swarma-rb/1 channel open (framed, multiplexed)
+note right of RB: restrict, no port forwarding, no agent, no X11;\nonly the executor runs; reconnect is the donor side's job
+
+== launch ==
+SUP -> SUP: compose through Curator: profile remote-worker, tool_posture=lockdown,\npermissions=remote-auto, MCP set = {swarma-remote-tools}; compare expect_pin; refuse R4 args
+SUP -> H: start (e.g. claude --restricted --tools "" --strict-mcp-config --mcp-config m.json\n--allowedTools mcp__swarma-remote-tools__* --permission-mode dontAsk; token in env, CIP-0010)
+H -> MCP: MCP initialize; tools/list = {bash, read_file, write_file, apply_patch, mailbox_read, mailbox_post}
+
+== task arrives ==
+O -> BR: signed task message to the worker (snapshot of one element)
+BR -> BR: verify signature, grant, decision guard; mailbox record
+BR -> RB: mailbox.notify {message_id}
+RB -> MCP: frame mailbox.notify
+MCP -> SUP: doorbell
+SUP -> H: next turn: "validated message <id>: fetch from mailbox"
+H -> MCP: tools/call mailbox_read {id}
+MCP -> RB: frame mailbox.read
+RB -> BR: read
+BR --> RB: body + verification record
+RB --> MCP: frame reply
+MCP --> H: tool result
+
+== work ==
+loop each tool call
+  H -> MCP: tools/call bash {cmd, cwd, timeout}
+  MCP -> MCP: audit line {tool, args_sha256, bytes, at}
+  MCP -> RB: frame exec {id, cmd, cwd, env_allow, timeout_s, max_output_bytes}
+  RB -> WP: run as the workplace user / in a fresh container; audit {who, what, when}
+  WP --> RB: stdout/stderr frames, exit
+  RB --> MCP: frames
+  MCP --> H: tool result
+end
+H -> PX: model API calls (the only egress of the harness user)
+alt the model requests a built-in tool (Bash, Edit, WebFetch ...)
+  H -> H: harness returns an error tool result (tool not available);\nsupervisor tripwire logs the name and may end the turn
+end
+
+== result ==
+H -> MCP: tools/call mailbox_post {binding, text}
+MCP -> RB: frame mailbox.post
+RB -> BR: post as the worker's bound identity (the bridge signs; the donor holds no carrier credential)
+BR -> O: outcome proposal (audience projection -> thread)
+@enduml
