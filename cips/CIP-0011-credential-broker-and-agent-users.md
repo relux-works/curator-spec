@@ -3,7 +3,7 @@
 - **Status:** Draft (revision 3)
 - **Owner:** ivan-curator (orchestrator); decision: operator
 - **Created:** 2026-10-09
-- **Related:** [CIP-0010](CIP-0010-credentials-setup-token-and-inherited-auth.md) (credential sources, protected credential binding C3.4, executor capability, CIP-0003 disposition); [CIP-0008](CIP-0008-remote-worker-launch-mode.md), [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md); [Decision 0013](../decisions/0013-execution-ownership-and-launch-plans.md) (launch plans); [Decision 0017](../decisions/0017-environment-credential-modes.md) (credential modes); environments §7.4, §10.3, §12.1–§12.2; relux-works/curator-credential-broker `spec/broker.md` (draft v0.2); relux-works/curator-host-helper `spec/helper.md` (draft v0.2, with the launcher); relux-works/curator-dispatcher `spec/dispatcher.md` (draft v0.1); relux-works/curator-network-profiles (binding records)
+- **Related:** [CIP-0010](CIP-0010-credentials-setup-token-and-inherited-auth.md) (credential sources, protected credential binding C3.4, executor capability, CIP-0003 disposition); [CIP-0008](CIP-0008-remote-worker-launch-mode.md), [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md); [Decision 0013](../decisions/0013-execution-ownership-and-launch-plans.md) (launch plans); [Decision 0017](../decisions/0017-environment-credential-modes.md) (credential modes); environments §7.4, §10.3, §12.1–§12.2; relux-works/curator-credential-broker `spec/broker.md` (draft v0.3); relux-works/curator-host-helper `spec/helper.md` (draft v0.3, with the launcher and `exec.stop`); relux-works/curator-dispatcher `spec/dispatcher.md` (draft v0.2); relux-works/curator-network-profiles (binding records)
 - **Affects:** environments §7.4 and §12.1 (a credential source value), Decision 0013 (the credential extension), the launcher SPEC, the manager command set (`broker`, `agent-user` as a dispatcher client), the final executors (task-board spawn runner first, then the session host and the remote-worker supervisor)
 
 ## Revision 2
@@ -73,7 +73,8 @@ curator agent-user list
 
 - Curator composes the plan (compose-only) and passes it to the dispatcher as opaque bytes with its digest; the dispatcher never reads fragments or credentials.
 - In the dispatcher's v0, the client runs the dispatcher command under the dispatcher's account through one sudoers rule; in v1 it talks to the dispatcher's socket. The commands and their results do not change between the two.
-- A caller administers only the agents it provisioned, and can never obtain for an agent more than its own grant allows. Arbitrary `sudo -u` is never used instead of the launcher.
+- A caller administers only the agents it provisioned, and can never obtain for an agent more than its own grant allows. Its requests are signed with a key associated with its OS account, and the broker keeps the caller's authorization as a dependency of every binding: revoking the caller's grant cuts its agents' new leases and renewals at once (owner decision 2026-10-10). Arbitrary `sudo -u` is never used instead of the launcher.
+- Platform paths and accounts follow the root `/opt/swarma` (agent homes in `/opt/swarma/agents/`, services in `/opt/swarma/services/`); retired homes are archived under the helper's retention policy.
 
 ### 5. `curator broker`
 
