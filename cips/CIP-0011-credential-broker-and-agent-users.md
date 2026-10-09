@@ -1,59 +1,73 @@
 # CIP-0011: Credential broker leases and agent OS users
 
-- **Status:** Draft
+- **Status:** Draft (revision 2)
 - **Owner:** ivan-curator (orchestrator); decision: operator
 - **Created:** 2026-10-09
-- **Related:** [CIP-0010](CIP-0010-credentials-setup-token-and-inherited-auth.md) (credential sources, executor capability, CIP-0003 disposition); [CIP-0008](CIP-0008-remote-worker-launch-mode.md), [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md); [Decision 0013](../decisions/0013-execution-ownership-and-launch-plans.md) (launch plans); environments §7.4, §10.3, §12.1–§12.2; relux-works/curator-credential-broker `spec/broker.md` (draft v0.1); relux-works/curator-host-helper `spec/helper.md` (draft v0.1); relux-works/curator-network-profiles (binding records)
-- **Affects:** environments §7.4 and §12.1 (a credential source value), Decision 0013 (the credential plan extension), the launcher SPEC, the manager command set (`broker`, `agent-user`), the final executors (session host, task-board spawn runner, the remote-worker supervisor)
+- **Related:** [CIP-0010](CIP-0010-credentials-setup-token-and-inherited-auth.md) (credential sources, protected credential binding C3.4, executor capability, CIP-0003 disposition); [CIP-0008](CIP-0008-remote-worker-launch-mode.md), [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md); [Decision 0013](../decisions/0013-execution-ownership-and-launch-plans.md) (launch plans); [Decision 0017](../decisions/0017-environment-credential-modes.md) (credential modes); environments §7.4, §10.3, §12.1–§12.2; relux-works/curator-credential-broker `spec/broker.md` (draft v0.2); relux-works/curator-host-helper `spec/helper.md` (draft v0.2, with the launcher); relux-works/curator-network-profiles (binding records)
+- **Affects:** environments §7.4 and §12.1 (a credential source value), Decision 0013 (the credential extension), the launcher SPEC, the manager command set (`broker`, `agent-user`), the final executors (task-board spawn runner first, then the session host and the remote-worker supervisor)
+
+## Revision 2
+
+An architecture review on 2026-10-09 kept the direction and found gaps that this revision closes: an unprivileged dispatcher had no way to run anything as a created account (the helper repository now has a narrow launcher); the broker path did not restate CIP-0010's protected binding (now explicit); the per-turn token-only Codex home contradicted CIP-0010's no-copy decision (removed); network checks claimed more than a caller's record proves (now cooperative and labelled so); and the first slice was too wide (now one protected Claude launch first).
 
 ## Summary
 
-CIP-0010 lets a managed home use a credential enrolled once instead of a login per home, but its authentication node lives in one OS user's store and cannot serve agents that run as other OS users. This CIP connects Curator to two new platform components:
+CIP-0010 lets a managed home use a credential enrolled once instead of a login per home, but its authentication node lives in one OS user's store and cannot serve agents that run as other OS users. This CIP connects Curator to two platform components:
 
-- **curator-credential-broker** holds each account once, under its own service user, and leases it to launches that a signed grant authorises, identifying the launching process by its kernel-reported UID. It also runs the single Codex auth owner per account.
-- **curator-host-helper** creates and removes per-agent OS users (and, in its v1, per-user firewall rules) through a closed, journaled operation schema run with `sudo`.
+- **curator-credential-broker** holds each account once, under its own service user, and leases it to launches that a signed grant authorises, identifying the launching process by its kernel-reported UID and the account's never-reused generation. It also runs the single Codex auth owner per account.
+- **curator-host-helper** creates and retires per-agent OS accounts through a closed, journaled operation schema run with `sudo`, and its **launcher** starts one approved executor under one active agent account. (Its v1 adds per-account firewall rules.)
 
-Curator gains a credential source `broker:<account>`, a broker client in the final executor, the plan member `credential` mode `broker`, `curator broker …` commands, and `curator agent-user …` commands that play the dispatcher's role until a dispatcher exists. The result is the owners' first MVP shape: one subscription, one machine, a chain of OS users, each agent launching from its own account and receiving the subscription's credential from the broker.
+Curator gains a credential source `broker:<account>`, the broker mode of the credential extension, a broker client in the final executor, `curator broker …` commands, and `curator agent-user …` commands that play the dispatcher's role until a dispatcher exists. The result is the owners' first MVP shape: one subscription, one machine, a chain of OS accounts, each agent running under its own account and receiving the subscription's credential from the broker.
 
 ## Motivation
 
-- **Owner (2026-10-09):** a launch of an environment with a profile should run from its own OS account and get its token from the broker; the mechanism must work when orchestrators and helpers create agents, including ephemeral agents with a user created for one task; a subscription's traffic should be bound to a network profile.
+- **Owner (2026-10-09):** a launch of an environment with a profile should run from its own OS account and get its token from the broker; the mechanism must work when orchestrators and helpers create agents, including ephemeral agents with an account created for one task; a subscription's traffic should be bound to a network profile.
 - CIP-0010 slice 0 named the missing piece: a peer-authenticated interface across OS users. Designing it as the platform's credential broker from the start avoids a second rewrite.
 
 ## Design
 
 ### 1. Credential source `broker:<account>`
 
-CIP-0010's `credential_source.<profile>.<harness>` (user-owned layer, never lockable) gains the value `broker:<account>`, naming a broker account id. A profile with this source:
+CIP-0010's `credential_source.<profile>.<harness>` (user-owned layer, never lockable) gains the value `broker:<account>`, naming a broker account id. The value enters the closed configuration schema together with its CLI and marker changes; a Curator profile's bytes still never select accounts, endpoints, executables or injected values (environments §10.3), and no system lock selects credential material (§12.2).
 
-- holds no credential of its own;
-- at every launch, the final executor asks the broker for a lease for (harness, profile, account), passing the launch's network binding record when curator-network-profiles resolved one;
-- delivers the material through the harness's channel (environment variable at exec, stdin, Codex app-server external token, or a per-turn token-only Codex home) and never into argv, files, logs or MCP children.
+A profile with this source holds no credential of its own. At every launch the final executor, running under the agent's account, requests a lease and delivers the material through the harness's channel (environment variable at exec, stdin, or the Codex app-server's external tokens), never into argv, files or logs.
 
-`node:<label>` (CIP-0010, the same-user file store) remains for single-user, interactive machines without a broker. A machine that runs agents as separate OS users uses `broker:`.
+`node:<label>` (CIP-0010, the same-user file store) remains for single-user machines without a broker. A machine that runs agents as separate OS accounts uses `broker:`.
 
-### 2. Plan member and gates
+### 2. Launch-plan extension and the protected binding
 
-The CIP-0010 extension `works.relux.curator.credential/1` gains `mode: "broker"` with `{ account, harness_channel }` and no value. Intake refuses a broker-mode plan unless the executor declares `credential-injection/1` and can reach the broker socket (`credential_broker_unavailable`). The executor's lease request carries the plan digest as `launch_id`, so the broker's audit names the exact launch.
-
-The executor refuses to exec when any other source supplies a credential for the harness (inherited environment, settings `apiKeyHelper`, configuration keys) (`credential_source_conflict`), as in CIP-0010.
+- The credential travels in the plan only as metadata, in `extensions["works.relux.curator.credential/1"]` with `mode: "broker"`, `account` and `channel`; no new top-level plan member. The extension is marked as required-understanding: an executor that does not implement it refuses the plan instead of ignoring it.
+- Intake refuses a broker-mode plan unless the executor declares `credential-injection/1` and can reach the broker socket (`credential_broker_unavailable`).
+- Broker mode implements CIP-0010 C3.4 explicitly. Immediately before exec, the executor resolves `credential_binding/1` destination-locally (peer identity, profile, harness, account, channel, vendor endpoint, approved executable digest, policy generation), sends it in the lease request, and re-checks it before exec; the broker checks it against its own records and approved lists (broker §8.2).
+- The executor refuses to exec when any other source supplies a credential for the harness (inherited environment, settings `apiKeyHelper`, configuration keys, native store selectors) (`credential_source_conflict`), and never replaces such a source silently.
+- An executor may declare `credential-injection/1` only for a harness release that has been qualified to keep the credential out of children it does not control (MCP servers, hooks, tool subprocesses) and to use the leased source as the effective one. A clean environment at exec is not enough on its own.
+- The plan digest is passed as `launch_id` for correlation; receipts bind the consumed plan, the qualified executor and the policy generation without material. A digest is not proof of what ran.
 
 ### 3. Codex auth owner
 
-CIP-0010's "single auth owner" for Codex personal plans is implemented inside the broker (`codex-chatgpt` accounts). Launches never hold `auth.json`; app-server launches renew a rejected access token through the broker without a restart; `codex exec` launches receive a per-turn token-only home. The external-token path is qualified per Codex release before the broker leases it (`lease_harness_unqualified` otherwise); it is proven live on Codex 0.155.1 and must be re-qualified on the supported release first.
+CIP-0010's single auth owner for Codex personal plans is implemented inside the broker (`codex-chatgpt` accounts):
 
-### 4. Agent OS users: `curator agent-user`
+- enrolment is a ceremony run by the broker under its own user (the vendor's device login into a fresh broker-owned home); no existing login is imported and no keyring item is exported;
+- launches use **only** `codex app-server` with external tokens: the lease carries the access token and the ChatGPT account id; a 401 is answered through `lease.renew` within the app-server's response deadline, or the turn fails without any fallback login;
+- launches never hold `auth.json`. `codex exec` is not served in broker mode; serving it would need an explicit amendment of CIP-0010's no-copy decision with operator consent, contents, lifetime and cleanup rules;
+- each supported Codex release is qualified before the broker leases for it (`lease_harness_unqualified` otherwise). The mechanism is proven live on Codex 0.155.1; the supported release must be re-qualified first.
+
+### 4. Agent OS accounts: `curator agent-user`
 
 Until a dispatcher exists, Curator plays its role:
 
 ```
-curator agent-user create --label dev-7f3 --profile dev \
-    --grant <grant file or id> [--until <time>] [--network egress-a]
-curator agent-user remove --label dev-7f3
+curator agent-user create --label dev-7f3 --profile dev --account ivan/claude/personal \
+    [--until <time>] [--network egress-a]
+curator agent-user run    --label dev-7f3 --plan <launch plan>
+curator agent-user retire --label dev-7f3
 curator agent-user list
 ```
 
-`create` runs curator-host-helper (`user.create`, and in helper v1 `fw.apply` with the network profile's proxy), then `bind`s the new UID in the broker with the grant chain and the account generation from the helper ledger. `remove` unbinds first, then removes the user. The calling OS user must be a configured helper caller and a configured broker dispatcher; nothing else changes when a dispatcher later takes over the same two calls.
+- `create` calls the helper's `user.create` (and in helper v1 `fw.apply`), signs a leaf grant for `agent:<generation>` narrowed from the dispatcher's own grant, and binds the generation in the broker. All three calls carry one request id, so a failure part-way is reconciled by repeating them.
+- `run` starts the executor under the agent's account through the launcher (`launch.start`): the launcher checks that the generation is active and was created by this caller, verifies the approved executor's digest, closes every inherited descriptor, drops privileges and execs; the plan reaches the executor on a dedicated descriptor. The executor then opens its own broker connection.
+- `retire` unbinds first, then retires the account (the helper fences new launches, stops the account's processes and removes it).
+- The calling OS account must be a configured dispatcher in both the helper's and the broker's policy; it administers only the agents it created. Nothing else changes when a dispatcher later takes over the same calls. Arbitrary `sudo -u` is never used instead of the launcher.
 
 ### 5. `curator broker`
 
@@ -61,32 +75,38 @@ curator agent-user list
 
 ### 6. Network profiles
 
-A broker account may require a network profile. Curator's launch already resolves the network profile for a Curator profile (`[bindings.profiles]` in the operator's `~/.curator/network.toml`); the executor passes the resulting binding record in the lease request and the broker refuses a mismatch. With helper v1 rules the agent's UID can reach the network only through that profile's proxy.
+A broker account may require a network profile. Curator's launch already resolves the network profile for a Curator profile (`[bindings.profiles]` in the operator's destination-local `~/.curator/network.toml`); the executor passes the resulting record (`profile_ref`, `profile_digest`, assurance) in the lease request.
+
+- In this version the check is **cooperative**: it shows that the requesting process declared the expected profile, and it is recorded as declared. It does not prove that traffic used the profile.
+- An account that requires enforcement is refused (`lease_network_enforcement_unavailable`) until helper v1 publishes trusted applied state for the agent's generation; from then on the broker matches that state, not the request.
 
 ## Specification changes
 
-- environments §7.4: the `broker:<account>` source, its channel table (shared with CIP-0010 C2), and its refusal codes; §12.1: the value in `credential_source`.
-- Decision 0013: `credential` mode `broker`; intake refusal `credential_broker_unavailable`.
-- Launcher SPEC: the lease request at the final executor, delivery rules, the refusal codes.
+- environments §7.4: the `broker:<account>` source, its channel table (shared with CIP-0010 C2), and its refusal codes; §12.1: the value in `credential_source`, never lockable.
+- Decision 0013: the broker mode of `extensions["works.relux.curator.credential/1"]`, its required-understanding marking, and the intake refusal `credential_broker_unavailable`.
+- Launcher SPEC: the protected binding at the final executor, the lease request, delivery rules, conflict refusal, the qualification conditions for `credential-injection/1`, and the refusal codes.
 - Manager: `broker` and `agent-user` command groups.
 
 ## Implementation plan
 
-1. **curator-host-helper v0** (users, ledger, journal, audit; hosted-runner qualification).
-2. **curator-credential-broker slice 0** (broker spec §16), including the Codex external-token re-qualification on the supported release.
-3. **Curator:** the broker client in the final executor (task-board spawn runner first, then the session host), the `broker:` source, the plan mode, `curator broker`, `curator agent-user`, `env status` lines.
-4. **Lab chain on hosted runners:** enrol, create an agent user, bind, launch Claude and Codex under it, and the refusal set (other UID, other account, expired or revoked grant, network mismatch, conflicting source).
-5. **helper v1** firewall rules, making network requirements enforced.
+1. **Formats** in curator-credential-broker: grants, revocations and socket frames frozen with canonical and negative vectors; the verifier with its mutant suite.
+2. **Slice 0: one protected Claude launch.** Helper v0 with the launcher; broker slice 0 (file store, local grants and revocations, bind, lease, release, the `env` channel, audit); in Curator the broker client in the task-board spawn runner's executor, the `broker:` source, the plan extension, `curator broker`, `curator agent-user`, `env status` lines. Acceptance on hosted runners through `curator agent-user` and the real executor, with exactly the deployed sudoers rules.
+3. **Slice 1: Codex** external tokens, the enrolment ceremony and the auth owner, qualified on the supported release.
+4. **Slice 2: enforced networking** with helper v1 and applied state.
+
+Keeper migration, a shared registry, roles and wildcards in grants, concurrency bounds, Muse (researched in parallel), parent access to child homes and donor deployment come later and do not block these slices.
 
 ## Test plan
 
-- Production entry: a tracked launch under an agent user created by `curator agent-user create` receives a lease and runs; the token is in the harness process environment only.
-- Negatives: no binding, recycled UID, wrong profile, wrong harness, expired grant, revoked grant, revoked account, network mismatch, broker unreachable, executor without `credential-injection/1`, conflicting inherited credential.
-- Codex: eight concurrent launches near expiry cause one refresh; an app-server 401 renews and the turn continues.
-- No material in plans, fragments, receipts, logs, `env status` or MCP children (scan of all artifacts).
+Hosted runners only; no account, launcher or firewall test runs on a developer's or a production host.
+
+- Production entry: `curator agent-user create` and `run`, then a tracked launch under the agent account receives a lease and runs Claude; the token is in the harness process environment only and in no file, argv, log or covered child process.
+- Negatives: no binding; a retired generation; a recycled UID or a repeated label; another dispatcher's agent; wrong profile; wrong harness; expired grant; revoked grant; unreadable revocation state; revoked account; broker unreachable; executor without `credential-injection/1`; conflicting inherited credential; unqualified harness release; a broker connection inherited across the launcher (it must not reach the executor); unapproved executor digest.
+- Codex (slice 1): eight concurrent launches near expiry cause one refresh; a 401 renews within the deadline and the turn continues; a slow or failed renewal fails the turn without a fallback login.
+- No material in plans, fragments, receipts, logs, `env status` or covered child processes (a scan of all artifacts).
 
 ## Open questions for the operator
 
 1. Should `curator agent-user` stay after a dispatcher exists (for manual setups), or be removed?
 2. Should the session host or the task-board runner be the first executor with the broker client? Recommended: the task-board runner (tracked spawns are the main consumer today).
-3. Grant registry beyond the broker's local file: open platform question (D-R6).
+3. Grant registry beyond the broker's local state: open platform question (D-R6).
