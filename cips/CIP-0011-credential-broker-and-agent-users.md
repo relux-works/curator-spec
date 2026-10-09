@@ -1,14 +1,18 @@
 # CIP-0011: Credential broker leases and agent OS users
 
-- **Status:** Draft (revision 2)
+- **Status:** Draft (revision 3)
 - **Owner:** ivan-curator (orchestrator); decision: operator
 - **Created:** 2026-10-09
-- **Related:** [CIP-0010](CIP-0010-credentials-setup-token-and-inherited-auth.md) (credential sources, protected credential binding C3.4, executor capability, CIP-0003 disposition); [CIP-0008](CIP-0008-remote-worker-launch-mode.md), [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md); [Decision 0013](../decisions/0013-execution-ownership-and-launch-plans.md) (launch plans); [Decision 0017](../decisions/0017-environment-credential-modes.md) (credential modes); environments §7.4, §10.3, §12.1–§12.2; relux-works/curator-credential-broker `spec/broker.md` (draft v0.2); relux-works/curator-host-helper `spec/helper.md` (draft v0.2, with the launcher); relux-works/curator-network-profiles (binding records)
-- **Affects:** environments §7.4 and §12.1 (a credential source value), Decision 0013 (the credential extension), the launcher SPEC, the manager command set (`broker`, `agent-user`), the final executors (task-board spawn runner first, then the session host and the remote-worker supervisor)
+- **Related:** [CIP-0010](CIP-0010-credentials-setup-token-and-inherited-auth.md) (credential sources, protected credential binding C3.4, executor capability, CIP-0003 disposition); [CIP-0008](CIP-0008-remote-worker-launch-mode.md), [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md); [Decision 0013](../decisions/0013-execution-ownership-and-launch-plans.md) (launch plans); [Decision 0017](../decisions/0017-environment-credential-modes.md) (credential modes); environments §7.4, §10.3, §12.1–§12.2; relux-works/curator-credential-broker `spec/broker.md` (draft v0.2); relux-works/curator-host-helper `spec/helper.md` (draft v0.2, with the launcher); relux-works/curator-dispatcher `spec/dispatcher.md` (draft v0.1); relux-works/curator-network-profiles (binding records)
+- **Affects:** environments §7.4 and §12.1 (a credential source value), Decision 0013 (the credential extension), the launcher SPEC, the manager command set (`broker`, `agent-user` as a dispatcher client), the final executors (task-board spawn runner first, then the session host and the remote-worker supervisor)
 
 ## Revision 2
 
 An architecture review on 2026-10-09 kept the direction and found gaps that this revision closes: an unprivileged dispatcher had no way to run anything as a created account (the helper repository now has a narrow launcher); the broker path did not restate CIP-0010's protected binding (now explicit); the per-turn token-only Codex home contradicted CIP-0010's no-copy decision (removed); network checks claimed more than a caller's record proves (now cooperative and labelled so); and the first slice was too wide (now one protected Claude launch first).
+
+## Revision 3
+
+The owner decided (2026-10-09) to build the dispatcher as its own platform module, relux-works/curator-dispatcher, instead of folding its work into Curator. `curator agent-user` becomes a client of the dispatcher: the dispatcher, running under its own service account, owns the run records, the grant checks, the capacity gates, provisioning through the helper and the broker, the start through the launcher, and reconciliation. Its v0 is a command run under that account; its v1 is a daemon with a socket for orchestrators and the session host, on the same core.
 
 ## Summary
 
@@ -52,22 +56,24 @@ CIP-0010's single auth owner for Codex personal plans is implemented inside the 
 - launches never hold `auth.json`. `codex exec` is not served in broker mode; serving it would need an explicit amendment of CIP-0010's no-copy decision with operator consent, contents, lifetime and cleanup rules;
 - each supported Codex release is qualified before the broker leases for it (`lease_harness_unqualified` otherwise). The mechanism is proven live on Codex 0.155.1; the supported release must be re-qualified first.
 
-### 4. Agent OS accounts: `curator agent-user`
+### 4. Agent OS accounts: the dispatcher and `curator agent-user`
 
-Until a dispatcher exists, Curator plays its role:
+relux-works/curator-dispatcher does the dispatcher's work from the platform design (architecture §7.1): it accepts a launch request, authenticates the caller by its OS account, checks the caller's grant and the machine's capacity, provisions the agent (helper `user.create`, a leaf grant for `agent:<generation>` narrowed to the request and the caller's grant, broker `bind`), starts the executor under the agent account through the helper's launcher, tracks the run in a durable record keyed by the caller's request id, cleans up (unbind, retire), and reconciles after crashes. It runs under its own unprivileged service account, which is the only account configured as a dispatcher in the helper and the broker.
+
+Curator's commands are its clients:
 
 ```
 curator agent-user create --label dev-7f3 --profile dev --account ivan/claude/personal \
-    [--until <time>] [--network egress-a]
-curator agent-user run    --label dev-7f3 --plan <launch plan>
-curator agent-user retire --label dev-7f3
+    [--until <time>] [--network egress-a]            # dispatcher: provision
+curator agent-user run    --label dev-7f3 [--plan <launch plan> | --profile dev]   # dispatcher: start
+curator agent-user run    --dispatch --profile dev …  # dispatcher: dispatch (provision, start, clean up)
+curator agent-user retire --label dev-7f3            # dispatcher: retire
 curator agent-user list
 ```
 
-- `create` calls the helper's `user.create` (and in helper v1 `fw.apply`), signs a leaf grant for `agent:<generation>` narrowed from the dispatcher's own grant, and binds the generation in the broker. All three calls carry one request id, so a failure part-way is reconciled by repeating them.
-- `run` starts the executor under the agent's account through the launcher (`launch.start`): the launcher checks that the generation is active and was created by this caller, verifies the approved executor's digest, closes every inherited descriptor, drops privileges and execs; the plan reaches the executor on a dedicated descriptor. The executor then opens its own broker connection.
-- `retire` unbinds first, then retires the account (the helper fences new launches, stops the account's processes and removes it).
-- The calling OS account must be a configured dispatcher in both the helper's and the broker's policy; it administers only the agents it created. Nothing else changes when a dispatcher later takes over the same calls. Arbitrary `sudo -u` is never used instead of the launcher.
+- Curator composes the plan (compose-only) and passes it to the dispatcher as opaque bytes with its digest; the dispatcher never reads fragments or credentials.
+- In the dispatcher's v0, the client runs the dispatcher command under the dispatcher's account through one sudoers rule; in v1 it talks to the dispatcher's socket. The commands and their results do not change between the two.
+- A caller administers only the agents it provisioned, and can never obtain for an agent more than its own grant allows. Arbitrary `sudo -u` is never used instead of the launcher.
 
 ### 5. `curator broker`
 
@@ -90,7 +96,7 @@ A broker account may require a network profile. Curator's launch already resolve
 ## Implementation plan
 
 1. **Formats** in curator-credential-broker: grants, revocations and socket frames frozen with canonical and negative vectors; the verifier with its mutant suite.
-2. **Slice 0: one protected Claude launch.** Helper v0 with the launcher; broker slice 0 (file store, local grants and revocations, bind, lease, release, the `env` channel, audit); in Curator the broker client in the task-board spawn runner's executor, the `broker:` source, the plan extension, `curator broker`, `curator agent-user`, `env status` lines. Acceptance on hosted runners through `curator agent-user` and the real executor, with exactly the deployed sudoers rules.
+2. **Slice 0: one protected Claude launch.** Helper v0 with the launcher; broker slice 0 (file store, local grants and revocations, bind, lease, release, the `env` channel, audit); dispatcher v0 (requests, run records, grants, capacity, provisioning, start, cleanup, reconciliation); in Curator the executor with the broker client, the `broker:` source, the plan extension, `curator broker`, `curator agent-user` as the dispatcher's client, `env status` lines. Acceptance on hosted runners through `curator agent-user` and the dispatcher, with exactly the deployed sudoers rules.
 3. **Slice 1: Codex** external tokens, the enrolment ceremony and the auth owner, qualified on the supported release.
 4. **Slice 2: enforced networking** with helper v1 and applied state.
 
@@ -100,13 +106,13 @@ Keeper migration, a shared registry, roles and wildcards in grants, concurrency 
 
 Hosted runners only; no account, launcher or firewall test runs on a developer's or a production host.
 
-- Production entry: `curator agent-user create` and `run`, then a tracked launch under the agent account receives a lease and runs Claude; the token is in the harness process environment only and in no file, argv, log or covered child process.
+- Production entry: `curator agent-user create` and `run` through the dispatcher, then a tracked launch under the agent account receives a lease and runs Claude; the token is in the harness process environment only and in no file, argv, log or covered child process.
 - Negatives: no binding; a retired generation; a recycled UID or a repeated label; another dispatcher's agent; wrong profile; wrong harness; expired grant; revoked grant; unreadable revocation state; revoked account; broker unreachable; executor without `credential-injection/1`; conflicting inherited credential; unqualified harness release; a broker connection inherited across the launcher (it must not reach the executor); unapproved executor digest.
 - Codex (slice 1): eight concurrent launches near expiry cause one refresh; a 401 renews within the deadline and the turn continues; a slow or failed renewal fails the turn without a fallback login.
 - No material in plans, fragments, receipts, logs, `env status` or covered child processes (a scan of all artifacts).
 
 ## Open questions for the operator
 
-1. Should `curator agent-user` stay after a dispatcher exists (for manual setups), or be removed?
-2. Should the session host or the task-board runner be the first executor with the broker client? Recommended: the task-board runner (tracked spawns are the main consumer today).
+1. Resolved (owner, 2026-10-09): the dispatcher is its own module and `curator agent-user` is its client.
+2. Which executor gets the broker client first. Recommended: Curator's own small executor (started by the launcher under the agent account); the board's spawn path and the session host then start agents through the dispatcher instead of embedding the client.
 3. Grant registry beyond the broker's local state: open platform question (D-R6).
