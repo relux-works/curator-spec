@@ -102,3 +102,4 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0008](CIP-0008-remote-worker-launch-mode.md) | Remote-worker launch mode (tool lockdown on a donor machine) | Draft |
 | [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md) | Donor-side deployment and the worker-to-project bridge | Draft |
 | [CIP-0010](CIP-0010-credentials-setup-token-and-inherited-auth.md) | Credentials: `setup-token` adoption, homes with inherited authentication, CIP-0003 disposition | Draft |
+| [CIP-0011](CIP-0011-credential-broker-and-agent-users.md) | Credential broker leases and agent OS users | Draft |
