@@ -6,6 +6,15 @@
 - **Related:** TASK-261004-2asduq — launch-command-environment-fragment-design; STORY-261004-1ffwh8 — design-launch-project-views; TASK-261004-34brhn — research-claude-login-transfer-modes; Decisions 0013, 0017, 0018 and 0019
 - **Affects:** curator-spec environments §§1–5, 7–12; manager §§3, 5, 6, 10, 12; fragment and manager schemas; Curator, curator-run, agents-management and the tracked-session launch-plan consumer
 
+## Operator input (2026-10-10)
+
+The operator confirmed the model: a project layer composed over a profile, outside the repository, while the Skillfile stays in the project as the declaration of skills. To be integrated before acceptance:
+- **Names.** `register` takes `--name`; by default the name comes from the repository or directory name.
+- **Operator and agent mode.** `inspect`, `preview` and `approve` work for both. An agent may inspect and propose, and may approve only within a granted ceiling (for example no new permissions and no network MCP servers); everything above the ceiling needs the operator. Every approval records who approved it.
+- **Launch by project.** `curator run <project>` or `curator run <profile> --project <project>` works from any directory.
+- **Saved composites.** A project can keep a default composite (for example `dev` + `acme-app`). Without one, `curator run <project>` uses the profile extracted from the repository's own admitted layer.
+- **Follow-ups:** the surfaces the Skillfile does not cover yet (curator issue #113), and modular instruction files assembled from chapters at launch (curator issue #114).
+
 ## Summary
 
 Allow a registered project X to contribute individually approved context, rules, knowledge, MCP servers, permissions, skills and commands when launched with profile Y. Recommend a persistent manager-owned home for each checkout × profile × environment, backed by a digest-bound composition record and leased for the session lifetime. Repository files are candidate inputs to admission; native tools receive generated, protected copies and must not discover unapproved project configuration implicitly. A proposed fragment v4 carries the context identity and a single manager dispatcher directory through a typed channel, with PATH append performed after child-environment admission. This proposal asks for design decisions; it neither authorizes implementation nor claims that every native adapter can enforce the proposed boundary today.

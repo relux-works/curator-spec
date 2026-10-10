@@ -17,8 +17,15 @@
 
 Option B is accepted with these conditions:
 - **Several registries, first-class.** A registry is its own repository with its own signing keys. The project's own registry, another organisation's registry and registries of internal networks are configured side by side, ordered in the machine or fleet configuration, under the same trust rules; a verified revocation in any enabled registry blocks the artefact.
-- **A dedicated registry signing key set**, not a person's key; more than one key, to allow rotation and, if wanted, a threshold signature. The public keys ship with the manager release.
+- **A dedicated registry signing key set**, not a person's key; more than one key, to allow rotation and, if wanted, a threshold signature.
+- **No trust keys compiled into the binary.** Trusted registries and their keys live in the configuration of the network they serve: the system layer, edited by an administrator or MDM. A release ships a default trust bundle as a separate file that a network replaces with its own. Keys rotate TUF-style: a new root is signed by the old one, and a threshold may be required.
 - **Exposure at launch.** The manager links each provisioned alias into a launch-scoped bin directory placed first on the session's PATH, so a skill and the model call the tool by its alias and get exactly the locked bytes; enforced script-worker commands receive it only through their declared `exec` names. Nothing is installed system-wide.
+
+  ```
+  ~/.curator/tools/store/github.com/cli/cli/2.62.0/darwin-arm64/gh   sealed store, read-only
+  <launch home>/.launch/<id>/bin/gh  ->  the store file
+  session PATH = <launch home>/.launch/<id>/bin : <inherited PATH> : <project>/.agents/bin
+  ```
 
 ## Summary
 
