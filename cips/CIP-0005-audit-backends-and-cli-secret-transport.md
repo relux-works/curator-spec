@@ -1,6 +1,6 @@
 # CIP-0005: Audit backends and CLI secret transport
 
-- **Status:** Draft
+- **Status:** Accepted (operator, 2026-10-10); the first step is the CLI secret transport
 - **Owner:** ivan-curator (orchestrator); decision: operator
 - **Created:** 2026-10-04
 - **Related:** TASK-261004-hy8zmn — audit-token-argv-and-backend-env-allowlist-design; STORY-261004-2b8pnx — design-audit-backends-and-secret-transport; K24; public cocoaskills PR #142, commit 0da153a54e7f8b446e63a6a177a9b5392e30da11; adopted Decisions 0019 and 0021

@@ -1,6 +1,6 @@
 # CIP-0006: Legacy provider settings and MCP opt-outs
 
-- **Status:** Draft
+- **Status:** Accepted (operator, 2026-10-10): the narrow profile-settings record
 - **Owner:** ivan-curator (orchestrator); decision: operator
 - **Created:** 2026-10-04
 - **Related:** [curator#105 — preserve legacy provider settings and explicit MCP opt-outs](https://github.com/relux-works/curator/issues/105); Decision 0014 — tool-configuration surfaces (**proposed, not adopted**); Decision 0018 — curator run permission interface (**adopted**); TASK-261004-2iewnz — research-105-design-and-implementation-plan; STORY-261004-3v2zm2 — legacy-provider-settings-and-mcp-optouts-105; TASK-260927-367jb7 — infra-exit (external dependency named by the brief); TASK-260929-3hrwzn — transactional-legacy-config-import (PM-owned importer).

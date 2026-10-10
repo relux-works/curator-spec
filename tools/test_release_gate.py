@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 import shutil
 import subprocess
+import tarfile
 import tempfile
 import unittest
 from pathlib import Path
@@ -278,14 +280,85 @@ class ProtocolRC14ReleaseGateTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary.name)
-        shutil.copytree(
-            SOURCE_ROOT,
-            self.root,
-            dirs_exist_ok=True,
-            ignore=shutil.ignore_patterns(".git", ".temp", ".venv", ".task-board", "__pycache__"),
-        )
+        self._extract_published_rc14()
         self.root_patch = patch.object(release_gate, "ROOT", self.root)
         self.root_patch.start()
+
+    def _extract_published_rc14(self) -> None:
+        # Fixture the published rc.14 tree from its tag, not the live
+        # worktree: post-tag candidate work legitimately diverges from the
+        # frozen rc.14 pin, and a live-tree copy fails the gate on every
+        # such change. Live-tree protection stays with validate.py's
+        # released-record/schema immutability gates, which already require
+        # tags locally.
+        archive = subprocess.run(
+            ["git", "archive", "v1.0.0-rc.14"],
+            cwd=SOURCE_ROOT,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        if archive.returncode != 0:
+            detail = archive.stderr.decode("utf-8", errors="replace").strip()
+            self.fail(f"cannot read published rc.14 tree: {detail}")
+        if not archive.stdout:
+            self.fail("published rc.14 archive is empty")
+        with tarfile.open(fileobj=io.BytesIO(archive.stdout), mode="r:*") as tar:
+            tar.extractall(path=self.root, filter="data")
+        self._restore_export_subst_bytes()
+
+    def _restore_export_subst_bytes(self) -> None:
+        # git archive expands export-subst placeholders (the byte-exact
+        # subst.txt fixture), so the extracted bytes differ from the pinned
+        # manifest. Restore raw blob bytes for every such path.
+        listed = subprocess.run(
+            ["git", "ls-tree", "-r", "--name-only", "-z", "v1.0.0-rc.14"],
+            cwd=SOURCE_ROOT,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        if listed.returncode != 0:
+            detail = listed.stderr.decode("utf-8", errors="replace").strip()
+            self.fail(f"cannot list published rc.14 tree: {detail}")
+        names = [name for name in listed.stdout.split(b"\0") if name]
+        if not names:
+            self.fail("published rc.14 tree is empty")
+        checked = subprocess.run(
+            ["git", "check-attr", "--stdin", "-z", "export-subst"],
+            cwd=SOURCE_ROOT,
+            input=b"\0".join(names) + b"\0",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        if checked.returncode != 0:
+            detail = checked.stderr.decode("utf-8", errors="replace").strip()
+            self.fail(f"cannot read export-subst attributes: {detail}")
+        fields = checked.stdout.split(b"\0")
+        if fields and not fields[-1]:
+            fields.pop()
+        if len(fields) % 3 != 0:
+            self.fail("malformed check-attr output")
+        for index in range(0, len(fields), 3):
+            raw_path, _attribute, value = fields[index : index + 3]
+            if value != b"set":
+                continue
+            try:
+                relative = raw_path.decode("utf-8")
+            except UnicodeError:
+                self.fail(f"cannot decode export-subst path: {raw_path!r}")
+            shown = subprocess.run(
+                ["git", "show", f"v1.0.0-rc.14:{relative}"],
+                cwd=SOURCE_ROOT,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
+            if shown.returncode != 0:
+                detail = shown.stderr.decode("utf-8", errors="replace").strip()
+                self.fail(f"cannot read published bytes for {relative}: {detail}")
+            (self.root / relative).write_bytes(shown.stdout)
 
     def tearDown(self) -> None:
         self.root_patch.stop()
@@ -630,6 +703,103 @@ class ProtocolRC14ReleaseGateTests(unittest.TestCase):
         path.write_text(payload, encoding="utf-8")
         with self.assertRaisesRegex(release_gate.ReleaseFailure, "duplicate JSON key"):
             release_gate.validate_version(self.VERSION)
+
+
+class LiveCandidateAcceptedCorpusTests(unittest.TestCase):
+    """The strict rc.14 gate still guards the live candidate's accepted suite.
+
+    Historical rc.14 verification above runs against the published tag. These
+    checks run the unchanged release gate against the live tree:
+    draft-sources-v2 additions are outside the gate's scope, and the only
+    live deviation from the rc.14 artifact set is the draft-owned source
+    contract, pinned live by the draft manifest instead.
+    """
+
+    VERSION = "1.0.0-rc.14"
+
+    def setUp(self) -> None:
+        self.temporary = tempfile.TemporaryDirectory()
+        self.root = Path(self.temporary.name)
+        shutil.copytree(
+            SOURCE_ROOT,
+            self.root,
+            dirs_exist_ok=True,
+            ignore=shutil.ignore_patterns(".git", ".temp", ".venv", ".task-board", "__pycache__"),
+        )
+        self.root_patch = patch.object(release_gate, "ROOT", self.root)
+        self.root_patch.start()
+
+    def tearDown(self) -> None:
+        self.root_patch.stop()
+        self.temporary.cleanup()
+
+    def tagged_bytes(self, relative: str) -> bytes:
+        shown = subprocess.run(
+            ["git", "show", f"v{self.VERSION}:{relative}"],
+            cwd=SOURCE_ROOT,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        self.assertEqual(shown.returncode, 0, f"tag lookup failed for {relative}")
+        return shown.stdout
+
+    def release_metadata(self) -> dict:
+        path = self.root / "release" / f"{self.VERSION}.json"
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    def restore_draft_owned_document(self) -> None:
+        (self.root / "protocol" / "skillfile-sources.md").write_bytes(
+            self.tagged_bytes("protocol/skillfile-sources.md")
+        )
+
+    def test_live_tree_is_not_the_frozen_rc14_artifact_set(self) -> None:
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure,
+            r"skillfile-sources-v1 manifest digest mismatch: protocol/skillfile-sources\.md",
+        ):
+            release_gate.validate_skillfile_sources_manifest(self.release_metadata())
+
+    def test_live_gate_admits_draft_with_tagged_document(self) -> None:
+        self.assertTrue((self.root / "conformance" / "draft-sources-v2").is_dir())
+        self.assertTrue((self.root / "schemas" / "draft-sources-v2").is_dir())
+        self.restore_draft_owned_document()
+        release_gate.validate_skillfile_sources_manifest(self.release_metadata())
+
+    def test_live_accepted_case_drift_is_rejected(self) -> None:
+        self.restore_draft_owned_document()
+        path = (
+            self.root / "conformance" / "skillfile-sources-v1"
+            / "schema-cases" / "build-receipt-v3" / "valid.json"
+        )
+        path.write_bytes(path.read_bytes() + b"\n")
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure,
+            r"skillfile-sources-v1 manifest digest mismatch: "
+            r"conformance/skillfile-sources-v1/schema-cases/build-receipt-v3/valid\.json",
+        ):
+            release_gate.validate_skillfile_sources_manifest(self.release_metadata())
+
+    def test_live_accepted_schema_drift_is_rejected(self) -> None:
+        self.restore_draft_owned_document()
+        path = self.root / "schemas" / "skillfile-sources-v1" / "source-types-v1.schema.json"
+        path.write_bytes(path.read_bytes() + b"\n")
+        with self.assertRaisesRegex(
+            release_gate.ReleaseFailure,
+            r"skillfile-sources-v1 manifest digest mismatch: "
+            r"schemas/skillfile-sources-v1/source-types-v1\.schema\.json",
+        ):
+            release_gate.validate_skillfile_sources_manifest(self.release_metadata())
+
+    def test_live_document_is_the_only_manifest_deviation(self) -> None:
+        manifest_path = self.root / "conformance" / "skillfile-sources-v1" / "manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        deviated = []
+        for entry in manifest["files"]:
+            relative = entry["path"]
+            if (self.root / relative).read_bytes() != self.tagged_bytes(relative):
+                deviated.append(relative)
+        self.assertEqual(deviated, ["protocol/skillfile-sources.md"])
 
 
 if __name__ == "__main__":

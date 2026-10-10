@@ -1,6 +1,6 @@
 # CIP-0004: Shell hook without sourcing and PATH append
 
-- **Status:** Draft
+- **Status:** Accepted (operator, 2026-10-10)
 - **Owner:** ivan-curator (orchestrator); decision: operator
 - **Created:** 2026-10-04
 - **Related:** TASK-261004-1z2pgb — shell-hook-no-source-and-path-append-design; STORY-261004-7fglii — shell-hook-path-and-backend-env-hardening; K3 / historical S6; reviewer input `shell-hook-test-matrix.md`

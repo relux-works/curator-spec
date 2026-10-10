@@ -5,6 +5,35 @@ Versioning for the complete specification set.
 
 ## Unreleased
 
+### Added
+
+- Unreleased, opt-in core manifest schema 9 adds optional
+  `dependencies.skills.*.directory` selection at the dependency's pinned
+  repository ref, isolated in the new `draft-sources-v2` namespaces
+  (`schemas/draft-sources-v2`, `conformance/draft-sources-v2`). It reuses
+  the accepted Skillfile schema-2 directory grammar, normalizes omitted
+  directory to `.`, and binds package, closure, lock, local audit and
+  draft-marker-v6 identity to that directory. Schemas 1 through 8 and the
+  rc.14 accepted suite stay byte-frozen: schema-9 recording mints draft
+  `install-marker-v6` (marker v5 shape with manifest versions through 9)
+  because the frozen marker v5 band cannot record version 9, and the
+  accepted `skillfile-sources-v1` corpus, schemas, and candidate pin are
+  unchanged. The draft vectors cover path rejection, missing package
+  folders and manifests, root compatibility, and same-repository diamond
+  unification; the draft manifest pins the amended source-contract input.
+
+### Changed
+
+- Fixture the historical rc.14 release-gate tests on the published
+  v1.0.0-rc.14 tag, so post-tag candidate work no longer fails the frozen
+  rc.14 pin check; raw blob bytes are restored for export-subst paths.
+  Live-candidate checks beside them prove the accepted corpus and pin
+  match the tag, admit the draft additions, and still reject accepted
+  drift on the live tree. The vector generator pins the draft-owned
+  source-contract input at its frozen tag digest when rewriting the
+  accepted manifest, and owns the new draft manifest; the
+  regenerate-check covers both.
+
 ## 1.0.0-rc.14 - 2026-10-02
 
 ### Changed
