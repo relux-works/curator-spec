@@ -1,6 +1,6 @@
 # CIP-0003: Claude managed-home credential modes
 
-- **Status:** Draft
+- **Status:** Accepted (operator, 2026-10-10): narrowed, adopted together with CIP-0010 (its C6 disposition)
 - **Owner:** ivan-curator (orchestrator); decision: operator
 - **Created:** 2026-10-04
 - **Related:** TASK-261004-34brhn — research-claude-login-transfer-modes; STORY-261004-1pwxri — claude-macos-managed-home-login-modes; Decision 0017 — environment credential modes.
