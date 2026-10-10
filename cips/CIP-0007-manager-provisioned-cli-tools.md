@@ -1,6 +1,6 @@
 # CIP-0007: Manager-provisioned CLI tools
 
-- **Status:** Draft
+- **Status:** Accepted (operator, 2026-10-10): option B with the operator conditions below
 - **Owner:** orchestrator; decision: operator
 - **Created:** 2026-10-05
 - **Related:** Issue #108 (manager-provisioned CLI tools proposal); issues #100
@@ -12,6 +12,13 @@
   (lock identity); manager profile §§2–4, 10 (install lifecycle, scopes,
   status); skillfile and lock schemas; conformance vectors. No normative
   change is made by this document.
+
+## Operator decision (2026-10-10)
+
+Option B is accepted with these conditions:
+- **Several registries, first-class.** A registry is its own repository with its own signing keys. The project's own registry, another organisation's registry and registries of internal networks are configured side by side, ordered in the machine or fleet configuration, under the same trust rules; a verified revocation in any enabled registry blocks the artefact.
+- **A dedicated registry signing key set**, not a person's key; more than one key, to allow rotation and, if wanted, a threshold signature. The public keys ship with the manager release.
+- **Exposure at launch.** The manager links each provisioned alias into a launch-scoped bin directory placed first on the session's PATH, so a skill and the model call the tool by its alias and get exactly the locked bytes; enforced script-worker commands receive it only through their declared `exec` names. Nothing is installed system-wide.
 
 ## Summary
 
