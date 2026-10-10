@@ -1,19 +1,20 @@
 @startuml join-handshake
 !theme plain
-title Join handshake (revision 2): a server challenge, a signed canonical transcript, atomic invitation consumption; the out-of-band pin is the first anchor, DNSSEC/DANE a cross-check
+title Join handshake (revision 3): a server challenge, a signed canonical transcript, atomic invitation consumption; anchors: the Web PKI, mandatory DNSSEC validated in the client, and the invitation's pins when present
 
 participant "Donor bridge identity\n(curator remote-worker init)" as C
-database "Trusted validating resolver\n(local, or validating stub over a protected channel)" as R
+database "DNS: system resolver,\nDNS-over-HTTPS as the fallback\n(signatures validated inside the client)" as R
 participant "Join point\n(our host)" as JP
 actor "Operator" as OP
 participant "Registry / key keeper" as T
 
 note over C, T
   Anchors before first contact:
-  (a) the invitation, delivered over a second channel: root fingerprint, SSH host key fingerprint, join point certificate, one-use random code (>= 128 bits);
-  (b) when a trusted validator exists: DNSSEC-secure TXT _swarma.<domain> = root fingerprint, SSHFP = our SSH host key, TLSA = the join point's TLS key.
+  (a) the Web PKI certificate of the join point's domain;
+  (b) mandatory: DNSSEC-secure TXT _swarma.<domain> = root fingerprint, SSHFP = our SSH host key, TLSA = the join point's TLS key, validated inside the client from the embedded root trust anchor;
+  (c) when invited: the invitation (marketplace deal thread, e-mail, our site) with the same fingerprints and a one-use random code (>= 128 bits).
   Proof of possession: the transcript signed over a SERVER challenge (not a client nonce).
-  Human check: the fingerprint read back over the second channel. No step downgrades on failure.
+  No human second channel and nothing for the donor to configure. No step downgrades on failure.
 end note
 
 C -> JP: POST /join/challenge {invitation_id}
@@ -21,13 +22,13 @@ JP -> JP: invitation known, unexpired, not consumed? attempt counter
 JP --> C: server_challenge (5 min)
 C -> R: TXT _swarma, SSHFP, TLSA
 R --> C: records + validation state (secure | bogus | indeterminate)
-C -> C: secure: must equal the invitation; bogus: refuse; indeterminate: proceed on the pin, record it
+C -> C: secure: must equal the invitation when present; bogus: refuse;\nindeterminate: retry over DNS-over-HTTPS, then refuse (dns_unverifiable)
 C -> C: transcript = canonical CBOR, domain-separated:\n{version, invitation_id, project, role, K_sig, K_enc, K_ssh, server_challenge, client_nonce, expires_at, algorithms}
-C -> JP: TLS pinned to the join point certificate (invitation; TLSA when secure)
+C -> JP: HTTPS: Web PKI for the domain, pinned by the TLSA record (and the invitation when present)
 C -> JP: POST /join/cert {transcript, sig_K_sig(transcript), code}
 JP -> JP: code equal (constant time)? signature valid? challenge bound and fresh?\nconsume the invitation atomically -> tombstone(invitation_id, K_sig)\n(same K_sig retry -> same pending enrolment; other key -> refuse); rate limit
 JP -> OP: show {invitation_id, fingerprint, name, role}
-OP -> OP: read the fingerprint back with the human on the donor side
+OP -> OP: check against the donor's signed marketplace card when there is one,\notherwise the invitation the code binds; no voice check
 OP -> T: pin K_sig, K_enc, K_ssh; root-signed admission; grants (scope, expiry)
 OP -> OP: package: AEAD to K_enc with AAD = H(transcript); signed by the operator certificate (root-signed, scope onboard)
 OP -> JP: release package for <invitation_id>

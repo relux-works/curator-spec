@@ -30,7 +30,7 @@ workspace "Remote worker on a donor machine" "CIP-0008/0009: lockdown harness, t
       workplace = container "Remote workplace (OS-user backend)" "one OS user per worker; policy: tools, write scope, network, limits, env_allow" "where every tool call runs; audit; cleanup"
       bridge = container "Bridge (M3)" "broker, mailbox, trust gate" "admits messages; verifies the worker's signature; carries bytes unchanged under a distinct carrier account"
       registry = container "Trust registry + key keeper" "pins K_sig, K_enc, K_ssh; grants; root-signed admission and revocations" "operator certificates chained to the root"
-      dns = container "DNS zone (DNSSEC, cross-check)" "TXT _swarma, SSHFP, TLSA" "published fingerprints; used when a trusted validator exists"
+      dns = container "DNS zone (DNSSEC, mandatory)" "TXT _swarma, SSHFP, TLSA" "published fingerprints of the environment, validated inside the client"
     }
 
     provider = softwareSystem "Model provider API" "Anthropic / OpenAI / Meta" "External"
@@ -38,8 +38,8 @@ workspace "Remote worker on a donor machine" "CIP-0008/0009: lockdown harness, t
     donorOwner -> donor.curator "init <invitation>, status, stop, leave, purge"
     donor.curator -> donor.helper "create/remove identities, egress, sandbox (sudo; closed schema)"
     donor.curator -> donor.keys "generate K_sig, K_enc, K_ssh (bridge identity); decrypt the package"
-    donor.curator -> project.dns "cross-check fingerprints when a trusted validator exists"
-    donor.curator -> project.joinPoint "challenge; cert (signed swarma-join/1 transcript + code); collect (TLS pinned)"
+    donor.curator -> project.dns "validate the fingerprints (DNSSEC in the client; DNS-over-HTTPS fallback)"
+    donor.curator -> project.joinPoint "challenge; cert (signed swarma-join/1 transcript + code); collect (HTTPS: Web PKI, pinned by TLSA)"
     donor.supervisor -> donor.harness "launch as the harness identity under the lockdown plan; next admitted turn"
     donor.harness -> donor.relay "MCP stdio: tools/call"
     donor.relay -> donor.socket "forward (peer credentials checked)"
@@ -50,7 +50,7 @@ workspace "Remote worker on a donor machine" "CIP-0008/0009: lockdown harness, t
     donor.bridgeCore -> project.sshd "one SSH connection; swarma-rb/1 frames (bounded CBOR, op_key idempotency)"
     project.sshd -> project.workplace "exec / file ops as the workplace user; process-group lease"
     project.sshd -> project.bridge "mailbox.read / mailbox.post (worker-signed bytes) / mailbox.notify (advisory)"
-    operator -> project.joinPoint "confirm fingerprint over a second channel; release package"
+    operator -> project.joinPoint "check the enrolment against the signed card or the invitation; release package"
     operator -> project.registry "pin keys; root-signed admission; grants"
     project.bridge -> project.registry "verify signatures, grants, revocation, freshness"
   }
