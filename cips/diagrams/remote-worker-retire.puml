@@ -1,52 +1,61 @@
 @startuml remote-worker-retire
 !theme plain
-title Lifecycle of a remote worker (revision 2): stop, leave and purge on the donor; suspend, retire and revoke on our side; the identity stays pinned unless revoked
+title Lifecycle of a remote worker (revision 4; variant-aware cleanup and independent state axes): stop, leave and purge on the donor; suspend, retire and revoke on our side; the identity stays pinned unless revoked
 
 actor "Operator (our side)" as OP
 participant "Registry / key keeper" as T
-participant "Dispatcher + helper\n(our host)" as D
+participant "swarma-dispatcher + swarma-user-manager\n(project host; account lifecycle)" as D
 participant "Bridge (M3) + sshd" as BR
 actor "Donor (the machine's owner)" as ADM
-participant "curator remote-worker\n(donor; bridge identity)" as C
-participant "Privileged helper (donor)" as PH
+participant "curator remote-worker\n(donor bridge role; UID follows variant)" as C
+participant "Separate donor provisioner (B only)\n(binary/schema/rules/removal pending; B disabled)" as PH
 
 note over OP, PH
-  States: enrolled -> active <-> stopped (donor) | suspended (project) -> retired -> revoked -> purged.
+  Independent axes: installation present/purged; donor execution active/stopped/left;
+  project workplace admitted/suspended/retired; signing identity pinned/revoked.
+  A/C share donor UID; B has separate UIDs. Offline purge proves no remote revocation.
   Stop and revocation marks are persisted BEFORE any process is touched, so a service restart cannot race them.
-  Removing an SSH key never substitutes for closing established sessions and killing jobs.
+  User-certificate revocation/expiry never substitutes for closing established sessions and killing jobs.
 end note
 
 == donor: stop (pause) ==
 ADM -> C: curator remote-worker stop
-C -> C: persist "stopped"; end the harness identity's processes; keep the bridge service and the keys; audit line
-C --> ADM: stopped (run resumes it)
+C -> C: persist "stopped"; end this worker's harness and descendants (never all donor-UID processes); keep the bridge service and the keys; audit line
+C --> ADM: stopped (run needs valid admission/credentials/qualification)
 
 == donor: leave (retire the workplace, keep the identity) ==
 ADM -> C: curator remote-worker leave
 C -> BR: retire request over the channel (if reachable)
 C -> C: close the channel; keep K_sig, K_enc, K_ssh and the configuration
-C --> ADM: left; "init --rejoin" with a new invitation returns this identity to a new workplace
+C --> ADM: left; "init --rejoin" with a new invitation returns the pinned identity to a newly admitted workplace unless revoked
 
 == project: suspend / retire / revoke ==
 OP -> T: suspend: grants paused
+OP -> BR: suspend: close sessions; keep workplace
 OP -> D: retire workplace
-D -> BR: revoke channel authorization; close open sessions
-D -> D: kill every job and its descendants (process group / cgroup); verify no process of the workplace UID remains;\nremove the authorized key; archive permitted noncredential artifacts only; release account and egress rules
+D -> BR: persist channel/grant revocation; stop renewal; user-certificate KRL; close sessions
+D -> D: kill every job and its descendants (process group / cgroup); verify no process of the workplace UID remains;\narchive permitted noncredential artifacts only; release account and egress rules
 BR -> BR: next frame or envelope from this worker refused (retired); mailbox kept durable
 note right of BR: the donor's connection drops; its bridge reports "retired by project" and pauses
 OP -> T: revoke (only on compromise or departure): root-signed revocation of K_sig, K_enc, K_ssh
-T -> BR: revocation record: every frame and envelope from these keys refuses from now on;\na return needs a new key through a new enrolment (rotation is a root-authorized record)
+T -> BR: persist revocation; user-certificate KRL; close sessions; stop renewal;\nrevocation record: every frame and envelope from these keys refuses from now on;\na return needs a new key through a new enrolment (rotation is a root-authorized record)
 
 == donor: purge (destroy) ==
 ADM -> C: curator remote-worker purge --confirm
 C -> BR: report purge; ask revocation outcome (if reachable)
 alt channel reachable
-  BR --> C: revocation outcome (retired | revoked)
+  BR --> C: reported workplace and identity states (independent axes; response schema pending)
 else channel unreachable
   C -> C: record "channel unreachable; the project side must revoke separately"
 end
-C -> C: delete keys, locked config, managed home; audit kept for the donor
-C -> PH: remove-worker <label>: both accounts, egress anchor, sandbox profile, daemon unit (journal, rollback)
-PH --> C: done
-C --> ADM: removed; nothing of the project remains on this machine; revocation outcome printed
+C -> C: stop owned processes; delete keys, locked config, managed home; retain donor-visible audit
+alt A
+  C -> C: remove owned user service/artifacts; preserve donor account and unrelated data
+else C
+  C -> C: remove owned sandbox + user service/artifacts; preserve donor account
+else B (future path, disabled while provisioner contract pending)
+  C -> PH: remove only B-allocated accounts, egress, sandbox, system service\n(exact closed operation format pending; journal/rollback required)
+  PH --> C: removal result
+end
+C --> ADM: variant-owned artifacts removed; printed revocation result or unknown when unreachable
 @enduml

@@ -1,0 +1,54 @@
+# Remote worker on a donor machine
+
+- **Status:** Draft contract reconciliation for R-CS1; no implemented capability or qualification asserted.
+- **Authority:** [CIP-0009](../cips/CIP-0009-donor-side-deployment-and-bridge.md), the platform contract table at `relux-works/curator` revision `177cb554` (D1–D5), and the recorded owner decisions of 2026-10-10/11. D-DONOR-PROVISIONING supersedes the open helper-extension choice; D-WIRE-NAMES sets wire naming.
+
+This document publishes the common contract and the status of its missing formats. The field lists in CIP-0009 are design requirements, not closed schemas. A pending format cannot be treated as an interoperable API or permission to activate its feature.
+
+## Publication status
+
+Versioned platform wire identifiers carry the owning repository name: `swarma-<component> <object>/<n>`. No format has shipped, so the clean naming rule requires no migration. The bridge owns join/admission delivery; its three enrolment objects use the names below. These names alone do not specify signing preimages, canonical field types or complete readers.
+
+| Reference | Owner / location | Publication status and remaining work |
+|---|---|---|
+| `swarma-bridge invitation/1` | CIP-0009 D4 | **PENDING closed schema.** Invitation ID, one-use code, environment/project/role, expiry, join URL, root and host-CA pins, TLS pin, explicit trust-mode declaration; exact encodings, field names and validation errors still need publication. |
+| `swarma-bridge join/1` | CIP-0009 D4 | **PENDING closed schema and signature preimage.** Deterministic CBOR, challenge-bound proof of possession, three separate keys, algorithms, variant/tuple and invitation/open-application binding. Open-application identifiers and retry binding are not frozen. |
+| `swarma-bridge credential-package/1` | CIP-0009 D4/D12 | **PENDING closed schema.** Root, operator chain, host CA, short user certificate/workplace principal, binding, tuple, variant, generation and expiry; authenticated encryption and transcript associated data; no carrier credential. Exact serialized envelope and algorithm negotiation remain unpublished. |
+| Join API: `challenge`, `cert`, `collect` | CIP-0009 D4/D9 | **PENDING request/response/error schemas.** Routes are proposed as `POST /join/challenge`, `/join/cert`, `/join/collect`. Invited/open application, polling, second challenge, collection retry/replay and rejection payloads require closed formats; no additional join verb is implied. |
+| Remote Bash framing (design shorthand `swarma-rb/1`) | CIP-0009 D5 | **PENDING standalone framed protocol and wire owner.** Bounds, deterministic CBOR, negotiation, request IDs, `op_key`, result cache, caps, method authorization, leases, flow credits, cursors, receipts and errors must be frozen together. |
+| Workplace execution (design shorthand `swarma-workplace-exec/1`) | CIP-0009 D5 | **PENDING standalone backend contract and wire owner.** OS-user backend first; policy/audit/output review/descendant cleanup requirements do not establish container conformance. |
+| Donor provisioning/removal | CIP-0009 D1/D2; D-DONOR-PROVISIONING | **PENDING separate short spec, rules, removal and closed schema; B disabled.** Separate donor-side binary and privileges; sharing UID/path libraries is allowed. No donor operation exists in `swarma-user-manager`'s closed schema. Binary naming is not decided here. |
+
+**Open owner question — transport/backend wire ownership:** Should the remote channel and execution contract belong to (a) the `swarma-bridge` repository, with bridge-owned object names, or (b) a separately owned executor component, with that repository's object names? The contract table specifies their design labels but does not record a repository owner for these wire formats. D-WIRE-NAMES fixes the naming rule, not this ownership choice. Keep these two labels as design shorthand until ownership and exact formats are recorded; neither is a frozen versioned wire identifier. This publication question does not change the decided separate donor-provisioner boundary.
+
+## Deployment and launch boundary
+
+A is first: qualified lockdown under the donor's own user, no administrator rights and no separate UID, sandbox or egress guarantee. If the harness is compromised, it can act as that user. B follows with two identities, one administrator request, per-UID egress and a kernel read boundary; its 0600 bridge-owned keys use no Keychain, and B stays disabled while its separate provisioner contract is pending. C is the sandbox fallback under the donor UID when administrator rights are declined or unavailable. A/C use Secure Enclave P-256 signing/SSH keys on qualified Macs that support them, 0600 files elsewhere; package-decryption keys are separate X25519 keys. Algorithms and storage must be qualified for the selected tuple.
+
+Only the human donor initializes. Interactive TTY, typed consent and managed-session environment checks are policy admission heuristics, not proof of human identity. The bridge accepts only `lockdown` + `remote-auto` with an exact qualified build and current policy generation. Qualification requirements are not evidence that a tuple passed. The supervisor consumes a caller-composed plan; it does not compose one. The relay owns no keys or network; it forwards local MCP calls. Tools execute in the project workplace over one donor-originated SSH connection; the project never connects back to execute on the donor.
+
+**Open owner question — A after B/C qualification:** Keep A selectable, or offer only B/C once both are qualified on a platform? CIP-0009 question 7 is unresolved; neither answer is implied by this revision.
+
+## Trust and SSH
+
+Web PKI validates the join domain. DNSSEC is the default and is validated inside the client from an embedded root anchor; DoH is a transport fallback when system DNS strips signatures, not a different trust source. Closed networks may supply a zone anchor. Records are per environment: `TXT _swarma.<domain>` for root fingerprint, `TXT _swarma-ssh-ca.<domain>` for SSH host CA public key, and join-point `TLSA`.
+
+Invitation pins select the fallback only when the invitation explicitly declares an environment without a DNSSEC domain. When DNS and invitation pins coexist they must agree. Mismatch, malformed/failed reads, bogus or unresolved validation refuse; they never become evidence of absence or activate fallback. Open applications without invitation pins require DNSSEC. No second human channel is used.
+
+The host CA (Ed25519, kept in the keeper or hardware token) certifies host keys; the donor uses `@cert-authority` and verifies host name, validity and KRL on every connection. Host certificates of about a year are policy examples. Adding a certified host changes no DNS record; CA rotation overlaps the old/new keys. A separate user CA certifies donor-generated `K_ssh` with the workplace-user principal, with certificates of about a day as a policy example, renewed by the bridge. Root-controlled sshd trusts `TrustedUserCAKeys`, checks revocation and enforces the protected absolute forced command with no forwarding, PTY, user rc or environment. Retirement/revocation stops renewal, updates user-certificate KRL and closes established sessions; revocation alone does not terminate an existing connection.
+
+## Join service and limits
+
+The join point sits on the project's public entry host behind existing TLS ingress, under its own name. It holds no admission-signing key and executes no command: it challenges, stores signed enrolment/application data and returns operator-signed encrypted packages after admission. Invited enrolment uses a random one-use code of at least 128 bits, challenge-bound signature, atomic consumption and replay tombstone. Same-key retries recover the same pending enrolment; other-key retries refuse. Open applications have no invitation code and enter the same operator queue; exact schema is pending.
+
+D9 owner-approved policy values are 10 requests/minute and 100/day per source address, five challenges per invitation, one use, 72-hour invitation validity, 16 KiB maximum request body, five-minute challenge lifetime and 50 pending applications. New applications beyond the pending cap refuse until capacity is available. These values do not substitute for the pending API/error schemas or imply a published cleanup/polling format.
+
+## Tools, mailbox and lifecycle
+
+The effective tool set is the relay maximum intersected with workplace policy. Mailbox operations are control plane and appear as tools only when granted. Donor admission checks verification records, binding, expiry, fences/revocations and delivery mode before a session-input adapter receives a turn. Cursors advance after persistence; message IDs deduplicate; the application receipt is separate from transport acknowledgement. A dropped channel pauses new turns; a current turn reaches its deadline, calls fail `channel_down`, and outbound results queue durably. Reconnect checks SSH certificates and uses cached results or `unknown_result`, never a repeated effect.
+
+The donor bridge signs final envelope bytes with `K_sig`. The project verifies signature/grants/freshness and carries those bytes unchanged under a distinct audited carrier authority in the first slice. No project carrier credential enters the donor package. Later organisation accounts and allowlisted freelancer federation are a separate rollout phase.
+
+Track donor installation, donor execution, project workplace and signing identity separately (CIP-0009 D7). Local stop persists before termination and keeps bridge/keys; leave keeps identity for a new admitted workplace; purge removes only variant-owned artifacts and can happen offline. A/C never remove the donor account. B cleanup belongs to its pending separate provisioner. Project suspend/retire/revoke are independent: retirement closes sessions and jobs, revokes channel/grants/user certificates, archives permitted artifacts and releases the workplace after process absence; the donor identity remains pinned. Only a separate operator-authorized signed revocation revokes that identity; the one-shot dispatcher exception does not apply. Offline purge reports remote revocation as unknown.
+
+The [CIP-0009 test plan](../cips/CIP-0009-donor-side-deployment-and-bridge.md#test-plan) is future qualification work. This documentation publication claims no test, build, renderer or provider qualification result.

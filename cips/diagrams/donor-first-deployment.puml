@@ -1,52 +1,68 @@
 @startuml donor-first-deployment
 !theme plain
-title Remote worker on a donor machine, first deployment (revision 3; variant B shown, see CIP-0009 D0 for A and C): one invitation, one command, nothing to configure; two OS identities; three role-separated keys owned by the bridge identity; the posture is locked by the donor (the machine's owner)
+title Remote worker on a donor machine, first deployment (revision 4; variants A/B/C, B disabled until separate provisioner spec exists): one invitation, one command, nothing to configure; B has two OS identities; A/C share the donor UID; three role-separated keys stay on the donor; the posture is locked by the donor (the machine's owner)
 
 actor "Donor (the machine's owner)" as ADM
 participant "curator remote-worker init\n(donor install)" as C
-participant "swarma-user-manager\n(sudoers: this absolute path only;\nclosed schema; journal + rollback)" as PH
-participant "Bridge identity\nswarma-bridge-<project>\n(keys, config, audit)" as B
-participant "Harness identity\nworker-<project>\n(managed home, scratch)" as U
+participant "Separate donor provisioner (B only)\n(binary/schema/rules/removal pending;\nnot swarma-user-manager)" as PH
+participant "Bridge role\nB: swarma-bridge-<project> UID\nA/C: donor UID (keys, config, audit)" as B
+participant "Harness role\nB: worker-<project> UID\nA/C: donor UID (managed home, scratch)" as U
 database "DNS (DNSSEC, default)\nTXT _swarma, TXT _swarma-ssh-ca, TLSA\n(validated inside the client)" as DNS
 participant "Join point\n(our host, HTTPS: challenge, cert, collect)" as JP
 actor "Operator (our side)\nor orchestrator with onboard grant" as OP
 participant "Trust registry + key keeper\n(our host)" as T
 
 == 1. invitation ==
-OP -> ADM: swarma-invitation/1 {invitation_id, join point, root fingerprint,\nSSH host CA fingerprint, project, role, expires, one-use random code}\nthrough the channel the donor found us by: marketplace deal thread, e-mail, our site\n(the code is a short-lived bootstrap secret; without an invitation: init <domain>, an open application)
+OP -> ADM: swarma-bridge invitation/1 {invitation_id, join point, root fingerprint,\nSSH host CA fingerprint, TLS pin, declared trust mode, project, role, expires, one-use random code}\nthrough the channel the donor found us by: marketplace deal thread, e-mail, our site\n(the code is a short-lived bootstrap secret; without an invitation: init <domain>, an open application)
 
 == 2. local provisioning (transactional) ==
-ADM -> C: curator remote-worker init <invitation>
-C -> C: refuse unsupported host; verify the release manifest of /opt/swarma/<release>
-C -> PH: create-worker <label>: two accounts (allocated UIDs), homes,\negress anchor by UID, Seatbelt profile (read boundary), launchd daemon unit
-PH --> C: journal entry per step (rollback on failure)
-C -> B: generate K_sig (Ed25519), K_enc (X25519), K_ssh (Ed25519); 0600, bridge-owned
-B -> B: enrolment certificate {K_sig, K_enc, K_ssh, name, role, invitation_id, expires}\nself-signed by K_sig; fingerprint = SHA-256(certificate)
+ADM -> C: curator remote-worker init <invitation-file>\n(file holds the bootstrap secret; no secret in argv)
+C -> C: interactive TTY + typed consent + managed-session check (policy heuristic, not proof of humanity);\nrefuse unsupported tuple; verify manifest and variant-owned executable root
+alt A (first milestone, no administrator rights)
+  C -> C: donor user service, qualified lockdown only; no OS isolation or egress guarantee
+else C (no administrator rights, sandbox fallback)
+  C -> C: donor user service + qualified sandbox; bridge state excluded; pinned runtime roots read/execute only
+else B (one administrator request, future path)
+  break provisioner spec/rules/removal or qualification absent
+    C --> ADM: B disabled; choose an admitted variant
+  end
+  C -> PH: provision B-owned accounts/homes/egress/sandbox/system service\n(exact closed operation format pending; no user-manager donor operation)
+  PH --> C: journaled result; rollback on failure (required contract)
+end
+C -> B: three separate keys: K_sig, K_enc (X25519), K_ssh;\nA/C qualified Secure Enclave Macs: P-256 signing/SSH, non-exportable; files elsewhere;\nB: Ed25519 signing/SSH in bridge-owned 0600 files, no Keychain
+B -> B: enrolment certificate {K_sig, K_enc, K_ssh, name, role, variant, invitation_id when invited, expires}\nself-signed by K_sig; fingerprint = SHA-256(certificate)
 C --> ADM: show fingerprint F
 
 == 3. join (see join-handshake for the transcript) ==
-C -> JP: POST /join/challenge {invitation_id}
-JP --> C: server challenge (bound to the invitation, 5 min, attempt counter)
-C -> DNS: TXT _swarma, TXT _swarma-ssh-ca, TLSA (system resolver; DNS-over-HTTPS when the network strips DNSSEC);\nsignatures validated in the client from the embedded root trust anchor
-alt secure and equal to the invitation
-  C -> C: record "dns: secure, matches"
-else bogus
-  C --> ADM: refused{dns_bogus}
-else indeterminate (even over DNS-over-HTTPS)
-  C --> ADM: refused{dns_unverifiable}: explain; no downgrade
+alt invitation declares environment without a DNSSEC domain
+  C -> C: select invitation root/host-CA/TLS pins before lookup; Web PKI required
+else DNSSEC default (also open-domain applications)
+  C -> DNS: TXT _swarma, TXT _swarma-ssh-ca, TLSA; system DNS / DoH transport; local validation
+  break mismatch, bogus, failed/malformed read or still indeterminate
+    C --> ADM: refused; no invitation fallback on DNS failure
+  end
+  C -> C: secure records; cross-check invitation pins when present
 end
-C -> JP: POST /join/cert {swarma-join/1 transcript, sig_K_sig, code}\n(HTTPS: Web PKI for the domain, pinned by the TLSA record)
-JP -> JP: code (constant time), signature, challenge, expiry;\nconsume invitation atomically (tombstone); rate limit
+C -> JP: POST /join/challenge (invitation reference or open-application binding; schema pending)\nHTTPS: Web PKI + selected trust pins
+JP --> C: enrolment-bound server challenge (5 min, attempt counter)
+C -> JP: POST /join/cert {swarma-bridge join/1 transcript, sig_K_sig, code only when invited}\n(HTTPS: Web PKI plus selected DNSSEC/TLSA or declared invitation pins; schemas pending)
+alt invited
+  JP -> JP: code (constant time), signature, challenge, expiry;\nconsume invitation atomically (tombstone); same-key retry recovers, other key refuses
+else open application (no invitation code)
+  JP -> JP: signature, challenge, expiry; bounded operator queue\n(binding/retry schema pending)
+end
+JP -> JP: rate limit
 JP -> OP: pending enrolment: fingerprint F, name, role
-OP -> OP: check the enrolment: the key in the donor's signed marketplace card when there is one,\notherwise the invitation the code binds (no voice check)
+OP -> OP: check the enrolment: the key in the donor's signed marketplace card when there is one,\notherwise invitation binding or open application (no voice check)
 alt rejected
   OP -> JP: reject
   JP --> C: refused
 else admitted
   OP -> T: pin K_sig, K_enc, K_ssh; root-signed admission "K admitted with role R";\ngrants: post to worker thread, read own mailbox, no delegation, expiry
-  OP -> OP: swarma-credential-package/1 {root pubkey, operator cert (root-signed), host,\nSSH host CA key, workplace user, binding digest, qualified tuple, policy generation, expiry}\nAEAD to K_enc (X25519 + HKDF + ChaCha20-Poly1305), AAD = transcript digest, signed by the operator cert
-  OP -> JP: package ready for <invitation_id>
-  C -> JP: POST /join/collect {invitation_id, sig_K_sig(second challenge)}
+  OP -> T: provision workplace for K (dispatcher, grant user.create): OS user,\nTrustedUserCAKeys + KRL: short user certificates for K_ssh (principal = workplace user),\nprotected absolute ForceCommand swarma-rb-exec,\nsshd Match: no forwarding, no PTY, no user rc/env; egress by UID
+  OP -> OP: swarma-bridge credential-package/1 {root pubkey, operator cert (root-signed), host,\nSSH host CA key, short user certificate/principal, variant, binding digest, qualified tuple, policy generation, expiry}\nAEAD to K_enc (X25519 + HKDF + ChaCha20-Poly1305), AAD = transcript digest, signed by the operator cert
+  OP -> JP: package ready for this enrolment (reference schema pending)
+  C -> JP: POST /join/challenge (collection phase) -> second server challenge\nPOST /join/collect {enrolment reference, sig_K_sig(second challenge)} (schema pending)
   JP --> C: package
   C -> B: decrypt with K_enc; verify operator cert against the pinned root;\nverify package signature and AAD
   C -> B: write LOCKED machine config: tool_posture=lockdown, permissions=remote-auto (pair),\npolicy_generation, mcp_package_allowlist=[canonical source of swarma-remote-tools],\npassable_env_names=[], qualified tuple, binding, sandbox revision
@@ -54,7 +70,6 @@ else admitted
   C --> ADM: registered; waiting for tasks (status, stop, leave, purge available)
 end
 
-== 4. workplace on our host ==
-OP -> T: provision workplace for K (dispatcher, grant user.create): OS user,\nTrustedUserCAKeys: short user certificates for K_ssh (principal = workplace user), restrict + command="/opt/swarma/libexec/swarma-rb-exec",\nsshd Match: no forwarding, no PTY, no user rc/env; egress by UID
-note right of T: see remote-worker-turn for the connection
+note over C, JP: Invitation, transcript, package and join API/error schemas PENDING: protocol/remote-worker.md\nOpen-domain init has no code; operator admission and challenge proof remain required.
+
 @enduml
