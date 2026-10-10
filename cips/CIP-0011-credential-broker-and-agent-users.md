@@ -3,7 +3,7 @@
 - **Status:** Draft (revision 3)
 - **Owner:** ivan-curator (orchestrator); decision: operator
 - **Created:** 2026-10-09
-- **Related:** [CIP-0010](CIP-0010-credentials-setup-token-and-inherited-auth.md) (credential sources, protected credential binding C3.4, executor capability, CIP-0003 disposition); [CIP-0008](CIP-0008-remote-worker-launch-mode.md), [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md); [Decision 0013](../decisions/0013-execution-ownership-and-launch-plans.md) (launch plans); [Decision 0017](../decisions/0017-environment-credential-modes.md) (credential modes); environments §7.4, §10.3, §12.1–§12.2; relux-works/curator-credential-broker `spec/broker.md` (draft v0.3); relux-works/curator-host-helper `spec/helper.md` (draft v0.3, with the launcher and `exec.stop`); relux-works/curator-dispatcher `spec/dispatcher.md` (draft v0.2); relux-works/curator-network-profiles (binding records)
+- **Related:** [CIP-0010](CIP-0010-credentials-setup-token-and-inherited-auth.md) (credential sources, protected credential binding C3.4, executor capability, CIP-0003 disposition); [CIP-0008](CIP-0008-remote-worker-launch-mode.md), [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md); [Decision 0013](../decisions/0013-execution-ownership-and-launch-plans.md) (launch plans); [Decision 0017](../decisions/0017-environment-credential-modes.md) (credential modes); environments §7.4, §10.3, §12.1–§12.2; relux-works/swarma-credential-broker `spec/broker.md` (draft v0.3); relux-works/swarma-user-manager `spec/helper.md` (draft v0.3, with the launcher and `exec.stop`); relux-works/swarma-dispatcher `spec/dispatcher.md` (draft v0.2); relux-works/curator-network-profiles (binding records)
 - **Affects:** environments §7.4 and §12.1 (a credential source value), Decision 0013 (the credential extension), the launcher SPEC, the manager command set (`broker`, `agent-user` as a dispatcher client), the final executors (task-board spawn runner first, then the session host and the remote-worker supervisor)
 
 ## Revision 2
@@ -12,14 +12,14 @@ An architecture review on 2026-10-09 kept the direction and found gaps that this
 
 ## Revision 3
 
-The owner decided (2026-10-09) to build the dispatcher as its own platform module, relux-works/curator-dispatcher, instead of folding its work into Curator. `curator agent-user` becomes a client of the dispatcher: the dispatcher, running under its own service account, owns the run records, the grant checks, the capacity gates, provisioning through the helper and the broker, the start through the launcher, and reconciliation. Its v0 is a command run under that account; its v1 is a daemon with a socket for orchestrators and the session host, on the same core.
+The owner decided (2026-10-09) to build the dispatcher as its own platform module, relux-works/swarma-dispatcher, instead of folding its work into Curator. `curator agent-user` becomes a client of the dispatcher: the dispatcher, running under its own service account, owns the run records, the grant checks, the capacity gates, provisioning through the helper and the broker, the start through the launcher, and reconciliation. Its v0 is a command run under that account; its v1 is a daemon with a socket for orchestrators and the session host, on the same core.
 
 ## Summary
 
 CIP-0010 lets a managed home use a credential enrolled once instead of a login per home, but its authentication node lives in one OS user's store and cannot serve agents that run as other OS users. This CIP connects Curator to two platform components:
 
-- **curator-credential-broker** holds each account once, under its own service user, and leases it to launches that a signed grant authorises, identifying the launching process by its kernel-reported UID and the account's never-reused generation. It also runs the single Codex auth owner per account.
-- **curator-host-helper** creates and retires per-agent OS accounts through a closed, journaled operation schema run with `sudo`, and its **launcher** starts one approved executor under one active agent account. (Its v1 adds per-account firewall rules.)
+- **swarma-credential-broker** holds each account once, under its own service user, and leases it to launches that a signed grant authorises, identifying the launching process by its kernel-reported UID and the account's never-reused generation. It also runs the single Codex auth owner per account.
+- **swarma-user-manager** creates and retires per-agent OS accounts through a closed, journaled operation schema run with `sudo`, and its **launcher** starts one approved executor under one active agent account. (Its v1 adds per-account firewall rules.)
 
 Curator gains a credential source `broker:<account>`, the broker mode of the credential extension, a broker client in the final executor, `curator broker …` commands, and `curator agent-user …` commands that play the dispatcher's role until a dispatcher exists. The result is the owners' first MVP shape: one subscription, one machine, a chain of OS accounts, each agent running under its own account and receiving the subscription's credential from the broker.
 
@@ -58,7 +58,7 @@ CIP-0010's single auth owner for Codex personal plans is implemented inside the 
 
 ### 4. Agent OS accounts: the dispatcher and `curator agent-user`
 
-relux-works/curator-dispatcher does the dispatcher's work from the platform design (architecture §7.1): it accepts a launch request, authenticates the caller by its OS account, checks the caller's grant and the machine's capacity, provisions the agent (helper `user.create`, a leaf grant for `agent:<generation>` narrowed to the request and the caller's grant, broker `bind`), starts the executor under the agent account through the helper's launcher, tracks the run in a durable record keyed by the caller's request id, cleans up (unbind, retire), and reconciles after crashes. It runs under its own unprivileged service account, which is the only account configured as a dispatcher in the helper and the broker.
+relux-works/swarma-dispatcher does the dispatcher's work from the platform design (architecture §7.1): it accepts a launch request, authenticates the caller by its OS account, checks the caller's grant and the machine's capacity, provisions the agent (helper `user.create`, a leaf grant for `agent:<generation>` narrowed to the request and the caller's grant, broker `bind`), starts the executor under the agent account through the helper's launcher, tracks the run in a durable record keyed by the caller's request id, cleans up (unbind, retire), and reconciles after crashes. It runs under its own unprivileged service account, which is the only account configured as a dispatcher in the helper and the broker.
 
 Curator's commands are its clients:
 
@@ -96,7 +96,7 @@ A broker account may require a network profile. Curator's launch already resolve
 
 ## Implementation plan
 
-1. **Formats** in curator-credential-broker: grants, revocations and socket frames frozen with canonical and negative vectors; the verifier with its mutant suite.
+1. **Formats** in swarma-credential-broker: grants, revocations and socket frames frozen with canonical and negative vectors; the verifier with its mutant suite.
 2. **Slice 0: one protected Claude launch.** Helper v0 with the launcher; broker slice 0 (file store, local grants and revocations, bind, lease, release, the `env` channel, audit); dispatcher v0 (requests, run records, grants, capacity, provisioning, start, cleanup, reconciliation); in Curator the executor with the broker client, the `broker:` source, the plan extension, `curator broker`, `curator agent-user` as the dispatcher's client, `env status` lines. Acceptance on hosted runners through `curator agent-user` and the dispatcher, with exactly the deployed sudoers rules.
 3. **Slice 1: Codex** external tokens, the enrolment ceremony and the auth owner, qualified on the supported release.
 4. **Slice 2: enforced networking** with helper v1 and applied state.
