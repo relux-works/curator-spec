@@ -21,6 +21,11 @@
 
 - The node secret store is a pluggable backend; the first release ships only a 0600 file backend on macOS and Linux. No Keychain or Secret Service backend in the first release; the interface keeps room for one, and a prompting backend is refused for tracked and headless launches (C1).
 
+## Revision 2.2 (owner decisions 2026-10-10)
+
+- **A launch whose credential source is not configured.** Version 1 keeps `per-home`, today's behaviour; a node, a helper or the broker (CIP-0011) is used only through an explicit entry. Owner, verbatim: «без контекста сегодняшних запусков - как правильно? а можем брать но если вдруг c - правильнее - то просто пишем потом в спеку к v2 конкретно этого решения». The correct end state is an explicit entry for every profile and harness: **version 2 refuses** a launch whose credential source is not configured, and the migration to version 2 writes `per-home` explicitly for every existing home that already holds a login, so nothing that works today breaks.
+- **CIP-0003** is adopted, narrowed, as part of this CIP (C6).
+
 ## Summary
 
 Three related changes. (1) **Adopt `claude setup-token`** (`CLAUDE_CODE_OAUTH_TOKEN`) for tracked and headless launches behind explicit gates: the token is enrolled once into a per-user protected store under an *authentication node*, referenced by an opaque `source_ref`, re-resolved through a protected binding and injected into the harness process environment by the **final executor** only; the plan and the fragment never carry it. (2) **Homes with inherited authentication**: a managed home may start with no credential of its own and use the authentication of a node higher up (the operator's root login or a named account node) instead of a per-home Keychain login on macOS or a per-home `auth.json`; for Claude this is the enrolled token; for Codex it is an access token handed out by a single auth owner per account; each with stated limits. (3) **CIP-0003 disposition**: its `token` mode is the core of this CIP and should be accepted in a narrowed revision; its `shared-file` mode is replaced by the node; `per-home` stays the interactive default; `helper` stays for API keys; its gates, precedence, protected-store reads and migration rules are retained clause by clause. Priority: high, right after v0.15.0-rc.5, with slice 0 (the cross-user broker interface) first, because the owner's MVP, tracked spawns and remote workers depend on it.
@@ -154,8 +159,8 @@ So "inherited authentication" for Claude is one token from `setup-token`, enroll
 
 ## Open questions for the operator
 
-1. **Default for tracked launches once an executor passes the qualification:** keep `per-home` as default and require the knob (recommended), or make `node:root` the default when a root node exists?
+1. **Default for tracked launches once an executor passes the qualification:** decided 2026-10-10: version 1 keeps `per-home`; version 2 requires an explicit entry (Revision 2.2).
 2. **Codex personal plan:** adopt the single auth owner with external tokens (recommended, measured by `rwh`), with the race test at 0.159.0 as the precondition?
-3. **Accept CIP-0003 narrowed together with this CIP** in one decision record (recommended), or keep them separate?
+3. **Accept CIP-0003 narrowed together with this CIP:** decided 2026-10-10, yes.
 4. **Muse:** node kind `meta-api-key` only (recommended), or also an account-login node once refresh semantics are measured?
 5. **Slice 0 before rc.6?** The broker interface is the prerequisite of the owner's MVP; recommended: yes, as the first item after rc.5.

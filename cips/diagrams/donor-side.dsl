@@ -12,8 +12,8 @@ workspace "Remote worker on a donor machine" "CIP-0008/0009: lockdown harness, t
     donor = softwareSystem "Donor machine" "A machine we do not own, lending a harness subscription" {
       curator = container "curator (donor install)" "Go CLI" "init/status/stop/run/leave/purge; consumes the composed lockdown plan; writes the locked machine config (bridge-owned)"
       helper = container "swarma-helper" "privileged helper (sudoers, absolute path)" "closed schema: create-worker, remove-worker, set-egress, apply-sandbox, rollback; allocated identifiers; journal"
-      harnessUser = container "Harness identity swarma-rw-<project>" "OS user, home 0700, quotas, Seatbelt/Landlock read boundary" "the UNTRUSTED side: managed home and scratch dir only"
-      bridgeUser = container "Bridge identity swarma-rb-<project>" "OS user, system service (launchd daemon / systemd)" "the TRUSTED side: keys, locked config, audit, lifecycle state"
+      harnessUser = container "Harness identity worker-<project>" "OS user, home 0700, quotas, Seatbelt/Landlock read boundary" "the UNTRUSTED side: managed home and scratch dir only"
+      bridgeUser = container "Bridge identity swarma-bridge-<project>" "OS user, system service (launchd daemon / systemd)" "the TRUSTED side: keys, locked config, audit, lifecycle state"
       supervisor = container "Bridge service: supervisor" "curator remote-worker run (bridge identity)" "launches the harness as the harness identity; admitted mailbox items become turns via the session-input adapter; budgets, rate, lifetime (trusted-side counters)"
       bridgeCore = container "Bridge service: SSH client + signer + admission" "swarma-bridge (bridge identity)" "one SSH connection to our host (K_ssh, host key pinned, rechecked on every reconnect); signs outbound envelopes with K_sig; admits inbound items; durable cursors; audit"
       keys = container "Key store" "0600 files owned by the bridge identity (keyring-backed later)" "K_sig (Ed25519), K_enc (X25519), K_ssh (Ed25519); unreadable by the harness identity"

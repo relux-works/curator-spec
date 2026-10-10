@@ -5,8 +5,8 @@ title Remote worker on a donor machine, first deployment (revision 3; variant B 
 actor "Donor (the machine's owner)" as ADM
 participant "curator remote-worker init\n(donor install)" as C
 participant "Privileged helper\n(sudoers: this absolute path only;\nclosed schema; journal + rollback)" as PH
-participant "Bridge identity\nswarma-rb-<project>\n(keys, config, audit)" as B
-participant "Harness identity\nswarma-rw-<project>\n(managed home, scratch)" as U
+participant "Bridge identity\nswarma-bridge-<project>\n(keys, config, audit)" as B
+participant "Harness identity\nworker-<project>\n(managed home, scratch)" as U
 database "DNS (DNSSEC, mandatory)\nTXT _swarma, SSHFP, TLSA\n(validated inside the client)" as DNS
 participant "Join point\n(our host, HTTPS: challenge, cert, collect)" as JP
 actor "Operator (our side)\nor orchestrator with onboard grant" as OP
@@ -55,6 +55,6 @@ else admitted
 end
 
 == 4. workplace on our host ==
-OP -> T: provision workplace for K (dispatcher, grant user.create): OS user,\nroot-owned AuthorizedKeysFile entry = K_ssh with restrict + command="/opt/swarma/bin/swarma-rb-exec",\nsshd Match: no forwarding, no PTY, no user rc/env; egress by UID
+OP -> T: provision workplace for K (dispatcher, grant user.create): OS user,\nroot-owned AuthorizedKeysFile entry = K_ssh with restrict + command="/opt/swarma/libexec/swarma-rb-exec",\nsshd Match: no forwarding, no PTY, no user rc/env; egress by UID
 note right of T: see remote-worker-turn for the connection
 @enduml
