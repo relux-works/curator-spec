@@ -81,9 +81,10 @@ jobs:
             --no-progress
             --max-retries 3
             --retry-wait-time 2
-            --accept 200,206,429
+            --accept 200,206,429,503
             '**/*.md'
           fail: true
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   release-provenance:
     name: Release target provenance
