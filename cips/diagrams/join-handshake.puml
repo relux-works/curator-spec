@@ -1,6 +1,6 @@
 @startuml join-handshake
 !theme plain
-title Join handshake (revision 3): a server challenge, a signed canonical transcript, atomic invitation consumption; anchors: the Web PKI, mandatory DNSSEC validated in the client, and the invitation's pins when present
+title Join handshake (revision 3): a server challenge, a signed canonical transcript, atomic invitation consumption; anchors: the Web PKI, DNSSEC validated in the client (default), and the invitation's pins (fallback for an environment without a DNSSEC domain)
 
 participant "Donor bridge identity\n(curator remote-worker init)" as C
 database "DNS: system resolver,\nDNS-over-HTTPS as the fallback\n(signatures validated inside the client)" as R
@@ -11,8 +11,8 @@ participant "Registry / key keeper" as T
 note over C, T
   Anchors before first contact:
   (a) the Web PKI certificate of the join point's domain;
-  (b) mandatory: DNSSEC-secure TXT _swarma.<domain> = root fingerprint, SSHFP = our SSH host key, TLSA = the join point's TLS key, validated inside the client from the embedded root trust anchor;
-  (c) when invited: the invitation (marketplace deal thread, e-mail, our site) with the same fingerprints and a one-use random code (>= 128 bits).
+  (b) default: DNSSEC-secure TXT _swarma.<domain> = root fingerprint, TXT _swarma-ssh-ca.<domain> = our SSH host CA key, TLSA = the join point's TLS key, validated inside the client from the embedded root trust anchor (a closed network brings its own zone trust anchor);
+  (c) the invitation (marketplace deal thread, e-mail, our site) with the same fingerprints and a one-use random code (>= 128 bits): the fallback when the environment has no DNSSEC domain, a cross-check otherwise.
   Proof of possession: the transcript signed over a SERVER challenge (not a client nonce).
   No human second channel and nothing for the donor to configure. No step downgrades on failure.
 end note
@@ -20,9 +20,9 @@ end note
 C -> JP: POST /join/challenge {invitation_id}
 JP -> JP: invitation known, unexpired, not consumed? attempt counter
 JP --> C: server_challenge (5 min)
-C -> R: TXT _swarma, SSHFP, TLSA
+C -> R: TXT _swarma, TXT _swarma-ssh-ca, TLSA
 R --> C: records + validation state (secure | bogus | indeterminate)
-C -> C: secure: must equal the invitation when present; bogus: refuse;\nindeterminate: retry over DNS-over-HTTPS, then refuse (dns_unverifiable)
+C -> C: secure: must equal the invitation when present; bogus: refuse;\nindeterminate: retry over DNS-over-HTTPS, then refuse (dns_unverifiable);\nan invitation that declares no DNSSEC domain: proceed on its pins, recorded
 C -> C: transcript = canonical CBOR, domain-separated:\n{version, invitation_id, project, role, K_sig, K_enc, K_ssh, server_challenge, client_nonce, expires_at, algorithms}
 C -> JP: HTTPS: Web PKI for the domain, pinned by the TLSA record (and the invitation when present)
 C -> JP: POST /join/cert {transcript, sig_K_sig(transcript), code}
@@ -35,14 +35,14 @@ OP -> JP: release package for <invitation_id>
 C -> JP: POST /join/challenge {invitation_id} (second challenge)
 C -> JP: POST /join/collect {invitation_id, sig_K_sig(second challenge)}
 JP --> C: package
-C -> C: decrypt with K_enc; verify operator cert chain to the pinned root;\nverify package signature; check AAD; pin our SSH host key from the package\nAND cross-check against the invitation (and SSHFP when secure)
+C -> C: decrypt with K_enc; verify operator cert chain to the pinned root;\nverify package signature; check AAD; pin our SSH host CA key from the package\nAND cross-check it against DNS (or the invitation)
 
 note over C, T
   Pinned afterwards:
-  on our side K_sig, K_enc, K_ssh in the registry and K_ssh in the root-owned authorized-keys file of the workplace user;
-  on the donor side our root, the operator certificate, our SSH host key, the binding digest, the qualified tuple, the policy generation.
+  on our side K_sig, K_enc, K_ssh in the registry; K_ssh reaches the workplace user only through short certificates of our user CA (TrustedUserCAKeys);
+  on the donor side our root, the operator certificate, our SSH host CA key (@cert-authority), the binding digest, the qualified tuple, the policy generation.
   Every later message: signed over exact bytes by K_sig on the donor, fresh, replay-checked, grant-checked (ADM).
   Replay: cert/collect meet the tombstone; frames meet connection-scoped ids and op_key caches.
-  Rotation: our host key -> new SSHFP + "init --rotate-host" with a fresh invitation; operator cert -> root-signed record; K -> revoke + new enrolment.
+  Rotation: a new host key gets a new host certificate (no DNS change); a host CA rotation publishes the new key beside the old; operator cert -> root-signed record; K -> revoke + new enrolment.
 end note
 @enduml
