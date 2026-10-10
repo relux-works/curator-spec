@@ -1,0 +1,73 @@
+@startuml remote-worker-turn
+!theme plain
+title Remote worker turn (revision 2): the harness has no local tools; the relay (harness identity) forwards to the bridge service (bridge identity), which carries every tool call and the mailbox over ONE SSH connection from the donor to our host; our host never connects back
+
+box "Donor machine: harness identity (sandboxed, egress = proxy only)" #WhiteSmoke
+  participant "Harness\n(Claude / Codex / Muse, lockdown plan)" as H
+  participant "swarma-remote-tools\n(stdio relay; no keys, no network)" as MCP
+  participant "Provider proxy" as PX
+end box
+box "Donor machine: bridge identity (keys, audit, cursors)" #WhiteSmoke
+  participant "Bridge service\n(supervisor + SSH client + signer + admission)" as SUP
+end box
+box "Our host" #WhiteSmoke
+  participant "sshd + forced command\nswarma-rb-exec (workplace user)" as RB
+  participant "Workplace\n(OS-user backend, swarma-workplace-exec/1)" as WP
+  participant "Bridge\n(broker, mailbox, M3)" as BR
+end box
+participant "Orchestrator" as O
+
+== standing connection ==
+SUP -> RB: ssh workplace-user@host with K_ssh; host key checked against the pin on EVERY connection (no TOFU)
+RB --> SUP: hello {versions:[1]} / swarma-rb/1 channel open (bounded CBOR frames, flow credits)
+SUP -> RB: policy.get
+RB --> SUP: workplace policy {tools, write scope, network, limits, env_allow} -> effective tool set
+note right of RB: Match block: root-owned AuthorizedKeysFile, restrict, no forwarding, no PTY,\nno user rc/env; forced command by absolute path; reconnect is the donor side's job
+
+== launch ==
+SUP -> SUP: obtain the composed plan from the construction site (agents-management);\ncheck expect_pin, tool_posture=lockdown, permissions=remote-auto, policy generation, qualified tuple;\nvalidate the expanded launch against the generated policy; resolve credential_binding/1
+SUP -> H: start as the harness identity under the Seatbelt profile\n(e.g. claude --restricted --tools "" --strict-mcp-config --mcp-config <protected> --settings <protected>\n--setting-sources "" --disable-slash-commands --permission-prompts none --allowedTools mcp__swarma-remote-tools__*;\ntoken in the harness environment only, CIP-0010)
+H -> MCP: MCP initialize; tools/list = effective set (policy intersection)
+
+== task arrives ==
+O -> BR: signed task message to the worker (snapshot of one element)
+BR -> BR: verify signature, grant, decision guard, fence; mailbox record; cursor++
+BR -> RB: mailbox.notify {message_id, cursor} (advisory)
+RB -> SUP: frame mailbox.notify
+SUP -> RB: mailbox.read {from_cursor}
+RB -> BR: read
+BR --> RB: items + verification records
+RB --> SUP: frames
+SUP -> SUP: DONOR-SIDE ADMISSION: verification record present, target binding = this worker,\nunexpired, not fenced/revoked, delivery mode allowed; dedup by message_id; persist; cursor++
+SUP -> H: next turn through the session-input adapter: "validated message <id>" + snapshot
+SUP -> RB: mailbox.applied {message_id} (application receipt, distinct from the transport reply)
+
+== work ==
+loop each tool call
+  H -> MCP: tools/call bash {cmd, cwd, timeout}
+  MCP -> SUP: forward over the relay socket (peer credentials checked)
+  SUP -> SUP: audit line {tool, args_sha256, bytes, at}; budget counters (trusted side)
+  SUP -> RB: frame exec {id, op_key, cmd, cwd, env (env_allow only), timeout_s <= policy, max_output_bytes <= policy, lease_s}
+  RB -> WP: run as the workplace user in its own process group with a lease; audit {who, what, when, policy id}
+  WP --> RB: stdout/stderr frames (seq), exit
+  RB --> SUP: frames (result cached by op_key for 10 min)
+  SUP --> MCP: result
+  MCP --> H: tool result
+end
+H -> PX: model API calls (the only egress of the harness identity)
+alt the model requests a built-in tool (Bash, Edit, WebFetch ...)
+  H -> H: harness returns an error tool result (tool not available);\nthe tripwire logs the name after dispatch and may end the turn
+end
+alt SSH channel drops mid-turn
+  SUP -> SUP: pause the turn loop; running turn continues to its deadline;\ntool calls fail with channel_down (retryable); result post queued durably with its op_key
+  SUP -> RB: reconnect with backoff; host key rechecked; catch up from the durable cursor;\nreplay-safe: cached result or unknown_result, never a second effect
+end
+
+== result ==
+H -> MCP: tools/call mailbox_post {binding, text} (offered only when the policy grants it)
+MCP -> SUP: forward
+SUP -> SUP: build the FINAL envelope (canonical bytes; audience/thread from the task record);\nsign with K_sig (never leaves the bridge identity)
+SUP -> RB: frame mailbox.post {op_key, envelope_bytes, signature}
+RB -> BR: verify K_sig signature, grant, freshness; admit
+BR -> O: carry the bytes UNCHANGED under the worker's carrier account (distinct authority, audited) -> outcome proposal
+@enduml
