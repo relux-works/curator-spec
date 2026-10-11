@@ -1,14 +1,22 @@
 # CIP-0006: Legacy provider settings and MCP opt-outs
 
 - **Status:** Accepted (operator, 2026-10-10): the narrow profile-settings record
-- **Owner:** ivan-curator (orchestrator); decision: operator
+- **Owner:** orchestrator; decision: operator
 - **Created:** 2026-10-04
 - **Related:** [curator#105 — preserve legacy provider settings and explicit MCP opt-outs](https://github.com/relux-works/curator/issues/105); Decision 0014 — tool-configuration surfaces (**proposed, not adopted**); Decision 0018 — curator run permission interface (**adopted**); TASK-261004-2iewnz — research-105-design-and-implementation-plan; STORY-261004-3v2zm2 — legacy-provider-settings-and-mcp-optouts-105; TASK-260927-367jb7 — infra-exit (external dependency named by the brief); TASK-260929-3hrwzn — transactional-legacy-config-import (PM-owned importer).
 - **Affects:** environments §§5.8, 7.4, 7.8, 8, 9.2, 10, 12–13; manager configuration and profile cleanup; CLI `env config`, `env resolve`, `env status`; implementations: curator, curator-run/launcher and its agents-management integration; PM importer as a consumer.
 
+## Operative disposition (2026-10-11)
+
+- **Decided:** Accepted on 2026-10-10: the narrow machine-owned profile_settings record on existing profiles. Package settings and Decision 0014 as a whole remain outside this acceptance. Presence, scope, negative MCP intent and conservative key ownership must be preserved.
+- **Open:** Project/global selection, bounded native-rule semantics, provider suppression and deny/release details retain the explicit alternatives in Open questions. Coordinated schemas and adapter qualification remain pending.
+- **Superseded:** The no-acceptance statement and the option-A-versus-package-authority approval question are superseded by narrow acceptance. Detailed subcontracts do not become accepted merely because the header is Accepted.
+
+[Cross-CIP contract, schema owners and versions](platform-contract-disposition.md) records the canonical values and owner decisions. Acceptance records design disposition; schema publication, implementation and runtime qualification are separate. Current-state observations and companion probes below are historical at their stated pins, not rerun evidence.
+
 ## Summary
 
-Add one closed, machine-owned `environments.profile_settings.<profile>` record to the existing profile configuration surface, covering exactly the nine provider paths and per-server MCP choices in issue #105. Keep global and project declarations separate, apply them through the existing managed-home resolver, and expose explicit negative MCP intent through the existing launch fragment. Curator owns only the selected configuration keys, preserving unrelated managed values and leaving native provider files and authentication stores untouched. This is a narrow adoption of the machine-configuration approach discussed in Decision 0014, not adoption of that decision or its package-distribution, rules, model, or plugin-installation proposals. Every new name and behavior below is proposed; none is claimed to exist on current main.
+Add one closed, machine-owned `environments.profile_settings.<profile>` record to the existing profile configuration surface, covering exactly the nine provider paths and per-server MCP choices in issue #105. Keep global and project declarations separate, apply them through the existing managed-home resolver, and expose explicit negative MCP intent through the existing launch fragment. Curator owns only the selected configuration keys, preserving unrelated managed values and leaving native provider files and authentication stores untouched. This is a narrow adoption of the machine-configuration approach discussed in Decision 0014, not adoption of that decision or its package-distribution, rules, model, or plugin-installation proposals. The authority location is accepted; exact new grammar and unresolved subcontracts below remain proposed; none is claimed to exist on current main.
 
 ## Motivation and user stories
 
@@ -21,7 +29,7 @@ The decision to unblock is **where the narrow import authority lives and how its
 
 ## Current state
 
-Source baseline: curator main `ca1b776fb580ec0cee0173bf150daf063023aeaa`, equal to the worktree HEAD and advertised remote main when inspected. Specification baseline: `v1.0.0-rc.14`, peeled commit `43bf0a2506d5c354a73bbc3ea4623d4653db10c7`. This CIP is filed from the research draft in [.research/261004_CIP-0006-legacy-provider-settings-and-mcp-optouts.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0006-legacy-provider-settings-and-mcp-optouts.md) on `relux-works/curator` `main` @ `fae2ff9c`. Detailed citations, commands, exit codes, and bounds remain in the companion [.research/261004_CIP-0006-legacy-provider-settings-and-mcp-optouts_evidence.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0006-legacy-provider-settings-and-mcp-optouts_evidence.md) at the same commit; they are cited, not copied. The operator has made no acceptance decision on this proposal.
+Source baseline: curator main `ca1b776fb580ec0cee0173bf150daf063023aeaa`, equal to the worktree HEAD and advertised remote main when inspected. Specification baseline: `v1.0.0-rc.14`, peeled commit `43bf0a2506d5c354a73bbc3ea4623d4653db10c7`. This CIP is filed from the research draft in [.research/261004_CIP-0006-legacy-provider-settings-and-mcp-optouts.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0006-legacy-provider-settings-and-mcp-optouts.md) on `relux-works/curator` `main` @ `fae2ff9c`. Detailed citations, commands, exit codes, and bounds remain in the companion [.research/261004_CIP-0006-legacy-provider-settings-and-mcp-optouts_evidence.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0006-legacy-provider-settings-and-mcp-optouts_evidence.md) at the same commit; they are cited, not copied. At the original research pin no acceptance decision had been recorded; the operative disposition above records the later acceptance and its scope.
 
 | Surface | What exists | Consequence for #105 |
 |---|---|---|
@@ -225,7 +233,7 @@ Run platform CI on Linux, macOS and Windows for parsing, path identity, case col
 
 ## Open questions for the operator
 
-1. **Approve the narrow authority location?** Recommended: option A, the machine-owned `profile_settings` knob on existing profiles. Keep package distribution and Decision 0014 adoption deferred. If portable settings packages are required now, choose B explicitly and add its trust/admission leaf.
+1. **Authority location — decided, 2026-10-10.** Option A, the narrow machine-owned `profile_settings` knob on existing profiles, is accepted. This approval question is superseded; package distribution and Decision 0014 adoption remain deferred. Portable settings packages require a separate decision.
 2. **Approve project selection and the meaning of global?** Recommended: explicit named project profiles with guarded roots; PM copies the preserved global contribution into each migrated profile record and selects that profile through existing launch configuration. No automatic cwd profile selector or implicit all-profile inheritance. Confirm the PM consumer can supply that existing selection before its importer switches over.
 3. **Approve the bounded native-rule contract and semantic preservation?** Recommended: refuse unproved rule forms and values, preserve supported values and source intent, and permit managed JSON/TOML formatting changes while preserving unrelated parsed values. Source-relative permission anchors must be translated and tested; no raw relocation. `status_line_use_colors` must be verified at L2, or reported as an unresolved source value that still blocks retirement.
 4. **Approve old-Codex-home suppression if the reserved layer cannot express it?** Recommended: first prove explicit `enabled=false` in the existing layer. If the pinned tool rejects negative-only layering, authorize key-level suppression only in the managed base, with projection ownership and conservative restoration. If neither suppresses a higher-precedence source reliably, refuse that launch and request a pinned-provider/spec decision; do not purge/re-provision auth homes or silently drop the opt-out.

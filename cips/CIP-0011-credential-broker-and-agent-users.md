@@ -1,10 +1,18 @@
 # CIP-0011: Credential broker leases and agent OS users
 
 - **Status:** Draft (revision 3)
-- **Owner:** ivan-curator (orchestrator); decision: operator
+- **Owner:** orchestrator; decision: operator
 - **Created:** 2026-10-09
 - **Related:** [CIP-0010](CIP-0010-credentials-setup-token-and-inherited-auth.md) (credential sources, protected credential binding C3.4, executor capability, CIP-0003 disposition); [CIP-0008](CIP-0008-remote-worker-launch-mode.md), [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md); [Decision 0013](../decisions/0013-execution-ownership-and-launch-plans.md) (launch plans); [Decision 0017](../decisions/0017-environment-credential-modes.md) (credential modes); environments §7.4, §10.3, §12.1–§12.2; relux-works/swarma-credential-broker `spec/broker.md` (draft v0.3); relux-works/swarma-user-manager `spec/helper.md` (draft v0.3, with the launcher and `exec.stop`); relux-works/swarma-dispatcher `spec/dispatcher.md` (draft v0.2); relux-works/curator-network-profiles (binding records)
-- **Affects:** environments §7.4 and §12.1 (a credential source value), Decision 0013 (the credential extension), the launcher SPEC, the manager command set (`broker`, `agent-user` as a dispatcher client), the final executors (task-board spawn runner first, then the session host and the remote-worker supervisor)
+- **Affects:** environments §7.4 and §12.1 (a credential source value), Decision 0013 (the credential extension), the launcher SPEC, the manager command set (`broker`, `agent-user` as a dispatcher client), agent-account curator-run as first broker consumer; board/session-host dispatcher clients; donor supervisor later
+
+## Operative disposition (2026-10-11)
+
+- **Decided:** The dispatcher is a separate module. D-EXECUTOR selects agent-account curator-run first: caller composes, executor verifies and executes without profile resolution and with no network except the broker; it shares a launch library with swarma-session-runner. Board and session host call the dispatcher. D-WIRE-NAMES governs platform identifiers.
+- **Open:** The executor intake release/grammar, general-grant adapter/registry, helper v2 signature grammar and joint launch-ticket/host-role activation remain pending; the shared contract states owner options. Codex is slice 1 with qualification; networking is slice 2.
+- **Superseded:** Commands playing dispatcher, board-spawn-first and the first-consumer recommendation question are superseded by the separate dispatcher decision and D-EXECUTOR. Acceptance of a direction does not publish a schema or attest a running cross-user launch.
+
+[Cross-CIP contract, schema owners and versions](platform-contract-disposition.md) records the canonical values and owner decisions. Acceptance records design disposition; schema publication, implementation and runtime qualification are separate. Current-state observations and companion probes below are historical at their stated pins, not rerun evidence.
 
 ## Revision 2
 
@@ -21,7 +29,7 @@ CIP-0010 lets a managed home use a credential enrolled once instead of a login p
 - **swarma-credential-broker** holds each account once, under its own service user, and leases it to launches that a signed grant authorises, identifying the launching process by its kernel-reported UID and the account's never-reused generation. It also runs the single Codex auth owner per account.
 - **swarma-user-manager** creates and retires per-agent OS accounts through a closed, journaled operation schema run with `sudo`, and its **launcher** starts one approved executor under one active agent account. (Its v1 adds per-account firewall rules.)
 
-Curator gains a credential source `broker:<account>`, the broker mode of the credential extension, a broker client in the final executor, `curator broker …` commands, and `curator agent-user …` commands that play the dispatcher's role until a dispatcher exists. The result is the owners' first MVP shape: one subscription, one machine, a chain of OS accounts, each agent running under its own account and receiving the subscription's credential from the broker.
+Curator gains a credential source `broker:<account>`, the broker mode of the credential extension, a broker client in the final executor, `curator broker …` commands, and `curator agent-user …` commands that act only as clients of the separate `swarma-dispatcher` module. The result is the owners' first MVP shape: one subscription, one machine, a chain of OS accounts, each agent running under its own account and receiving the subscription's credential from the broker.
 
 ## Motivation
 
@@ -34,7 +42,7 @@ Curator gains a credential source `broker:<account>`, the broker mode of the cre
 
 CIP-0010's `credential_source.<profile>.<harness>` (user-owned layer, never lockable) gains the value `broker:<account>`, naming a broker account id. The value enters the closed configuration schema together with its CLI and marker changes; a Curator profile's bytes still never select accounts, endpoints, executables or injected values (environments §10.3), and no system lock selects credential material (§12.2).
 
-A profile with this source holds no credential of its own. At every launch the final executor, running under the agent's account, requests a lease and delivers the material through the harness's channel (environment variable at exec, stdin, or the Codex app-server's external tokens), never into argv, files or logs.
+A profile with this source holds no credential of its own. At every launch the final executor, running under the agent's account, requests a lease and delivers the material through the harness's channel (environment variable at exec, stdin, or the Codex app-server's external tokens), never into argv, files or logs. Platform wire identifiers follow the [D-WIRE-NAMES rule and owner/version table](platform-contract-disposition.md#wire-naming-rule); renamed domains require matching module vectors before activation.
 
 `node:<label>` (CIP-0010, the same-user file store) remains for single-user machines without a broker. A machine that runs agents as separate OS accounts uses `broker:`.
 
@@ -58,12 +66,12 @@ CIP-0010's single auth owner for Codex personal plans is implemented inside the 
 
 ### 4. Agent OS accounts: the dispatcher and `curator agent-user`
 
-relux-works/swarma-dispatcher does the dispatcher's work from the platform design (architecture §7.1): it accepts a launch request, authenticates the caller by its OS account, checks the caller's grant and the machine's capacity, provisions the agent (helper `user.create`, a leaf grant for `agent:<generation>` narrowed to the request and the caller's grant, broker `bind`), starts the executor under the agent account through the helper's launcher, tracks the run in a durable record keyed by the caller's request id, cleans up (unbind, retire), and reconciles after crashes. It runs under its own unprivileged service account, which is the only account configured as a dispatcher in the helper and the broker.
+relux-works/swarma-dispatcher does the dispatcher's work from the platform design (architecture §7.1): it accepts a launch request, authenticates the caller by its OS account, checks the caller's grant and the machine's capacity, provisions the agent (helper `user.create`, a leaf grant for `agent:<generation>` narrowed to the request and the caller's grant, broker `bind`), starts the executor under the agent account through the helper's launcher, tracks the execution in a durable record with caller-scoped root request correlation and distinct per-effect idempotency IDs, cleans up (unbind, retire), and reconciles after crashes. It runs under its own unprivileged service account, which is the only account configured as a dispatcher in the helper and the broker.
 
 Curator's commands are its clients:
 
 ```
-curator agent-user create --label dev-7f3 --profile dev --account ivan/claude/personal \
+curator agent-user create --label dev-7f3 --profile dev --account primary/claude/personal \
     [--until <time>] [--network egress-a]            # dispatcher: provision
 curator agent-user run    --label dev-7f3 [--plan <launch plan> | --profile dev]   # dispatcher: start
 curator agent-user run    --dispatch --profile dev …  # dispatcher: dispatch (provision, start, clean up)
@@ -71,7 +79,8 @@ curator agent-user retire --label dev-7f3            # dispatcher: retire
 curator agent-user list
 ```
 
-- Curator composes the plan (compose-only) and passes it to the dispatcher as opaque bytes with its digest; the dispatcher never reads fragments or credentials.
+- Caller-side `curator-run` composes the plan (compose-only) and passes it to the dispatcher as opaque bytes with its digest; the dispatcher never reads fragments or credentials.
+- D-EXECUTOR: agent-account `curator-run` only verifies and executes that caller-composed plan. It does not compose or resolve profiles, and it has no network except the broker. It shares one launch library with `swarma-session-runner`; a minimal separate executor binary remains a later option.
 - In the dispatcher's v0, the client runs the dispatcher command under the dispatcher's account through one sudoers rule; in v1 it talks to the dispatcher's socket. The commands and their results do not change between the two.
 - A caller administers only the agents it provisioned, and can never obtain for an agent more than its own grant allows. Its requests are signed with a key associated with its OS account, and the broker keeps the caller's authorization as a dependency of every binding: revoking the caller's grant cuts its agents' new leases and renewals at once (owner decision 2026-10-10). Arbitrary `sudo -u` is never used instead of the launcher.
 - Platform paths and accounts follow the root `/opt/swarma` (agent accounts `worker-<label>` with homes in `/opt/swarma/workers/`, services in `/opt/swarma/services/`); retired homes are archived under the helper's retention policy.
@@ -97,7 +106,7 @@ A broker account may require a network profile. Curator's launch already resolve
 ## Implementation plan
 
 1. **Formats** in swarma-credential-broker: grants, revocations and socket frames frozen with canonical and negative vectors; the verifier with its mutant suite.
-2. **Slice 0: one protected Claude launch.** Helper v0 with the launcher; broker slice 0 (file store, local grants and revocations, bind, lease, release, the `env` channel, audit); dispatcher v0 (requests, run records, grants, capacity, provisioning, start, cleanup, reconciliation); in Curator the executor with the broker client, the `broker:` source, the plan extension, `curator broker`, `curator agent-user` as the dispatcher's client, `env status` lines. Acceptance on hosted runners through `curator agent-user` and the dispatcher, with exactly the deployed sudoers rules.
+2. **Slice 0: one protected Claude launch.** Helper v0 with the launcher; broker slice 0 (file store, local grants and revocations, bind, lease, release, the `env` channel, audit); dispatcher v0 (requests, run records, grants, capacity, provisioning, start, cleanup, reconciliation); the first broker client in agent-account `curator-run` (D-EXECUTOR; narrow execution only). The caller-side manager publishes the `broker:` source, plan extension, `curator broker`, `curator agent-user` dispatcher-client commands and `env status` lines; those management operations are not part of the agent-account executor mode. Acceptance on hosted runners through `curator agent-user` and the dispatcher, with exactly the deployed sudoers rules.
 3. **Slice 1: Codex** external tokens, the enrolment ceremony and the auth owner, qualified on the supported release.
 4. **Slice 2: enforced networking** with helper v1 and applied state.
 
@@ -115,5 +124,5 @@ Hosted runners only; no account, launcher or firewall test runs on a developer's
 ## Open questions for the operator
 
 1. Resolved (owner, 2026-10-09): the dispatcher is its own module and `curator agent-user` is its client.
-2. Which executor gets the broker client first. Recommended: Curator's own small executor (started by the launcher under the agent account); the board's spawn path and the session host then start agents through the dispatcher instead of embedding the client.
-3. Grant registry beyond the broker's local state: open platform question (D-R6).
+2. **First consumer — decided, 2026-10-11 (D-EXECUTOR).** `curator-run` under the agent account gets the first broker client. Board spawn and session host call the dispatcher, which launches through `curator-run`; neither embeds a client. The earlier approval question is superseded. Intake schema/version publication and qualification remain R-LR1 work.
+3. **Grant registry — OPEN (D-R6).** Retain broker-local envelopes/state for the first slice, or publish a separately versioned shared registry/verifier adapter for general platform grants. General `grant/1` role/action grammar is not the broker's closed envelope; no adapter or registry activation is claimed.

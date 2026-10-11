@@ -1,0 +1,111 @@
+# Cross-CIP platform contract disposition
+
+## Authority and status
+
+This is the shared R-CS2 disposition for CIP-0002 to CIP-0007, CIP-0010 and CIP-0011, dated 2026-10-11. Canonical values come from the [platform contract table](https://github.com/relux-works/curator/blob/177cb554/.research/261010_platform-contract-table.md); coverage comes from [audit R-CS2, D1 and C4](https://github.com/relux-works/curator/blob/48789217/.research/261010_platform-docs-audit.md). The later owner decisions supplied in the task precondition `owner-decisions-20261010-audit.md` override the table only where stated: D-EXECUTOR resolves N6/P1/C9, D-PATH resolves X1, D-WIRE-NAMES replaces W2's historical domain retention and qualifies W3/I4 naming; the other decisions retain their own scopes.
+
+**Decided** means accepted direction. **Specified** means a module's pinned design. **Open** means an owner choice remains; a recommendation does not resolve it. **Superseded** text is design history. None of these labels, or an Accepted CIP header, establishes schema publication, implementation or runtime qualification. Current-state probes at older pins remain historical; no test, build, login or renderer result is claimed here.
+
+## Managed and interactive PATH
+
+**D-PATH, accepted 2026-10-11:** after child-environment admission, managed launches use, in order:
+
+1. The protected tool directory of this launch (CIP-0007).
+2. The admitted base PATH of this user, in its existing order.
+3. One protected manager dispatcher directory, through which project commands run only after checks (CIP-0002).
+
+Repository `.agents/bin` is never executed in a managed launch. The resolved PATH is recorded in the launch plan and covered by its digest. Excluded/absent PATH must not be recreated; malformed/unreadable admission state refuses command capability. Direct and tracked launches must bind the same context, destination transformation and resolved PATH; caller PATH literals do not replace destination admission. The exact coordinated fragment/transform grammar remains pending. The reserved `path_prepend` field at the historical launcher pin does not implement this recipe.
+
+CIP-0004 concerns interactive shell activation: inherited PATH, optional global bin, optional project bin, appended without sourcing any env file. That hook's bins confer no managed-launch authority. On entering/switching/leaving a project, restore the owned prior snapshot, clear old project state and activate the newly discovered scope; on opt-out clear project state and retain only an enabled global scope. Cache refresh retains the selected options; loaded old shell functions need reload/restart and must not be reported current by inference. See [CIP-0004 compatibility and migration](CIP-0004-shell-hook-without-sourcing-and-path-append.md#compatibility-and-migration).
+
+Enforced script-worker commands retain the core declared-interpreter/exec PATH contract; inherited PATH is discarded there. D-PATH does not widen that lane.
+
+## Executor and consumer phases
+
+**D-EXECUTOR, confirmed 2026-10-11:** agent-account `curator-run` is the first broker consumer. It only verifies and executes a plan composed on the caller's side; it never composes or resolves profiles under the agent account and has no network except the broker. It shares one launch library with `swarma-session-runner`. A separate minimal executor binary is a later option.
+
+| Phase | Request/composition owner | Launch and credential owner | Publication/qualification limit |
+|---|---|---|---|
+| Human direct / interactive hosting | Caller-side `curator-run`; the existing shared launch construction site owns harness flags | Existing direct/hosting contract | Preserved separately from the Swarma one-shot amendment |
+| Broker slice 0, one protected Claude launch | Board, session host or other caller asks `swarma-dispatcher` with a caller-composed plan | Dispatcher admits/provisions/tracks; root `swarma-user-launcher` passes the immutable plan to approved agent-account `curator-run`; that executor leases and injects | First consumer decided; versioned intake, required-understanding checks and supported-release qualification pending R-LR1 |
+| Later Codex / enforced networking | Same dispatcher boundary | Codex single broker auth owner and external-token lane in slice 1; helper v1 applied network state in slice 2 | Codex adoption/qualification question remains open; no current support inferred |
+| SH2 session runner / donor integration | Session host requests dispatcher; donor has its separately specified supervisor | Agent-side `swarma-session-runner` owns PTY/app-server and lease renewal in the SH2 target; donor supervisor is a later qualified executor | Shared library is accepted; joint host-role/ticket activation and donor qualification remain separate |
+
+Board runner and session host do not embed the first broker client. Dispatcher is its own module; `curator agent-user` is a client, never a temporary dispatcher substitute. [Decision 0021 amendment v1](../decisions/0021-sessions-enter-through-curator-run.md#amendment-v1--agent-account-one-shot-execution-2026-10-11) records the narrow amendment. The illustrative `exec --plan-fd N` entry is not published CLI syntax. The helper's specified plan FD3 transport does not settle the executor command grammar or release version.
+
+## Credential source, channel and disposition
+
+Source-policy **v1** treats a missing entry as `per-home`; node/helper/broker use requires an explicit user-owned entry. Source-policy **v2** refuses missing entries and migrates existing logins to explicit `per-home`. These policy labels are not schema or broker wire versions. `isolation` remains the independent native-store sharing axis.
+
+The first node and broker secret stores are 0600 files inside owner-only 0700 directories on macOS/Linux. Keychain and Secret Service node backends are later work; a prompting backend cannot serve tracked/headless launches. Native per-home Keychain observations do not contradict this node-store decision. Source/channel binding admits no fallback: failed, partial or unreadable state is an error, never absence. Plans/fragments contain metadata only; the destination executor re-resolves the protected binding and qualifies effective source and covered children. The harness can read its injected credential; no universal secret-free-agent claim is made.
+
+| Provider / source | Channel | Phase and owner decision |
+|---|---|---|
+| Native per-home | Provider-native local channel/store under admitted isolation | Retained v1 default; enrollment never permits native-login copying/export |
+| Claude enrolled setup-token via node/broker | `CLAUDE_CODE_OAUTH_TOKEN` in harness environment at exec; no launch credential file or native fallback | First protected provider launch, broker slice 0; no refresh; re-enroll/restart on expiry/auth failure |
+| Claude API-key helper | Qualified protected helper pipe | Separate API-key lane retained from CIP-0003; no subscription equivalence or mode fallback |
+| Codex personal node/broker | External access token plus account ID into a per-session app-server; no launch `auth.json` or broker-mode `codex exec` | One auth owner per account, broker slice 1; supported-release qualification and C4 owner adoption choice still open |
+| Codex Business/Enterprise explicit token | `CODEX_ACCESS_TOKEN` | Specified later lane, outside first release; no broker refresh |
+| Muse API key | Explicitly selected `META_API_KEY` or supported `exec --api-key-stdin` | Separate API-key lane; exact executor/harness admission required |
+| Gemini/agy/qwen API key | Explicit provider API-key environment channel | Per-harness admission required; no automatic channel substitution |
+| Muse subscription | Source/refresh/channel reserved | Open C7 choice: prioritize evidence-based qualification or defer; no subscription parity promised |
+
+[CIP-0010 C6](CIP-0010-credentials-setup-token-and-inherited-auth.md#recommendation) is the clause-by-clause CIP-0003 disposition: token becomes node, helper remains API-key, shared-file is replaced by node, Linux linked-file behavior stays legacy with unqualified refresh safety. Precedence, validation/no-fallback, inspect → plan → apply, marker coordination and final-executor capability checks survive. The earlier Keychain-first token implementation and recommended-default questions are superseded.
+
+## Wire naming rule
+
+**D-WIRE-NAMES, 2026-10-11:** versioned platform-module wire identifiers carry their repository name: `swarma-<component> <object>/<n>`. Nothing has shipped; no migration is required. This is an explicit owner rename before shipping, not an inference from executable renaming. Owning module documents and canonical/verifier vectors must publish the same bytes before activation.
+
+Broker grant and revocation domains are now `swarma-credential-broker grant/1` and `swarma-credential-broker revocation/1`, replacing historical `curator-broker …/1`. Each domain is followed by newline and CCJ-1 body; grant IDs hash the same preimage. Dispatcher mutating signatures remain `swarma-dispatcher request/1`, newline and CCJ-1 request without `auth`. The broker peer-authenticated transport does not thereby gain a signed request format.
+
+The rule also prefixes the existing user-manager request kinds and dispatcher/broker transport and record identifiers in the table below. It does not invent a user-manager v2 signature domain, launch-ticket object/version, canonical bytes or host-role schema where none has been published. Curator credential extension/capability labels remain the separate Curator-owned contracts; general platform grants are not interchangeable with broker envelopes.
+
+## Schema owner and version table
+
+Module owners are the pinned [broker specification](https://github.com/relux-works/swarma-credential-broker/blob/f910e68f882900f03ffd036ecc2481f35bf8988b/spec/broker.md), [dispatcher specification](https://github.com/relux-works/swarma-dispatcher/blob/9cec4115b8666aa1f3325a792359135a9df5a2f7/spec/dispatcher.md) and [user-manager/helper specification](https://github.com/relux-works/swarma-user-manager/blob/92bdf1d59478b8fd28d2d98cfe9fb95716d10e8e/spec/helper.md); section owners below follow the contract table. D-WIRE-NAMES is a later override to those pinned designs.
+
+This is the single coordination table for these CIPs. A named candidate is a reservation/proposal, not a shipped schema. Existing frozen shapes remain unchanged. Manager/fragment/marker v4 proposals in CIP-0002, CIP-0003 and CIP-0006 must be published together with the credential amendments, or explicitly deferred; they cannot each allocate incompatible v4 shapes. Exact release pins and still-unallocated candidate numbers must be checked at publication.
+
+| Schema / contract | Owner and normative landing | Version / naming disposition | Adoption limit |
+|---|---|---|---|
+| Project declaration, composition, approval and lease | CIP-0002; Curator manager and environments contracts | Closed grammar/references/limits pending; no new fixed version | Draft operator model, not supported project CLI |
+| Manager machine configuration | Curator manager / environments §12; CIPs 0002/0003/0006/0010/0011 | `manager-config-v4` candidate after v3; coordinate project, settings and source members | Unpublished coordinated revision |
+| System configuration | Manager system policy; CIP-0006 | `system-config-v3` candidate after v2 for settings policy | Credentials remain user-owned and not lock-selected |
+| Launch fragment and PATH transform | Environments §10, manager emitter, launcher consumer; CIPs 0002/0003/0006/0007 | `launch-env-fragment-v4` candidate after v3; exact D-PATH/context/settings/source grammar pending | Reserved field or accepted PATH is not implemented transport |
+| Environment marker | Manager materialization / environments §8; CIPs 0003/0006/0010 | `agent-environment-marker-v4` candidate after v3; metadata only | No login/backend attestation from GOOS or marker alone |
+| Credential launch-plan extension | Decision 0013 §6.4, launcher SPEC; CIPs 0010/0011 | Required `works.relux.curator.credential/1` proposal | Old/unsupported executors refuse; never secret values |
+| Credential binding and injection capability | CIPs 0010 C3 / 0011 §2; broker §8.2 and launcher intake | `credential_binding/1`, `credential-injection/1` | Protected destination resolution and qualification; capability alone is not authority |
+| Narrow one-shot plan intake | Launcher SPEC / R-LR1 and Decision 0021 amendment v1 | Separate versioned intake/release pending; no number invented | D-EXECUTOR rails accepted; activation waits for publication and qualification |
+| Interactive hook/cache metadata | CIP-0004 → Manager §8 and conformance | Accepted `no-source-v1`; proposed cache `schema_version: 1` | Native shell/cache qualification pending; no fragment bump merely to stop sourcing |
+| CLI secret transport and audit backend/cache descriptors | CIP-0005 → CLI/Manager audit and registry §9.1 | Transport first accepted; closed descriptor/cache versions and vectors pending | No headless broker capability implied |
+| Tool declaration, lock and registry records/trust | CIP-0007 → core §4, registry §§1–5, skillfile-sources §3, manager | Option B accepted; declaration/record/schema revisions pending | Keys in system/fleet config and separate bundle; service/distribution questions below |
+| Broker grant / revocation signed domains | `swarma-credential-broker` spec §§6.1–6.4 | `swarma-credential-broker grant/1`, `swarma-credential-broker revocation/1` (D-WIRE-NAMES) | General `grant/1` role/action grammar needs a separately versioned adapter |
+| Broker peer-authenticated frames | Broker spec §13 | `swarma-credential-broker broker/1` by D-WIRE-NAMES, hello versions `[1]`; replaces unprefixed `broker/1` | Transport identity, not a broker request-signature domain |
+| Dispatcher command / socket and signed domains | `swarma-dispatcher` spec §§3.3, 4.5, 8 | `swarma-dispatcher dispatch-op/1`, `swarma-dispatcher dispatch/1`; `swarma-dispatcher request/1`, `swarma-dispatcher effect/1` | D-WIRE-NAMES applies to command/socket labels; signature/effect domains already repository-prefixed |
+| Dispatcher allocation / execution records | Dispatcher spec §§4.3–4.4 | `swarma-dispatcher agent/1`, `swarma-dispatcher run/1` by D-WIRE-NAMES | `agent_id`, dispatcher `run_id`, execution claim `execution_id` and board IDs remain distinct |
+| User-manager helper / launcher requests | `swarma-user-manager` spec §§2–3, 7 | `swarma-user-manager helper-op/1`, `swarma-user-manager launch-op/1`, `v:1` (D-WIRE-NAMES) | Configured sudo caller/role policy in v0/v1; grants refused until v2; no signed-request grammar invented |
+| User-manager v2 signed request | User-manager §9 with dispatcher/grant owners | Domain/object/version/canonical bytes open (W3) | Choose component-specific format or versioned shared adapter before activation |
+| Launch ticket and host role | Joint dispatcher §12, user-manager extension, session-host §§3.3–3.4 | Object/version/signature bytes and role schema open (I4); eventual issuer namespace `swarma-dispatcher` per D-WIRE-NAMES | Jointly version and activate, or leave SH2 backend disabled |
+
+## Open owner questions and related decision boundaries
+
+| Question / contract row | Owner | Explicit options / current disposition |
+|---|---|---|
+| Default registry configuration, trust-bundle delivery and snapshot distribution (X2 / A09.4) | CIP-0007 registry and manager owners; operator | Ship editable system/fleet default entry and separate release trust bundle with a pinned snapshot, or fetch a signed snapshot on first use using configured pins. A network may replace the bundle/configuration. Which concrete delivery contract and publisher/service? Reviewed file snapshots or an operator-owned registry service remain options. No concrete URL, keys or delivery grammar chosen. |
+| Tool grammar and option C (CIP-0007) | Core/registry/manager owners; operator | `dependencies.tools` versus a separately versioned system-command extension; own namespace versus upstream identities. Retain accepted B now; separately charter C client resolution versus pre-signed service records, expected-signer ownership and downgrade/air-gap authorization. |
+| Personal-plan Codex adoption/qualification (C4) | CIP-0010 / broker owner; operator | Adopt single auth owner with external tokens and named supported-release evidence, or defer the lane. Historical race evidence is not current qualification. |
+| Muse subscription (C7) | CIP-0010 / broker owner; operator | Prioritize source/refresh/channel qualification from evidence, or defer and keep the API-key lane separate. |
+| Remaining launch intake publication (N6/P1) | Launcher R-LR1 with dispatcher/user-manager owners | D-EXECUTOR resolves the executor model. Publish the narrow versioned intake/verification/receipts and qualified release before activation, or defer activation; do not reopen the chosen first consumer. |
+| Shared grant adapter / registry (W2/W4; CIP-0011 D-R6) | Broker / platform trust owners | Retain broker-local envelopes/state, or publish a versioned general-grant/keeper adapter and registry with explicit key/role mapping. Caller keys, broker software root and keeper identity keys remain separate. |
+| Helper v2 signed bytes (W3) | User-manager / platform trust owners | Explicit component-specific signed format, or versioned shared adapter. D-WIRE-NAMES fixes the naming rule only, not unpublished grammar. |
+| Launch ticket/host-role activation (I4) | Dispatcher, user-manager and session-host jointly | Jointly version and activate, or leave SH2 backend disabled. Ticket generation, execution ID, ticket epoch and controller epoch remain distinct. |
+| Retire `keep` request (P7) | User-manager owner / operator | Admit operator-only `keep` and align the closed schema, or remove it from policy and retain archive/delete. Dispatcher/installer authority is not expanded. |
+| Release scheduling / reauthentication (CIP-0010) | CIP and harness owners / operator | Schedule slice 0 in the proposed release window or defer; re-enroll/restart after setup-token failure, with no automatic fallback. Supported-release recovery evidence remains qualification work. |
+
+D-GOALS keeps session host board-free and goal-free: only the initiating caller or optional board/orchestrator authors goals now, with no agent-account goal capability on the host socket. This keeps authorship with the initiating authority while the separate agent namespace/bounds await SH2+ design. A later item chooses self-goals in a separate namespace or continued caller/board-only authorship; no strict coupling to task-board, goals or the orchestrator toolchain is permitted.
+
+D-IDENTITY allows dispatcher revocation only for identities it registered with the one-shot flag, as a separate cleanup operation after account retirement. Standing account retirement preserves identity; only the operator revokes with a signed record. The account helper does not own blanket identity revocation.
+
+D-DONOR-PROVISIONING selects a separate small donor-side privileged component, with its own short spec, rules and removal; libraries may be shared, but binary and privileges are separate from user-manager. Variant B remains disabled until specified. Donor figures and protocol repairs belong to R-CS1, not evidence of supported helper extensions.
+
+D-RESUME settles P8 for native resume on the same machine: semver non-breaking harness changes are allowed (same major, and for 0.x same minor), without an extra qualification row. Different major/0.x minor refuses. Harness failure reports `resume-failed` and the caller decides the next action; no automatic fallback or portable seed. Other integrity/home/profile/lock/auth/grant preconditions retain their scopes. Per-harness notes identify vendors known not to follow semver.

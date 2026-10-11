@@ -1,14 +1,22 @@
 # CIP-0004: Shell hook without sourcing and PATH append
 
 - **Status:** Accepted (operator, 2026-10-10)
-- **Owner:** ivan-curator (orchestrator); decision: operator
+- **Owner:** orchestrator; decision: operator
 - **Created:** 2026-10-04
 - **Related:** TASK-261004-1z2pgb — shell-hook-no-source-and-path-append-design; STORY-261004-7fglii — shell-hook-path-and-backend-env-hardening; K3 / historical S6; reviewer input `shell-hook-test-matrix.md`
 - **Affects:** curator-spec rc.14 Manager §§3, 8, 10 and environment-exposure text; Environments §§11–12; shell conformance vectors; curator hook generation, generated env helpers, cache installation and status. Launcher and launch-fragment contracts require boundary clarification, not a PATH-policy change here.
 
+## Operative disposition (2026-10-11)
+
+- **Decided:** Accepted on 2026-10-10: no-source-v1 interactive activation; inherited PATH, optional global bin, optional project bin, in that order. Shell approvals no longer authorize activation. Managed launches use D-PATH and never execute repository .agents/bin.
+- **Open:** The cache metadata grammar, adopting release and native shell qualification remain to be published. Cache refresh and activation/restoration follow Compatibility and migration; loaded-shell state remains unknown unless observed.
+- **Superseded:** The acceptance request and warn-first K3 rollout below are superseded by the accepted header. This changes interactive activation only; project-context approval remains the separate CIP-0002 admission boundary.
+
+[Cross-CIP contract, schema owners and versions](platform-contract-disposition.md) records the canonical values and owner decisions. Acceptance records design disposition; schema publication, implementation and runtime qualification are separate. Current-state observations and companion probes below are historical at their stated pins, not rerun evidence.
+
 ## Summary
 
-Adopt an interactive hook that discovers the project root and assigns its environment directly, without reading or sourcing project or global env files. Append the project `.agents/bin` at the end of PATH, after inherited entries and any optional global bin. Remove the warning-and-source exception immediately in the adopting revision, replacing the K3 staged A→B plan with a single `no-source-v1` contract. Preserve optional activation and opt-outs, retire approvals as an activation dependency, and make all human-facing paths and remedy commands safe to display. This draft asks for a design decision; it authorizes neither implementation nor scheduling.
+Adopt an interactive hook that discovers the project root and assigns its environment directly, without reading or sourcing project or global env files. Append the project `.agents/bin` at the end of PATH, after inherited entries and any optional global bin. Remove the warning-and-source exception immediately in the adopting revision, replacing the K3 staged A→B plan with a single `no-source-v1` contract. Preserve optional activation and opt-outs, retire approvals as an activation dependency, and make all human-facing paths and remedy commands safe to display. This direction is accepted; adopting contract publication and runtime qualification remain separate work.
 
 ## Motivation and user stories
 
@@ -22,7 +30,7 @@ Research bounds: one design decision, one CIP plus evidence below 100 KB combine
 
 ## Current state
 
-This CIP is filed from the research draft in [.research/261004_CIP-0004-shell-hook-no-source-path-append.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0004-shell-hook-no-source-path-append.md) on `relux-works/curator` `main` @ `fae2ff9c`. Companion evidence and reproduction remain in [.research/261004_CIP-0004-shell-hook-no-source-path-append_evidence.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0004-shell-hook-no-source-path-append_evidence.md) at the same commit; they are cited, not copied. References C1–C10, S1–S7 and P1–P4 below resolve there. The operator has made no acceptance decision on this proposal.
+This CIP is filed from the research draft in [.research/261004_CIP-0004-shell-hook-no-source-path-append.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0004-shell-hook-no-source-path-append.md) on `relux-works/curator` `main` @ `fae2ff9c`. Companion evidence and reproduction remain in [.research/261004_CIP-0004-shell-hook-no-source-path-append_evidence.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0004-shell-hook-no-source-path-append_evidence.md) at the same commit; they are cited, not copied. References C1–C10, S1–S7 and P1–P4 below resolve there. At the original research pin no acceptance decision had been recorded; the operative disposition above records the later acceptance and its scope.
 
 | Verified behavior | Evidence and consequence |
 |---|---|
@@ -93,7 +101,7 @@ No credential, token, Keychain entry or operator configuration content is requir
 
 ## Specification changes
 
-The following is a normative sketch to publish in curator-spec only after review and operator acceptance:
+The following is the accepted direction to publish in normative Manager/Environments contracts with reviewed schemas and vectors:
 
 > **Manager §8, no-source-v1.** Shell activation is optional. A hook MUST NOT source, dot-source, evaluate, import or otherwise execute any project or global env-file content. No approval record or rollout mode may relax this rule. Discovery MUST use directory metadata and MUST NOT depend on env-file bytes, readability or approval. The nearest `.agents` directory identifies the physical project root; invalid or indeterminate discovery disables activation for that scope. The hook MUST append its bin entries after inherited PATH entries, with the project bin last, MUST NOT introduce empty entries, and MUST clear project-root state when leaving. Reloading MUST be idempotent. Global activation follows the same no-source rule, is enabled by default, and respects an explicitly retained opt-out.
 
@@ -103,11 +111,11 @@ The following is a normative sketch to publish in curator-spec only after review
 
 > **Environments §§11–12.** Describe historical S6/K3 env-file execution as removed by Manager §8's new hook while retaining the provider trust-root requirement for all untrusted PATH entries. Cross-reference `no-source-v1` in the shared posture inventory and distinguish cache status from live-shell status. Do not revise Environments §9.2's independent update-confirmation A→B plan, §10.2's reserved `path_prepend`, or §11's provider rollout through this decision.
 
-**Proposed decision record — replace the K3 warn-first plan.** Status: Pending operator acceptance. Context: rc.14 Manager §8.5 requires warning-and-source before enforcement; measured directory entry executes hostile bytes and prepend displaces inherited commands. Decision: adopt C, with no-source activation and append together in the adopting release; supersede §8.5's staged A→B rule only for shell activation/K3. Consequences: custom automatic env scripts and approval authorization end; helpers/approval cleanup get a bounded deprecation window; caches and open shells need explicit migration; inherited-before-global-before-project becomes normative. Rejected alternatives: A keeps arbitrary approved code and verification/use risk; B restricts code but retains store/snapshot complexity. Acceptance must name the target release and approve the global collision behavior. The orchestrator assigns the decision filename/number when publishing this reviewed CIP under `cips/`; this research edits neither spec nor decision files.
+**Accepted disposition — replace the K3 warn-first plan.** Status: accepted 2026-10-10; normative landing/release pending. Context: rc.14 Manager §8.5 requires warning-and-source before enforcement; measured directory entry executes hostile bytes and prepend displaces inherited commands. Decision: adopt C, with no-source activation and append together in the adopting release; supersede §8.5's staged A→B rule only for shell activation/K3. Consequences: custom automatic env scripts and approval authorization end; helpers/approval cleanup get a bounded deprecation window; caches and open shells need explicit migration; inherited-before-global-before-project becomes normative. Rejected alternatives: A keeps arbitrary approved code and verification/use risk; B restricts code but retains store/snapshot complexity. Publication must name the target release; interactive inherited/global/project ordering follows the accepted disposition. The orchestrator assigns the decision filename/number when publishing this reviewed CIP under `cips/`; this research edits neither spec nor decision files.
 
 ## Implementation plan
 
-These are **proposed leaves, not scheduled or authorized tasks**. Sizes are relative estimates: S is one focused surface; M spans several related production paths and platform tests. Implementation starts only after the operator accepts the design.
+These are **proposed leaves, not scheduled or authorized tasks**. Sizes are relative estimates: S is one focused surface; M spans several related production paths and platform tests. Implementation consumes the accepted design after the normative contract is published.
 
 | Order | Proposed leaf | Size | Deliverable and gate |
 |---|---|---|---|
@@ -150,10 +158,10 @@ Research coverage is intentionally bounded: P1–P4 touched 9/18 reviewer rows, 
 
 ## Open questions for the operator
 
-1. **Accept C as the sole default, with no warning-and-source or approval escape hatch? Recommended: yes.** A preserves arbitrary approved scripts; B requires canonical verification plus race-safe snapshot execution and state hardening. Neither has a demonstrated benefit for a two-variable PATH helper.
-2. **Accept inherited → global → project, making the project addition literally last? Recommended: yes.** This changes project/global collision behavior. Preserving project-over-global precedence would instead require inherited → project → global and relaxing the literal-last requirement.
-3. **Accept physical-root discovery by nearest `.agents` directory and refusal of PATH-separator-containing roots? Recommended: yes.** This removes env-file presence as a prerequisite and avoids splitting one hostile name into search entries. Inaccessible discovery disables that scope.
-4. **Accept the one-release compatibility window for explicit-use helpers and approval inspection/cleanup, with approval authorization retired immediately? Recommended: yes.** Keep old files/state untouched until normal regeneration or explicit cleanup; do not retain a mode that sources them automatically. Preserve the existing snapshot-restoration semantics for PATH edits while a scope is active.
+1. **Superseded acceptance question — decided 2026-10-10:** C is the accepted no-source default with no approval escape hatch. A preserves arbitrary approved scripts; B requires canonical verification plus race-safe snapshot execution and state hardening. Neither has a demonstrated benefit for a two-variable PATH helper.
+2. **Superseded ordering question — decided 2026-10-10:** inherited → global → project, with project literally last. This changes project/global collision behavior. Preserving project-over-global precedence would instead require inherited → project → global and relaxing the literal-last requirement.
+3. **Publication detail — proposed:** physical-root discovery by nearest `.agents` directory and refusal of PATH-separator-containing roots. Publish this bounded grammar (recommended), or revise the discovery grammar before qualification. This removes env-file presence as a prerequisite and avoids splitting one hostile name into search entries. Inaccessible discovery disables that scope.
+4. **Compatibility timing — open:** publish the proposed one-release window for explicit-use helpers and approval inspection/cleanup (recommended), or choose a different explicit deprecation window. Activation approval authority is already retired by the accepted no-source decision. Keep old files/state untouched until normal regeneration or explicit cleanup; do not retain a mode that sources them automatically. Preserve the existing snapshot-restoration semantics for PATH edits while a scope is active.
 5. **Which release adopts the new contract, and does Windows PowerShell 5.1 remain supported? Recommended: the first jointly qualified spec/manager release after acceptance, with current shell support retained until native evidence justifies a separate support decision.** Refresh existing managed caches with retained options and tell users to restart/reload; do not attest that a running shell has changed merely because the manager was upgraded.
 
-Recommended decision package: **C + literal-tail project append + no global sourcing + safe output + explicit cache migration**. Acceptance enables the proposed L1–L5 leaves; prioritization remains the operator's next decision.
+Recommended decision package: **C + literal-tail project append + no global sourcing + safe output + explicit cache migration**. The acceptance questions above are superseded; normative publication, compatibility timing and release qualification remain separate work.

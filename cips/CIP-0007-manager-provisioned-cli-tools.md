@@ -13,6 +13,14 @@
   status); skillfile and lock schemas; conformance vectors. No normative
   change is made by this document.
 
+## Operative disposition (2026-10-11)
+
+- **Decided:** Option B accepted on 2026-10-10 with several signed registries, revocation veto across every enabled registry, dedicated rotating key sets, system/fleet trust configuration, a separate release-shipped trust bundle and no compiled-in trust keys. Launch aliases use the combined D-PATH recipe.
+- **Open:** Registry publisher/service, snapshot distribution, manifest/identity grammar and future option C retain the alternatives in Open questions. A default registry entry is configuration, not a trust key; exact configuration/bundle delivery remains an owner question in the shared contract.
+- **Superseded:** The example executing project .agents/bin is superseded by D-PATH. Earlier default-policy/probe questions cannot reopen accepted registry-only, provisioned-alias B exposure; option C remains a later decision.
+
+[Cross-CIP contract, schema owners and versions](platform-contract-disposition.md) records the canonical values and owner decisions. Acceptance records design disposition; schema publication, implementation and runtime qualification are separate. Current-state observations and companion probes below are historical at their stated pins, not rerun evidence.
+
 ## Operator decision (2026-10-10)
 
 Option B is accepted with these conditions:
@@ -24,8 +32,10 @@ Option B is accepted with these conditions:
   ```
   ~/.curator/tools/store/github.com/cli/cli/2.62.0/darwin-arm64/gh   sealed store, read-only
   <launch home>/.launch/<id>/bin/gh  ->  the store file
-  session PATH = <launch home>/.launch/<id>/bin : <inherited PATH> : <project>/.agents/bin
+  session PATH = <protected launch tool directory> : <admitted base PATH> : <protected manager dispatcher directory>
   ```
+
+D-PATH (2026-10-11) supersedes the earlier project-bin suffix. Project commands run only through the protected manager dispatcher after checks; repository `.agents/bin` is never executed in a managed launch. The resolved PATH is recorded in the launch plan and covered by its digest. Enforced script-worker PATH remains its separate declared-exec contract.
 
 ## Summary
 
@@ -238,8 +248,7 @@ operator control surface for B:
   explicit operator downgrade approval; lock replay provisions exactly the
   locked bytes after re-running current revocation, key-validity, and
   freshness authorization checks.
-- Defaults: built-in registry only; no organization registry configured;
-  overrides empty. A skill needing an unlisted tool fails with a refusal that
+- Default proposal: a release-supplied registry entry in editable system/fleet configuration, with its trusted keys in a separate release-shipped trust bundle; no organization registry configured and overrides empty. Registry coordinates are configuration, never compiled-in trust keys. Exact entry/bundle delivery and snapshot distribution remain the open owner choices below. A skill needing an unlisted tool fails with a refusal that
   names the tool, constraint, policy, and the exact remediation (add a
   registry, or install the tool on PATH where policy permits).
 
@@ -418,8 +427,8 @@ Threat model and trust boundaries (all options; B/C deltas noted):
   old markers remain readable on their lanes and must not attest tool
   currency.
 - Rollout: option A diagnostics first (no protocol change), then the B lane
-  behind operator-configured registries (default: built-in only, so default
-  behavior is unchanged until the operator opts in), then C's policy modes
+  behind operator-configured registries (proposed release-default entry and
+  separate trust bundle; exact distribution remains open), then C's policy modes
   only after the service decisions land.
 
 ## Specification changes
@@ -507,7 +516,7 @@ S = one narrow surface; M = one production path plus its vectors.
 
 | Order | Leaf / size | Consumes and produces |
 | --- | --- | --- |
-| 1 | Spec and Decision adoption, M | Approve the decisions above; freeze the declaration, record, lock, refusal, and offline vectors. No runtime work before operator acceptance. |
+| 1 | Spec and Decision adoption, M | Publish accepted B conditions, resolve the remaining schema/service questions, and freeze declaration, record, lock, refusal and offline vectors. Runtime adoption requires that coordinated publication. |
 | 2 | Hint/diagnostic improvements (option A), S | Better missing-command diagnostics and readiness reporting. Independently useful; no protocol change. |
 | 3 | Registry-only resolution and store, M | Ordered registry configuration, two-phase revocation-then-selection verification, staging download, content-addressed sealed store, B minimal provisioned-only binding with collision refusal (no probes). |
 | 4 | Lock, marker, and transaction integration, M | Proposed lock-v2 per-member tool entries, replay/refresh with current authorization and downgrade approval, marker bindings, journaled publication and rollback, `tool_snapshot_changed`-class diagnostics. |
@@ -562,15 +571,8 @@ platform.
    file-distributed snapshots? Recommend: charter one operator-owned
    snapshot pipeline before leaf 3, even if it starts as reviewed files;
    no client resolves from a registry with no owner.
-2. **Signing keys.** Which keys sign the built-in and organization
-   snapshots, and where do operators obtain pins out of band?
-   Recommend: Ed25519 pins distributed with the manager release for the
-   built-in snapshot, operator-configured pins for organization
-   registries, rotation per `registry.md` §2.1.
-3. **Default policy.** Ship option B's fixed `registry-only`, or also
-   charter option C's `verified`/`prompt` modes now? Recommend:
-   `registry-only` only, until the mirror and approval-store designs are
-   accepted.
+2. **Signing keys — conditions decided; concrete pins open.** Dedicated registry key sets, rotation and a separate release-shipped trust bundle are accepted; no keys are compiled into the binary. The registry owner must select concrete pins and their distribution. Options: release bundle plus administrator-managed system configuration, or a network-replaced bundle/configuration; snapshot distribution remains question 7.
+3. **Default policy — decided.** Option B is accepted: `registry-only` with provisioned aliases. The earlier B-versus-C approval question is superseded. Chartering C remains a separate later owner decision; it is not admitted by B acceptance.
 4. **Client vs service resolution for `verified` mode.** If C is chartered,
    do clients resolve on demand or only consume pre-signed records?
    Recommend: service-only resolution; clients consume pre-signed records,
@@ -589,10 +591,7 @@ platform.
 7. **Built-in registry distribution.** Ship in the manager release or fetch
    as a signed snapshot on first use? Recommend: ship a pinned snapshot
    with the release (zero-config, no first-use network trust decision).
-8. **Version probes vs provisioned-only.** Registry-declared PATH probes,
-   or trust only provisioned copies for constrained tools? Recommend:
-   provisioned-only first; add probes only with an execution model the
-   operator accepts.
+8. **Exposure — decided for B.** Provisioned locked aliases use D-PATH. Earlier probe-versus-provisioned approval wording is superseded for this slice. Registry-declared system probes belong to a separately accepted option C execution model.
 9. **Upstream expected-signer policy (C `verified` mode).** Who owns the
    per-tool allowed publisher/subject pins and their revocation, and where
    are they distributed? Recommend: the registry owner publishes the
@@ -608,5 +607,4 @@ platform.
    extension).
 
 Accepting the recommendation implies the spec/Decision leaf and the
-bounded B-lane leaves above. Until acceptance, this packet is ready for
-review as research only.
+bounded B-lane leaves above. B acceptance records the conditions above; open schema/service choices and runtime qualification remain separate.

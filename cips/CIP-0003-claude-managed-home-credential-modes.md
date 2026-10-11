@@ -1,14 +1,22 @@
 # CIP-0003: Claude managed-home credential modes
 
 - **Status:** Accepted (operator, 2026-10-10): narrowed, adopted together with CIP-0010 (its C6 disposition)
-- **Owner:** ivan-curator (orchestrator); decision: operator
+- **Owner:** orchestrator; decision: operator
 - **Created:** 2026-10-04
 - **Related:** TASK-261004-34brhn — research-claude-login-transfer-modes; STORY-261004-1pwxri — claude-macos-managed-home-login-modes; Decision 0017 — environment credential modes.
 - **Affects:** curator-spec rc.14 environments §§7.4, 7.7, 7.9, 8.2, 8.4.1, 10.1–10.4, 12.1–12.2; manager §§1, 12.4–12.5; configuration, marker and launch-fragment schemas; curator; curator-run/launcher and its tracked execution boundary.
 
+## Operative disposition (2026-10-11)
+
+- **Decided:** Accepted, narrowed by CIP-0010 C6 (2026-10-10). Source-policy v1 keeps per-home when no entry exists; source-policy v2 requires an explicit entry and migrates existing logins to explicit per-home. Token becomes node-sourced; helper remains an API-key lane. The first node store is a protected 0600 file on macOS and Linux.
+- **Open:** The coordinated v4 grammar and supported-release qualification remain publication/implementation work. Personal-plan Codex adoption and Muse subscription support remain owner questions in CIP-0010 and the shared contract.
+- **Superseded:** The earlier default, Keychain-first token leaf, shared-file adoption and general acceptance/Q7 questions below are historical, superseded by CIP-0010 C1/C3/C6 and Revision 2.2. Native per-home Keychain evidence remains historical evidence; it is not the node backend.
+
+[Cross-CIP contract, schema owners and versions](platform-contract-disposition.md) records the canonical values and owner decisions. Acceptance records design disposition; schema publication, implementation and runtime qualification are separate. Current-state observations and companion probes below are historical at their stated pins, not rerun evidence.
+
 ## Summary
 
-Offer an operator-controlled credential source for each profile and environment: `token`, `helper`, or `per-home`, with `shared-file` admitted only by a verified platform capability. A setup token reuses the operator's subscription authorization without extracting the existing native login; a helper supplies an externally managed API credential; a per-home login remains owned and refreshed by Claude Code. Curator resolves references and manages metadata, while the launcher obtains a selected token from a protected store immediately before starting the child. Keep `per-home` as the new macOS default and preserve existing installations until explicit adoption. This proposal does not discharge Decision 0017 Q1's disposable-account gate or authorize native credential copying under Q7.
+CIP-0010 C6 adopts this CIP narrowed: `per-home` remains the source-policy v1 default, token becomes an explicitly selected node source, helper remains for API-key setups, and shared-file is replaced by node. Source-policy v2 requires explicit entries, preserving existing logins through migration. The first node backend is a protected 0600 file on macOS/Linux. Protected-source validation, no fallback, credential no-copy and inspect → plan → apply remain requirements; qualification and coordinated schema publication remain pending. The older selector and Keychain-first design below is retained as historical reasoning with the operative replacements stated above.
 
 ## Motivation and user stories
 
@@ -20,7 +28,7 @@ Research bounds: one decision proposal and its evidence companion, at most 96 Ki
 
 ## Current state
 
-This CIP is filed from the research draft in [.research/261004_CIP-0003-claude-managed-home-credential-modes.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0003-claude-managed-home-credential-modes.md) on `relux-works/curator` `main` @ `fae2ff9c`. Evidence identifiers used below resolve in the companion [.research/261004_CIP-0003-claude-managed-home-credential-modes_evidence.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0003-claude-managed-home-credential-modes_evidence.md) at the same commit; they are cited, not copied. The operator has made no acceptance decision on this proposal. Repository citations are pinned to curator main `ca1b776fb580ec0cee0173bf150daf063023aeaa`, curator-spec rc.14 `43bf0a2506d5c354a73bbc3ea4623d4653db10c7`, and launcher main `2517d2753945d0a8b0c40a291e4aef883a7c16ee`.
+This CIP is filed from the research draft in [.research/261004_CIP-0003-claude-managed-home-credential-modes.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0003-claude-managed-home-credential-modes.md) on `relux-works/curator` `main` @ `fae2ff9c`. Evidence identifiers used below resolve in the companion [.research/261004_CIP-0003-claude-managed-home-credential-modes_evidence.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0003-claude-managed-home-credential-modes_evidence.md) at the same commit; they are cited, not copied. At the original research pin no acceptance decision had been recorded; the operative disposition above records the later acceptance and its scope. Repository citations are pinned to curator main `ca1b776fb580ec0cee0173bf150daf063023aeaa`, curator-spec rc.14 `43bf0a2506d5c354a73bbc3ea4623d4653db10c7`, and launcher main `2517d2753945d0a8b0c40a291e4aef883a7c16ee`.
 
 - Curator exposes `environments.isolation.<profile>.<env>` with `shared|isolated`, rather than credential-source modes (`internal/config/environments.go:20`, `:799`). Its macOS Claude adapter declares no shared passthrough, pins 2.1.261, defaults to isolated, and refuses shared (`internal/envregistry/envregistry.go:240`, `:450`). The production resolve path calls this policy (`internal/envprofile/managed.go:319`). [C1–C3]
 - The macOS isolated marker currently records `strategy=per-home-keychain`, `backend=keychain`, and the registry's release without observing a successful Keychain write (`internal/envprofile/managed.go:598`). This is strategy metadata, not evidence of actual authentication or of the selected backend. [C3]
@@ -40,7 +48,9 @@ This CIP is filed from the research draft in [.research/261004_CIP-0003-claude-m
 
 For ordinary first-party CLI operation, documented priority is provider selection, then `ANTHROPIC_AUTH_TOKEN`, `ANTHROPIC_API_KEY`, `apiKeyHelper`, `CLAUDE_CODE_OAUTH_TOKEN`, qualifying Anthropic profile/federation sources, and stored subscription login. Gateway sessions and some profile choices have additional rules. API-key approval differs between interactive use and `-p`. Treat this as the vendor's source-selection logic, not the Curator configuration precedence defined below. [D1; synthetic confirmation limited to P4–P6]
 
-## Design
+## Historical design (superseded where listed)
+
+The original selector/Keychain sketch, implementation ordering and approval questions are retained as design history. Apply CIP-0010 C6 clause by clause: defaults follow Revision 2.2; the node store follows C1; shared-file is replaced by node; protected-store validation/no-fallback, migration and final-executor checks survive under C3. No historical v4 example below is a published schema.
 
 ### Options considered
 
@@ -150,7 +160,7 @@ Explicit adoption uses the existing inspect → plan → apply discipline. A pla
 
 The compatibility path retains legacy macOS isolated-by-default behavior and Linux shared-file behavior, with their current evidence limits. Do not silently classify a legacy ambient API key as `token` or `helper`; mode adoption is explicit. The revised marker separates the declared source mode, source role, strategy, capability release and optional observation from actual authentication state. New per-home records must not assert `backend=keychain` solely from GOOS.
 
-## Specification changes
+## Historical specification changes (apply CIP-0010 C6)
 
 Adopt CIP-0003 and a follow-on decision record referencing Decision 0017; preserve the historical observations.
 
@@ -160,7 +170,7 @@ Adopt CIP-0003 and a follow-on decision record referencing Decision 0017; preser
 4. **§§7.7, 7.9, 8.2, 8.4.1, 10, 12 and manager §§1, 12.4–12.5:** add the union, defaults, precedence, migration and capability tables; distinguish absent, unreadable, unsupported, source-conflict, store-denied and known-expired states. None may produce an authenticated claim or a fallback fragment. Define launch-reference provenance and final-executor obligations.
 5. **Schemas and vectors:** source definitions live only in protected operator machine configuration. Fragment-v4 carries only `{mode, source_ref?}` plus a non-secret trusted-configuration binding; no helper body, store value, token-derived hash or arbitrary auth env assignment. Marker-v4 records metadata without credential bytes. The consumer independently verifies the binding instead of trusting caller-minted metadata. `passable_env_names` remains the MCP name surface and cannot authorize provider credential injection.
 
-## Implementation plan
+## Historical implementation plan (superseded ordering)
 
 Sizes are relative: S is a bounded schema/docs leaf, M is a cross-module behavior leaf with production tests. These are consuming leaves, not additional serial research tasks.
 
@@ -189,11 +199,11 @@ Tests below are **planned implementation/qualification work**, not results from 
 
 Report coverage as executed rows over the independent spec-derived matrix, not a list of passing helper unit tests. Q1 presently has **0/3 required disposable-account facts established by this run**. No product test suite or previously attached login evidence was replayed or accepted as a current-release pass.
 
-## Open questions for the operator
+## Superseded operator questions
 
-1. **Default and rollout:** adopt `per-home` for newly opted-in macOS profiles, preserve legacy behavior until inspect → plan → apply, and allow `token`/`helper` overrides? **Recommend yes.** All three mechanisms remain available; no automatic login extraction is involved.
-2. **Q7 boundary:** authorize dedicated setup-token enrollment plus transient final-executor injection, while native/per-home credential export and copying stay refused? **Recommend yes.** Without this narrow revision, the new launcher secret-read behavior has no normative authority.
-3. **Conflicting ambient auth:** refuse explicit-mode launch when another source or endpoint can win, rather than accepting native precedence silently? **Recommend yes.** Preserve the legacy path for existing ambient setups; do not claim a mode that was not selected.
-4. **Helper scope:** define `helper` as an external API credential mechanism, with the protected bridge and native cache behavior, rather than promise subscription-login equivalence? **Recommend yes.** Require fresh-account qualification before claiming any additional token kind.
-5. **Shared-file and undocumented selector:** retain the Q1 gate and exclude `CLAUDE_SECURESTORAGE_CONFIG_DIR` from supported modes? **Recommend yes.** Run its approved disposable-account experiment only if shared-store support is still desired; token/helper delivery can proceed independently.
-6. **Qualification access:** schedule an authorized disposable-account/OS-user check as part of implementation qualification, with no operator-account access? **Recommend yes.** Keep unmeasured capability rows unavailable rather than treating this research's synthetic status results as successful authentication.
+1. **Superseded by CIP-0010 Revision 2.2/C6 — default and rollout:** adopt `per-home` for newly opted-in macOS profiles, preserve legacy behavior until inspect → plan → apply, and allow `token`/`helper` overrides? **Recommend yes.** All three mechanisms remain available; no automatic login extraction is involved.
+2. **Superseded by CIP-0010 C3/C6 — Q7 boundary (Q7 no-copy unchanged):** authorize dedicated setup-token enrollment plus transient final-executor injection, while native/per-home credential export and copying stay refused? **Recommend yes.** Without this narrow revision, the new launcher secret-read behavior has no normative authority.
+3. **Retained requirement in CIP-0010 C3 — conflicting ambient auth:** refuse explicit-mode launch when another source or endpoint can win, rather than accepting native precedence silently? **Recommend yes.** Preserve the legacy path for existing ambient setups; do not claim a mode that was not selected.
+4. **Retained API-key scope in CIP-0010 C6 — helper scope:** define `helper` as an external API credential mechanism, with the protected bridge and native cache behavior, rather than promise subscription-login equivalence? **Recommend yes.** Require fresh-account qualification before claiming any additional token kind.
+5. **Superseded by CIP-0010 C6 — shared-file replaced by node; undocumented selector remains unsupported:** retain the Q1 gate and exclude `CLAUDE_SECURESTORAGE_CONFIG_DIR` from supported modes? **Recommend yes.** Run its approved disposable-account experiment only if shared-store support is still desired; token/helper delivery can proceed independently.
+6. **Deferred qualification work, not an acceptance question — qualification access:** schedule an authorized disposable-account/OS-user check as part of implementation qualification, with no operator-account access? **Recommend yes.** Keep unmeasured capability rows unavailable rather than treating this research's synthetic status results as successful authentication.

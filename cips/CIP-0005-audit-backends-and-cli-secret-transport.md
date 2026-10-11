@@ -1,14 +1,22 @@
 # CIP-0005: Audit backends and CLI secret transport
 
 - **Status:** Accepted (operator, 2026-10-10); the first step is the CLI secret transport
-- **Owner:** ivan-curator (orchestrator); decision: operator
+- **Owner:** orchestrator; decision: operator
 - **Created:** 2026-10-04
 - **Related:** TASK-261004-hy8zmn — audit-token-argv-and-backend-env-allowlist-design; STORY-261004-2b8pnx — design-audit-backends-and-secret-transport; K24; public cocoaskills PR #142, commit 0da153a54e7f8b446e63a6a177a9b5392e30da11; adopted Decisions 0019 and 0021
 - **Affects:** curator-spec manager profile §§1, 7, 12.6; registry protocol §9.1; CLI audit reference; manager configuration, local verdict and backend schemas; curator; shared agents-management launch layer. No proposed curator-run headless mode or launch-fragment wire change.
 
+## Operative disposition (2026-10-11)
+
+- **Decided:** Accepted on 2026-10-10, with CLI secret transport first: refuse literal argv tokens; explicit token-file failure never falls back to CURATOR_REGISTRY_TOKEN. Native backend launch construction remains with the existing shared launch owner.
+- **Open:** Option B backend details, Windows privacy qualification, descriptors/cache versions, canary verification and later-leaf ordering retain the explicit options in Open questions. CLI-transport-first does not decide every backend policy.
+- **Superseded:** The general no-acceptance statement and the question whether secret transport should be first are superseded by the accepted header. Additional backend questions remain open; this CIP does not enact the D-EXECUTOR broker mode.
+
+[Cross-CIP contract, schema owners and versions](platform-contract-disposition.md) records the canonical values and owner decisions. Acceptance records design disposition; schema publication, implementation and runtime qualification are separate. Current-state observations and companion probes below are historical at their stated pins, not rerun evidence.
+
 ## Summary
 
-Refuse literal registry tokens in CLI arguments and support CURATOR_REGISTRY_TOKEN or a bounded, private, no-follow token file. Implement explicitly selected audit backends through a shared process runner, with Codex and Claude launch plans constructed by the existing owner of harness flags and a direct command adapter. Every manager-launched backend process receives the same allowlist policy, with unconditional secret-variable exclusions; Git transport retains its separate authentication policy. Make egress, canary results, incomplete backend coverage, cache identity, and strict/advisory failures explicit. This draft recommends a design for operator review; it authorizes no implementation, scheduling, or producer runs.
+Refuse literal registry tokens in CLI arguments and support CURATOR_REGISTRY_TOKEN or a bounded, private, no-follow token file. Implement explicitly selected audit backends through a shared process runner, with Codex and Claude launch plans constructed by the existing owner of harness flags and a direct command adapter. Every manager-launched backend process receives the same allowlist policy, with unconditional secret-variable exclusions; Git transport retains its separate authentication policy. Make egress, canary results, incomplete backend coverage, cache identity, and strict/advisory failures explicit. The CLI secret transport direction is accepted first; backend subcontracts and release publication remain separate work.
 
 ## Motivation and user stories
 
@@ -20,7 +28,7 @@ Refuse literal registry tokens in CLI arguments and support CURATOR_REGISTRY_TOK
 
 ## Current state
 
-The inspected curator main revision is **ca1b776fb580ec0cee0173bf150daf063023aeaa**, equal to the public main ref observed during research. The specification baseline is **v1.0.0-rc.14**, peeled commit **43bf0a2506d5c354a73bbc3ea4623d4653db10c7**, also pinned by curator CI. Source references below are relative to those repositories at those revisions; curator package paths such as audit/audit.go are under internal/. This CIP is filed from the research draft in [.research/261004_CIP-0005-audit-backends-and-cli-secret-transport.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0005-audit-backends-and-cli-secret-transport.md) on `relux-works/curator` `main` @ `fae2ff9c`. Links, probe procedures, real exit codes and verification bounds remain in the companion [.research/261004_CIP-0005-audit-backends-and-cli-secret-transport_evidence.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0005-audit-backends-and-cli-secret-transport_evidence.md) at the same commit; they are cited, not copied. The operator has made no acceptance decision on this proposal.
+The inspected curator main revision is **ca1b776fb580ec0cee0173bf150daf063023aeaa**, equal to the public main ref observed during research. The specification baseline is **v1.0.0-rc.14**, peeled commit **43bf0a2506d5c354a73bbc3ea4623d4653db10c7**, also pinned by curator CI. Source references below are relative to those repositories at those revisions; curator package paths such as audit/audit.go are under internal/. This CIP is filed from the research draft in [.research/261004_CIP-0005-audit-backends-and-cli-secret-transport.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0005-audit-backends-and-cli-secret-transport.md) on `relux-works/curator` `main` @ `fae2ff9c`. Links, probe procedures, real exit codes and verification bounds remain in the companion [.research/261004_CIP-0005-audit-backends-and-cli-secret-transport_evidence.md](https://github.com/relux-works/curator/blob/fae2ff9cab17a031c26a2b4c776afd8dc5e8b4f6/.research/261004_CIP-0005-audit-backends-and-cli-secret-transport_evidence.md) at the same commit; they are cited, not copied. At the original research pin no acceptance decision had been recorded; the operative disposition above records the later acceptance and its scope.
 
 | Finding | Evidence and consequence |
 | --- | --- |
@@ -258,7 +266,7 @@ Derive expected adapter/phase/call-site members from the accepted spec and produ
 ## Open questions for the operator
 
 1. **Accept option B and its launch ownership?** Recommend yes: Curator owns execution/policy; agents-management owns Codex/Claude flag spelling. If the shared typed audit purpose is not yet available, keep those kinds explicitly unsupported and ship only the accepted earlier slices.
-2. **Release priority?** Recommend token transport first, then command runner/egress/profile integration, then native adapters. This is proposed ordering only; no producer or schedule starts from this draft.
+2. **First step — decided; later order open.** CLI secret transport is first (2026-10-10). The remaining options are command runner/egress/profile integration before native adapters (recommended), or a separately approved later order. No release schedule is established here.
 3. **Windows file input and privacy strength?** Recommend native DACL/no-follow qualification before enabling --token-file there; otherwise a clear refusal with environment input available. On POSIX, require the brief's group/other read-bit check and document ACL limits; adopting owner-only/no-group-write and ACL checks as stronger mandatory rules needs an explicit conformance scope.
 4. **Environment authentication exceptions?** Recommend none, including OPENAI_API_KEY, ANTHROPIC_API_KEY and subscription token variables. Use explicitly provisioned saved provider authentication. If environment-only providers are essential, choose a separately designed credential broker; do not weaken the deny rule.
 5. **Local model scope?** Recommend native codex/claude version 1 classified cloud, with local analyzers through an explicitly trusted command descriptor. Add OSS/provider endpoint controls only with a later versioned contract that proves effective locality.
@@ -266,4 +274,4 @@ Derive expected adapter/phase/call-site members from the accepted spec and produ
 7. **Canary and model findings?** Recommend started-canary failures always block, with fixture-specific verification; model findings block only after manager-owned deterministic verification. This preserves the spec's canary and verifiable-finding distinction without treating model assertions as evidence.
 8. **Contract/migration direction?** Recommend versioned selected descriptors and new local cache state, preserving frozen manager/registry/fragment schemas. Spec adoption must settle the exact source-pattern and response-verification vectors before leaves 4–8 consume them.
 
-Accepting these answers implies the spec/Decision leaves and bounded implementation leaves above. Until that acceptance, this packet is ready for review as research only.
+Accepting these answers implies the spec/Decision leaves and bounded implementation leaves above. The accepted first transport slice and the remaining open backend choices are distinguished in the operative disposition; qualification remains pending.
