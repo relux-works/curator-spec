@@ -1,5 +1,4 @@
 @startuml remote-worker-retire
-!theme plain
 title Lifecycle of a remote worker (revision 4; variant-aware cleanup and independent state axes): stop, leave and purge on the donor; suspend, retire and revoke on our side; the identity stays pinned unless revoked
 
 actor "Operator (our side)" as OP
@@ -34,7 +33,11 @@ OP -> T: suspend: grants paused
 OP -> BR: suspend: close sessions; keep workplace
 OP -> D: retire workplace
 D -> BR: persist channel/grant revocation; stop renewal; user-certificate KRL; close sessions
-D -> D: kill every job and its descendants (process group / cgroup); verify no process of the workplace UID remains;\narchive permitted noncredential artifacts only; release account and egress rules
+D -> D: kill every job and its descendants (process group / cgroup); verify no process of the workplace UID remains;\narchive permitted noncredential artifacts only after process absence
+break process absence not established / cleanup failure
+  D -> D: do not release remaining account/egress; recovery format unspecified in spec D7
+end
+D -> D: proven process absence -> release account and egress rules
 BR -> BR: next frame or envelope from this worker refused (retired); mailbox kept durable
 note right of BR: the donor's connection drops; its bridge reports "retired by project" and pauses
 OP -> T: revoke (only on compromise or departure): root-signed revocation of K_sig, K_enc, K_ssh
@@ -58,4 +61,18 @@ else B (future path, disabled while provisioner contract pending)
   PH --> C: removal result
 end
 C --> ADM: variant-owned artifacts removed; printed revocation result or unknown when unreachable
+note over OP, PH
+  Phase: Draft donor target after one-host slice 0; A first, B disabled, C fallback.
+  Donor Curator human commands run as donor UID; bridge service owns lifecycle marks,
+  keys/config/audit (A/C donor UID; B bridge UID); harness owns home/scratch.
+  Project dispatcher service owns tracking, root user-manager owns account lifecycle;
+  root sshd owns user KRL; project bridge owns channel/mailbox state;
+  registry/keeper owns signed identity revocations. Their exact UIDs/storage formats
+  unspecified in spec CIP-0009 D7/D12. Stop terminates only owned harness descendants.
+  Cleanup cannot release workplace before proven process absence; forward-recovery
+  states unspecified in spec CIP-0009 D7. Local purge never proves remote revocation.
+  [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D7/D12]]
+  [[../../protocol/remote-worker.md#tools-mailbox-and-lifecycle Four independent axes]]
+end note
+
 @enduml

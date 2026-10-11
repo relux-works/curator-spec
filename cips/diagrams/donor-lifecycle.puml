@@ -1,0 +1,63 @@
+@startuml donor-lifecycle
+title Donor lifecycle - Draft target A first / B disabled / C fallback; four independent descriptive axes, no closed state schema
+state "Donor installation\nowner: donor / bridge role; B separate provisioner pending" as Installation {
+  state "Present\nvariant-owned service, config, keys, home" as Present
+  state "Purged\nlocal owned artifacts removed; donor audit retained" as Purged
+  Present --> Purged : human purge: stop owned processes; A/C preserve donor account;
+  Present --> Purged : B removal requires separate specified provisioner; B currently disabled
+}
+state "Donor execution\nowner: bridge-role supervisor\nA/C donor UID; B bridge UID" as Execution {
+  state "Active\nqualified lockdown + remote-auto; current generation" as Active
+  state "Stopped\npersisted stop mark; bridge and keys kept" as Stopped
+  state "Left\nchannel closed; keys/config kept" as Left
+  state "Refused run / rejoin outcome\nprior persistent execution state retained\nno fallback posture or identity" as Refused
+  Active --> Stopped : human stop: persist first, terminate only owned harness/descendants
+  Active --> Left : human leave: request retirement when reachable; close channel
+  Stopped --> Left : human leave; retain identity
+  Stopped --> Active : human run; admission, credentials and exact qualification remain valid
+  Stopped --> Refused : absent/invalid admission, credential, tuple or current policy
+  Left --> Stopped : human init --rejoin; new invitation/package and newly admitted workplace; wait for run
+  Left --> Refused : revoked identity / invalid admission or qualification
+}
+state "Project workplace\nowner: project operator + dispatcher/helper + project bridge\nhelper root boundary; workplace UID executes jobs" as Workplace {
+  state "Admitted workplace" as Admitted
+  state "Suspended\ngrants paused; sessions closed; workplace kept" as Suspended
+  state "Retirement in progress\nrevocation persisted before termination/restart" as Retiring
+  state "Retired\narchive permitted noncredential artifacts; account/egress released" as Retired
+  Admitted --> Suspended : operator suspend
+  Admitted --> Retiring : operator retire; stop user-cert renewal, user KRL, close sessions
+  Suspended --> Retiring : operator retire
+  Retiring --> Retired : kill jobs/descendants; verify process absence before release
+}
+state "Worker signing identity / three pinned keys\nowner: operator-authorized trust registry / key keeper\nprivate keys remain on donor" as Identity {
+  state "Pinned\nretirement and leave preserve identity" as Pinned
+  state "Revoked\nold frames/envelopes refused" as Revoked
+  Pinned --> Revoked : separate operator-authorized root-signed revoke of K_sig, K_enc, K_ssh
+}
+note right of Installation
+  Purge may happen offline; remote retirement/revocation then UNKNOWN.
+  No transition from local purge to project retirement or identity revoke.
+  A removes user service/artifacts; C also removes sandbox artifacts.
+  B allocated accounts/egress/sandbox/system service: removal spec pending.
+end note
+note right of Execution
+  Named run/rejoin arrows describe validated return, not automatic restart.
+  Project cannot prevent donor stop/leave/purge.
+  Exact execution bookkeeping after project channel loss
+  unspecified in spec CIP-0009 D7; D5 pauses new turns.
+end note
+note right of Workplace
+  Failure to prove process absence cannot authorize account release.
+  Retirement forward-recovery states/record encoding
+  unspecified in spec CIP-0009 D7; no invented retry state machine.
+  Project suspension resume grammar unspecified in spec CIP-0009 D7.
+end note
+note right of Identity
+  Revoke stops renewal, updates user KRL and closes established sessions.
+  Certificate revocation alone does not stop an existing connection.
+  Return after revoke requires new keys through new enrollment.
+  Dispatcher one-shot identity exception never applies to donor identity.
+  [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D7/D12]]
+  [[../../protocol/remote-worker.md#tools-mailbox-and-lifecycle Lifecycle contract]]
+end note
+@enduml

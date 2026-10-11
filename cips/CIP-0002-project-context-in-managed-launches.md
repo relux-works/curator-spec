@@ -6,6 +6,17 @@
 - **Related:** TASK-261004-2asduq — launch-command-environment-fragment-design; STORY-261004-1ffwh8 — design-launch-project-views; TASK-261004-34brhn — research-claude-login-transfer-modes; Decisions 0013, 0017, 0018 and 0019
 - **Affects:** curator-spec environments §§1–5, 7–12; manager §§3, 5, 6, 10, 12; fragment and manager schemas; Curator, curator-run, agents-management and the tracked-session launch-plan consumer
 
+## Operative summary
+
+| Field | Contract |
+|---|---|
+| Purpose | Registered project context composed over a selected profile. |
+| Boundary | Repository inputs are candidates; only protected, individually approved snapshots enter strict launches. |
+| Authority owner | Operator approves within fleet/manager ceilings; manager owns registrations, admissions, compositions and leases; launcher owns composition. |
+| Inputs → outputs | Registered checkout, selected profile lock, approved generation and adapter contract → protected view, metadata fragment and context-bound launch plan. |
+| Phase | Draft; D-PATH decided, home choice and coordinated v4 grammar/qualification pending. |
+| Normative links and proposed landing | [Environments §§1–5](../protocol/environments.md#1-environment-profiles-and-sources), [§10](../protocol/environments.md#10-resolution-and-the-launch-fragment), [Manager §12](../profiles/manager.md#12-agent-environments-manager-profile); amendments: [Specification changes](#specification-changes). |
+
 ## Operative disposition (2026-10-11)
 
 - **Decided:** The operator input of 2026-10-10 governs project registration, saved composites, profile alternatives/stacks, approval ceilings and protected admission. D-PATH (2026-10-11) settles the managed-launch PATH recipe; see the shared contract below. The CIP remains Draft.
@@ -85,6 +96,8 @@ Evidence below is pinned to Curator main `ca1b776`, curator-spec `43bf0a2` (the 
 None of these home layouts alone provides the hostile-repository boundary. This proposal does not hide that missing boundary behind a copied workspace, an empty fake repository, broad native trust, or credential transfer.
 
 ### Recommendation
+
+The [configuration publication figure](diagrams/configuration-publication.puml) shows the proposed admission, composition, lease and destination PATH boundaries, with the independent shell/settings lanes.
 
 Adopt option A as an **optional, separately versioned project-context capability**. Keep rc.14's existing environment capability intact. Release a strict adapter only when it can both exclude unadmitted native sources and expose the declared admitted surfaces; otherwise return a typed refusal for the requested capability.
 
@@ -172,7 +185,7 @@ The original sketch's at-most-two project/global roots is rejected in favor of *
 
 Migrate existing manager-owned singleton forwarders to dispatch through the same context binding, or refuse when an older forwarder would shadow the new view. Appending cannot outrank such a shim. For unmanaged earlier executables with an admitted command's name, report/refuse ambiguous ordinary-command availability and offer an explicit manager command invocation; never silently invoke the wrong skill. Reserve all `curator-*` names and add the dispatcher directory and aliases to umbrella provider-discovery refusals, even if placed in a configured provider trust root. E3, E10, P6.
 
-D-PATH (accepted 2026-10-11) defines one managed-launch order: protected tool directory of this launch (CIP-0007), admitted base PATH of this user in its existing order, then one protected manager dispatcher directory. Project commands run through that dispatcher only after admission and execution checks; repository `.agents/bin` is never executed in a managed launch. Use the platform separator and avoid duplicate manager entries by canonical identity. The closed transform grammar must preserve the accepted order; it is not adopted by this example. Reject malformed/unreadable manager roots and ambiguous PATH entries required for command selection. If PATH is absent or excluded by the environment policy, refuse command capability rather than recreate an environment variable that admission removed. Empty/relative/CWD-sensitive components and repository-writable search roots require explicit treatment in the upstream PATH-admission contract; strict mode must not accept them by accident. Native settings may not subsequently replace PATH or shell initialization defeat the recipe. Claude `settings.env` and Codex `shell_environment_policy.set` are assignment surfaces, not append operators. D2, D5.
+D-PATH (accepted 2026-10-11) defines one managed-launch order: protected tool directory of this launch (CIP-0007), admitted base PATH of this user in its existing order, then one protected manager dispatcher directory. Project commands run through that dispatcher only after admission and execution checks; repository `.agents/bin` is never executed in a managed launch. Use the platform separator; deduplicate by identity and preserve the existing position of the manager dispatcher directory when it is already in the admitted base PATH, otherwise append it. Do not move an existing dispatcher entry to the tail. The protected launch tool directory remains first; the admitted base entries retain their order. The closed transform grammar must preserve the accepted order; it is not adopted by this example. Reject malformed/unreadable manager roots and ambiguous PATH entries required for command selection. If PATH is absent or excluded by the environment policy, refuse command capability rather than recreate an environment variable that admission removed. Empty/relative/CWD-sensitive components and repository-writable search roots require explicit treatment in the upstream PATH-admission contract; strict mode must not accept them by accident. Native settings may not subsequently replace PATH or shell initialization defeat the recipe. Claude `settings.env` and Codex `shell_environment_policy.set` are assignment surfaces, not append operators. D2, D5.
 
 Apply the operation on the **admitted child PATH**, not the parent shell's PATH. In tracked mode the destination performs the same typed transformation after its own environment admission and records both the operation/context digest and resolved PATH in the immutable effective plan identity. Do not transport the caller's inherited PATH as an owned literal. The launcher remains the only semantic composer; the destination evaluates its admitted transform and the provider translates the resulting plan without recomposition. Until the tracked schema, consumer and provider reproduce this contract, refuse tracked requests for command capability. A resume must reproduce the pinned effective plan or refuse a changed destination context.
 

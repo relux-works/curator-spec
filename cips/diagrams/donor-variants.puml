@@ -1,0 +1,68 @@
+@startuml donor-variants
+title Donor deployment variants - Draft target: slice 0 one-host MVP precedes donor; A first, B disabled, C sandbox fallback
+left to right direction
+actor "Human donor\nonly init authority; TTY/typed consent\nis a policy heuristic" as O
+node "A - first milestone\nno administrator rights; donor UID" as A {
+  component "Curator init / bridge service\nsupervisor, SSH client, signer, admission\nuser service while logged in" as AB
+  component "Qualified harness + stdio relay\ndonor UID; no local tool offered\nrelay has no keys/network" as AH
+  artifact "Donor-owned state\nkeys, locked config, audit, cursors, budgets\nmanaged home/scratch; release binaries" as AS
+}
+node "B - future, disabled until separate provisioner spec/qualification\none administrator request" as B {
+  component "Separate donor provisioner\nprivileged binary/name/schema pending\nnot swarma-user-manager" as BP
+  component "Bridge service\nbridge UID; system daemon survives logout\nsupervisor, SSH client, signer, admission" as BB
+  component "Harness + stdio relay\nworker UID; mandatory kernel read sandbox\nper-UID egress; peer-checked relay socket" as BH
+  component "Provider proxy\nbridge UID or system service\nqualified provider host allowlist" as BX
+  artifact "Bridge-owned 0600 keys/state\nlocked config, audit, cursors, budgets\nworker-owned home/scratch; root-owned releases" as BS
+}
+node "C - no administrator rights\ndonor UID; sandbox fallback" as C {
+  component "Curator init / bridge user service\nsupervisor, SSH client, signer, admission" as CB
+  component "Qualified harness + relay\ndonor UID inside sandbox\nhome/scratch writable; runtime read/execute" as CH
+  component "Provider proxy\nqualified local proxy; identity role as D1\nno UID split" as CX
+  artifact "Donor-owned state/releases\nbridge state outside harness sandbox\nlocked config outside writable set" as CS
+}
+node "Project host target\nproject workplace UID; root-controlled sshd policy" as P {
+  component "sshd + protected forced executor\nOS-user workplace; project bridge" as PB
+  artifact "Project-owned state\nmailbox/cache, admission/grants, user KRL\ncarrier credential stays here" as PS
+}
+cloud "Qualified model provider" as API
+O --> AB : choose A; consent / stop / leave / purge
+O --> BP : B requires specified and qualified boundary
+O --> CB : choose C when rights declined/unavailable
+AB --> AH : consumes caller-composed lockdown + remote-auto plan
+BB --> BH : consumes plan; launch as worker UID
+CB --> CH : consumes plan; apply qualified sandbox
+AB --> AS : owns/persists; verifies executable digests
+BB --> BS : bridge keys/state; journaled B provisioning/removal
+CB --> CS : owns/persists; verifies executable digests
+AH --> AB : stdio relay -> local bridge socket
+BH --> BB : relay socket; authenticated peer UID
+CH --> CB : relay socket; sandbox-only local access
+AH --> API : direct provider path; no OS egress guarantee
+BH --> BX : only provider proxy; all other egress denied
+CH --> CX : proxy + relay only; other IPC/Keychain denied
+BX --> API
+CX --> API
+AB --> PB : donor-originated SSH only
+BB --> PB : donor-originated SSH; bridge egress SSH/join only
+CB --> PB : donor-originated SSH only
+PB --> PS
+note bottom of A
+  A has no UID split, sandbox, proxy or OS integrity/confidentiality/egress guarantee.
+  A/C: qualified Secure Enclave Macs use non-exportable P-256 signing/SSH;
+  0600 files elsewhere. K_enc is separate X25519. B: Ed25519 signing/SSH
+  in bridge-owned 0600 files, no Keychain. Algorithms/storage bound to tuple.
+end note
+note bottom of B
+  B absent spec/rules/removal/qualification -> refuse; no substitute helper operation.
+  Provisioning failure -> journal undo in reverse order; never retain relaxed rules.
+  Every variant: unsupported tuple, changed/unreadable executable, wrong posture
+  or policy generation -> refuse; human fixes/requalifies before run.
+end note
+note bottom of C
+  Platform-specific sandbox must be qualified; unknown coverage refuses.
+  A availability after B/C qualification unspecified in spec CIP-0009 question 7.
+  [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D0-D3]]
+  [[../CIP-0008-remote-worker-launch-mode.md#recommendation CIP-0008 R9]]
+  [[../../protocol/remote-worker.md#deployment-and-launch-boundary Donor boundary/publication limits]]
+end note
+@enduml

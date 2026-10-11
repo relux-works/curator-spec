@@ -6,6 +6,17 @@
 - **Related:** TASK-261004-34brhn — research-claude-login-transfer-modes; STORY-261004-1pwxri — claude-macos-managed-home-login-modes; Decision 0017 — environment credential modes.
 - **Affects:** curator-spec rc.14 environments §§7.4, 7.7, 7.9, 8.2, 8.4.1, 10.1–10.4, 12.1–12.2; manager §§1, 12.4–12.5; configuration, marker and launch-fragment schemas; curator; curator-run/launcher and its tracked execution boundary.
 
+## Operative summary
+
+| Field | Contract |
+|---|---|
+| Purpose | Explicit Claude credential selection, narrowed by CIP-0010 C6. |
+| Boundary | No native-login copying/export; source metadata is separate from secret material and native-store isolation. |
+| Authority owner | User owns source selection and node store; final executor validates and injects; Claude owns per-home refresh and helper cache. |
+| Inputs → outputs | Trusted selector, protected binding and explicit enrollment → non-secret source metadata and qualified child-only delivery. |
+| Phase | Accepted narrowed; source-policy v1 defaults per-home, v2 requires explicit entries; coordinated v4 pending. |
+| Normative links and proposed landing | [Environments §7.4](../protocol/environments.md#74-credential-passthrough-provisioning-seeds-and-isolation), [Decision 0017](../decisions/0017-environment-credential-modes.md); operative replacement: [CIP-0010 C6](CIP-0010-credentials-setup-token-and-inherited-auth.md#recommendation); landing: [Historical specification changes](#historical-specification-changes-apply-cip-0010-c6). |
+
 ## Operative disposition (2026-10-11)
 
 - **Decided:** Accepted, narrowed by CIP-0010 C6 (2026-10-10). Source-policy v1 keeps per-home when no entry exists; source-policy v2 requires an explicit entry and migrates existing logins to explicit per-home. Token becomes node-sourced; helper remains an API-key lane. The first node store is a protected 0600 file on macOS and Linux.
@@ -153,6 +164,8 @@ An environment token is protected in transit from Curator's argv/logging paths b
 A helper is intentional code execution and a credential supplier. Its bridge must capture output privately, never forward raw stderr, bound response size and runtime, and ensure it is invoked only for an authorized source. The output format is a single nonempty printable-ASCII credential, at most 16 KiB after trimming, with no embedded whitespace; reject malformed output without echoing it. Cap bridge execution at 30 seconds for the initial contract. A helper's native five-minute cache is not a promise of immediate revocation.
 
 ## Compatibility and migration
+
+The [credential source lifecycle](diagrams/credential-source-lifecycle.puml) shows this migration under CIP-0010 C6, including explicit v2 per-home entries, no-fallback refusals and operator recovery.
 
 Existing manager schemas, fragments and markers stay frozen. Reserve **manager-config-v4**, **launch-env-fragment-v4** and **agent-environment-marker-v4** for enactment; v3 already exists. Old consumers reject v4, and new consumers still accept the existing shapes. Coordinate release/pin promotion between spec, manager and launcher. No system-config bump is proposed because this draft adds no system-selectable source field; revise it only if the operator later chooses a new mode-enforcement policy.
 

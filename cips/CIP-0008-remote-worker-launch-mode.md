@@ -6,6 +6,17 @@
 - **Related:** owner brief 2026-10-08 (remote worker on a donor machine); [Decision 0018](../decisions/0018-curator-run-permission-interface.md) (`native|yolo`); [Decision 0013](../decisions/0013-execution-ownership-and-launch-plans.md) (launch plans, §6.4 extensions); [Decision 0019](../decisions/0019-fragment-consumers-and-one-construction-site.md); [Decision 0021](../decisions/0021-sessions-enter-through-curator-run.md); [Decision 0014](../decisions/0014-tool-configuration-surfaces.md) (proposed); [CIP-0002](CIP-0002-project-context-in-managed-launches.md) (strict MCP set); [CIP-0006](CIP-0006-legacy-provider-settings-and-mcp-opt-outs.md); [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md) (the donor machine and the bridge); [CIP-0010](CIP-0010-credentials-setup-token-and-inherited-auth.md) (credentials); environments [§2.2](../protocol/environments.md#22-mcp-declaration-packages), [§10.3](../protocol/environments.md#103-the-profile-influence-boundary), [§12.1](../protocol/environments.md#121-machine-configuration-knobs), §12.2 (locks)
 - **Affects:** environments §12.1–§12.2 (new knob, lock amendment, policy generation), Decision 0013 (required plan extensions), Decisions 0018/0019/0021 (amendments), launcher SPEC (posture, caller-tail grammar, refusals, receipts), agents-management (per-harness qualified tuples); implementations: curator, curator-run/launcher, agents-management, the remote-worker supervisor (CIP-0009)
 
+## Operative summary
+
+| Field | Contract |
+|---|---|
+| Purpose | Qualified remote-worker tool lockdown and remote-auto permission posture. |
+| Boundary | One shared composer; caller tail is closed and validated; lockdown is a tool boundary, OS confinement belongs to CIP-0009. |
+| Authority owner | User owns machine posture; agents-management composes native policy; launcher/executor admits tuple and generation; bridge refuses other postures. |
+| Inputs → outputs | Profile lock, required posture extensions, exact tuple, caller tail and current generation → immutable plan/receipt and qualified launch or refusal. |
+| Phase | Draft target; current native/yolo remains separate; required extensions and qualification pending. |
+| Normative links and proposed landing | [Decision 0013 §6.4](../decisions/0013-execution-ownership-and-launch-plans.md#64-tracked-mode-delegates-untracked-mode-execs), [Decision 0018](../decisions/0018-curator-run-permission-interface.md), [Environments §12.2](../protocol/environments.md#122-lockable-knobs); amendments: [Specification changes](#specification-changes). |
+
 ## Revision 2: what the architecture review changed
 
 The first draft was reviewed on 2026-10-08 (research task, read-only, 25 findings). This revision folds in every finding that concerns this CIP; the finding numbers (F1–F25) refer to that review and are kept in the text so the owners can trace each change.
@@ -55,6 +66,8 @@ A **remote worker** is a harness whose model runs on a machine we do not own (th
 4. **Ship a separate "remote worker" harness wrapper.** This is `rwh` today. It duplicates the composer and spells flags outside Curator; the owner asked for a Curator mode.
 
 ### Recommendation
+
+The [donor component view](diagrams/donor-side.puml), [deployment variants](diagrams/donor-variants.puml) and [turn sequence](diagrams/remote-worker-turn.puml) show which executor checks the qualified posture and current generation. These are Draft target views; no native tuple qualification is claimed.
 
 **R1. Posture knob and lock.** A new environments §12.1 knob `tool_posture.<profile>` with the closed values `open` (default, absent) and `lockdown`. It is a *machine* knob: lockable by system configuration (manager §12), never profile content, never a launcher-file entry. The donor's installation locks `tool_posture.remote-worker: lockdown` (CIP-0009), so no launch of that profile on that machine can be `open`. **Lock amendment (F7):** environments §12.2 today permits a `permissions` lock only toward `native`; this CIP amends it so that a lock may also pin the **pair** `tool_posture = lockdown` with `permissions = remote-auto` (and nothing else: a lock toward `yolo` stays refused). The §12.2 rule that a lock never selects or constrains credential material is unchanged; CIP-0010 keeps the credential source in the user-owned layer.
 

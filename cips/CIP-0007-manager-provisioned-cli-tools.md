@@ -13,6 +13,17 @@
   status); skillfile and lock schemas; conformance vectors. No normative
   change is made by this document.
 
+## Operative summary
+
+| Field | Contract |
+|---|---|
+| Purpose | Provision exact CLI-tool bytes from operator-trusted signed registries. |
+| Boundary | Skills declare identity/alias/constraint only; no author fetch URL, system-wide install or B-lane PATH version probe. |
+| Authority owner | System/fleet owns trust policy and keys; registry operators sign records/revocations; manager owns lock, sealed store and launch aliases. |
+| Inputs → outputs | Logical dependencies, platform, signed snapshots and current authorization → exact lock/store artifacts and protected launch tool directory; any verified revocation vetoes. |
+| Phase | Option B accepted with conditions; record/manifest grammar and registry delivery pending; option C later. |
+| Normative links and proposed landing | [Core §4](../protocol/core.md#4-skill-manifest), [Registry §§2–5](../protocol/registry.md#2-signature-envelope-and-keys), [source locks §3](../protocol/skillfile-sources.md#3-local-snapshots-and-lock-identity), [Manager §2](../profiles/manager.md#2-installation-lifecycle); amendments: [Specification changes](#specification-changes). |
+
 ## Operative disposition (2026-10-11)
 
 - **Decided:** Option B accepted on 2026-10-10 with several signed registries, revocation veto across every enabled registry, dedicated rotating key sets, system/fleet trust configuration, a separate release-shipped trust bundle and no compiled-in trust keys. Launch aliases use the combined D-PATH recipe.
@@ -224,6 +235,8 @@ user-installed tool; automatic fallback from a refused tool to an unrelated
 source.
 
 ### Recommendation
+
+The [tool admission figure](diagrams/tool-admission.puml) shows all-registry revocation scanning before positive selection, current authorization on lock replay, and protected PATH exposure.
 
 Adopt **option B**, per the triage recommendation, with option C held as the
 explicit target architecture gated on the decisions in Open questions. The

@@ -1,5 +1,4 @@
 @startuml remote-worker-turn
-!theme plain
 title Remote worker turn (revision 4; B boundary shown, disabled until separate provisioner spec/qualification): the harness has no local tools; the relay (harness identity) forwards to the bridge service (bridge identity), which carries every tool call and the mailbox over ONE SSH connection from the donor to our host; our host never connects back
 
 box "Donor machine: harness identity (sandboxed, egress = proxy only)" #WhiteSmoke
@@ -26,6 +25,9 @@ end note
 == standing connection ==
 SUP -> RB: ssh workplace-user@host with K_ssh + short user-CA certificate;\nhost certificate checked on EVERY connection: pinned host CA, host name, validity, KRL (no TOFU)
 note over SUP, RB: Bridge renews short user certificate; expiry/revocation refuses; retire stops renewal and closes sessions.
+break failed host trust / expired or revoked user certificate / wrong workplace principal
+  SUP -> SUP: refuse connection; no TOFU or alternate trust source
+end
 RB --> SUP: hello {versions:[1]} / swarma-rb/1 channel open (bounded CBOR frames, flow credits)
 SUP -> RB: policy.get
 RB --> SUP: workplace policy {tools, write scope, network, limits, env_allow} -> effective tool set
@@ -33,6 +35,9 @@ note right of RB: Match block: root-controlled TrustedUserCAKeys + KRL + workpla
 
 == launch ==
 SUP -> SUP: obtain the composed plan from the construction site (agents-management);\ncheck expect_pin, tool_posture=lockdown, permissions=remote-auto, policy generation, qualified tuple;\nvalidate the expanded launch against the generated policy; resolve credential_binding/1
+break unqualified/changed/unreadable executable, wrong pin/posture/permissions/generation or credential binding
+  SUP -> SUP: refuse before exec; no alternate harness/source
+end
 SUP -> H: consume composed plan, launch exact qualified build;\nB: harness UID + sandbox + per-UID egress; C: donor UID + sandbox;\nA: donor UID, no OS confinement, direct provider path; credential per launch (CIP-0010)
 H -> MCP: MCP initialize; tools/list = effective set (policy intersection)
 
@@ -46,6 +51,9 @@ RB -> BR: read
 BR --> RB: items + verification records
 RB --> SUP: frames
 SUP -> SUP: DONOR-SIDE ADMISSION: verification record present, target binding = this worker,\nunexpired, not fenced/revoked, delivery mode allowed; dedup by message_id; persist; cursor++
+break absent/invalid verification, wrong binding, expired/fenced/revoked item or disallowed delivery mode
+  SUP -> SUP: refuse input; do not apply a turn
+end
 SUP -> H: next turn through the session-input adapter: "validated message <id>" + snapshot
 SUP -> RB: mailbox.applied {message_id} (application receipt, distinct from the transport reply)
 
@@ -54,6 +62,10 @@ loop each tool call
   H -> MCP: tools/call bash {cmd, cwd, timeout}
   MCP -> SUP: forward over the relay socket (peer credentials checked)
   SUP -> SUP: audit line {tool, args_sha256, bytes, at}; budget counters (trusted side)
+  break tool outside effective policy or wrong local peer
+    SUP --> MCP: error result; audit refusal
+    MCP --> H: unavailable tool
+  end
   SUP -> RB: frame exec {id, op_key, cmd, cwd, env (env_allow only), timeout_s <= policy, max_output_bytes <= policy, lease_s}
   RB -> WP: run as the workplace user in its own process group with a lease; audit {who, what, when, policy id}
   WP --> RB: stdout/stderr frames (seq), exit
@@ -77,4 +89,17 @@ SUP -> SUP: build the FINAL envelope (canonical bytes; audience/thread from the 
 SUP -> RB: frame mailbox.post {op_key, envelope_bytes, signature}
 RB -> BR: verify K_sig signature, grant, freshness; admit
 BR -> O: carry the bytes UNCHANGED under the project bridge's carrier account for the worker (first slice) (distinct authority, audited) -> outcome proposal
+note over H, O
+  Phase: Draft donor target after slice 0; A first, B disabled, C qualified fallback.
+  B proxy identity is bridge UID or a system service; A provider path is direct, no proxy.
+  Bridge-role supervisor owns audit/budgets/cursors/dedup and durable queued results;
+  harness role owns home/scratch; project bridge owns mailbox and project carrier credential;
+  workplace executor owns job leases and op_key cache; root sshd owns CA/KRL/forced command.
+  Exact service UIDs for project bridge, filenames and cache persistence format
+  unspecified in spec CIP-0009 D5. rb/1 and workplace-exec/1 are pending design shorthand.
+  [[../CIP-0008-remote-worker-launch-mode.md#recommendation CIP-0008 R3/R5/R9]]
+  [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D0-D5/D12]]
+  [[../../protocol/remote-worker.md#tools-mailbox-and-lifecycle Delivery and reconnect]]
+end note
+
 @enduml

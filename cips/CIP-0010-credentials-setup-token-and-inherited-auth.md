@@ -6,6 +6,17 @@
 - **Related:** owner brief 2026-10-08 §8; [CIP-0003](CIP-0003-claude-managed-home-credential-modes.md) (accepted, narrowed); [Decision 0017](../decisions/0017-environment-credential-modes.md) (`shared|isolated`, Q4, Q7 no-copy); environments [§7.4](../protocol/environments.md#74-credential-passthrough-provisioning-seeds-and-isolation), §10.3, §12.1–§12.2; wiki `research/harness-auth/RESEARCH.md` (2026-10-07) and `PLAN-expiry-check.ru.md`; wiki `session-host/architecture.ru.md` §7.3 (credential broker); VISION v1.3 LCH §7; [CIP-0008](CIP-0008-remote-worker-launch-mode.md), [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md); relux-works/remote-worker-harness `docs/session-mode.md` ("Login: the single auth owner")
 - **Affects:** environments §7.4 and §12.1 (new user-owned knob), Decision 0013 (a required plan extension), Decision 0017 (Q4 evidence label; Q7 unchanged), the marker schema, curator (`env credential` commands, the Codex auth owner), curator-run/launcher, the final executors (agent-account curator-run first; board and session host through the dispatcher; donor supervisor later)
 
+## Operative summary
+
+| Field | Contract |
+|---|---|
+| Purpose | Enrollment and node-sourced credentials with explicit per-home migration. |
+| Boundary | User-owned source choice; no refresh-token cloning, silent source fallback or secret in fragments/plans. |
+| Authority owner | User owns node metadata and protected store; final executor owns destination binding/injection; one Codex auth owner owns refresh. |
+| Inputs → outputs | Explicit source, protected binding and intentionally enrolled material → metadata-only required extension and qualified per-launch channel; expiry reports stated/computed/unknown. |
+| Phase | Source-policy v1/v2 decided; first file backend decided; broker slice 0 first, Codex slice 1 qualification/open adoption, donor later. |
+| Normative links and proposed landing | [Environments §7.4](../protocol/environments.md#74-credential-passthrough-provisioning-seeds-and-isolation), [§12.1](../protocol/environments.md#121-machine-configuration-knobs), [Decision 0017](../decisions/0017-environment-credential-modes.md); amendments: [Specification changes](#specification-changes). |
+
 ## Operative disposition (2026-10-11)
 
 - **Decided:** Revision 2.1 and Revision 2.2 decide the first file backend and source-policy v1/v2; CIP-0003 is adopted narrowed. D-EXECUTOR (2026-10-11) makes curator-run under the agent account the first broker consumer. Board and session host request the dispatcher; neither embeds the first broker client.
@@ -77,6 +88,8 @@ Facts are measured, vendor-documented or source-inspected, with the label stated
 2. *The final executor re-resolves a protected binding and injects into the process environment at exec.* The only process that must see the value is the one that execs the harness. **Recommended**; it is what VISION M1 does and what the donor supervisor (CIP-0009) does.
 
 ### Recommendation
+
+The [credential source lifecycle](diagrams/credential-source-lifecycle.puml) shows C1–C6, source-policy v1/v2, enrollment, final-executor refusal and expiry recovery; broker slice 0 and later consumers retain their separate phases.
 
 **C1. Authentication nodes.** A new managed object, the **authentication node**: a per-OS-user, per-harness, per-account-label record under the manager's environments root, `auth/<label>/`, holding *references and metadata* only: `{harness, account_label, kind: claude-oauth-token | codex-auth-owner | codex-access-token | meta-api-key | gemini-api-key, source_ref, enrolled_at, issued_at?, expires_at | unknown, last_refusal?}`. Material lives in the node's **secret store**, never in the node record. The secret store is a pluggable backend behind one interface (`put`, `get`, `delete`, `describe`), so other backends can be added without changing nodes, plans or executors. **First release: one backend, a 0600 file** in a 0700 directory owned by the OS user (`~/.curator/auth/<label>/secret`, identically on macOS and Linux) — the same protection level as Codex's default `auth.json` and Claude's Linux `.credentials.json`. The macOS Keychain and the Linux Secret Service are **not** implemented in the first release (owner decision 2026-10-09: files on both systems first; a node Keychain backend is deferred). Reasons: tracked and headless launches cannot answer Keychain access prompts and often run without an unlocked GUI login keychain or under another OS user; Keychain "Always Allow" is bound to the binary's code-signing designated requirement, so locally built or unsigned curator binaries re-prompt after every rebuild; and the protection gain is small because the executor hands the token to the harness process anyway. When a keychain backend is added later, tracked and headless launches MUST refuse a node whose backend can prompt (`credential_store_interactive_only`) rather than block on a prompt; it is meant for interactive use with signed (Developer ID) releases. The **root node** is the label `root` of a user; several accounts are several labels. A node belongs to the OS user that enrolled it; another OS user cannot read it by construction. Crossing OS users is the credential broker of architecture §7.3, whose minimal interface is slice 0 of this CIP (C7).
 

@@ -6,6 +6,17 @@
 - **Related:** [curator#105 — preserve legacy provider settings and explicit MCP opt-outs](https://github.com/relux-works/curator/issues/105); Decision 0014 — tool-configuration surfaces (**proposed, not adopted**); Decision 0018 — curator run permission interface (**adopted**); TASK-261004-2iewnz — research-105-design-and-implementation-plan; STORY-261004-3v2zm2 — legacy-provider-settings-and-mcp-optouts-105; TASK-260927-367jb7 — infra-exit (external dependency named by the brief); TASK-260929-3hrwzn — transactional-legacy-config-import (PM-owned importer).
 - **Affects:** environments §§5.8, 7.4, 7.8, 8, 9.2, 10, 12–13; manager configuration and profile cleanup; CLI `env config`, `env resolve`, `env status`; implementations: curator, curator-run/launcher and its agents-management integration; PM importer as a consumer.
 
+## Operative summary
+
+| Field | Contract |
+|---|---|
+| Purpose | Preserve narrow provider settings and explicit negative MCP intent on existing profiles. |
+| Boundary | Machine-owned declarations update exact managed keys; native files/auth remain outside ownership. |
+| Authority owner | Operator/system owns scoped declarations; manager owns key projection, prior values and journal; pinned adapter owns rendering/suppression semantics. |
+| Inputs → outputs | Closed profile_settings with presence/scope and MCP choices → managed key projection, marker/digest and explicit MCP launch channel, including empty sets. |
+| Phase | Narrow record accepted; coordinated v4 and adapter suppression grammar/qualification pending; Decision 0014 stays proposed. |
+| Normative links and proposed landing | [Environments §5.8](../protocol/environments.md#58-mcp-launch-channel-output), [§8](../protocol/environments.md#8-materialization-modes-and-the-environment-marker), [§10](../protocol/environments.md#10-resolution-and-the-launch-fragment), [§12.1](../protocol/environments.md#121-machine-configuration-knobs); amendments: [Specification changes](#specification-changes). |
+
 ## Operative disposition (2026-10-11)
 
 - **Decided:** Accepted on 2026-10-10: the narrow machine-owned profile_settings record on existing profiles. Package settings and Decision 0014 as a whole remain outside this acceptance. Presence, scope, negative MCP intent and conservative key ownership must be preserved.
@@ -47,6 +58,8 @@ Decision 0014:3–10 explicitly leaves all its options unadopted. Decision 0018:
 Measured on the baseline: the scratch package with the issue's Claude permission object failed with exit **1**, `profile_source_invalid: context_manifest_invalid: unknown field settings`. A synthetic `mcp_policy` member failed with exit **1** for the same closed-schema reason. The otherwise identical plain package installed with exit **0**; its real `env resolve claude_code --repair --format json` exited **0** with no `mcp` member. Five selected existing tests passed, exit **0**. These establish current behavior, not implementation of this proposal.
 
 ## Design
+
+The [configuration publication figure](diagrams/configuration-publication.puml) shows declaration versus per-home publication, owned-key conflict/recovery and authoritative negative MCP policy.
 
 ### Options considered
 

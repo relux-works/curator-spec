@@ -6,6 +6,17 @@
 - **Related:** [CIP-0010](CIP-0010-credentials-setup-token-and-inherited-auth.md) (credential sources, protected credential binding C3.4, executor capability, CIP-0003 disposition); [CIP-0008](CIP-0008-remote-worker-launch-mode.md), [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md); [Decision 0013](../decisions/0013-execution-ownership-and-launch-plans.md) (launch plans); [Decision 0017](../decisions/0017-environment-credential-modes.md) (credential modes); environments §7.4, §10.3, §12.1–§12.2; relux-works/swarma-credential-broker `spec/broker.md` (draft v0.3); relux-works/swarma-user-manager `spec/helper.md` (draft v0.3, with the launcher and `exec.stop`); relux-works/swarma-dispatcher `spec/dispatcher.md` (draft v0.2); relux-works/curator-network-profiles (binding records)
 - **Affects:** environments §7.4 and §12.1 (a credential source value), Decision 0013 (the credential extension), the launcher SPEC, the manager command set (`broker`, `agent-user` as a dispatcher client), agent-account curator-run as first broker consumer; board/session-host dispatcher clients; donor supervisor later
 
+## Operative summary
+
+| Field | Contract |
+|---|---|
+| Purpose | Cross-user credential leases and dispatcher-managed agent OS accounts. |
+| Boundary | Caller composes; dispatcher provisions/tracks; agent-account executor verifies/executes and talks only to broker; capability is not authorization. |
+| Authority owner | Broker service owns accounts/bindings/leases/auth owner; dispatcher service owns run records; root helper owns accounts; executor owns injection. |
+| Inputs → outputs | Caller-composed plan/digest, signed caller grant, generation and protected binding → approved account/execution, lease/injection and metadata receipt or refusal. |
+| Phase | Slice 0 Claude / helper v0 and dispatcher v0 target; dispatcher v1 socket, Codex slice 1, enforced networking/helper v1 slice 2; SH2/donor later. |
+| Normative links and proposed landing | [Decision 0013](../decisions/0013-execution-ownership-and-launch-plans.md), [Decision 0021 amendment](../decisions/0021-sessions-enter-through-curator-run.md#amendment-v1--agent-account-one-shot-execution-2026-10-11), [Environments §7.4](../protocol/environments.md#74-credential-passthrough-provisioning-seeds-and-isolation); [module owner/version table with pinned broker/dispatcher/helper specifications](platform-contract-disposition.md#schema-owner-and-version-table); amendments: [Specification changes](#specification-changes). |
+
 ## Operative disposition (2026-10-11)
 
 - **Decided:** The dispatcher is a separate module. D-EXECUTOR selects agent-account curator-run first: caller composes, executor verifies and executes without profile resolution and with no network except the broker; it shares a launch library with swarma-session-runner. Board and session host call the dispatcher. D-WIRE-NAMES governs platform identifiers.
@@ -47,6 +58,8 @@ A profile with this source holds no credential of its own. At every launch the f
 `node:<label>` (CIP-0010, the same-user file store) remains for single-user machines without a broker. A machine that runs agents as separate OS accounts uses `broker:`.
 
 ### 2. Launch-plan extension and the protected binding
+
+The [credential source lifecycle](diagrams/credential-source-lifecycle.puml) identifies caller composition, dispatcher/root-launcher handoff and agent-account final-executor checks, with broker store/lease ownership and refusal branches.
 
 - The credential travels in the plan only as metadata, in `extensions["works.relux.curator.credential/1"]` with `mode: "broker"`, `account` and `channel`; no new top-level plan member. The extension is marked as required-understanding: an executor that does not implement it refuses the plan instead of ignoring it.
 - Intake refuses a broker-mode plan unless the executor declares `credential-injection/1` and can reach the broker socket (`credential_broker_unavailable`).

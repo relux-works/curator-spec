@@ -1,0 +1,61 @@
+@startuml donor-side
+title Donor and project components - Draft target after one-host slice 0; B disabled; A/C role substitutions shown
+left to right direction
+actor "Human donor" as Donor
+actor "Project operator" as Operator
+node "Donor machine\nB: separate bridge and harness UIDs\nA/C: donor UID, user service" as D {
+  component "Curator init\nhuman donor UID; consent/provision request" as Init
+  component "Separate donor provisioner\nprivileged B only; pending short spec/removal\nnot swarma-user-manager" as Prov
+  component "Bridge service\nswarma-bridge + supervisor role\nB bridge UID; A/C donor UID\nconsumes caller-composed plan" as Bridge
+  component "Harness\nB worker UID + sandbox\nC donor UID + sandbox; A donor UID only" as Harness
+  component "swarma-remote-tools\nstdio relay, harness identity\nno keys / no network" as Relay
+  component "Provider proxy\nB bridge UID or system service\nC qualified proxy; A absent" as Proxy
+  database "Bridge-role-owned persistent state\nkeys/config/binding/tuple/generation\naudit, cursors, budgets, queued results" as DS
+  artifact "Managed home / scratch\nharness-role state; variant-owned releases\nB releases root-owned" as HS
+}
+node "Project host" as P {
+  component "Join point\nservice identity unspecified in spec D9\nTLS challenge/cert/collect; no signing key" as Join
+  component "swarma-dispatcher\nservice UID; project workplace provisioning\nroot swarma-user-manager account helper" as Disp
+  component "sshd (root) + forced swarma-rb-exec\nworkplace UID; OS-user backend" as Exec
+  component "Project bridge (M3)\nservice identity unspecified in spec D5\nmailbox/admission/carrier authority" as PB
+  component "Trust registry / key keeper\nservice identity unspecified in spec D4/D12\nroot/operator chain; host and separate user CA" as Keeper
+  database "Join-point-owned pending applications\nchallenges/invitation consumption/tombstones\noperator-signed encrypted packages" as JS
+  database "Project-owned persistent state\npublic worker keys/grants/revocations, KRL\nmailbox/cursors, execution result cache, archives\ncarrier credentials never in donor package" as PS
+}
+cloud "Model provider" as API
+cloud "DNSSEC zone\nenvironment root/host-CA/TLS records" as DNS
+Donor --> Init : only human init; policy heuristics
+Init --> Prov : B absent spec/qualification -> refuse; future journal/rollback
+Init --> DNS : local validation; DoH transport; mismatch/failure -> refuse
+Init --> Join : Web PKI + DNSSEC default or declared no-DNSSEC invitation pins
+Join --> JS : bounded queue; same-key retry recovers; other-key replay refuses
+Operator --> Keeper : admission / grants / separate signed identity revoke
+Operator --> Join : approve/reject; release encrypted signed package
+Keeper --> PS
+Disp --> PS : workplace lifecycle; no donor provisioning authority
+Init --> Bridge : validated package; pin root/operator/CA, tuple and generation
+Bridge --> DS
+Bridge --> Harness : qualification/current policy/binding checks before exact exec
+Harness --> HS
+Harness --> Relay : effective tools = relay maximum intersect workplace policy
+Relay --> Bridge : authenticated local socket; wrong peer/tool -> refuse
+Harness --> Proxy : B/C model calls only
+Proxy --> API : qualified host allowlist
+Harness --> API : A direct path; no OS egress guarantee
+Bridge --> Exec : one donor-originated SSH; certificates/CA/name/validity/KRL checked
+Exec --> PS : policy/leased jobs; cached result or unknown_result after reconnect
+Exec --> PB : mailbox control plane; tools only if granted
+PB --> PS : durable mailbox; signatures/grants/freshness; exact-byte carrier delivery
+note bottom of D
+  Channel drops -> pause new turns; current deadline; channel_down; durable output queue.
+  Reconnect validates trust and catches up cursors; never repeat an uncertain effect.
+  B disabled until separate provisioner exists. C enforces sandbox without UID split.
+  A has no OS confinement; all variants require lockdown + remote-auto and exact tuple.
+end note
+note bottom of P
+  Transport/backend object ownership and closed formats unspecified in spec publication register.
+  [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D0-D12]]
+  [[../../protocol/remote-worker.md#publication-status Pending formats/owners]]
+  [[../../protocol/remote-worker.md#tools-mailbox-and-lifecycle Recovery/lifecycle]]
+end note
+@enduml

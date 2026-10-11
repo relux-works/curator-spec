@@ -1,0 +1,97 @@
+@startuml audit-transport
+title Audit transport - CLI secret input accepted first; backend/cache contracts proposed; current null backend is static-only
+actor "Operator" as O
+participant "Curator CLI / manager\noperator UID; policy/process/decision owner" as M
+participant "Opened private token handle\noperator-owned file; transient, non-inheritable" as F
+participant "Shared agents-management launch layer\nnative argv/settings owner" as L
+participant "Selected analyzer child\nmanager-launched identity; direct-child policy" as A
+database "Manager-owned private state\nfrozen snapshot, bounded workdir/output\nverdict cache and registry trust/high-water" as S
+participant "Registry HTTP service\nsigned record publication owner" as R
+
+== Registry publishing secret input; no backend credential propagation ==
+O -> M: audit --publish record --registry URL; optional token-file path (never token value)
+break legacy --token / -token, repeated file option or wrong-subcommand file input
+  M --> O: usage refusal before config/read/launch/network; do not echo raw argv/value
+end
+alt explicit token file
+  M -> F: no-follow, nonblocking open; validate opened type/identity/privacy on same handle
+  break link/reparse point, nonregular object, unsafe ACL/privacy or indeterminate read
+    M --> O: publication error; no CURATOR_REGISTRY_TOKEN fallback
+  end
+  F --> M: bounded bytes (65536 raw cap; read at most 65537); remove at most one LF/CRLF
+  M -> F: close before publication; handle never inherited by child
+else no file option
+  M -> M: use CURATOR_REGISTRY_TOKEN; same grammar/cap; no newline removal
+end
+break missing/empty/oversize/non-ASCII/invalid bearer grammar
+  M --> O: source/category only; no contents/headers in diagnostic
+end
+M -> R: HTTP Bearer publication + signed record; token stays outside argv/config/cache/plans
+R --> M: publication result; failure reported, no backend/source fallback
+
+== Audit analysis proposal; independent from publish-token input ==
+O -> M: selected audit policy + frozen subject; profile operations strict
+M -> S: obtain exact snapshot/current revocation/policy; local static canary before cache authorization
+break failed/partial snapshot/cache read, indeterminate identity or static canary failure
+  M --> O: block both modes; no absence-triggered fallback / empty success
+end
+alt null backend
+  M --> O: deterministic findings; static-only coverage; no analyzer child
+else selected descriptor
+  M -> M: validate selected descriptor, executable, bounds and cloud policy
+  alt unavailable before canary starts
+    M --> O: strict blocks; advisory warns incomplete; no successful backend cache
+  else malformed descriptor or unsafe launch plan
+    M --> O: error in both modes; no child
+  else selected backend admitted
+    M -> M: cloud requires allow_cloud and public classification of every contributing identity
+    break egress disallowed / redaction incomplete or residual supported secret shape
+      M --> O: block both modes; no subject bytes sent, no cloud canary if cloud disabled
+    end
+    M -> S: inspect eligible successful cache identity; current gates still apply
+    alt eligible cache hit
+      S --> M: bounded cached findings/coverage and exact adapter/source identity
+      M --> O: cached status, not executed in this operation
+    else absent or old-version ineligible cache
+      M -> L: native audit-purpose plan (Codex/Claude); command kind uses admitted absolute argv
+      L --> M: sole native flag/settings construction; unsupported controls refuse
+      M -> M: fresh non-nil child env: base/per-kind allowlist; deny *_TOKEN, *_KEY, SSH_AUTH_SOCK, GIT_*
+      break required env forbidden / native auth and context suppression unqualified
+        M --> O: unsupported; no widening, credential copy or shell fallback
+      end
+      M -> A: bounded synthetic canary via same runner/adapter/environment, private workdir, stdin
+      A --> M: structured canary response
+      break started canary timeout/nonzero/malformed or wrong/missing expected findings
+        M --> O: block both modes; no extraction/cache pass
+      end
+      break request exceeds cap after wrapping/redaction
+        M --> O: strict blocks; advisory warns incomplete; no extraction/cache pass
+      end
+      M -> A: whole frozen source as bounded stdin; never checkout execution or source/auth argv
+      A --> M: bounded response/stdout (1 MiB), diagnostic stderr (64 KiB), validated identity/findings
+      alt timeout/nonzero/malformed/oversize/bad identity
+        M -> A: terminate owned tree, drain and reap within deadline
+        M --> O: strict blocks; advisory warns incomplete; retain deterministic findings
+      else valid bounded findings
+        M -> M: manager deterministic verifier decides verifiability; model claim is not authority
+        M -> S: bounded atomic cache write unless dry-run
+        alt cache persistence fails
+          M --> O: valid in-memory result + cache-write diagnostic; no persistence claim
+        else cache persisted or dry-run skipped write
+          M --> O: decision + backend/adapter/model/cache status + measured coverage; unknown when unmeasured
+        end
+      end
+    end
+  end
+end
+note over M,S
+  Canary, egress, revocation and unsafe configuration cannot be waived by pins/fail_on=off.
+  Dry-run persists no verdict/pin/response/prompt/auth copy. Git transport has separate auth policy.
+  Analyzer saved login is explicitly provisioned; no token passed from registry publication.
+  Direct-child environment filtering is not a sandbox or descendant/native-store secrecy claim.
+  New backend/cache versions and native qualification unspecified in spec CIP-0005 Open questions.
+  [[../CIP-0005-audit-backends-and-cli-secret-transport.md#1-registry-token-sources CIP-0005 token input]]
+  [[../CIP-0005-audit-backends-and-cli-secret-transport.md#recommendation CIP-0005 backend/canary/cache]]
+  [[../CIP-0005-audit-backends-and-cli-secret-transport.md#6-failure-and-coverage-semantics CIP-0005 refusal semantics]]
+end note
+@enduml

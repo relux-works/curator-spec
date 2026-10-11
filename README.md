@@ -79,6 +79,26 @@ Protocol and implementation designs are recorded as
 [CIP-0001](cips/CIP-0001-curator-improvement-proposals.md); adoption follows
 [GOVERNANCE.md](GOVERNANCE.md).
 
+## CIP diagram sources
+
+[Source index and phase/authority notes](cips/diagrams/README.md) map the B4 module views to their defining CIP sections. These views describe current contracts and proposed targets; they do not assert implementation or qualification.
+
+| Figure | Source | Defining section |
+|---|---|---|
+| Donor components (C4 retained) | [donor-side.dsl](cips/diagrams/donor-side.dsl) | [D0–D3, D5, D12](cips/CIP-0009-donor-side-deployment-and-bridge.md#recommendation) |
+| Donor components (PlantUML) | [donor-side.puml](cips/diagrams/donor-side.puml) | [D0–D3, D5, D9, D12](cips/CIP-0009-donor-side-deployment-and-bridge.md#recommendation) |
+| First deployment | [donor-first-deployment.puml](cips/diagrams/donor-first-deployment.puml) | [D0–D4, D9–D10, D12](cips/CIP-0009-donor-side-deployment-and-bridge.md#recommendation) |
+| Join handshake | [join-handshake.puml](cips/diagrams/join-handshake.puml) | [D4, D6, D9, D12](cips/CIP-0009-donor-side-deployment-and-bridge.md#recommendation) |
+| Remote-worker turn | [remote-worker-turn.puml](cips/diagrams/remote-worker-turn.puml) | [D0–D5, D12; CIP-0008 R3/R5/R9](cips/CIP-0009-donor-side-deployment-and-bridge.md#recommendation) |
+| Retirement sequence | [remote-worker-retire.puml](cips/diagrams/remote-worker-retire.puml) | [D7, D12](cips/CIP-0009-donor-side-deployment-and-bridge.md#recommendation) |
+| Deployment variants | [donor-variants.puml](cips/diagrams/donor-variants.puml) | [D0–D3; CIP-0008 R9](cips/CIP-0009-donor-side-deployment-and-bridge.md#recommendation) |
+| Independent lifecycle axes | [donor-lifecycle.puml](cips/diagrams/donor-lifecycle.puml) | [D7, D12](cips/CIP-0009-donor-side-deployment-and-bridge.md#recommendation) |
+| State layout | [donor-layout.puml](cips/diagrams/donor-layout.puml) | [D0–D3, D5, D7, D12](cips/CIP-0009-donor-side-deployment-and-bridge.md#recommendation) |
+| Credential source lifecycle | [credential-source-lifecycle.puml](cips/diagrams/credential-source-lifecycle.puml) | [C1–C6, Revision 2.2; CIP-0003 migration; CIP-0011 §2/§3](cips/CIP-0010-credentials-setup-token-and-inherited-auth.md#recommendation) |
+| Configuration publication | [configuration-publication.puml](cips/diagrams/configuration-publication.puml) | [CIP-0002 admission/leases/PATH; CIP-0004 recommendation/migration; CIP-0006 design/migration](cips/CIP-0002-project-context-in-managed-launches.md#recommendation) |
+| Tool admission | [tool-admission.puml](cips/diagrams/tool-admission.puml) | [Operator decision, option B, recommendation/security; shared D-PATH](cips/CIP-0007-manager-provisioned-cli-tools.md#recommendation) |
+| Audit transport | [audit-transport.puml](cips/diagrams/audit-transport.puml) | [Recommendation §§1–7](cips/CIP-0005-audit-backends-and-cli-secret-transport.md#recommendation) |
+
 ## Tools
 
 Published `release/<version>.json` records are byte-frozen against release

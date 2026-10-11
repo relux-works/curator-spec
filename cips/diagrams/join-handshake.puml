@@ -1,5 +1,4 @@
 @startuml join-handshake
-!theme plain
 title Join handshake (revision 4): a server challenge, a signed canonical transcript, atomic invitation consumption; anchors: the Web PKI, DNSSEC validated in the client (default), and the invitation's pins (fallback for an environment without a DNSSEC domain)
 
 participant "Human-run init / donor bridge role\n(A/C: donor UID; B: bridge UID)" as C
@@ -7,6 +6,7 @@ database "DNS: system resolver,\nDNS-over-HTTPS as the fallback\n(signatures val
 participant "Join point\n(our host)" as JP
 actor "Operator" as OP
 participant "Registry / key keeper" as T
+participant "swarma-dispatcher (service UID)\nroot swarma-user-manager helper\nproject workplace provisioning" as D
 
 note over C, T
   Anchors before first contact:
@@ -40,16 +40,27 @@ else open application (no code)
   JP -> JP: signature/challenge/expiry; operator queue; exact binding/retry schema pending
 end
 JP -> JP: per-address/per-invitation/queue limits
+break invalid signature/challenge/expiry, wrong-key retry, invitation limits or full queue
+  JP --> C: refuse; no package
+end
 JP -> OP: show {enrolment reference (schema pending), fingerprint, name, role}
 OP -> OP: check against the donor's signed marketplace card when there is one,\notherwise invitation binding or open application; no voice check
+break operator rejects application
+  OP -> JP: reject
+  JP --> C: refused
+end
 OP -> T: pin K_sig, K_enc, K_ssh; root-signed admission; grants (scope, expiry)
-OP -> T: dispatcher provisions project workplace; issue short user certificate for its principal\n(project-side account boundary; separate from donor provisioner)
+OP -> D: provision project workplace; issue short user certificate for its principal\n(project-side account boundary; separate from donor provisioner)
 OP -> OP: package with host CA + short user certificate/principal, variant/tuple and binding; no carrier credential; AEAD to K_enc with AAD = H(transcript); signed by the operator certificate (root-signed, scope onboard)
 OP -> JP: release package for this enrolment (reference schema pending)
 C -> JP: POST /join/challenge (collection phase, second challenge; pending schema)
 C -> JP: POST /join/collect {enrolment reference, sig_K_sig(second challenge)}
 JP --> C: package
 C -> C: decrypt with K_enc; verify operator cert chain to the pinned root;\nverify package signature; check AAD; pin our SSH host CA key from the package\nAND cross-check it against DNS (or the invitation)
+
+break invalid package chain/signature/AAD or host-CA mismatch
+  C -> C: refuse package activation; no trust fallback
+end
 
 note over C, T
   All invitation/transcript/package and join API/error schemas PENDING (protocol/remote-worker.md).
@@ -63,4 +74,18 @@ note over C, T
   Certificates: host about one year, user about one day (policy examples); bridge renews user certificate.
   Key storage/algorithm admission follows D0; B disabled until separate provisioner contract exists.
 end note
+note over C, T
+  Phase: Draft donor target, A first after slice 0; B disabled pending separate provisioner.
+  Curator init: human donor UID; bridge role: A/C donor UID or future B bridge UID.
+  Join point and registry/keeper service UIDs unspecified in spec CIP-0009 D4/D9/D12.
+  Join point owns challenges, queue, atomic invitation tombstones and stored packages;
+  registry/keeper owns public key pins/admission/grants and CA authority;
+  donor bridge owns private keys and protected package/config/CA trust state.
+  Host root owns sshd CA/KRL policy; workplace UID never controls SSH authorization.
+  Invalid/replayed/wrong-key proof, expired challenge/invitation or queue cap -> refuse.
+  Same-key invited retry recovers same pending enrollment; collection retry format pending.
+  [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D4/D6/D9/D12]]
+  [[../../protocol/remote-worker.md#trust-and-ssh Selected trust and CAs]]
+end note
+
 @enduml

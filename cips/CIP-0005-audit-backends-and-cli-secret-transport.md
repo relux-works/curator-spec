@@ -6,6 +6,17 @@
 - **Related:** TASK-261004-hy8zmn — audit-token-argv-and-backend-env-allowlist-design; STORY-261004-2b8pnx — design-audit-backends-and-secret-transport; K24; public cocoaskills PR #142, commit 0da153a54e7f8b446e63a6a177a9b5392e30da11; adopted Decisions 0019 and 0021
 - **Affects:** curator-spec manager profile §§1, 7, 12.6; registry protocol §9.1; CLI audit reference; manager configuration, local verdict and backend schemas; curator; shared agents-management launch layer. No proposed curator-run headless mode or launch-fragment wire change.
 
+## Operative summary
+
+| Field | Contract |
+|---|---|
+| Purpose | Private CLI registry-token input and explicitly selected audit backends. |
+| Boundary | Secrets never enter argv, plans or audit children; backend output cannot mint verification authority. |
+| Authority owner | Operator selects policy/backend; manager owns input, process, decision/cache; shared launch layer owns native flags; registry owns publication. |
+| Inputs → outputs | Private file or registry-token environment, frozen subject and audit policy → Bearer publication or bounded audit findings/coverage/cache status. |
+| Phase | CLI secret transport accepted first; backend descriptor/cache/native qualification details pending. |
+| Normative links and proposed landing | [Manager §7](../profiles/manager.md#7-source-audit-policy), [§12.6](../profiles/manager.md#126-profile-audit), [Registry §9.1](../protocol/registry.md#91-status-and-errors); amendments: [Specification changes](#specification-changes). |
+
 ## Operative disposition (2026-10-11)
 
 - **Decided:** Accepted on 2026-10-10, with CLI secret transport first: refuse literal argv tokens; explicit token-file failure never falls back to CURATOR_REGISTRY_TOKEN. Native backend launch construction remains with the existing shared launch owner.
@@ -55,6 +66,8 @@ The configuration schemas leave audit.backends open and audit.backend as a strin
 A blacklist-only environment, arbitrary inherited environment, and a native adapter bypassing the shared runner are rejected within every option that launches analysis.
 
 ### Recommendation
+
+The [audit transport figure](diagrams/audit-transport.puml) separates registry-token input from proposed analyzer execution and shows refusal, cache and strict/advisory branches.
 
 Adopt B, with independently reviewable leaves after operator acceptance. Preserve current defaults: audit.enabled false for optional skill gates, backend null, advisory mode, fail_on high, allow_cloud false, and internal source classification. Explicit CLI audit continues to enable its audit, and profiles remain always strict.
 

@@ -1,0 +1,67 @@
+@startuml tool-admission
+title Tool admission - accepted option B / proposed record grammar; D-PATH decided; option C deferred
+actor "Operator\nsystem/fleet policy authority" as O
+participant "Curator manager\noperator UID; resolver/provisioner" as M
+participant "Enabled signed tool registries\neach registry operator owns dedicated rotating keys" as R
+database "Manager-owned protected state\ntrust bundle/config, URL high-water\nlocks, sealed store, launch alias directory" as S
+participant "Caller-side curator-run + agents-management\ncaller UID; sole semantic composer" as L
+participant "Destination executor\nadmitted execution UID bound by plan\nagent-account curator-run for broker; SH2 runner later" as E
+participant "Harness or declared script worker\nchild identity from admitted plan" as H
+O -> S: configure registry order, pinned key sets/freshness; separate release trust bundle
+note over O,S: No compiled-in trust keys. Publisher/service and bundle delivery unspecified in spec CIP-0007 Open questions.
+O -> M: install/resolve/refresh or lock replay
+M -> M: read logical dependency id / alias / constraint / platform as untrusted data
+M -> M: admit declaration: no author URL/checksum/signature; deny override wins (proposed)
+break invalid identity, alias/version collision or policy denial
+  M --> O: structured refusal; no fetch from author or fallback
+end
+M -> R: phase 1: scan every enabled trusted registry for candidate revocations
+R --> M: signed snapshots/records/revocations
+M -> S: verify current keys/freshness and persisted URL rollback high-water
+note right of M: Malformed/unmatched/unverifiable records ignored with warning; not trusted permits.
+break unreachable trusted registry / incomplete revocation evidence / rollback or authorization failure
+  M --> O: fail closed; name affected registry/tools; no availability-preferring B mode
+end
+alt verified revocation in any enabled registry covers artifact or record
+  M --> O: veto before positive selection; allow override cannot waive it
+else no verified matching revocation after full scan
+  alt replay existing lock
+    M -> S: exact locked version/platform/hash/registry; recheck current authorization
+    break removed signing key, stale record or no longer authorized artifact
+      M --> O: refuse replay even when store bytes/hash exist
+    end
+  else resolve / explicit refresh
+    M -> R: phase 2: first configured layer with verified non-revoked satisfying record
+    R --> M: exact selected version/platform URL, format, map, hash
+    M -> M: highest satisfying version; refresh never downgrades without explicit approval (proposed)
+    break unknown/unsigned identity or no satisfying verified record
+      M --> O: refuse; add trusted registry; no C mirror/system probe fallback
+    end
+  end
+  M -> M: provision manager-owned sealed files; verify exact artifact bytes
+  M -> S: record exact lock and store identity; expose provisioned alias in protected launch bin
+  note right of S: Store/publication failure recovery details unspecified in spec CIP-0007; no invented transaction order.
+  M -> L: protected tool directory + admitted command context
+  L -> E: immutable composed plan; destination applies its admitted typed transform
+  E -> E: after destination child-environment admission: tools first, base order, dispatcher
+  note right of E
+    Deduplicate by identity; preserve existing dispatcher position, otherwise append.
+    Bind resolved PATH/context into immutable plan digest; repository .agents/bin excluded.
+  end note
+  alt PATH absent/excluded or admission malformed/unreadable
+    E --> O: refuse command capability; never recreate excluded PATH
+  else managed harness launch
+    E -> H: exact provisioned aliases by accepted launch exposure; no system-wide install
+  else enforced script-worker-v1
+    E -> H: only resolved interpreter + declared exec names; discard inherited PATH
+    note right of H: Tool dependency never widens enforced PATH; alias must also be declared exec.
+  end
+end
+note over M,E
+  Option B has no PATH version probes or system-tool reuse; those remain option C.
+  [[../CIP-0007-manager-provisioned-cli-tools.md#operator-decision-2026-10-10 CIP-0007 acceptance conditions]]
+  [[../CIP-0007-manager-provisioned-cli-tools.md#recommendation CIP-0007 scan/selection/replay]]
+  [[../CIP-0007-manager-provisioned-cli-tools.md#security-considerations CIP-0007 authorization/keys]]
+  [[../platform-contract-disposition.md#managed-and-interactive-path D-PATH]]
+end note
+@enduml

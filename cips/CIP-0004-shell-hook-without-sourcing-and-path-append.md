@@ -6,6 +6,17 @@
 - **Related:** TASK-261004-1z2pgb — shell-hook-no-source-and-path-append-design; STORY-261004-7fglii — shell-hook-path-and-backend-env-hardening; K3 / historical S6; reviewer input `shell-hook-test-matrix.md`
 - **Affects:** curator-spec rc.14 Manager §§3, 8, 10 and environment-exposure text; Environments §§11–12; shell conformance vectors; curator hook generation, generated env helpers, cache installation and status. Launcher and launch-fragment contracts require boundary clarification, not a PATH-policy change here.
 
+## Operative summary
+
+| Field | Contract |
+|---|---|
+| Purpose | Interactive activation without executing project/global env files. |
+| Boundary | Metadata-only discovery and literal assignments; shell bins confer no managed-launch admission. |
+| Authority owner | Generated hook owns its activation snapshot; manager owns canonical cache bytes/options; user controls opt-outs and reload. |
+| Inputs → outputs | Physical CWD, nearest .agents directory, inherited PATH and options → root variables and appended global/project bins; exit/switch restores prior state. |
+| Phase | Accepted no-source-v1; cache schema/release and native shell qualification pending. |
+| Normative links and proposed landing | [Manager §8](../profiles/manager.md#8-shell-activation), [§10](../profiles/manager.md#10-status-and-garbage-collection), [Environments §12](../protocol/environments.md#12-status-machine-configuration-and-garbage-collection); amendments: [Specification changes](#specification-changes). |
+
 ## Operative disposition (2026-10-11)
 
 - **Decided:** Accepted on 2026-10-10: no-source-v1 interactive activation; inherited PATH, optional global bin, optional project bin, in that order. Shell approvals no longer authorize activation. Managed launches use D-PATH and never execute repository .agents/bin.
@@ -63,6 +74,8 @@ For A and B, “digest + realpath” is necessary but insufficient: a retained s
 Snapshot execution also changes compatibility: today's POSIX canonical helper discovers its root from its own source location (C1), so simply copying it to a private approval directory changes the root it computes. B needs a new canonical template with the verified project root encoded as a literal; A cannot transparently relocate every arbitrary approved script that depends on its source filename. This is another cost of retaining sourcing, not a solved property of a digest store.
 
 ### Recommendation
+
+The [configuration publication figure](diagrams/configuration-publication.puml) separates no-source interactive activation and cache reload from project-context admission and managed-launch PATH.
 
 Select **C**, with one supported behavior, `no-source-v1`, and no configurable unsafe mode. In particular `_CURATOR_TRUST_PROFILE`, an old record, a file header or a “permissive” security profile must not re-enable sourcing.
 

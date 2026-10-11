@@ -1,11 +1,16 @@
 // C4 (Structurizr DSL) fragment for CIP-0009 (revision 4: B boundary shown; A/C differences in source notes; B disabled until separate provisioner contract exists): the donor machine and the bridge to our host.
+// Defining sections: ../CIP-0009-donor-side-deployment-and-bridge.md#recommendation (D0-D12); ../../protocol/remote-worker.md#publication-status.
+// Phase: Draft donor target after one-host slice 0; no current deployment/qualification claim.
+// Refusal/recovery: unknown tuple/posture/generation or failed trust refuses; failed B provisioning reverses journal; channel loss pauses/catches up without repeating effects.
+// State owners: donor bridge role owns keys/config/audit/cursors/budgets; harness role owns managed home/scratch; join point owns queue/challenges/tombstones/packages; project registry owns public pins/grants/revocations, project bridge owns mailbox/carrier, executor owns job leases/op_key cache.
+// Exact service UIDs, state files/retention and recovery record schemas unspecified in CIP-0009 D4/D5/D7/D9.
 // Style follows relux-works/swarm-platform-architecture diagrams/c4 (hierarchical identifiers, one container per process).
 // Variant B: two OS identities on the donor (untrusted harness, trusted bridge); the relay holds no keys and no network;
 // A/C: donor UID user service; A qualified lockdown only, no OS boundary or proxy; C sandbox without UID split.
 // A/C keys: qualified Secure Enclave P-256 signing/SSH on supported Macs, files elsewhere; B Ed25519 0600, no Keychain.
 // Invitation/transcript/package, join API/error, channel/backend and donor provisioner formats: pending protocol/remote-worker.md.
 // the bridge signs outbound envelopes with the worker's key; the harness reaches only the relay socket and the provider proxy.
-workspace "Remote worker on a donor machine" "CIP-0008/0009: lockdown harness, trusted bridge identity, minimal remote-tools relay, one SSH connection towards the project host" {
+workspace "Remote worker on a donor machine" "Draft donor target after slice 0: CIP-0009 Recommendation D0-D12; B disabled pending separate provisioner; A/C substitutions in source notes and PlantUML variant view" {
   !identifiers hierarchical
 
   model {
@@ -13,7 +18,7 @@ workspace "Remote worker on a donor machine" "CIP-0008/0009: lockdown harness, t
     operator = person "Project operator" "Reviews enrolment, issues admission, grants and packages; no voice comparison"
 
     donor = softwareSystem "Donor machine" "A machine we do not own, lending a harness subscription" {
-      curator = container "curator (donor install)" "Go CLI" "init/status/stop/run/leave/purge; consumes the composed lockdown plan; writes the locked machine config (bridge-owned)"
+      curator = container "curator (donor install)" "Go CLI" "human donor UID for init/leave/purge; bridge role for run/status/stop; consumes the composed lockdown plan; writes the locked machine config (bridge-owned)"
       helper = container "Separate donor provisioner (B only; pending)" "Separate binary and privileges; not swarma-user-manager" "Short spec, closed schema, rules and removal pending; B disabled; allocated identifiers, journal/rollback required"
       harnessUser = container "Harness identity worker-<project>" "OS user, home 0700, quotas, Seatbelt/Landlock read boundary" "the UNTRUSTED side: managed home and scratch dir only"
       bridgeUser = container "Bridge identity swarma-bridge-<project>" "OS user, system service (launchd daemon / systemd)" "the TRUSTED side: keys, locked config, audit, lifecycle state"
@@ -28,11 +33,11 @@ workspace "Remote worker on a donor machine" "CIP-0008/0009: lockdown harness, t
     }
 
     project = softwareSystem "Project host" "Our host" {
-      joinPoint = container "Join point" "HTTPS, three verbs: challenge, cert, collect" "atomic invitation consumption, tombstones, rate limits; never commands"
-      sshd = container "sshd + swarma-rb-exec" "Root-controlled Match, TrustedUserCAKeys + KRL + workplace principal; protected absolute forced command" "speaks swarma-rb/1; executes under swarma-workplace-exec/1"
+      joinPoint = container "Join point (service UID unspecified in D9)" "HTTPS, three verbs: challenge, cert, collect" "atomic invitation consumption, tombstones, rate limits; never commands"
+      sshd = container "sshd + swarma-rb-exec" "Root-controlled Match, TrustedUserCAKeys + KRL + workplace principal; protected absolute forced command" "root sshd / workplace UID executor; swarma-rb/1 and swarma-workplace-exec/1 are pending design labels, owner/formats unresolved"
       workplace = container "Remote workplace (OS-user backend)" "one OS user per worker; policy: tools, write scope, network, limits, env_allow" "where execution/file tools run; audit; cleanup; mailbox control plane goes to project bridge"
-      bridge = container "Bridge (M3)" "broker, mailbox, trust gate" "admits messages; verifies the worker's signature; carries bytes unchanged under a distinct carrier account"
-      registry = container "Trust registry + key keeper" "pins K_sig, K_enc, K_ssh; grants; root-signed admission and revocations" "operator certificates chained to the root"
+      bridge = container "Bridge (M3; service UID unspecified in D5)" "broker, mailbox, trust gate" "admits messages; verifies the worker's signature; carries bytes unchanged under a distinct carrier account"
+      registry = container "Trust registry + key keeper (service UID unspecified in D4/D12)" "pins K_sig, K_enc, K_ssh; grants; root-signed admission and revocations" "operator certificates chained to the root"
       dns = container "DNS zone (DNSSEC default)" "TXT _swarma, TXT _swarma-ssh-ca, TLSA" "Per-environment root/host-CA/TLS trust; validated in client; declared no-DNSSEC invitation uses pins, never fallback on failure"
     }
 
@@ -43,14 +48,14 @@ workspace "Remote worker on a donor machine" "CIP-0008/0009: lockdown harness, t
     donor.curator -> donor.keys "generate K_sig, K_enc, K_ssh (bridge identity); decrypt the package"
     donor.curator -> project.dns "DNSSEC branch only: local validation, DoH transport; failed reads/mismatch refuse; pins must agree"
     donor.curator -> project.joinPoint "challenge; cert (signed swarma-bridge join/1 transcript + code when invited); collect (HTTPS: Web PKI + DNSSEC/TLSA or declared invitation pins; schemas pending)"
-    donor.supervisor -> donor.harness "launch as the harness identity under the lockdown plan; next admitted turn"
+    donor.supervisor -> donor.harness "validate tuple/current generation/binding; refuse unknown or changed input; launch as harness identity under composed plan; next admitted turn"
     donor.harness -> donor.relay "MCP stdio: tools/call"
     donor.relay -> donor.socket "forward (peer credentials checked)"
     donor.socket -> donor.bridgeCore "authenticated local RPC"
     donor.harness -> donor.proxy "model API over the proxy only"
     donor.proxy -> provider "HTTPS"
     donor.bridgeCore -> donor.keys "sign envelopes with K_sig; SSH with K_ssh"
-    donor.bridgeCore -> project.sshd "one SSH connection; swarma-rb/1 frames (bounded CBOR, op_key idempotency)"
+    donor.bridgeCore -> project.sshd "one SSH connection; trust failure refuses; channel loss pauses new turns; reconnect catches up/cached result or unknown_result, no repeated effect"
     project.sshd -> project.workplace "exec / file ops as the workplace user; process-group lease"
     project.sshd -> project.bridge "mailbox.read / mailbox.post (worker-signed bytes) / mailbox.notify (advisory)"
     operator -> project.joinPoint "check the enrolment against signed card, invitation binding or open application; release package"
@@ -59,11 +64,11 @@ workspace "Remote worker on a donor machine" "CIP-0008/0009: lockdown harness, t
   }
 
   views {
-    container donor "DonorContainers" "Variant B (disabled until provisioner spec/qualification): the untrusted harness identity (harness, relay), the trusted bridge identity (supervisor, SSH client, signer, keys, audit), the proxy and the kernel boundary" {
+    container donor "DonorContainers" "Draft target, variant B (disabled until provisioner spec/qualification): the untrusted harness identity (harness, relay), the trusted bridge identity (supervisor, SSH client, signer, keys, audit), the proxy and the kernel boundary" {
       include *
       autolayout lr
     }
-    container project "ProjectSideContainers" "Our host: join point, sshd with the forced executor, the OS-user workplace, the bridge, the registry and DNS" {
+    container project "ProjectSideContainers" "Draft project target: join point, sshd with the forced executor, the OS-user workplace, the bridge, the registry and DNS" {
       include *
       autolayout lr
     }

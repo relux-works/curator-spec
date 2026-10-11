@@ -1,0 +1,104 @@
+@startuml configuration-publication
+title Configuration publication - CIP-0002 Draft v4; CIP-0006 narrow acceptance / v4 pending; CIP-0004 accepted no-source-v1 target
+actor "Operator / granted agent\napproval within ceiling" as O
+participant "Curator manager\noperator UID; protected authority" as M
+database "Manager-owned records/store\nregistration, approval, composition, lease\nprofile_settings, prior-key values, journal, marker" as S
+participant "Shared launch construction\ncaller-side curator-run + agents-management; caller UID" as L
+participant "Destination executor\nexecution UID bound by launch; agent-account curator-run for broker\nSH2 swarma-session-runner later; native child launched from plan" as H
+participant "Generated interactive hook\nuser shell process" as SH
+database "Hook cache\nmanager-owned generation bytes/options\nloaded snapshot belongs to shell" as C
+
+== CIP-0002 project-context proposal; no adopted home/transform grammar ==
+O -> M: register / inspect / preview / approve selected snapshot digest
+M -> M: bounded untrusted inventory; canonical registered CWD; no execution/imported authority
+break unreadable/malformed input, self-minted approval, ceiling violation or unsupported required semantics
+  M --> O: refuse; no fragment or child
+end
+M -> S: protected snapshot + approval; compose project over selected profile lock
+M -> M: identical pins dedupe; whole-skill replacement; unique command/MCP owners
+break incompatible requirements, ambiguous owner, revoked approval or unproved native discovery exclusion
+  M --> O: refuse composition / strict capability
+end
+M -> S: preparation: inspect composition and existing session leases before publication
+alt changed composition with live lease
+  S --> M: project_view_busy: wait or refuse; never switch files beneath session
+else live or indeterminate session after crash/detach
+  S --> M: retain lease/home/artifacts; recover process/session identity before collection
+else idle admitted view
+  M -> S: acquire lease before collection; revalidate; publish generated surfaces under transaction
+  M -> L: metadata-only context/lease + typed command transform (v4 proposal)
+  L -> H: immutable composed plan; destination admits child environment
+  H -> H: D-PATH: protected tool prefix; admitted base order; one protected dispatcher
+  note right of H
+    Deduplicate by identity; preserve existing dispatcher position in base,
+    otherwise append. No repository .agents/bin; no recreation of excluded PATH.
+    Bind context/transform/resolved PATH into effective plan digest.
+  end note
+  break unsupported consumer, absent/excluded PATH, changed destination context or unreadable state
+    H --> L: refuse before child; resume must reproduce pinned effective plan
+  end
+end
+note over M,S
+  Stable checkout x profile x environment home is recommended, still open.
+  Pure preview starts no child and acquires no durable launch lease.
+  Lease transfers to actual tracked session/runner before caller exit; descendants/detach retain it.
+end note
+
+== CIP-0006 machine declaration and per-home application are separate ==
+O -> M: full closed profile_settings record/map; explicit global/project scope and false/empty values
+M -> M: strict decode and adapter/scope checks before atomic config write
+break malformed/unsupported input or wrong project binding
+  M --> O: refuse; no declaration/home mutation
+end
+M -> S: atomically publish declaration; home may intentionally remain stale
+O -> M: env resolve --repair; takeover consent when acquiring a conflicting key
+M -> S: read managed base + owned-key projection + prior values under lock/journal
+break failed parse/read, owned drift without repair, no takeover or concurrent file change
+  M --> O: refuse; never use an empty base or replace unrelated keys
+end
+M -> M: plan complete candidate; keep unrelated keys, presence and source scope
+M -> M: MCP absent inherits; denied wins; disabled remains explicit even with no positives
+alt pinned adapter proves negative suppression
+  M -> S: publish exact managed keys + marker/effective digest; journal recovery on failed mutation
+  M -> L: v4 metadata + explicit MCP policy/channel
+  L -> H: Claude canonical empty set + strict flag; Codex qualified per-name suppression
+else source class / Codex encoding unsupported
+  M --> O: mcp_policy_unenforceable; no permissive fragment/launch
+end
+O -> M: unset/release owned keys
+alt current key equals last managed value
+  M -> S: restore saved prior value/absence; preserve unrelated provider edits
+else key changed
+  M --> O: provider_settings_release_conflict; preserve current data
+end
+note over M,S
+  Per-home journal recovery; outer importer compensates failed multi-profile rollout.
+  No all-homes atomicity. Exact new schema bounds and rollback record encoding
+  unspecified in spec CIP-0006 Specification changes; v1-v3 remain frozen.
+end note
+
+== CIP-0004 interactive activation; independent from project admission ==
+O -> M: refresh/install existing managed hook cache; retain include_global option
+M -> C: canonical no-source-v1 bytes + proposed generation metadata
+alt unknown/custom/unreadable or partial cache
+  M --> O: legacy/unknown/non-current; explicit regeneration; no inferred live-shell update
+else user reloads or starts fresh shell
+  C -> SH: load trusted generated hook
+  SH -> SH: enter/switch/leave: restore owned prior PATH snapshot; clear old root/state
+  SH -> SH: metadata-only nearest .agents discovery; no env/Skillfile/approval reads
+  alt invalid/inaccessible/indeterminate discovery or unrepresentable path
+    SH -> SH: disable affected activation scope; no fallback to another project
+  else valid discovered scope
+    SH -> SH: literal assignments: inherited PATH -> optional global -> optional project
+  end
+  SH -> SH: CURATOR_AUTO_ENV=0: clear project; retain only enabled global; never source files
+end
+note over SH,C
+  Shell snapshot is transient. Cached bytes/options persist; legacy approvals give no authority.
+  Loaded old functions require reload/restart; live state unknown unless observed.
+  [[../CIP-0002-project-context-in-managed-launches.md#recommendation CIP-0002 admission/leases/PATH]]
+  [[../CIP-0006-legacy-provider-settings-and-mcp-opt-outs.md#design CIP-0006 ownership/MCP]]
+  [[../CIP-0004-shell-hook-without-sourcing-and-path-append.md#recommendation CIP-0004 activation]]
+  [[../CIP-0004-shell-hook-without-sourcing-and-path-append.md#compatibility-and-migration CIP-0004 cache migration]]
+end note
+@enduml

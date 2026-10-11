@@ -1,0 +1,55 @@
+@startuml donor-layout
+title Donor state layout - Draft target; A/C donor-owned state root; B platform root / separate provisioner pending and disabled
+left to right direction
+node "Donor machine\nA/C: donor UID; B: root-provisioned separate UIDs" as D {
+  folder "Variant root (D0)\nA/C donor-owned; B system-owned" as Root {
+    artifact "libexec / lib / releases/<release>\npinned executable/runtime bytes\nA/C donor-owned; B root-owned read-only" as Binaries
+    artifact "etc / locked configuration\nbinding, tuple, policy generation, sandbox revision\nA/C donor-owned; C harness write denied\nB bridge-role configuration files" as Config
+    folder "services/swarma-bridge-<project>\nA/C donor UID; B bridge UID home" as BridgeHome {
+      artifact "Three role-separated keys\nA/C Secure Enclave signing/SSH on qualified Macs\n0600 files elsewhere; K_enc X25519\nB 0600 Ed25519 signing/SSH; no Keychain" as Keys
+      artifact "Bridge-owned audit, budgets, lifecycle marks\ndurable cursors/dedup and queued results\ncredential source metadata/store (CIP-0010)" as State
+      artifact "Pinned root/operator chain, host CA trust\n@cert-authority; short user certificate\nvariant, tuple, generation, binding" as Trust
+    }
+    folder "workers/worker-<project>\nA/C donor UID; B harness UID home" as WorkerHome {
+      artifact "Managed home + scratch\nprovider native state by admitted credential source\nharness logs retained where required" as Home
+    }
+    folder "run\nlocal authenticated relay socket\nB peer UID checked; C sandbox allows socket" as Socket
+  }
+  component "Bridge service / supervisor\nA/C user service; B system daemon\nowns SSH client, signer, admission" as Bridge
+  component "Harness + stdio relay\nB harness UID; A/C donor UID\nrelay no keys/network" as Harness
+  component "Provider proxy\nB bridge UID or system service; C qualified proxy\nA absent" as Proxy
+  component "B privileged provisioner / kernel boundary\naccounts, egress, sandbox, service journal\nseparate spec/name/schema pending" as Provisioner
+}
+node "Project host" as P {
+  artifact "Root-controlled sshd policy\nTrustedUserCAKeys + user-certificate KRL\nprotected absolute forced command; no PTY/forward/rc/env" as SSHPolicy
+  artifact "Project registry / keeper-owned trust\nadmission, public worker keys, grants/revocations\nseparate host CA and user CA authorities" as Registry
+  artifact "Project bridge / workplace executor-owned state\nmailbox/cursors, op_key result cache, permitted archive\ncarrier credential stays project-side" as Mailbox
+}
+Bridge --> Keys : sign / decrypt / SSH; private keys never sent
+Bridge --> State : persist before acknowledgments / termination
+Bridge --> Trust : validate CA/name/validity/KRL on each connect
+Bridge --> Config : validate current generation / binding before exec/resume
+Bridge --> Binaries : absolute paths; verify digest; changed/unreadable/shadowed -> refuse
+Bridge --> Harness : consume caller-composed qualified plan
+Harness --> Home : B/C managed home + scratch writable
+Harness --> Socket : only admitted local relay
+Socket --> Bridge
+Harness --> Proxy : B/C provider path only
+Bridge --> SSHPolicy : one donor-originated SSH; expired/revoked/wrong principal -> refuse
+SSHPolicy --> Mailbox : workplace UID jobs; project bridge mailbox
+Registry --> SSHPolicy : user certificates/KRL; retirement stops renewal and closes sessions
+Provisioner --> Root : B journaled provision/remove only allocated artifacts; failure -> reverse rollback
+note bottom of BridgeHome
+  State/keys unreadable to B harness UID and C sandbox.
+  A shares UID: no OS confidentiality/integrity/egress guarantee.
+  Exact key/state/audit/cursor file names, socket basename, schema and retention
+  unspecified in spec CIP-0009 D0/D1/D5; folders above are the named D0 layout.
+end note
+note bottom of WorkerHome
+  Stop keeps bridge/keys; leave keeps keys/config; purge removes only owned artifacts,
+  retains donor-visible audit, preserves A/C donor account. Offline revoke outcome unknown.
+  [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D0-D3/D5/D7/D12]]
+  [[../../protocol/remote-worker.md#trust-and-ssh CA trust]]
+  [[../../protocol/remote-worker.md#tools-mailbox-and-lifecycle Lifecycle/ownership]]
+end note
+@enduml
