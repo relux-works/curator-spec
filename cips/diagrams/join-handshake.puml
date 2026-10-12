@@ -1,4 +1,5 @@
 @startuml join-handshake
+' Revision 2026-10-12: F-7 replay relies on durable effect claims/admission floors; wire formats remain pending.
 title Join handshake (revision 4): a server challenge, a signed canonical transcript, atomic invitation consumption; anchors: the Web PKI, DNSSEC validated in the client (default), and the invitation's pins (fallback for an environment without a DNSSEC domain)
 
 participant "Human-run init / donor bridge role\n(A/C: donor UID; B: bridge UID)" as C
@@ -69,7 +70,7 @@ note over C, T
   on our side K_sig, K_enc, K_ssh in the registry; K_ssh reaches the workplace user only through short certificates of our user CA (TrustedUserCAKeys);
   on the donor side our root, the operator certificate, our SSH host CA key (@cert-authority), the binding digest, the qualified tuple, the policy generation.
   Every later message: signed over exact bytes by K_sig on the donor, fresh, replay-checked, grant-checked (ADM).
-  Replay: invited cert meets its tombstone; collection proof/retry format pending; frames meet connection-scoped ids and op_key caches.
+  Replay: invited cert meets its tombstone; collection proof/retry format pending; later frame effects rely on durable binding-generation-scoped operation-identity/canonical-argument-digest claims with authenticated admission floors (CIP-0009 D5); connection IDs and the output cache do not authorize retry mutation.
   Rotation: a new host key gets a new host certificate (no DNS change); a host CA rotation publishes the new key beside the old; operator cert -> root-signed record; K -> operator revocation, user KRL, close sessions + new enrolment.
   Certificates: host about one year, user about one day (policy examples); bridge renews user certificate.
   Key storage/algorithm admission follows D0; B disabled until separate provisioner contract exists.

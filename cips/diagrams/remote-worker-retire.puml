@@ -1,5 +1,6 @@
 @startuml remote-worker-retire
-title Lifecycle of a remote worker (revision 4; variant-aware cleanup and independent state axes): stop, leave and purge on the donor; suspend, retire and revoke on our side; the identity stays pinned unless revoked
+' Revision 2026-10-12: accepted review findings; Draft semantics, no renderer/qualification evidence.
+title Lifecycle of a remote worker (revision 5; variant-aware cleanup and independent state axes): stop, leave and purge on the donor; suspend, retire and revoke on our side; the identity stays pinned unless revoked
 
 actor "Operator (our side)" as OP
 participant "Registry / key keeper" as T
@@ -33,11 +34,15 @@ OP -> T: suspend: grants paused
 OP -> BR: suspend: close sessions; keep workplace
 OP -> D: retire workplace
 D -> BR: persist channel/grant revocation; stop renewal; user-certificate KRL; close sessions
-D -> D: kill every job and its descendants (process group / cgroup); verify no process of the workplace UID remains;\narchive permitted noncredential artifacts only after process absence
-break process absence not established / cleanup failure
-  D -> D: do not release remaining account/egress; recovery format unspecified in spec D7
+D -> D: kill every job and descendants (process group / cgroup); verify no workplace-UID process remains
+break process absence not established
+  D -> D: retain account/egress; reconcile unknown evidence; do not delete home
 end
-D -> D: proven process absence -> release account and egress rules
+D -> D: journal declared-key cleanup, then delete workplace home;\nexport service-generated closed-schema metadata only (no agent-controlled strings/names/links/bodies)
+break key cleanup / home deletion / metadata validation failure
+  D -> D: do not release remaining account/egress; journaled recovery; exact format unpublished
+end
+D -> D: confirmed absence + key cleanup + home deletion -> release account and egress rules
 BR -> BR: next frame or envelope from this worker refused (retired); mailbox kept durable
 note right of BR: the donor's connection drops; its bridge reports "retired by project" and pauses
 OP -> T: revoke (only on compromise or departure): root-signed revocation of K_sig, K_enc, K_ssh
@@ -65,6 +70,8 @@ note over OP, PH
   Phase: Draft donor target after one-host slice 0; A first, B disabled, C fallback.
   Donor Curator human commands run as donor UID; bridge service owns lifecycle marks,
   keys/config/audit (A/C donor UID; B bridge UID); harness owns home/scratch.
+  Separate explicit operator home retention states confidentiality is not guaranteed.
+  Git/accepted outputs have a separate confidentiality policy.
   Project dispatcher service owns tracking, root user-manager owns account lifecycle;
   root sshd owns user KRL; project bridge owns channel/mailbox state;
   registry/keeper owns signed identity revocations. Their exact UIDs/storage formats

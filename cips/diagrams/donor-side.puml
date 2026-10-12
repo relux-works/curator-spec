@@ -1,4 +1,5 @@
 @startuml donor-side
+' Revision 2026-10-12: accepted review findings; Draft semantics, no renderer/qualification evidence.
 title Donor and project components - Draft target after one-host slice 0; B disabled; A/C role substitutions shown
 left to right direction
 actor "Human donor" as Donor
@@ -20,7 +21,7 @@ node "Project host" as P {
   component "Project bridge (M3)\nservice identity unspecified in spec D5\nmailbox/admission/carrier authority" as PB
   component "Trust registry / key keeper\nservice identity unspecified in spec D4/D12\nroot/operator chain; host and separate user CA" as Keeper
   database "Join-point-owned pending applications\nchallenges/invitation consumption/tombstones\noperator-signed encrypted packages" as JS
-  database "Project-owned persistent state\npublic worker keys/grants/revocations, KRL\nmailbox/cursors, execution result cache, archives\ncarrier credentials never in donor package" as PS
+  database "Project-owned persistent state\npublic worker keys/grants/revocations, KRL\nmailbox/cursors; durable effect claims + admission floors\nten-minute output cache; closed-schema service metadata\ncarrier credentials never in donor package" as PS
 }
 cloud "Model provider" as API
 cloud "DNSSEC zone\nenvironment root/host-CA/TLS records" as DNS
@@ -43,11 +44,15 @@ Harness --> Proxy : B/C model calls only
 Proxy --> API : qualified host allowlist
 Harness --> API : A direct path; no OS egress guarantee
 Bridge --> Exec : one donor-originated SSH; certificates/CA/name/validity/KRL checked
-Exec --> PS : policy/leased jobs; cached result or unknown_result after reconnect
+Exec --> PS : policy/leased jobs; claim identity/digest before mutation;\nreconcile same effect on reconnect; output cache separate
 Exec --> PB : mailbox control plane; tools only if granted
 PB --> PS : durable mailbox; signatures/grants/freshness; exact-byte carrier delivery
 note bottom of D
   Channel drops -> pause new turns; current deadline; channel_down; durable output queue.
+  Recovery reconciles claims/floors before admission; missing/restored evidence keeps binding closed.
+  Discard claims only when identities permanently inadmissible; floor persisted first.
+  Retirement: confirmed absence, declared-key cleanup, home deletion; export has no agent content.
+  Separate explicit home retention states confidentiality is not guaranteed.
   Reconnect validates trust and catches up cursors; never repeat an uncertain effect.
   B disabled until separate provisioner exists. C enforces sandbox without UID split.
   A has no OS confinement; all variants require lockdown + remote-auto and exact tuple.

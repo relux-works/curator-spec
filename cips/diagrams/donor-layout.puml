@@ -1,4 +1,5 @@
 @startuml donor-layout
+' Revision 2026-10-12: accepted review findings; Draft semantics, no renderer/qualification evidence.
 title Donor state layout - Draft target; A/C donor-owned state root; B platform root / separate provisioner pending and disabled
 left to right direction
 node "Donor machine\nA/C: donor UID; B: root-provisioned separate UIDs" as D {
@@ -23,7 +24,7 @@ node "Donor machine\nA/C: donor UID; B: root-provisioned separate UIDs" as D {
 node "Project host" as P {
   artifact "Root-controlled sshd policy\nTrustedUserCAKeys + user-certificate KRL\nprotected absolute forced command; no PTY/forward/rc/env" as SSHPolicy
   artifact "Project registry / keeper-owned trust\nadmission, public worker keys, grants/revocations\nseparate host CA and user CA authorities" as Registry
-  artifact "Project bridge / workplace executor-owned state\nmailbox/cursors, op_key result cache, permitted archive\ncarrier credential stays project-side" as Mailbox
+  artifact "Project bridge / workplace executor-owned state\nmailbox/cursors; durable identity/digest claims + admission floors\nseparate ten-minute output cache; closed-schema service metadata\ncarrier credential stays project-side" as Mailbox
 }
 Bridge --> Keys : sign / decrypt / SSH; private keys never sent
 Bridge --> State : persist before acknowledgments / termination
@@ -42,6 +43,11 @@ Provisioner --> Root : B journaled provision/remove only allocated artifacts; fa
 note bottom of BridgeHome
   State/keys unreadable to B harness UID and C sandbox.
   A shares UID: no OS confidentiality/integrity/egress guarantee.
+  Project claims persist before mutation; floors advance before claims may be discarded.
+  Recovery reconciles claim/floor evidence before admission; unknown keeps binding closed.
+  Project retirement deletes home after process absence and declared-key cleanup;
+  export only closed-schema service metadata with no agent-controlled content.
+  Separate explicit home retention states confidentiality is not guaranteed.
   Exact key/state/audit/cursor file names, socket basename, schema and retention
   unspecified in spec CIP-0009 D0/D1/D5; folders above are the named D0 layout.
 end note

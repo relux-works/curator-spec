@@ -1,5 +1,6 @@
 @startuml remote-worker-turn
-title Remote worker turn (revision 4; B boundary shown, disabled until separate provisioner spec/qualification): the harness has no local tools; the relay (harness identity) forwards to the bridge service (bridge identity), which carries every tool call and the mailbox over ONE SSH connection from the donor to our host; our host never connects back
+' Revision 2026-10-12: accepted review findings; Draft semantics, no renderer/qualification evidence.
+title Remote worker turn (revision 5; B boundary shown, disabled until separate provisioner spec/qualification): the harness has no local tools; the relay (harness identity) forwards to the bridge service (bridge identity), which carries every tool call and the mailbox over ONE SSH connection from the donor to our host; our host never connects back
 
 box "Donor machine: harness identity (sandboxed, egress = proxy only)" #WhiteSmoke
   participant "Harness\n(Claude / Codex / Muse, lockdown plan)" as H
@@ -27,6 +28,10 @@ SUP -> RB: ssh workplace-user@host with K_ssh + short user-CA certificate;\nhost
 note over SUP, RB: Bridge renews short user certificate; expiry/revocation refuses; retire stops renewal and closes sessions.
 break failed host trust / expired or revoked user certificate / wrong workplace principal
   SUP -> SUP: refuse connection; no TOFU or alternate trust source
+end
+RB -> WP: reconcile durable claims and admission floors before opening admission
+break missing / restored / unreadable / contradictory claim or floor evidence
+  RB -> RB: keep binding admission closed
 end
 RB --> SUP: hello {versions:[1]} / swarma-rb/1 channel open (bounded CBOR frames, flow credits)
 SUP -> RB: policy.get
@@ -67,9 +72,20 @@ loop each tool call
     MCP --> H: unavailable tool
   end
   SUP -> RB: frame exec {id, op_key, cmd, cwd, env (env_allow only), timeout_s <= policy, max_output_bytes <= policy, lease_s}
-  RB -> WP: run as the workplace user in its own process group with a lease; audit {who, what, when, policy id}
-  WP --> RB: stdout/stderr frames (seq), exit
-  RB --> SUP: frames (result cached by op_key for 10 min)
+  RB -> WP: authenticate new-versus-retry admission; binding-generation identity, operation, argument digest
+  break operation/argument mismatch or unseen expired identity below sequence/epoch floor
+    WP --> RB: refuse without mutation (exact codes unpublished)
+    RB --> SUP: refusal
+  end
+  alt existing durable claim
+    WP -> WP: reconcile/observe same effect; never automatically re-execute
+    WP --> RB: retained recorded result or pending / unknown_result
+  else genuinely new operation admitted in current bounded window
+    WP -> WP: durably claim identity + operation + canonical-argument digest BEFORE mutation
+    WP -> WP: run as workplace user in leased process group; persist result; audit
+    WP --> RB: stdout/stderr frames (seq), exit
+  end
+  RB --> SUP: frames (output cached separately for 10 min; cache miss never authorizes mutation)
   SUP --> MCP: result
   MCP --> H: tool result
 end
@@ -79,23 +95,37 @@ alt the model requests a built-in tool (Bash, Edit, WebFetch ...)
 end
 alt SSH channel drops mid-turn
   SUP -> SUP: pause the turn loop; running turn continues to its deadline;\ntool calls fail with channel_down (retryable); result post queued durably with its op_key
-  SUP -> RB: reconnect with backoff; host certificate/CA/validity/KRL rechecked; catch up from the durable cursor;\nreplay-safe: cached result or unknown_result, never a second effect
+  SUP -> RB: reconnect with backoff; host certificate/CA/validity/KRL rechecked; catch up from the durable cursor;\nretry keeps original identity/arguments/admission window; reconcile same durable claim;\nretained result or pending / unknown_result, never automatic re-execution
 end
 
 == result ==
 H -> MCP: tools/call mailbox_post {binding, text} (offered only when the policy grants it)
 MCP -> SUP: forward
 SUP -> SUP: build the FINAL envelope (canonical bytes; audience/thread from the task record);\nsign with K_sig (D0 variant-specific storage; never sent to the project)
-SUP -> RB: frame mailbox.post {op_key, envelope_bytes, signature}
-RB -> BR: verify K_sig signature, grant, freshness; admit
-BR -> O: carry the bytes UNCHANGED under the project bridge's carrier account for the worker (first slice) (distinct authority, audited) -> outcome proposal
+SUP -> RB: frame mailbox.post {op_key, envelope_bytes, signature}; original admission window on retry
+RB -> WP: authenticate admission; durable binding-generation identity/argument claim before effect
+break conflicting arguments / expired new admission / unresolved existing claim
+  WP --> SUP: refuse or pending / unknown_result; no automatic post
+end
+alt existing conclusive remote post claim
+  WP --> RB: retained result or unknown_result if output unavailable; no second post
+  RB --> SUP: same-effect outcome
+else genuinely new post admitted and claimed before effect
+  WP -> BR: verify K_sig signature, grant, freshness; durable mailbox admission claim
+  BR -> O: carry final bytes UNCHANGED under project carrier authority (first slice, audited) -> outcome proposal
+end
 note over H, O
   Phase: Draft donor target after slice 0; A first, B disabled, C qualified fallback.
   B proxy identity is bridge UID or a system service; A provider path is direct, no proxy.
   Bridge-role supervisor owns audit/budgets/cursors/dedup and durable queued results;
   harness role owns home/scratch; project bridge owns mailbox and project carrier credential;
-  workplace executor owns job leases and op_key cache; root sshd owns CA/KRL/forced command.
-  Exact service UIDs for project bridge, filenames and cache persistence format
+  workplace executor owns job leases, durable identity/digest claims and admission floors; root sshd owns CA/KRL/forced command.
+  Claims discarded only after identities are permanently inadmissible; persist floor first.
+  R-OBS where applicable: recorded (result/current state), pending, rolled_back,
+  not_recorded (authoritative), unavailable (missing/expired/unreadable), contradictory.
+  Original caller/operators observe under receiver journal serialization; absence never retries.
+  Ten-minute output retention is independent of claim retention; no new service.
+  Exact service UIDs for project bridge, filenames and claim/floor/cache encoding
   unspecified in spec CIP-0009 D5. rb/1 and workplace-exec/1 are pending design shorthand.
   [[../CIP-0008-remote-worker-launch-mode.md#recommendation CIP-0008 R3/R5/R9]]
   [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D0-D5/D12]]

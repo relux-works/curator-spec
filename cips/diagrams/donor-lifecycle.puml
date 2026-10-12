@@ -1,4 +1,5 @@
 @startuml donor-lifecycle
+' Revision 2026-10-12: accepted review findings; Draft semantics, no renderer/qualification evidence.
 title Donor lifecycle - Draft target A first / B disabled / C fallback; four independent descriptive axes, no closed state schema
 state "Donor installation\nowner: donor / bridge role; B separate provisioner pending" as Installation {
   state "Present\nvariant-owned service, config, keys, home" as Present
@@ -23,7 +24,7 @@ state "Project workplace\nowner: project operator + dispatcher/helper + project 
   state "Admitted workplace" as Admitted
   state "Suspended\ngrants paused; sessions closed; workplace kept" as Suspended
   state "Retirement in progress\nrevocation persisted before termination/restart" as Retiring
-  state "Retired\narchive permitted noncredential artifacts; account/egress released" as Retired
+  state "Retired\nquiesce + declared-key cleanup; delete home; account/egress released" as Retired
   Admitted --> Suspended : operator suspend
   Admitted --> Retiring : operator retire; stop user-cert renewal, user KRL, close sessions
   Suspended --> Retiring : operator retire
@@ -54,6 +55,9 @@ note right of Workplace
 end note
 note right of Identity
   Revoke stops renewal, updates user KRL and closes established sessions.
+  Only service-generated closed-schema metadata is exported at retirement,
+  with no agent-controlled strings, names, links or bodies. Separate explicit
+  operator home retention states confidentiality is not guaranteed.
   Certificate revocation alone does not stop an existing connection.
   Return after revoke requires new keys through new enrollment.
   Dispatcher one-shot identity exception never applies to donor identity.

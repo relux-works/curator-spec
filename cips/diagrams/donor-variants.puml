@@ -1,4 +1,5 @@
 @startuml donor-variants
+' Revision 2026-10-12: durable claims/floors separate from cached output; Draft, no qualification evidence.
 title Donor deployment variants - Draft target: slice 0 one-host MVP precedes donor; A first, B disabled, C sandbox fallback
 left to right direction
 actor "Human donor\nonly init authority; TTY/typed consent\nis a policy heuristic" as O
@@ -22,7 +23,7 @@ node "C - no administrator rights\ndonor UID; sandbox fallback" as C {
 }
 node "Project host target\nproject workplace UID; root-controlled sshd policy" as P {
   component "sshd + protected forced executor\nOS-user workplace; project bridge" as PB
-  artifact "Project-owned state\nmailbox/cache, admission/grants, user KRL\ncarrier credential stays here" as PS
+  artifact "Project-owned state\nmailbox; durable effect claims + admission floors\nseparate ten-minute output cache; grants, user KRL\ncarrier credential stays here" as PS
 }
 cloud "Qualified model provider" as API
 O --> AB : choose A; consent / stop / leave / purge
