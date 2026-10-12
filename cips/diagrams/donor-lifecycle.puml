@@ -1,5 +1,5 @@
 @startuml donor-lifecycle
-' Revision 2026-10-12: accepted review findings; Draft semantics, no renderer/qualification evidence.
+' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
 title Donor lifecycle - Draft target A first / B disabled / C fallback; four independent descriptive axes, no closed state schema
 state "Donor installation\nowner: donor / bridge role; B separate provisioner pending" as Installation {
   state "Present\nvariant-owned service, config, keys, home" as Present
@@ -20,15 +20,15 @@ state "Donor execution\nowner: bridge-role supervisor\nA/C donor UID; B bridge U
   Left --> Stopped : human init --rejoin; new invitation/package and newly admitted workplace; wait for run
   Left --> Refused : revoked identity / invalid admission or qualification
 }
-state "Project workplace\nowner: project operator + dispatcher/helper + project bridge\nhelper root boundary; workplace UID executes jobs" as Workplace {
-  state "Admitted workplace" as Admitted
+state "Project workplace\nowner: project operator + dispatcher/helper + project bridge\nhelper root boundary; workplace UID jobs only\nservice-principal executor owns policy/claims/audit/mailbox" as Workplace {
+  state "Admitted workplace\nhelper v1 enforced/applied networking; fixed relay shell" as Admitted
   state "Suspended\ngrants paused; sessions closed; workplace kept" as Suspended
   state "Retirement in progress\nrevocation persisted before termination/restart" as Retiring
   state "Retired\nquiesce + declared-key cleanup; delete home; account/egress released" as Retired
   Admitted --> Suspended : operator suspend
   Admitted --> Retiring : operator retire; stop user-cert renewal, user KRL, close sessions
   Suspended --> Retiring : operator retire
-  Retiring --> Retired : kill jobs/descendants; verify process absence before release
+  Retiring --> Retired : journaled exec.stop; confirmed execution absence + key cleanup/home deletion before release
 }
 state "Worker signing identity / three pinned keys\nowner: operator-authorized trust registry / key keeper\nprivate keys remain on donor" as Identity {
   state "Pinned\nretirement and leave preserve identity" as Pinned
@@ -48,6 +48,8 @@ note right of Execution
   unspecified in spec CIP-0009 D7; D5 pauses new turns.
 end note
 note right of Workplace
+  Per-job or standing-runner execution shape/concurrency/blast radius unpublished.
+  Process-group death alone proves no execution absence.
   Failure to prove process absence cannot authorize account release.
   Retirement forward-recovery states/record encoding
   unspecified in spec CIP-0009 D7; no invented retry state machine.

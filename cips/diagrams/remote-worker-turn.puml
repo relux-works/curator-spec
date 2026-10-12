@@ -1,6 +1,6 @@
 @startuml remote-worker-turn
-' Revision 2026-10-12: accepted review findings; Draft semantics, no renderer/qualification evidence.
-title Remote worker turn (revision 5; B boundary shown, disabled until separate provisioner spec/qualification): the harness has no local tools; the relay (harness identity) forwards to the bridge service (bridge identity), which carries every tool call and the mailbox over ONE SSH connection from the donor to our host; our host never connects back
+' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
+title Remote worker turn (revision 6; B boundary shown, disabled until separate provisioner spec/qualification): the harness has no local tools; the relay (harness identity) forwards to the bridge service (bridge identity), which carries every tool call and the mailbox over ONE SSH connection from the donor to our host; our host never connects back
 
 box "Donor machine: harness identity (sandboxed, egress = proxy only)" #WhiteSmoke
   participant "Harness\n(Claude / Codex / Muse, lockdown plan)" as H
@@ -11,8 +11,10 @@ box "Donor machine: bridge identity (keys, audit, cursors)" #WhiteSmoke
   participant "Bridge service\n(supervisor + SSH client + signer + admission)" as SUP
 end box
 box "Our host" #WhiteSmoke
-  participant "sshd + forced command\nswarma-rb-exec (workplace user)" as RB
-  participant "Workplace\n(OS-user backend, swarma-workplace-exec/1)" as WP
+  participant "sshd root + relay-only fixed shell\nswarma-rb-exec (service principal; peer UID/generation)" as RB
+  participant "Workplace control state\nservice-owned policy/claims/floors/audit" as WP
+  participant "Dispatcher + root launcher/helper\nstart receipt + journaled exec.stop" as D
+  participant "Untrusted jobs or runner\nworkplace UID; backend shape unpublished" as JOB
   participant "Bridge\n(broker, mailbox, M3)" as BR
 end box
 participant "Orchestrator" as O
@@ -25,7 +27,7 @@ end note
 
 == standing connection ==
 SUP -> RB: ssh workplace-user@host with K_ssh + short user-CA certificate;\nhost certificate checked on EVERY connection: pinned host CA, host name, validity, KRL (no TOFU)
-note over SUP, RB: Bridge renews short user certificate; expiry/revocation refuses; retire stops renewal and closes sessions.
+note over SUP, RB: Bridge requests renewal; service authenticates workplace; keeper-held CA signs only its principal; expiry/revocation refuses; retire stops renewal and closes sessions.
 break failed host trust / expired or revoked user certificate / wrong workplace principal
   SUP -> SUP: refuse connection; no TOFU or alternate trust source
 end
@@ -36,7 +38,7 @@ end
 RB --> SUP: hello {versions:[1]} / swarma-rb/1 channel open (bounded CBOR frames, flow credits)
 SUP -> RB: policy.get
 RB --> SUP: workplace policy {tools, write scope, network, limits, env_allow} -> effective tool set
-note right of RB: Match block: root-controlled TrustedUserCAKeys + KRL + workplace principal, no forwarding, no PTY,\nno user rc/env; forced command by absolute path; reconnect is the donor side's job
+note right of RB: Match block: root-controlled TrustedUserCAKeys + KRL + workplace principal, no forwarding, no PTY,\nno user rc/env; relay-only fixed shell/forced command by absolute path; no user startup files; reconnect is the donor side's job
 
 == launch ==
 SUP -> SUP: obtain the composed plan from the construction site (agents-management);\ncheck expect_pin, tool_posture=lockdown, permissions=remote-auto, policy generation, qualified tuple;\nvalidate the expanded launch against the generated policy; resolve credential_binding/1
@@ -82,7 +84,10 @@ loop each tool call
     WP --> RB: retained recorded result or pending / unknown_result
   else genuinely new operation admitted in current bounded window
     WP -> WP: durably claim identity + operation + canonical-argument digest BEFORE mutation
-    WP -> WP: run as workplace user in leased process group; persist result; audit
+    WP -> D: authorized execution via existing launcher/receipt path; caps and lease service-owned
+    D -> JOB: start under workplace UID; admitted shape/concurrency unpublished
+    JOB --> WP: output and result evidence
+    WP -> WP: persist result + service audit outside workplace UID
     WP --> RB: stdout/stderr frames (seq), exit
   end
   RB --> SUP: frames (output cached separately for 10 min; cache miss never authorizes mutation)
@@ -97,6 +102,21 @@ alt SSH channel drops mid-turn
   SUP -> SUP: pause the turn loop; running turn continues to its deadline;\ntool calls fail with channel_down (retryable); result post queued durably with its op_key
   SUP -> RB: reconnect with backoff; host certificate/CA/validity/KRL rechecked; catch up from the durable cursor;\nretry keeps original identity/arguments/admission window; reconcile same durable claim;\nretained result or pending / unknown_result, never automatic re-execution
 end
+
+== execution cleanup ==
+opt lease expires / cancel / channel loss after grace
+  RB -> D: journaled execution stop under existing effect ID
+  D -> JOB: exec.stop under published scope; signal and verify same execution process set
+  break absence unknown / contradictory / unavailable
+    D --> RB: retain affected claims; block replay/restart; no process-group-only proof
+  end
+  D --> RB: confirmed execution absence
+end
+note over D, JOB
+  Serialized per-job execution or standing runner shape remains unpublished.
+  Runner per-job cancel is best effort; unknown descendants stop whole runner execution,
+  retaining all affected job claims as unknown; restart requires prior absence + fresh admission.
+end note
 
 == result ==
 H -> MCP: tools/call mailbox_post {binding, text} (offered only when the policy grants it)
@@ -115,17 +135,19 @@ else genuinely new post admitted and claimed before effect
   BR -> O: carry final bytes UNCHANGED under project carrier authority (first slice, audited) -> outcome proposal
 end
 note over H, O
-  Phase: Draft donor target after slice 0; A first, B disabled, C qualified fallback.
+  Phase: Draft donor target after slice 0 + project helper v1/workplace qualification; A first, B disabled, C qualified fallback.
   B proxy identity is bridge UID or a system service; A provider path is direct, no proxy.
   Bridge-role supervisor owns audit/budgets/cursors/dedup and durable queued results;
   harness role owns home/scratch; project bridge owns mailbox and project carrier credential;
-  workplace executor owns job leases, durable identity/digest claims and admission floors; root sshd owns CA/KRL/forced command.
+  service-principal executor owns policy/caps, execution leases, durable identity/digest claims and admission floors; root sshd owns CA/KRL/relay shell; project keeper/hardware token holds user CA private key.
+  Workplace activation requires helper v1 fw.apply + applied state including loopback, even A/read-only.
+  Write scope = workplace UID writable set; network mode = enforced per-UID firewall.
   Claims discarded only after identities are permanently inadmissible; persist floor first.
   R-OBS where applicable: recorded (result/current state), pending, rolled_back,
   not_recorded (authoritative), unavailable (missing/expired/unreadable), contradictory.
   Original caller/operators observe under receiver journal serialization; absence never retries.
   Ten-minute output retention is independent of claim retention; no new service.
-  Exact service UIDs for project bridge, filenames and claim/floor/cache encoding
+  Exact service-account deployment for project bridge/executor, filenames and claim/floor/cache encoding
   unspecified in spec CIP-0009 D5. rb/1 and workplace-exec/1 are pending design shorthand.
   [[../CIP-0008-remote-worker-launch-mode.md#recommendation CIP-0008 R3/R5/R9]]
   [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D0-D5/D12]]

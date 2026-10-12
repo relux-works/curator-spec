@@ -1,6 +1,6 @@
 @startuml donor-variants
-' Revision 2026-10-12: durable claims/floors separate from cached output; Draft, no qualification evidence.
-title Donor deployment variants - Draft target: slice 0 one-host MVP precedes donor; A first, B disabled, C sandbox fallback
+' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
+title Donor deployment variants - Draft target: slice 0 + project helper v1/workplace qualification precede donor; A first, B disabled, C sandbox fallback
 left to right direction
 actor "Human donor\nonly init authority; TTY/typed consent\nis a policy heuristic" as O
 node "A - first milestone\nno administrator rights; donor UID" as A {
@@ -21,8 +21,8 @@ node "C - no administrator rights\ndonor UID; sandbox fallback" as C {
   component "Provider proxy\nqualified local proxy; identity role as D1\nno UID split" as CX
   artifact "Donor-owned state/releases\nbridge state outside harness sandbox\nlocked config outside writable set" as CS
 }
-node "Project host target\nproject workplace UID; root-controlled sshd policy" as P {
-  component "sshd + protected forced executor\nOS-user workplace; project bridge" as PB
+node "Project host target\nworkplace jobs UID; service controls UID; root-controlled sshd policy" as P {
+  component "sshd + relay-only fixed shell\nservice-principal swarma-rb-exec; workplace class\nhelper v1 enforced/applied networking required" as PB
   artifact "Project-owned state\nmailbox; durable effect claims + admission floors\nseparate ten-minute output cache; grants, user KRL\ncarrier credential stays here" as PS
 }
 cloud "Qualified model provider" as API
@@ -46,7 +46,12 @@ CX --> API
 AB --> PB : donor-originated SSH only
 BB --> PB : donor-originated SSH; bridge egress SSH/join only
 CB --> PB : donor-originated SSH only
-PB --> PS
+PB --> PS : service-owned controls/claims/audit; keeper holds user CA
+note bottom of P
+  Every donor variant needs project helper v1 including loopback and backend qualification.
+  Jobs: dispatcher/root launcher/start receipt/exec.stop; no same-UID controls.
+  Write scope = UID writable set; per-job/runner shape and stop blast radius unpublished.
+end note
 note bottom of A
   A has no UID split, sandbox, proxy or OS integrity/confidentiality/egress guarantee.
   A/C: qualified Secure Enclave Macs use non-exportable P-256 signing/SSH;

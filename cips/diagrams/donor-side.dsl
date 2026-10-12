@@ -1,8 +1,8 @@
-// C4 (Structurizr DSL) fragment for CIP-0009 (revision 5, accepted review findings 2026-10-12: B boundary shown; A/C differences in source notes; B disabled until separate provisioner contract exists): the donor machine and the bridge to our host.
+// C4 (Structurizr DSL) fragment for CIP-0009 (revision 6, R-WORKPLACE cycle-2 findings 2026-10-12: B boundary shown; A/C differences in source notes; B disabled until separate provisioner contract exists): the donor machine and the bridge to our host.
 // Defining sections: ../CIP-0009-donor-side-deployment-and-bridge.md#recommendation (D0-D12); ../../protocol/remote-worker.md#publication-status.
-// Phase: Draft donor target after one-host slice 0; no current deployment/qualification claim.
+// Phase: Draft donor target after one-host slice 0 + project helper v1/workplace qualification; no current deployment/qualification claim.
 // Refusal/recovery: unknown tuple/posture/generation or failed trust refuses; failed B provisioning reverses journal; channel loss pauses/catches up without repeating effects.
-// State owners: donor bridge role owns keys/config/audit/cursors/budgets; harness role owns managed home/scratch; join point owns queue/challenges/tombstones/packages; project registry owns public pins/grants/revocations, project bridge owns mailbox/carrier, executor owns job leases, durable binding-generation identity/digest claims and admission floors; ten-minute output cache is separate. Claims are discarded only after identities are permanently inadmissible; recovery reconciles before admission.
+// State owners: donor bridge role owns keys/config/audit/cursors/budgets; harness role owns managed home/scratch; join point owns queue/challenges/tombstones/packages; project registry owns public pins/grants/revocations, project bridge owns mailbox/carrier, service-principal swarma-rb-exec outside workplace UID owns policy/caps/execution leases, durable binding-generation identity/digest claims and admission floors; ten-minute output cache is separate. Claims are discarded only after identities are permanently inadmissible; recovery reconciles before admission.
 // Separate explicit operator home retention states confidentiality is not guaranteed; git/accepted outputs retain their own policy.
 // Exact service UIDs, state files/retention and recovery record schemas unspecified in CIP-0009 D4/D5/D7/D9.
 // Style follows relux-works/swarm-platform-architecture diagrams/c4 (hierarchical identifiers, one container per process).
@@ -11,7 +11,7 @@
 // A/C keys: qualified Secure Enclave P-256 signing/SSH on supported Macs, files elsewhere; B Ed25519 0600, no Keychain.
 // Invitation/transcript/package, join API/error, channel/backend and donor provisioner formats: pending protocol/remote-worker.md.
 // the bridge signs outbound envelopes with the worker's key; the harness reaches only the relay socket and the provider proxy.
-workspace "Remote worker on a donor machine" "Draft donor target after slice 0: CIP-0009 Recommendation D0-D12; B disabled pending separate provisioner; A/C substitutions in source notes and PlantUML variant view" {
+workspace "Remote worker on a donor machine" "Draft donor target after slice 0 + project helper v1/workplace qualification: CIP-0009 Recommendation D0-D12; B disabled pending separate provisioner; A/C substitutions in source notes and PlantUML variant view" {
   !identifiers hierarchical
 
   model {
@@ -35,10 +35,12 @@ workspace "Remote worker on a donor machine" "Draft donor target after slice 0: 
 
     project = softwareSystem "Project host" "Our host" {
       joinPoint = container "Join point (service UID unspecified in D9)" "HTTPS, three verbs: challenge, cert, collect" "atomic invitation consumption, tombstones, rate limits; never commands"
-      sshd = container "sshd + swarma-rb-exec" "Root-controlled Match, TrustedUserCAKeys + KRL + workplace principal; protected absolute forced command" "root sshd / workplace UID executor; swarma-rb/1 and swarma-workplace-exec/1 are pending design labels, owner/formats unresolved"
-      workplace = container "Remote workplace (OS-user backend)" "one OS user per worker; policy: tools, write scope, network, limits, env_allow" "durable identity/digest claim before execution/file mutation; audit; cleanup; mailbox control plane goes to project bridge; retirement deletes home after absence/key cleanup, exports only closed-schema service metadata without agent content"
+      sshd = container "sshd + relay-only fixed login shell" "Root-controlled Match, TrustedUserCAKeys + KRL + workplace principal; protected absolute relay stub" "Root-owned stub accepts only sshd forced-command invocation; no user startup files; relays to service socket, no policy or tool authority"
+      executor = container "swarma-rb-exec" "Service principal outside workplace UID" "Kernel peer UID and active generation authentication; service-owned policy/caps/leases/claims/floors/audit; swarma-rb/1 and swarma-workplace-exec/1 unpublished, owner/formats unresolved"
+      dispatcher = container "Dispatcher + root launcher/user manager" "Existing journaled start/receipt/exec.stop path" "Workplace class activates only with helper v1 fw.apply + published applied state, including loopback; v0 refuses all variants including read-only; physical starts dispatcher-owned"
+      workplace = container "Remote workplace jobs or runner" "Untrusted workplace UID; private home; standalone Git across isolated accounts" "Write scope is UID writable set; network mode is helper-v1 per-UID firewall; per-job/runner concurrency and stop blast radius unpublished; process groups alone prove no absence; controls/claims/audit stay service-owned"
       bridge = container "Bridge (M3; service UID unspecified in D5)" "broker, mailbox, trust gate" "admits messages; verifies the worker's signature; carries bytes unchanged under a distinct carrier account"
-      registry = container "Trust registry + key keeper (service UID unspecified in D4/D12)" "pins K_sig, K_enc, K_ssh; grants; root-signed admission and revocations" "operator certificates chained to the root"
+      registry = container "Trust registry + key keeper (service UID unspecified in D4/D12)" "pins K_sig, K_enc, K_ssh; grants; root-signed admission and revocations" "operator certificates chained to the root; user CA private key in project keeper/hardware token, renewal only for authenticated active workplace principal"
       dns = container "DNS zone (DNSSEC default)" "TXT _swarma, TXT _swarma-ssh-ca, TLSA" "Per-environment root/host-CA/TLS trust; validated in client; declared no-DNSSEC invitation uses pins, never fallback on failure"
     }
 
@@ -57,8 +59,10 @@ workspace "Remote worker on a donor machine" "Draft donor target after slice 0: 
     donor.proxy -> provider "HTTPS"
     donor.bridgeCore -> donor.keys "sign envelopes with K_sig; SSH with K_ssh"
     donor.bridgeCore -> project.sshd "one SSH connection; trust failure refuses; channel loss pauses new turns; reconnect reconciles same durable claim and original admission window; retained result or pending/unknown_result, never automatic re-execution"
-    project.sshd -> project.workplace "authenticated bounded new-versus-retry admission; claim identity/digest before exec/file effects; process-group lease"
-    project.sshd -> project.bridge "mailbox.read / mailbox.post (worker-signed bytes) / mailbox.notify (advisory)"
+    project.sshd -> project.executor "relay only; service authenticates kernel peer UID and active generation"
+    project.executor -> project.dispatcher "authorized execution start/stop; service claims identity/digest before effects; unknown claims never replay"
+    project.dispatcher -> project.workplace "root launcher/start receipt and journaled exec.stop; confirmed execution absence before release or restart"
+    project.executor -> project.bridge "mailbox.read / mailbox.post (worker-signed bytes) / mailbox.notify (advisory)"
     operator -> project.joinPoint "check the enrolment against signed card, invitation binding or open application; release package"
     operator -> project.registry "pin keys; root-signed admission; grants"
     project.bridge -> project.registry "verify signatures, grants, revocation, freshness"
@@ -69,7 +73,7 @@ workspace "Remote worker on a donor machine" "Draft donor target after slice 0: 
       include *
       autolayout lr
     }
-    container project "ProjectSideContainers" "Draft project target: join point, sshd with the forced executor, the OS-user workplace, the bridge, the registry and DNS" {
+    container project "ProjectSideContainers" "Draft project target: join point, root sshd/relay shell, service-principal executor, dispatcher/root execution path, the workplace jobs, the bridge, the registry and DNS" {
       include *
       autolayout lr
     }

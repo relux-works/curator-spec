@@ -1,6 +1,6 @@
 @startuml join-handshake
-' Revision 2026-10-12: F-7 replay relies on durable effect claims/admission floors; wire formats remain pending.
-title Join handshake (revision 4): a server challenge, a signed canonical transcript, atomic invitation consumption; anchors: the Web PKI, DNSSEC validated in the client (default), and the invitation's pins (fallback for an environment without a DNSSEC domain)
+' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
+title Join handshake (revision 6): a server challenge, a signed canonical transcript, atomic invitation consumption; anchors: the Web PKI, DNSSEC validated in the client (default), and the invitation's pins (fallback for an environment without a DNSSEC domain)
 
 participant "Human-run init / donor bridge role\n(A/C: donor UID; B: bridge UID)" as C
 database "DNS: system resolver,\nDNS-over-HTTPS as the fallback\n(signatures validated inside the client)" as R
@@ -51,7 +51,7 @@ break operator rejects application
   JP --> C: refused
 end
 OP -> T: pin K_sig, K_enc, K_ssh; root-signed admission; grants (scope, expiry)
-OP -> D: provision project workplace; issue short user certificate for its principal\n(project-side account boundary; separate from donor provisioner)
+OP -> D: provision workplace class only with helper v1 enforced/applied networking including loopback;\nfixed relay shell -> peer UID/generation -> service-principal executor;\nkeeper-held user CA signs only authenticated workplace principal\n(project-side account boundary; separate from donor provisioner)
 OP -> OP: package with host CA + short user certificate/principal, variant/tuple and binding; no carrier credential; AEAD to K_enc with AAD = H(transcript); signed by the operator certificate (root-signed, scope onboard)
 OP -> JP: release package for this enrolment (reference schema pending)
 C -> JP: POST /join/challenge (collection phase, second challenge; pending schema)
@@ -72,17 +72,17 @@ note over C, T
   Every later message: signed over exact bytes by K_sig on the donor, fresh, replay-checked, grant-checked (ADM).
   Replay: invited cert meets its tombstone; collection proof/retry format pending; later frame effects rely on durable binding-generation-scoped operation-identity/canonical-argument-digest claims with authenticated admission floors (CIP-0009 D5); connection IDs and the output cache do not authorize retry mutation.
   Rotation: a new host key gets a new host certificate (no DNS change); a host CA rotation publishes the new key beside the old; operator cert -> root-signed record; K -> operator revocation, user KRL, close sessions + new enrolment.
-  Certificates: host about one year, user about one day (policy examples); bridge renews user certificate.
+  Certificates: host about one year, user about one day (policy examples); donor bridge requests renewal; service authenticates workplace; keeper signs only its principal.
   Key storage/algorithm admission follows D0; B disabled until separate provisioner contract exists.
 end note
 note over C, T
-  Phase: Draft donor target, A first after slice 0; B disabled pending separate provisioner.
+  Phase: Draft donor target, A first after slice 0 + project helper v1/workplace qualification; B disabled pending separate provisioner.
   Curator init: human donor UID; bridge role: A/C donor UID or future B bridge UID.
   Join point and registry/keeper service UIDs unspecified in spec CIP-0009 D4/D9/D12.
   Join point owns challenges, queue, atomic invitation tombstones and stored packages;
   registry/keeper owns public key pins/admission/grants and CA authority;
   donor bridge owns private keys and protected package/config/CA trust state.
-  Host root owns sshd CA/KRL policy; workplace UID never controls SSH authorization.
+  Host root owns relay-only fixed shell/sshd CA/KRL policy; service UID owns controls/claims/audit;\n  user CA private key stays with project keeper/hardware token; workplace UID owns no control.
   Invalid/replayed/wrong-key proof, expired challenge/invitation or queue cap -> refuse.
   Same-key invited retry recovers same pending enrollment; collection retry format pending.
   [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D4/D6/D9/D12]]

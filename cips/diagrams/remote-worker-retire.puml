@@ -1,11 +1,11 @@
 @startuml remote-worker-retire
-' Revision 2026-10-12: accepted review findings; Draft semantics, no renderer/qualification evidence.
-title Lifecycle of a remote worker (revision 5; variant-aware cleanup and independent state axes): stop, leave and purge on the donor; suspend, retire and revoke on our side; the identity stays pinned unless revoked
+' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
+title Lifecycle of a remote worker (revision 6; variant-aware cleanup and independent state axes): stop, leave and purge on the donor; suspend, retire and revoke on our side; the identity stays pinned unless revoked
 
 actor "Operator (our side)" as OP
 participant "Registry / key keeper" as T
 participant "swarma-dispatcher + swarma-user-manager\n(project host; account lifecycle)" as D
-participant "Bridge (M3) + sshd" as BR
+participant "Service-principal bridge + swarma-rb-exec\nroot sshd + relay-only fixed shell" as BR
 actor "Donor (the machine's owner)" as ADM
 participant "curator remote-worker\n(donor bridge role; UID follows variant)" as C
 participant "Separate donor provisioner (B only)\n(binary/schema/rules/removal pending; B disabled)" as PH
@@ -34,7 +34,7 @@ OP -> T: suspend: grants paused
 OP -> BR: suspend: close sessions; keep workplace
 OP -> D: retire workplace
 D -> BR: persist channel/grant revocation; stop renewal; user-certificate KRL; close sessions
-D -> D: kill every job and descendants (process group / cgroup); verify no workplace-UID process remains
+D -> D: journaled exec.stop for workplace executions via receipt/effect;\nconfirm absence under published account-wide stop scope; no process-group-only proof
 break process absence not established
   D -> D: retain account/egress; reconcile unknown evidence; do not delete home
 end
@@ -67,13 +67,14 @@ else B (future path, disabled while provisioner contract pending)
 end
 C --> ADM: variant-owned artifacts removed; printed revocation result or unknown when unreachable
 note over OP, PH
-  Phase: Draft donor target after one-host slice 0; A first, B disabled, C fallback.
+  Phase: Draft donor target after one-host slice 0 + project helper v1/workplace qualification; A first, B disabled, C fallback.
   Donor Curator human commands run as donor UID; bridge service owns lifecycle marks,
   keys/config/audit (A/C donor UID; B bridge UID); harness owns home/scratch.
   Separate explicit operator home retention states confidentiality is not guaranteed.
   Git/accepted outputs have a separate confidentiality policy.
   Project dispatcher service owns tracking, root user-manager owns account lifecycle;
-  root sshd owns user KRL; project bridge owns channel/mailbox state;
+  root sshd owns relay shell/user KRL; service executor owns claims/floors/audit;
+  project bridge owns channel/mailbox state; user CA private key stays with keeper/hardware token;
   registry/keeper owns signed identity revocations. Their exact UIDs/storage formats
   unspecified in spec CIP-0009 D7/D12. Stop terminates only owned harness descendants.
   Cleanup cannot release workplace before proven process absence; forward-recovery

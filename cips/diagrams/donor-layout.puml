@@ -1,5 +1,5 @@
 @startuml donor-layout
-' Revision 2026-10-12: accepted review findings; Draft semantics, no renderer/qualification evidence.
+' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
 title Donor state layout - Draft target; A/C donor-owned state root; B platform root / separate provisioner pending and disabled
 left to right direction
 node "Donor machine\nA/C: donor UID; B: root-provisioned separate UIDs" as D {
@@ -22,9 +22,9 @@ node "Donor machine\nA/C: donor UID; B: root-provisioned separate UIDs" as D {
   component "B privileged provisioner / kernel boundary\naccounts, egress, sandbox, service journal\nseparate spec/name/schema pending" as Provisioner
 }
 node "Project host" as P {
-  artifact "Root-controlled sshd policy\nTrustedUserCAKeys + user-certificate KRL\nprotected absolute forced command; no PTY/forward/rc/env" as SSHPolicy
-  artifact "Project registry / keeper-owned trust\nadmission, public worker keys, grants/revocations\nseparate host CA and user CA authorities" as Registry
-  artifact "Project bridge / workplace executor-owned state\nmailbox/cursors; durable identity/digest claims + admission floors\nseparate ten-minute output cache; closed-schema service metadata\ncarrier credential stays project-side" as Mailbox
+  artifact "Root-controlled sshd policy\nTrustedUserCAKeys + user-certificate KRL\nprotected relay-only forced command + fixed no-startup-file login shell\nno PTY/forward/rc/env" as SSHPolicy
+  artifact "Project registry / keeper-owned trust\nadmission, public worker keys, grants/revocations\nhost CA authority; user CA private key in keeper/hardware token" as Registry
+  artifact "Service-principal project bridge / swarma-rb-exec state\noutside workplace UID write/signal authority\nmailbox/cursors; durable identity/digest claims + admission floors\nseparate ten-minute output cache; closed-schema service metadata\ncarrier credential stays project-side" as Mailbox
 }
 Bridge --> Keys : sign / decrypt / SSH; private keys never sent
 Bridge --> State : persist before acknowledgments / termination
@@ -37,7 +37,7 @@ Harness --> Socket : only admitted local relay
 Socket --> Bridge
 Harness --> Proxy : B/C provider path only
 Bridge --> SSHPolicy : one donor-originated SSH; expired/revoked/wrong principal -> refuse
-SSHPolicy --> Mailbox : workplace UID jobs; project bridge mailbox
+SSHPolicy --> Mailbox : relay to service socket; kernel peer UID + active generation
 Registry --> SSHPolicy : user certificates/KRL; retirement stops renewal and closes sessions
 Provisioner --> Root : B journaled provision/remove only allocated artifacts; failure -> reverse rollback
 note bottom of BridgeHome
@@ -45,6 +45,8 @@ note bottom of BridgeHome
   A shares UID: no OS confidentiality/integrity/egress guarantee.
   Project claims persist before mutation; floors advance before claims may be discarded.
   Recovery reconciles claim/floor evidence before admission; unknown keeps binding closed.
+  Workplace jobs use dispatcher/root launcher/start receipt/exec.stop; v1 applied network before activation.
+  Write scope = UID writable set; loopback qualification mandatory; controls never workplace-owned.
   Project retirement deletes home after process absence and declared-key cleanup;
   export only closed-schema service metadata with no agent-controlled content.
   Separate explicit home retention states confidentiality is not guaranteed.

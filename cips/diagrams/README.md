@@ -1,5 +1,7 @@
 # CIP figure sources
 
+Revision 2026-10-12: R-WORKPLACE separates service controls from workplace jobs and gates every donor variant on project helper v1/backend qualification. The credential-source view aligns R-REBIND, R-SESSION, R-TIME, R-NETBIND and R-SVC-EGRESS; recovery controls remain reachable during forward-admission closure.
+
 These are source views of the current CIP text, not runtime qualification. Phase, process identity, persistent-state authority and refusal/recovery appear in each view. Unknown formats, UIDs and retention rules are marked where the defining specification is silent. B activation stays disabled. PlantUML uses local basic syntax without themes, includes or a renderer dependency. The existing C4 source is retained and extended alongside the PlantUML component view.
 
 | Figure | Source | Defining specification | Audit row |

@@ -1,6 +1,6 @@
 @startuml donor-side
-' Revision 2026-10-12: accepted review findings; Draft semantics, no renderer/qualification evidence.
-title Donor and project components - Draft target after one-host slice 0; B disabled; A/C role substitutions shown
+' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
+title Donor and project components - Draft target after one-host slice 0 + project helper v1/workplace qualification; B disabled; A/C role substitutions shown
 left to right direction
 actor "Human donor" as Donor
 actor "Project operator" as Operator
@@ -17,7 +17,9 @@ node "Donor machine\nB: separate bridge and harness UIDs\nA/C: donor UID, user s
 node "Project host" as P {
   component "Join point\nservice identity unspecified in spec D9\nTLS challenge/cert/collect; no signing key" as Join
   component "swarma-dispatcher\nservice UID; project workplace provisioning\nroot swarma-user-manager account helper" as Disp
-  component "sshd (root) + forced swarma-rb-exec\nworkplace UID; OS-user backend" as Exec
+  component "sshd (root) + relay-only stub\nfixed workplace login shell; no startup files" as Exec
+  component "swarma-rb-exec\nservice principal; peer UID/generation authentication\npolicy/caps/claims/audit outside workplace UID" as Control
+  component "Workplace jobs\nworkplace UID; helper-v1 enforced egress\nUID writable set; launcher/receipt/exec.stop" as Jobs
   component "Project bridge (M3)\nservice identity unspecified in spec D5\nmailbox/admission/carrier authority" as PB
   component "Trust registry / key keeper\nservice identity unspecified in spec D4/D12\nroot/operator chain; host and separate user CA" as Keeper
   database "Join-point-owned pending applications\nchallenges/invitation consumption/tombstones\noperator-signed encrypted packages" as JS
@@ -33,7 +35,7 @@ Join --> JS : bounded queue; same-key retry recovers; other-key replay refuses
 Operator --> Keeper : admission / grants / separate signed identity revoke
 Operator --> Join : approve/reject; release encrypted signed package
 Keeper --> PS
-Disp --> PS : workplace lifecycle; no donor provisioning authority
+Disp --> PS : workplace class; v1 fw.apply + applied state at activation; no donor provisioning authority
 Init --> Bridge : validated package; pin root/operator/CA, tuple and generation
 Bridge --> DS
 Bridge --> Harness : qualification/current policy/binding checks before exact exec
@@ -44,8 +46,11 @@ Harness --> Proxy : B/C model calls only
 Proxy --> API : qualified host allowlist
 Harness --> API : A direct path; no OS egress guarantee
 Bridge --> Exec : one donor-originated SSH; certificates/CA/name/validity/KRL checked
-Exec --> PS : policy/leased jobs; claim identity/digest before mutation;\nreconcile same effect on reconnect; output cache separate
-Exec --> PB : mailbox control plane; tools only if granted
+Exec --> Control : relay channel only; active workplace UID/generation
+Control --> Disp : admitted execution start/stop; no direct UID switch
+Disp --> Jobs : root launcher / start receipt / journaled exec.stop
+Control --> PS : policy/leased executions; claim identity/digest before mutation;\nreconcile same effect on reconnect; output cache separate
+Control --> PB : mailbox control plane; tools only if granted
 PB --> PS : durable mailbox; signatures/grants/freshness; exact-byte carrier delivery
 note bottom of D
   Channel drops -> pause new turns; current deadline; channel_down; durable output queue.
@@ -58,6 +63,9 @@ note bottom of D
   A has no OS confinement; all variants require lockdown + remote-auto and exact tuple.
 end note
 note bottom of P
+  User CA private key: project keeper/hardware token; renewal only for authenticated workplace.
+  Write scope = UID writable set; helper v1 loopback row mandatory.
+  Serialized per-job execution or standing runner shape/concurrency/blast radius unpublished.
   Transport/backend object ownership and closed formats unspecified in spec publication register.
   [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D0-D12]]
   [[../../protocol/remote-worker.md#publication-status Pending formats/owners]]
