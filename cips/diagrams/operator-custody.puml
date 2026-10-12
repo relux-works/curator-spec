@@ -1,0 +1,65 @@
+@startuml operator-custody
+' Revision 2026-10-12: accepted F-23 owner amendment and R-OPERATOR; Draft, formats unpublished, no renderer/qualification evidence.
+title Operator custody - CIP-0011 slice-0 acceptance; phone main path, terminal fallback, mandatory observer
+actor "Human operator" as Human
+participant "Phone app\noperator device key in secure element\nnon-exportable; biometric presence" as Phone
+participant "Computer terminal\npassword sudo; timestamp_timeout=0\nno NOPASSWD" as Terminal
+participant "swarma-operator\nbroker operator/account owner; helper operator UID\nno harness; protected software root/signing authority" as Operator
+participant "Broker / user manager / dispatcher\nexisting role and record checks" as Services
+participant "swarma-observer\nmandatory read-only account" as Observer
+participant "Interactive / agent session\nseparate account; no operator key/authority" as Agent
+
+== main phone path ==
+Human -> Phone: select exact act: who, which actions, until when
+Phone -> Human: display exact canonical act content
+Human -> Phone: biometric confirmation (revocation: single confirmation)
+Phone -> Phone: sign this one act with operator device key
+Phone -> Operator: SSH over tailnet; login by pinned phone key only\nforced operator command; no shell
+Operator -> Operator: verify signed operator record against pinned device key\nbound to exact canonical act; no cross-act reuse
+break invalid authentication/signature/content or widening from agent session
+  Operator --> Phone: refuse; no operator effect (format/code unpublished)
+end
+Operator -> Services: authenticated operator act under existing authority checks
+Services --> Operator: outcome (format unpublished)
+Operator --> Phone: outcome
+
+== terminal fallback (works without phone) ==
+Human -> Terminal: select operator act
+Terminal -> Human: password authentication for sudo into swarma-operator\nno cached ticket
+Human -> Terminal: authenticate
+alt widening act
+  Terminal -> Human: confirm exact act content
+  Human -> Terminal: confirm
+else revocation / account disabling
+  note over Human, Terminal: Authentication only; no additional widening confirmation.
+end
+Terminal -> Operator: curator broker enrol / grant / revoke, or module-owned operator act
+break absent authentication/required confirmation or widening from agent session
+  Operator --> Terminal: refuse; no operator effect (format/code unpublished)
+end
+Operator -> Services: authorized operator act; software root stays in operator account
+Services --> Operator: outcome
+Operator --> Terminal: outcome
+
+== reads ==
+Human -> Observer: status, grants, accounts, bindings; no act confirmation
+Observer -> Services: authenticated read-only principal; no signing/mutation authority
+Services --> Observer: metadata only
+Observer --> Human: metadata only
+Agent -> Operator: attempt widening operator act
+Operator --> Agent: refuse from agent session
+
+note over Operator, Services
+  Widening: grant issue, subscription enrolment, team/1, standing retirement or re-creation,
+  explicit home retention, maintenance stop authority, renewal of standing grants.
+  Authentication + exact-content confirmation; standing retirement follows explicit owner rule.
+  NOPASSWD only for dispatcher service helper/launcher rules, never helper operator role.
+  Operator device key is an admitted signer for existing team/1 and standing retirement.
+  Operator command binary/wire and signed operator record domain/canonical bytes unpublished.
+  No grant signature-algorithm change or new hardware beyond phone mandated.
+  Bounded existing delegation may re-grant without widening; no inferred infinite renewal.
+  Operator/root loss: fenced root replacement, never restore into session account.
+  Key enrolment/rotation/phone loss open; terminal re-enrolment is proposal.
+  [[../CIP-0011-credential-broker-and-agent-users.md#5-curator-broker CIP-0011 operator rules]]
+end note
+@enduml

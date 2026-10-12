@@ -1,12 +1,23 @@
 @startuml audit-transport
+' Revision 2026-10-12: R-OPERATOR separates signing authority from the analyzer launch account.
 title Audit transport - CLI secret input accepted first; backend/cache contracts proposed; current null backend is static-only
-actor "Operator" as O
-participant "Curator CLI / manager\noperator UID; policy/process/decision owner" as M
-participant "Opened private token handle\noperator-owned file; transient, non-inheritable" as F
+actor "Human audit caller / publisher" as O
+participant "Curator CLI / manager\naudit caller UID; policy/process/decision owner" as M
+participant "Opened private token handle\npublisher-owned file; transient, non-inheritable" as F
 participant "Shared agents-management launch layer\nnative argv/settings owner" as L
 participant "Selected analyzer child\nmanager-launched identity; direct-child policy" as A
 database "Manager-owned private state\nfrozen snapshot, bounded workdir/output\nverdict cache and registry trust/high-water" as S
 participant "Registry HTTP service\nsigned record publication owner" as R
+
+note right of O
+  R-OPERATOR: swarma-operator never hosts an analyzer/harness session.
+  Operator signing authority stays separate from this audit caller/publisher account.
+  Operator acts use the phone-signed exact-act main path or password sudo fallback;
+  widening authenticates + confirms and refuses agent sessions; narrowing authenticates only.
+  Operator reads (status/grants/accounts/bindings) use swarma-observer without confirmation.
+  This registry bearer input never becomes an operator device key or broker root.
+  [[../CIP-0011-credential-broker-and-agent-users.md#5-curator-broker Operator custody and act rules]]
+end note
 
 == Registry publishing secret input; no backend credential propagation ==
 O -> M: audit --publish record --registry URL; optional token-file path (never token value)

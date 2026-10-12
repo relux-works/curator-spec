@@ -1,4 +1,5 @@
 @startuml donor-first-deployment
+' Revision 2026-10-12: R-OPERATOR operator custody/act gate; formats and qualification remain open.
 ' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
 title Remote worker first deployment (revision 6): donor variants A/B/C; project workplace service controls and helper-v1 activation; B disabled pending separate provisioner
 
@@ -12,6 +13,19 @@ participant "Join point\n(our host, HTTPS: challenge, cert, collect)" as JP
 actor "Operator (our side)\nor orchestrator with onboard grant" as OP
 participant "Trust registry + key keeper\n(our host)" as T
 participant "swarma-dispatcher (service UID)\nroot swarma-user-manager helper\nproject workplace provisioning" as D
+
+note right of OP
+  R-OPERATOR: project/platform operator acts use no-harness swarma-operator.
+  Phone main: hardware-backed presence-gated operator device key; displayed act signed,
+  pinned-key SSH over tailnet; forced operator command, no shell; canonical binding/no reuse.
+  Terminal fallback: password sudo, timestamp_timeout=0, no NOPASSWD.
+  Widening authenticates + confirms exact content; refuses from an agent session.
+  Narrowing authenticates only; phone revocation is one biometric confirmation.
+  Reads use mandatory swarma-observer without confirmation.
+  Delegated agent acts stay under their own principal/ceiling, never operator UID.
+  Existing record domains/algorithms unchanged; command/record formats and key lifecycle open.
+  [[../CIP-0011-credential-broker-and-agent-users.md#5-curator-broker R-OPERATOR rules and widening list]]
+end note
 
 == 1. invitation ==
 OP -> ADM: swarma-bridge invitation/1 {invitation_id, join point, root fingerprint,\nSSH host CA fingerprint, TLS pin, declared trust mode, project, role, expires, one-use random code}\nthrough the channel the donor found us by: marketplace deal thread, e-mail, our site\n(the code is a short-lived bootstrap secret; without an invitation: init <domain>, an open application)

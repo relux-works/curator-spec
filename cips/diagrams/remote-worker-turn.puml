@@ -1,5 +1,5 @@
 @startuml remote-worker-turn
-' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
+' Revision 2026-10-12: R-OPERATOR observer reads; R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
 title Remote worker turn (revision 6; B boundary shown, disabled until separate provisioner spec/qualification): the harness has no local tools; the relay (harness identity) forwards to the bridge service (bridge identity), which carries every tool call and the mailbox over ONE SSH connection from the donor to our host; our host never connects back
 
 box "Donor machine: harness identity (sandboxed, egress = proxy only)" #WhiteSmoke
@@ -145,7 +145,8 @@ note over H, O
   Claims discarded only after identities are permanently inadmissible; persist floor first.
   R-OBS where applicable: recorded (result/current state), pending, rolled_back,
   not_recorded (authoritative), unavailable (missing/expired/unreadable), contradictory.
-  Original caller/operators observe under receiver journal serialization; absence never retries.
+  Original caller observes under receiver journal serialization; absence never retries.
+  Human operator reads use mandatory swarma-observer without confirmation (R-OPERATOR).
   Ten-minute output retention is independent of claim retention; no new service.
   Exact service-account deployment for project bridge/executor, filenames and claim/floor/cache encoding
   unspecified in spec CIP-0009 D5. rb/1 and workplace-exec/1 are pending design shorthand.

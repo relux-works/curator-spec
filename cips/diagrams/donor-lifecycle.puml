@@ -1,5 +1,5 @@
 @startuml donor-lifecycle
-' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
+' Revision 2026-10-12: R-OPERATOR operator custody and lifecycle acts; R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
 title Donor lifecycle - Draft target A first / B disabled / C fallback; four independent descriptive axes, no closed state schema
 state "Donor installation\nowner: donor / bridge role; B separate provisioner pending" as Installation {
   state "Present\nvariant-owned service, config, keys, home" as Present
@@ -20,7 +20,7 @@ state "Donor execution\nowner: bridge-role supervisor\nA/C donor UID; B bridge U
   Left --> Stopped : human init --rejoin; new invitation/package and newly admitted workplace; wait for run
   Left --> Refused : revoked identity / invalid admission or qualification
 }
-state "Project workplace\nowner: project operator + dispatcher/helper + project bridge\nhelper root boundary; workplace UID jobs only\nservice-principal executor owns policy/claims/audit/mailbox" as Workplace {
+state "Project workplace\nowner: swarma-operator (no harness) + dispatcher/helper + project bridge\nhelper root boundary; workplace UID jobs only\nservice-principal executor owns policy/claims/audit/mailbox" as Workplace {
   state "Admitted workplace\nhelper v1 enforced/applied networking; fixed relay shell" as Admitted
   state "Suspended\ngrants paused; sessions closed; workplace kept" as Suspended
   state "Retirement in progress\nrevocation persisted before termination/restart" as Retiring
@@ -48,6 +48,14 @@ note right of Execution
   unspecified in spec CIP-0009 D7; D5 pauses new turns.
 end note
 note right of Workplace
+  R-OPERATOR operator acts: phone main with secure-element operator device key,
+  biometric exact-act signature; pinned-key SSH over tailnet, forced operator command/no shell.
+  Terminal fallback: password sudo, timestamp_timeout=0, no NOPASSWD.
+  Widening authenticates + confirms and refuses agent sessions; standing retirement
+  and explicit home retention are in the owner widening list. Narrowing authenticates only;
+  phone revocation: one biometric confirmation. Reads: swarma-observer, no confirmation.
+  Formats and phone-key lifecycle unpublished; existing signed domains unchanged.
+  [[../CIP-0011-credential-broker-and-agent-users.md#5-curator-broker R-OPERATOR authority boundary]]
   Per-job or standing-runner execution shape/concurrency/blast radius unpublished.
   Process-group death alone proves no execution absence.
   Failure to prove process absence cannot authorize account release.

@@ -1,5 +1,7 @@
 # CIP figure sources
 
+Revision 2026-10-12: accepted F-23/R-OPERATOR adds the phone-first operator custody view, the terminal fallback and mandatory observer reads; operator views reference its exact-act boundary.
+
 Revision 2026-10-12: R-WORKPLACE separates service controls from workplace jobs and gates every donor variant on project helper v1/backend qualification. The credential-source view aligns R-REBIND, R-SESSION, R-TIME, R-NETBIND and R-SVC-EGRESS; recovery controls remain reachable during forward-admission closure.
 
 These are source views of the current CIP text, not runtime qualification. Phase, process identity, persistent-state authority and refusal/recovery appear in each view. Unknown formats, UIDs and retention rules are marked where the defining specification is silent. B activation stays disabled. PlantUML uses local basic syntax without themes, includes or a renderer dependency. The existing C4 source is retained and extended alongside the PlantUML component view.
@@ -15,6 +17,7 @@ These are source views of the current CIP text, not runtime qualification. Phase
 | Deployment variants | [donor-variants.puml](donor-variants.puml) | [D0–D3; CIP-0008 R9](../CIP-0009-donor-side-deployment-and-bridge.md#recommendation) | M-CIP1 |
 | Independent lifecycle axes | [donor-lifecycle.puml](donor-lifecycle.puml) | [D7, D12](../CIP-0009-donor-side-deployment-and-bridge.md#recommendation) | M-CIP1 |
 | State layout | [donor-layout.puml](donor-layout.puml) | [D0–D3, D5, D7, D12](../CIP-0009-donor-side-deployment-and-bridge.md#recommendation) | M-CIP1 |
+| Operator custody | [operator-custody.puml](operator-custody.puml) | [CIP-0011 §5, slice-0 acceptance and open question 9](../CIP-0011-credential-broker-and-agent-users.md#5-curator-broker) | F-23 / R-OPERATOR |
 | Credential source lifecycle | [credential-source-lifecycle.puml](credential-source-lifecycle.puml) | [C1–C6, Revision 2.2; CIP-0003 migration; CIP-0011 §2/§3](../CIP-0010-credentials-setup-token-and-inherited-auth.md#recommendation) | M-CIP2 |
 | Configuration publication | [configuration-publication.puml](configuration-publication.puml) | [CIP-0002 admission/leases/PATH; CIP-0004 recommendation/migration; CIP-0006 design/migration](../CIP-0002-project-context-in-managed-launches.md#recommendation) | M-CIP2 |
 | Tool admission | [tool-admission.puml](tool-admission.puml) | [Operator decision, option B, recommendation/security; shared D-PATH](../CIP-0007-manager-provisioned-cli-tools.md#recommendation) | M-CIP2 |

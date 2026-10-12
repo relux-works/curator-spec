@@ -1,5 +1,5 @@
 @startuml donor-layout
-' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
+' Revision 2026-10-12: R-OPERATOR custody and explicit retention; R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
 title Donor state layout - Draft target; A/C donor-owned state root; B platform root / separate provisioner pending and disabled
 left to right direction
 node "Donor machine\nA/C: donor UID; B: root-provisioned separate UIDs" as D {
@@ -52,6 +52,16 @@ note bottom of BridgeHome
   Separate explicit home retention states confidentiality is not guaranteed.
   Exact key/state/audit/cursor file names, socket basename, schema and retention
   unspecified in spec CIP-0009 D0/D1/D5; folders above are the named D0 layout.
+end note
+note bottom of P
+  R-OPERATOR project operator: swarma-operator, no harness; protected broker v0 software root.
+  Operator device key stays in phone secure element; phone-signed exact acts over
+  pinned-key SSH/tailnet, forced operator command/no shell. Terminal password sudo fallback,
+  timestamp_timeout=0, no NOPASSWD. Widening authenticates + confirms, refuses agent sessions;
+  includes explicit home retention. Narrowing authenticates only; phone revoke one biometric.
+  Reads via mandatory swarma-observer without confirmation; no mutation authority.
+  Phone-key lifecycle/operator formats unpublished; user CA custody remains as shown.
+  [[../CIP-0011-credential-broker-and-agent-users.md#5-curator-broker R-OPERATOR custody and act rules]]
 end note
 note bottom of WorkerHome
   Stop keeps bridge/keys; leave keeps keys/config; purge removes only owned artifacts,

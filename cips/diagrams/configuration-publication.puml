@@ -1,12 +1,26 @@
 @startuml configuration-publication
+' Revision 2026-10-12: R-OPERATOR operator custody/act gate; formats and qualification remain open.
 title Configuration publication - CIP-0002 Draft v4; CIP-0006 narrow acceptance / v4 pending; CIP-0004 accepted no-source-v1 target
 actor "Operator / granted agent\napproval within ceiling" as O
-participant "Curator manager\noperator UID; protected authority" as M
+participant "Curator manager\nprotected authority; caller-specific approval ceiling" as M
 database "Manager-owned records/store\nregistration, approval, composition, lease\nprofile_settings, prior-key values, journal, marker" as S
 participant "Shared launch construction\ncaller-side curator-run + agents-management; caller UID" as L
 participant "Destination executor\nexecution UID bound by launch; agent-account curator-run for broker\nSH2 swarma-session-runner later; native child launched from plan" as H
 participant "Generated interactive hook\nuser shell process" as SH
 database "Hook cache\nmanager-owned generation bytes/options\nloaded snapshot belongs to shell" as C
+
+note right of O
+  R-OPERATOR: project/platform operator acts use no-harness swarma-operator.
+  Phone main: hardware-backed presence-gated operator device key; displayed act signed,
+  pinned-key SSH over tailnet; forced operator command, no shell; canonical binding/no reuse.
+  Terminal fallback: password sudo, timestamp_timeout=0, no NOPASSWD.
+  Widening authenticates + confirms exact content; refuses from an agent session.
+  Narrowing authenticates only; phone revocation is one biometric confirmation.
+  Reads use mandatory swarma-observer without confirmation.
+  Delegated agent acts stay under their own principal/ceiling, never operator UID.
+  Existing record domains/algorithms unchanged; command/record formats and key lifecycle open.
+  [[../CIP-0011-credential-broker-and-agent-users.md#5-curator-broker R-OPERATOR rules and widening list]]
+end note
 
 == CIP-0002 project-context proposal; no adopted home/transform grammar ==
 O -> M: register / inspect / preview / approve selected snapshot digest

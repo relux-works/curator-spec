@@ -1,9 +1,9 @@
 @startuml donor-side
-' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
+' Revision 2026-10-12: R-OPERATOR custody and act paths; R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
 title Donor and project components - Draft target after one-host slice 0 + project helper v1/workplace qualification; B disabled; A/C role substitutions shown
 left to right direction
 actor "Human donor" as Donor
-actor "Project operator" as Operator
+actor "Project operator\nswarma-operator; no harness" as Operator
 node "Donor machine\nB: separate bridge and harness UIDs\nA/C: donor UID, user service" as D {
   component "Curator init\nhuman donor UID; consent/provision request" as Init
   component "Separate donor provisioner\nprivileged B only; pending short spec/removal\nnot swarma-user-manager" as Prov
@@ -61,6 +61,15 @@ note bottom of D
   Reconnect validates trust and catches up cursors; never repeat an uncertain effect.
   B disabled until separate provisioner exists. C enforces sandbox without UID split.
   A has no OS confinement; all variants require lockdown + remote-auto and exact tuple.
+end note
+note right of Operator
+  R-OPERATOR: phone main, displayed canonical act + biometric signature,
+  pinned device-key SSH over tailnet; forced operator command, no shell.
+  Terminal fallback: password sudo, timestamp_timeout=0, no NOPASSWD.
+  Widening authenticates + confirms; refuses from agent session.
+  Narrowing authenticates only; phone revocation: one biometric confirmation.
+  Reads: mandatory swarma-observer, no confirmation. Formats/key lifecycle unpublished.
+  [[../CIP-0011-credential-broker-and-agent-users.md#5-curator-broker Operator custody and act rules]]
 end note
 note bottom of P
   User CA private key: project keeper/hardware token; renewal only for authenticated workplace.
