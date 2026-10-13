@@ -1,5 +1,5 @@
 @startuml remote-worker-transfer
-' Revision 2026-10-13: accepted architecture-review findings; no rendering or qualification claimed.
+' Revision 2026-10-13: accepted architecture-review findings; cumulative integration-baseline review and inert exact-C resources; no rendering or qualification claimed.
 ' Revision 2026-10-13: R-TRANSFER adopted round; design labels/formats unpublished, no renderer or qualification evidence.
 title R-TRANSFER: code as data, then exact candidate review and board integration
 actor "Orchestrator / original run requester" as O
@@ -98,24 +98,36 @@ break .git component / outside write scope / .task-board change
 end
 B -> B: candidate C signed by repository identity; worker/run/result-digest trailers
 B -> B: C tree equals independent recomputation from B + change set
-B -> R: review exactly C; flagged paths explicit hunk-by-hunk acknowledgement
+B -> B: recompute full review delta/sensitive set against trusted integration baseline; bind baseline/set to exact C OID
+B -> R: inert exact-C diffs/blobs outside discovery roots; fresh exact-C hunk acknowledgements and verdict
 R -> V: orchestrate all candidate code execution (tests/builds/generators)
 V --> B: data-only results in testing state; controlled dependency egress
 note over B, R
   Flagged classes: CI, Git behaviour, hooks/auto-run, agent instructions/config, all symlinks.
   Exact path list: CIP-0009 D5a. No pre-acceptance untrusted candidate push to CI with secrets.
-  K1 acceptance binds C, never transferred by patch equality.
+  Integration baseline differs from round B and approved verification-control H.
+  Retained sensitive changes from unaccepted candidates remain flagged; fully reverted content need not.
+  Inherited unresolved web provenance stays a candidate obligation; current run class remains factual.
+  Clear only by published conservative provenance/removal rule or exact-candidate reviewer resolution;
+  rewording alone is no proof; acknowledgement does not complete incomplete provenance.
+  K1 acceptance binds C, never transferred by patch equality or prior acknowledgements.
+  CIP-0002: candidate files remain data before/after acknowledgement; acceptance is not control admission.
+  Discovery-capable tree entry needs qualified strict-context/ambient-discovery exclusion;
+  root-supplied surfaces alone are insufficient. Inert path shows no automatic load preceded acknowledgement.
+  [[../CIP-0002-project-context-in-managed-launches.md#operative-summary Review consumer boundary]]
 end note
 
 alt changes requested
   R -> B: findings bound to C
   O -> L: signed rework task letter: findings + admitted base C
   D -> E: materialize afresh from C; prior deletion requires complete-content custody or explicit waiver
-  E -> W: next round; export yields C2 on C; same gates/review
+  E -> W: next round; export yields C2 on C; materialization base changes, integration baseline retained
+  B -> B: recompute full C2 sensitive/provenance obligations; bind baseline/set to exact C2
+  B -> R: fresh exact-C2 acknowledgements/verdict; no inherited verdict
 else accepted
   R -> B: exact C verdict
   O -> B: request integration of accepted exact head
-  break base moved
+  break base moved or trusted integration baseline changed
     B --> O: ordinary base refresh + re-review
   end
   B -> B: signed fast-forward accepted exact head (K1/K3)

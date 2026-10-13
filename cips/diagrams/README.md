@@ -1,5 +1,7 @@
 # CIP figure sources
 
+Revision 2026-10-13: accepted architecture-review findings update turn/transfer review and rework to retain the trusted integration baseline, recompute cumulative sensitive/provenance obligations and obtain fresh exact-candidate acknowledgements/verdicts. Exact-C diffs/blobs are inert review resources; discovery-capable entry waits for the CIP-0002 strict boundary. No rendering or qualification is claimed.
+
 Revision 2026-10-13: accepted architecture-review findings align the linked transfer/turn/retirement and summary views with base/mode verification, full-invocation qualification, cleanup consent, complete-content custody and current-authority refusal repair. Onboarding proposals grant no operator authority. The result field contract is a producer-owned draft; transport/lifecycle and renderer qualification remain gated.
 
 Revision 2026-10-13: wave-5 aligns the donor/workplace views with R-TRANSFER rounds, zero egress, no-default-web/resource delivery, exec/host admission, watcher and emergency stop. The public entry host is separate from untrusted workplaces (R-SHARED); no renderer or runtime qualification is claimed.

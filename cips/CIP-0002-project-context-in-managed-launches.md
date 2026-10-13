@@ -11,11 +11,19 @@
 | Field | Contract |
 |---|---|
 | Purpose | Registered project context composed over a selected profile. |
-| Boundary | Repository inputs are candidates; only protected, individually approved snapshots enter strict launches. |
+| Boundary | Repository inputs are candidates; only protected, individually approved snapshots enter strict launches. Unaccepted candidate files remain untrusted review data; exact-candidate acceptance confers no control-context admission. |
 | Authority owner | Operator approves within fleet/manager ceilings; manager owns registrations, admissions, compositions and leases; launcher owns composition. |
 | Inputs → outputs | Registered checkout, selected profile lock, approved generation and adapter contract → protected view, metadata fragment and context-bound launch plan. |
 | Phase | Draft; D-PATH decided, home choice and coordinated v4 grammar/qualification pending. |
 | Normative links and proposed landing | [Environments §§1–5](../protocol/environments.md#1-environment-profiles-and-sources), [§10](../protocol/environments.md#10-resolution-and-the-launch-fragment), [Manager §12](../profiles/manager.md#12-agent-environments-manager-profile); amendments: [Specification changes](#specification-changes). |
+
+R-TRANSFER review at stage T is the first required consumer of the strict-context boundary. The board first supplies exact-C diffs and blobs as inert, read-only resources bound by digest and placed outside every consuming harness's discovery roots, using the R-NET-TOOL task-resource path. This applies to reviewers, orchestrators reading C for rework and testers reading candidate data. No harness may automatically adopt candidate instructions, hooks, MCP servers, permissions, skills or executable discovery at startup, reload, nested discovery, resume or child-agent entry, before or after flagged-hunk acknowledgement. Acceptance of C is not admission of its control surfaces; activation remains a separate CIP-0002 control-context decision.
+
+Materializing or entering an unaccepted candidate tree in a discovery-capable harness requires a qualified strict-context adapter, or equivalent exclusion of ambient candidate discovery, as that launch's admission gate. A tuple without that qualification cannot host such tree entry. Root-supplied surfaces alone do not establish exclusion. The flagged-hunk acknowledgement record must show that no automatic load preceded it; the inert-resource path satisfies this by construction. Data-only consumption still leaves semantic prompt injection as a review residual.
+
+## Revision: accepted architecture-review findings (2026-10-13)
+
+R-TRANSFER's inert exact-C resources are the first review consumer; discovery-capable candidate-tree entry waits for a qualified strict adapter. Verdict acceptance never admits control surfaces. The wider project-context direction remains open; no implementation or qualification is claimed.
 
 ## Operative disposition (2026-10-11)
 
@@ -269,3 +277,4 @@ Research validation is limited to the file/source audit and P1–P6 in the compa
 5. **Busy view updates:** Wait for active leases or allocate a fresh home automatically? **Recommend wait/refuse**, reusing the stable home after it becomes idle. An explicit additional view may incur another login; never silently switch active sessions.
 6. **PATH selection — decided; transport still open:** D-PATH selects one protected dispatcher after the protected tool directory and admitted base PATH. Raw repository/global command roots are superseded. The remaining owner choice is the versioned destination transform and stale/ambiguous owner handling: adopt the proposed checked transform with refusal until supported, or defer command capability. Caller-PATH literals cannot replace destination admission.
 7. **Adapter delivery contract:** Accept a separately versioned optional capability whose certified environments/surfaces are advertised explicitly, with Pi as the first proposed direct slice? **Recommend yes**, with Claude/Codex next and OpenCode/Muse after their native contracts are established. All five remain in the design; an unsupported required feature refuses rather than being omitted.
+8. **Required R-TRANSFER review consumer:** Stage T board/harness review uses inert exact-C diffs/blobs first. Would need publication of the digest-bound resource and acknowledgement record, and real-tool-path qualification for each supported harness before discovery-capable tree entry: candidate hook, MCP entry, instruction file and skill remain data without automatic loading or execution at launch, reload, nested read, resume and child entry, while every flagged hunk is recorded in the verdict. A strict adapter or equivalent ambient-discovery exclusion must precede that entry; this does not require the full project-context rollout or decide its open home/grammar choices.

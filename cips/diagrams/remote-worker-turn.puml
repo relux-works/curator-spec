@@ -1,8 +1,8 @@
 @startuml remote-worker-turn
-' Revision 2026-10-13: accepted architecture-review findings; no rendering or qualification claimed.
+' Revision 2026-10-13: accepted architecture-review findings; cumulative integration-baseline review and inert exact-C resources; no rendering or qualification claimed.
 ' Revision 2026-10-13: wave-5 zero-egress admission, R-TRANSFER and controlled verification; formats/qualification unpublished.
 ' Revision 2026-10-12: R-OPERATOR observer reads; R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
-title Remote worker turn (revision 7; B boundary shown, disabled until separate provisioner spec/qualification): the harness has no local tools; the relay (harness identity) forwards to the bridge service (bridge identity), which carries every tool call and the mailbox over ONE SSH connection from the donor to our host; our host never connects back
+title Remote worker turn (revision 8; B boundary shown, disabled until separate provisioner spec/qualification): the harness has no local tools; the relay (harness identity) forwards to the bridge service (bridge identity), which carries every tool call and the mailbox over ONE SSH connection from the donor to our host; our host never connects back
 
 box "Donor machine: harness identity (sandboxed, egress = proxy only)" #WhiteSmoke
   participant "Harness\n(Claude / Codex / Muse, lockdown plan)" as H
@@ -191,11 +191,23 @@ end
 D -> D: retain delivered content until authenticated import acknowledgement or explicit authorized release
 D --> O: producer DRAFT workspace-result/1 fields; transport/lifecycle gated; current authenticated retrieval
 O -> O: independent immutable repository-B manifest recomputation; base/digest match then deterministic import -> exact C
-O -> O: R-VERIFY only for candidate code; K1 exact acceptance / flagged-hunk acknowledgements
+O -> O: board recomputes full review delta/sensitive set against trusted integration baseline, distinct from B and verification H
+O -> O: inert exact-C diffs/blobs outside discovery roots; fresh exact-C hunk acknowledgements/verdict; R-VERIFY only for code
+note right of O
+  Retained sensitive changes and unresolved web provenance from unaccepted candidates remain obligations.
+  Bind integration baseline and complete sensitive set to exact C OID; fully reverted sensitive content need not stay flagged.
+  Current run capability class remains factual; rewording alone never clears provenance dependency.
+  Clear by published conservative provenance/removal rule or exact-candidate reviewer resolution;
+  acknowledgement does not make incomplete provenance complete.
+  CIP-0002: candidate files stay data; acceptance never admits control surfaces.
+  Discovery-capable tree entry requires qualified strict-context/ambient-discovery exclusion.
+  [[../CIP-0002-project-context-in-managed-launches.md#operative-summary Review consumer boundary]]
+end note
 alt changes requested
   O -> BR: signed rework task letter from C + reviewer findings; fresh materialization next round
+  O -> O: retain integration baseline; recompute C2 sensitive/provenance obligations; fresh exact-C2 acknowledgements/verdict
 else accepted
-  O -> O: board signed fast-forward K1/K3; moved base -> refresh + re-review
+  O -> O: board signed fast-forward K1/K3; moved base/integration baseline -> refresh + re-review
 end
 note over O, JOB
   Intermediate export uses same closed write/SSH fences and absence gates.
