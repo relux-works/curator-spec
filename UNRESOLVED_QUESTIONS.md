@@ -1,5 +1,25 @@
 # Unresolved questions
 
+## Muse managed-context residuals
+
+The revision-1 admission in [environments §§7.1 and 7.9](protocol/environments.md)
+verifies the Muse Code 1.4.7 monolithic own-file target and loader-level
+foreign exclusion on `exec`. Skills discovery, system-prompt discovery,
+model-visible removal of the unidentified foreign source, and a reproducible
+size threshold remain unverified. Workspace precedence in observed conflicts
+is a residual; `serve` cannot exclude foreign personal context. The required
+admission vectors are listed in environments §13 for delivery with the
+target and flag; existing vectors do not qualify the added requirements.
+
+**Managed Muse `exec` without a root-context surface.** The behavior when
+the resolved profile declares no root-context surface (including the synthesized
+`default` profile) needs an owner decision before the managed-launch consumer
+implements this case: materialize a header-only target with the flag, omit
+the target and pass no flag with a standing foreign-context residual, or
+refuse the launch. No option, diagnostic code, or value is admitted here;
+environments §§2 and 10.2 retain their no-surface and sequencing rules
+pending that decision.
+
 ## Advanced repository mappings decided by transport revision 2
 
 Non-default endpoint ports, operator-declared mirrors and operator-declared

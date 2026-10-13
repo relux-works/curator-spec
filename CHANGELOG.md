@@ -24,6 +24,14 @@ Versioning for the complete specification set.
 
 ### Changed
 
+- Admit the measured Muse Code 1.4.7 monolithic root-context target in
+  environments revision 1, coupled to mandatory foreign personal-context
+  exclusion on managed `exec` in the same release. The Decision 0010
+  amendment records the trust-boundary change without new wire fields or
+  schema versions. Workspace precedence and `serve` exclusion remain
+  residuals; skills discovery, model-visible foreign removal, and a size
+  cap remain unverified. Required conformance vectors are listed for
+  delivery with the admission; no implementation or qualification is claimed.
 - `protocol/remote-worker.md` revision 6 records accepted architecture-review
   findings: R-TRANSFER rework carries the integration baseline's cumulative
   sensitive and provenance obligations into fresh acknowledgements and verdicts
