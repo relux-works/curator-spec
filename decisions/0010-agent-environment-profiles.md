@@ -1,5 +1,34 @@
 # Decision 0010: agent environment profiles and global context management
 
+## Muse admission amendment (2026-10-14)
+
+**Context.** The earlier Muse row admitted only the managed-home layout.
+[Measurements on Muse Code 1.4.7](https://github.com/relux-works/curator-spec/issues/117)
+establish own-file loading and loader-level foreign exclusion; they do not
+establish a size cap, skills discovery, or model-visible foreign removal.
+
+**Decision.** Admit `<home>/config/muse/AGENTS.md` in monolithic form and
+require `--no-foreign-personal-context` on managed `exec` launches, as one
+release change. The flag MUST NOT be emitted without materializing the
+target. Normative details are in environments §§7.1, 7.2, 7.9, 10.2, 12,
+and 13; no implementation or qualification is claimed.
+
+**Alternatives.** Retaining the unadmitted target would omit measured own
+context; referenced output would rely on an include form not expanded in
+the probe; shipping exclusion first could remove context without supplying
+the profile's own rules. These alternatives are not admitted.
+
+**Compatibility impact.** This is a later evidence-driven amendment within
+environments revision 1. No wire object, released schema, signed bytes, or
+shared identifier changes. The added conformance vectors are listed for
+delivery with the admission; existing vectors do not qualify it.
+
+**Security impact.** The mandatory flag narrows foreign personal-context
+loading on `exec`; its measured effect is loader accounting only. `serve`
+cannot exclude that context, observed workspace precedence remains a
+residual, and skills discovery remains unverified. Credential isolation,
+permission policy, and optional owner policies are unchanged.
+
 ## Status
 
 Proposed 2026-08-31. Draft for review; nothing in this document is normative
@@ -292,7 +321,7 @@ the 2026-10-01 Muse amendment adds the row below (normative details in
 | `codex_cli` | `CODEX_HOME=<home>` | variable names the home | `<home>/AGENTS.md` | `<home>/skills/` |
 | `opencode` | `XDG_CONFIG_HOME=<parent>` | tool reads `<parent>/opencode/` | `<home>/AGENTS.md` | `<home>/skills/` |
 | `pi` | `PI_CODING_AGENT_DIR=<home>` | variable names the home | `<home>/AGENTS.md` (the tool also honors agent-dir `APPEND_SYSTEM.md` — system-prompt append — and `SYSTEM.md` — full system-prompt replacement — both applied unconditionally when present; system-prompt rules in Decisions 2 and 6) | `<home>/skills/` |
-| `muse` | four XDG parents = `<home>/{config,data,state,cache}`; MUST NOT replace `HOME` | config/data use `muse/`; state/cache layout unverified | **unverified**, not admitted | `<home>/data/muse/skills/` (discovery **unverified**) |
+| `muse` | four XDG parents = `<home>/{config,data,state,cache}`; MUST NOT replace `HOME` | config/data use `muse/`; state/cache layout unverified | `<home>/config/muse/AGENTS.md`, monolithic (**verified** on 1.4.7; amendment above) | `<home>/data/muse/skills/` (discovery **unverified**) |
 
 Each adapter normatively declares: the environment-variable name and whether
 it names the home or a parent; the home-relative path of every managed

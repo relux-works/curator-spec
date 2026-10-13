@@ -1,6 +1,14 @@
 # Environments protocol
 
 This document is normative for the agent-environments capability, revision 1.
+
+**Revision-1 amendment (2026-10-14).** The later evidence-driven Muse
+admission records the root-context target and monolithic form verified on
+1.4.7, together with mandatory foreign personal-context exclusion on `exec`.
+The target and flag ship in one release; no implementation or qualification
+is claimed. The trust-boundary decision is recorded in the
+[Decision 0010 amendment](../decisions/0010-agent-environment-profiles.md#muse-admission-amendment-2026-10-14).
+
 It extends, and does not reinterpret, the portable objects in
 [`core.md`](core.md) and the manager behavior in
 [`../profiles/manager.md`](../profiles/manager.md). It adds new identities and
@@ -1267,7 +1275,7 @@ The closed revision-1 adapter set is exactly:
 | `codex_cli` | `CODEX_HOME=<home>` | variable names the home | `<home>/AGENTS.md` | `<home>/skills/` |
 | `opencode` | `XDG_CONFIG_HOME=<parent>` | tool reads `<parent>/opencode/` as the home | `<home>/AGENTS.md` | the manager §5 native surface (`~/.agents/skills`), unchanged in revision 1 |
 | `pi` | `PI_CODING_AGENT_DIR=<home>` | variable names the home | `<home>/AGENTS.md` | `<home>/skills/` |
-| `muse` | `XDG_CONFIG_HOME=<home>/config`, `XDG_DATA_HOME=<home>/data`, `XDG_STATE_HOME=<home>/state`, `XDG_CACHE_HOME=<home>/cache` (in this declared order) | `<home>` is the parent layout; config/data use `muse/` below each parent; internal state/cache layout unverified | **unverified** — no root-context target admitted | `<home>/data/muse/skills/` — location measured, native discovery **unverified** |
+| `muse` | `XDG_CONFIG_HOME=<home>/config`, `XDG_DATA_HOME=<home>/data`, `XDG_STATE_HOME=<home>/state`, `XDG_CACHE_HOME=<home>/cache` (in this declared order) | `<home>` is the parent layout; config/data use `muse/` below each parent; internal state/cache layout unverified | `<home>/config/muse/AGENTS.md` — **verified** on 1.4.7 | `<home>/data/muse/skills/` — location measured, native discovery **unverified** |
 
 `gemini`, `cursor`, and `windsurf` remain skills-only adapters under the
 unchanged manager §5 table in revision 1. Tools with no home-isolation
@@ -1309,7 +1317,9 @@ per-adapter note for `opencode` stating exactly that, until the skills
 surface moves into `<home>/skills/` under a later revision.
 
 **Muse evidence and isolation bound.** The Muse row is based on
-[Muse Code 1.4.1 (1.4.1-R4503.1), macOS arm64 measurements](https://github.com/relux-works/curator-spec/issues/117).
+[macOS arm64 measurements](https://github.com/relux-works/curator-spec/issues/117):
+Muse Code 1.4.1 (1.4.1-R4503.1) for the managed-home layout and 1.4.7
+(1.4.7-R6101.1) for the root-context and foreign-exclusion facts below.
 The manager MUST set all four XDG parents exactly as above and MUST NOT
 replace `HOME`. Replacing `HOME`, or importing a credential instead of
 linking the native `auth.json`, can hang on a macOS Keychain UI prompt
@@ -1321,23 +1331,31 @@ State and cache use the other two XDG parents; their internal layouts
 are unverified. Unlike opencode, Muse retargets data and state too;
 opencode's ambient data/state rule above applies only to opencode.
 These generic XDG overrides also affect XDG-conforming child processes.
-No foreign XDG entries are seeded for Muse in this revision. Only the
-managed-home layout is admitted for Muse here; no native in-place or
-secondary fixed-home target is admitted while discovery is unverified.
+No foreign XDG entries are seeded for Muse in this revision. Muse targets
+only the managed-home layout here; no native in-place or secondary
+fixed-home target is admitted.
 
-The root-context target and skills discovery are still open questions:
-the manager MUST NOT invent a root-context path or claim those surfaces
-are verified. Root-context materialization is unavailable for Muse until
-its target and loading semantics are measured and admitted in a later
-revision; it MUST NOT silently emit `AGENTS.md`. The measured skills
-location is recorded as a candidate, not proof that the tool loads it.
-With `HOME` unchanged Muse loads foreign personal rules and skills from
-other tools' native homes. This is a **known isolation gap**, not fixed by
-XDG retargeting or credential sharing; `muse serve` has no
-`--no-foreign-personal-context` flag
+This amendment admits the measured root-context target
+`$XDG_CONFIG_HOME/muse/AGENTS.md`, which is
+`<home>/config/muse/AGENTS.md` in the managed layout. Loading plain Markdown
+is **verified** on 1.4.7 by a leave-one-out contrast. The tested standalone
+`@include` was not expanded; only the monolithic form is admitted. A
+workspace `AGENTS.md` prevailed over the own file in both observed ordering
+conflicts. This is a **recorded residual**, not a general precedence
+guarantee or a conflict the manager prevents. Skills discovery remains an
+open question: the measured location is a candidate, not proof of loading.
+
+On `exec`, `--no-foreign-personal-context` reduced the loader's foreign-source
+count from one to zero while the own XDG file continued loading
+(**verified** on 1.4.7). The foreign source was unidentified; model-visible
+removal of its contents remains unverified. Section 10.2 requires the flag
+for managed `exec` launches. XDG retargeting and credential sharing alone
+do not exclude foreign personal context. `muse serve` has no such flag
 ([muse-issues 013](https://github.com/relux-works/muse-issues)).
-`env status` MUST carry a standing Muse note naming this gap and the
-unverified context surfaces. This adapter does not promise account or
+`env status` MUST carry a standing Muse note naming the `serve` exclusion
+gap, observed workspace precedence, unverified model-visible foreign
+removal, and unverified skills and system-prompt discovery. This adapter
+does not promise account or
 context isolation; fresh-login `isolated` operation is unverified and
 MUST be refused with `environment_isolated_unsupported` until verified.
 
@@ -1349,9 +1367,7 @@ MUST be refused with `environment_isolated_unsupported` until verified.
 | `codex_cli` | `monolithic` | `monolithic` |
 | `opencode` | `monolithic`, `referenced` | `monolithic` |
 | `pi` | `monolithic` | `monolithic` |
-
-Muse has no admitted root-context form while its target is unverified;
-a request to materialize that surface is `environment_form_unsupported`.
+| `muse` | `monolithic` | `monolithic` |
 
 The effective form is machine configuration with these defaults; profile
 data cannot select a form. Requesting `referenced` for an adapter that does
@@ -1876,6 +1892,7 @@ size advisory for its root-context target:
 | `codex_cli` | 0.153.2 (this text; 0.151.0 for the review's facts) | `32768` | `project_doc_max_bytes = 32768` applies to the project-document chain only; the global `$CODEX_HOME/AGENTS.md` is **not truncated** (**verified** on 0.153.2 with a 41 KB file via `codex debug prompt-input`, also with the cap narrowed to 1000), so the advisory is not tied to any tool cap and keeps the common default as a prompt-budget advisory |
 | `opencode` | not installed on the recording machine — every opencode fact is docs-confidence | `32768` | none published; default adopted |
 | `pi` | 0.84.2 | `32768` | none published; default adopted |
+| `muse` | 1.4.7 (1.4.7-R6101.1; root-context loading, observed workspace precedence, standalone include behavior, and `exec` foreign-source exclusion) | `32768` | common prompt-budget default, not a measured cap; the loader rendered the full tested files, while model-visible retrieval varied at identical sizes between 31 KB and 40 KB, so no reproducible size threshold is established |
 
 Each adapter additionally records the following members, whose values were
 fixed by the verification sprint of 2026-09-05 (claude 2.1.261, codex
@@ -3250,6 +3267,23 @@ supported fragment revision. The new schema is
 `schemas/v1/launch-env-fragment-v3.schema.json`; released schemas v1/v2
 remain byte-identical.
 
+**Muse managed launch argv.** A managed Muse launch on the `exec` form
+whose environment materializes the root-context target in section 7.1
+MUST pass `--no-foreign-personal-context`. This is a per-adapter launch
+requirement, independent of permissions mode and
+system-prompt or MCP opt-ins. The root-context target in section 7.1 and
+this exclusion flag are one change and MUST ship in the same release.
+An implementation MUST NOT emit the flag without materializing that
+target. The `serve` form cannot exclude foreign
+personal context and retains the standing residual in sections 7.1 and 12.
+
+The existing channel-descriptor grammar cannot encode this standalone
+flag: `flag` requires `argument`, `with` accompanies another channel flag,
+and Muse has no admitted system-prompt or MCP channel. The minimal addition
+is this per-adapter argv rule; the launcher selects it for `muse`/`exec`.
+No fragment member, descriptor kind, argument value, or channel is added;
+the v3 fragment shape and released schema bytes remain unchanged.
+
 **`launch-env-fragment-v2`.** Revision v2 is revision v1 plus one
 REQUIRED member, `permissions`, a closed object carrying the resolved
 profile level and the lock engagement for the resolved profile. Every
@@ -3531,7 +3565,8 @@ participating target's embedded MCP configuration and `commands/` are
 ungoverned, the passthrough liveness row per managed home, the recorded
 seeds per managed home, the XDG seed state per managed `opencode` parent
 with any `environment_seed_shadowed` entry, the standing `opencode`
-split-brain note of section 7.1, the recorded and detected tool release per
+split-brain note and the standing Muse residual note of section 7.1, the
+recorded and detected tool release per
 adapter (section 7.9), both homes of the current profile per scope and
 their provisioning state (section 8.1), backup generation counts and ages
 per home (section 8.3; `environment_backup_record_unreadable`,
@@ -3835,6 +3870,16 @@ each with positive and negative schema cases; `profilefile-v1` and
 the Muse registry row, managed-home layout, shared file-link liveness
 and repair/refusal, and no-HOME-replacement cases
 (`vectors/environments-muse.json`, sections 7.1, 7.4, and 10.2);
+the later Muse admission requires vectors for the monolithic output at
+`<home>/config/muse/AGENTS.md` with the exact section 5.2 bytes (including
+zero applicable modules), refusal of `referenced` with
+`environment_form_unsupported` and no fallback output, and managed `exec`
+argv carrying `--no-foreign-personal-context` independently of permissions
+mode and channel opt-ins. Negative cases cover the wrong output path or
+bytes, acceptance of `referenced`, omission of the flag, and emission of
+the flag without materializing the target. These vectors are listed for
+delivery with the admission; the existing Muse vector family predates it
+and does not establish conformance to these added requirements;
 version and range parsing (section 1.4, including the coercion table and
 the excluded forms); resolution (conflict, downward re-selection,
 prerelease admission, exact-constraint unification); lock canonicalization
