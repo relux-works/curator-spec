@@ -1,9 +1,12 @@
 @startuml remote-worker-retire
+' Revision 2026-10-13: wave-5 zero-egress admission, R-TRANSFER and controlled verification; formats/qualification unpublished.
 ' Revision 2026-10-12: R-OPERATOR operator custody/act gate; formats and qualification remain open.
 ' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
-title Lifecycle of a remote worker (revision 6; variant-aware cleanup and independent state axes): stop, leave and purge on the donor; suspend, retire and revoke on our side; the identity stays pinned unless revoked
+title Lifecycle of a remote worker (revision 7; variant-aware cleanup and independent state axes): stop, leave and purge on the donor; suspend, retire and revoke on our side; the identity stays pinned unless revoked
 
 actor "Operator (our side)" as OP
+participant "R-WATCH sampler\nread-only; least OS-required privilege" as Watch
+participant "Broker + session host\nservice-owned all-stop parts" as Services
 participant "Registry / key keeper" as T
 participant "swarma-dispatcher + swarma-user-manager\n(project host; account lifecycle)" as D
 participant "Service-principal bridge + swarma-rb-exec\nroot sshd + relay-only fixed shell" as BR
@@ -52,6 +55,8 @@ D -> D: journaled exec.stop for workplace executions via receipt/effect;\nconfir
 break process absence not established
   D -> D: retain account/egress; reconcile unknown evidence; do not delete home
 end
+D -> BR: write-fence round; refuse further workspace tool calls
+D -> D: R-TRANSFER child-UID export, recorded result/digests OR explicit operator waiver;\nhome deletion waits; unknown/failed export retains cleanup obligation
 D -> D: journal declared-key cleanup, then delete workplace home;\nexport service-generated closed-schema metadata only (no agent-controlled strings/names/links/bodies)
 break key cleanup / home deletion / metadata validation failure
   D -> D: do not release remaining account/egress; journaled recovery; exact format unpublished
@@ -84,6 +89,7 @@ note over OP, PH
   Phase: Draft donor target after one-host slice 0 + project helper v1/workplace qualification; A first, B disabled, C fallback.
   Donor Curator human commands run as donor UID; bridge service owns lifecycle marks,
   keys/config/audit (A/C donor UID; B bridge UID); harness owns home/scratch.
+  Export cleanup obligation cannot be silently dropped; R-TRANSFER code result is separate.
   Separate explicit operator home retention states confidentiality is not guaranteed.
   Git/accepted outputs have a separate confidentiality policy.
   Project dispatcher service owns tracking, root user-manager owns account lifecycle;
@@ -97,4 +103,17 @@ note over OP, PH
   [[../../protocol/remote-worker.md#tools-mailbox-and-lifecycle Four independent axes]]
 end note
 
+== R-WATCH / R-ALLSTOP ==
+Watch -> D: hard threshold: one-account freeze + journaled exec.stop (no unjournaled kill)
+D -> BR: close affected jobs/delivery; workplace suspended
+BR --> C: channel drops -> existing channel-down pause; no new donor state
+OP -> D: node-wide narrowing act: phone authentication + one confirmation or terminal fallback; no agent sessions
+D -> D: hold closes admission; range deny-all; every generation account-wide stop/confirmed absence
+D -> Services: broker freezes leases/renewals; session host closes delivery + board snapshots; each journals its part
+note over D, C
+  R-WATCH read-only least-privileged per-UID telemetry; alerts to operator phone.
+  Node-wide stop manual; tokens already delivered retain vendor lifetime.
+  Partial/unknown all-stop keeps admission closed; recovery explicit, no automatic restart.
+  Thresholds/sampler/alerts and act/record formats unpublished.
+end note
 @enduml

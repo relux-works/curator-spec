@@ -1,0 +1,88 @@
+@startuml remote-worker-transfer
+' Revision 2026-10-13: R-TRANSFER adopted round; design labels/formats unpublished, no renderer or qualification evidence.
+title R-TRANSFER: code as data, then exact candidate review and board integration
+actor "Orchestrator / original run requester" as O
+participant "Dispatcher workspace contract\nno repository; journaled digests" as D
+participant "Approved workspace executors\nchild UID; materialize / export" as E
+participant "Workplace round\nzero egress; exec profile; private home" as W
+participant "User manager + service-principal executor\naccount-wide absence and write fence" as U
+participant "Board change-request machinery\nresource/import/candidate/verdict/integration" as B
+participant "Independent trusted reviewer\nnot producer or untrusted-class" as R
+participant "R-VERIFY ephemeral runners\nanother machine; no secrets" as V
+participant "Donor loop\ncontinues across rework; signed letters" as L
+
+== materialize / work ==
+O -> D: admitted exact repository commit B as bounded canonical tree archive
+D -> D: journal archive digest; no repository held
+D -> E: swarma-workspace-materialize before work (design label)
+E -> W: standalone private Git; fresh config; no hooks/remotes/credential helpers
+D -> D: plan digest covers B, path-to-blob manifest digest, task write scope and exec profile
+O -> L: signed task letter + resource attachments; resources read-only beside workspace with plan digests
+L -> W: admitted tools via SSH relay; worker edits data only
+note over W, L
+  Worker Git/commits/history never used; no worker network/push/merge-request access.
+  Validators outside write scope unless task is about them; dependencies read-only seeded caches.
+  Default donor provider endpoints + our host only; no search/fetch; worker asks for resources by letter.
+end note
+
+== round end / export ==
+L -> O: signed final envelope (local worker: board outcome)
+O -> U: fence round and account-wide journaled stop / confirm absence
+U -> W: refuse further workspace tools; no account process remains
+break absence/fence unknown
+  U --> O: retain cleanup obligation; no export/home deletion
+end
+D -> E: swarma-workspace-export after absence; fixed environment/no network
+E -> W: no-follow walk; skip every Git component; hash against plan manifest
+break any RWP export gate refuses
+  E --> D: whole export refused; no partial result; obligation retained
+end
+E --> D: added/modified regular content + executable bit, symlink text, deleted paths only
+D -> D: journal digests / recorded export
+D --> O: swarma-dispatcher workspace-result/1 to original caller only (unpublished schema/retention)
+O -> B: accept result as resource only
+note over E, B
+  RWP v2.1 sections 8/10 gates: special files, .git components however spelled,
+  case-fold/Unicode-normalisation collisions, gitlinks/submodules, root escape,
+  file-count/per-file/total/binary cap exceeded -> whole export refusal.
+  Caps/formats unpublished. Intermediate turn-boundary export uses same fence/absence.
+  Home deletion waits for recorded export or explicit operator waiver; never silently dropped.
+end note
+
+== candidate / review ==
+O -> B: deterministic import on B in scratch index; hooks off; no attribute filters/drivers
+break .git component / outside write scope / .task-board change
+  B --> O: hard refusal, no candidate
+end
+B -> B: candidate C signed by repository identity; worker/run/result-digest trailers
+B -> B: C tree equals independent recomputation from B + change set
+B -> R: review exactly C; flagged paths explicit hunk-by-hunk acknowledgement
+R -> V: orchestrate all candidate code execution (tests/builds/generators)
+V --> B: data-only results in testing state; controlled dependency egress
+note over B, R
+  Flagged classes: CI, Git behaviour, hooks/auto-run, agent instructions/config, all symlinks.
+  Exact path list: CIP-0009 D5a. No pre-acceptance untrusted candidate push to CI with secrets.
+  K1 acceptance binds C, never transferred by patch equality.
+end note
+
+alt changes requested
+  R -> B: findings bound to C
+  O -> L: signed rework task letter: findings + admitted base C
+  D -> E: materialize afresh from C; remove prior workspace after recorded export
+  E -> W: next round; export yields C2 on C; same gates/review
+else accepted
+  R -> B: exact C verdict
+  O -> B: request integration of accepted exact head
+  break base moved
+    B --> O: ordinary base refresh + re-review
+  end
+  B -> B: signed fast-forward accepted exact head (K1/K3)
+end
+note over D, V
+  Materialize/export: dispatcher workspace owner, approved child-UID executors.
+  Import/candidate/review/integration: board change-request owner, orchestrator executes.
+  Archive/plan/result/trailer/verdict/runner formats and command names remain unpublished.
+  [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D5a-D5d]]
+  [[../../protocol/remote-worker.md#publication-status Publication register]]
+end note
+@enduml

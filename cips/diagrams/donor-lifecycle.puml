@@ -1,4 +1,5 @@
 @startuml donor-lifecycle
+' Revision 2026-10-13: wave-5 zero-egress admission, R-TRANSFER and controlled verification; formats/qualification unpublished.
 ' Revision 2026-10-12: R-OPERATOR operator custody and lifecycle acts; R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
 title Donor lifecycle - Draft target A first / B disabled / C fallback; four independent descriptive axes, no closed state schema
 state "Donor installation\nowner: donor / bridge role; B separate provisioner pending" as Installation {
@@ -21,14 +22,14 @@ state "Donor execution\nowner: bridge-role supervisor\nA/C donor UID; B bridge U
   Left --> Refused : revoked identity / invalid admission or qualification
 }
 state "Project workplace\nowner: swarma-operator (no harness) + dispatcher/helper + project bridge\nhelper root boundary; workplace UID jobs only\nservice-principal executor owns policy/claims/audit/mailbox" as Workplace {
-  state "Admitted workplace\nhelper v1 enforced/applied networking; fixed relay shell" as Admitted
+  state "Admitted workplace\nqualified zero egress / exec profile / host matrix; fixed relay shell" as Admitted
   state "Suspended\ngrants paused; sessions closed; workplace kept" as Suspended
   state "Retirement in progress\nrevocation persisted before termination/restart" as Retiring
   state "Retired\nquiesce + declared-key cleanup; delete home; account/egress released" as Retired
-  Admitted --> Suspended : operator suspend
+  Admitted --> Suspended : operator suspend / R-WATCH one-account freeze + journaled stop / R-ALLSTOP
   Admitted --> Retiring : operator retire; stop user-cert renewal, user KRL, close sessions
   Suspended --> Retiring : operator retire
-  Retiring --> Retired : journaled exec.stop; confirmed execution absence + key cleanup/home deletion before release
+  Retiring --> Retired : journaled exec.stop; account-wide absence/fence + recorded export or operator waiver + key cleanup/home deletion
 }
 state "Worker signing identity / three pinned keys\nowner: operator-authorized trust registry / key keeper\nprivate keys remain on donor" as Identity {
   state "Pinned\nretirement and leave preserve identity" as Pinned
@@ -44,8 +45,8 @@ end note
 note right of Execution
   Named run/rejoin arrows describe validated return, not automatic restart.
   Project cannot prevent donor stop/leave/purge.
-  Exact execution bookkeeping after project channel loss
-  unspecified in spec CIP-0009 D7; D5 pauses new turns.
+  Project watcher/all-stop uses existing channel-down behaviour: pause new turns,
+  current deadline then park; explicit recovery, no new donor state.
 end note
 note right of Workplace
   R-OPERATOR operator acts: phone main with secure-element operator device key,
@@ -65,7 +66,8 @@ note right of Workplace
 end note
 note right of Identity
   Revoke stops renewal, updates user KRL and closes established sessions.
-  Only service-generated closed-schema metadata is exported at retirement,
+  R-TRANSFER code export or operator waiver precedes home deletion.
+  Retirement metadata alone is service-generated closed-schema data,
   with no agent-controlled strings, names, links or bodies. Separate explicit
   operator home retention states confidentiality is not guaranteed.
   Certificate revocation alone does not stop an existing connection.
@@ -73,5 +75,15 @@ note right of Identity
   Dispatcher one-shot identity exception never applies to donor identity.
   [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D7/D12]]
   [[../../protocol/remote-worker.md#tools-mailbox-and-lifecycle Lifecycle contract]]
+end note
+note bottom of Workplace
+  R-ALLSTOP manual narrowing act: phone auth + one confirmation or terminal fallback;
+  refused inside agent sessions; hold/range deny/all generations journaled absence,
+  broker freeze (delivered tokens retain vendor lifetime), host closes delivery/snapshots.
+  Partial/unknown keeps admission closed; each service journals; explicit recovery only.
+  R-WATCH read-only least-privileged per-UID sampler; hard threshold narrows one account;
+  phone alerts, no unjournaled kill. Formats/thresholds unpublished.
+  Standing workplace allowed; loop at donor only. Trusted standing surfaces digest checked.
+  R-TRANSFER each round: fresh B/C materialization, fence/absence/export, exact board review.
 end note
 @enduml

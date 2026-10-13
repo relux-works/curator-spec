@@ -1,4 +1,5 @@
 @startuml donor-variants
+' Revision 2026-10-13: wave-5 zero-egress admission, R-TRANSFER and controlled verification; formats/qualification unpublished.
 ' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
 title Donor deployment variants - Draft target: slice 0 + project helper v1/workplace qualification precede donor; A first, B disabled, C sandbox fallback
 left to right direction
@@ -50,7 +51,8 @@ PB --> PS : service-owned controls/claims/audit; keeper holds user CA
 note bottom of P
   Every donor variant needs project helper v1 including loopback and backend qualification.
   Jobs: dispatcher/root launcher/start receipt/exec.stop; no same-UID controls.
-  Write scope = UID writable set; per-job/runner shape and stop blast radius unpublished.
+  Task write scope plan/import bound; OS write boundary = UID writable set.
+  Zero egress, denied loopback/no proxy; per-job/runner shape/blast radius unpublished.
 end note
 note bottom of A
   A has no UID split, sandbox, proxy or OS integrity/confidentiality/egress guarantee.
@@ -70,5 +72,19 @@ note bottom of C
   [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D0-D3]]
   [[../CIP-0008-remote-worker-launch-mode.md#recommendation CIP-0008 R9]]
   [[../../protocol/remote-worker.md#deployment-and-launch-boundary Donor boundary/publication limits]]
+end note
+note right of P
+  R-UNTRUSTED recorded at admission, no subscription lease/binding; slice 0/v0 refuse.
+  Host capability matrix + exec profile + zero egress gate every variant; no OS-name ban.
+  No shared services beside untrusted placements; join ingress on separate entry host.
+  Standing workplace allowed, loop at donor only; R-TRANSFER exact candidate review.
+  R-VERIFY heavy work on secret-free ephemeral runners on another machine.
+end note
+note top of B
+  Default no web: donor provider endpoints + our host; lockdown plan disables provider search.
+  Trusted-circle opt-in only: qualified provider-search tuple or donor swarma-web.
+  swarma-web: own B identity / C sandbox, never harness/bridge; search API only;
+  donor search key never crosses channel/package; init consent; results to donor model.
+  Both options pending qualification; task resources are read-only with plan digests.
 end note
 @enduml

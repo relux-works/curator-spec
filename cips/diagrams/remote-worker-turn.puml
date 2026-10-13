@@ -1,6 +1,7 @@
 @startuml remote-worker-turn
+' Revision 2026-10-13: wave-5 zero-egress admission, R-TRANSFER and controlled verification; formats/qualification unpublished.
 ' Revision 2026-10-12: R-OPERATOR observer reads; R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
-title Remote worker turn (revision 6; B boundary shown, disabled until separate provisioner spec/qualification): the harness has no local tools; the relay (harness identity) forwards to the bridge service (bridge identity), which carries every tool call and the mailbox over ONE SSH connection from the donor to our host; our host never connects back
+title Remote worker turn (revision 7; B boundary shown, disabled until separate provisioner spec/qualification): the harness has no local tools; the relay (harness identity) forwards to the bridge service (bridge identity), which carries every tool call and the mailbox over ONE SSH connection from the donor to our host; our host never connects back
 
 box "Donor machine: harness identity (sandboxed, egress = proxy only)" #WhiteSmoke
   participant "Harness\n(Claude / Codex / Muse, lockdown plan)" as H
@@ -48,8 +49,18 @@ end
 SUP -> H: consume composed plan, launch exact qualified build;\nB: harness UID + sandbox + per-UID egress; C: donor UID + sandbox;\nA: donor UID, no OS confinement, direct provider path; credential per launch (CIP-0010)
 H -> MCP: MCP initialize; tools/list = effective set (policy intersection)
 
-== task arrives ==
-O -> BR: signed task message to the worker (snapshot of one element)
+== task arrives / per-round materialization ==
+O -> D: admitted exact B tree archive + manifest digest/write scope/exec profile; task resources
+D -> JOB: swarma-workspace-materialize under child UID before work; standalone Git, no remotes/hooks/helpers
+D -> D: journal archive/resource digests; plan digest covers base/manifest/write scope/exec profile
+note over D, JOB
+  Read-only digested task resources next to workspace; dependencies only read-only seeded caches.
+  Zero egress incl. loopback; no proxy; OS exec allowlist, writable areas non-executable.
+  No compiler/linker/transpiler/bundler/test runner/package manager/container/network/harness tools.
+  Qualified light checks only; D-PATH protected wrapper for shared heavy/light executable.
+  R-VERIFY executes candidate code only on another machine in secret-free ephemeral runners.
+end note
+O -> BR: signed task letter (snapshot + resource attachments; rework findings + base C)
 BR -> BR: verify signature, grant, decision guard, fence; mailbox record; cursor++
 BR -> RB: mailbox.notify {message_id, cursor} (advisory)
 RB -> SUP: frame mailbox.notify
@@ -83,6 +94,7 @@ loop each tool call
     WP -> WP: reconcile/observe same effect; never automatically re-execute
     WP --> RB: retained recorded result or pending / unknown_result
   else genuinely new operation admitted in current bounded window
+    WP -> WP: admit exec profile; refuse heavy forms, writable executables and out-of-profile calls
     WP -> WP: durably claim identity + operation + canonical-argument digest BEFORE mutation
     WP -> D: authorized execution via existing launcher/receipt path; caps and lease service-owned
     D -> JOB: start under workplace UID; admitted shape/concurrency unpublished
@@ -118,7 +130,7 @@ note over D, JOB
   retaining all affected job claims as unknown; restart requires prior absence + fresh admission.
 end note
 
-== result ==
+== result / round end ==
 H -> MCP: tools/call mailbox_post {binding, text} (offered only when the policy grants it)
 MCP -> SUP: forward
 SUP -> SUP: build the FINAL envelope (canonical bytes; audience/thread from the task record);\nsign with K_sig (D0 variant-specific storage; never sent to the project)
@@ -141,7 +153,8 @@ note over H, O
   harness role owns home/scratch; project bridge owns mailbox and project carrier credential;
   service-principal executor owns policy/caps, execution leases, durable identity/digest claims and admission floors; root sshd owns CA/KRL/relay shell; project keeper/hardware token holds user CA private key.
   Workplace activation requires helper v1 fw.apply + applied state including loopback, even A/read-only.
-  Write scope = workplace UID writable set; network mode = enforced per-UID firewall.
+  OS write boundary = workplace UID writable set; task write scope = plan/import bound.
+  R-NET-TOOL: zero egress, loopback denied, no proxy destination; R-EXEC applies.
   Claims discarded only after identities are permanently inadmissible; persist floor first.
   R-OBS where applicable: recorded (result/current state), pending, rolled_back,
   not_recorded (authoritative), unavailable (missing/expired/unreadable), contradictory.
@@ -155,4 +168,33 @@ note over H, O
   [[../../protocol/remote-worker.md#tools-mailbox-and-lifecycle Delivery and reconnect]]
 end note
 
+== R-TRANSFER after final envelope ==
+BR -> O: round-end outcome, not a reviewed commit
+O -> RB: request round fence/export (format unpublished)
+RB -> WP: write-fence round; refuse further tool calls
+RB -> D: account-wide journaled stop / confirm no account processes
+break absence not confirmed
+  D --> O: retain round/export cleanup obligation; no export or home deletion
+end
+D -> JOB: swarma-workspace-export under child UID; fixed environment/no network; no-follow walk
+JOB --> D: bounded change set only; skip Git; whole-result refusal on RWP gates
+D -> D: journal result digests; export recorded before retirement/deletion
+D --> O: swarma-dispatcher workspace-result/1 to original caller only (schema/retention unpublished)
+O -> O: deterministic board import on B -> signed exact C; trusted independent review
+O -> O: R-VERIFY only for candidate code; K1 exact acceptance / flagged-hunk acknowledgements
+alt changes requested
+  O -> BR: signed rework task letter from C + reviewer findings; fresh materialization next round
+else accepted
+  O -> O: board signed fast-forward K1/K3; moved base -> refresh + re-review
+end
+note over O, JOB
+  Intermediate export at turn boundary uses same fence/absence/export gates.
+  No worker network/push/MR access; worker commits/history never imported.
+  R-WATCH one-account freeze/journaled stop; R-ALLSTOP manual hold/range deny/all stops,
+  broker freeze (delivered tokens retain vendor lifetime), host delivery closure/snapshots.
+  Partial/unknown keeps admission closed; explicit recovery; donor channel-down/workplace suspended.
+  Default no web; more resources requested by letter, worker never fetches.
+  Trusted opt-in: qualified provider search or separate donor swarma-web, key never crosses.
+  [[remote-worker-transfer.puml R-TRANSFER round and gates]]
+end note
 @enduml

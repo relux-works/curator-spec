@@ -1,6 +1,6 @@
 # CIP-0010: Credentials for managed launches: `setup-token` adoption, homes with inherited authentication, and the disposition of CIP-0003
 
-- **Status:** Draft (revision 2, after the architecture review of 2026-10-08)
+- **Status:** Draft (revision 3, wave-5 credential boundary of 2026-10-13; qualification pending)
 - **Owner:** orchestrator; decision: operator
 - **Created:** 2026-10-08
 - **Related:** owner brief 2026-10-08 §8; [CIP-0003](CIP-0003-claude-managed-home-credential-modes.md) (accepted, narrowed); [Decision 0017](../decisions/0017-environment-credential-modes.md) (`shared|isolated`, Q4, Q7 no-copy); environments [§7.4](../protocol/environments.md#74-credential-passthrough-provisioning-seeds-and-isolation), §10.3, §12.1–§12.2; wiki `research/harness-auth/RESEARCH.md` (2026-10-07) and `PLAN-expiry-check.ru.md`; wiki `session-host/architecture.ru.md` §7.3 (credential broker); VISION v1.3 LCH §7; [CIP-0008](CIP-0008-remote-worker-launch-mode.md), [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md); relux-works/remote-worker-harness `docs/session-mode.md` ("Login: the single auth owner")
@@ -16,6 +16,10 @@
 | Inputs → outputs | Explicit source, protected binding and intentionally enrolled material → metadata-only required extension and qualified per-launch channel; expiry reports stated/computed/unknown. |
 | Phase | Source-policy v1/v2 decided; first file backend decided; broker slice 0 first, Codex slice 1 qualification/open adoption, donor later. |
 | Normative links and proposed landing | [Environments §7.4](../protocol/environments.md#74-credential-passthrough-provisioning-seeds-and-isolation), [§12.1](../protocol/environments.md#121-machine-configuration-knobs), [Decision 0017](../decisions/0017-environment-credential-modes.md); amendments: [Specification changes](#specification-changes). |
+
+## Revision 3: wave-5 credential boundary (2026-10-13)
+
+R-UNTRUSTED prohibits subscription bindings and leases for the untrusted class; slice 0 refuses that class. A workplace has no broker subscription lease even when its remote worker joins the trusted circle. The donor's model credential stays donor-side; optional donor search-key custody is separate from provider injection and is unpublished under R-NET-TOOL. No new credential channel is introduced.
 
 ## Operative disposition (2026-10-11)
 
@@ -115,7 +119,9 @@ So "inherited authentication" for Claude is one token from `setup-token`, enroll
 
 **C4. Enrolment commands** (human-only steps stay with the human; the vendor flow is never bypassed; enrolment of a deliberately supplied token is never permission to extract an existing native login): `curator env credential enrol claude_code --node root --token-stdin [--issued-at <date>]` (the human runs `claude setup-token` themselves and pipes the output; Curator stores it in the protected store and records the node); `curator env credential enrol codex_cli --node root --from-native` (starts the auth owner on the native `auth.json` of this user after the liveness checks of §7.4; refuses a keyring-backed native store); `enrol codex_cli --access-token-stdin`; `enrol muse --api-key-stdin`; `curator env credential owner start|stop|status` (the Codex auth owner); `curator env credential revoke --node <label>` (deletes the stored item, marks the node, stops the owner; the vendor-side revocation is the human's step, named in the output); `status`.
 
-**C5. Remote workers.** On the donor machine the node is enrolled by the donor (the machine's owner) during `curator remote-worker init` (CIP-0009) under the **bridge identity**; the supervisor is the executor with `credential-injection/1` and resolves the binding from the bridge's store; the harness is launched in lockdown with the token in its environment only. The project side never holds a donor credential (architecture §7.9).
+**R-UNTRUSTED broker boundary.** The broker refuses subscription bindings and leases for the untrusted class; slice 0 and user-manager v0 refuse the class (code unpublished). Workplace accounts never receive a subscription binding or lease, including trusted-circle workplaces: circle admission enables only donor-side opt-ins and leaves all project-host boundaries intact. Donor-owned model credentials below are separate from project-side broker authority.
+
+**C5. Remote workers.** On the donor machine the node is enrolled by the donor (the machine's owner) during `curator remote-worker init` (CIP-0009) under the **bridge identity**; the supervisor is the executor with `credential-injection/1` and resolves the binding from the bridge's store; the harness is launched in lockdown with the token in its environment only. The project side never holds a donor credential (architecture §7.9). R-NET-TOOL defaults to no web. A pending trusted-circle `swarma-web` opt-in holds the donor's own search key in its separate B identity or C sandbox (A: donor Keychain or 0600 file); it never runs in the harness or bridge identity, never receives the injected model credential, and its key never enters a `swarma-rb/1` frame/package or a project request method. Search results go only to the donor model; see CIP-0009 D5b. Both web options require qualification.
 
 **C6. CIP-0003 disposition, clause by clause (F23).** Decided 2026-10-10: CIP-0003 is adopted narrowed. The table below is operative; coordinated normative schema publication remains pending.
 
@@ -185,3 +191,5 @@ So "inherited authentication" for Claude is one token from `setup-token`, enroll
 3. **Accept CIP-0003 narrowed together with this CIP:** decided 2026-10-10, yes.
 4. **Muse — OPEN (contract C7):** keep only the separately specified `meta-api-key` lane and defer subscription support (recommended), or prioritize subscription qualification and choose its source/refresh/channel from evidence. No subscription channel is invented here.
 5. **Slice 0 before rc.6?** The broker interface is the prerequisite of the owner's MVP; recommended: yes, as the first item after rc.5.
+
+6. **R-UNTRUSTED / R-NET-TOOL publication.** Would need class admission/refusal encoding and broker negative qualification for subscription binding/lease refusal, plus separate donor web-key custody/consent/identity qualification. Search-key formats and refusal codes remain unpublished; this CIP adds no channel or wire field.

@@ -1,7 +1,7 @@
 # CIP-0008: Remote-worker launch mode (tool lockdown on a donor machine)
 
-- **Status:** Draft (revision 2, after the architecture review of 2026-10-08; R9 records the owner decisions of 2026-10-10)
-- **Owner:** ivan-curator (orchestrator); decision: operator
+- **Status:** Draft (revision 3, wave-5 owner decisions of 2026-10-13; qualification pending)
+- **Owner:** orchestrator; decision: operator
 - **Created:** 2026-10-08
 - **Related:** owner brief 2026-10-08 (remote worker on a donor machine); [Decision 0018](../decisions/0018-curator-run-permission-interface.md) (`native|yolo`); [Decision 0013](../decisions/0013-execution-ownership-and-launch-plans.md) (launch plans, §6.4 extensions); [Decision 0019](../decisions/0019-fragment-consumers-and-one-construction-site.md); [Decision 0021](../decisions/0021-sessions-enter-through-curator-run.md); [Decision 0014](../decisions/0014-tool-configuration-surfaces.md) (proposed); [CIP-0002](CIP-0002-project-context-in-managed-launches.md) (strict MCP set); [CIP-0006](CIP-0006-legacy-provider-settings-and-mcp-opt-outs.md); [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md) (the donor machine and the bridge); [CIP-0010](CIP-0010-credentials-setup-token-and-inherited-auth.md) (credentials); environments [§2.2](../protocol/environments.md#22-mcp-declaration-packages), [§10.3](../protocol/environments.md#103-the-profile-influence-boundary), [§12.1](../protocol/environments.md#121-machine-configuration-knobs), §12.2 (locks)
 - **Affects:** environments §12.1–§12.2 (new knob, lock amendment, policy generation), Decision 0013 (required plan extensions), Decisions 0018/0019/0021 (amendments), launcher SPEC (posture, caller-tail grammar, refusals, receipts), agents-management (per-harness qualified tuples); implementations: curator, curator-run/launcher, agents-management, the remote-worker supervisor (CIP-0009)
@@ -16,6 +16,10 @@
 | Inputs → outputs | Profile lock, required posture extensions, exact tuple, caller tail and current generation → immutable plan/receipt and qualified launch or refusal. |
 | Phase | Draft target; current native/yolo remains separate; required extensions and qualification pending. |
 | Normative links and proposed landing | [Decision 0013 §6.4](../decisions/0013-execution-ownership-and-launch-plans.md#64-tracked-mode-delegates-untracked-mode-execs), [Decision 0018](../decisions/0018-curator-run-permission-interface.md), [Environments §12.2](../protocol/environments.md#122-lockable-knobs); amendments: [Specification changes](#specification-changes). |
+
+## Revision 3: wave-5 owner decisions (2026-10-13)
+
+R-NET-TOOL keeps web/search/fetch disabled by default. The plan controls provider-side search because it travels inside the model API and is invisible to network rules. Tasks supply read-only resources; additional resources are requested by letter. Web remains a pending, per-identity trusted-circle opt-in under a newly qualified tuple; all other lockdown controls stay. R-EXEC/R-VERIFY govern project-side calls and candidate execution in CIP-0009, not donor runtime internals.
 
 ## Revision 2: what the architecture review changed
 
@@ -90,9 +94,13 @@ Surfaces that are not model tools but still act locally, and how the rows treat 
 | Telemetry, prefetch, harness-originated network | B: per-UID egress to the provider proxy; C: sandbox network confinement to the proxy; A: direct provider access with no OS egress boundary. Flags are hygiene; qualification measures traffic for the selected variant |
 | Logs and state | explicit permitted writable roots (the managed home, the scratch dir), quotas, retention per tuple; recovery per persistence mode in CIP-0010 C3 |
 | MCP, settings, hooks, plugins | the effective-source inventory per tuple; strict MCP even with an empty declaration set; hooks and plugins disabled through the protected settings file and measured |
-| Hosted tools (web search and similar) | removed per row; a provider-hosted tool still violates an "only remote tools" set, so the visible tool set is measured against the permitted set |
+| Hosted tools (web search and similar) | disabled by default per row; provider search is controlled only by the lockdown plan, not network rules. A trusted-circle opt-in needs a newly qualified tuple/permitted set; current rows remain remote-tools-only |
 | Context and file reads | a closed caller grammar (R4) and qualified source inventory in every variant; B/C add the OS read boundary with explicit runtime exceptions; A has no OS read confinement; an empty cwd is not an inventory |
 | Harness shell-outs (auth helpers, hooks, updater launchers, internal subprocesses) | inherit the harness UID and, in B/C, its sandbox; A shares the donor UID without a sandbox. No helper is configured; absence is measured, not assumed |
+
+**R-NET-TOOL: default and opt-in.** No search/fetch tool is offered by default; provider-side search stays disabled in R3, and no donor-side web server runs. The donor loop reaches only its model-provider endpoints and our host; the project environment has no internet. This design works without web: trusted-side task resources travel as signed-task-letter attachments, are materialized read-only beside the workplace with plan digests, and are data, never instructions. The worker asks for more by ordinary letter/outcome and never fetches. Web content mixes outside context into the model's environment context and invites injection.
+
+The lockdown plan is the **only control for provider-side search**: it is carried inside the provider API, where a network rule cannot see it. For a remote worker admitted to the trusted circle by an operator act at admission, web may be explicitly granted per identity, never by default or to the untrusted class. Pending options are (a) provider-executed search with a newly qualified tuple proving no local fetch, or (b) donor-side `swarma-web` MCP under its own B identity or C sandbox, never the harness or bridge identity. The harness keeps provider-only egress; the web service keeps the donor's search key and reaches search-provider API endpoints only. No arbitrary fetch, no key in channel/frames/packages and no project method to request it; results go only to the donor model. A uses the donor Keychain/0600-file custody described in CIP-0009 D5b. Donor consent is at `init`. Both options, formats and tuple changes are pending qualification; current R3 rows keep web disabled, caller-tail search enablers remain refused, and lockdown is otherwise unchanged. See CIP-0009 D5b and the publication register.
 
 **R4. Launcher grammar (F1).** Under `lockdown` the launcher separates two inputs:
 - the **generated policy** of the row (R3), which is required: a plan whose expanded argv, configuration files, environment or plugin set lacks a required member, duplicates it, spells an alias of it or supplies the same setting from another source is refused at intake with `launch_plan_invalid`;
@@ -179,3 +187,5 @@ The pending v4 changes to fragments and plans proposed by several CIPs are adopt
 3. **Codex catalog sanitization** relies on an implementation-private config key, and the only qualified transport is the app-server. Decided 2026-10-10: the app-server is the only Codex transport; keep the key as a per-tuple golden with the tripwire as detection, add `exec` only after its own qualification, and ask the vendor for a documented "no built-in tools" switch.
 4. **Muse** cannot drop read tools and needs its session logs. Superseded by R9: not supported on donors under the admission rule.
 5. **Pi and opencode**: decided 2026-10-10: support both; qualify Pi 1.1.0 and OpenCode 1.18.35 (R9) and refuse until the rows exist.
+
+6. **R-NET-TOOL opt-in publication.** Would need per-identity trusted-circle web authorisation and donor consent binding, a newly qualified provider-search tuple proving no local fetch or a qualified `swarma-web` MCP tuple/identity/sandbox, exact allowed tool-set and plan representation, task-resource formats/caps and custody negatives. These formats remain unpublished; no new field, refusal code or cap is allocated.

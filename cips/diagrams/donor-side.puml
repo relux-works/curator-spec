@@ -1,4 +1,5 @@
 @startuml donor-side
+' Revision 2026-10-13: wave-5 zero-egress admission, R-TRANSFER and controlled verification; formats/qualification unpublished.
 ' Revision 2026-10-12: R-OPERATOR custody and act paths; R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
 title Donor and project components - Draft target after one-host slice 0 + project helper v1/workplace qualification; B disabled; A/C role substitutions shown
 left to right direction
@@ -10,21 +11,26 @@ node "Donor machine\nB: separate bridge and harness UIDs\nA/C: donor UID, user s
   component "Bridge service\nswarma-bridge + supervisor role\nB bridge UID; A/C donor UID\nconsumes caller-composed plan" as Bridge
   component "Harness\nB worker UID + sandbox\nC donor UID + sandbox; A donor UID only" as Harness
   component "swarma-remote-tools\nstdio relay, harness identity\nno keys / no network" as Relay
+  component "Optional donor swarma-web\nown B identity / C sandbox; never harness/bridge\ntrusted-circle opt-in; pending qualification" as Web
   component "Provider proxy\nB bridge UID or system service\nC qualified proxy; A absent" as Proxy
   database "Bridge-role-owned persistent state\nkeys/config/binding/tuple/generation\naudit, cursors, budgets, queued results" as DS
   artifact "Managed home / scratch\nharness-role state; variant-owned releases\nB releases root-owned" as HS
 }
-node "Project host" as P {
+node "Separate public entry host\nR-SHARED: no untrusted placements" as Entry {
   component "Join point\nservice identity unspecified in spec D9\nTLS challenge/cert/collect; no signing key" as Join
+  database "Pending applications/challenges\ninvitation tombstones; signed packages" as JS
+}
+node "Project host\nR-SHARED: platform services only" as P {
   component "swarma-dispatcher\nservice UID; project workplace provisioning\nroot swarma-user-manager account helper" as Disp
   component "sshd (root) + relay-only stub\nfixed workplace login shell; no startup files" as Exec
   component "swarma-rb-exec\nservice principal; peer UID/generation authentication\npolicy/caps/claims/audit outside workplace UID" as Control
-  component "Workplace jobs\nworkplace UID; helper-v1 enforced egress\nUID writable set; launcher/receipt/exec.stop" as Jobs
+  component "Workplace jobs\nworkplace UID; qualified zero egress / exec profile\nUID writable set; launcher/receipt/exec.stop" as Jobs
   component "Project bridge (M3)\nservice identity unspecified in spec D5\nmailbox/admission/carrier authority" as PB
   component "Trust registry / key keeper\nservice identity unspecified in spec D4/D12\nroot/operator chain; host and separate user CA" as Keeper
-  database "Join-point-owned pending applications\nchallenges/invitation consumption/tombstones\noperator-signed encrypted packages" as JS
   database "Project-owned persistent state\npublic worker keys/grants/revocations, KRL\nmailbox/cursors; durable effect claims + admission floors\nten-minute output cache; closed-schema service metadata\ncarrier credentials never in donor package" as PS
 }
+cloud "Search-provider API only" as Search
+Web --> Search : donor key stays donor-side; results to donor model only
 cloud "Model provider" as API
 cloud "DNSSEC zone\nenvironment root/host-CA/TLS records" as DNS
 Donor --> Init : only human init; policy heuristics
@@ -56,7 +62,8 @@ note bottom of D
   Channel drops -> pause new turns; current deadline; channel_down; durable output queue.
   Recovery reconciles claims/floors before admission; missing/restored evidence keeps binding closed.
   Discard claims only when identities permanently inadmissible; floor persisted first.
-  Retirement: confirmed absence, declared-key cleanup, home deletion; export has no agent content.
+  Retirement: account-wide absence/fence; R-TRANSFER export recorded or operator waiver;
+  then key cleanup/home deletion. Retirement metadata alone has no agent content.
   Separate explicit home retention states confidentiality is not guaranteed.
   Reconnect validates trust and catches up cursors; never repeat an uncertain effect.
   B disabled until separate provisioner exists. C enforces sandbox without UID split.
@@ -73,11 +80,22 @@ note right of Operator
 end note
 note bottom of P
   User CA private key: project keeper/hardware token; renewal only for authenticated workplace.
-  Write scope = UID writable set; helper v1 loopback row mandatory.
+  OS write boundary = UID writable set; task write scope bound in plan/import.
+  R-NET-TOOL: zero egress, loopback denied, no proxy; R-EXEC applies.
   Serialized per-job execution or standing runner shape/concurrency/blast radius unpublished.
   Transport/backend object ownership and closed formats unspecified in spec publication register.
   [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D0-D12]]
   [[../../protocol/remote-worker.md#publication-status Pending formats/owners]]
   [[../../protocol/remote-worker.md#tools-mailbox-and-lifecycle Recovery/lifecycle]]
+end note
+note bottom of Jobs
+  R-TRANSFER: dispatcher materializes/exports under child UID; board resource -> exact C.
+  Candidate review/rework/integration on trusted side; no worker push/MR/network.
+  R-VERIFY: all heavy work/candidate execution on secret-free runners on another machine.
+  R-UNTRUSTED / R-CEILINGS / R-EXEC gate admission; no subscription binding/lease.
+  Standing workplace loop stays donor-side; no harness executable here (R-STANDING).
+  R-WATCH: one-account freeze + journaled stop; R-ALLSTOP manual, range deny + all stops.
+  Partial/unknown all-stop keeps admission closed; explicit recovery; donor channel-down.
+  Default no web; task resources read-only/digested; R-RANGE-DENY / R-SOCKETS qualified.
 end note
 @enduml

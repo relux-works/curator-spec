@@ -1,4 +1,5 @@
 @startuml donor-layout
+' Revision 2026-10-13: wave-5 zero-egress admission, R-TRANSFER and controlled verification; formats/qualification unpublished.
 ' Revision 2026-10-12: R-OPERATOR custody and explicit retention; R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
 title Donor state layout - Draft target; A/C donor-owned state root; B platform root / separate provisioner pending and disabled
 left to right direction
@@ -21,7 +22,7 @@ node "Donor machine\nA/C: donor UID; B: root-provisioned separate UIDs" as D {
   component "Provider proxy\nB bridge UID or system service; C qualified proxy\nA absent" as Proxy
   component "B privileged provisioner / kernel boundary\naccounts, egress, sandbox, service journal\nseparate spec/name/schema pending" as Provisioner
 }
-node "Project host" as P {
+node "Project host\nno shared services beside untrusted work" as P {
   artifact "Root-controlled sshd policy\nTrustedUserCAKeys + user-certificate KRL\nprotected relay-only forced command + fixed no-startup-file login shell\nno PTY/forward/rc/env" as SSHPolicy
   artifact "Project registry / keeper-owned trust\nadmission, public worker keys, grants/revocations\nhost CA authority; user CA private key in keeper/hardware token" as Registry
   artifact "Service-principal project bridge / swarma-rb-exec state\noutside workplace UID write/signal authority\nmailbox/cursors; durable identity/digest claims + admission floors\nseparate ten-minute output cache; closed-schema service metadata\ncarrier credential stays project-side" as Mailbox
@@ -46,9 +47,11 @@ note bottom of BridgeHome
   Project claims persist before mutation; floors advance before claims may be discarded.
   Recovery reconciles claim/floor evidence before admission; unknown keeps binding closed.
   Workplace jobs use dispatcher/root launcher/start receipt/exec.stop; v1 applied network before activation.
-  Write scope = UID writable set; loopback qualification mandatory; controls never workplace-owned.
-  Project retirement deletes home after process absence and declared-key cleanup;
-  export only closed-schema service metadata with no agent-controlled content.
+  OS write boundary = UID writable set; task write scope plan/import bound.
+  Zero egress, denied loopback/no proxy; exec profile; controls never workplace-owned.
+  Project retirement waits for account-wide absence/fence and recorded R-TRANSFER export
+  or operator waiver, then key cleanup/home deletion. Retirement metadata alone
+  is closed-schema service data without agent-controlled content.
   Separate explicit home retention states confidentiality is not guaranteed.
   Exact key/state/audit/cursor file names, socket basename, schema and retention
   unspecified in spec CIP-0009 D0/D1/D5; folders above are the named D0 layout.
@@ -69,5 +72,18 @@ note bottom of WorkerHome
   [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D0-D3/D5/D7/D12]]
   [[../../protocol/remote-worker.md#trust-and-ssh CA trust]]
   [[../../protocol/remote-worker.md#tools-mailbox-and-lifecycle Lifecycle/ownership]]
+end note
+note bottom of Config
+  Default no web/search/fetch; lockdown plan controls provider search inside provider API.
+  Task resources are read-only beside round workspace; digests in project launch plan.
+  Optional swarma-web: own B identity/C sandbox, never bridge/harness, donor key only.
+  Provider-search or MCP opt-in requires trusted-circle operator admission + qualification.
+end note
+note bottom of Mailbox
+  Dispatcher: B archive/manifest/exec profile/write scope; fresh materialization each round.
+  Child Git history unused; bounded export under child UID after account-wide absence/fence.
+  Board: resource -> signed C -> exact trusted review -> signed rework letter from C.
+  All candidate code execution: R-VERIFY, another machine, no secrets.
+  R-WATCH journals one-account narrowing; R-ALLSTOP journals node stop, explicit recovery.
 end note
 @enduml

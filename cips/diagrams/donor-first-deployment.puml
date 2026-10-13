@@ -1,7 +1,8 @@
 @startuml donor-first-deployment
+' Revision 2026-10-13: wave-5 zero-egress admission, R-TRANSFER and controlled verification; formats/qualification unpublished.
 ' Revision 2026-10-12: R-OPERATOR operator custody/act gate; formats and qualification remain open.
 ' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
-title Remote worker first deployment (revision 6): donor variants A/B/C; project workplace service controls and helper-v1 activation; B disabled pending separate provisioner
+title Remote worker first deployment (revision 7): donor variants A/B/C; project workplace service controls and helper-v1 activation; B disabled pending separate provisioner
 
 actor "Donor (the machine's owner)" as ADM
 participant "curator remote-worker init\n(donor install)" as C
@@ -83,8 +84,8 @@ alt rejected
   OP -> JP: reject
   JP --> C: refused
 else admitted
-  OP -> T: pin K_sig, K_enc, K_ssh; root-signed admission "K admitted with role R";\ngrants: post to worker thread, read own mailbox, no delegation, expiry
-  OP -> D: provision workplace for K (dispatcher, grant user.create): workplace account class; v0 refuses; v1 fw.apply + applied state at activation,\nTrustedUserCAKeys + KRL: short user certificates for K_ssh (principal = workplace user),\nprotected absolute relay-only ForceCommand + fixed no-startup-file shell,\npeer UID/generation -> service-principal swarma-rb-exec,\nsshd Match: no forwarding, no PTY, no user rc/env; egress by UID
+  OP -> T: record R-UNTRUSTED at registration/admission; never infer from account name;\ntrusted-circle admission only by operator act, donor opt-ins only\npin K_sig, K_enc, K_ssh; root-signed admission "K admitted with role R";\ngrants: post to worker thread, read own mailbox, no delegation, expiry
+  OP -> D: provision workplace for K (dispatcher, grant user.create): workplace account class; v0 refuses; v1 fw.apply + applied state at activation,\nTrustedUserCAKeys + KRL: short user certificates for K_ssh (principal = workplace user),\nprotected absolute relay-only ForceCommand + fixed no-startup-file shell,\npeer UID/generation -> service-principal swarma-rb-exec,\nsshd Match: no forwarding, no PTY, no user rc/env; qualified zero egress; denied loopback, no proxy
   OP -> OP: swarma-bridge credential-package/1 {root pubkey, operator cert (root-signed), host,\nSSH host CA key, short user certificate/principal, variant, binding digest, qualified tuple, policy generation, expiry}\nAEAD to K_enc (X25519 + HKDF + ChaCha20-Poly1305), AAD = transcript digest, signed by the operator cert
   OP -> JP: package ready for this enrolment (reference schema pending)
   C -> JP: POST /join/challenge (collection phase) -> second server challenge\nPOST /join/collect {enrolment reference, sig_K_sig(second challenge)} (schema pending)
@@ -113,6 +114,19 @@ note over C, T
   Exact join/keeper service UIDs and state filenames unspecified in spec CIP-0009 D4/D9/D12.
   [[../CIP-0009-donor-side-deployment-and-bridge.md#recommendation CIP-0009 D0-D4/D9/D10/D12]]
   [[../../protocol/remote-worker.md#publication-status Pending join formats]]
+end note
+
+note over OP, D
+  R-UNTRUSTED: all workplaces untrusted unless operator admits worker to trusted circle.
+  Circle never relaxes zero egress, exec profile, transfer or review on project host.
+  No workplace subscription binding/lease; broker refuses; slice 0/v0 refuse class.
+  R-CEILINGS: host qualified matrix meets class; no OS-name exclusion.
+  R-RANGE-DENY installed before accounts; active precedence probe gates readiness.
+  R-SOCKETS: reachable sockets equal declared set. R-SHARED: no shared services here;
+  public join ingress is on a separate entry host, not the untrusted workplace host.
+  Default donor loop: provider endpoints + our host only, no web/search/fetch.
+  Trusted web options require explicit per-identity opt-in, donor init consent and qualification.
+  No donor-side web server by default; lockdown plan disables provider search inside API.
 end note
 
 @enduml
