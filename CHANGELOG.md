@@ -24,6 +24,14 @@ Versioning for the complete specification set.
 
 ### Changed
 
+- `protocol/remote-worker.md` revision 6 records accepted architecture-review
+  findings: R-TRANSFER rework carries the integration baseline's cumulative
+  sensitive and provenance obligations into fresh acknowledgements and verdicts
+  bound to the exact candidate, and the worker signing suite, the workplace
+  ingress and relay lifetime and the donor egress principals are registered as
+  open requirements for their stage contracts; registering them changes no
+  normative behaviour, deployment choice or activation gate. References to the platform
+  naming index are now plain text, because that index is not public.
 - Fixture the historical rc.14 release-gate tests on the published
   v1.0.0-rc.14 tag, so post-tag candidate work no longer fails the frozen
   rc.14 pin check; raw blob bytes are restored for export-subst paths.
