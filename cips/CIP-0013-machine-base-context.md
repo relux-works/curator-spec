@@ -279,7 +279,8 @@ cross-implementation checks. No released corpus or release pin changes here.
 The following quoted diffs are proposed replacements/additions against the
 identified specification. They are normative **only if adopted**; the actual
 `protocol/environments.md` and manager profile are unchanged by this draft.
-Unquoted rules retain their existing meaning. Section numbers remain stable.
+Unquoted rules retain their existing meaning. Section numbers remain stable. Relative links inside quoted text are rewritten to resolve from this
+directory (for example `../protocol/registry.md`); the quoted wording is otherwise verbatim.
 
 ### Environments §§1.3–1.4: base identity and resolution seed
 
@@ -676,7 +677,7 @@ added to the header. The old header grammar remains frozen.
 -   manifest entries, compared between the old and the new snapshot;
 -   admission under section 3 does not narrow the trigger; or
 - - an `mcp` member new to the lock, or a moved one whose MCP declaration
--   differs — the CCJ-1 bytes ([`registry.md`](registry.md) §1) of the
+-   differs — the CCJ-1 bytes ([`registry.md`](../protocol/registry.md) §1) of the
 -   declaration object as the lock and the materialization read it:
 -   `transport`, `command`, `args`, `env_names`, the `url` of an `http`
 -   declaration, and the `environments` selector. Any byte difference
@@ -695,7 +696,7 @@ added to the header. The old header grammar remains frozen.
 +   manifest entries, compared between the old and the new snapshot;
 +   admission under section 3 does not narrow the trigger;
 + - an `mcp` member new to the lock, or a moved one whose MCP declaration
-+   differs — the CCJ-1 bytes ([`registry.md`](registry.md) §1) of the
++   differs — the CCJ-1 bytes ([`registry.md`](../protocol/registry.md) §1) of the
 +   declaration object as the lock and the materialization read it:
 +   `transport`, `command`, `args`, `env_names`, the `url` of an `http`
 +   declaration, and the `environments` selector. Any byte difference
