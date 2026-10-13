@@ -27,7 +27,7 @@ This document publishes the common contract and the status of its missing format
 
 ## Publication status
 
-Repository-qualified signing domains use `swarma-<component> <object>/<n>`; wire kind discriminators retain their individually registered owner spelling, transport/schema labels retain their owner-published short forms, and provisional design labels confer no admission. The shared [naming index](https://github.com/relux-works/wiki/blob/main/naming.md) owns the typed rule and wire/format sections; this table routes to producers and keeps local prerequisites. No format has shipped, so the clean naming rule requires no migration. The bridge owns join/admission delivery; its three enrolment objects use the names below. These names alone do not specify signing preimages, canonical field types or complete readers.
+Repository-qualified signing domains use `swarma-<component> <object>/<n>`; wire kind discriminators retain their individually registered owner spelling, transport/schema labels retain their owner-published short forms, and provisional design labels confer no admission. The shared naming index (`naming.md` in the platform wiki) owns the typed rule and wire/format sections; this table routes to producers and keeps local prerequisites. No format has shipped, so the clean naming rule requires no migration. The bridge owns join/admission delivery; its three enrolment objects use the names below. These names alone do not specify signing preimages, canonical field types or complete readers.
 
 | Reference | Owner / location | Publication status and remaining work |
 |---|---|---|
