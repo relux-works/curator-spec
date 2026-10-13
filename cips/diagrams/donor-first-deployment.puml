@@ -1,4 +1,5 @@
 @startuml donor-first-deployment
+' Revision 2026-10-13: accepted architecture-review findings; no rendering or qualification claimed.
 ' Revision 2026-10-13: wave-5 zero-egress admission, R-TRANSFER and controlled verification; formats/qualification unpublished.
 ' Revision 2026-10-12: R-OPERATOR operator custody/act gate; formats and qualification remain open.
 ' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
@@ -11,7 +12,7 @@ participant "Bridge role\nB: swarma-bridge-<project> UID\nA/C: donor UID (keys, 
 participant "Harness role\nB: worker-<project> UID\nA/C: donor UID (managed home, scratch)" as U
 database "DNS (DNSSEC, default)\nTXT _swarma, TXT _swarma-ssh-ca, TLSA\n(validated inside the client)" as DNS
 participant "Join point\n(our host, HTTPS: challenge, cert, collect)" as JP
-actor "Operator (our side)\nor orchestrator with onboard grant" as OP
+actor "Operator (our side)\nor orchestrator proposing admission (no grant action registered)" as OP
 participant "Trust registry + key keeper\n(our host)" as T
 participant "swarma-dispatcher (service UID)\nroot swarma-user-manager helper\nproject workplace provisioning" as D
 

@@ -1,4 +1,5 @@
 @startuml donor-lifecycle
+' Revision 2026-10-13: accepted architecture-review findings; no rendering or qualification claimed.
 ' Revision 2026-10-13: wave-5 zero-egress admission, R-TRANSFER and controlled verification; formats/qualification unpublished.
 ' Revision 2026-10-12: R-OPERATOR operator custody and lifecycle acts; R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
 title Donor lifecycle - Draft target A first / B disabled / C fallback; four independent descriptive axes, no closed state schema
@@ -24,12 +25,12 @@ state "Donor execution\nowner: bridge-role supervisor\nA/C donor UID; B bridge U
 state "Project workplace\nowner: swarma-operator (no harness) + dispatcher/helper + project bridge\nhelper root boundary; workplace UID jobs only\nservice-principal executor owns policy/claims/audit/mailbox" as Workplace {
   state "Admitted workplace\nqualified zero egress / exec profile / host matrix; fixed relay shell" as Admitted
   state "Suspended\ngrants paused; sessions closed; workplace kept" as Suspended
-  state "Retirement in progress\nrevocation persisted before termination/restart" as Retiring
+  state "Retirement requested\ncleanup export before irreversible retiring; revocation persisted before termination" as Retiring
   state "Retired\nquiesce + declared-key cleanup; delete home; account/egress released" as Retired
   Admitted --> Suspended : operator suspend / R-WATCH one-account freeze + journaled stop / R-ALLSTOP
   Admitted --> Retiring : operator retire; stop user-cert renewal, user KRL, close sessions
   Suspended --> Retiring : operator retire
-  Retiring --> Retired : journaled exec.stop; account-wide absence/fence + recorded export or operator waiver + key cleanup/home deletion
+  Retiring --> Retired : journaled exec.stop; account-wide absence/fence + verified durable complete-content export or operator waiver + key cleanup/home deletion
 }
 state "Worker signing identity / three pinned keys\nowner: operator-authorized trust registry / key keeper\nprivate keys remain on donor" as Identity {
   state "Pinned\nretirement and leave preserve identity" as Pinned
@@ -84,6 +85,11 @@ note bottom of Workplace
   R-WATCH read-only least-privileged per-UID sampler; hard threshold narrows one account;
   phone alerts, no unjournaled kill. Formats/thresholds unpublished.
   Standing workplace allowed; loop at donor only. Trusted standing surfaces digest checked.
-  R-TRANSFER each round: fresh B/C materialization, fence/absence/export, exact board review.
+  R-TRANSFER each round: fresh B/C materialization except an admitted repair round; fence/absence/export, exact board review.
+  Cleanup export precedes retiring; distinct execution evidence and bounded original-admission consent.
+  Ordinary expiry only; holds need separate authority. Result + all blobs verified durable outside deletion.
+  Refusal/unknown retains obligation; current-authority bounded repair or per-act waiver; standing discard off.
+  Retained content release requires authenticated import acknowledgement or explicit authorized release.
+  [[remote-worker-transfer.puml Detailed transfer, refusal repair and cleanup custody]]
 end note
 @enduml

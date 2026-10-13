@@ -1,4 +1,5 @@
 @startuml donor-layout
+' Revision 2026-10-13: accepted architecture-review findings; no rendering or qualification claimed.
 ' Revision 2026-10-13: wave-5 zero-egress admission, R-TRANSFER and controlled verification; formats/qualification unpublished.
 ' Revision 2026-10-12: R-OPERATOR custody and explicit retention; R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
 title Donor state layout - Draft target; A/C donor-owned state root; B platform root / separate provisioner pending and disabled
@@ -80,10 +81,15 @@ note bottom of Config
   Provider-search or MCP opt-in requires trusted-circle operator admission + qualification.
 end note
 note bottom of Mailbox
-  Dispatcher: B archive/manifest/exec profile/write scope; fresh materialization each round.
+  Dispatcher: B archive/manifest/exec profile/write scope; immutable-B mode/content manifest verified before work and recomputed at import; fresh materialization each round except an admitted repair round.
   Child Git history unused; bounded export under child UID after account-wide absence/fence.
   Board: resource -> signed C -> exact trusted review -> signed rework letter from C.
   All candidate code execution: R-VERIFY, another machine, no secrets.
   R-WATCH journals one-account narrowing; R-ALLSTOP journals node stop, explicit recovery.
+  Cleanup export precedes retiring; distinct execution evidence and bounded original-admission consent.
+  Ordinary expiry only; holds need separate authority. Result + all blobs verified durable outside deletion.
+  Refusal/unknown retains obligation; current-authority bounded repair or per-act waiver; standing discard off.
+  Retained content release requires authenticated import acknowledgement or explicit authorized release.
+  [[remote-worker-transfer.puml Detailed transfer, refusal repair and cleanup custody]]
 end note
 @enduml

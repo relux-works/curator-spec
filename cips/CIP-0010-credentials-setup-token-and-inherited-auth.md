@@ -1,6 +1,6 @@
 # CIP-0010: Credentials for managed launches: `setup-token` adoption, homes with inherited authentication, and the disposition of CIP-0003
 
-- **Status:** Draft (revision 3, wave-5 credential boundary of 2026-10-13; qualification pending)
+- **Status:** Draft (revision 4, accepted architecture-review findings of 2026-10-13; qualification pending)
 - **Owner:** orchestrator; decision: operator
 - **Created:** 2026-10-08
 - **Related:** owner brief 2026-10-08 §8; [CIP-0003](CIP-0003-claude-managed-home-credential-modes.md) (accepted, narrowed); [Decision 0017](../decisions/0017-environment-credential-modes.md) (`shared|isolated`, Q4, Q7 no-copy); environments [§7.4](../protocol/environments.md#74-credential-passthrough-provisioning-seeds-and-isolation), §10.3, §12.1–§12.2; wiki `research/harness-auth/RESEARCH.md` (2026-10-07) and `PLAN-expiry-check.ru.md`; wiki `session-host/architecture.ru.md` §7.3 (credential broker); VISION v1.3 LCH §7; [CIP-0008](CIP-0008-remote-worker-launch-mode.md), [CIP-0009](CIP-0009-donor-side-deployment-and-bridge.md); relux-works/remote-worker-harness `docs/session-mode.md` ("Login: the single auth owner")
@@ -17,6 +17,10 @@
 | Phase | Source-policy v1/v2 decided; first file backend decided; broker slice 0 first, Codex slice 1 qualification/open adoption, donor later. |
 | Normative links and proposed landing | [Environments §7.4](../protocol/environments.md#74-credential-passthrough-provisioning-seeds-and-isolation), [§12.1](../protocol/environments.md#121-machine-configuration-knobs), [Decision 0017](../decisions/0017-environment-credential-modes.md); amendments: [Specification changes](#specification-changes). |
 
+## Revision 4: accepted architecture-review findings (2026-10-13)
+
+Muse subscription priority is decided, the broker channel remains proposed and qualification remains open; other acceptance questions retain their status.
+
 ## Revision 3: wave-5 credential boundary (2026-10-13)
 
 R-UNTRUSTED prohibits subscription bindings and leases for the untrusted class; slice 0 refuses that class. A workplace has no broker subscription lease even when its remote worker joins the trusted circle. The donor's model credential stays donor-side; optional donor search-key custody is separate from provider injection and is unpublished under R-NET-TOOL. No new credential channel is introduced.
@@ -24,7 +28,7 @@ R-UNTRUSTED prohibits subscription bindings and leases for the untrusted class; 
 ## Operative disposition (2026-10-11)
 
 - **Decided:** Revision 2.1 and Revision 2.2 decide the first file backend and source-policy v1/v2; CIP-0003 is adopted narrowed. D-EXECUTOR (2026-10-11) makes curator-run under the agent account the first broker consumer. Board and session host request the dispatcher; neither embeds the first broker client.
-- **Open:** Personal-plan Codex adoption/qualification, Muse subscription channel and release scheduling retain the explicit options below. Credential extension, binding and capability names describe pending contracts, not qualified runtime adoption.
+- **Open:** Personal-plan Codex adoption/qualification and release scheduling retain the explicit options below. Muse subscription priority is decided on 2026-10-13; channel (b) with fallback (c) is proposed; qualification remains open (see question 4). Credential extension, binding and capability names describe pending contracts, not qualified runtime adoption.
 - **Superseded:** Keychain-first node storage, the CIP-0003 acceptance/default questions and board-spawn-first client sequencing are superseded by Revision 2.1, Revision 2.2/C6 and D-EXECUTOR respectively.
 
 [Cross-CIP contract, schema owners and versions](platform-contract-disposition.md) records the canonical values and owner decisions. Acceptance records design disposition; schema publication, implementation and runtime qualification are separate. Current-state observations and companion probes below are historical at their stated pins, not rerun evidence.
@@ -172,7 +176,7 @@ So "inherited authentication" for Claude is one token from `setup-token`, enroll
 0. **Slice 0:** `credential_binding/1` over a peer-authenticated Unix socket across two OS users on one host; one chain proven with refusals (wrong peer, wrong account, expired). Size M.
 1. Spec text and the decision record. Size S–M.
 2. curator: nodes, `credential_source`, the Codex auth owner (from `rwh`), `env credential` commands, status and events, marker members. Size M.
-3. **First broker consumer (D-EXECUTOR):** `curator-run` under the agent account, in its narrow one-shot mode, verifies and executes the caller-composed immutable plan and implements the protected binding/qualification gate. Board spawn and session host request the dispatcher, which launches through `curator-run`; neither embeds a broker client. Shared launch library with `swarma-session-runner`; donor supervisor integration is later and independently qualified. The intake release/grammar belongs to R-LR1 and Decision 0021's amendment. Size M each.
+3. **First broker consumer (D-EXECUTOR):** `curator-run` under the agent account, in its narrow one-shot mode, verifies and executes the caller-composed immutable plan and implements the protected binding/qualification gate. Board spawn and session host request the dispatcher, which launches through `curator-run`; neither embeds a broker client. Shared launch library with `swarma-session-runner`; donor supervisor integration is later and independently qualified. The intake release/grammar belongs to the [launcher intake lane](../decisions/0021-sessions-enter-through-curator-run.md#amendment-v1--agent-account-one-shot-execution-2026-10-11) (Decision 0021 amendment; launcher SPEC §10). Size M each.
 4. Authorized qualification lab (future work, not run on this host): step 2 (effective source: no Keychain read with the environment token), steps 3–4 for Claude (revocation signal, `--resume` with a new token), the Codex owner race test (eight callers, one refresh) at 0.159.0. Size S of operator time.
 5. Muse: `META_API_KEY` pass-through (TASK-261007-hjwgiz) then node kind `meta-api-key`. Size S.
 
@@ -189,7 +193,7 @@ So "inherited authentication" for Claude is one token from `setup-token`, enroll
 1. **Default for tracked launches once an executor passes the qualification:** decided 2026-10-10: version 1 keeps `per-home`; version 2 requires an explicit entry (Revision 2.2).
 2. **Codex personal plan — OPEN (contract C4):** adopt the single auth owner with external tokens and named supported-release qualification (recommended), or defer the personal-plan lane. The historical `rwh` race test at 0.159.0 is an input, not current qualification or an owner adoption decision.
 3. **Accept CIP-0003 narrowed together with this CIP:** decided 2026-10-10, yes.
-4. **Muse — OPEN (contract C7):** keep only the separately specified `meta-api-key` lane and defer subscription support (recommended), or prioritize subscription qualification and choose its source/refresh/channel from evidence. No subscription channel is invented here.
+4. **Muse (contract C7):** Priority **DECIDED (2026-10-13)**: prioritize subscription qualification; channel (b), one minting owner leasing the minted API key rather than OAuth tokens, with fallback (c), **PROPOSED**; qualification **OPEN**, with billing, lifetimes, refresh and rotation unknown. The API-key lane remains separate; no supported subscription tuple is established. [Broker §§10.2/18.5](https://github.com/relux-works/swarma-credential-broker/blob/df8c7385456e9588392900e000738d419ffee2ec/spec/broker.md) owns the channel proposal and qualification rows; this does not close the other CIP-0010/0011 acceptance questions.
 5. **Slice 0 before rc.6?** The broker interface is the prerequisite of the owner's MVP; recommended: yes, as the first item after rc.5.
 
 6. **R-UNTRUSTED / R-NET-TOOL publication.** Would need class admission/refusal encoding and broker negative qualification for subscription binding/lease refusal, plus separate donor web-key custody/consent/identity qualification. Search-key formats and refusal codes remain unpublished; this CIP adds no channel or wire field.

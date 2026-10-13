@@ -17,10 +17,14 @@
 | Phase | Accepted narrowed; source-policy v1 defaults per-home, v2 requires explicit entries; coordinated v4 pending. |
 | Normative links and proposed landing | [Environments §7.4](../protocol/environments.md#74-credential-passthrough-provisioning-seeds-and-isolation), [Decision 0017](../decisions/0017-environment-credential-modes.md); operative replacement: [CIP-0010 C6](CIP-0010-credentials-setup-token-and-inherited-auth.md#recommendation); landing: [Historical specification changes](#historical-specification-changes-apply-cip-0010-c6). |
 
+## Revision: accepted architecture-review findings (2026-10-13)
+
+Muse subscription priority is decided; the proposed channel and open qualification remain separate from admission.
+
 ## Operative disposition (2026-10-11)
 
 - **Decided:** Accepted, narrowed by CIP-0010 C6 (2026-10-10). Source-policy v1 keeps per-home when no entry exists; source-policy v2 requires an explicit entry and migrates existing logins to explicit per-home. Token becomes node-sourced; helper remains an API-key lane. The first node store is a protected 0600 file on macOS and Linux.
-- **Open:** The coordinated v4 grammar and supported-release qualification remain publication/implementation work. Personal-plan Codex adoption and Muse subscription support remain owner questions in CIP-0010 and the shared contract.
+- **Open:** The coordinated v4 grammar and supported-release qualification remain publication/implementation work. Personal-plan Codex adoption remains an owner question in CIP-0010 and the shared contract. Muse subscription priority is decided on 2026-10-13; channel (b) with fallback (c) is proposed; qualification remains open ([CIP-0010 question 4](CIP-0010-credentials-setup-token-and-inherited-auth.md#open-questions-for-the-operator)).
 - **Superseded:** The earlier default, Keychain-first token leaf, shared-file adoption and general acceptance/Q7 questions below are historical, superseded by CIP-0010 C1/C3/C6 and Revision 2.2. Native per-home Keychain evidence remains historical evidence; it is not the node backend.
 
 [Cross-CIP contract, schema owners and versions](platform-contract-disposition.md) records the canonical values and owner decisions. Acceptance records design disposition; schema publication, implementation and runtime qualification are separate. Current-state observations and companion probes below are historical at their stated pins, not rerun evidence.

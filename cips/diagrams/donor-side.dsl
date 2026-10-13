@@ -1,3 +1,4 @@
+// Revision 2026-10-13: accepted architecture-review findings; no rendering or qualification claimed.
 // Revision 2026-10-13: R-TRANSFER, zero egress, qualified host admission and separate public entry host; no runtime evidence.
 // C4 (Structurizr DSL) fragment for CIP-0009 (revision 7, R-WORKPLACE cycle-2 findings 2026-10-12: B boundary shown; A/C differences in source notes; B disabled until separate provisioner contract exists): the donor machine and the bridge to our host.
 // Defining sections: ../CIP-0009-donor-side-deployment-and-bridge.md#recommendation (D0-D12); ../../protocol/remote-worker.md#publication-status.
@@ -70,7 +71,7 @@ workspace "Remote worker on a donor machine" "Draft donor target after slice 0 +
     donor.bridgeCore -> project.sshd "one SSH connection; trust failure refuses; channel loss pauses new turns; reconnect reconciles same durable claim and original admission window; retained result or pending/unknown_result, never automatic re-execution"
     project.sshd -> project.executor "relay only; service authenticates kernel peer UID and active generation"
     project.executor -> project.dispatcher "authorized execution start/stop; service claims identity/digest before effects; unknown claims never replay"
-    project.dispatcher -> project.workplace "root launcher/start receipt and journaled exec.stop; R-TRANSFER materialize/export under child UID; account-wide absence/fence before export, export recorded or operator waiver before deletion"
+    project.dispatcher -> project.workplace "root launcher/start receipt and journaled exec.stop; R-TRANSFER materialize/export under child UID; account-wide absence/closed fences before export; distinct bounded cleanup consent; verified durable result/all-blob custody outside home before retiring/deletion or per-act waiver; refusal retains current-authority bounded repair; no standing discard"
     project.dispatcher -> board "Bounded workspace result as resource to original caller; no worker push/MR; worker Git history unused"
     board -> runners "All heavy work and candidate execution; tester orchestrates/reads results only"
     project.executor -> project.bridge "mailbox.read / mailbox.post (worker-signed bytes) / mailbox.notify (advisory)"

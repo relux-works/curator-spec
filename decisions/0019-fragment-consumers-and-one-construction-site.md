@@ -1,5 +1,9 @@
 # Decision 0019: fragment consumers and one construction site
 
+## Revision: accepted architecture-review findings (2026-10-13)
+
+The interactive-plan references explicitly name Decision 0013 Decision 5, that document's §5; they do not refer to either historical Decision 0005. No behavior changes.
+
 ## Status
 
 Status: adopted 2026-10-01 by the operator
@@ -25,7 +29,7 @@ Decision 0013 Decision 1 fixes four planes and one composer: Curator
 resolves the launch environment fragment, `agents-management` builds an
 interactive plan value, `curator-run` composes exactly one launch plan
 from that plan, the fragment's channels and the native arguments, and
-`ax` records and launches. Decision 5 keeps the interactive plan free of
+`ax` records and launches. Decision 0013 Decision 5 keeps the interactive plan free of
 channel flags: `BuildPlan` refuses a non-empty `Composition` in
 `LaunchModeInteractive`, because "two components spelling MCP flags is
 the M2 class of defect". Decision 6.3 has the launcher append the
@@ -111,7 +115,7 @@ current text requires.
   fragment consumers". `agents-management` learns the fragment's channel
   descriptor vocabulary, never how a fragment is resolved, locked or
   discovered.
-- Decision 5: `LaunchModeInteractive` accepts the typed context member.
+- Decision 0013 Decision 5: `LaunchModeInteractive` accepts the typed context member.
   The raw `Composition` prefix stays refused in that mode; the typed
   member is the only way a channel reaches the plan.
 - Decisions 6.3 and 6.5: the launcher appends only the native arguments

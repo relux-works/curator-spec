@@ -1,4 +1,5 @@
 @startuml join-handshake
+' Revision 2026-10-13: accepted architecture-review findings; no rendering or qualification claimed.
 ' Revision 2026-10-13: wave-5 zero-egress admission, R-TRANSFER and controlled verification; formats/qualification unpublished.
 ' Revision 2026-10-12: R-OPERATOR operator custody/act gate; formats and qualification remain open.
 ' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
@@ -67,7 +68,7 @@ break operator rejects application
 end
 OP -> T: record R-UNTRUSTED at registration/admission; never infer from account name;\ntrusted-circle admission only by operator act, donor opt-ins only\npin K_sig, K_enc, K_ssh; root-signed admission; grants (scope, expiry)
 OP -> D: provision workplace class only with helper v1 enforced/applied networking with denied loopback/no proxy;\nfixed relay shell -> peer UID/generation -> service-principal executor;\nkeeper-held user CA signs only authenticated workplace principal\n(project-side account boundary; separate from donor provisioner)
-OP -> OP: package with host CA + short user certificate/principal, variant/tuple and binding; no carrier credential; AEAD to K_enc with AAD = H(transcript); signed by the operator certificate (root-signed, scope onboard)
+OP -> OP: package with host CA + short user certificate/principal, variant/tuple and binding; no carrier credential; AEAD to K_enc with AAD = H(transcript); signed by the operator certificate (root-signed, admission scope/action mapping unpublished; proposal alone grants no authority)
 OP -> JP: release package for this enrolment (reference schema pending)
 C -> JP: POST /join/challenge (collection phase, second challenge; pending schema)
 C -> JP: POST /join/collect {enrolment reference, sig_K_sig(second challenge)}

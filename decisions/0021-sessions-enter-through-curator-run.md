@@ -1,5 +1,9 @@
 # Decision 0021: sessions enter through curator run and are hosted through the ax contract
 
+## Revision: accepted architecture-review findings (2026-10-13)
+
+The naming-rule cross-reference distinguishes owner-published identifier categories; it grants no activation.
+
 ## Status
 
 Status: adopted 2026-10-01 by the operator
@@ -261,7 +265,7 @@ The supplied owner decisions do not settle the following later contracts:
    supplies no evidence that this later channel is qualified.
 
 D-WIRE-NAMES resolves the naming rule: versioned platform wire identifiers
-carry the repository name, `swarma-<component> <object>/<n>`. Nothing has
+carry the repository name, `swarma-<component> <object>/<n>`. This sentence is scoped by the [disposition's D-WIRE-NAMES scope sentence](../cips/platform-contract-disposition.md#wire-naming-rule), which distinguishes signing domains, wire kind discriminators, transport/schema labels and provisional design labels. Nothing has
 shipped, so no migration is needed. That rule does not publish W3's
 canonical signed bytes or I4's closed schema; neither open gate is
 silently enabled by a name. These follow-on questions do not reopen

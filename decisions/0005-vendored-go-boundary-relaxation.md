@@ -1,4 +1,10 @@
-# Decision 0005: vendored Go boundary relaxation
+# Vendored Go boundary relaxation
+
+<a id="decision-0005-vendored-go-boundary-relaxation"></a>
+
+## Revision: accepted architecture-review findings (2026-10-13)
+
+Retitled to distinguish this historical Decision 0005 from [Decision 0005: external build repositories](0005-external-build-repositories.md). The existing pathname and original heading anchor remain valid; the decision body is unchanged.
 
 ## Context
 

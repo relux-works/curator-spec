@@ -1,4 +1,5 @@
 @startuml operator-custody
+' Revision 2026-10-13: accepted architecture-review findings; per-act export waiver, no automatic discard.
 ' Revision 2026-10-12: accepted F-23 owner amendment and R-OPERATOR; Draft, formats unpublished, no renderer/qualification evidence.
 title Operator custody - CIP-0011 slice-0 acceptance; phone main path, terminal fallback, mandatory observer
 actor "Human operator" as Human
@@ -51,8 +52,10 @@ Operator --> Agent: refuse from agent session
 
 note over Operator, Services
   Widening: grant issue, subscription enrolment, team/1, standing retirement or re-creation,
-  explicit home retention, maintenance stop authority, renewal of standing grants.
-  Authentication + exact-content confirmation; standing retirement follows explicit owner rule.
+  explicit home retention, maintenance stop authority, renewal of standing grants, export-obligation waiver.
+  Authentication + exact-content confirmation per act; standing retirement follows explicit owner rule.
+  Standing automatic export discard is unchosen/off; refusal repair needs current work authority.
+  [[remote-worker-transfer.puml Export refusal, repair and per-act waiver]]
   NOPASSWD only for dispatcher service helper/launcher rules, never helper operator role.
   Operator device key is an admitted signer for existing team/1 and standing retirement.
   Operator command binary/wire and signed operator record domain/canonical bytes unpublished.

@@ -1,4 +1,5 @@
 @startuml remote-worker-turn
+' Revision 2026-10-13: accepted architecture-review findings; no rendering or qualification claimed.
 ' Revision 2026-10-13: wave-5 zero-egress admission, R-TRANSFER and controlled verification; formats/qualification unpublished.
 ' Revision 2026-10-12: R-OPERATOR observer reads; R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
 title Remote worker turn (revision 7; B boundary shown, disabled until separate provisioner spec/qualification): the harness has no local tools; the relay (harness identity) forwards to the bridge service (bridge identity), which carries every tool call and the mailbox over ONE SSH connection from the donor to our host; our host never connects back
@@ -51,13 +52,14 @@ H -> MCP: MCP initialize; tools/list = effective set (policy intersection)
 
 == task arrives / per-round materialization ==
 O -> D: admitted exact B tree archive + manifest digest/write scope/exec profile; task resources
-D -> JOB: swarma-workspace-materialize under child UID before work; standalone Git, no remotes/hooks/helpers
-D -> D: journal archive/resource digests; plan digest covers base/manifest/write scope/exec profile
+D -> JOB: distinct materialize execution; verify archive path/kind/mode/content against immutable-B manifest before work; standalone Git
+D -> D: journal archive/resource digests; plan digest covers base/mode-content manifest/write scope/exec profile, exporter/caps/repair budget/cleanup consent
 note over D, JOB
   Read-only digested task resources next to workspace; dependencies only read-only seeded caches.
   Zero egress incl. loopback; no proxy; OS exec allowlist, writable areas non-executable.
   No compiler/linker/transpiler/bundler/test runner/package manager/container/network/harness tools.
-  Qualified light checks only; D-PATH protected wrapper for shared heavy/light executable.
+  Full invocation/transitive inputs qualified inert; scripts/imports/plugins/config/startup/env injection refuse locally.
+  D-PATH wrapper excludes direct/indirect heavy-form bypass; unqualified tools use R-VERIFY.
   R-VERIFY executes candidate code only on another machine in secret-free ephemeral runners.
 end note
 O -> BR: signed task letter (snapshot + resource attachments; rework findings + base C)
@@ -176,11 +178,19 @@ RB -> D: account-wide journaled stop / confirm no account processes
 break absence not confirmed
   D --> O: retain round/export cleanup obligation; no export or home deletion
 end
-D -> JOB: swarma-workspace-export under child UID; fixed environment/no network; no-follow walk
-JOB --> D: bounded change set only; skip Git; whole-result refusal on RWP gates
-D -> D: journal result digests; export recorded before retirement/deletion
-D --> O: swarma-dispatcher workspace-result/1 to original caller only (schema/retention unpublished)
-O -> O: deterministic board import on B -> signed exact C; trusted independent review
+D -> JOB: distinct export execution under bounded cleanup consent; fixed environment/no network; no-follow mode/content comparison
+JOB --> D: bounded change set incl. mode-only/type swaps/deletion prior mode OR whole refusal
+break refusal / interrupted / unknown export
+  D --> O: retained obligation; no C; immutable refusal or original pending effect
+  O -> O: current-authority plan-bounded same-workspace repair with new linked effects, or per-act waiver
+end
+D -> D: verify result + every blob; durable outside deletion path; journal complete-content receipt
+break content durability unknown / incomplete
+  D --> O: retained obligation; no deletion
+end
+D -> D: retain delivered content until authenticated import acknowledgement or explicit authorized release
+D --> O: producer DRAFT workspace-result/1 fields; transport/lifecycle gated; current authenticated retrieval
+O -> O: independent immutable repository-B manifest recomputation; base/digest match then deterministic import -> exact C
 O -> O: R-VERIFY only for candidate code; K1 exact acceptance / flagged-hunk acknowledgements
 alt changes requested
   O -> BR: signed rework task letter from C + reviewer findings; fresh materialization next round
@@ -188,7 +198,11 @@ else accepted
   O -> O: board signed fast-forward K1/K3; moved base -> refresh + re-review
 end
 note over O, JOB
-  Intermediate export at turn boundary uses same fence/absence/export gates.
+  Intermediate export uses same closed write/SSH fences and absence gates.
+  Cleanup consent covers ordinary expiry only, never repair/security holds/retiring-generation launch.
+  Permission classification/intake unpublished; infrastructure failure stays pending, no chmod/privilege increase.
+  Standing discard off; physical claims/receipts distinct; lost replies reconcile without duplicate launch.
+  [[remote-worker-transfer.puml Detailed transfer and refusal/cleanup branches]]
   No worker network/push/MR access; worker commits/history never imported.
   R-WATCH one-account freeze/journaled stop; R-ALLSTOP manual hold/range deny/all stops,
   broker freeze (delivered tokens retain vendor lifetime), host delivery closure/snapshots.

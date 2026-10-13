@@ -1,4 +1,5 @@
 @startuml remote-worker-retire
+' Revision 2026-10-13: accepted architecture-review findings; no rendering or qualification claimed.
 ' Revision 2026-10-13: wave-5 zero-egress admission, R-TRANSFER and controlled verification; formats/qualification unpublished.
 ' Revision 2026-10-12: R-OPERATOR operator custody/act gate; formats and qualification remain open.
 ' Revision 2026-10-12: R-WORKPLACE service controls, helper-v1 activation and execution-level stops; Draft, no renderer/qualification evidence.
@@ -56,7 +57,12 @@ break process absence not established
   D -> D: retain account/egress; reconcile unknown evidence; do not delete home
 end
 D -> BR: write-fence round; refuse further workspace tool calls
-D -> D: R-TRANSFER child-UID export, recorded result/digests OR explicit operator waiver;\nhome deletion waits; unknown/failed export retains cleanup obligation
+D -> D: before entering retiring: distinct child-UID exporter claim/receipt under bounded original cleanup consent;\nordinary expiry only; security holds require explicit authority, never R-SESSION reuse
+D -> D: digest/size verify result + every blob; durable custody outside deletion path; journal receipt
+break unresolved refusal / interrupted / unknown / incomplete content without explicit operator waiver
+  D -> D: retain obligation; current-authority bounded repair with new linked effects or per-act waiver; no silent discard
+end
+D -> D: recorded complete-content receipt OR explicit operator waiver; then enter retiring;\nretained content requires authenticated import acknowledgement or explicit authorized release
 D -> D: journal declared-key cleanup, then delete workplace home;\nexport service-generated closed-schema metadata only (no agent-controlled strings/names/links/bodies)
 break key cleanup / home deletion / metadata validation failure
   D -> D: do not release remaining account/egress; journaled recovery; exact format unpublished
@@ -89,7 +95,8 @@ note over OP, PH
   Phase: Draft donor target after one-host slice 0 + project helper v1/workplace qualification; A first, B disabled, C fallback.
   Donor Curator human commands run as donor UID; bridge service owns lifecycle marks,
   keys/config/audit (A/C donor UID; B bridge UID); harness owns home/scratch.
-  Export cleanup obligation cannot be silently dropped; R-TRANSFER code result is separate.
+  Export cleanup obligation cannot be silently dropped; no launch after retiring.
+  [[remote-worker-transfer.puml Transfer outcomes, repair and cleanup authority]]
   Separate explicit operator home retention states confidentiality is not guaranteed.
   Git/accepted outputs have a separate confidentiality policy.
   Project dispatcher service owns tracking, root user-manager owns account lifecycle;
