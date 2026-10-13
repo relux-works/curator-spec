@@ -104,3 +104,4 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0010](CIP-0010-credentials-setup-token-and-inherited-auth.md) | Credentials: `setup-token` adoption, homes with inherited authentication, CIP-0003 disposition | Draft |
 | [CIP-0011](CIP-0011-credential-broker-and-agent-users.md) | Credential broker leases and agent OS users | Draft |
 | [CIP-0012](CIP-0012-symlinked-seed-files.md) | Symlinked seed files | Rejected |
+| [CIP-0013](CIP-0013-machine-base-context.md) | Machine base context | Draft |
