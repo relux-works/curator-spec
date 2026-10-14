@@ -7,6 +7,20 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Environments revision 1 adds `env resolve --repair --preserve-lock`: repair
+  preserves the lock hash or refuses before repair-lock acquisition and every
+  write with `environment_repair_needs_lock_migration`. The flag alone uses
+  the existing `usage` error. Plain `--repair` explicitly admits v1-to-v2 lock
+  identity migration without re-resolving the closure. Add conformance vectors
+  for migration refusal, hash-preserving repair, invalid flag use, and the
+  current-home lock-free path in an independent unreleased namespace, leaving
+  the accepted rc.14 corpus and pin unchanged; no implementation conformance
+  is claimed. Migration refusal directs the operator to plain `--repair`;
+  concurrent lock replacement refuses with `environment_repair_failed`
+  before writes, and status remains read-only/current for a matching v1 home.
+  The manager profile (`profiles/manager.md`) §12.5 mirrors the repair
+  semantics and both refusal conditions from environments §10.1 and §10.4.
+
 - Unreleased, opt-in core manifest schema 9 adds optional
   `dependencies.skills.*.directory` selection at the dependency's pinned
   repository ref, isolated in the new `draft-sources-v2` namespaces

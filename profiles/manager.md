@@ -4,6 +4,13 @@ This document is normative for implementations claiming the **manager**
 conformance class. It defines behavior around the portable objects in the
 protocol core. It does not prescribe an executable name or machine-home path.
 
+**Repair amendment (2026-10-14).** Section 12.5 mirrors environments §10.1
+and §10.4 for lock-preserving repair: plain `--repair` admits v1-to-v2 lock
+identity migration, while `--repair --preserve-lock` refuses repair that
+would change the lock hash before repair-lock acquisition and writes. The
+resolve-refusal table also covers a lock hash changed before repair-lock
+acquisition.
+
 For rc.9, assurance selection and verified-provider behavior are also governed
 by [`protocol/assurance.md`](../protocol/assurance.md). Portable remains the
 default behavior defined below. A manager MAY omit verified support, but if it
@@ -2927,8 +2934,10 @@ passthrough entry is never stale (environments §8.4.1): resolve reports the
 unreadable diagnostic and emits no fragment, and `--repair` neither
 re-materializes an unreadable surface nor re-links an unreadable entry.
 Under `--repair` the same verification
-runs first and a current home emits its fragment without any lock; only a
-stale home takes the section 2.5 mutation lock with a bounded wait of at
+runs first and a current home emits its fragment without any lock when no
+lock identity migration is required; only a stale home or a plain
+`--repair` requiring identity migration (environments §10.1) takes the
+section 2.5 mutation lock with a bounded wait of at
 least one and at most sixty seconds, documented by the manager, and
 provisions or repairs the home from the store entries the lock names as one
 journaled transaction — re-materializing managed surfaces, re-linking
@@ -2947,7 +2956,13 @@ bytes from the store and
 MUST NOT adopt candidate bytes found in the home — the no-adoption rule of
 sections 2.6 and 11.9. A lock wait that times out is
 `environment_lock_unavailable`; a store that cannot restore the home is
-`environment_repair_failed`; neither emits a fragment. The manager holds no
+`environment_repair_failed`. Under `--repair --preserve-lock`, a repair that
+would change the lock hash refuses with
+`environment_repair_needs_lock_migration` before repair-lock acquisition
+and any write, naming the explicit plain-`--repair` migration command
+(environments §10.1). A lock hash changed between the preserve-lock pre-check
+and repair-lock acquisition refuses with `environment_repair_failed`
+before any write. These refusals emit no fragment. The manager holds no
 per-home lock, and the window between a completed repair and the child's
 first read is the recorded residual of environments §10.1.
 
@@ -2996,7 +3011,8 @@ in this profile launches.
 | store entry, lock, or marker file fails the environments §4 protected-boundary contract or its pin hash at resolve (no fragment; non-current) | `environment_store_untrusted` |
 | enclosing boundary cannot be proven at resolve (no fragment; non-current; nothing rebuilt) | `environment_store_untrusted` |
 | repair could not acquire the mutation lock within the bounded wait | `environment_lock_unavailable` |
-| managed home cannot be repaired from the store | `environment_repair_failed` |
+| `--repair --preserve-lock` would change the lock hash (including a v1 lock with a v2 writer); refusal before repair-lock acquisition and any write; no fragment; names explicit migration commands | `environment_repair_needs_lock_migration` |
+| managed home cannot be repaired from the store, or the lock hash changed between the preserve-lock pre-check and repair-lock acquisition (no fragment or writes) | `environment_repair_failed` |
 
 ### 12.6 Profile audit
 

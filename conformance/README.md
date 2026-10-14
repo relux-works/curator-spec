@@ -190,6 +190,23 @@ Pack/index negatives carry concrete bytes plus deterministic base-fixture
 mutations; harnesses must materialize the mutation and recompute the declared
 Git hash-family checksums.
 
+The hand-authored
+[`environments-repair-preserve-lock/vectors.json`](environments-repair-preserve-lock/vectors.json)
+vector extends environments revision 1, section 10.1. This unreleased family
+lives outside the frozen accepted rc.14 corpus and does not change its
+manifest or candidate pin. Its fixture locks carry
+exact CCJ-1 bytes and SHA-256 lock hashes; its snapshot carries both core §8
+framing identities. Consumers drive `env resolve` or `env status` with each case's argv and
+fixture state, compare the emitted fragment's profile pin when present, and
+observe repair-lock acquisition and all writes (including staging, journals,
+and store rebuilds). Each `forbidden_observations` entry is nonconforming,
+including a migration refusal after taking the lock or writing anything.
+The concurrent-replacement case acquires the repair lock and refuses before
+any write; its write observations exclude the other operation's publication.
+The status case reports a matching v1-lock home as current without mutation.
+Local fixture and outcome checks validate the new specification data; these
+vectors do not claim that a pinned implementation consumes this new family.
+
 ## 4. Execution
 
 From the specification repository:
