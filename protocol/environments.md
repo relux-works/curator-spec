@@ -2,6 +2,12 @@
 
 This document is normative for the agent-environments capability, revision 1.
 
+**Revision-1 repair amendment (2026-10-14).** Section 10.1 explicitly admits
+v1-to-v2 lock identity migration under plain `--repair` and adds
+`--repair --preserve-lock` for repair that preserves the effective pin or
+refuses before lock acquisition and writes. Section 13 names the new
+conformance vectors; no implementation conformance is claimed.
+
 **Revision-1 amendment (2026-10-14).** The later evidence-driven Muse
 admission records the root-context target and monolithic form verified on
 1.4.7, together with mandatory foreign personal-context exclusion on `exec`.
@@ -209,6 +215,12 @@ and writes a new lock only when the new closure passes the always-strict
 audit of section 9.1 in full (section 9.2). Nothing re-resolves implicitly:
 `profile use`, `profile sync`, `env resolve`, and status read the lock they
 find.
+
+An identity migration is distinct from re-resolution: it retains the selected
+closure and snapshot bytes while changing their content-hash framing and the
+lock hash. Section 10.1 explicitly permits the v1-to-v2 identity migration
+under plain `env resolve --repair`; `--preserve-lock` forbids a repair that
+would change the lock hash.
 
 The lock is a record, not a signature: it MUST NOT be used as an
 authorization token or provenance proof (core §10 discipline). The
@@ -2921,7 +2933,7 @@ and never fails an operation.
 The manager's only execution-facing primitive is:
 
 ```text
-env resolve <env-id> [--profile <name>] [--repair] [--format json|env|shell]
+env resolve <env-id> [--profile <name>] [--repair [--preserve-lock]] [--format json|env|shell]
 ```
 
 It resolves a profile — the named one, otherwise the current profile for the
@@ -2929,6 +2941,49 @@ applicable scope — and an environment to a **launch environment fragment**.
 Resolution is a pure function from (lock, precedence policy, environment,
 machine configuration) to the fragment; it launches nothing and applies no
 channel.
+
+`--preserve-lock` is valid only with `--repair`. Without `--repair`, it MUST
+fail as the existing general CLI `usage` error, before resolving a profile,
+taking a repair lock, or writing anything, and MUST emit no fragment.
+
+**Lock identity migration under repair.** Plain `--repair` (without
+`--preserve-lock`) MUST migrate a readable, trusted `context-lock-v1` lock
+when the writer uses content-hash framing version 2. This is an identity-only
+migration under the repair lock, not implicit re-resolution: the selected
+closure, versions, source declarations, commit pins, and snapshot bytes MUST
+remain unchanged. State pins are recomputed from those same verified snapshot
+bytes using core §8 framing version 2, and the manager writes
+`context-lock-v2` with `hash_version: 2`. The lock hash changes; the manager
+updates the affected managed surfaces and markers to bind the migrated lock
+before emitting its fragment. The section 4 trust checks, core §8 v1 NUL
+guard, transaction discipline, and prohibition on credential ownership
+migration continue to apply. The migration is required even when the home's
+surfaces match the old lock; that home needs identity repair under a v2 writer.
+
+**Preserving the lock.** Under `--repair --preserve-lock`, the manager MUST
+evaluate whether repair would change the section 1.3 lock hash **before taking
+the repair lock and before any write**, including staging, store rebuilds,
+journal writes, provisioning, and home repair. A v1 lock with a v2 writer is
+the defined instance of a repair that would change the lock hash. If repair
+would change it, the manager MUST refuse with
+`environment_repair_needs_lock_migration`, MUST emit no fragment, and MUST
+write nothing. The diagnostic MUST direct the operator to the explicit
+identity migration defined above: rerun without `--preserve-lock` as
+`curator env resolve <env-id> --profile <name> --repair`, naming the selected
+environment and profile. This is an operator action, never a command resolve
+executes automatically.
+
+Otherwise the operation MUST behave exactly as `--repair`, with the additional
+invariant that the lock hash after the operation equals the lock hash read
+before it; it MUST NOT rewrite the lock to obtain a new effective pin. Inputs
+MUST be revalidated under the repair lock before any write, and the operation
+MUST NOT proceed with a changed lock hash. If the hash changed between the
+read-only pre-check and repair-lock acquisition, the manager MUST refuse with
+`environment_repair_failed`, MUST emit no fragment, and MUST write nothing;
+it MUST NOT repair against either the old or the replacement lock in that
+invocation. A current home requiring no lock identity migration emits its
+fragment without taking or touching any lock,
+including under `--repair --preserve-lock`.
 
 **Read-only by default.** Resolution verifies that the profile's managed
 home for the environment is materialized and current, and the verification
@@ -2950,8 +3005,10 @@ knows is wrong without saying so. For a `claude_code` home in the
 `referenced` form, the launch directory's missing project entry (section
 7.4) is a staleness reason like any other. Under `--repair` the same
 lock-free verification runs **first**, and a current home emits its
-fragment without touching any lock; only when that verification finds the
-home stale does resolve take the **repair lock** — the manager-home
+fragment without touching any lock when no lock identity migration is
+required; only when that verification finds the home stale or plain
+`--repair` requires the identity migration above does resolve take the
+**repair lock** — the manager-home
 mutation lock of manager §2.5, the same lock `profile use` holds — with a
 bounded wait (implementation-documented, at least one second and at most
 sixty), provisions or repairs the home from
@@ -3404,7 +3461,8 @@ that no reader mistakes the surfacing rows for an execution sandbox.
 | dry-run evaluation of an entry-class failure of a store entry or a marker file, or of a lock file that fails its boundary checks (no mutation; a real operation would rebuild it) | `would-rebuild-untrusted-store` |
 | dry-run evaluation of an enclosing-boundary failure, of a `path` source directory failure, or of an unreadable or malformed lock file (no mutation; no rebuild planned) | `environment_store_untrusted` |
 | repair could not acquire the mutation lock within the bounded wait | `environment_lock_unavailable` |
-| managed home cannot be repaired from the store | `environment_repair_failed` |
+| `--repair --preserve-lock` would change the lock hash (including a v1 lock with a v2 writer); refusal before repair-lock acquisition and any write; no fragment; names explicit migration commands | `environment_repair_needs_lock_migration` |
+| managed home cannot be repaired from the store, or the lock hash changed between the preserve-lock pre-check and repair-lock acquisition (no fragment or writes) | `environment_repair_failed` |
 | S4 profile `s4-warn`: launch composition passes an operator variable outside the configured `passable_env_names` (warning, names the variables and the knob) | `mcp_env_passthrough_unlisted` |
 | S4 profile `s4-enforce`: launch composition drops a requested name outside the effective `passable_env_names` (warning, names the variables) | `mcp_env_passthrough_dropped` |
 | explicit `passable_env_names: null` under the `hardened` posture at profile install, profile update, or launch composition (refusal, names the knob; old lock stands) | `passable_env_names_unbounded_refused` |
@@ -3626,6 +3684,12 @@ report `profile`, `explicit`, or `lock`. Both commands follow
 the manager §10 discipline exactly: recompute and report, never mutate — no
 fetch, no repair, no adoption, no channel application, no onboarding.
 `--check` returns non-zero when any row is non-current.
+
+`environment_repair_needs_lock_migration` is a resolve-operation refusal,
+not an additional home-currency verdict. A v1 lock alone does not make a
+home non-current when its marker and surfaces match that lock; status remains
+read-only. Section 10.1 defines when a v2 writer requires identity migration
+under repair and when `--preserve-lock` refuses it.
 
 An installation row is current only when its marker is valid and supported;
 profile identity, lock hash, member list, precedence, mode, and form match
@@ -3868,6 +3932,21 @@ REQUIRED closed `permissions` member — and `launch-env-fragment-v3`
 (section 10.2), adding Muse and its four XDG parents,
 each with positive and negative schema cases; `profilefile-v1` and
 `context-manifest-v1` with their cases are withdrawn. Vector families:
+lock-preserving repair
+(`conformance/environments-repair-preserve-lock/vectors.json` at repository root,
+section 10.1): (a) a v1 lock with a v2 writer refuses before lock acquisition
+and every write, emitting no fragment, including when the old home matches
+the v1 lock or is unprovisioned; (b) a stale home under a v2 lock repairs with
+equal before/after lock hashes; (c) `--preserve-lock` without `--repair`
+returns the existing `usage` error with no fragment or writes; and (d) a
+current home under a v2 lock emits without acquiring the repair lock, even
+when another operation holds it. A companion plain-`--repair` case requires
+the v1-to-v2 identity migration without re-resolution. Additional cases
+require `environment_repair_failed` with no fragment or writes when the lock
+hash changes between the read-only pre-check and repair-lock acquisition,
+and require `env status --check --json` to report a matching v1-lock home as
+current without taking a lock or rewriting it (section 12). The vector's
+forbidden observations narrow the refusal, equality, and current-home bounds;
 the Muse registry row, managed-home layout, shared file-link liveness
 and repair/refusal, and no-HOME-replacement cases
 (`vectors/environments-muse.json`, sections 7.1, 7.4, and 10.2);

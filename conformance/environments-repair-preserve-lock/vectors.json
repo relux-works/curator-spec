@@ -1,0 +1,668 @@
+{
+  "capability": "agent-environments",
+  "capability_revision": 1,
+  "cases": [
+    {
+      "argv": [
+        "env",
+        "resolve",
+        "pi",
+        "--profile",
+        "example-profile",
+        "--repair",
+        "--preserve-lock",
+        "--format",
+        "json"
+      ],
+      "expected": {
+        "closure_reresolved": false,
+        "diagnostic": "environment_repair_needs_lock_migration",
+        "fragment_emitted": false,
+        "fragment_profile_lock_sha256": null,
+        "lock_bytes_unchanged": true,
+        "lock_sha256_after": "sha256:209de96f3a5e37505262d6e5d5440a1cf4606898731153ddd101b5253a59e7f8",
+        "lock_sha256_before": "sha256:209de96f3a5e37505262d6e5d5440a1cf4606898731153ddd101b5253a59e7f8",
+        "operator_commands": [
+          "curator env resolve pi --profile example-profile --repair"
+        ],
+        "repair_lock_acquired": false,
+        "writes": []
+      },
+      "forbidden_observations": [
+        {
+          "mutation": "refuse-only-after-lock-acquisition",
+          "observation": {
+            "repair_lock_acquired": true
+          }
+        },
+        {
+          "mutation": "protect-only-lock-file",
+          "observation": {
+            "writes": [
+              "operation-staging"
+            ]
+          }
+        },
+        {
+          "mutation": "emit-fragment-on-migration-refusal",
+          "observation": {
+            "fragment_emitted": true
+          }
+        },
+        {
+          "mutation": "recovery-guidance-only-for-stale-homes",
+          "observation": {
+            "operator_commands": [
+              "curator env resolve pi --profile example-profile --repair --preserve-lock"
+            ]
+          }
+        }
+      ],
+      "input": {
+        "home_state": "stale",
+        "lock_fixture": "v1",
+        "repair_lock_held_by_other_operation": false,
+        "writer_hash_version": 2
+      },
+      "name": "v1-v2-stale-preserve-lock-refused"
+    },
+    {
+      "argv": [
+        "env",
+        "resolve",
+        "pi",
+        "--profile",
+        "example-profile",
+        "--repair",
+        "--preserve-lock",
+        "--format",
+        "json"
+      ],
+      "expected": {
+        "closure_reresolved": false,
+        "diagnostic": "environment_repair_needs_lock_migration",
+        "fragment_emitted": false,
+        "fragment_profile_lock_sha256": null,
+        "lock_bytes_unchanged": true,
+        "lock_sha256_after": "sha256:209de96f3a5e37505262d6e5d5440a1cf4606898731153ddd101b5253a59e7f8",
+        "lock_sha256_before": "sha256:209de96f3a5e37505262d6e5d5440a1cf4606898731153ddd101b5253a59e7f8",
+        "operator_commands": [
+          "curator env resolve pi --profile example-profile --repair"
+        ],
+        "repair_lock_acquired": false,
+        "writes": []
+      },
+      "forbidden_observations": [
+        {
+          "mutation": "refuse-only-for-stale-home",
+          "observation": {
+            "fragment_emitted": true
+          }
+        },
+        {
+          "mutation": "refuse-only-after-lock-acquisition",
+          "observation": {
+            "repair_lock_acquired": true
+          }
+        },
+        {
+          "mutation": "protect-only-lock-file",
+          "observation": {
+            "writes": [
+              "operation-staging"
+            ]
+          }
+        },
+        {
+          "mutation": "emit-fragment-on-migration-refusal",
+          "observation": {
+            "fragment_emitted": true
+          }
+        },
+        {
+          "mutation": "recovery-guidance-only-for-stale-homes",
+          "observation": {
+            "operator_commands": [
+              "curator env resolve pi --profile example-profile --repair --preserve-lock"
+            ]
+          }
+        }
+      ],
+      "input": {
+        "home_state": "unprovisioned",
+        "lock_fixture": "v1",
+        "repair_lock_held_by_other_operation": false,
+        "writer_hash_version": 2
+      },
+      "name": "v1-v2-unprovisioned-preserve-lock-refused"
+    },
+    {
+      "argv": [
+        "env",
+        "resolve",
+        "pi",
+        "--profile",
+        "example-profile",
+        "--repair",
+        "--preserve-lock",
+        "--format",
+        "json"
+      ],
+      "expected": {
+        "closure_reresolved": false,
+        "diagnostic": "environment_repair_needs_lock_migration",
+        "fragment_emitted": false,
+        "fragment_profile_lock_sha256": null,
+        "lock_bytes_unchanged": true,
+        "lock_sha256_after": "sha256:209de96f3a5e37505262d6e5d5440a1cf4606898731153ddd101b5253a59e7f8",
+        "lock_sha256_before": "sha256:209de96f3a5e37505262d6e5d5440a1cf4606898731153ddd101b5253a59e7f8",
+        "operator_commands": [
+          "curator env resolve pi --profile example-profile --repair"
+        ],
+        "repair_lock_acquired": false,
+        "writes": []
+      },
+      "forbidden_observations": [
+        {
+          "mutation": "refuse-only-for-stale-home",
+          "observation": {
+            "fragment_emitted": true
+          }
+        },
+        {
+          "mutation": "refuse-only-after-lock-acquisition",
+          "observation": {
+            "repair_lock_acquired": true
+          }
+        },
+        {
+          "mutation": "protect-only-lock-file",
+          "observation": {
+            "writes": [
+              "operation-staging"
+            ]
+          }
+        },
+        {
+          "mutation": "emit-fragment-on-migration-refusal",
+          "observation": {
+            "fragment_emitted": true
+          }
+        },
+        {
+          "mutation": "recovery-guidance-only-for-stale-homes",
+          "observation": {
+            "operator_commands": [
+              "curator env resolve pi --profile example-profile --repair --preserve-lock"
+            ]
+          }
+        }
+      ],
+      "input": {
+        "home_state": "current",
+        "lock_fixture": "v1",
+        "repair_lock_held_by_other_operation": false,
+        "writer_hash_version": 2
+      },
+      "name": "v1-v2-current-preserve-lock-refused"
+    },
+    {
+      "argv": [
+        "env",
+        "resolve",
+        "pi",
+        "--profile",
+        "example-profile",
+        "--repair",
+        "--preserve-lock",
+        "--format",
+        "json"
+      ],
+      "expected": {
+        "closure_reresolved": false,
+        "diagnostic": null,
+        "fragment_emitted": true,
+        "fragment_profile_lock_sha256": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+        "lock_bytes_unchanged": true,
+        "lock_sha256_after": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+        "lock_sha256_before": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+        "repair_lock_acquired": true,
+        "writes": [
+          "managed-surfaces",
+          "marker"
+        ]
+      },
+      "forbidden_observations": [
+        {
+          "mutation": "preserve-only-hash-version",
+          "observation": {
+            "lock_bytes_unchanged": false,
+            "lock_sha256_after": "sha256:209de96f3a5e37505262d6e5d5440a1cf4606898731153ddd101b5253a59e7f8"
+          }
+        },
+        {
+          "mutation": "emit-old-pin-after-lock-rewrite",
+          "observation": {
+            "fragment_profile_lock_sha256": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+            "lock_sha256_after": "sha256:209de96f3a5e37505262d6e5d5440a1cf4606898731153ddd101b5253a59e7f8"
+          }
+        }
+      ],
+      "input": {
+        "home_state": "stale",
+        "lock_fixture": "v2",
+        "repair_lock_held_by_other_operation": false,
+        "writer_hash_version": 2
+      },
+      "name": "v2-stale-preserve-lock-repairs"
+    },
+    {
+      "argv": [
+        "env",
+        "resolve",
+        "pi",
+        "--profile",
+        "example-profile",
+        "--repair",
+        "--preserve-lock",
+        "--format",
+        "json"
+      ],
+      "expected": {
+        "closure_reresolved": false,
+        "diagnostic": null,
+        "fragment_emitted": true,
+        "fragment_profile_lock_sha256": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+        "lock_bytes_unchanged": true,
+        "lock_sha256_after": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+        "lock_sha256_before": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+        "repair_lock_acquired": true,
+        "writes": [
+          "managed-surfaces",
+          "marker"
+        ]
+      },
+      "forbidden_observations": [
+        {
+          "mutation": "preserve-only-hash-version",
+          "observation": {
+            "lock_bytes_unchanged": false,
+            "lock_sha256_after": "sha256:209de96f3a5e37505262d6e5d5440a1cf4606898731153ddd101b5253a59e7f8"
+          }
+        },
+        {
+          "mutation": "emit-old-pin-after-lock-rewrite",
+          "observation": {
+            "fragment_profile_lock_sha256": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+            "lock_sha256_after": "sha256:209de96f3a5e37505262d6e5d5440a1cf4606898731153ddd101b5253a59e7f8"
+          }
+        }
+      ],
+      "input": {
+        "home_state": "unprovisioned",
+        "lock_fixture": "v2",
+        "repair_lock_held_by_other_operation": false,
+        "writer_hash_version": 2
+      },
+      "name": "v2-unprovisioned-preserve-lock-repairs"
+    },
+    {
+      "argv": [
+        "env",
+        "resolve",
+        "pi",
+        "--profile",
+        "example-profile",
+        "--preserve-lock",
+        "--format",
+        "json"
+      ],
+      "expected": {
+        "closure_reresolved": false,
+        "diagnostic": "usage",
+        "fragment_emitted": false,
+        "fragment_profile_lock_sha256": null,
+        "lock_bytes_unchanged": true,
+        "lock_sha256_after": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+        "lock_sha256_before": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+        "repair_lock_acquired": false,
+        "writes": []
+      },
+      "forbidden_observations": [
+        {
+          "mutation": "accept-preserve-lock-without-repair",
+          "observation": {
+            "diagnostic": null,
+            "fragment_emitted": true
+          }
+        }
+      ],
+      "input": {
+        "home_state": "stale",
+        "lock_fixture": "v2",
+        "repair_lock_held_by_other_operation": false,
+        "writer_hash_version": 2
+      },
+      "name": "preserve-lock-without-repair-usage"
+    },
+    {
+      "argv": [
+        "env",
+        "resolve",
+        "pi",
+        "--profile",
+        "example-profile",
+        "--repair",
+        "--preserve-lock",
+        "--format",
+        "json"
+      ],
+      "expected": {
+        "closure_reresolved": false,
+        "diagnostic": null,
+        "fragment_emitted": true,
+        "fragment_profile_lock_sha256": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+        "lock_bytes_unchanged": true,
+        "lock_sha256_after": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+        "lock_sha256_before": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+        "repair_lock_acquired": false,
+        "writes": []
+      },
+      "forbidden_observations": [
+        {
+          "mutation": "lock-even-current-home",
+          "observation": {
+            "repair_lock_acquired": true
+          }
+        },
+        {
+          "mutation": "wait-on-busy-lock-even-current-home",
+          "observation": {
+            "diagnostic": "environment_lock_unavailable",
+            "fragment_emitted": false
+          }
+        },
+        {
+          "mutation": "rewrite-marker-even-current-home",
+          "observation": {
+            "writes": [
+              "marker"
+            ]
+          }
+        }
+      ],
+      "input": {
+        "home_state": "current",
+        "lock_fixture": "v2",
+        "repair_lock_held_by_other_operation": true,
+        "writer_hash_version": 2
+      },
+      "name": "v2-current-preserve-lock-lock-free"
+    },
+    {
+      "argv": [
+        "env",
+        "resolve",
+        "pi",
+        "--profile",
+        "example-profile",
+        "--repair",
+        "--format",
+        "json"
+      ],
+      "expected": {
+        "closure_reresolved": false,
+        "diagnostic": null,
+        "fragment_emitted": true,
+        "fragment_profile_lock_sha256": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+        "lock_bytes_unchanged": false,
+        "lock_sha256_after": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+        "lock_sha256_before": "sha256:209de96f3a5e37505262d6e5d5440a1cf4606898731153ddd101b5253a59e7f8",
+        "repair_lock_acquired": true,
+        "selected_closure_unchanged": true,
+        "snapshot_bytes_unchanged": true,
+        "writes": [
+          "v2-store-entries",
+          "profile-lock",
+          "managed-surfaces",
+          "marker"
+        ]
+      },
+      "forbidden_observations": [
+        {
+          "mutation": "plain-repair-skips-identity-migration",
+          "observation": {
+            "lock_sha256_after": "sha256:209de96f3a5e37505262d6e5d5440a1cf4606898731153ddd101b5253a59e7f8"
+          }
+        },
+        {
+          "mutation": "migrate-by-reresolving-closure",
+          "observation": {
+            "closure_reresolved": true
+          }
+        }
+      ],
+      "input": {
+        "home_state": "current",
+        "lock_fixture": "v1",
+        "repair_lock_held_by_other_operation": false,
+        "writer_hash_version": 2
+      },
+      "name": "v1-v2-plain-repair-migrates-identity"
+    },
+    {
+      "argv": [
+        "env",
+        "resolve",
+        "pi",
+        "--profile",
+        "example-profile",
+        "--repair",
+        "--preserve-lock",
+        "--format",
+        "json"
+      ],
+      "expected": {
+        "closure_reresolved": false,
+        "diagnostic": "environment_repair_failed",
+        "fragment_emitted": false,
+        "fragment_profile_lock_sha256": null,
+        "lock_bytes_unchanged": true,
+        "lock_sha256_after": "sha256:80cc8d12c555130f965ddba7db5627790436dc1121dc8419f7a4376d3aa83a3b",
+        "lock_sha256_before": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+        "repair_lock_acquired": true,
+        "writes": []
+      },
+      "forbidden_observations": [
+        {
+          "mutation": "revalidate-only-hash-version",
+          "observation": {
+            "diagnostic": null,
+            "fragment_emitted": true,
+            "fragment_profile_lock_sha256": "sha256:80cc8d12c555130f965ddba7db5627790436dc1121dc8419f7a4376d3aa83a3b",
+            "writes": [
+              "managed-surfaces",
+              "marker"
+            ]
+          }
+        },
+        {
+          "mutation": "reject-lock-change-after-surface-write",
+          "observation": {
+            "writes": [
+              "managed-surfaces"
+            ]
+          }
+        },
+        {
+          "mutation": "emit-old-pin-after-concurrent-lock-change",
+          "observation": {
+            "fragment_emitted": true,
+            "fragment_profile_lock_sha256": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607"
+          }
+        }
+      ],
+      "input": {
+        "home_state": "stale",
+        "lock_fixture": "v2",
+        "lock_replacement_before_repair_lock": "v2-concurrent",
+        "repair_lock_held_by_other_operation": false,
+        "writer_hash_version": 2
+      },
+      "name": "v2-lock-changed-before-repair-lock-refused"
+    },
+    {
+      "argv": [
+        "env",
+        "status",
+        "--check",
+        "--json"
+      ],
+      "expected": {
+        "closure_reresolved": false,
+        "diagnostic": null,
+        "exit_code": 0,
+        "fragment_emitted": false,
+        "fragment_profile_lock_sha256": null,
+        "lock_bytes_unchanged": true,
+        "lock_sha256_after": "sha256:209de96f3a5e37505262d6e5d5440a1cf4606898731153ddd101b5253a59e7f8",
+        "lock_sha256_before": "sha256:209de96f3a5e37505262d6e5d5440a1cf4606898731153ddd101b5253a59e7f8",
+        "repair_lock_acquired": false,
+        "status_home_currency": "current",
+        "writes": []
+      },
+      "forbidden_observations": [
+        {
+          "mutation": "status-currency-requires-writer-framing",
+          "observation": {
+            "exit_code": 1,
+            "status_home_currency": "stale"
+          }
+        },
+        {
+          "mutation": "status-read-only-except-identity-repair",
+          "observation": {
+            "lock_bytes_unchanged": false,
+            "lock_sha256_after": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+            "writes": [
+              "profile-lock",
+              "marker"
+            ]
+          }
+        },
+        {
+          "mutation": "status-lock-free-except-v1-lock",
+          "observation": {
+            "repair_lock_acquired": true
+          }
+        }
+      ],
+      "input": {
+        "home_state": "current",
+        "lock_fixture": "v1",
+        "repair_lock_held_by_other_operation": true,
+        "writer_hash_version": 2
+      },
+      "name": "v1-current-status-read-only"
+    }
+  ],
+  "execution_contract": {
+    "current": "Provision a home matching the fixture lock, marker, generated surfaces, and configuration.",
+    "forbidden_observations": "Each partial observation overrides the named case expected result and MUST be rejected as nonconforming.",
+    "lock_replacement_before_repair_lock": "After the invocation reads its fixture lock and passes the read-only pre-check, another operation publishes the named replacement lock and its verified store snapshot before repair-lock acquisition. Observe only writes by the tested invocation. lock_bytes_unchanged means the tested invocation did not rewrite either lock; the before/after hashes include the concurrent publication. Both locks use framing version 2.",
+    "repair_lock_acquired": "Observe acquisition attempts as well as successful acquisitions; false requires no attempt.",
+    "stale": "Provision a matching home, then change a recorded managed surface without changing the fixture lock.",
+    "status": "Register only the fixture profile and environment, with all other status rows current. Drive env status --check --json under a v2 writer; compare the selected home currency and command exit code. Do not repair or rewrite the v1 lock. No launch fragment is emitted by status.",
+    "unprovisioned": "Leave the managed home absent; the fixture lock and verified store exist.",
+    "usage": "The fixture exists but argv validation must fail before profile resolution.",
+    "writes": "Observe every write including temporary staging, store publication, journals, locks, home surfaces, and markers. Successful repair writes list logical publication classes, not an exhaustive filesystem trace. Refusal and current-home empty lists require zero writes."
+  },
+  "fixtures": {
+    "concurrent_snapshot_files_utf8": {
+      "agent-context.json": "{\"context\":{\"modules\":[]},\"name\":\"example-context\",\"schema_version\":1,\"version\":\"1.0.1\"}\n"
+    },
+    "concurrent_snapshot_state_sha256": "119506393823fd5e251be4fcfc2e38e96b27c2da9879bfe7fa95ec89ad0164b4",
+    "locks": {
+      "v1": {
+        "ccj1_utf8": "{\"members\":[{\"kind\":\"context\",\"name\":\"example-context\",\"overlay\":false,\"required_by\":[],\"state_sha256\":\"5ad74ca0ba475c503434120a27d343e982e0f6c06252f4b8f3d9c138539592d0\",\"version\":\"1.0.0\",\"weight\":0}],\"root\":\"example-context\",\"schema_version\":1}",
+        "lock_sha256": "sha256:209de96f3a5e37505262d6e5d5440a1cf4606898731153ddd101b5253a59e7f8",
+        "object": {
+          "members": [
+            {
+              "kind": "context",
+              "name": "example-context",
+              "overlay": false,
+              "required_by": [],
+              "state_sha256": "5ad74ca0ba475c503434120a27d343e982e0f6c06252f4b8f3d9c138539592d0",
+              "version": "1.0.0",
+              "weight": 0
+            }
+          ],
+          "root": "example-context",
+          "schema_version": 1
+        }
+      },
+      "v2": {
+        "ccj1_utf8": "{\"hash_version\":2,\"members\":[{\"kind\":\"context\",\"name\":\"example-context\",\"overlay\":false,\"required_by\":[],\"state_sha256\":\"651c49afe7873d25873382af1ee5dc8656451bfaf2cb0d77d908ae461a448fa3\",\"version\":\"1.0.0\",\"weight\":0}],\"root\":\"example-context\",\"schema_version\":2}",
+        "lock_sha256": "sha256:03b6a058123cfb43c862abb722c2b656da37de7d8797690e7ce29249e6c74607",
+        "object": {
+          "hash_version": 2,
+          "members": [
+            {
+              "kind": "context",
+              "name": "example-context",
+              "overlay": false,
+              "required_by": [],
+              "state_sha256": "651c49afe7873d25873382af1ee5dc8656451bfaf2cb0d77d908ae461a448fa3",
+              "version": "1.0.0",
+              "weight": 0
+            }
+          ],
+          "root": "example-context",
+          "schema_version": 2
+        }
+      },
+      "v2-concurrent": {
+        "ccj1_utf8": "{\"hash_version\":2,\"members\":[{\"kind\":\"context\",\"name\":\"example-context\",\"overlay\":false,\"required_by\":[],\"state_sha256\":\"119506393823fd5e251be4fcfc2e38e96b27c2da9879bfe7fa95ec89ad0164b4\",\"version\":\"1.0.1\",\"weight\":0}],\"root\":\"example-context\",\"schema_version\":2}",
+        "lock_sha256": "sha256:80cc8d12c555130f965ddba7db5627790436dc1121dc8419f7a4376d3aa83a3b",
+        "object": {
+          "hash_version": 2,
+          "members": [
+            {
+              "kind": "context",
+              "name": "example-context",
+              "overlay": false,
+              "required_by": [],
+              "state_sha256": "119506393823fd5e251be4fcfc2e38e96b27c2da9879bfe7fa95ec89ad0164b4",
+              "version": "1.0.1",
+              "weight": 0
+            }
+          ],
+          "root": "example-context",
+          "schema_version": 2
+        }
+      }
+    },
+    "profile_name": "example-profile",
+    "snapshot_files_utf8": {
+      "agent-context.json": "{\"context\":{\"modules\":[]},\"name\":\"example-context\",\"schema_version\":1,\"version\":\"1.0.0\"}\n"
+    },
+    "snapshot_state_sha256": {
+      "1": "5ad74ca0ba475c503434120a27d343e982e0f6c06252f4b8f3d9c138539592d0",
+      "2": "651c49afe7873d25873382af1ee5dc8656451bfaf2cb0d77d908ae461a448fa3"
+    },
+    "source_kind": "path"
+  },
+  "normative_section": "protocol/environments.md \u00a710.1",
+  "preconditions": {
+    "credential_migration_required": false,
+    "environment": "pi",
+    "form": "monolithic",
+    "isolation": "shared",
+    "protected_boundaries": "verified",
+    "seed_reads": "absent",
+    "snapshot_contains_nul": false,
+    "store_pins": "verified",
+    "unmanaged_conflicts": false
+  }
+}
