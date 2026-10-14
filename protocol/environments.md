@@ -2,6 +2,14 @@
 
 This document is normative for the agent-environments capability, revision 1.
 
+**Revision-1 foreign-context amendment (2026-10-14).** Section 7.1 records
+the verified Muse 1.4.7 probes P1–P4: native root context suppresses foreign
+personal rules fallback, while foreign personal skills require exclusion.
+Section 10.2 binds the interactive `-c context.foreign_personal_skills=false`
+argv to the same target and release as the `exec` flag. Sections 12 and 13
+carry the aligned status note and argv vectors; no implementation
+conformance or model-visible isolation is claimed.
+
 **Revision-1 repair amendment (2026-10-14).** Section 10.1 explicitly admits
 v1-to-v2 lock identity migration under plain `--repair` and adds
 `--repair --preserve-lock` for repair that preserves the effective pin or
@@ -1359,15 +1367,32 @@ open question: the measured location is a candidate, not proof of loading.
 
 On `exec`, `--no-foreign-personal-context` reduced the loader's foreign-source
 count from one to zero while the own XDG file continued loading
-(**verified** on 1.4.7). The foreign source was unidentified; model-visible
-removal of its contents remains unverified. Section 10.2 requires the flag
-for managed `exec` launches whose environment materializes that target.
+(**verified** on 1.4.7). The following foreign personal-context behavior is
+**verified** on Muse 1.4.7 (1.4.7-R6101.1), probes P1–P4:
+
+- **P3 — rules fallback.** The Claude Code and Codex personal rule files
+  are a fallback. When the native `$XDG_CONFIG_HOME/muse/AGENTS.md` exists,
+  Muse does not read those foreign personal rules.
+- **P4 — skills persist.** Foreign personal skills still load with that
+  native file present.
+- **P1/P2 — form-specific flag.** `--no-foreign-personal-context` is accepted
+  only on `exec` (P1); the interactive form rejects it (P2).
+- **P4 — interactive exclusion.** The interactive form accepts
+  `-c context.foreign_personal_skills=false`, with the value required to be
+  the JSON boolean `false`. This override has no effect while the rules
+  fallback is active, that is, without the native file.
+
+These loader observations do not verify model-visible removal of foreign
+contents. Section 10.2 requires the form-specific exclusion argv for managed
+`exec` and interactive launches whose environment materializes that target.
 XDG retargeting and credential sharing alone do not exclude foreign
 personal context. `muse serve` has no such flag
 ([muse-issues 013](https://github.com/relux-works/muse-issues)).
-`env status` MUST carry a standing Muse note naming the `serve` exclusion
-gap, observed workspace precedence, unverified model-visible foreign
-removal, and unverified skills and system-prompt discovery. This adapter
+`env status` MUST carry a standing Muse note naming the verified rules
+fallback suppression and persistent foreign personal skills, the target-bound
+`exec` and interactive exclusion argv, the `serve` exclusion gap, observed
+workspace precedence, unverified model-visible foreign removal, and
+unverified managed skills and system-prompt discovery. This adapter
 does not promise account or
 context isolation; fresh-login `isolated` operation is unverified and
 MUST be refused with `environment_isolated_unsupported` until verified.
@@ -3325,21 +3350,28 @@ supported fragment revision. The new schema is
 `schemas/v1/launch-env-fragment-v3.schema.json`; released schemas v1/v2
 remain byte-identical.
 
-**Muse managed launch argv.** A managed Muse launch on the `exec` form
-whose environment materializes the root-context target in section 7.1
-MUST pass `--no-foreign-personal-context`. This is a per-adapter launch
-requirement, independent of permissions mode and
-system-prompt or MCP opt-ins. The root-context target in section 7.1 and
-this exclusion flag are one change and MUST ship in the same release.
-An implementation MUST NOT emit the flag without materializing that
-target. The `serve` form cannot exclude foreign
-personal context and retains the standing residual in sections 7.1 and 12.
+**Muse managed launch argv.** A managed Muse launch whose environment
+materializes the root-context target in section 7.1 MUST pass
+`--no-foreign-personal-context` on the `exec` form, or the two argv elements
+`-c` and `context.foreign_personal_skills=false` on the interactive form.
+The interactive value is the JSON boolean `false`, not a quoted string or
+an alternative spelling. The forms differ because the interactive form
+rejects the `exec` flag (**verified** on 1.4.7, P2); the native target
+suppresses the rules fallback before the interactive skills override takes
+effect (P3/P4). Both exclusions are the same per-adapter launch requirement,
+independent of permissions mode and system-prompt or MCP opt-ins. The
+root-context target in section 7.1 and both forms' exclusion argv are one
+change and MUST ship in the same release. An implementation MUST NOT emit
+either exclusion without materializing that target. The `serve` form cannot
+exclude foreign personal context and retains the standing residual in
+sections 7.1 and 12.
 
 The existing channel-descriptor grammar cannot encode this standalone
 flag: `flag` requires `argument`, `with` accompanies another channel flag,
 and Muse has no admitted system-prompt or MCP channel. The minimal addition
-is this per-adapter argv rule; the launcher selects it for `muse`/`exec`.
-No fragment member, descriptor kind, argument value, or channel is added;
+is this per-adapter argv rule; the launcher selects the exclusion by the
+`muse` launch form (`exec` or interactive).
+No fragment member, descriptor kind, or channel is added;
 the v3 fragment shape and released schema bytes remain unchanged.
 
 **`launch-env-fragment-v2`.** Revision v2 is revision v1 plus one
@@ -3624,7 +3656,9 @@ participating target's embedded MCP configuration and `commands/` are
 ungoverned, the passthrough liveness row per managed home, the recorded
 seeds per managed home, the XDG seed state per managed `opencode` parent
 with any `environment_seed_shadowed` entry, the standing `opencode`
-split-brain note and the standing Muse residual note of section 7.1, the
+split-brain note and the standing Muse note of section 7.1 (verified rules
+fallback suppression, persistent foreign personal skills, target-bound
+`exec` and interactive exclusion argv, and the recorded residuals), the
 recorded and detected tool release per
 adapter (section 7.9), both homes of the current profile per scope and
 their provisioning state (section 8.1), backup generation counts and ages
@@ -3954,12 +3988,17 @@ the later Muse admission requires vectors for the monolithic output at
 `<home>/config/muse/AGENTS.md` with the exact section 5.2 bytes (including
 zero applicable modules), refusal of `referenced` with
 `environment_form_unsupported` and no fallback output, and managed `exec`
-argv carrying `--no-foreign-personal-context` independently of permissions
-mode and channel opt-ins. Negative cases cover the wrong output path or
-bytes, acceptance of `referenced`, omission of the flag, and emission of
-the flag without materializing the target. These vectors are listed for
-delivery with the admission; the existing Muse vector family predates it
-and does not establish conformance to these added requirements;
+argv carrying `--no-foreign-personal-context`, and interactive argv carrying
+`-c context.foreign_personal_skills=false`, independently of permissions
+mode and channel opt-ins. The unreleased
+[`environments-muse-launch-argv/vectors.json`](../conformance/environments-muse-launch-argv/vectors.json)
+family covers both forms and the negative where the target is not
+materialized and neither exclusion appears. Its forbidden observations
+cover omitted exclusions, the `exec` flag on the interactive form, non-boolean
+interactive values, and either exclusion emitted without the target.
+Wrong output path or bytes and acceptance of `referenced` remain required
+vectors for delivery with the admission; the existing released Muse family
+predates it and does not establish conformance to these added requirements;
 version and range parsing (section 1.4, including the coercion table and
 the excluded forms); resolution (conflict, downward re-selection,
 prerelease admission, exact-constraint unification); lock canonicalization

@@ -38,6 +38,16 @@ Versioning for the complete specification set.
 
 ### Changed
 
+- Record verified Muse 1.4.7 foreign personal-context probes P1–P4:
+  native root context suppresses foreign personal rules fallback, foreign
+  personal skills persist, and the interactive form rejects the `exec`
+  exclusion flag. Require interactive `-c context.foreign_personal_skills=false`
+  under the same target, per-adapter and release binding as the `exec` flag;
+  the override requires JSON boolean `false` and has no effect without the
+  native file. Align manager and status mirrors and add unreleased argv
+  vectors for both forms and absent-target negatives. No new diagnostic,
+  released corpus change, or implementation conformance is claimed.
+
 - Admit the measured Muse Code 1.4.7 monolithic root-context target in
   environments revision 1, coupled to mandatory foreign personal-context
   exclusion on managed `exec` in the same release. The Decision 0010

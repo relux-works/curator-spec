@@ -2543,9 +2543,18 @@ managed homes always link from the profile store. The `in_place_mode.<env-id>`
 knob selects `linked` or `copied` for an adapter's in-place surfaces on
 this machine; an adapter MAY declare a different in-place default in the
 registry; profile data cannot select a mode. Muse currently admits only
-the managed-home layout, with its unverified context surfaces and isolation
-gap bounded by environments §7.1; no Muse in-place or secondary target
-is admitted. One per-surface exception
+the managed-home layout and the monolithic root-context target verified on
+1.4.7. Native root context suppresses foreign personal rules fallback (P3),
+while foreign personal skills persist (P4). Managed launches materializing
+that target MUST pass `--no-foreign-personal-context` on `exec` or
+`-c context.foreign_personal_skills=false` on the interactive form; both
+are the same per-adapter requirement, independent of permissions and
+channel opt-ins, ship with the target in the same release, and MUST NOT be
+emitted without it (environments §10.2). The interactive form rejects the
+`exec` flag (P2), and its skills override accepts only JSON boolean `false`
+and has no effect without the native file (P4). The remaining context
+surfaces and isolation gap are bounded by environments §7.1; no Muse
+in-place or secondary target is admitted. One per-surface exception
 holds in every mode and every home and is not overridable by the registry
 or by any knob: the `claude_code` root-context surface is always a copied
 regular file, recorded as a copy with its reason in the marker so that hash
@@ -3074,7 +3083,12 @@ context members with weights and both precedence primitives, every
 split-brain scope, secondary-target probe and consent results with the
 ungoverned-surfaces statement, the passthrough liveness row and the
 recorded seeds per managed home, the XDG seed state per managed `opencode`
-parent, the standing `opencode` split-brain note, the recorded and detected
+parent, the standing `opencode` split-brain note, the standing Muse note
+(environments §7.1 and §12: verified rules fallback suppression, persistent
+foreign personal skills, target-bound `exec` and interactive exclusion argv,
+the `serve` exclusion gap, observed workspace precedence, unverified
+model-visible foreign removal, and unverified managed skills and
+system-prompt discovery), the recorded and detected
 tool release per adapter, both homes of the current profile per scope with
 their provisioning state, backup generation counts and ages per home (or
 `environment_backup_record_unreadable` when the inventory cannot be

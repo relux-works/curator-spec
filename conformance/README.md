@@ -209,6 +209,20 @@ vectors do not claim that a pinned implementation consumes this new family.
 
 ## 4. Execution
 
+The hand-authored
+[`environments-muse-launch-argv/vectors.json`](environments-muse-launch-argv/vectors.json)
+family covers environments revision 1, section 10.2: managed `exec` and
+interactive exclusions, and neither exclusion when the root-context target
+is not materialized. Its matrix crosses both forms and target states with
+both permission modes and each independent system-prompt/MCP opt-in state.
+Consumers drive their managed launch entry point with the declared state,
+capture the process argv, and compare the ordered `expected.exclusion_argv`
+projection. The execution contract defines the target and projection;
+each forbidden observation is nonconforming. This unreleased family lives
+outside the frozen rc.14 corpus and does not alter its manifest or candidate
+pin. Local tests check specification data, not Muse runtime behavior or
+implementation consumption.
+
 From the specification repository:
 
 ```text
