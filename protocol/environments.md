@@ -1349,8 +1349,9 @@ On `exec`, `--no-foreign-personal-context` reduced the loader's foreign-source
 count from one to zero while the own XDG file continued loading
 (**verified** on 1.4.7). The foreign source was unidentified; model-visible
 removal of its contents remains unverified. Section 10.2 requires the flag
-for managed `exec` launches. XDG retargeting and credential sharing alone
-do not exclude foreign personal context. `muse serve` has no such flag
+for managed `exec` launches whose environment materializes that target.
+XDG retargeting and credential sharing alone do not exclude foreign
+personal context. `muse serve` has no such flag
 ([muse-issues 013](https://github.com/relux-works/muse-issues)).
 `env status` MUST carry a standing Muse note naming the `serve` exclusion
 gap, observed workspace precedence, unverified model-visible foreign

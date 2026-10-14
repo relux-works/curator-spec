@@ -8,10 +8,11 @@ establish own-file loading and loader-level foreign exclusion; they do not
 establish a size cap, skills discovery, or model-visible foreign removal.
 
 **Decision.** Admit `<home>/config/muse/AGENTS.md` in monolithic form and
-require `--no-foreign-personal-context` on managed `exec` launches, as one
-release change. The flag MUST NOT be emitted without materializing the
-target. Normative details are in environments §§7.1, 7.2, 7.9, 10.2, 12,
-and 13; no implementation or qualification is claimed.
+require `--no-foreign-personal-context` on managed `exec` launches whose
+environment materializes that target, as one release change. The flag MUST
+NOT be emitted without materializing the target. Normative details are in
+environments §§7.1, 7.2, 7.9, 10.2, 12, and 13; no implementation or
+qualification is claimed.
 
 **Alternatives.** Retaining the unadmitted target would omit measured own
 context; referenced output would rely on an include form not expanded in
