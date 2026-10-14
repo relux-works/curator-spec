@@ -1,0 +1,176 @@
+{
+  "capability": "agent-environments",
+  "capability_revision": 1,
+  "normative_section": "protocol/environments.md §10.2",
+  "preconditions": {
+    "environment": "muse",
+    "managed_home": true,
+    "root_context_form": "monolithic"
+  },
+  "matrix": {
+    "permissions": [
+      "native",
+      "yolo"
+    ],
+    "system_prompt_opt_in": [
+      false,
+      true
+    ],
+    "mcp_opt_in": [
+      false,
+      true
+    ]
+  },
+  "execution_contract": {
+    "entry_point": "Drive the consumer managed Muse launch entry point for each case and every matrix combination (32 launches). Capture the actual child process argv; a helper-only call does not establish implementation conformance.",
+    "target": "When true, materialize the section 7.1 root-context target at $XDG_CONFIG_HOME/muse/AGENTS.md with section 5.2 monolithic bytes before launch. When false, do not materialize that target. Other surfaces and configuration are valid and unchanged.",
+    "matrix": "Cross every case with both permission modes and each independent system-prompt/MCP opt-in value. These opt-ins do not admit a Muse system-prompt or MCP channel; they cannot suppress or introduce the exclusion argv.",
+    "projection": "From captured argv retain --no-foreign-personal-context and every -c pair assigning context.foreign_personal_skills, in order and including duplicates. Compare exactly with expected.exclusion_argv; other argv remains governed by its own contract.",
+    "forbidden_observations": "Each exclusion_argv observation overrides the case expected projection and MUST be rejected as nonconforming in every matrix combination.",
+    "scope": "This family tests launch argv binding only. It does not establish runtime loading, model-visible isolation, serve exclusion, monolithic output byte conformance, or referenced-form refusal."
+  },
+  "cases": [
+    {
+      "name": "exec-target-materialized",
+      "input": {
+        "launch_form": "exec",
+        "root_context_target_materialized": true
+      },
+      "expected": {
+        "exclusion_argv": [
+          "--no-foreign-personal-context"
+        ]
+      },
+      "forbidden_observations": [
+        {
+          "mutation": "exclude-only-on-other-form",
+          "exclusion_argv": []
+        },
+        {
+          "mutation": "reuse-other-form-exclusion",
+          "exclusion_argv": [
+            "-c",
+            "context.foreign_personal_skills=false"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "exec-target-not-materialized",
+      "input": {
+        "launch_form": "exec",
+        "root_context_target_materialized": false
+      },
+      "expected": {
+        "exclusion_argv": []
+      },
+      "forbidden_observations": [
+        {
+          "mutation": "emit-exec-exclusion-without-target",
+          "exclusion_argv": [
+            "--no-foreign-personal-context"
+          ]
+        },
+        {
+          "mutation": "emit-interactive-exclusion-without-target",
+          "exclusion_argv": [
+            "-c",
+            "context.foreign_personal_skills=false"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "interactive-target-materialized",
+      "input": {
+        "launch_form": "interactive",
+        "root_context_target_materialized": true
+      },
+      "expected": {
+        "exclusion_argv": [
+          "-c",
+          "context.foreign_personal_skills=false"
+        ]
+      },
+      "forbidden_observations": [
+        {
+          "mutation": "exclude-only-on-other-form",
+          "exclusion_argv": []
+        },
+        {
+          "mutation": "reuse-other-form-exclusion",
+          "exclusion_argv": [
+            "--no-foreign-personal-context"
+          ]
+        },
+        {
+          "mutation": "replace-json-boolean-with-off",
+          "exclusion_argv": [
+            "-c",
+            "context.foreign_personal_skills=off"
+          ]
+        },
+        {
+          "mutation": "replace-json-boolean-with-string-false",
+          "exclusion_argv": [
+            "-c",
+            "context.foreign_personal_skills=\"false\""
+          ]
+        },
+        {
+          "mutation": "replace-json-boolean-with-string-off",
+          "exclusion_argv": [
+            "-c",
+            "context.foreign_personal_skills=\"off\""
+          ]
+        },
+        {
+          "mutation": "replace-json-boolean-with-disabled",
+          "exclusion_argv": [
+            "-c",
+            "context.foreign_personal_skills=disabled"
+          ]
+        },
+        {
+          "mutation": "replace-json-boolean-with-exclude",
+          "exclusion_argv": [
+            "-c",
+            "context.foreign_personal_skills=exclude"
+          ]
+        },
+        {
+          "mutation": "replace-json-boolean-with-never",
+          "exclusion_argv": [
+            "-c",
+            "context.foreign_personal_skills=never"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "interactive-target-not-materialized",
+      "input": {
+        "launch_form": "interactive",
+        "root_context_target_materialized": false
+      },
+      "expected": {
+        "exclusion_argv": []
+      },
+      "forbidden_observations": [
+        {
+          "mutation": "emit-exec-exclusion-without-target",
+          "exclusion_argv": [
+            "--no-foreign-personal-context"
+          ]
+        },
+        {
+          "mutation": "emit-interactive-exclusion-without-target",
+          "exclusion_argv": [
+            "-c",
+            "context.foreign_personal_skills=false"
+          ]
+        }
+      ]
+    }
+  ]
+}
