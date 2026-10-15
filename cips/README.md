@@ -108,3 +108,5 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0014](CIP-0014-managed-home-snapshots.md) | Managed-home snapshots: `curator env materialize` | Draft |
 | [CIP-0015](CIP-0015-login-readiness-and-profile-preparation.md) | Login readiness and profile preparation | Draft |
 | [CIP-0016](CIP-0016-local-hosted-launches.md) | Local hosted launches through curator-run | Draft |
+| [CIP-0017](CIP-0017-muse-root-context-and-credential-store.md) | Muse root-context fragment member and credential store | Draft |
+| [CIP-0018](CIP-0018-profile-level-codex-settings.md) | Profile-level Codex settings as launch overrides | Draft |
