@@ -204,8 +204,11 @@ including a migration refusal after taking the lock or writing anything.
 The concurrent-replacement case acquires the repair lock and refuses before
 any write; its write observations exclude the other operation's publication.
 The status case reports a matching v1-lock home as current without mutation.
-Local fixture and outcome checks validate the new specification data; these
-vectors do not claim that a pinned implementation consumes this new family.
+Local `make validate` checks that Markdown links to this family resolve to
+existing files; neither it nor `make regenerate-check` validates this family's
+fixture bytes or expected outcomes. CI additionally runs Lychee over Markdown
+links, including external URLs. These vectors do not claim that a pinned
+implementation consumes this new family.
 
 ## 4. Execution
 

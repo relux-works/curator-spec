@@ -8,8 +8,9 @@ establish own-file loading and loader-level foreign exclusion; they do not
 establish a size cap, skills discovery, or model-visible foreign removal.
 
 **Decision.** Admit `<home>/config/muse/AGENTS.md` in monolithic form and
-require `--no-foreign-personal-context` on managed `exec` launches whose
-environment materializes that target, as one release change. The flag MUST
+require the form-specific exclusion argv of environments §10.2 on managed
+`exec` and interactive launches whose environment materializes that target,
+as one release change. The exclusion argv MUST
 NOT be emitted without materializing the target. Normative details are in
 environments §§7.1, 7.2, 7.9, 10.2, 12, and 13; no implementation or
 qualification is claimed.
@@ -24,8 +25,9 @@ environments revision 1. No wire object, released schema, signed bytes, or
 shared identifier changes. The added conformance vectors are listed for
 delivery with the admission; existing vectors do not qualify it.
 
-**Security impact.** The mandatory flag narrows foreign personal-context
-loading on `exec`; its measured effect is loader accounting only. `serve`
+**Security impact.** The mandatory exclusions narrow foreign personal-context
+loading on `exec` and interactive launches; environments §7.1 records the
+measured sources and loader-level bounds. `serve`
 cannot exclude that context, observed workspace precedence remains a
 residual, and skills discovery remains unverified. Credential isolation,
 permission policy, and optional owner policies are unchanged.

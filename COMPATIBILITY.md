@@ -286,8 +286,9 @@ baseline. B3 cache pruning is also deferred.
 Muse uses the new `launch-env-fragment-v3` with four XDG parents and preserved
 HOME. Earlier fragment and marker schemas retain their bytes and meaning.
 The later revision-1 Muse admission couples the measured 1.4.7 monolithic
-root-context target to mandatory `--no-foreign-personal-context` on managed
-`exec`, in one release. It adds no fragment member or schema version;
+root-context target to mandatory exclusion on managed `exec` and interactive
+launches (environments §§7.1 and 10.2), in one release. It adds no fragment
+member or schema version;
 conformance requires the added vectors listed in environments §13, and
 the pre-admission vectors do not qualify the new requirements.
 Global add/install publish the extended profile lock before materialization
