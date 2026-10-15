@@ -2348,9 +2348,14 @@ as one machine profile set, and two profiles whose locks share a member
 share its store entry.
 
 Profile installation always runs the manager §7 source audit in strict
-mode over every member; an advisory profile install does not exist. A
-`path` snapshot audits identically to a `git` snapshot. A `path` package has
-no network identity: its identity for local revocation is its state hash,
+mode over every member; an advisory profile install does not exist. When a
+skill member carries its own package manifest (`agent-skill.json`, or the
+legacy read alias `csk-skill.json`), the audit MUST use that manifest's
+declared capabilities under core §3 and §4.3. A declaration covering a
+detected network host satisfies the network-declaration check, but does not
+clear other audit findings. A `path` snapshot audits identically to a `git`
+snapshot. A `path` package has no network identity: its identity for local
+revocation is its state hash,
 the core §6.1 network allowlist does not apply (local sources bypass it),
 and a `path` snapshot never produces a shared `audit-record-v1` object,
 whose shape requires a network identity and a commit. The audit pipeline is
@@ -2671,9 +2676,10 @@ its root's store key and pin are its state hash, recomputed when its state
 changes, and its lock hash follows. A root with no `context` declares no
 root-context surface (section 2), so no root-context file is written for
 `default`; it materializes skills alone. Switching, `profile sync`, and
-`env status` treat a `local` profile exactly like an installed one. A
-machine that never installs another profile observes no behavior change:
-`default` simply is the current profile and existing global installations
+`env status` treat a `local` profile exactly like an installed one. Subject
+to the strict audit below, a machine that never installs another profile
+observes no behavior change: `default` simply is the current profile and
+existing global installations
 keep their behavior byte-for-byte. Migration reads each global skill's
 install record to synthesize the lock; a record it cannot read is a loss
 with reason under the section 8.4.1 inventory-candidate row — never "not
@@ -2682,6 +2688,22 @@ installed" — and migration stops before any write with
 path admits no consent flag: the operator makes the record readable — or
 removes the skill through the normal global-remove path — and retries;
 the skill is never dropped silently.
+
+Every migrated legacy global skill MUST pass the strict member audit of
+section 9.1 using its own package manifest's capabilities, when present;
+the synthesized `local` root and the machine's global declarations do not
+supply capabilities for a skill. A skill whose manifest declares a
+`capabilities.network` host glob covering the detected host passes that
+check exactly like any other skill member. Without a covering declaration
+— including no manifest, no network declaration, or `network: "none"` —
+migration MUST refuse with the blocking finding
+`audit.capability.network-undeclared`. The diagnostic MUST name the skill,
+the undeclared host, and the file containing the detected network use, and
+MUST direct the operator to add a covering host glob to
+`capabilities.network` in that skill's `agent-skill.json` (or
+`csk-skill.json` when using the legacy alias), or leave the skill unmigrated.
+Migration MUST NOT synthesize capability declarations or downgrade the
+finding. All other audit gates and findings remain unchanged.
 
 ### 9.5 Onboarding
 
@@ -2931,6 +2953,7 @@ declaration (section 2.2) — reassembly emits no `requires.mcp` entry.
 | audit finding from the secret-material detector class (blocking, unpinnable) | finding class `context-secret-material` |
 | `class: system` module present in a context member (always warning) | finding class `context-system-module-present` |
 | recorded secret-material waiver matches no finding (warning) | `context_secret_waiver_unmatched` |
+| migrated legacy global skill contacts a host not covered by its own manifest's `capabilities.network` (blocking; names the skill, host, file, and remediation under section 9.4) | finding `audit.capability.network-undeclared` |
 | `--as <name>` or the root package name is already an installed profile name | `profile_name_taken` |
 | more than one requirement flag, or a requirement flag or `--directory` with a `path` operand | `profile_install_ref_conflict` |
 | `profile update` candidate lock carries a blocking finding on a new member; old lock stands | `profile_update_blocked` |
