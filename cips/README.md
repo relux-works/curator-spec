@@ -110,3 +110,4 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0016](CIP-0016-local-hosted-launches.md) | Local hosted launches through curator-run | Accepted |
 | [CIP-0017](CIP-0017-muse-root-context-and-credential-store.md) | Muse root-context fragment member and credential store | Accepted |
 | [CIP-0018](CIP-0018-profile-level-codex-settings.md) | Profile-level Codex settings as launch overrides (D14: machine-owned credential store) | Accepted |
+| [CIP-0019](CIP-0019-carrier-admission-by-public-key.md) | Carrier admission by public key (swarma-registrar) | Draft |
