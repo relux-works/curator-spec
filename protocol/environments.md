@@ -2,6 +2,13 @@
 
 This document is normative for the agent-environments capability, revision 1.
 
+**CIP-0017 amendment (2026-10-15).** Owner decision 2026-10-15 (D9,
+D10, D12) adopts the v4 root-context fact and coordinated credential-store
+transport in section 10.2, managed Muse file credentials in section 7.4,
+and the version-separated qualification/release sequence in section 7.9.
+Released schema and corpus bytes are unchanged. This specification does not
+claim implementation or Muse 1.4.8 exclusion qualification.
+
 **Revision-1 foreign-context amendment (2026-10-14).** Section 7.1 records
 the verified Muse 1.4.7 probes P1–P4: native root context suppresses foreign
 personal rules fallback, while foreign personal skills require exclusion.
@@ -1342,9 +1349,11 @@ surface moves into `<home>/skills/` under a later revision.
 Muse Code 1.4.1 (1.4.1-R4503.1) for the managed-home layout and 1.4.7
 (1.4.7-R6101.1) for the root-context and foreign-exclusion facts below.
 The manager MUST set all four XDG parents exactly as above and MUST NOT
-replace `HOME`. Replacing `HOME`, or importing a credential instead of
-linking the native `auth.json`, can hang on a macOS Keychain UI prompt
-([muse-issues 005](https://github.com/relux-works/muse-issues)).
+replace `HOME`. Managed launches MUST select `TBH_CREDENTIAL_BACKEND=file`
+(section 7.4); XDG retargeting alone does not select the credential backend.
+The historical Keychain prompt observation
+([muse-issues 005](https://github.com/relux-works/muse-issues)) is not evidence
+that the native default is file-backed.
 Mutable tool state lives under `data/muse/` (`sessions/`,
 `session-index.db`, `skills/`, `plugins/`, `model-catalog/`, `memory/`
 and locks); config files and their locks live under `config/muse/`.
@@ -1395,8 +1404,13 @@ fallback suppression and persistent foreign personal skills, the target-bound
 workspace precedence, unverified model-visible foreign removal, and
 unverified managed skills and system-prompt discovery. This adapter
 does not promise account or
-context isolation; fresh-login `isolated` operation is unverified and
-MUST be refused with `environment_isolated_unsupported` until verified.
+context isolation. Both `isolated` and `shared` file-backed modes are
+admitted optimistically under section 7.4 (owner decision 2026-10-15 (D10)).
+Status MUST distinguish the 1.4.7 context evidence from the 1.4.8 credential
+evidence, report the selected file backend and isolation mode without secret
+bytes, and retain unknown refresh and 1.4.8 exclusion qualification as separate
+bounds. A required exclusion on `serve` is refused under section 10.2; without
+a root-context fact, the standing foreign-context residual still applies.
 
 ### 7.2 Root-context forms
 
@@ -1492,11 +1506,47 @@ pinned release that the strategy answers to:
 | `codex_cli` | `auth.json` | `keyring-preferred`: where the operator's `config.toml` sets `cli_auth_credentials_store` to `keyring` the credential is ambient and no entry is linked; under `file` (the default) or `auto` the managed `auth.json` is a `file-link` — a symlink to the native file, re-checked by the liveness row. The manager assumes the keyring identity is operator-global (independent of `CODEX_HOME`) until a disposable-account scratch-`CODEX_HOME` probe proves per-home scoping, so under `keyring` or `auto` storage `isolated` is `environment_isolated_unsupported`. An absent `cli_auth_credentials_store` key means effective `file` storage, so `isolated` is admitted; a storage selector outside the verified `file`/`keyring`/`auto` set fails closed with `environment_credential_unsupported` | **verified** in-place: codex 0.153.2 rewrites `auth.json` by truncate-and-write on the same inode, mode 0600, never temp-and-rename (upstream `login/src/auth/storage.rs` for the path the binary names); `cli_auth_credentials_store = file|keyring|auto` **verified** in the embedded configuration docs |
 | `opencode` | none — auth lives in `XDG_DATA_HOME`, which the config swap never touches (section 7.1) | ambient | — |
 | `pi` | `auth.json` | `file-link` — the managed `auth.json` is a symlink to the native `~/.pi/agent/auth.json` (native root `~/.pi/agent`, not `~/.pi`), re-checked by the liveness row | **verified** in-place: pi 0.84.2 rewrites its agent-root `auth.json` with a single in-place write, mode 0600, under its own lockfile, never temp-and-rename (installed `core/auth-storage.js`) |
-| `muse` | `config/muse/auth.json` | `file-link` to the native effective `XDG_CONFIG_HOME/muse/auth.json` (default `~/.config/muse/auth.json`), determined from the operator environment **before** managed overrides | **unverified refresh**: the link survived four measured runs with no Keychain prompt and a real model turn; that does not establish token-refresh or login write semantics |
+| `muse` | `shared`: `config/muse/auth.json`; `isolated`: none | Managed launches set `TBH_CREDENTIAL_BACKEND=file`. `shared` uses `file-link` to native effective `$XDG_CONFIG_HOME/muse/auth.json` (default `~/.config/muse/auth.json`), captured before managed overrides and requiring a native file-backed login. `isolated` logs in inside the managed XDG home. Both modes are admitted optimistically. | Muse 1.4.8 on macOS 27: file-backed login at mode 0600, subsequent backend `file` with zero Keychain access, and a link to another home's file worked (owner decision 2026-10-15 measured facts). Default backend is global Keychain-first and fails to save without Keychain access. Token-refresh and concurrent refresh behavior remain unmeasured; every-resolve liveness and conflict-preserving repair remain mandatory. |
 
-**Muse refresh rule.** Issue #117 has no posted refresh probe result as
-of 2026-10-01. Keep the plain file-link for `shared` and treat refresh as
-an open question, never infer write-through from a surviving login turn.
+**Managed Muse backend selection.** The user-owned per-profile × environment
+`credential_store` selector is coordinated with CIP-0015. Its compatibility
+default remains `native` for other adapters. For a managed Muse home only,
+unset and `native` MUST resolve to effective `file`, as does explicit `file`;
+Curator MUST report this adapter-specific mapping and MUST NOT rewrite the
+stored selector. Explicit `keychain` MUST refuse with
+`environment_credential_unsupported` and a file-selection hint. This widens
+that diagnostic from unknown native storage selectors to unsupported explicit
+backend mappings; it never permits silent fallback or credential migration.
+The resolved file policy MUST agree with the section 10.2 fragment at login
+and every launch. No profile-package environment map or second selector is added.
+
+In `isolated`, Curator MUST NOT create a passthrough link, copy native tokens,
+or synthesize `auth.json`. Muse's own login runs with the managed XDG parents
+and file backend; native Keychain login does not establish readiness there.
+In `shared`, the operator MUST first perform native login with
+`TBH_CREDENTIAL_BACKEND=file` in the native effective XDG environment.
+A Keychain-only login is insufficient. Capture the native path before managed
+overrides; a missing native file requires native file-login guidance and no
+shared fragment, never a placeholder, Keychain export or fallback. Failed
+metadata reads remain `environment_passthrough_unreadable`, never absence.
+Store changes conflicting with existing credentials require explicit
+inspect → plan → apply migration; neither credential is overwritten.
+
+Muse 1.4.8's native default uses global Keychain item `ai.meta.dev.credentials`,
+with `auth.json` only a fallback. Observed backend labels were `keychain`,
+`keychain_fallback_file`, and `file`. With no Keychain access, default login
+failed to save; forced file login and subsequent runs needed no Keychain
+access (owner decision 2026-10-15 measured facts, recorded 2026-10-14).
+These facts establish neither refresh writes nor account/process isolation.
+Credential files MUST retain private access (0600 on the measured platform),
+and managed directories MUST exclude unrelated users. Status MUST NOT read
+credential payloads or include them or their digests in locks, markers,
+fragments, root-context hashes, logs or snapshots.
+
+**Muse refresh rule.** Keep the plain file-link for `shared` and treat
+refresh as an open question, never infer write-through from a surviving
+login turn. Successful refresh probes MUST NOT gate the optimistic admission
+of either file-backed mode (owner decision 2026-10-15 (D10)).
 If a pinned refresh probe proves writes through the link, retain it. If
 refresh writes temp+rename, it can fork the managed credential; the manager
 MUST detect and repair or refuse at **every resolve**, including
@@ -1869,7 +1919,7 @@ identifier not declared by the registry is `environment_target_unknown`.
 | recorded passthrough entry is no longer a symlink to the native entry (non-current) | `environment_passthrough_detached` |
 | recorded passthrough entry whose link state cannot be established — `lstat` or `readlink` fails with permission, I/O, or path errors (non-current, currency unknown; never "detached") | `environment_passthrough_unreadable` |
 | recorded passthrough link path holds a regular file or a symlink to an unexpected target at repair, or an isolated system lock engages while a provisioned home still has a recorded shared passthrough (refusal, no fragment; the latter directs to explicit migration and never unlinks silently) | `environment_credential_conflict` |
-| credential strategy cannot be established — native storage selector outside the verified set (refusal, no fragment) | `environment_credential_unsupported` |
+| credential strategy cannot be established — native storage selector outside the verified set or explicitly selected backend has no admitted mapping, including managed Muse `keychain` (refusal, no fragment) | `environment_credential_unsupported` |
 | provisioning seed exists but cannot be read — a native-home file or a named XDG entry | `environment_seed_unreadable` |
 | unrecorded entry in a managed `opencode` parent shadows an allowlisted operator entry (warning) | `environment_seed_shadowed` |
 | first `auto` write into a secondary target's home without recorded consent | `environment_target_consent_required` |
@@ -1931,7 +1981,7 @@ size advisory for its root-context target:
 | `codex_cli` | 0.153.2 (this text; 0.151.0 for the review's facts) | `32768` | `project_doc_max_bytes = 32768` applies to the project-document chain only; the global `$CODEX_HOME/AGENTS.md` is **not truncated** (**verified** on 0.153.2 with a 41 KB file via `codex debug prompt-input`, also with the cap narrowed to 1000), so the advisory is not tied to any tool cap and keeps the common default as a prompt-budget advisory |
 | `opencode` | not installed on the recording machine — every opencode fact is docs-confidence | `32768` | none published; default adopted |
 | `pi` | 0.84.2 | `32768` | none published; default adopted |
-| `muse` | 1.4.7 (1.4.7-R6101.1; root-context loading, observed workspace precedence, standalone include behavior, and `exec` foreign-source exclusion) | `32768` | common prompt-budget default, not a measured cap; the loader rendered the full tested files, while model-visible retrieval varied at identical sizes between 31 KB and 40 KB, so no reproducible size threshold is established |
+| `muse` | 1.4.7 (1.4.7-R6101.1): root context, workspace residual, include behavior and P1–P4 exclusions; 1.4.8 on macOS 27: credential backend only (owner decision 2026-10-15 measured facts); 1.4.8 exclusion build remains unqualified | `32768` | common prompt-budget default, not a measured cap; the loader rendered the full tested files, while model-visible retrieval varied at identical sizes between 31 KB and 40 KB, so no reproducible size threshold is established |
 
 Each adapter additionally records the following members, whose values were
 fixed by the verification sprint of 2026-09-05 (claude 2.1.261, codex
@@ -1954,6 +2004,21 @@ nothing in this document is gated on the warning, but the operator is told
 the registry's evidence does not cover the binary in front of them. A tool
 that cannot be located or whose version cannot be read reports the detected
 release as unknown, never as matching.
+
+**Muse qualification order.** Muse 1.4.8 is the candidate managed
+integration target; credential measurements MUST NOT be promoted to context
+qualification. Before releasing the v4 producer/consumer pair with a refusal
+that depends on exclusion qualification, the implementation owners MUST
+record the exact 1.4.8 build and replay section 7.1 P1–P4 on both forms:
+root present/absent, foreign rules/skills separately, each exclusion spelling,
+native loading through a Curator link and a regular-file snapshot, and the
+workspace-conflict residual. Record loader observations separately from
+model-visible behavior. Until that replay passes, the 1.4.8 exclusion result
+is unknown; a request requiring unqualified exclusion MUST refuse before
+execution. The probe leaf precedes consumer release, so a 1.4.7-only equality
+check cannot silently drop a required exclusion on 1.4.8. This release gate
+neither retracts D10 credential-mode admission nor waits for token refresh.
+Linux and Windows native Muse login and refresh remain unqualified.
 
 **Erratum fast path.** A recorded fact that fails to reproduce on a release
 this table names is corrected by an erratum on the decision that introduced
@@ -2033,6 +2098,12 @@ provisioned. An operator picks one door per environment for daily work; a
 `--isolated-home` flag that would change the answer is not in revision 1.
 
 ### 8.2 Environment marker, schemas 1 through 3
+
+Muse credential entries and token bytes remain outside managed surfaces and
+surface hashes. The root-context fact in section 10.2 is derived only after
+verifying the applicable root surface and marker; it is not a new marker
+member. Effective non-secret backend/mode reporting follows sections 7.4
+and 12, without adding fields to released markers.
 
 Every in-place surface set and every managed home carries a per-home
 **environment marker**, `.agent-environment.json`, beside the managed
@@ -2979,6 +3050,11 @@ and never fails an operation.
 
 ### 10.1 `env resolve`
 
+Managed Muse resolution MUST establish the section 7.4 backend and credential
+liveness rules before publishing v4, and derive its root-context fact only
+from successfully verified materialization (section 10.2). Failed resolution
+or repair emits no fragment; credential repair never manufactures a root fact.
+
 The manager's only execution-facing primitive is:
 
 ```text
@@ -3280,8 +3356,9 @@ the interactive launch-plan builder supports Muse.
 
 ### 10.2 The launch environment fragment
 
-Three fragment revisions exist, `launch-env-fragment-v1`,
-`launch-env-fragment-v2`, and `launch-env-fragment-v3`, named by the REQUIRED `fragment` member,
+Four fragment revisions exist, `launch-env-fragment-v1`,
+`launch-env-fragment-v2`, `launch-env-fragment-v3`, and
+`launch-env-fragment-v4`, named by the REQUIRED `fragment` member,
 which is the fragment's revision token. `launch-env-fragment-v2` is
 the minimum transport version token for the section 12.1 `permissions`
 profile level and the section 12.2 lock engagement (Decision 0018,
@@ -3369,36 +3446,99 @@ Their values MUST share one absolute `<home>` parent and end in
 `/config`, `/data`, `/state`, and `/cache`, respectively. `HOME` MUST NOT
 appear in a fragment or be replaced at launch. Muse has no `system_prompt`
 or `mcp` member while those channels are unverified. Other adapters retain
-their single home variable and v2 channel rules. Muse resolve emits v3;
+their single home variable and v2 channel rules. Historical Muse emission
+uses v3;
 v1/v2 readers MUST reject its revision token and MUST NOT fall back to a
 single-variable fragment. Existing adapters may continue emitting their
 supported fragment revision. The new schema is
 `schemas/v1/launch-env-fragment-v3.schema.json`; released schemas v1/v2
 remain byte-identical.
 
-**Muse managed launch argv.** A managed Muse launch whose environment
-materializes the root-context target in section 7.1 MUST pass
-`--no-foreign-personal-context` on the `exec` form, or the two argv elements
-`-c` and `context.foreign_personal_skills=false` on the interactive form.
-The interactive value is the JSON boolean `false`, not a quoted string or
-an alternative spelling. The forms differ because the interactive form
-rejects the `exec` flag (**verified** on 1.4.7, P2); the native target
-suppresses the rules fallback before the interactive skills override takes
-effect (P3/P4). Both exclusions are the same per-adapter launch requirement,
-independent of permissions mode and system-prompt or MCP opt-ins. The
-root-context target in section 7.1 and both forms' exclusion argv are one
-change and MUST ship in the same release. An implementation MUST NOT emit
-either exclusion without materializing that target. The `serve` form cannot
-exclude foreign personal context and retains the standing residual in
-sections 7.1 and 12.
+**`launch-env-fragment-v4`.** This is the shared revision for CIP-0017's
+Muse root-context fact/backend constant and CIP-0015's typed
+`credential_store` agreement check; it is not Muse-only. It retains the v3
+permissions, paths and adapter-channel contracts. Non-Muse adapters MAY
+continue emitting older supported revisions when they need no new policy.
+V4 readers MUST reject duplicate keys, unknown fields and revisions, and
+validate the whole fragment before constructing any launch.
+V1–v3 schemas and their meanings remain unchanged; old readers MUST reject
+v4 and additions carried under an old token. A new managed Muse launch MUST
+use v4 and MUST refuse v3 with upgrade guidance, without retrying an older
+revision, inferring missing policy or synthesizing a v4 fact.
 
-The existing channel-descriptor grammar cannot encode this standalone
-flag: `flag` requires `argument`, `with` accompanies another channel flag,
-and Muse has no admitted system-prompt or MCP channel. The minimal addition
-is this per-adapter argv rule; the launcher selects the exclusion by the
-`muse` launch form (`exec` or interactive).
-No fragment member, descriptor kind, or channel is added;
-the v3 fragment shape and released schema bytes remain unchanged.
+V4 `credential_store` is a closed object with REQUIRED `selection`
+(`native`, `file`, or `keychain`) and OPTIONAL closed `config_overrides`.
+For Muse it is REQUIRED and exactly `{"selection":"file"}`: selection is
+the effective backend after section 7.4's native/unset mapping. Its `env`
+MUST contain exactly the four XDG parent paths plus
+`"TBH_CREDENTIAL_BACKEND":"file"`; only the XDG entries are paths and
+retain the one-parent suffix rule. `HOME` MUST NOT be changed. Muse still
+has no admitted `system_prompt` or `mcp` member.
+
+For Codex, an optional `credential_store` with `selection: native` carries
+no overrides. `file` requires exactly
+`config_overrides: {"cli_auth_credentials_store":"file"}`; `keychain`
+requires exactly `config_overrides: {"cli_auth_credentials_store":"keyring"}`.
+The launcher MUST apply the typed value as a Codex `-c` setting at launch,
+never rewrite vendor `config.toml`; platform and isolation admission remain
+separate checks, not a capability established by schema validity. Other
+non-Muse adapters admit only optional `{"selection":"native"}` with no
+overrides. An absent non-Muse object preserves the older native contract.
+This freezes coordinated transport only; preparation, login readiness and
+platform probe semantics remain CIP-0015's own implementation leaves.
+
+The launcher MUST validate store/override/environment agreement and refuse
+missing, contradictory, unknown or unsupported policy before execution.
+The Muse fragment constant takes precedence over an ambient backend value;
+later environment merging MUST NOT undo it. An incompatible explicit plan
+override MUST refuse; native arguments MUST NOT override required policy.
+JSON, env and shell renderers MUST emit the same five Muse values, with the
+XDG variables in section 7.1 order followed by the backend constant. Env and
+shell output are environment projections, not substitutes for the typed v4
+JSON contract required by a managed launcher.
+
+V4's OPTIONAL `root_context` is Muse-only and exactly
+`{"exclusive":true}`. Reject null, empty objects, false, strings, extra
+members and use on another adapter. Curator MUST emit it iff successful
+resolve establishes the selected home's root-context target as materialized
+and verified for the profile, whether linked, copied, newly repaired or
+already current. The section 5 surface and marker rules determine this fact,
+not file size. A planned write is insufficient. With no declared root surface,
+omit it and pass neither exclusion; foreign personal context remains a
+standing residual. A stale, missing, drifted or unreadable required surface
+follows existing resolve/repair refusals and MUST NOT produce a successful
+fragment with the fact silently omitted. Failed repair emits no fragment.
+
+**Muse managed launch argv.** The launcher MUST carry the validated fact
+through launch requests and sealing. Presence requires
+`--no-foreign-personal-context` on `exec`, or exactly two elements `-c` and
+`context.foreign_personal_skills=false` on interactive launch. The value is
+JSON boolean false, not a string or an alternative spelling. The 1.4.7
+P1–P4 evidence and section 7.9 release gate apply separately. The mapping
+MUST be identical in dry-run and actual launch, independent of permission
+mode, MCP/system-prompt opt-ins, or linked/copied target representation.
+Native arguments that override the exclusion MUST refuse. A selected
+form/build unable to apply required exclusion MUST refuse before exec.
+In particular, `serve` with `root_context` MUST refuse, rather than warn and
+continue; without the fact, `serve` retains the standing residual.
+No new refusal-code spelling for form/build qualification is allocated here.
+
+No launcher argv or sealing path may stat, lstat, open, readlink, hash, or
+recognize headers in Curator content to decide exclusion. Absence never
+permits filesystem inference. A transformation relocating XDG parents MUST
+preserve the established context through the admitted snapshot/materialization
+contract or refuse; it MUST NOT erase the fact for a network launch or
+recreate a second home-layout verifier. Curator owns content verification;
+the launcher applies typed policy. No descriptor kind or general argv channel
+is added, and no released schema is widened.
+
+Under broker key delivery, the minting owner retains the Muse login and
+children receive the minted key via `META_API_KEY` or `exec --api-key-stdin`,
+with file backend selected. This does not authorize OAuth copies or links to
+the minting owner's `auth.json`. Local sharing and broker injection remain
+distinct; broker qualification, refresh, rotation and lifetime remain the
+broker work's open questions (CIP-0011). The owner decision 2026-10-15
+measured billing/store observations do not establish refresh inode behavior.
 
 **`launch-env-fragment-v2`.** Revision v2 is revision v1 plus one
 REQUIRED member, `permissions`, a closed object carrying the resolved
@@ -3439,7 +3579,12 @@ shape:
 
 Fragment variable names come only from the closed adapter registry.
 Fragment values are absolute paths below the manager-owned environments
-root. Profile bytes MUST NOT select, add, rename, or retarget an
+root, except for v4's registry-owned Muse constant
+`TBH_CREDENTIAL_BACKEND=file`. That literal is not profile-controlled and
+MUST NOT admit arbitrary names or non-path values. The typed root-context
+fact and credential-store policy are manager-established control metadata,
+not package-provided argv or environment maps. Profile bytes MUST NOT
+select, add, rename, or retarget an
 environment variable and MUST NOT move a value outside that root; the only
 profile-derived component of a value is the profile-name path segment,
 bounded by the core §2 grammar — no separators, no traversal. A profile
@@ -3513,7 +3658,7 @@ that no reader mistakes the surfacing rows for an execution sandbox.
 | recorded passthrough entry unreadable at resolve (no fragment; non-current, currency unknown; never "detached", never a stale-home reason; `--repair` does not re-link it) | `environment_passthrough_unreadable` |
 | profile explicitly requests `shared` for a profile × environment whose system lock requires `isolated` (refusal; no fragment) | `environment_isolation_lock_conflict` |
 | recorded passthrough link path holds a regular file or an unexpected symlink target under `--repair`, or an isolated system lock engages while a provisioned home still has a recorded shared passthrough (no fragment; the latter directs to explicit migration and never unlinks silently) | `environment_credential_conflict` |
-| native credential storage selector outside the verified set at provisioning or repair (no fragment) | `environment_credential_unsupported` |
+| native credential storage selector outside the verified set or unsupported explicit backend mapping, including managed Muse `keychain`, at provisioning or repair (no fragment) | `environment_credential_unsupported` |
 | store entry, lock, or marker file fails the §4 protected-boundary contract or its pin hash, or a `path` source directory fails its §4 boundary checks, at resolve (no fragment; non-current) | `environment_store_untrusted` |
 | enclosing boundary (environments root or store root) cannot be proven at resolve (no fragment; non-current; nothing rebuilt) | `environment_store_untrusted` |
 | dry-run evaluation of an entry-class failure of a store entry or a marker file, or of a lock file that fails its boundary checks (no mutation; a real operation would rebuild it) | `would-rebuild-untrusted-store` |
@@ -3684,7 +3829,10 @@ seeds per managed home, the XDG seed state per managed `opencode` parent
 with any `environment_seed_shadowed` entry, the standing `opencode`
 split-brain note and the standing Muse note of section 7.1 (verified rules
 fallback suppression, persistent foreign personal skills, target-bound
-`exec` and interactive exclusion argv, and the recorded residuals), the
+`exec` and interactive exclusion argv, required `serve` refusal, separate
+1.4.7 context/1.4.8 credential evidence, unknown 1.4.8 exclusion build until
+replay, unknown refresh, effective file backend/mode, and the recorded
+residuals), the
 recorded and detected tool release per
 adapter (section 7.9), both homes of the current profile per scope and
 their provisioning state (section 8.1), backup generation counts and ages
@@ -3989,8 +4137,12 @@ when `argument` is `name`; the Decision 0012 §9 worked example, which omits
 `argument` on its system-prompt descriptors, is read as pre-revision —
 and `launch-env-fragment-v2` (section 10.2) — revision v1 plus the
 REQUIRED closed `permissions` member — and `launch-env-fragment-v3`
-(section 10.2), adding Muse and its four XDG parents,
-each with positive and negative schema cases; `profilefile-v1` and
+(section 10.2), adding Muse and its four XDG parents, and
+`launch-env-fragment-v4` (section 10.2), the coordinated typed store policy,
+Muse backend constant and root-context fact, each with positive and negative
+schema cases. The later v4 cases and vector notes live separately under
+`conformance/environments-muse-v4/`; released v1–v3 cases remain frozen;
+`profilefile-v1` and
 `context-manifest-v1` with their cases are withdrawn. Vector families:
 lock-preserving repair
 (`conformance/environments-repair-preserve-lock/vectors.json` at repository root,

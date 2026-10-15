@@ -275,3 +275,15 @@ Skillfile schema 2 and new identity-bearing records without changing the
 established definitions in this directory. The Curator orchestrator verified
 the corpus references only definitions here that have remained unchanged since
 rc.10, preserving partial-client independence.
+
+## Coordinated launch fragment revision 4
+
+[`launch-env-fragment-v4.schema.json`](launch-env-fragment-v4.schema.json)
+adds the Muse-only closed `root_context` fact, required effective file policy
+and literal `TBH_CREDENTIAL_BACKEND=file`, plus the coordinated typed
+`credential_store` transport. V4 is available to all adapters; Codex typed
+store overrides must agree with selection, while other adapters preserve
+native policy. Old revisions remain byte-frozen and reject the additions.
+The [later cases](../../conformance/environments-muse-v4/README.md) stay
+outside the released corpus. XDG one-parent agreement is a semantic check;
+provenance and materialization remain runtime obligations.

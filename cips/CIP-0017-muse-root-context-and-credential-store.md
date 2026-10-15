@@ -1,6 +1,8 @@
 # CIP-0017: Muse root-context fragment member and credential store
 
-- **Status:** Draft
+- **Status:** Accepted
+- **Accepted:** 2026-10-15 (owner decision 2026-10-15)
+- **Normative text:** [Environments §§7.1, 7.4, 7.7, 7.9, 8.2, 10.1–10.3, 10.4, 12–13](../protocol/environments.md), [v4 schema](../schemas/v1/launch-env-fragment-v4.schema.json), [cases and vector notes](../conformance/environments-muse-v4/README.md), [Decision 0010 amendment](../decisions/0010-agent-environment-profiles.md#muse-v4-amendment-2026-10-15).
 - **Owner:** ivan-curator (orchestrator); decision: operator
 - **Created:** 2026-10-15
 - **Related:** CIP-0015 (per-profile credential backend proposal); owner decision 2026-10-15 (D1, D9, D10, D12)
@@ -14,8 +16,8 @@ The launcher will map this fact to Muse's form-specific exclusion arguments
 without inspecting Curator's files. Managed Muse homes will select file
 credentials with `TBH_CREDENTIAL_BACKEND=file`, admitting both `isolated`
 and `shared` now, optimistically, under owner decision 2026-10-15 (D10).
-This proposal corrects the environments §7.4 Muse row using the supplied
-Muse 1.4.8 measurements while retaining the unmeasured refresh bound.
+This proposal corrects the environments §7.4 Muse row using the owner decision 2026-10-15
+Muse 1.4.8 measured facts while retaining the unmeasured refresh bound.
 
 ## Motivation and user stories
 
@@ -34,7 +36,7 @@ A non-desktop launch must not need Keychain interaction merely to start
 Muse. The measured file backend supplies this behavior; it does not prove
 refresh safety, account isolation, sandboxing, or model-visible exclusion.
 
-## Current state
+## Pre-adoption state
 
 ### Reference identities and limits
 
@@ -44,10 +46,9 @@ are at commit `00fec196`. The task-board consumer baseline is
 skill-project-management commit `b057ef468`; its
 `tools/board-cli/go.mod:11` pins skill-agents-management `v0.5.62`.
 
-The root-context inspection described in the brief is present in
+The root-context inspection is present in
 skill-agents-management commit `a8fff5994f4053d2bbd59886fb3eef06137f2c15`,
-contained in tag `v0.5.65`. It is not present in the supplied local main
-checkout or the `v0.5.62` pin. References to that inspection therefore name
+contained in tag `v0.5.65`. It is not present in the `v0.5.62` pin. References to that inspection therefore name
 this later revision explicitly; they do not claim the pinned task-board
 consumer already implements it. These identities can be inspected without
 depending on moving branch heads.
@@ -113,9 +114,9 @@ context, exec exclusion, the serve gap, observed workspace precedence,
 and unverified refresh/discovery/model-visible behavior. It does not yet
 express the full P1–P4 interactive distinction required by the current spec.
 
-### Credentials and supplied measurements
+### Credentials and recorded measurements
 
-Environments §7.4 currently lists `config/muse/auth.json` as a `file-link`
+At the baseline, environments §7.4 lists `config/muse/auth.json` as a `file-link`
 to native effective `XDG_CONFIG_HOME/muse/auth.json`, captured before
 managed overrides, defaulting to `~/.config/muse/auth.json`. The row
 records four surviving runs, no Keychain prompt and a model turn, while
@@ -128,7 +129,7 @@ target. A forked regular file, unexpected link target, or dangling native
 target refuses repair with `environment_credential_conflict`. Metadata
 read failures are `environment_passthrough_unreadable`, never absence.
 
-The supplied `rc7-decisions.md`, measured facts dated 2026-10-14, records
+Owner decision 2026-10-15 measured facts, recorded 2026-10-14, describe
 Muse 1.4.8 on macOS 27:
 
 - Default login is Keychain-first, using global item
@@ -144,7 +145,7 @@ Muse 1.4.8 on macOS 27:
   `META_API_KEY` left the store untouched.
 - Token-refresh write behavior is unmeasured.
 
-These are supplied measurements, not probes rerun for this documentation
+These are recorded measurements, not probes rerun for this documentation
 change. Owner decision 2026-10-15 (D9) assigns backend selection per
 profile × environment; D10 admits both Muse modes without waiting for
 refresh evidence. The historical 1.4.7 exclusion evidence must remain
@@ -182,8 +183,14 @@ the managed home uses. Neither choice claims account or process isolation.
 
 #### 1. Closed root-context fact
 
-Introduce `launch-env-fragment-v4`, preserving the common v3 members and
-existing adapter contracts except for the explicit Muse additions below.
+Introduce the shared `launch-env-fragment-v4`, preserving the common v3
+members and adapter contracts with the explicit Muse additions below and
+CIP-0015's coordinated typed `credential_store` agreement check. V4 is not
+Muse-only; non-Muse adapters may keep emitting older supported revisions
+when they require no new policy. The effective Muse policy is the required
+closed `credential_store: {"selection":"file"}`. Other adapters and Codex's
+closed typed overrides are specified in environments §10.2; this allocates
+one coordinated revision, not a competing revision without store policy.
 The optional top-level member has exactly this shape:
 
 ```json
@@ -233,7 +240,8 @@ preserve the Curator-established root context through the admitted
 snapshot/materialization contract or refuse the required launch.
 It must not suppress the member for a network launch or recreate a
 second layout verifier. `serve` remains outside the qualified exclusion
-forms: a request requiring this fact cannot silently launch through serve.
+forms: a request carrying this fact MUST refuse before execution, rather
+than warn and continue. Without the fact, the standing residual applies.
 
 #### 2. Managed file credentials
 
@@ -244,8 +252,12 @@ five keys, keeps path validation and one-parent semantics for XDG, and
 admits only the literal string `file` for the backend key. Other adapters
 retain their existing environment sets; unknown names remain invalid.
 
-Integrate this with CIP-0015's per profile × environment backend setting,
-defaulting managed Muse to `file` for both credential modes. CIP-0015 owns
+Integrate this with CIP-0015's per profile × environment backend setting.
+Its stored default remains `native`; for managed Muse only, unset and
+`native` resolve to effective `file`, as does explicit `file`, for both
+credential modes. Report the mapping without rewriting the stored selector.
+This is the explicit Muse-specific change to CIP-0015's proposed no-override
+native mapping; other adapters retain their defaults. CIP-0015 owns
 the persisted configuration spelling and precedence; this CIP does not
 invent a competing key. An explicitly selected Keychain backend cannot
 claim the file-backed isolation or sharing contract: this initial Muse
@@ -320,7 +332,7 @@ admission or invent an interim path-inspection hack.
 Under the broker, the minting owner retains the Muse login and the child
 receives the minted key as `META_API_KEY` or `exec --api-key-stdin`;
 `TBH_CREDENTIAL_BACKEND=file` keeps the child away from the Keychain.
-This is consistent with owner decision 2026-10-15 (D11) and the supplied
+This is consistent with owner decision 2026-10-15 (D11) and its recorded
 Muse 1.4.8 billing/store observations. It does not authorize copying OAuth
 tokens or linking the broker owner's `auth.json` into a child: local
 `shared` homes and broker key delivery are different contracts. The
@@ -383,23 +395,28 @@ discovery remain unverified. The public guarantee must retain those bounds.
 
 ## Specification changes
 
-Adoption makes these normative edits together; this Draft edits none of
-the normative artifacts itself:
+The Accepted leaf 1 publishes these normative edits together:
 
 - Environments §§7.1 and 7.4: replace the isolated prohibition and Muse
   credential row with the file-backed modes and preserve refresh bounds.
 - Environments §§7.9 and 12: record version-separated evidence and the
-  complete rules-fallback/skills/interactive/serve status note.
+  complete rules-fallback/skills/interactive/serve status note. Required
+  exclusion on `serve` now refuses explicitly; without the fact retain the
+  standing residual. Replay the 1.4.8 exclusion probes before releasing a
+  consumer with a refusal that depends on their qualification.
 - Environments §§8.2 and 10.1: keep credentials outside managed content;
   record only the effective non-secret backend using CIP-0015's adopted
   metadata contract, and bind the fact to successful home verification.
-- Environments §10.2: add v4, its closed optional Muse `root_context`,
-  and the five-key Muse environment. Replace the quoted no-member rule
+- Environments §10.2: add the shared v4 revision, its closed optional
+  Muse `root_context`, five-key Muse environment and CIP-0015's coordinated
+  typed `credential_store` agreement check. Replace the quoted no-member rule
   with the member-driven argv contract; retain the two distinct forms.
 - Environments §10.3: allow only the registry-owned constant backend
   value as a non-path exception. Do not generalize profile env injection.
 - Add `schemas/v1/launch-env-fragment-v4.schema.json` and positive/negative
   conformance cases, including old-reader rejection; freeze old schemas.
+- Environments §§7.7 and 10.4: widen `environment_credential_unsupported`
+  to unsupported explicit backend mappings, including managed Muse Keychain.
 - Amend Decision 0010 to record owner decision 2026-10-15 (D10, D12).
   Align curator-agent-launcher fragment acceptance and the broker cross-
   reference without asserting unmeasured refresh or subscription lifetime.
@@ -408,23 +425,28 @@ the normative artifacts itself:
 
 Ordered leaves use S/M/L as scope estimates, not elapsed-time promises.
 
-1. **curator-spec — M:** adopt v4 prose, schema, revision rejection
-   vectors, corrected §7.4 row, evidence matrix, and influence boundary.
-2. **skill-agents-management — M:** carry the validated fact through the
+1. **curator-spec — M:** adopt v4 prose, coordinated store-policy schema,
+   revision rejection cases, corrected §7.4 row, evidence matrix, and influence
+   boundary. This is the Accepted normative-text leaf; no runtime qualification
+   is claimed by its schema/data checks.
+2. **curator / skill-agents-management — M:** replay the minimal 1.4.8
+   P1–P4 exclusion integration probes, record exact build qualification and
+   residuals. This precedes consumer release and every qualification-dependent
+   refusal in that release; it is not the token-refresh follow-up or a D10
+   credential-mode admission gate.
+3. **skill-agents-management — M:** carry the validated fact through the
    real launch request, map both forms, reject overriding native args,
    remove argv/sealer file inspection, and publish the module tag.
-3. **curator-agent-launcher — M:** consume v4, bind the fact and backend
-   into plans, enforce environment precedence and legacy managed-Muse
-   refusal, and retain qualification refusals across exec/interactive.
-4. **curator — M:** derive the fact from successful root materialization
+4. **curator-agent-launcher — M:** consume coordinated v4, bind the fact,
+   store policy and backend into plans, enforce agreement and environment
+   precedence, legacy managed-Muse refusal, and qualified exec/interactive.
+5. **curator — M:** derive the fact from successful root materialization
    and verification; implement file selection via CIP-0015, all renderers,
    both modes, login readiness, repair preservation, and status corrections.
-5. **skill-project-management — S:** update the spm module pin/vendor to
+6. **skill-project-management — S:** update the spm module pin/vendor to
    the new agents-management release; drive its real hosted launch path
    using the new fragment, without reproducing home-content checks.
-6. **curator / skill-agents-management — M:** run the minimal 1.4.8
-   integration probes, record exact build qualification and residuals,
-   and release compatible producer/consumers together.
+   Release the compatible producer/consumers only after leaf 2 qualification.
 7. **swarma-dispatcher — S:** verify broker-key forwarding plus the file
    backend in the existing child launch; never create a linked OAuth store.
    Archive/snapshot work remains owned by its separate materialization CIP.
@@ -432,7 +454,7 @@ Ordered leaves use S/M/L as scope estimates, not elapsed-time promises.
 ## Test plan
 
 These are implementation acceptance tests to add in the named repositories,
-not tests claimed to have run for this Draft. Exercise production resolve,
+not runtime tests claimed to have run for the normative-text leaf. Exercise production resolve,
 login, launch-plan, seal, and exec entry points, not just JSON helpers.
 
 | Named test | Entry and assertion | Negative case |
@@ -448,8 +470,7 @@ login, launch-plan, seal, and exec entry points, not just JSON helpers.
 | `TestMuseSharedRefreshDetachment` | status, bare resolve and repair drive each existing §7.4 state | Forked file, retarget, dangling target, read failure and non-empty directory preserve bytes and emit no fragment |
 | `TestMuseManagedV3RequiresUpgrade` | actual managed launch rejects a legacy Muse fragment | No retry, filesystem inference, or silently omitted exclusion/backend |
 
-Keep all committed reviewer tests under their original names. Extend existing
-Muse liveness tests rather than replacing them. Record each source/test/
+Extend existing Muse liveness tests rather than replacing them. Record each source/test/
 configuration/environment identity with its command, exit code, and log.
 
 Minimal tool probes use disposable homes and synthetic context sentinels,
@@ -471,10 +492,10 @@ without disturbing an active native login. On macOS with Muse 1.4.8:
 5. For broker qualification, contrast minted key via stdin and env, record
    subscription billing and unchanged store metadata without logging keys.
 
-The credential facts supplied here cover macOS 27 only. Portable schema,
+The recorded credential facts cover macOS 27 only. Portable schema,
 argv and synthetic filesystem tests run on supported platforms; Linux and
 Windows native Muse login/refresh qualification remains unclaimed until
-measured. No iOS app target exists in this spec repository.
+measured.
 
 Narrowing mutants for the implementation tests must be run and reported
 with their named failing test; the following are planned, not killed here:
@@ -501,11 +522,11 @@ Documentation validation does not establish these runtime properties.
    implementation and pin that exact release in spm and the launcher;
    never reuse a published tag. This is release coordination, not a reason
    to retain the old inspector.
-2. **CIP-0015 setting integration:** should Muse initially accept an
-   explicit Keychain choice? Recommended: default to file and reject
-   Keychain for this managed contract; adopt CIP-0015's single persisted
-   setting/precedence without a second Muse-only config key. D9/D10 remain
-   binding regardless of that spelling.
+2. **CIP-0015 integration — resolved for this leaf:** retain its single
+   persisted selector and compatibility default `native`; managed Muse
+   native/unset resolves to file and explicit Keychain refuses. The shared
+   v4 transport carries the typed agreement check. No second config key is
+   created; preparation/readiness implementation remains with CIP-0015.
 3. **Refresh follow-up:** should a delayed refresh result postpone mode
    admission? Recommended: no, per owner decision 2026-10-15 (D10); retain
    the existing conflict-preserving liveness contract and schedule the
@@ -513,5 +534,8 @@ Documentation validation does not establish these runtime properties.
    explicit operator recovery, not automatic credential copy-back.
 4. **Muse 1.4.8 exclusion build:** promote 1.4.7 evidence automatically or
    replay P1–P4 on the exact 1.4.8 artifact? Recommended: replay, record the
-   build and separate each evidence dimension; do not disable required
-   exclusions silently or claim the credential probe verified context.
+   build and separate each evidence dimension before consumer release
+   (implementation leaf 2), and before applying any qualification-dependent
+   refusal. Do not disable required exclusions silently or claim the
+   credential probe verified context. Leaf 1 freezes this ordering, not an
+   unmeasured positive result.
