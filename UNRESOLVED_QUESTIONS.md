@@ -2,14 +2,15 @@
 
 ## Muse managed-context residuals
 
-The revision-1 admission in [environments §§7.1 and 7.9](protocol/environments.md)
-verifies the Muse Code 1.4.7 monolithic own-file target and loader-level
-foreign exclusion on `exec`. Skills discovery, system-prompt discovery,
-model-visible removal of the unidentified foreign source, and a reproducible
-size threshold remain unverified. Workspace precedence in observed conflicts
-is a residual; `serve` cannot exclude foreign personal context. The required
-admission vectors are listed in environments §13 for delivery with the
-target and flag; existing vectors do not qualify the added requirements.
+The revision-1 admission in [environments §§7.1, 7.9, and 10.2](protocol/environments.md)
+records the Muse Code 1.4.7 monolithic own-file target, measured foreign
+personal-context sources, and target-bound `exec` and interactive exclusion.
+Skills discovery, system-prompt discovery, model-visible foreign removal,
+and a reproducible size threshold remain unverified. Workspace precedence in
+observed conflicts is a residual; `serve` cannot exclude foreign personal
+context. The required admission vectors are listed in environments §13 for
+delivery with the target and both forms' exclusion argv; existing vectors
+do not qualify the added requirements.
 
 **Managed Muse `exec` without a root-context surface.** The behavior when
 the resolved profile declares no root-context surface (including the synthesized

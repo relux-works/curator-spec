@@ -3020,7 +3020,7 @@ in this profile launches.
 | store entry, lock, or marker file fails the environments §4 protected-boundary contract or its pin hash at resolve (no fragment; non-current) | `environment_store_untrusted` |
 | enclosing boundary cannot be proven at resolve (no fragment; non-current; nothing rebuilt) | `environment_store_untrusted` |
 | repair could not acquire the mutation lock within the bounded wait | `environment_lock_unavailable` |
-| `--repair --preserve-lock` would change the lock hash (including a v1 lock with a v2 writer); refusal before repair-lock acquisition and any write; no fragment; names explicit migration commands | `environment_repair_needs_lock_migration` |
+| `--repair --preserve-lock` would change the lock hash (including a v1 lock with a v2 writer); refusal before repair-lock acquisition and any write; no fragment; names the explicit migration command | `environment_repair_needs_lock_migration` |
 | managed home cannot be repaired from the store, or the lock hash changed between the preserve-lock pre-check and repair-lock acquisition (no fragment or writes) | `environment_repair_failed` |
 
 ### 12.6 Profile audit

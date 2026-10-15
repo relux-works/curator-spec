@@ -18,9 +18,10 @@ conformance vectors; no implementation conformance is claimed.
 
 **Revision-1 amendment (2026-10-14).** The later evidence-driven Muse
 admission records the root-context target and monolithic form verified on
-1.4.7, together with mandatory foreign personal-context exclusion on `exec`.
-The target and flag ship in one release; no implementation or qualification
-is claimed. The trust-boundary decision is recorded in the
+1.4.7, together with mandatory foreign personal-context exclusion on `exec`
+and interactive launches (sections 7.1 and 10.2).
+The target and both forms' exclusion argv ship in one release; no implementation
+or qualification is claimed. The trust-boundary decision is recorded in the
 [Decision 0010 amendment](../decisions/0010-agent-environment-profiles.md#muse-admission-amendment-2026-10-14).
 
 It extends, and does not reinterpret, the portable objects in
@@ -3093,8 +3094,10 @@ or of an unreadable or malformed lock file reports
 (section 4).
 Lock acquisition that times out is
 `environment_lock_unavailable`, distinct from `environment_repair_failed`,
-which keeps meaning that the store cannot restore this home — an entry is
-missing or fails validation, including the section 4 contract. Neither emits a fragment.
+which means that the store cannot restore this home — an entry is
+missing or fails validation, including the section 4 contract — or that the
+lock hash changed between the preserve-lock pre-check and repair-lock acquisition
+as specified above. Neither emits a fragment.
 
 **Store-trust verification.** On every resolve, as part of the lock-free
 verification, the manager MUST verify in order: enclosing boundary →
@@ -3493,7 +3496,7 @@ that no reader mistakes the surfacing rows for an execution sandbox.
 | dry-run evaluation of an entry-class failure of a store entry or a marker file, or of a lock file that fails its boundary checks (no mutation; a real operation would rebuild it) | `would-rebuild-untrusted-store` |
 | dry-run evaluation of an enclosing-boundary failure, of a `path` source directory failure, or of an unreadable or malformed lock file (no mutation; no rebuild planned) | `environment_store_untrusted` |
 | repair could not acquire the mutation lock within the bounded wait | `environment_lock_unavailable` |
-| `--repair --preserve-lock` would change the lock hash (including a v1 lock with a v2 writer); refusal before repair-lock acquisition and any write; no fragment; names explicit migration commands | `environment_repair_needs_lock_migration` |
+| `--repair --preserve-lock` would change the lock hash (including a v1 lock with a v2 writer); refusal before repair-lock acquisition and any write; no fragment; names the explicit migration command | `environment_repair_needs_lock_migration` |
 | managed home cannot be repaired from the store, or the lock hash changed between the preserve-lock pre-check and repair-lock acquisition (no fragment or writes) | `environment_repair_failed` |
 | S4 profile `s4-warn`: launch composition passes an operator variable outside the configured `passable_env_names` (warning, names the variables and the knob) | `mcp_env_passthrough_unlisted` |
 | S4 profile `s4-enforce`: launch composition drops a requested name outside the effective `passable_env_names` (warning, names the variables) | `mcp_env_passthrough_dropped` |
