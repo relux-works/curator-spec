@@ -1,0 +1,7 @@
+{
+  "environment": "codex_cli",
+  "credential_store": {
+    "selection": "native"
+  },
+  "env": {}
+}

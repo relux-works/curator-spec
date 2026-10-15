@@ -7,6 +7,14 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Accept CIP-0015 leaf 1: [login readiness revision 1](protocol/login-readiness.md),
+  metadata-only caller-session presence, user-owned store selection and
+  prepare/login lifecycle, with standalone schemas and structural cases.
+  Strict check/prepare requires every participant present, so ambient OpenCode
+  cannot currently return green. Full containing config/status/fragment
+  revisions and native qualification remain pending; released schemas and
+  fragment v1–v3 stay unchanged. No implementation conformance is claimed.
+
 - Environments revision 1 adds `env resolve --repair --preserve-lock`: repair
   preserves the lock hash or refuses before repair-lock acquisition and every
   write with `environment_repair_needs_lock_migration`. The flag alone uses

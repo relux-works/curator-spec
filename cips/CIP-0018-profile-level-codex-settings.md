@@ -1,10 +1,13 @@
 # CIP-0018: Profile-level Codex settings as launch overrides
 
-- **Status:** Draft
-- **Owner:** ivan-curator (orchestrator); decision: operator
+- **Status:** Accepted
+- **Owner:** Curator maintainers; decision: operator
 - **Created:** 2026-10-15
-- **Related:** owner decision 2026-10-15 (D9, D13); CIP-0015 credential-store selection (parallel proposal)
+- **Related:** owner decision 2026-10-15 (D9, D13); owner decision 2026-10-16 (D14); CIP-0015 machine credential-store selection
 - **Affects:** environments §§2, 6, 7.3, 7.4, 10.2, 10.3, 12.1; curator; curator-agent-launcher; skill-agents-management; skill-project-management; swarma-dispatcher
+
+- **Decision:** owner decision 2026-10-15 (D9, D13), corrected by owner decision 2026-10-16 (D14); profile inheritance and typed launch overrides retained; credential-store selection is machine-owned.
+- **Normative text:** [Profile Codex settings §§1–7](../protocol/profile-codex-settings.md), [environments §§2, 6, 7.4, 8.2, 10.2–10.3, 12.1](../protocol/environments.md), [member schemas](../schemas/profile-codex-settings-v1/README.md), [cases and vectors](../conformance/profile-codex-settings-v1/README.md), [Decision 0025](../decisions/0025-profile-codex-settings.md).
 
 ## Summary
 
@@ -14,16 +17,19 @@ Curator resolves the values and emits typed launch data; the launcher applies
 that data as stable `-c key=value` argv pairs on every managed Codex launch.
 Neither resolution nor launch rewrites the native or managed `config.toml`:
 that file remains a one-time seed followed by tool-owned state.
-The first admitted setting is `cli_auth_credentials_store`, including the
-explicit `file` selection required by owner decision 2026-10-15 (D9).
+Owner decision 2026-10-16 (D14) removes `cli_auth_credentials_store` from the
+package vocabulary, which admits no key in this revision. Curator fills that
+launch override only from CIP-0015's user-owned machine selector
+`credential_store.<profile>.<env-id>` (default `native`).
 
 ## Motivation and user stories
 
-A profile author needs a reproducible credential-store choice even when a
-seeded home has an older configuration. An operator needs a machine overlay
-to refine that choice without editing a dependency or rebuilding a tool-owned
-file. A hosted session needs the same resolved selection as an interactive
-launch, while retaining its own sandbox, approvals and tool isolation.
+An operator needs a machine-owned credential-store choice even when a seeded
+home has an older configuration. Owner decision 2026-10-16 (D14) assigns that
+choice exclusively to the machine selector: packages must not decide that
+tokens go to disk. A hosted session needs the same machine-selected override
+as an interactive launch, while retaining its own sandbox, approvals and tool
+isolation. Profile inheritance remains available for future reviewed keys.
 
 Owner decision 2026-10-15 (D13) requires profile-level inheritance and launch
 overrides. Owner decision 2026-10-15 (D9) assigns the per-profile × environment
@@ -56,6 +62,12 @@ claim that an older standalone checkout has the same implementation.
 Code inspection establishes existing code paths, not new live probe results.
 The measured Codex facts cited from S retain its **Codex 0.153.2** version.
 No independent credential-storage or upstream merge probe was run for this CIP.
+
+S §10.3 says a profile chooses context, never how a process is launched,
+and forbids profile-selected environment variables. Adoption deliberately
+narrows the first boundary only for reviewed package keys, admitting none in
+this revision under D14; the variable boundary remains unchanged. The machine
+credential-store selector uses a separate closed launch vocabulary.
 
 ### Profile composition and closed channels
 
@@ -106,6 +118,10 @@ Codex only under native `file`, refusing `keyring`/`auto`. These are current
 rules to amend explicitly, not assumptions that a launch override already
 changes provisioning or links.
 
+Scalar `-c` precedence over a conflicting seed and the effect of this key on
+login, app-server and token refresh remain unverified on Codex 0.153.2.
+Native configuration support does not establish those launch behaviors.
+
 ### The launcher and the session host
 
 A `pkg/agentic/systems/codex/context.go:137-192` validates the Curator Codex
@@ -146,9 +162,10 @@ proposed contracts unless explicitly identified above as current state.
 | B: manifest denylist | Accept most Codex keys except reserved prefixes | Broad customization | Every upstream key can change the attack surface | New aliases or tables can bypass the denylist |
 | C: separate settings file | Manifest points at a TOML file with unrestricted contents | Familiar native format | Another parser, path and digest surface; ambiguous ownership | Tables, includes and secrets require broad filtering |
 
-Recommend **A**, initially admitting only the credential-store key. This
-satisfies D9 without granting model-provider, sandbox or MCP configuration
-powers. A broader allowlist can be added after each key has typed semantics.
+Recommend **A**, with no admitted package key in this revision under D14.
+Credential-store, credential-source and account keys are never admissible.
+Other keys need a reviewed typed vocabulary extension. D9's machine selector
+uses the typed launch transport without becoming a package contribution.
 
 **How inherited values conflict**
 
@@ -156,7 +173,7 @@ powers. A broader allowlist can be added after each key has typed semantics.
 | --- | --- | --- | --- | --- |
 | A: section 6 weights | Select one scalar using effective weights and `winner`; reject unequal ties | Matches operator composition controls | Requires an explicit extension to section 6 | No traversal-order tie breaker or hidden override |
 | B: root always wins | Ignore dependency weights for settings | Simple mental model | Machine overlays cannot refine by the same policy | Root publisher can defeat machine refinements |
-| C: first/last traversal wins | Use topological emission order | Reuses an existing sequence | Unrelated graph edits change winners | Order manipulation silently changes credentials |
+| C: first/last traversal wins | Use topological emission order | Reuses an existing sequence | Unrelated graph edits change winners | Order manipulation silently changes settings |
 
 Recommend **A**; `placement` has no role in scalar value selection.
 
@@ -187,16 +204,14 @@ last `-c` repairs an already unsafe table merge.
 #### Package member and validation
 
 Add OPTIONAL `codex_settings` at the top level of `agent-context.json`.
-It is an object keyed by exact Codex configuration names. For example:
+It is a closed object with no admitted package keys in this revision. For example:
 
 ```json
 {
   "schema_version": 1,
   "name": "example-profile",
   "version": "1.0.0",
-  "codex_settings": {
-    "cli_auth_credentials_store": "file"
-  }
+  "codex_settings": {}
 }
 ```
 
@@ -208,19 +223,20 @@ it as an alternative settings source. A package with no context modules may
 still contribute settings. A path overlay receives no extra configuration
 powers by being machine-selected.
 
-The initial closed allowlist has exactly this row:
+The initial package allowlist is empty under D14. New keys require a reviewed
+typed vocabulary extension; credential-store, credential-source and account
+keys, including `cli_auth_credentials_store`, are never admissible here.
+Declaring that key with either `file` or `keyring`, or declaring any unknown
+key, produces `context_manifest_invalid` before resolution and no launch data.
 
-| Key | JSON type | Accepted values | Default when absent |
-| --- | --- | --- | --- |
-| `cli_auth_credentials_store` | string | `file`, `keyring` | No profile override; preserve native/tool behavior and current eligibility checks |
-
-`keyring` is the Codex spelling for the OS credential store, including the
-Keychain where applicable. `auto` remains recognized when inspecting native
-storage but is not an explicit profile selection: it does not promise one
-backend. No new storage selector or Codex default is inferred by this CIP.
+In the launch transport only, `keyring` is the Codex spelling for the OS
+credential store, including the Keychain where applicable. CIP-0015's machine
+selector maps `file` to `file`, qualified `keychain` to `keyring`, and `native`
+to no override. Native `auto` remains a compatibility inspection value;
+no new storage selector or Codex default is inferred by this CIP.
 
 Reject null, booleans, numbers, arrays, objects and TOML-source strings in
-place of the allowed enum. Reject duplicate JSON keys before decoding to a
+place of the empty package object. Reject duplicate JSON keys before decoding to a
 map, unknown manifest fields, unknown setting names, dotted/quoted aliases,
 invalid UTF-8 and control characters in names. There is no interpolation,
 include, executable expression, deletion marker or secret value. An absent
@@ -229,8 +245,8 @@ or empty object contributes nothing; neither clears a lower-weight value.
 Validate every contribution before precedence, including values that would
 lose. A high-weight valid declaration cannot hide a hostile lower-weight
 one. Invalid input emits no usable fragment and makes launch fail closed.
-The implementation must specify diagnostics during normative adoption;
-this draft does not claim that new refusal codes already exist.
+Adoption names the diagnostics in the linked normative text; this does not
+claim that existing implementations emit them.
 
 Never admit `sandbox_mode`, `approval_policy`, permission profiles,
 `sandbox_*`, `permissions`, `default_permissions`, `mcp_servers`, `model`,
@@ -242,22 +258,26 @@ not this list of examples, is the validator's authority.
 Machine permission policy and explicit operator provider choices continue
 through their existing separate surfaces. Machine consent to those surfaces
 does not turn `codex_settings` into a raw TOML escape hatch or widen the
-allowlist. A future profile-controlled sensitive key requires a separate
-machine authorization contract and normative review before admission.
+allowlist. Credential-store, credential-source and account keys remain
+forbidden regardless of machine authorization; other future keys require a
+reviewed typed vocabulary extension.
 
 #### Inheritance and reporting
 
 Collect contributions from the resolved closure once per package identity.
 Compute each member's effective weight exactly as S §6 specifies; do not
-introduce a special root or dependency priority. For each admitted key:
+introduce a special root or dependency priority. This machinery is retained
+for future reviewed keys; with an empty package vocabulary it yields `{}` and
+no contributions. It never composes or applies precedence to credential-store
+selection. For each admitted key:
 
 1. Select the highest effective weight under `winner=higher-weight`, or the
    lowest under `winner=lower-weight`.
 2. If all declarations at that winning weight have the same typed value,
    coalesce them and retain every winning origin.
-3. If winning declarations disagree, refuse resolution; no lexical name,
+3. If winning declarations disagree, refuse resolution (`codex_settings_conflict`); no lexical name,
    overlay-list order, graph order or chapter placement breaks the tie.
-4. If lower-ranked values differ, succeed with a visible override diagnostic
+4. If lower-ranked values differ, succeed with a visible `codex_settings_override` diagnostic
    identifying key, package origins, weights, winning value and winner rule.
    Identical redundant values remain visible in inspection provenance.
 
@@ -274,8 +294,11 @@ lock identity; provenance remains Curator's inspection concern.
 
 #### Fragment and argv delivery
 
-Add OPTIONAL `codex_settings` with the same restricted object shape to a
-new closed fragment revision. Reserve no concrete version number here:
+Add OPTIONAL `codex_settings` as a closed typed launch-override object to a
+new closed fragment revision. Unlike the empty package vocabulary, this
+transport admits `cli_auth_credentials_store` with `file` or `keyring` only,
+filled exclusively by Curator from the machine selector. Machine overrides
+are absent from package locks and markers, but covered by launch identity. Reserve no concrete version number here:
 coordinate it with the parallel root-context and snapshot amendments to
 avoid assigning incompatible meanings to one revision. It is admitted only
 when `environment=codex_cli`; when empty it is omitted. No `channels`, raw
@@ -329,10 +352,12 @@ launch with the requested setting, it refuses instead of dropping it.
 
 #### Credential-store selection and CIP-0015
 
-CIP-0015's Codex store choice should use this member as its single launch
-transport, rather than an additional file-edit mechanism. D9's explicit
-file mode becomes `cli_auth_credentials_store="file"` for login preparation
-and every subsequent launch. No credential bytes enter the manifest, lock,
+CIP-0015 section 2's machine selector `credential_store.<profile>.<env-id>`
+(default `native`) is the only source of the Codex store choice under D14.
+Curator fills this member as its single launch transport; packages, overlays,
+locks and repositories cannot select, refine or override that choice.
+D9's machine-selected file mode becomes `cli_auth_credentials_store="file"`
+for login preparation and every subsequent launch. No credential bytes enter the manifest, lock,
 fragment, plan, status row or diagnostics.
 
 Separate two facts in status: **native storage**, which determines what can
@@ -341,7 +366,7 @@ session backend. Preserve S §7.4's native-storage rule for sharing. A launch
 file override does not turn a native keyring identity into a shared file
 credential or make an existing `auth.json` the authenticated native store.
 
-For an explicit setting, preparation checks this matrix before linking or
+For an explicit machine selection, preparation checks this matrix before linking or
 launching; read/parse failure is unknown and refuses, never native `file`:
 
 | Mode | Native storage | Effective launch storage | Proposed result |
@@ -354,7 +379,7 @@ launching; read/parse failure is unknown and refuses, never native `file`:
 
 The isolated/file row is an explicit amendment to S §7.4's native-file-only
 eligibility gate, coordinated with CIP-0015; it is not a claim about current
-code. Without an explicit profile setting, retain today's native-derived
+code. Without an explicit machine selection, retain today's native-derived
 rules, including current `auto` behavior. Backend or isolation changes to an
 existing home require the existing inspect → plan → confirm → apply migration,
 not repair. The setting cannot migrate credentials, silently sign in, repair
@@ -362,6 +387,13 @@ a detached link or bypass readiness. Unsupported backend capability refuses
 with an actionable report before a model or login invocation.
 
 ## Security considerations
+
+The adoption deliberately amends S §10.3's no-launch-influence statement only
+for reviewed package keys, admitting none in this revision under D14.
+The closed typed credential-store override is machine-owned; package bytes
+admit no paths, names, raw TOML or policy keys. Profile-selected environment variables remain forbidden.
+Two third-party requirements with differing winning values can deny resolution;
+this is a fail-closed availability risk, not a permission bypass.
 
 Treat every package contribution as hostile configuration, even from a signed
 source: signature trust is not permission to weaken sandboxing. Exact-key
@@ -410,7 +442,8 @@ eligibility matrix before the new isolated/file row is enabled.
 
 ## Specification changes
 
-Adopt the following normative sketch in a later, separately reviewed change:
+The linked normative text adopts the following leaf-1 requirements; consumer
+implementation, shared wire allocation and runtime qualification remain gated:
 
 1. Environments §2 and the context schema MUST admit the optional closed
    `codex_settings` object and reject invalid contributions before merging.
@@ -421,17 +454,24 @@ Adopt the following normative sketch in a later, separately reviewed change:
    inspection provenance; their schema changes MUST be versioned together.
 4. Sections 7.3 and 7.8 MUST retain their current descriptor grammars; §10.2
    MUST add the typed member in a newly assigned fragment revision.
-5. Section 10.3 and L §§4.1–4.5 MUST require closed validation, stable TOML
+5. Section 10.3 MUST narrow its no-launch-influence statement only for
+   reviewed package keys, admitting none under D14, and retain the
+   registry-only variable boundary. The credential-store override MUST come
+   exclusively from CIP-0015's machine selector. L §§4.1–4.5
+   MUST require closed validation, stable TOML
    argv delivery, digest coverage and refusal of unsupported delivery.
 6. Section 7.4 and CIP-0015 MUST distinguish native sharing from effective
    launch storage and adopt the explicit-setting matrix above. Section 12.1
    MUST keep machine permission consent separate from profile settings.
 7. Record D13's profile/inheritance/argv ownership and D9's concrete selector
-   as owner decision 2026-10-15 (D13) and owner decision 2026-10-15 (D9).
+   as owner decision 2026-10-15 (D13) and owner decision 2026-10-15 (D9),
+   corrected by owner decision 2026-10-16 (D14): the selector is machine-owned,
+   never a package contribution.
 
-This draft changes no normative schema, diagnostic registry or implementation.
-Exact wire-version allocation and new diagnostic spellings remain adoption
-work, not undocumented existing behavior.
+The adoption publishes new normative member schemas and diagnostics in a
+separate unreleased namespace. Full successor carrier allocation remains open
+with parallel amendments; existing closed wire schemas remain unchanged.
+The leaf does not enable producers or claim an implementation has shipped.
 
 ## Implementation plan
 
@@ -462,14 +502,14 @@ Ordered leaves; sizes use relative Fibonacci points and denote future work:
 ## Test plan
 
 These are required future implementation tests, not tests claimed to run by
-this documentation change. Run the repository's documentation validator for
-this draft; no product behavior or runtime gate ships in this leaf.
+this specification change. Leaf 1 adds executable member-schema cases and
+specification-data checks; no runtime gate ships in this leaf.
 
 | Named test | Production entry and observation | Negative or narrowing mutant worth killing |
 | --- | --- | --- |
-| `SettingsResolveClosureWeights` | `curator env resolve --format json` with root, requirement and machine overlay; both winner directions; unchanged result under placement flip | Resolve only root/overlay and omit a required-package setting |
-| `SettingsWinningTieRefuses` | Resolve equal winning weights with different enum values; require refusal, no fragment | Permit equal-weight disagreement only for requirements |
-| `SettingsValidateAllContributions` | Install/resolve hostile lower-weight declarations; exact unknown keys, dotted aliases, duplicate keys and wrong types refuse | Validate only winning declarations or only deny `sandbox_mode` |
+| `SettingsResolveClosureWeights` (future reviewed vocabulary extension) | `curator env resolve --format json` with root, requirement and machine overlay; both winner directions; unchanged result under placement flip | Resolve only root/overlay and omit a required-package setting |
+| `SettingsWinningTieRefuses` (future reviewed vocabulary extension) | Resolve equal winning weights with different admitted values; require refusal, no fragment | Permit equal-weight disagreement only for requirements |
+| `SettingsValidateAllContributions` | Install/resolve package-selected stores and hostile lower-weight declarations; exact unknown keys, dotted aliases, duplicate keys and wrong types refuse | Validate only winning declarations or only deny `sandbox_mode` |
 | `SettingsLaunchAllModes` | Real `curator-run` interactive/exec and hosted app-server construction; capture exact child argv and parse its TOML values | Apply settings only to interactive launches |
 | `SettingsHostPolicySurvivesResume` | Hosted start, attach and cold resume under ordinary and builder tool policies; observe effective policy, not merely argv | Reject policy collisions on start but omit resume/RPC checks |
 | `SettingsCredentialNativeMatrix` | Prepare/login/launch with disposable file/keyring fixtures across every matrix row; inspect metadata and link identity | Admit shared native-keyring/effective-file mismatch |
@@ -493,12 +533,12 @@ is a planned test matrix, not measured mutant coverage.
 
 ## Open questions for the operator
 
-1. **Initial vocabulary:** only `cli_auth_credentials_store`, or additionally
-   reviewed presentation/model-tuning keys? Recommend the single-key allowlist
-   now; model/provider selection stays with existing operator-owned controls.
-2. **Backend ambiguity:** admit profile `auto`, or require deterministic
-   `file`/`keyring`? Recommend deterministic selectors and retain native `auto`
-   only for compatibility inspection. This makes D9 an actual store choice.
+1. **Initial vocabulary:** D14 decides no package key in this revision.
+   Credential-store, credential-source and account keys are never admissible;
+   other keys need a reviewed typed vocabulary extension.
+2. **Backend ambiguity:** D14 retains CIP-0015's machine selector unchanged.
+   Its explicit `file`/qualified `keychain` choices map to `file`/`keyring` in
+   the transport; `native` emits no override and retains native `auto` behavior.
 3. **Cross-backend sharing:** refuse it or introduce a separate credential
    conversion/migration feature? Recommend refusal in this CIP and the explicit
    matrix coordinated with CIP-0015; isolated file preparation is the clean
@@ -507,3 +547,14 @@ is a planned test matrix, not measured mutant coverage.
    amendments, or sequential revisions? Recommend one jointly reviewed schema
    allocation if they ship together, otherwise independently versioned strict
    readers. Never reuse an existing revision or silently drop the member.
+
+5. **Override qualification:** does the scalar override beat a conflicting seed
+   and select the same backend for login, app-server and token refresh on each
+   supported release? Recommend qualifying every path before enabling producers;
+   unmeasured behavior remains unknown and unsupported, never assumed.
+
+Questions 1–3 are answered by this adoption and D14: the package vocabulary
+is empty, credential storage is selected only by the machine knob, and
+cross-backend sharing is refused. Question 4
+(shared carrier allocation) and question 5 (release qualification) remain open
+rollout gates; no later repository leaf is implemented here.

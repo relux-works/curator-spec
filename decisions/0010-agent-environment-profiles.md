@@ -19,6 +19,27 @@ refusal; no refresh probe gates D10 admission. Refresh/concurrent writes,
 model-visible removal, skills discovery, broker lifetime and unqualified
 platforms remain bounded unknowns, not guarantees supplied by this amendment.
 
+## Snapshot-lifetime amendment (2026-10-15)
+
+Owner decision 2026-10-15 (D4–D6), adopted through CIP-0014, supersedes this
+record's historical recommendation to launch concurrent sessions in mutable
+managed homes. Curator owns a verified content closure and captures it under
+the manager-home mutation lock without implicit recovery or repair. A live
+session uses its own regular-file snapshot and separately owned state/policy;
+it MUST NOT point at a managed home. Consumers do not invent file inventories.
+
+The normative [snapshot contract](../protocol/managed-home-snapshots.md)
+freezes leaf 1 only. Recursive home copy, consumer-maintained inventories,
+two-fragment equality as a capture proof, and shared live-home delivery are
+rejected. The source fragment digest is a host-bound provenance binding,
+excluded from portable comparison; exact manifest integrity still covers it.
+
+Runtime B is an interpretation of D6 awaiting operator confirmation. Exact
+archive bytes/caps and cross-service plan encoding remain leaf 5 work, and
+runtime protection/adapter qualification remain activation gates. This
+amendment neither claims shipped support nor changes released schema bytes.
+The earlier text is historical where it conflicts with this amendment.
+
 ## Muse admission amendment (2026-10-14)
 
 **Context.** The earlier Muse row admitted only the managed-home layout.

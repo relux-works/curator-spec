@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/managed-home-snapshot-v1/managed-home-snapshot-v1.schema.json",
+  "title": "managed-home-snapshot-v1",
+  "type": "object",
+  "required": [
+    "snapshot",
+    "adapter",
+    "profile",
+    "curator_version",
+    "fragment_sha256",
+    "launch_sha256",
+    "files"
+  ],
+  "properties": {
+    "snapshot": {
+      "const": "managed-home-snapshot-v1"
+    },
+    "adapter": {
+      "enum": [
+        "claude_code",
+        "codex_cli",
+        "muse",
+        "opencode",
+        "pi"
+      ]
+    },
+    "profile": {
+      "type": "object",
+      "required": [
+        "name",
+        "lock_sha256"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "../v1/common.schema.json#/$defs/identifier"
+        },
+        "lock_sha256": {
+          "$ref": "../v1/common.schema.json#/$defs/hex256"
+        }
+      },
+      "additionalProperties": false
+    },
+    "curator_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$"
+    },
+    "fragment_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/hex256"
+    },
+    "launch_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/hex256"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "size",
+          "sha256",
+          "mode"
+        ],
+        "properties": {
+          "path": {
+            "allOf": [
+              {
+                "$ref": "../v1/common.schema.json#/$defs/portablePath"
+              },
+              {
+                "pattern": "^home/"
+              }
+            ]
+          },
+          "size": {
+            "$ref": "../v1/common.schema.json#/$defs/nonNegativeSafeInteger"
+          },
+          "sha256": {
+            "$ref": "../v1/common.schema.json#/$defs/hex256"
+          },
+          "mode": {
+            "enum": [
+              "0600",
+              "0700"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -210,6 +210,11 @@ fixture bytes or expected outcomes. CI additionally runs Lychee over Markdown
 links, including external URLs. These vectors do not claim that a pinned
 implementation consumes this new family.
 
+The unreleased [profile Codex settings corpus](profile-codex-settings-v1/README.md)
+checks closed member schemas and publishes semantic entrypoint vectors without
+altering rc.14 pins. Full successor carrier allocation and runtime qualification
+remain open; member-schema success does not establish implementation conformance.
+
 ## 4. Execution
 
 The hand-authored

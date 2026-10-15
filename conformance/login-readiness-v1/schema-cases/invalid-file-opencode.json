@@ -1,0 +1,7 @@
+{
+  "environment": "opencode",
+  "credential_store": {
+    "selection": "file"
+  },
+  "env": {}
+}

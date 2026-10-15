@@ -1,0 +1,292 @@
+[
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-valid.json",
+    "valid": true
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-valid-codex.json",
+    "valid": true
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-valid-claude_code.json",
+    "valid": true
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-valid-pi.json",
+    "valid": true
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-valid-muse.json",
+    "valid": true
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-valid-opencode.json",
+    "valid": true
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-missing-snapshot.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-missing-adapter.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-missing-profile.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-missing-curator_version.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-missing-fragment_sha256.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-missing-launch_sha256.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-missing-files.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-invalid-snapshot.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-invalid-extra.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-invalid-adapter.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-invalid-fragment_sha256.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-invalid-launch_sha256.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-invalid-curator_version.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-invalid-profile.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-path-parent.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-path-dot.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-path-absolute.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-path-drive.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-path-unc.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-path-empty-segment.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-path-backslash.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-path-nul.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-path-outside-home.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-path-reserved.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-entry-size-30.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-entry-size-31.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-entry-mode-32.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-entry-sha256-33.json",
+    "valid": false
+  },
+  {
+    "schema": "managed-home-snapshot-v1.schema.json",
+    "instance": "cases/managed-home-snapshot-entry-extra-34.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-missing-descriptor.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-missing-environment.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-missing-profile.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-missing-precedence.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-missing-env.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-missing-permissions.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-invalid-unknown.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-invalid-old-fragment.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-invalid-version.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-invalid-path-prepend.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-invalid-wrong-env.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-invalid-absolute-env.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-invalid-root-on-codex.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-invalid-bad-permissions.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-mcp-absolute.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-mcp-parent.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-mcp-extra.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-muse-root-false.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-muse-root-null.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-muse-root-empty.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-muse-root-extra.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-muse-mcp.json",
+    "valid": false
+  },
+  {
+    "schema": "snapshot-launch-v1.schema.json",
+    "instance": "cases/snapshot-launch-muse-system_prompt.json",
+    "valid": false
+  }
+]

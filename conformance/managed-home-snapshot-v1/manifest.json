@@ -1,0 +1,389 @@
+{
+  "contract": "managed-home-snapshot-v1",
+  "files": [
+    {
+      "path": "conformance/managed-home-snapshot-v1/README.md",
+      "sha256": "sha256:6a92408ebf2a746399369b969ecdc29e4d7d4aea7123c7247a3a23a9be5fa587"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-entry-extra-34.json",
+      "sha256": "sha256:9ff2361bb08a4cb9414a6c985e5eaa3e5dc66b63010f7e33b337314dd8f210f2"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-entry-mode-32.json",
+      "sha256": "sha256:60a52d3393fa9bfc4afa5db2ef5f90ff16f127e306b3ab1bba2e0173af58958c"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-entry-sha256-33.json",
+      "sha256": "sha256:47537558a3bbbd60b5619f9e0a9c4460ff36d70b7f6d1bdfd21025acf126c308"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-entry-size-30.json",
+      "sha256": "sha256:6f42f8faeefa044e1bd16b2829533737f6c7c5f86ae4dd0f94b1a084c25b68a4"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-entry-size-31.json",
+      "sha256": "sha256:c6e8c6cbc453b73c7035e4fdbf22c2b860418dd1fd95e880361eeae3ceb6bb84"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-invalid-adapter.json",
+      "sha256": "sha256:c63f460e936f1fc5253d8782102cb9102c4ad2622c214ec5a76d82f43bb1bcb7"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-invalid-curator_version.json",
+      "sha256": "sha256:1a8a43c4cdf81f76d03c34e77e45589fa62490659e257aa89773470fb406b56d"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-invalid-extra.json",
+      "sha256": "sha256:72955516b31e7523c38422d3f4824820fc9d993431379392029087a8914f1d31"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-invalid-fragment_sha256.json",
+      "sha256": "sha256:d1c962678d2cb11004f2cd21d9a4f74e7be015cf38bc6a75f44f5ec411d9a9a6"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-invalid-launch_sha256.json",
+      "sha256": "sha256:23d6aa72ef87f5585b46efcbd6ffaa19cfcf01ae80265d01e59cf5a5b38cd587"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-invalid-profile.json",
+      "sha256": "sha256:423a5b39964b4b630a930d65f435b984a51a69cb6dd51db9ebec03aadce27bce"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-invalid-snapshot.json",
+      "sha256": "sha256:aa5023af20d7517ab768884533e9d8f682ad50c00ae7da2ef2f4d59dceac7750"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-missing-adapter.json",
+      "sha256": "sha256:4964532d68e5aa5300598a44333f095bacaaab65609b9e0dc10a4518206ecb5b"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-missing-curator_version.json",
+      "sha256": "sha256:b0070b39aee6dc86093aa6ed8d4f9ede9bf586dc0057b275facad7e98709f508"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-missing-files.json",
+      "sha256": "sha256:7c19c82c4529fd4f2939d523245baf02674519e7447289a670bcc31c8c6a4fc3"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-missing-fragment_sha256.json",
+      "sha256": "sha256:9321efb4ac0707b7180c6d699603ac60dd0d7a1cd3c3644bbcce734d011a8c1f"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-missing-launch_sha256.json",
+      "sha256": "sha256:f12d1cf13972ed8b231231cb21ba6ffa8d6d07c493d70107d1e01589e6d4b290"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-missing-profile.json",
+      "sha256": "sha256:f5b577f3aed313f156c3b4eb1ae0906f57f65fcc2188de5be2f8ad55ba7b804d"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-missing-snapshot.json",
+      "sha256": "sha256:610df644a85466ac1ba37039791f7e978d781a90222cad9b2af2a40c069baa94"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-path-absolute.json",
+      "sha256": "sha256:d1c6b4882a7d1046208e25c9b9268992dcbf7645b0065ea1786291a44e0eaad9"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-path-backslash.json",
+      "sha256": "sha256:2f81e5ea1ad4bc1a70fe7ae656a11dc368995d9a1602365e724a49d6567324a8"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-path-dot.json",
+      "sha256": "sha256:3b672e7443ed6ea002119c1cbce65f6914267cc6fdedb6fee8144e8757936272"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-path-drive.json",
+      "sha256": "sha256:0792b883ea231251a1e6987f36a8dfce6bab6ff8d948a7ac2f15164ac94c066b"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-path-empty-segment.json",
+      "sha256": "sha256:600c7180fd760af472979f4b3ec0d9ca9b75a7046c9eeebfff73afe3a27b3a0c"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-path-nul.json",
+      "sha256": "sha256:87d60f080f1829a208894c44a9fea02db293f7305f5ac2a876ceec3bd0fb75ac"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-path-outside-home.json",
+      "sha256": "sha256:3b4813d043fe5e14ae5ec6578c6a5bf818a24b94787c2f0fc341f6afa42fd6e6"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-path-parent.json",
+      "sha256": "sha256:545bc7d2b41ab2adaf4cd4f6385229c6261acca45678ca6f71e5069b86bad73c"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-path-reserved.json",
+      "sha256": "sha256:58af9c5de78b6c4e86cd77ebf8f7829395cbb40ba9225a4165ebd50cf6eb8e29"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-path-unc.json",
+      "sha256": "sha256:44d9f0f52836876db2a657099b550468bce6612acc4326ba37e57329734799ea"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/managed-home-snapshot-valid.json",
+      "sha256": "sha256:e22bb505ae6fe8f8f47a626ad31485d904a46d350a454e845d8396e68b2d8412"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-invalid-absolute-env.json",
+      "sha256": "sha256:1c195f6ef3d7f4e7eec3a6dbd5aa6d8d7faebaf1f4a535f5ec42dafe3cda271a"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-invalid-bad-permissions.json",
+      "sha256": "sha256:e4bab6a58c912a003c3e1b547feff95077cbce9cb27e797974cce872e5d74575"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-invalid-old-fragment.json",
+      "sha256": "sha256:ca604adeaf302cac88a1deb516750a9e16a11ec206d547ac990ad8773101a0a7"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-invalid-path-prepend.json",
+      "sha256": "sha256:26f1bd60f7699119cba59d63569b0681dc6aefd04f1e227e5e1e1c59e4bc5e3d"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-invalid-root-on-codex.json",
+      "sha256": "sha256:df4b9e395df12abca7af6440986e31e1df42d792975178c2b73ca7a711825779"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-invalid-unknown.json",
+      "sha256": "sha256:8e5ecb1c765c9ffe3a8e1510c987de617d42e39dee16cbbec0738378cc959568"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-invalid-version.json",
+      "sha256": "sha256:1380f5e614334e92b65c3adffdaa5fa013f113824c94439fc4b1c5d74fc0832b"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-invalid-wrong-env.json",
+      "sha256": "sha256:96ca0fdcdc0cbcb4f98a38a0e724e052fdae55154c9bedcf0ec9a03fe06bc3fe"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-mcp-absolute.json",
+      "sha256": "sha256:2403df849590eccae779deb8a15792f5667f6d873ebe2e8ff10e6ac19c4ded80"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-mcp-extra.json",
+      "sha256": "sha256:138dc20805d25d9389fe276d54f9ee8ea57db6c36da1b0917881c2312e8abd5b"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-mcp-parent.json",
+      "sha256": "sha256:20a84bfdc1ee2318ef48c659eb400a18280e52719c035764ed00ff7af30d3342"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-missing-descriptor.json",
+      "sha256": "sha256:0f493feb992066da19028178a842c8b7362d2bfe58bfc772eb405d53e12cc776"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-missing-env.json",
+      "sha256": "sha256:a5c0f6feb160655cd7223bd7c5b20253f07a1000d521ac7198485bab1a65e940"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-missing-environment.json",
+      "sha256": "sha256:157a05dbeb3253598bd9b1ac0253e7e4eb039f2ba1d14c367250b261c2c5e000"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-missing-permissions.json",
+      "sha256": "sha256:988def4b1616b080dabbd55382f1a329ee983555a08122710784a65bc0175a9b"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-missing-precedence.json",
+      "sha256": "sha256:e7d8da20e1e99e3a31f0ef7a603133ce72fee5b63f0ee3585ed30d143810a0b5"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-missing-profile.json",
+      "sha256": "sha256:f6accae06dafde1f14bbc8a7d61e0902776349cd366dcb38b4295d3f5f81dea2"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-muse-mcp.json",
+      "sha256": "sha256:97c6dafa930bfe3d1d885e8e18133ca8f656da7aef325c1f9da01a3d6f90ba84"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-muse-root-empty.json",
+      "sha256": "sha256:f79bdbf519d1c1eecada864e2e97dd80b2fd77509ccdc2b5c56371e74933c4ee"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-muse-root-extra.json",
+      "sha256": "sha256:097a0328be0e98754aee5c5eb6b28f64f1fed36a4c6c002cc1e989eb40033921"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-muse-root-false.json",
+      "sha256": "sha256:efb509c0607af5aef6aaab0574f38c4062c8a80ceae461a67f0bae22e9a01c06"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-muse-root-null.json",
+      "sha256": "sha256:9aa02cd505ce3f28e1046e1be4da5974eb291a6be538f5b2d2edffefd6baebe7"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-muse-system_prompt.json",
+      "sha256": "sha256:fdc56b64b6c013cb721d250399d607d7c6333ac00ed81a58a845dfb4891ceee4"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-valid-claude_code.json",
+      "sha256": "sha256:2939ea23abd57e77a946d19afd93d682a1d3e66c6e1098d2a5a991f19f2f9ba4"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-valid-codex.json",
+      "sha256": "sha256:7031fc3278c0fd4c6d50abdce7bb0190a7a8a0640c08299ea3398c199b6a0241"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-valid-muse.json",
+      "sha256": "sha256:dbdb508be430742dc900349db1b6efe8504f65541ff607c5148f4e38edf30bb6"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-valid-opencode.json",
+      "sha256": "sha256:b5155de9b90f73293808f25e80f41d6d8716e8fa508d9aba09d07595851bda3f"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/cases/snapshot-launch-valid-pi.json",
+      "sha256": "sha256:c6c6e6348dc3e8ee17745f0f941e61ee624451e5d7a0804c2fc09dbe6dbd1455"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/golden/digests.json",
+      "sha256": "sha256:be72a9d370d2fbc47e42a1920eee82e445c48a0b5ac82f7f266cfe9bc3b59b8d"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/golden/home/.agent-context/system-prompt.md",
+      "sha256": "sha256:891236d85b05d13e2825b88562e500db5d5c73148d75ae37f6e890a1a5e66257"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/golden/home/AGENTS.md",
+      "sha256": "sha256:d9d628028c9813634fa680bf07aaa3af08ac5127ff9b87f0912e62a3f2fa00ed"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/golden/home/curator-mcp.config.toml",
+      "sha256": "sha256:bbbf150661f2aa720984b845caacf2f1190369442aa500504426db6c5a9fe806"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/golden/home/skills/sample/SKILL.md",
+      "sha256": "sha256:f59f564f7959816889de8bc3199a14c747e1c985103e89c42ecd53ce79c42fb4"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/golden/home/skills/sample/run.sh",
+      "sha256": "sha256:bd557f3282ee9f8009e13547f642ef198e0546c9cbb73f9e960dd11167616793"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/golden/launch.json",
+      "sha256": "sha256:991fa12d6db3ce6f26a0c59016bf120d90e8bd8baf0116d2039b0eb7bad4bd2e"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/golden/manifest.json",
+      "sha256": "sha256:67d150311d39bd6f7f7358ff3ee9b18039f40e42ccd1e36d8249ca34eef2f307"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/golden/other-source-manifest.json",
+      "sha256": "sha256:b1a0ca7c83afd73071e2cf215dcbfbfb099421c4e2ecc64315cd4bc4cdd59bea"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/index.json",
+      "sha256": "sha256:718cb54abf3022a78f3739b5139fd08e32231f2da94c9d049be7b7529e95e037"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/operation-vector-notes.md",
+      "sha256": "sha256:8199827d44df9b6f0f87b1b5a52bffe9d106134c6feb8b026c23f6c2478b6f9d"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/adapter-binding-manifest.json",
+      "sha256": "sha256:3a8184c5c2ce6354ff2717ed5e3e9760728e5e5e5c43af4e2e4dfab128225504"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/case-collision-launch.json",
+      "sha256": "sha256:7fc1037d62fa1f6dce66b21865dddf190f1099e3433f5d47fdfc20361a31b692"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/case-collision-manifest.json",
+      "sha256": "sha256:4f243dc6c6b519c1eb54af94143c3438a49fef4d020ea0011b897e6163888e06"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/channel-reference-launch.json",
+      "sha256": "sha256:dd88a13deb369aae2ff42e9bd6a2077602506e7eaa15c690949f85814c66a23b"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/channel-reference-manifest.json",
+      "sha256": "sha256:0bfecdaa565f25c88d3bc4d17cf8f44daf6ba1eb4490e7c75627d0f54d035c22"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/channel-semantics-launch.json",
+      "sha256": "sha256:bbe37c2509def8151fa7ab67346bf81f37b01e1a95764a4f7b3eed1df87b76b1"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/channel-semantics-manifest.json",
+      "sha256": "sha256:4991efa9a46da0123e4354c56a793cfbde169575c78680b83ddc97da9e4f5d14"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/directory-case-collision-launch.json",
+      "sha256": "sha256:7fc1037d62fa1f6dce66b21865dddf190f1099e3433f5d47fdfc20361a31b692"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/directory-case-collision-manifest.json",
+      "sha256": "sha256:a1b82310b2a8b5f4d26121a7ebc6d580e1808348fe30d981c4739a31dbc28dea"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/duplicate-path-launch.json",
+      "sha256": "sha256:7fc1037d62fa1f6dce66b21865dddf190f1099e3433f5d47fdfc20361a31b692"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/duplicate-path-manifest.json",
+      "sha256": "sha256:b0d67dab1e5fadccd1061da3dcb0d77389a6d6aa0803c114972293a51b3c4b97"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/file-ancestor-launch.json",
+      "sha256": "sha256:7fc1037d62fa1f6dce66b21865dddf190f1099e3433f5d47fdfc20361a31b692"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/file-ancestor-manifest.json",
+      "sha256": "sha256:6acd98da3dbcd2e5efa0cae75d090f18104720be091454b07490bc646fe68870"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/launch-digest-manifest.json",
+      "sha256": "sha256:5de75456a9b85b3b99c7ff53bbaff9951268dd0087b16d5db8d783ba1076aa33"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/metadata-lf-manifest.json",
+      "sha256": "sha256:ba73ecc89d2ea4fe752b285788f069e94d1015e466f18673af4573fdf6e37d9d"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/path-order-manifest.json",
+      "sha256": "sha256:da203aa32c329f1b5dfcfa1629aff6db4d7dc12d80a6046040808b8a00b893e8"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/profile-binding-manifest.json",
+      "sha256": "sha256:d530689f2802dc0bedbe779f81b7a6d61849c0a29d8a386033d2ae2c4f7c5e4c"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/unicode-collision-launch.json",
+      "sha256": "sha256:7fc1037d62fa1f6dce66b21865dddf190f1099e3433f5d47fdfc20361a31b692"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/unicode-collision-manifest.json",
+      "sha256": "sha256:d25182f0d838efd74329f2bc782a3012572b1e63ec32d89686b023a014661986"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/wrong-hash-manifest.json",
+      "sha256": "sha256:9bd714d825ea899be53c7af43baf15cc1d7315de99beebdd0c37ee129b52e094"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/semantic/wrong-size-manifest.json",
+      "sha256": "sha256:0d9f2110e43522c2721ddf372d07792f4cefd618a6f5caab651560ef983ae5f6"
+    },
+    {
+      "path": "conformance/managed-home-snapshot-v1/vectors.json",
+      "sha256": "sha256:a70e7202043f77a22e2ded335a7e056a46497eb39be26081093bcc046446301f"
+    },
+    {
+      "path": "protocol/managed-home-snapshots.md",
+      "sha256": "sha256:7cf997ce8f0c7468a5fbbe3412ad3b542b9ff128391acbcb54598372a01f9ad8"
+    },
+    {
+      "path": "schemas/managed-home-snapshot-v1/README.md",
+      "sha256": "sha256:3a0f49eac062f71ec30cc1885e715c625f2b570146551442fd7820ff538df07d"
+    },
+    {
+      "path": "schemas/managed-home-snapshot-v1/managed-home-snapshot-v1.schema.json",
+      "sha256": "sha256:4204957a276fe603d49780939ead7d84594457563164b64554e1c474b52a6045"
+    },
+    {
+      "path": "schemas/managed-home-snapshot-v1/snapshot-launch-v1.schema.json",
+      "sha256": "sha256:c099f03b850602111a3be925acae8649cfa85ff3b8095f64ac316c56d61f0b51"
+    }
+  ]
+}

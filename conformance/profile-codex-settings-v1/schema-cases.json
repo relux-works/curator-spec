@@ -1,0 +1,589 @@
+[
+  {
+    "name": "setting-file",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "cli_auth_credentials_store": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "setting-keyring",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "cli_auth_credentials_store": "keyring"
+    },
+    "valid": false
+  },
+  {
+    "name": "settings-empty",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {},
+    "valid": true
+  },
+  {
+    "name": "setting-auto",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "cli_auth_credentials_store": "auto"
+    },
+    "valid": false
+  },
+  {
+    "name": "setting-null",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "cli_auth_credentials_store": null
+    },
+    "valid": false
+  },
+  {
+    "name": "setting-boolean",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "cli_auth_credentials_store": true
+    },
+    "valid": false
+  },
+  {
+    "name": "setting-number",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "cli_auth_credentials_store": 1
+    },
+    "valid": false
+  },
+  {
+    "name": "setting-array",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "cli_auth_credentials_store": []
+    },
+    "valid": false
+  },
+  {
+    "name": "setting-object",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "cli_auth_credentials_store": {}
+    },
+    "valid": false
+  },
+  {
+    "name": "setting-toml-source",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "cli_auth_credentials_store": "\"file\""
+    },
+    "valid": false
+  },
+  {
+    "name": "setting-control",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "cli_auth_credentials_store": "file\n"
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-11",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "sandbox_mode": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-12",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "approval_policy": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-13",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "permissions": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-14",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "mcp_servers": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-15",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "model": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-16",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "model_provider": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-17",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "model_providers": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-18",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "model_instructions_file": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-19",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "hooks": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-20",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "projects": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-21",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "profiles": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-22",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "cli_auth_credentials_store.extra": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-23",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "\"cli_auth_credentials_store\"": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-24",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "CLI_AUTH_CREDENTIALS_STORE": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "unknown-25",
+    "schema": "codex-settings-v1.schema.json",
+    "instance": {
+      "cli_auth_credentials_store\n": "file"
+    },
+    "valid": false
+  },
+  {
+    "name": "manifest-members-v1-file",
+    "schema": "manifest-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {
+        "cli_auth_credentials_store": "file"
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "manifest-members-v1-empty",
+    "schema": "manifest-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {}
+    },
+    "valid": true
+  },
+  {
+    "name": "manifest-members-v1-unknown",
+    "schema": "manifest-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {
+        "cli_auth_credentials_store": "file"
+      },
+      "argv": []
+    },
+    "valid": false
+  },
+  {
+    "name": "manifest-members-v1-invalid",
+    "schema": "manifest-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {
+        "cli_auth_credentials_store": "auto"
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "marker-members-v1-file",
+    "schema": "marker-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {
+        "cli_auth_credentials_store": "file"
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "marker-members-v1-empty",
+    "schema": "marker-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {}
+    },
+    "valid": true
+  },
+  {
+    "name": "marker-members-v1-unknown",
+    "schema": "marker-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {
+        "cli_auth_credentials_store": "file"
+      },
+      "argv": []
+    },
+    "valid": false
+  },
+  {
+    "name": "marker-members-v1-invalid",
+    "schema": "marker-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {
+        "cli_auth_credentials_store": "auto"
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "manifest-absent",
+    "schema": "manifest-members-v1.schema.json",
+    "instance": {},
+    "valid": true
+  },
+  {
+    "name": "marker-missing",
+    "schema": "marker-members-v1.schema.json",
+    "instance": {},
+    "valid": false
+  },
+  {
+    "name": "lock-one",
+    "schema": "lock-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {
+        "cli_auth_credentials_store": "file"
+      },
+      "codex_settings_contributions": [
+        {
+          "package": "root",
+          "settings": {
+            "cli_auth_credentials_store": "file"
+          }
+        }
+      ],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "lock-empty",
+    "schema": "lock-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": true
+  },
+  {
+    "name": "lock-missing",
+    "schema": "lock-members-v1.schema.json",
+    "instance": {
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "lock-invalid-loser",
+    "schema": "lock-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {
+        "cli_auth_credentials_store": "file"
+      },
+      "codex_settings_contributions": [
+        {
+          "package": "root",
+          "settings": {
+            "cli_auth_credentials_store": "file"
+          }
+        },
+        {
+          "package": "dependency",
+          "settings": {
+            "sandbox_mode": "off"
+          }
+        }
+      ],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "lock-origin-unknown",
+    "schema": "lock-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {},
+      "codex_settings_contributions": [
+        {
+          "package": "root",
+          "settings": {},
+          "path": "forbidden"
+        }
+      ],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "lock-duplicate",
+    "schema": "lock-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {
+        "cli_auth_credentials_store": "file"
+      },
+      "codex_settings_contributions": [
+        {
+          "package": "root",
+          "settings": {
+            "cli_auth_credentials_store": "file"
+          }
+        },
+        {
+          "package": "root",
+          "settings": {
+            "cli_auth_credentials_store": "file"
+          }
+        }
+      ],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "fragment-codex_cli-absent",
+    "schema": "fragment-members-v1.schema.json",
+    "instance": {
+      "environment": "codex_cli"
+    },
+    "valid": true
+  },
+  {
+    "name": "fragment-codex_cli-file",
+    "schema": "fragment-members-v1.schema.json",
+    "instance": {
+      "environment": "codex_cli",
+      "codex_settings": {
+        "cli_auth_credentials_store": "file"
+      }
+    },
+    "valid": true
+  },
+  {
+    "name": "fragment-claude_code-absent",
+    "schema": "fragment-members-v1.schema.json",
+    "instance": {
+      "environment": "claude_code"
+    },
+    "valid": true
+  },
+  {
+    "name": "fragment-claude_code-file",
+    "schema": "fragment-members-v1.schema.json",
+    "instance": {
+      "environment": "claude_code",
+      "codex_settings": {
+        "cli_auth_credentials_store": "file"
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "fragment-opencode-absent",
+    "schema": "fragment-members-v1.schema.json",
+    "instance": {
+      "environment": "opencode"
+    },
+    "valid": true
+  },
+  {
+    "name": "fragment-opencode-file",
+    "schema": "fragment-members-v1.schema.json",
+    "instance": {
+      "environment": "opencode",
+      "codex_settings": {
+        "cli_auth_credentials_store": "file"
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "fragment-pi-absent",
+    "schema": "fragment-members-v1.schema.json",
+    "instance": {
+      "environment": "pi"
+    },
+    "valid": true
+  },
+  {
+    "name": "fragment-pi-file",
+    "schema": "fragment-members-v1.schema.json",
+    "instance": {
+      "environment": "pi",
+      "codex_settings": {
+        "cli_auth_credentials_store": "file"
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "fragment-muse-absent",
+    "schema": "fragment-members-v1.schema.json",
+    "instance": {
+      "environment": "muse"
+    },
+    "valid": true
+  },
+  {
+    "name": "fragment-muse-file",
+    "schema": "fragment-members-v1.schema.json",
+    "instance": {
+      "environment": "muse",
+      "codex_settings": {
+        "cli_auth_credentials_store": "file"
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "fragment-empty",
+    "schema": "fragment-members-v1.schema.json",
+    "instance": {
+      "environment": "codex_cli",
+      "codex_settings": {}
+    },
+    "valid": false
+  },
+  {
+    "name": "fragment-raw",
+    "schema": "fragment-members-v1.schema.json",
+    "instance": {
+      "environment": "codex_cli",
+      "codex_settings": {
+        "cli_auth_credentials_store": "file"
+      },
+      "argv": [
+        "-c"
+      ]
+    },
+    "valid": false
+  },
+  {
+    "name": "fragment-missing-environment",
+    "schema": "fragment-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {
+        "cli_auth_credentials_store": "file"
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "fragment-codex_cli-machine-keyring",
+    "schema": "fragment-members-v1.schema.json",
+    "instance": {
+      "environment": "codex_cli",
+      "codex_settings": {
+        "cli_auth_credentials_store": "keyring"
+      }
+    },
+    "valid": true
+  },
+  {
+    "name": "manifest-members-v1-keyring",
+    "schema": "manifest-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {
+        "cli_auth_credentials_store": "keyring"
+      }
+    },
+    "valid": false
+  },
+  {
+    "name": "lock-invalid-loser-store",
+    "schema": "lock-members-v1.schema.json",
+    "instance": {
+      "codex_settings": {},
+      "codex_settings_contributions": [
+        {
+          "package": "dependency",
+          "settings": {
+            "cli_auth_credentials_store": "file"
+          }
+        }
+      ],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false
+  }
+]

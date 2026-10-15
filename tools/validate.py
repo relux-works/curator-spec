@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 import assurance
+import managed_home_snapshots
 from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import SchemaError
 from referencing import Registry, Resource
@@ -11936,11 +11937,30 @@ def validate_environments_muse_vectors(vector: Any = None) -> None:
                 raise ValidationFailure(f"Muse passthrough case {name} violates resolve/repair refusal")
 
 
+def validate_managed_home_snapshots() -> None:
+    try:
+        managed_home_snapshots.check_corpus(ROOT, load_json, ccj1_bytes, validate_wire_semantics)
+    except (ValueError, OSError) as exc:
+        raise ValidationFailure(f"managed-home snapshots: {exc}") from exc
+
+
+def validate_login_readiness() -> None:
+    import login_readiness
+
+    try:
+        total, negatives = login_readiness.validate(ROOT)
+    except (ValueError, OSError, SchemaError) as exc:
+        raise ValidationFailure(f"login readiness: {exc}") from exc
+    print(f"login-readiness schema cases: {total}/{total}; negatives: {negatives}/{negatives}; runtime cases: unrun")
+
+
 def main(*, release_history_only: bool = False) -> int:
     checks = [
         validate_released_record_immutability,
         validate_released_schema_immutability,
         validate_schemas,
+        validate_managed_home_snapshots,
+        validate_login_readiness,
         validate_draft_source_schemas,
         validate_draft_sources_manifest,
         validate_repository_descriptor_identity,

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/profile-codex-settings-v1/fragment-members-v1.schema.json",
+  "description": "Projection of environment and the added optional member, not a complete fragment. A new closed fragment revision remains required.",
+  "type": "object",
+  "required": [
+    "environment"
+  ],
+  "properties": {
+    "environment": {
+      "enum": [
+        "claude_code",
+        "codex_cli",
+        "opencode",
+        "pi",
+        "muse"
+      ]
+    },
+    "codex_settings": {
+      "description": "Typed launch overrides; the credential store is filled only from the machine selector, never package bytes.",
+      "type": "object",
+      "properties": {
+        "cli_auth_credentials_store": {
+          "enum": [
+            "file",
+            "keyring"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "environment": {
+            "const": "codex_cli"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "codex_settings": false
+        }
+      }
+    }
+  ]
+}

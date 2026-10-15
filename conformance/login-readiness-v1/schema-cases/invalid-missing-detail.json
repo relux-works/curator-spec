@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "profile": "example",
+  "environment": "codex_cli",
+  "current": true,
+  "login": "present"
+}

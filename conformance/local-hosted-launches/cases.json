@@ -1,0 +1,461 @@
+{
+  "normative": "protocol/local-hosted-launches.md \u00a7\u00a71\u20132, 7\u20138",
+  "kind": "semantic-selection-cases-not-wire-payloads",
+  "runtimes": [
+    "claude_code",
+    "codex_cli",
+    "muse"
+  ],
+  "cases": [
+    {
+      "name": "native-no-selection",
+      "input": {
+        "host": "native",
+        "backend": "absent",
+        "ax": false,
+        "receiver": "ready",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": true,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "native",
+        "receiver_lookup": false,
+        "diagnostic": null,
+        "exit": null
+      },
+      "forbidden_observation": {
+        "route": "native",
+        "receiver_lookup": true,
+        "diagnostic": null,
+        "exit": null
+      }
+    },
+    {
+      "name": "explicit-native",
+      "input": {
+        "host": "explicit-native",
+        "backend": "absent",
+        "ax": false,
+        "receiver": "ready",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": true,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "native",
+        "receiver_lookup": false,
+        "diagnostic": null,
+        "exit": null
+      },
+      "forbidden_observation": {
+        "route": "native",
+        "receiver_lookup": true,
+        "diagnostic": null,
+        "exit": null
+      }
+    },
+    {
+      "name": "backend-does-not-enable-hosting",
+      "input": {
+        "host": "native",
+        "backend": "local-task-board",
+        "ax": false,
+        "receiver": "ready",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": true,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "native",
+        "receiver_lookup": false,
+        "diagnostic": null,
+        "exit": null
+      },
+      "forbidden_observation": {
+        "route": "native",
+        "receiver_lookup": true,
+        "diagnostic": null,
+        "exit": null
+      }
+    },
+    {
+      "name": "native-legacy-ax",
+      "input": {
+        "host": "native",
+        "backend": "absent",
+        "ax": true,
+        "receiver": "ready",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": true,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "ax",
+        "receiver_lookup": false,
+        "diagnostic": null,
+        "exit": null
+      },
+      "forbidden_observation": {
+        "route": "ax",
+        "receiver_lookup": true,
+        "diagnostic": null,
+        "exit": null
+      }
+    },
+    {
+      "name": "explicit-hosted-absent-backend",
+      "input": {
+        "host": "explicit-hosted",
+        "backend": "absent",
+        "ax": false,
+        "receiver": "ready",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": true,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "local-task-board",
+        "receiver_lookup": true,
+        "diagnostic": null,
+        "exit": null
+      },
+      "forbidden_observation": {
+        "route": "dispatcher",
+        "receiver_lookup": true,
+        "diagnostic": null,
+        "exit": null
+      }
+    },
+    {
+      "name": "explicit-hosted-local-backend",
+      "input": {
+        "host": "explicit-hosted",
+        "backend": "local-task-board",
+        "ax": false,
+        "receiver": "ready",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": true,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "local-task-board",
+        "receiver_lookup": true,
+        "diagnostic": null,
+        "exit": null
+      },
+      "forbidden_observation": {
+        "route": "dispatcher",
+        "receiver_lookup": true,
+        "diagnostic": null,
+        "exit": null
+      }
+    },
+    {
+      "name": "migrated-operator-default",
+      "input": {
+        "host": "operator-hosted",
+        "backend": "local-task-board",
+        "ax": false,
+        "receiver": "ready",
+        "operator_migrated": true,
+        "network": false,
+        "terminal": true,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "local-task-board",
+        "receiver_lookup": true,
+        "diagnostic": null,
+        "exit": null
+      },
+      "forbidden_observation": {
+        "route": "dispatcher",
+        "receiver_lookup": true,
+        "diagnostic": null,
+        "exit": null
+      }
+    },
+    {
+      "name": "unmigrated-operator-default",
+      "input": {
+        "host": "operator-hosted",
+        "backend": "absent",
+        "ax": false,
+        "receiver": "ready",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": true,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "refuse",
+        "receiver_lookup": false,
+        "diagnostic": null,
+        "exit": null
+      },
+      "forbidden_observation": {
+        "route": "native",
+        "receiver_lookup": false,
+        "diagnostic": null,
+        "exit": null
+      }
+    },
+    {
+      "name": "machine-default-gated",
+      "input": {
+        "host": "machine-hosted",
+        "backend": "local-task-board",
+        "ax": false,
+        "receiver": "ready",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": true,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "refuse",
+        "receiver_lookup": false,
+        "diagnostic": "session_host_default_not_ready",
+        "exit": 16
+      },
+      "forbidden_observation": {
+        "route": "native",
+        "receiver_lookup": false,
+        "diagnostic": "session_host_default_not_ready",
+        "exit": 16
+      }
+    },
+    {
+      "name": "ax-conflict-before-default-gate",
+      "input": {
+        "host": "machine-hosted",
+        "backend": "absent",
+        "ax": true,
+        "receiver": "ready",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": true,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "refuse",
+        "receiver_lookup": false,
+        "diagnostic": "host_configuration_conflict",
+        "exit": 2
+      },
+      "forbidden_observation": {
+        "route": "native",
+        "receiver_lookup": false,
+        "diagnostic": "host_configuration_conflict",
+        "exit": 2
+      }
+    },
+    {
+      "name": "ax-conflict-explicit-hosted",
+      "input": {
+        "host": "explicit-hosted",
+        "backend": "absent",
+        "ax": true,
+        "receiver": "ready",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": true,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "refuse",
+        "receiver_lookup": false,
+        "diagnostic": "host_configuration_conflict",
+        "exit": 2
+      },
+      "forbidden_observation": {
+        "route": "native",
+        "receiver_lookup": false,
+        "diagnostic": "host_configuration_conflict",
+        "exit": 2
+      }
+    },
+    {
+      "name": "dispatcher-unimplemented",
+      "input": {
+        "host": "explicit-hosted",
+        "backend": "dispatcher",
+        "ax": false,
+        "receiver": "ready",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": true,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "refuse",
+        "receiver_lookup": false,
+        "diagnostic": null,
+        "exit": null
+      },
+      "forbidden_observation": {
+        "route": "native",
+        "receiver_lookup": false,
+        "diagnostic": null,
+        "exit": null
+      }
+    },
+    {
+      "name": "receiver-missing",
+      "input": {
+        "host": "explicit-hosted",
+        "backend": "absent",
+        "ax": false,
+        "receiver": "missing",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": true,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "refuse",
+        "receiver_lookup": true,
+        "diagnostic": "session_host_missing",
+        "exit": 1
+      },
+      "forbidden_observation": {
+        "route": "native",
+        "receiver_lookup": true,
+        "diagnostic": "session_host_missing",
+        "exit": 1
+      }
+    },
+    {
+      "name": "receiver-unreachable",
+      "input": {
+        "host": "explicit-hosted",
+        "backend": "absent",
+        "ax": false,
+        "receiver": "unreachable",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": true,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "refuse",
+        "receiver_lookup": true,
+        "diagnostic": "session_host_unavailable",
+        "exit": 1
+      },
+      "forbidden_observation": {
+        "route": "native",
+        "receiver_lookup": true,
+        "diagnostic": "session_host_unavailable",
+        "exit": 1
+      }
+    },
+    {
+      "name": "hosted-network-before-contact",
+      "input": {
+        "host": "explicit-hosted",
+        "backend": "absent",
+        "ax": false,
+        "receiver": "ready",
+        "operator_migrated": false,
+        "network": true,
+        "terminal": true,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "refuse",
+        "receiver_lookup": false,
+        "diagnostic": "network_scope_unsupported",
+        "exit": 16
+      },
+      "forbidden_observation": {
+        "route": "native",
+        "receiver_lookup": false,
+        "diagnostic": "network_scope_unsupported",
+        "exit": 16
+      }
+    },
+    {
+      "name": "hosted-terminal-before-contact",
+      "input": {
+        "host": "explicit-hosted",
+        "backend": "absent",
+        "ax": false,
+        "receiver": "ready",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": false,
+        "stdin": "terminal"
+      },
+      "expected": {
+        "route": "refuse",
+        "receiver_lookup": false,
+        "diagnostic": "session_host_terminal_required",
+        "exit": 6
+      },
+      "forbidden_observation": {
+        "route": "native",
+        "receiver_lookup": false,
+        "diagnostic": "session_host_terminal_required",
+        "exit": 6
+      }
+    },
+    {
+      "name": "hosted-piped-stdin-before-contact",
+      "input": {
+        "host": "explicit-hosted",
+        "backend": "absent",
+        "ax": false,
+        "receiver": "ready",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": true,
+        "stdin": "piped"
+      },
+      "expected": {
+        "route": "refuse",
+        "receiver_lookup": false,
+        "diagnostic": "session_host_stdin_unsupported",
+        "exit": 6
+      },
+      "forbidden_observation": {
+        "route": "native",
+        "receiver_lookup": false,
+        "diagnostic": "session_host_stdin_unsupported",
+        "exit": 6
+      }
+    },
+    {
+      "name": "hosted-attached-stdin-before-handoff",
+      "input": {
+        "host": "explicit-hosted",
+        "backend": "absent",
+        "ax": false,
+        "receiver": "ready",
+        "operator_migrated": false,
+        "network": false,
+        "terminal": true,
+        "stdin": "attached"
+      },
+      "expected": {
+        "route": "refuse",
+        "receiver_lookup": null,
+        "diagnostic": "session_host_stdin_unsupported",
+        "exit": 6
+      },
+      "forbidden_observation": {
+        "route": "native",
+        "receiver_lookup": null,
+        "diagnostic": "session_host_stdin_unsupported",
+        "exit": 6
+      }
+    }
+  ]
+}

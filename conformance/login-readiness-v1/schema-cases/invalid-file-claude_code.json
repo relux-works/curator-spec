@@ -1,0 +1,7 @@
+{
+  "environment": "claude_code",
+  "credential_store": {
+    "selection": "file"
+  },
+  "env": {}
+}

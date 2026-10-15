@@ -1,6 +1,8 @@
 # CIP-0014: Managed-home snapshots: `curator env materialize`
 
-- **Status:** Draft
+- **Status:** Accepted
+- **Accepted:** 2026-10-15 (owner decision 2026-10-15)
+- **Normative text:** [Managed-home snapshots §§1–7](../protocol/managed-home-snapshots.md); [environments §§8.1, 9.2, 10.1, 10.5, 13](../protocol/environments.md); [schemas](../schemas/managed-home-snapshot-v1/README.md); [conformance](../conformance/managed-home-snapshot-v1/README.md); [Decision 0010 amendment](../decisions/0010-agent-environment-profiles.md#snapshot-lifetime-amendment-2026-10-15).
 - **Owner:** Curator specification maintainers (orchestrator); decision: operator
 - **Created:** 2026-10-15
 - **Related:** owner decision 2026-10-15 (D1–D6, D9, D12, D13); CIP-0003; CIP-0011; TASK-261014-3ntl3f — interim session content copy; TASK-261014-28uxsf — attach/resume content identity
@@ -15,7 +17,8 @@ snapshot through a private session home, keeping its tool policy and mutable
 state separate from Curator's home. In the swarm, the caller packages the
 snapshot as a bounded canonical archive covered by the launch plan; the
 dispatcher relays it and the executor verifies and installs it read-only.
-This is a proposal, not an assertion that the command or transport exists.
+Leaf 1 is normative at the pointers above. Acceptance does not assert that
+the command, launcher integration or transport is implemented.
 
 ## Motivation and user stories
 
@@ -167,7 +170,9 @@ Each question has independent options; security consequences are explicit.
 Adopt inventory C, consistency B, delivery B and runtime B. These implement
 owner decision 2026-10-15 (D1, D4–D6), while leaving session policy, credentials
 and tool state with their existing owners. The following names and JSON
-members are **proposed new contracts**, not fields in existing schemas.
+members for leaf 1 are **new contracts** in the separate snapshot namespace,
+not extensions to released fragment schemas. Archive bytes/caps and runtime
+projection remain later-leaf publication and activation gates.
 
 #### 1. Command and destination boundary
 
@@ -177,7 +182,9 @@ curator env materialize <env-id> [--profile <name>] --manifest-only --format jso
 ```
 
 The profile selection rules match `env resolve`. `--manifest-only` and
-`--into` are mutually exclusive; missing both is a usage error. Manifest-only
+`--into` are mutually exclusive; missing both is a usage error.
+`--manifest-only` requires explicit `--format json`; bare use is `usage`
+before selection, lock acquisition or writes. Manifest-only
 runs the same selection, read and digest algorithm, including relocation,
 but publishes no output directory. It is a planning observation, never proof
 that an existing session tree matches the manifest. Neither form repairs,
@@ -262,16 +269,16 @@ Never leave a path back into the managed home or invent include support.
 
 #### 3. Manifest and digest semantics
 
-Propose a closed `managed-home-snapshot-v1` manifest, canonicalized with
+Define the closed `managed-home-snapshot-v1` manifest, canonicalized with
 registry CCJ-1 and exactly one trailing LF on disk. It contains:
 
-| Proposed member | Meaning |
+| Member | Meaning |
 |---|---|
 | `snapshot` | Exact token `managed-home-snapshot-v1` |
 | `adapter` | Closed environment ID; matches the launch descriptor |
 | `profile` | Name and `lock_sha256`, without source paths |
 | `curator_version` | Exact producing Curator release identifier |
-| `fragment_sha256` | SHA-256 of CCJ-1 source resolve fragment, excluding presentation LF |
+| `fragment_sha256` | Host-bound SHA-256 of CCJ-1 source resolve fragment, excluding presentation LF; excluded from portable comparison |
 | `launch_sha256` | SHA-256 of exact canonical `launch.json` bytes, including its LF |
 | `files` | Sorted entries `{path, size, sha256, mode}` for every regular content file under `home/` |
 
@@ -286,31 +293,40 @@ entries; limits apply to their count and depth too.
 `launch.json` is a **new portable descriptor**, not a modified v1/v2/v3 launch
 fragment. It preserves environment, profile pin, precedence, permissions and
 channel semantics, but represents all home-dependent paths as validated
-snapshot-relative paths. It includes the explicit root-context reference
-required by owner decision 2026-10-15 (D12). No source absolute home path,
-credential value or machine-local PATH prefix is exported. A nonempty future
-`path_prepend` needs a separately covered tool resource or refusal; binaries
+snapshot-relative paths. It includes the optional Muse `root_context: {"exclusive": true}` fact
+exactly when verified root context is selected, coordinated with CIP-0017
+and owner decision 2026-10-15 (D12); consumers never infer it from layout. No source absolute home path,
+credential value or machine-local PATH prefix is exported. `path_prepend` is not admitted in descriptor v1; a source requirement
+needs a separately covered tool resource or refusal; binaries
 are not smuggled into this content archive.
 
 Define `manifest_sha256 = SHA256(exact manifest.json bytes including LF)`.
 The manifest does not contain its own digest and does not list itself or
 `launch.json` in `files`; `launch_sha256` covers the descriptor separately.
 The archive contains exactly these two metadata files and the listed content,
-with only derived directories. The fragment digest binds the source decision;
-the manifest digest binds portable output; neither is the archive digest.
-A different Curator version or descriptor changes identity even if content
-bytes happen to match. No timestamps, destination paths, OS identities or
-random generation IDs enter portable identity.
+with only derived directories. The fragment digest binds the host-specific
+source decision, whose fragment contains absolute paths. Therefore the
+manifest digest is also source-home-bound; neither is the archive digest.
+Portable comparison excludes only `fragment_sha256`, compares descriptor
+bytes/digest and the full file inventory plus every other manifest member,
+and recomputes actual entry-set/bytes/sizes/modes. Exact plan integrity still
+binds the whole source-bound manifest. A different Curator version or
+descriptor changes identity even if content bytes match. No timestamps,
+destination paths, OS identities or random generation IDs enter portable identity.
 
 With `--format json`, stdout is exactly one manifest document after success;
 normal mode reports its digest and destination without printing content.
 Both forms emit no success manifest on failure; diagnostics go to stderr.
-Manifest-only and export on unchanged verified inputs yield identical bytes.
+Manifest-only and export from the same unchanged source fragment and verified
+inputs yield identical bytes. Cross-home equality is portable comparison,
+not equality of manifest digests.
 
 #### 4. Consistency, publication and repeat calls
 
 1. Validate the destination without writes. Acquire the same manager-home
    mutation lock used by repair and switching, with the existing bounded wait.
+   Use a non-recovering lock path: existing `beginOperation` also recovers
+   incomplete journals and cannot be reused as-is.
    Resolve profile selection and machine configuration under it, not from a
    prior unlocked lookup. Do not call a locking repair operation recursively.
 2. Detect pending transaction recovery and refuse until an explicit recovery
@@ -334,9 +350,9 @@ path, credential-metadata and read-failure diagnostics for those failures.
 The remedy for stale/unprovisioned homes is explicit `env resolve --repair`
 or the preparation flow, followed by another materialize. Do not weaken
 §8.4.1 by treating unreadable state as absent or falling back to native files.
-New failure classes are needed for invalid destinations, capture drift,
-unsupported relocation and snapshot mismatch; exact codes are a spec-first
-publication item, **not existing refusal names**.
+The new destination, recovery, capture-drift, relocation, mismatch and
+unsupported-adapter codes are frozen in [snapshot §5](../protocol/managed-home-snapshots.md#5-consistent-capture-and-refusals).
+They are new normative names, not claims of existing implementation support.
 
 For absent targets, stage beside the target and publish by no-replace rename.
 For an empty target, require exclusive ownership and recheck emptiness by
@@ -380,6 +396,7 @@ never appears in the swarm archive. D9's Codex file-store override and Muse
 backend selection are launch policy, not modifications to snapshot content.
 Readiness metadata is not credential possession.
 
+Runtime B is an interpretation of D6 awaiting operator confirmation.
 A sealed extraction is not assumed to be a writable tool home. The runtime
 view retains the sealed content as read-only backing while providing distinct
 writable state/configuration slots. An adapter-qualified mount/projection or
@@ -508,7 +525,9 @@ refuses managed snapshot launches after cutover; it never means live-home use.
 
 ## Specification changes
 
-All text below is a normative **target sketch**, adopted only by later leaves.
+Leaf 1 is frozen by the Normative text pointers above. The launcher and
+dispatcher quotations below remain **target sketches** for later leaves;
+acceptance does not publish their wire contracts or qualify runtime B.
 
 - **Environments §§5, 8, 10:** “A session MUST NOT point at a live managed
   home. `env materialize` MUST capture the verified content closure under
@@ -546,12 +565,13 @@ All text below is a normative **target sketch**, adopted only by later leaves.
 ## Implementation plan
 
 Ordered leaves; sizes are relative Fibonacci estimates, not elapsed time.
-No leaf is implemented by this document.
+Leaf 1 is specified by the linked normative text; later leaves remain work.
+No production implementation is claimed.
 
 | Order | Repository / size | Deliverable and dependency |
 |---|---|---|
 | 1 | curator-spec / 3 | Freeze content closure, manifest/descriptor schemas, relocation, destination rules, diagnostic names and byte vectors; coordinate D12 descriptor/fragment work |
-| 2 | curator / 5 | Production `env materialize`, manager-lock capture without implicit recovery/repair, no-follow publication, manifest-only parity and verifier; depends on 1 |
+| 2 | curator / 5 | Production `env materialize`, non-recovering manager-lock acquisition (not `beginOperation` as-is), capture without implicit recovery/repair, no-follow publication, manifest-only parity and verifier; depends on 1 |
 | 3 | curator-agent-launcher + skill-agents-management / 5 | Compose snapshot-backed runtime homes, exact overlay identity and launch settings; qualify Claude/Codex/Muse without live-home access; depends on 1–2 |
 | 4 | skill-project-management / 3 | Replace L2 interim copy; implement L3 attach/resume comparison and legacy refusal through the real hosted entry points; depends on 2–3 |
 | 5 | curator-spec + curator-agent-launcher + swarma-dispatcher / 5 | Jointly publish canonical archive bytes/caps, protected plan/resource intake and exact refusal mappings; amend SPEC §10 and R-TRANSFER; depends on 1 |
@@ -604,7 +624,8 @@ Narrowing mutants worth killing are specified in advance:
 | M10 | Enforce read-only files but allow ancestor replacement | `ExecRuntime_ProtectedContent` | Runtime content immutability is unproven |
 | M11 | Journal the declared digest without checking relayed bytes | `DispatcherMaterialize_SnapshotRelay` | Relay-to-plan correspondence is unproven |
 
-No mutant has been run or killed for this draft. Implementation handoffs must
+No mutant in this future implementation table has been run or killed by
+leaf 1. Its metadata-checker controls are separate. Implementation handoffs must
 report actual failing test names and survivors, not promote this table to
 coverage evidence. Test coverage must distinguish a missing resource from a
 failed read and a valid digest from admitted authority.
@@ -619,14 +640,13 @@ failed read and a valid digest from admitted authority.
 2. **Runtime protection:** approve a qualified read-only projection with
    separate writable state, or restrict initial activation to adapters proven
    to run against a wholly sealed home? Recommend the protected runtime view;
-   it preserves D6 without assuming tools never write their home. Exact
+   it interprets D6 and awaits operator confirmation, without assuming tools
+   never write their home. Exact
    per-platform mechanism and backend qualification remain activation gates.
 3. **Opencode scope:** keep cross-account snapshot parity unsupported until
    skills have a profile-local target, or explicitly admit ambient skills?
    Recommend unsupported parity; ambient skills cannot reproduce the caller's
    admitted closure. Do not silently export a partial snapshot as a successful materialization.
-4. **New failure names:** group destination, capture drift, relocation and
-   snapshot mismatch under a new materialize diagnostic family, or reuse
-   resolve codes beyond their present meanings? Recommend a new family for
-   genuinely new failures while preserving exact existing source diagnostics.
-   Freeze codes in leaf 1, never imply they already exist.
+4. **Resolved in leaf 1 — failure names:** the new materialize family in
+   snapshot §5 covers new failure classes; exact existing source diagnostics
+   retain their meanings. These names are normative, not shipped-code claims.

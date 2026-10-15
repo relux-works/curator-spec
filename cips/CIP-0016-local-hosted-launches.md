@@ -1,8 +1,10 @@
 # CIP-0016: Local hosted launches through curator-run
 
-- **Status:** Draft
+- **Status:** Accepted
 - **Owner:** ivan-curator (orchestrator); decision: operator
 - **Created:** 2026-10-15
+- **Accepted:** owner decision 2026-10-15; local hosted direction adopted, activation remains gated
+- **Normative text:** [Local hosted launches §§1–8](../protocol/local-hosted-launches.md), [environments §10.1](../protocol/environments.md#101-env-resolve), [Decision 0021 amendment v2](../decisions/0021-sessions-enter-through-curator-run.md#amendment-v2--local-hosted-launches-2026-10-15), [semantic conformance cases](../conformance/local-hosted-launches/README.md)
 - **Related:** CIP-0014 (session materialization, proposed companion); owner decisions 2026-10-15 D1–D6, D9–D13
 - **Affects:** curator-agent-launcher SPEC §§3, 4.6, 4.8–4.9, 10; skill-project-management sessionmanager and tb-sessiond; skill-agents-management hosted planning; swarma-session-host SH1 compatibility boundary
 
@@ -17,9 +19,11 @@ home, and a versioned receiver contract prevents the daemon from rebuilding
 the profile or launch. This is a same-machine, same-OS-user integration,
 not activation of the cross-account dispatcher or session-runner design.
 
-This Draft proposes changes; it enables no route by itself. The public
-contract must be adopted and its three runtime adapters qualified before
-production advertises the capability. Owner decision 2026-10-15 (D2) requires
+The direction is Accepted by owner decision 2026-10-15; acceptance enables
+no route by itself. The curator-spec ownership, selection and receiver summary
+are normative at the pointers above. The successor wire must be published
+and its three runtime adapters qualified before production advertises the
+capability. Owner decision 2026-10-15 (D2) requires
 all three runtimes from the first supported release; owner decision
 2026-10-15 (D3) makes replacing the old infrastructure entry point the priority.
 
@@ -572,10 +576,13 @@ wire or bypass its broker, account and lifecycle admission contracts.
 
 ## Specification changes
 
-These normative sketches become binding only through later adoption. The
-implementation leaves must publish concrete schemas, capability tokens,
-preparation framing and conformance vectors in lockstep. No schema file or
-normative protocol document is changed by this Draft.
+The curator-spec ownership, selection and receiver summary are adopted in
+[Local hosted launches](../protocol/local-hosted-launches.md). The launcher
+and receiver amendment sketches below remain follow-up publication work in
+their owning repositories: concrete wire schemas, capability tokens, config
+spelling, preparation framing and wire vectors must be settled jointly. The
+four open questions below remain open; adoption does not publish their
+recommended answers as wire fields. Released schemas remain unchanged.
 
 ### Launcher §3 and §4.6 amendment
 
@@ -659,7 +666,9 @@ activation gates intact; local admission supplies no evidence for them.
 ## Implementation plan
 
 Sizes are relative leaves, not elapsed-time promises. Each repository owns
-its changes; this CIP authoring task changes only this file.
+its changes. The Normative text pointers identify the adopted curator-spec
+part of leaf 1; launcher SPEC publication and later implementation leaves
+remain separate.
 
 1. **S — curator-spec + curator-agent-launcher:** adopt the ownership/selection
    decision and publish successor schema, capability matrix, preparation
@@ -734,7 +743,7 @@ for a process/goal/credential property it does not measure.
 | Refuse missing resume but retry unreadable | Read failure starts ordinary work | `TestHostedResumeCannotBecomeNewLaunch` | Missing-record handling only; read-error bound unproven |
 | Read Muse context from layout for one value | Explicit fragment ignored in that case | `TestHostedMuseUsesRegisteredPTYAndRootContext` | Root-context support limited to coincident layout |
 
-None of these mutants was executed for this Draft. Future evidence must name
+None of these runtime mutants was executed for this adoption. Future evidence must name
 the actual failing test per killed mutant, report every survivor, and retain
 its stated bound. A proposed test name here is not measured mutant evidence.
 
@@ -746,11 +755,13 @@ platform's green result. Native login/Keychain and token refresh need separate
 Curator qualification; the supplied Claude Code 2.1.299 / Muse 1.4.8 findings
 do not qualify unmeasured releases or refresh behavior.
 
-For the documentation leaf, verify template sections, source citations,
-required-content coverage, public hygiene and exactly one new CIP file.
-Run the repository's existing validation/property suites and retain real exit
-codes. Do not create implementation tests or alter normative artifacts merely
-to make a Draft design appear operational.
+For the curator-spec normative leaf, check the ownership/selection/receiver
+summary against H1–H6, preserve the four publication questions and released
+schema bytes, and validate the positive/negative semantic corpus. Run the
+repository's existing validation/property suites and retain real exit codes.
+Specification-data tests do not qualify any provider or receiver. The original
+CIP authoring review covered one new CIP file; that historical scope is not
+the normative adoption scope.
 
 ## Open questions for the operator
 

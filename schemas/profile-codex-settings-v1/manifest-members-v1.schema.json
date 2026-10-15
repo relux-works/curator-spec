@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/profile-codex-settings-v1/manifest-members-v1.schema.json",
+  "description": "Added members only; not a complete agent-context.json envelope. The coordinated successor schema supplies all existing members and its new schema_version.",
+  "type": "object",
+  "properties": {
+    "codex_settings": {
+      "$ref": "codex-settings-v1.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

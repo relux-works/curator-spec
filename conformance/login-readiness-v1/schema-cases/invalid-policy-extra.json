@@ -1,0 +1,10 @@
+{
+  "environment": "muse",
+  "credential_store": {
+    "selection": "file",
+    "command": "synthetic"
+  },
+  "env": {
+    "TBH_CREDENTIAL_BACKEND": "file"
+  }
+}

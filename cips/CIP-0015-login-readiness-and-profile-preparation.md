@@ -1,6 +1,8 @@
 # CIP-0015: Login readiness and profile preparation
 
-- **Status:** Draft
+- **Status:** Accepted
+- **Decision:** owner decision 2026-10-15; implementation remains separately tracked
+- **Normative text:** [Login readiness revision 1](../protocol/login-readiness.md) §§1–7; [environments](../protocol/environments.md) §§7.4, 9.8, 10.2, 10.3, 12 and 12.1; [Decision 0024](../decisions/0024-login-readiness-and-profile-preparation.md)
 - **Owner:** orchestrator; decision: operator
 - **Created:** 2026-10-15
 - **Related:** [CIP-0003](CIP-0003-claude-managed-home-credential-modes.md) (credential modes); [CIP-0010](CIP-0010-credentials-setup-token-and-inherited-auth.md) (setup-token and inherited authentication); [CIP-0011](CIP-0011-credential-broker-and-agent-users.md) (broker); owner decisions 2026-10-15 (D1, D7–D11, D13)
@@ -46,8 +48,9 @@ Specification claims below refer to curator-spec `d34d8a6`, release candidate
 1.0.0-rc.14. Implementation claims refer to curator `00fec196`, the brief's
 main-branch pin; a newer local branch tip is not substituted for that pin.
 Section references are to `curator-spec/protocol/environments.md` unless
-another document is named. All commands and members in Design are proposals
-unless this section identifies an existing contract.
+another document is named. This section describes the pre-adoption baseline;
+Design records the accepted direction. The Normative text pointer identifies the frozen leaf-1 contract;
+acceptance does not claim implementation shipment.
 
 - §7.4 separates credential passthrough from non-credential provisioning
   seeds and defines `shared` and `isolated` as native-store sharing choices,
@@ -67,7 +70,11 @@ unless this section identifies an existing contract.
   silently replace that adapter's admission contract.
 - §10.1 defines read-only resolve and explicit `--repair`; neither launches
   a tool. §10.2 defines closed fragment revisions 1–3 and §10.3 restricts
-  environment transport. §12 defines the status matrix and makes `--check`
+  environment transport. Specifically, §10.2 restricts `env` to registry-declared
+  managed-home paths (Muse v3 has exactly four XDG variables); §10.3 requires
+  absolute values below the environments root and forbids profile-selected
+  variables. A Muse backend literal needs an explicit successor amendment,
+  never an extra variable in v1–v3. §12 defines the status matrix and makes `--check`
   non-zero for non-current rows. There is no login-readiness row there.
 - §12.1 includes `isolation.<profile>.<env-id>` and other machine knobs,
   but no `credential_store` knob. §12.2 permits isolation locks; it does not
@@ -80,9 +87,9 @@ unless this section identifies an existing contract.
   `firstResolveNotice`, tells Claude homes to log in on first use and Codex
   homes to log in unless native credentials are shared. It also records
   remaining first-run steps and Muse uncertainty; it does not perform login.
-- `curator/docs/environment-config.md:81–117`, “Logging in to managed
+- `curator/docs/environment-config.md:81–138`, “Logging in to managed
   homes”, documents manual resolve followed by `claude auth login` and the
-  current isolation table. `:119–137` explains session-dependent Keychain
+  current isolation table. The same section explains session-dependent Keychain
   access and the environment-token alternative. It does not implement
   `curator env login` or `curator profile prepare`.
 
@@ -199,7 +206,7 @@ an authentication fact in a marker or installed profile.
 
 | Adapter/source | Derivation and source reported | Unknown cases and limits |
 |---|---|---|
-| Claude, macOS, per-home/native | Establish the calling session's Keychain capability non-interactively. For a qualified Keychain-capable session, query the suffixed service's metadata. For a qualified fallback session, inspect `<home>/.credentials.json` metadata. | A negative capability result must distinguish a qualified no-access session from a failed probe. An item visible to another session cannot satisfy this row. If the effective store or vendor fallback precedence cannot be established, report unknown. Never try the other store merely to obtain present. |
+| Claude, macOS, per-home/native | Establish the calling session's Keychain capability non-interactively. For a qualified Keychain-capable session, query the suffixed service's metadata using the exact exported `CLAUDE_CONFIG_DIR` string and §7.4 service/account (`$USER`) naming; uncertain derivation is unknown, never absent. For a qualified fallback session, inspect `<home>/.credentials.json` metadata. | A negative capability result must distinguish a qualified no-access session from a failed probe. An item visible to another session cannot satisfy this row. If the effective store or vendor fallback precedence cannot be established, report unknown. Never try the other store merely to obtain present. |
 | Claude, Linux, per-home/native | Inspect the managed `.credentials.json`, or its verified native passthrough under shared. | No new refresh safety claim; bad link or unreadable target stays unknown/non-current. Windows remains unknown pending qualification. |
 | Codex, effective file | Inspect managed `auth.json`, or the verified native link for shared. | Source selector must first be resolved. File existence does not prove JSON validity or login method. |
 | Codex, effective keyring or auto | Report unknown until a metadata-only, nonprompting store identity and precedence probe is qualified. | Do not assume per-home keyring scope, guess from a file, or parse human `login status` output. Existing isolation refusal remains. |
@@ -225,11 +232,12 @@ The operator rule is: **log in from the same kind of session the launcher
 runs in**. Readiness in another session must be recomputed, not carried as
 a boolean capability in the launch plan.
 
-Proposed status JSON adds the following members to an existing home row;
-this is a design sketch, not a currently published status schema:
+The standalone row schema freezes the following shape; integration into a
+containing status revision remains coordinated publication work:
 
 ```json
 {
+  "schema_version": 1,
   "profile": "example",
   "environment": "claude_code",
   "current": true,
@@ -248,9 +256,9 @@ this is a design sketch, not a currently published status schema:
 `store` records the effective Curator selector, while `backend` names the
 observed selection (`file`, `keychain`, `environment`, `external`, or
 `unknown`). `source` is a source class, never an account or secret. Omit
-`keychain_access` for adapters where it is inapplicable. Publish closed enums
-and stable reason labels with the status contract before implementation;
-the sketch does not allocate existing diagnostic codes.
+`keychain_access` for adapters where it is inapplicable. The normative row
+schema publishes closed enums and stable reason labels;
+these labels are distinct from diagnostic codes.
 
 Keep content `current` separate from login readiness. Extend the aggregate
 `--check` condition: it exits 0 only when all existing currency checks pass
@@ -259,6 +267,10 @@ makes it exit 1, with all available rows still emitted. Plain status returns
 0 after a successfully rendered matrix even if some rows are absent or
 unknown; operational failure to produce a matrix is non-zero. `--check`
 therefore proves observed presence and currency, never successful inference.
+This intentionally means a profile participating in ambient OpenCode cannot
+currently pass check or prepare. Ordinary status and explicit install/resolve
+remain usable; launch gains no login gate. The strict aggregate avoids treating
+unobservable readiness as satisfied, and rollout guidance must name this cost.
 
 #### 2. `curator env login`
 
@@ -419,8 +431,10 @@ credential source or account. Existing `isolation` locks still apply.
 | Claude | Tool chooses Keychain or file according to session capability. | Refuse: no supported force-file switch is established. | Refuse: no supported force-Keychain switch is established. |
 | Pi, OpenCode and other adapters | Preserve existing behavior. | Refuse until that adapter declares and qualifies a mapping. | Refuse until that adapter declares and qualifies a mapping. |
 
-Unsupported selector values or mappings use the existing
-`environment_credential_unsupported` class, never silent native fallback.
+Unsupported Curator selector values or mappings use the new
+`environment_credential_store_unsupported` code, never silent native fallback.
+The existing `environment_credential_unsupported` retains its native-selector
+meaning; the two conditions must not be conflated.
 The Claude refusal explains the session rule and token alternative. Native
 does not guarantee a specific backend and does not invent an environment
 variable to steer Claude.
@@ -546,9 +560,15 @@ On adoption, in lockstep with implementation:
 3. Amend environments §12 with `login`, metadata scope, uncertainty, and
    aggregate check behavior; §12.1 gains the user-owned `credential_store`
    knob. §12.2 does not gain a credential-store or source-selection lock.
-4. Publish coordinated configuration/status/fragment schemas and conformance
-   vectors. Freeze the typed store policy with the existing pending fragment
-   work before choosing its revision token; reject unknown semantics.
+4. Amend §10.2 in the coordinated successor revision with the one closed
+   Muse `TBH_CREDENTIAL_BACKEND=file` literal exception to path-only `env`;
+   §10.3 continues to forbid profile-selected literals or variable names.
+   Publish coordinated configuration/status/fragment schemas and conformance
+   vectors, keeping v1–v3 unchanged. Use the new
+   `environment_credential_store_unsupported` code for Curator selectors,
+   retaining the native-selector code's existing meaning. Freeze the typed
+   store policy with the existing pending fragment work before choosing its
+   revision token; reject unknown semantics.
 5. Mirror consumer obligations in curator-agent-launcher SPEC and
    skill-agents-management; task-board and the session host consume Curator
    outcomes without keeping their own home-content or login checklist.
@@ -559,7 +579,8 @@ On adoption, in lockstep with implementation:
 ## Implementation plan
 
 Ordered leaves use Fibonacci sizes; each leaf names its owning repository.
-This draft changes no normative file, implementation or existing CIP.
+Leaf 1 is frozen by the Normative text above. Later leaves remain with their
+owning repositories; no implementation shipment is asserted.
 
 1. **curator-spec, size 3:** freeze status and store-policy grammar, CLI
    semantics and migration examples with pending fragment revisions. Add
@@ -628,17 +649,19 @@ prove a live Keychain or vendor-refresh capability.
 
 ## Open questions for the operator
 
-1. **Adopt metadata-only presence with stricter `--check`?** Recommended:
-   adopt §1 and its rollout notice. Alternative: keep currency-only check
+1. **Adopt metadata-only presence with stricter `--check`?** Adopted by owner
+   decision 2026-10-15: §1 and its rollout notice. Alternative: keep currency-only check
    and add a separate readiness check flag; that preserves old scripts but
    weakens the single preparation/readiness gate. Neither option validates
    tokens. D7 fixes the metadata-only bound, not an inference guarantee.
-2. **Keep `native` as the selector default?** Recommended: preserve existing
+2. **Keep `native` as the selector default?** Adopted: preserve existing
    native selection and require explicit `file` for supported automation.
    Alternative: default new Codex/Muse homes to file with a versioned opt-in
    migration; never change existing homes silently. Claude stays native.
-3. **Require all participating rows for prepare success?** Recommended:
-   yes, including unknown ambient adapters; report why they are unknown.
+3. **Require all participating rows for prepare success?** Adopted: yes,
+   including unknown ambient adapters; report why they are unknown. This
+   deliberately prevents a participating OpenCode profile from passing today,
+   as explained in the normative aggregate and rollout guidance.
    Alternative: define a separate explicit profile participation change
    before preparing. Do not silently omit unsupported rows or add a success
    exception for one adapter.
@@ -646,3 +669,10 @@ prove a live Keychain or vendor-refresh capability.
    keep them outside ordinary status and this first implementation. A later
    explicit diagnostic command can qualify output filtering, side effects
    and supported releases. No hidden `claude auth status` fallback is added.
+
+The coordinated full fragment token and containing manager-config/status
+revision numbers remain open with the pending fragment work. Standalone
+selector, store projection and readiness-row grammar are frozen without
+allocating those containing revisions or permitting v1–v3 extensions. Platform
+metadata probes, Codex keyring scope, Muse admission/refresh and destination
+readiness remain later-leaf qualification work.

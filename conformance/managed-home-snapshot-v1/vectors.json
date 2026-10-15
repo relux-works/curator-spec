@@ -1,0 +1,572 @@
+{
+  "contract": "managed-home-snapshot-v1",
+  "cases": [
+    {
+      "name": "exact-content",
+      "manifest": "golden/manifest.json",
+      "launch": "golden/launch.json",
+      "content": [
+        {
+          "path": "home/AGENTS.md",
+          "source": "golden/home/AGENTS.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/.agent-context/system-prompt.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/curator-mcp.config.toml",
+          "source": "golden/home/curator-mcp.config.toml",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/SKILL.md",
+          "source": "golden/home/skills/sample/SKILL.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/run.sh",
+          "source": "golden/home/skills/sample/run.sh",
+          "mode": "0700"
+        }
+      ],
+      "expected": "accept"
+    },
+    {
+      "name": "extra-entry",
+      "manifest": "golden/manifest.json",
+      "launch": "golden/launch.json",
+      "content": [
+        {
+          "path": "home/AGENTS.md",
+          "source": "golden/home/AGENTS.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/.agent-context/system-prompt.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/curator-mcp.config.toml",
+          "source": "golden/home/curator-mcp.config.toml",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/SKILL.md",
+          "source": "golden/home/skills/sample/SKILL.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/run.sh",
+          "source": "golden/home/skills/sample/run.sh",
+          "mode": "0700"
+        },
+        {
+          "path": "home/extra",
+          "source": "golden/home/AGENTS.md",
+          "mode": "0600"
+        }
+      ],
+      "expected": "entry-set"
+    },
+    {
+      "name": "missing-entry",
+      "manifest": "golden/manifest.json",
+      "launch": "golden/launch.json",
+      "content": [
+        {
+          "path": "home/AGENTS.md",
+          "source": "golden/home/AGENTS.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/.agent-context/system-prompt.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/curator-mcp.config.toml",
+          "source": "golden/home/curator-mcp.config.toml",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/SKILL.md",
+          "source": "golden/home/skills/sample/SKILL.md",
+          "mode": "0600"
+        }
+      ],
+      "expected": "entry-set"
+    },
+    {
+      "name": "changed-bytes",
+      "manifest": "golden/manifest.json",
+      "launch": "golden/launch.json",
+      "content": [
+        {
+          "path": "home/AGENTS.md",
+          "source": "golden/home/skills/sample/SKILL.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/.agent-context/system-prompt.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/curator-mcp.config.toml",
+          "source": "golden/home/curator-mcp.config.toml",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/SKILL.md",
+          "source": "golden/home/skills/sample/SKILL.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/run.sh",
+          "source": "golden/home/skills/sample/run.sh",
+          "mode": "0700"
+        }
+      ],
+      "expected": "file-identity"
+    },
+    {
+      "name": "execute-mode",
+      "manifest": "golden/manifest.json",
+      "launch": "golden/launch.json",
+      "content": [
+        {
+          "path": "home/AGENTS.md",
+          "source": "golden/home/AGENTS.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/.agent-context/system-prompt.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/curator-mcp.config.toml",
+          "source": "golden/home/curator-mcp.config.toml",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/SKILL.md",
+          "source": "golden/home/skills/sample/SKILL.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/run.sh",
+          "source": "golden/home/skills/sample/run.sh",
+          "mode": "0600"
+        }
+      ],
+      "expected": "file-identity"
+    },
+    {
+      "name": "wrong-size",
+      "manifest": "semantic/wrong-size-manifest.json",
+      "launch": "golden/launch.json",
+      "content": [
+        {
+          "path": "home/AGENTS.md",
+          "source": "golden/home/AGENTS.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/.agent-context/system-prompt.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/curator-mcp.config.toml",
+          "source": "golden/home/curator-mcp.config.toml",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/SKILL.md",
+          "source": "golden/home/skills/sample/SKILL.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/run.sh",
+          "source": "golden/home/skills/sample/run.sh",
+          "mode": "0700"
+        }
+      ],
+      "expected": "file-identity"
+    },
+    {
+      "name": "wrong-hash",
+      "manifest": "semantic/wrong-hash-manifest.json",
+      "launch": "golden/launch.json",
+      "content": [
+        {
+          "path": "home/AGENTS.md",
+          "source": "golden/home/AGENTS.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/.agent-context/system-prompt.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/curator-mcp.config.toml",
+          "source": "golden/home/curator-mcp.config.toml",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/SKILL.md",
+          "source": "golden/home/skills/sample/SKILL.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/run.sh",
+          "source": "golden/home/skills/sample/run.sh",
+          "mode": "0700"
+        }
+      ],
+      "expected": "file-identity"
+    },
+    {
+      "name": "launch-digest",
+      "manifest": "semantic/launch-digest-manifest.json",
+      "launch": "golden/launch.json",
+      "content": [
+        {
+          "path": "home/AGENTS.md",
+          "source": "golden/home/AGENTS.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/.agent-context/system-prompt.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/curator-mcp.config.toml",
+          "source": "golden/home/curator-mcp.config.toml",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/SKILL.md",
+          "source": "golden/home/skills/sample/SKILL.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/run.sh",
+          "source": "golden/home/skills/sample/run.sh",
+          "mode": "0700"
+        }
+      ],
+      "expected": "launch-digest"
+    },
+    {
+      "name": "adapter-binding",
+      "manifest": "semantic/adapter-binding-manifest.json",
+      "launch": "golden/launch.json",
+      "content": [
+        {
+          "path": "home/AGENTS.md",
+          "source": "golden/home/AGENTS.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/.agent-context/system-prompt.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/curator-mcp.config.toml",
+          "source": "golden/home/curator-mcp.config.toml",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/SKILL.md",
+          "source": "golden/home/skills/sample/SKILL.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/run.sh",
+          "source": "golden/home/skills/sample/run.sh",
+          "mode": "0700"
+        }
+      ],
+      "expected": "adapter-profile"
+    },
+    {
+      "name": "profile-binding",
+      "manifest": "semantic/profile-binding-manifest.json",
+      "launch": "golden/launch.json",
+      "content": [
+        {
+          "path": "home/AGENTS.md",
+          "source": "golden/home/AGENTS.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/.agent-context/system-prompt.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/curator-mcp.config.toml",
+          "source": "golden/home/curator-mcp.config.toml",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/SKILL.md",
+          "source": "golden/home/skills/sample/SKILL.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/run.sh",
+          "source": "golden/home/skills/sample/run.sh",
+          "mode": "0700"
+        }
+      ],
+      "expected": "adapter-profile"
+    },
+    {
+      "name": "path-order",
+      "manifest": "semantic/path-order-manifest.json",
+      "launch": "golden/launch.json",
+      "content": [
+        {
+          "path": "home/AGENTS.md",
+          "source": "golden/home/AGENTS.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/.agent-context/system-prompt.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/curator-mcp.config.toml",
+          "source": "golden/home/curator-mcp.config.toml",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/SKILL.md",
+          "source": "golden/home/skills/sample/SKILL.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/run.sh",
+          "source": "golden/home/skills/sample/run.sh",
+          "mode": "0700"
+        }
+      ],
+      "expected": "path-order"
+    },
+    {
+      "name": "duplicate-path",
+      "manifest": "semantic/duplicate-path-manifest.json",
+      "launch": "semantic/duplicate-path-launch.json",
+      "content": [
+        {
+          "path": "home/.agent-context/system-prompt.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/AGENTS.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/curator-mcp.config.toml",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/SKILL.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/run.sh",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        }
+      ],
+      "expected": "path-collision"
+    },
+    {
+      "name": "case-collision",
+      "manifest": "semantic/case-collision-manifest.json",
+      "launch": "semantic/case-collision-launch.json",
+      "content": [
+        {
+          "path": "home/A",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/a",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        }
+      ],
+      "expected": "path-collision"
+    },
+    {
+      "name": "directory-case-collision",
+      "manifest": "semantic/directory-case-collision-manifest.json",
+      "launch": "semantic/directory-case-collision-launch.json",
+      "content": [
+        {
+          "path": "home/Skills/a",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/b",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        }
+      ],
+      "expected": "path-collision"
+    },
+    {
+      "name": "unicode-collision",
+      "manifest": "semantic/unicode-collision-manifest.json",
+      "launch": "semantic/unicode-collision-launch.json",
+      "content": [
+        {
+          "path": "home/e\u0301",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/\u00e9",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        }
+      ],
+      "expected": "path-collision"
+    },
+    {
+      "name": "file-ancestor",
+      "manifest": "semantic/file-ancestor-manifest.json",
+      "launch": "semantic/file-ancestor-launch.json",
+      "content": [
+        {
+          "path": "home/a",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/a/b",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        }
+      ],
+      "expected": "file-ancestor"
+    },
+    {
+      "name": "channel-reference",
+      "manifest": "semantic/channel-reference-manifest.json",
+      "launch": "semantic/channel-reference-launch.json",
+      "content": [
+        {
+          "path": "home/AGENTS.md",
+          "source": "golden/home/AGENTS.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/.agent-context/system-prompt.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/curator-mcp.config.toml",
+          "source": "golden/home/curator-mcp.config.toml",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/SKILL.md",
+          "source": "golden/home/skills/sample/SKILL.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/run.sh",
+          "source": "golden/home/skills/sample/run.sh",
+          "mode": "0700"
+        }
+      ],
+      "expected": "channel-reference"
+    },
+    {
+      "name": "channel-semantics",
+      "manifest": "semantic/channel-semantics-manifest.json",
+      "launch": "semantic/channel-semantics-launch.json",
+      "content": [
+        {
+          "path": "home/AGENTS.md",
+          "source": "golden/home/AGENTS.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/.agent-context/system-prompt.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/curator-mcp.config.toml",
+          "source": "golden/home/curator-mcp.config.toml",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/SKILL.md",
+          "source": "golden/home/skills/sample/SKILL.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/run.sh",
+          "source": "golden/home/skills/sample/run.sh",
+          "mode": "0700"
+        }
+      ],
+      "expected": "channel-semantics"
+    },
+    {
+      "name": "metadata-lf",
+      "manifest": "semantic/metadata-lf-manifest.json",
+      "launch": "golden/launch.json",
+      "content": [
+        {
+          "path": "home/AGENTS.md",
+          "source": "golden/home/AGENTS.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/.agent-context/system-prompt.md",
+          "source": "golden/home/.agent-context/system-prompt.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/curator-mcp.config.toml",
+          "source": "golden/home/curator-mcp.config.toml",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/SKILL.md",
+          "source": "golden/home/skills/sample/SKILL.md",
+          "mode": "0600"
+        },
+        {
+          "path": "home/skills/sample/run.sh",
+          "source": "golden/home/skills/sample/run.sh",
+          "mode": "0700"
+        }
+      ],
+      "expected": "metadata-canonical"
+    }
+  ]
+}

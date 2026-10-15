@@ -71,7 +71,44 @@ declared mirrors and host aliases). See the
 and vectors remain in their own namespace; they are not merged into
 `conformance/v1`.
 
+## Accepted local hosted direction
+
+[Local hosted launches](protocol/local-hosted-launches.md) freezes CIP-0016's
+ownership, selection and receiver summary. Its
+[semantic corpus](conformance/local-hosted-launches/README.md) covers required
+and forbidden selection outcomes. Successor wire publication, four named
+questions and real adapter qualification remain gated; acceptance enables no
+production receiver and changes no released schema.
+
+## Accepted login-readiness amendment
+
+[Login readiness revision 1](protocol/login-readiness.md) freezes CIP-0015
+leaf 1 with [standalone schemas](schemas/login-readiness-v1/README.md) and
+[a separate corpus](conformance/login-readiness-v1/README.md). Containing
+configuration/status/fragment revisions remain coordinated publication work;
+released schema bytes and v1–v3 fragment rules remain unchanged. Acceptance
+does not claim implementation or platform qualification.
+
+## Profile Codex settings extension
+
+The accepted [profile Codex settings contract](protocol/profile-codex-settings.md)
+adopts CIP-0018 leaf 1 and D14: an empty package vocabulary, retained weighted
+inheritance, machine-owned credential-store launch delivery and explicit
+eligibility rules. Its
+[member schemas](schemas/profile-codex-settings-v1/README.md) and
+[conformance corpus](conformance/profile-codex-settings-v1/README.md) are
+unreleased and separate from frozen rc.14 artifacts. Coordinated successor
+carrier allocation and supported-release qualification remain open before
+producer activation; see [unresolved adoption questions](UNRESOLVED_QUESTIONS.md).
+
 ## Proposals
+
+[Managed-home snapshots](protocol/managed-home-snapshots.md) specify the
+Accepted CIP-0014 leaf-1 content, manifest and portable-descriptor contract.
+Its [separate schemas](schemas/managed-home-snapshot-v1/README.md) and
+[corpus](conformance/managed-home-snapshot-v1/README.md) preserve released
+schema bytes and core-suite identities. Archive bytes/caps and runtime
+projection remain gated; no implementation support is claimed.
 
 Protocol and implementation designs are recorded as
 [Curator Improvement Proposals](cips/README.md). Start with the
@@ -115,6 +152,23 @@ Validation requires local release tags (fetch tags in shallow checkouts).
   `python3 -B -m unittest discover -s tools -p "test_muse_v4.py"` for its
   targeted schema and negative controls. The accepted source corpus has a standalone validation command
   in the conformance README linked above. Store local logs in `.temp/`.
+  The same validator dispatch also checks the separate managed-home snapshot
+  corpus; `tools/managed_home_snapshots.py` checks metadata and semantic
+  counterexamples. It does not run a manager or launcher.
+  Local hosted specification-data checks run with
+  `python3 -B -m unittest discover -s tools -p "test_local_hosted_launches.py"`;
+  they read `conformance/local-hosted-launches/cases.json` and do not launch providers.
+
+- Login-readiness structural gate: `python3 tools/validate.py` calls
+  `tools/login_readiness.py`; `python3 -B -m unittest discover -s tools -p
+  "test_login_readiness.py"` checks refusal controls. Inputs live in
+  `schemas/login-readiness-v1/` and `conformance/login-readiness-v1/`; local
+  logs go in `.temp/`. No runtime login or Keychain probe runs here.
+
+- Profile Codex settings: `python3 -B -m unittest discover -s tools -p 'test_profile_codex_settings.py' -v` checks the five member schemas,
+  positive/negative cases and semantic-vector inventory. These tests also run
+  in `make validate`; they do not qualify runtime entrypoints. Corpus outputs
+  live in `conformance/profile-codex-settings-v1/`; logs belong in `.temp/`.
 - Go: `go test ./tools/...` tests specification tooling;
   `go run ./tools/generate-vectors -root .` regenerates the released corpus
   under `conformance/v1/`, its release metadata, and the independent
@@ -122,6 +176,8 @@ Validation requires local release tags (fetch tags in shallow checkouts).
   accepted source-extension vectors into the core corpus.
 - Make: `make validate` runs the existing Python/Go checks;
   `make regenerate-check` checks generator reproducibility against Git.
+- Lychee: `lychee --no-progress --max-retries 3 --retry-wait-time 2 --accept 200,206,429,502,503,504 '**/*.md'`
+  runs the CI Markdown link check locally; save its log under `.temp/`.
 
 ## Implementations
 

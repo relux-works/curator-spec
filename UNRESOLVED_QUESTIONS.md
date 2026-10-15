@@ -64,6 +64,24 @@ questions remain follow-ups.
 - [Decision 0019: fragment consumers and one construction site](decisions/0019-fragment-consumers-and-one-construction-site.md) — adopted 2026-10-01 by the operator.
 - [Decision 0021: sessions enter through curator run and are hosted through the ax contract](decisions/0021-sessions-enter-through-curator-run.md) — adopted 2026-10-01 by the operator.
 
+## Managed-home snapshot activation gates
+
+CIP-0014 is Accepted under owner decision 2026-10-15. Its normative leaf 1
+is [published separately](protocol/managed-home-snapshots.md). The following
+remain open and MUST NOT be inferred from acceptance:
+
+- Exact archive encoding, header/padding/end bytes, resource caps, plan wire
+  bindings and cross-service refusal mappings: joint leaf 5 publication.
+- Runtime B's sealed-content/private-state view: an interpretation of D6
+  awaiting operator confirmation, then per-adapter/platform protection and
+  start/login/model-turn/native-resume qualification in leaves 3/6.
+- Opencode profile-local skills discovery and ambient state bounds; export
+  refuses meanwhile. Muse skill discovery and refresh writes remain unverified.
+
+The materialize diagnostic family is resolved in snapshot §5. D12's portable
+Muse root-context fact is coordinated with CIP-0017; its fragment revision
+and credential policy remain outside this leaf.
+
 ## Filed proposals
 
 These decision drafts are **proposed — not adopted** (0014–0016 from
@@ -74,3 +92,45 @@ or draft landing.
 - [Decision 0014: tool-configuration surfaces](decisions/0014-tool-configuration-surfaces.md)
 - [Decision 0015: per-project policy and profile selection](decisions/0015-per-project-policy.md)
 - [Decision 0016: skill command roots in managed homes](decisions/0016-managed-home-command-roots.md)
+
+
+## Local hosted publication and qualification
+
+[CIP-0016](cips/CIP-0016-local-hosted-launches.md) is Accepted by owner decision
+2026-10-15. [Local hosted launches §8](protocol/local-hosted-launches.md#8-publication-questions-retained)
+retains four open questions: exact successor wire/capabilities/preparation
+framing; backend configuration and migration spelling; supported Codex policy
+layering across cold resume; and CIP-0014's Curator-owned credential exceptions.
+Recommended answers are not frozen fields or measured behavior. Launcher SPEC
+§§3, 4.6, 4.8–4.9 amendments and receiver qualification remain follow-up work;
+local activation must not defer Codex, wait for dispatcher, or use live homes.
+
+## Login readiness publication and qualification
+
+[CIP-0015](cips/CIP-0015-login-readiness-and-profile-preparation.md) is Accepted;
+[login readiness revision 1](protocol/login-readiness.md) freezes leaf 1's row,
+selector and store projection. Full containing manager-config/status revisions
+and the coordinated fragment token remain open with pending fragment work.
+No v1–v3 fragment extension is admitted. Metadata-only platform probes, Codex
+keyring scope/precedence, Windows, Muse admission/refresh, optional explicit
+vendor diagnostics, broker adoption and destination readiness remain later-leaf
+work. The strict all-participants aggregate is decided: a participating ambient
+OpenCode row currently prevents green check/prepare, deliberately and visibly.
+
+## Profile Codex settings (CIP-0018)
+
+1. **Coordinated carrier allocation.** Allocate successor context-manifest,
+   lock, marker and launch-fragment envelopes together with parallel
+   base-context, root-context and snapshot amendments, or independently if
+   they ship separately. The accepted member schemas do not assign these
+   wire versions. Full carrier schemas/cases must precede producer activation.
+2. **Supported-release qualification.** Establish scalar CLI precedence over
+   a conflicting seed and backend selection for login, app-server and token
+   refresh on every supported Codex release. Until measured, these capabilities
+   remain unknown and producers remain disabled. CIP-0015 must also adopt the
+   explicit eligibility matrix before isolated/file is enabled.
+
+The accepted [normative text](protocol/profile-codex-settings.md#7-wire-allocation-conformance-and-rollout)
+and [CIP questions 4–5](cips/CIP-0018-profile-level-codex-settings.md#open-questions-for-the-operator)
+define the required decisions and evidence. These are later adoption gates,
+not behavior inferred or implemented by the normative leaf.
