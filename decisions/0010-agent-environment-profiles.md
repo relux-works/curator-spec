@@ -1,5 +1,24 @@
 # Decision 0010: agent environment profiles and global context management
 
+## Muse v4 amendment (2026-10-15)
+
+Owner decision 2026-10-15 (D9, D10, D12), adopted through
+[CIP-0017](../cips/CIP-0017-muse-root-context-and-credential-store.md), supersedes
+the earlier no-fragment-member choice and fresh-login isolated prohibition
+for managed Muse. Environments §§7.4 and 10.2 select file credentials for
+native/unset and explicit file policy, admit both credential modes
+optimistically, and carry an explicit verified root-context fact in the
+coordinated v4 fragment with the typed store-policy agreement check.
+Explicit Keychain refuses; credential migration stays explicit. The launcher
+applies the fact without inspecting Curator layout. Required exclusion on
+`serve` refuses. Released schemas remain byte-identical.
+
+The 1.4.7 context and 1.4.8 credential evidence are separate. Section 7.9's
+1.4.8 P1–P4 replay precedes consumer release and qualification-dependent
+refusal; no refresh probe gates D10 admission. Refresh/concurrent writes,
+model-visible removal, skills discovery, broker lifetime and unqualified
+platforms remain bounded unknowns, not guarantees supplied by this amendment.
+
 ## Muse admission amendment (2026-10-14)
 
 **Context.** The earlier Muse row admitted only the managed-home layout.

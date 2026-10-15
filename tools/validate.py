@@ -353,14 +353,15 @@ def schema_registry() -> tuple[Registry, dict[str, Path]]:
 
 def validate_schemas() -> None:
     registry, paths = schema_registry()
-    index = load_json(SUITE / "schema-cases" / "index.json")
+    case_roots = [SUITE / "schema-cases", ROOT / "conformance/environments-muse-v4/schema-cases"]
+    index = [(root, case) for root in case_roots for case in load_json(root / "index.json")]
     covered: set[str] = set()
-    for case in index:
+    for case_root, case in index:
         schema_name = case["schema"]
         if schema_name not in paths:
             raise ValidationFailure(f"schema case names unknown schema {schema_name}")
         schema = load_json(paths[schema_name])
-        instance = load_json(SUITE / "schema-cases" / case["instance"])
+        instance = load_json(case_root / case["instance"])
         errors = list(Draft202012Validator(schema, registry=registry).iter_errors(instance))
         semantic_error = validate_wire_semantics(schema_name, instance) if not errors else None
         actual = not errors and semantic_error is None
@@ -951,18 +952,21 @@ def validate_wire_semantics(schema_name: str, instance: Any) -> str | None:
         seeded = instance.get("seeded_projects")
         if isinstance(seeded, list) and seeded != sorted(seeded):
             return "seeded_projects must be sorted"
-    elif schema_name in ("launch-env-fragment-v1.schema.json", "launch-env-fragment-v2.schema.json", "launch-env-fragment-v3.schema.json"):
+    elif schema_name in ("launch-env-fragment-v1.schema.json", "launch-env-fragment-v2.schema.json", "launch-env-fragment-v3.schema.json", "launch-env-fragment-v4.schema.json"):
         environment = instance.get("environment")
         if environment == "muse":
             parents = instance.get("env", {})
             config = parents.get("XDG_CONFIG_HOME", "")
             home = config.removesuffix("/config")
-            if not home or parents != {
+            expected = {
                 "XDG_CONFIG_HOME": home + "/config",
                 "XDG_DATA_HOME": home + "/data",
                 "XDG_STATE_HOME": home + "/state",
                 "XDG_CACHE_HOME": home + "/cache",
-            }:
+            }
+            if schema_name == "launch-env-fragment-v4.schema.json":
+                expected["TBH_CREDENTIAL_BACKEND"] = "file"
+            if not home or parents != expected:
                 return "Muse XDG variables must name one home's config/data/state/cache parents; HOME is forbidden"
         system_prompt = instance.get("system_prompt")
         if isinstance(system_prompt, dict) and environment in ENVIRONMENT_SYSTEM_PROMPT_CHANNELS:

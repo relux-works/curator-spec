@@ -110,7 +110,10 @@ Validation requires local release tags (fetch tags in shallow checkouts).
 - Python 3 with `python3 -m pip install -r requirements-dev.txt`: run
   `python3 tools/validate.py` and
   `python3 -B -m unittest discover -s tools -p "test_*.py"` for the existing
-  schema/vector/link checks. The accepted source corpus has a standalone validation command
+  schema/vector/link checks, including the later
+  [managed Muse v4 cases](conformance/environments-muse-v4/README.md). Run
+  `python3 -B -m unittest discover -s tools -p "test_muse_v4.py"` for its
+  targeted schema and negative controls. The accepted source corpus has a standalone validation command
   in the conformance README linked above. Store local logs in `.temp/`.
 - Go: `go test ./tools/...` tests specification tooling;
   `go run ./tools/generate-vectors -root .` regenerates the released corpus

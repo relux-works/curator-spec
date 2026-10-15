@@ -12,14 +12,14 @@ context. The required admission vectors are listed in environments §13 for
 delivery with the target and both forms' exclusion argv; existing vectors
 do not qualify the added requirements.
 
-**Managed Muse `exec` without a root-context surface.** The behavior when
-the resolved profile declares no root-context surface (including the synthesized
-`default` profile) needs an owner decision before the managed-launch consumer
-implements this case: materialize a header-only target with the flag, omit
-the target and pass no flag with a standing foreign-context residual, or
-refuse the launch. No option, diagnostic code, or value is admitted here;
-environments §§2 and 10.2 retain their no-surface and sequencing rules
-pending that decision.
+**CIP-0017 state.** [The Accepted CIP](cips/CIP-0017-muse-root-context-and-credential-store.md)
+resolves the no-root-surface case: omit `root_context`, pass neither exclusion,
+and retain the foreign-context residual. Native/unset managed Muse backend
+selection resolves to file; explicit Keychain refuses. Still open for later
+leaves: exact consumer module tag, exact 1.4.8 exclusion build and P1–P4 replay
+before consumer release, token-refresh and concurrent-writer behavior,
+Linux/Windows native qualification, and broker rotation/lifetime. The credential
+admission is optimistic now; unmeasured exclusion and refresh remain separate.
 
 ## Advanced repository mappings decided by transport revision 2
 
