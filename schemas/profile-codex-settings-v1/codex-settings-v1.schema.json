@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/profile-codex-settings-v1/codex-settings-v1.schema.json",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false,
+  "description": "Package vocabulary under D14: no admitted keys; credential stores are machine-owned."
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "profile": "example",
+  "environment": "codex_cli",
+  "current": true,
+  "login": "present",
+  "login_detail": {
+    "source": "per-home",
+    "store": "file",
+    "backend": "file",
+    "session": "machine",
+    "reason": "candidate-present"
+  }
+}

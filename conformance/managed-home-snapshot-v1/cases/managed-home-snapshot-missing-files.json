@@ -1,0 +1,11 @@
+{
+  "snapshot": "managed-home-snapshot-v1",
+  "adapter": "codex_cli",
+  "profile": {
+    "name": "sample",
+    "lock_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "curator_version": "1.0.0-rc.14",
+  "fragment_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+  "launch_sha256": "991fa12d6db3ce6f26a0c59016bf120d90e8bd8baf0116d2039b0eb7bad4bd2e"
+}

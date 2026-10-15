@@ -357,3 +357,62 @@ Security:
 - Hosted sessions inherit Decision 0018's tracked rules, so no bypass
   reaches a hosted session implicitly.
 - A failed hand-off still refuses instead of falling back.
+
+
+## Amendment v2 — local hosted launches (2026-10-15)
+
+Status: adopted by owner decision 2026-10-15 through
+[CIP-0016](../cips/CIP-0016-local-hosted-launches.md).
+
+### Context and decision
+
+Waiting for the dispatcher delays local hosted entry through `curator-run`.
+Live managed homes can be rewritten by repair, profile switching and skill
+sync. The adopted [local hosted contract](../protocol/local-hosted-launches.md)
+freezes the curator-spec portion of CIP-0016 leaf 1: explicit same-user local
+selection, preparation before composition, Curator-owned snapshots, caller
+composition, exact daemon execution, private provenance, typed resume and
+acknowledged goals. Claude Code, Codex and Muse gate the first supported
+release together. Snapshot verification and credential exceptions stay with
+Curator; the host never maintains its own home-content list.
+
+For this local mode, this amendment supersedes original decisions 1, 2, 5
+and 7 only where they conflict: the running session uses a private snapshot,
+not the live managed home; hosting uses the selected board's authenticated
+`tb-sessiond` transport without waiting for `ax` or the dispatcher; legacy
+`task-board claude|codex` commands remain supported and wrapper conversion is
+recommended rather than required. Existing operator hosted defaults need an
+explicit backend migration; machine hosted defaults retain the
+upgrade-without-hangup gate. Explicit `--hosted` does not enable defaults.
+Native and legacy `ax` routes, host precedence/locks and conflict refusals
+retain their launcher meanings. Restart uses the persisted session snapshot,
+receipt and Curator-defined protected inputs rather than re-resolving a live
+profile. There is no native fallback after a hosted refusal.
+
+Amendment v1 and launcher §10 dispatcher/agent-account activation gates remain
+unchanged. `task-board spawn` remains separate, including its snapshot gap.
+The four CIP publication questions remain open: wire family/version and
+capabilities/preparation schema, backend configuration, supported Codex policy
+layering and Curator-owned credential exceptions. Adoption publishes no answer
+by implication, no successor schema and no operational capability.
+
+### Alternatives
+
+Waiting for dispatcher violates the adopted local-entry priority. Routing
+through legacy wrappers recomposes instead of executing the sealed process.
+Reusing a live home or selecting files in the receiver duplicates Curator
+ownership and fails snapshot isolation. A complete prepared Codex app-server
+plan is selected over receiver conversion or an unqualified stdio redesign.
+
+### Compatibility and security impact
+
+No released schema, wire identifier or old-route semantics is extended.
+The successor contract and real adapters must be published and qualified
+before activation; old/new compatibility remains a required qualification.
+Receiver failure never becomes native or remote execution. The bearer still
+authorizes same-user processes and confers no cross-account isolation.
+Digests prove byte consistency, not authorship. Endpoint handover and
+same-user validation/use races remain explicit residuals. Secret-safe
+persistence and cleanup must preserve native/managed homes. Neither launcher
+nor receiver rewrites runtime-owned Codex config, even in a private snapshot;
+cold-resume policy enforcement is an activation gate with a stop rule.

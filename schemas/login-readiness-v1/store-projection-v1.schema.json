@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/login-readiness-v1/store-projection-v1.schema.json",
+  "title": "store-projection-v1",
+  "type": "object",
+  "properties": {
+    "environment": {
+      "enum": [
+        "claude_code",
+        "codex_cli",
+        "muse",
+        "pi",
+        "opencode"
+      ]
+    },
+    "credential_store": {
+      "type": "object",
+      "properties": {
+        "selection": {
+          "enum": [
+            "native",
+            "file",
+            "keychain"
+          ]
+        },
+        "config_overrides": {
+          "type": "object",
+          "properties": {
+            "cli_auth_credentials_store": {
+              "enum": [
+                "file",
+                "keyring"
+              ]
+            }
+          },
+          "required": [
+            "cli_auth_credentials_store"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "selection"
+      ],
+      "additionalProperties": false
+    },
+    "env": {
+      "type": "object",
+      "properties": {
+        "TBH_CREDENTIAL_BACKEND": {
+          "const": "file"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "environment",
+    "credential_store",
+    "env"
+  ],
+  "additionalProperties": false,
+  "oneOf": [
+    {
+      "properties": {
+        "environment": {
+          "enum": [
+            "claude_code",
+            "codex_cli",
+            "muse",
+            "pi",
+            "opencode"
+          ]
+        },
+        "credential_store": {
+          "type": "object",
+          "properties": {
+            "selection": {
+              "const": "native"
+            }
+          },
+          "required": [
+            "selection"
+          ],
+          "additionalProperties": false
+        },
+        "env": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "properties": {
+        "environment": {
+          "const": "codex_cli"
+        },
+        "credential_store": {
+          "type": "object",
+          "properties": {
+            "selection": {
+              "const": "file"
+            },
+            "config_overrides": {
+              "type": "object",
+              "properties": {
+                "cli_auth_credentials_store": {
+                  "const": "file"
+                }
+              },
+              "required": [
+                "cli_auth_credentials_store"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "selection",
+            "config_overrides"
+          ],
+          "additionalProperties": false
+        },
+        "env": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "properties": {
+        "environment": {
+          "const": "codex_cli"
+        },
+        "credential_store": {
+          "type": "object",
+          "properties": {
+            "selection": {
+              "const": "keychain"
+            },
+            "config_overrides": {
+              "type": "object",
+              "properties": {
+                "cli_auth_credentials_store": {
+                  "const": "keyring"
+                }
+              },
+              "required": [
+                "cli_auth_credentials_store"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "selection",
+            "config_overrides"
+          ],
+          "additionalProperties": false
+        },
+        "env": {
+          "type": "object",
+          "properties": {},
+          "required": [],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "properties": {
+        "environment": {
+          "const": "muse"
+        },
+        "credential_store": {
+          "type": "object",
+          "properties": {
+            "selection": {
+              "const": "file"
+            }
+          },
+          "required": [
+            "selection"
+          ],
+          "additionalProperties": false
+        },
+        "env": {
+          "type": "object",
+          "properties": {
+            "TBH_CREDENTIAL_BACKEND": {
+              "const": "file"
+            }
+          },
+          "required": [
+            "TBH_CREDENTIAL_BACKEND"
+          ],
+          "additionalProperties": false
+        }
+      }
+    }
+  ]
+}

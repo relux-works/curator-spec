@@ -1,0 +1,1 @@
+{"descriptor":"snapshot-launch-v1","env":{"CODEX_HOME":"home"},"environment":"codex_cli","permissions":{"locked":false,"mode":"native","source":"default"},"precedence":{"placement":"winner-last","winner":"higher-weight"},"profile":{"lock_sha256":"0000000000000000000000000000000000000000000000000000000000000000","name":"sample"}}

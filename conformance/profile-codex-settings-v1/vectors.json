@@ -1,0 +1,1453 @@
+{
+  "revision": 1,
+  "normative": "protocol/profile-codex-settings.md",
+  "runtime_qualification": "unverified",
+  "cases": [
+    {
+      "name": "closure-higher-weight-winner-first",
+      "entry": "curator env resolve",
+      "input": {
+        "contributions": [
+          {
+            "package": "root",
+            "weight": 0,
+            "role": "root",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          },
+          {
+            "package": "dependency",
+            "weight": 10,
+            "role": "requirement",
+            "settings": {
+              "cli_auth_credentials_store": "keyring"
+            }
+          },
+          {
+            "package": "overlay",
+            "weight": 100,
+            "role": "overlay",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          }
+        ],
+        "winner": "higher-weight",
+        "placement": "winner-first"
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false,
+        "launch_data": false
+      },
+      "forbidden_observations": [
+        "omit-required-package",
+        "change-selection-with-placement",
+        "duplicate-package-effect",
+        "select-store-from-package",
+        "apply-precedence-before-validation",
+        "emit-launch-data"
+      ]
+    },
+    {
+      "name": "closure-higher-weight-winner-last",
+      "entry": "curator env resolve",
+      "input": {
+        "contributions": [
+          {
+            "package": "root",
+            "weight": 0,
+            "role": "root",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          },
+          {
+            "package": "dependency",
+            "weight": 10,
+            "role": "requirement",
+            "settings": {
+              "cli_auth_credentials_store": "keyring"
+            }
+          },
+          {
+            "package": "overlay",
+            "weight": 100,
+            "role": "overlay",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          }
+        ],
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false,
+        "launch_data": false
+      },
+      "forbidden_observations": [
+        "omit-required-package",
+        "change-selection-with-placement",
+        "duplicate-package-effect",
+        "select-store-from-package",
+        "apply-precedence-before-validation",
+        "emit-launch-data"
+      ]
+    },
+    {
+      "name": "closure-lower-weight-winner-first",
+      "entry": "curator env resolve",
+      "input": {
+        "contributions": [
+          {
+            "package": "root",
+            "weight": 0,
+            "role": "root",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          },
+          {
+            "package": "dependency",
+            "weight": 10,
+            "role": "requirement",
+            "settings": {
+              "cli_auth_credentials_store": "keyring"
+            }
+          },
+          {
+            "package": "overlay",
+            "weight": 100,
+            "role": "overlay",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          }
+        ],
+        "winner": "lower-weight",
+        "placement": "winner-first"
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false,
+        "launch_data": false
+      },
+      "forbidden_observations": [
+        "omit-required-package",
+        "change-selection-with-placement",
+        "duplicate-package-effect",
+        "select-store-from-package",
+        "apply-precedence-before-validation",
+        "emit-launch-data"
+      ]
+    },
+    {
+      "name": "closure-lower-weight-winner-last",
+      "entry": "curator env resolve",
+      "input": {
+        "contributions": [
+          {
+            "package": "root",
+            "weight": 0,
+            "role": "root",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          },
+          {
+            "package": "dependency",
+            "weight": 10,
+            "role": "requirement",
+            "settings": {
+              "cli_auth_credentials_store": "keyring"
+            }
+          },
+          {
+            "package": "overlay",
+            "weight": 100,
+            "role": "overlay",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          }
+        ],
+        "winner": "lower-weight",
+        "placement": "winner-last"
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false,
+        "launch_data": false
+      },
+      "forbidden_observations": [
+        "omit-required-package",
+        "change-selection-with-placement",
+        "duplicate-package-effect",
+        "select-store-from-package",
+        "apply-precedence-before-validation",
+        "emit-launch-data"
+      ]
+    },
+    {
+      "name": "required-package-wins",
+      "entry": "curator env resolve",
+      "input": {
+        "contributions": [
+          {
+            "package": "root",
+            "weight": 0,
+            "role": "root",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          },
+          {
+            "package": "dependency",
+            "weight": 10,
+            "role": "requirement",
+            "settings": {
+              "cli_auth_credentials_store": "keyring"
+            }
+          }
+        ],
+        "winner": "higher-weight"
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false,
+        "launch_data": false
+      },
+      "forbidden_observations": [
+        "resolve-root-only",
+        "select-store-from-package",
+        "apply-precedence-before-validation",
+        "emit-launch-data"
+      ]
+    },
+    {
+      "name": "winning-tie-requirement",
+      "entry": "curator env resolve",
+      "input": {
+        "contributions": [
+          {
+            "package": "first",
+            "weight": 10,
+            "role": "requirement",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          },
+          {
+            "package": "second",
+            "weight": 10,
+            "role": "requirement",
+            "settings": {
+              "cli_auth_credentials_store": "keyring"
+            }
+          }
+        ],
+        "winner": "higher-weight"
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false,
+        "launch_data": false
+      },
+      "forbidden_observations": [
+        "break-tie-by-name",
+        "break-tie-by-traversal",
+        "publish-on-refusal",
+        "select-store-from-package",
+        "apply-precedence-before-validation",
+        "emit-launch-data"
+      ]
+    },
+    {
+      "name": "winning-tie-overlay",
+      "entry": "curator env resolve",
+      "input": {
+        "contributions": [
+          {
+            "package": "first",
+            "weight": 10,
+            "role": "overlay",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          },
+          {
+            "package": "second",
+            "weight": 10,
+            "role": "overlay",
+            "settings": {
+              "cli_auth_credentials_store": "keyring"
+            }
+          }
+        ],
+        "winner": "higher-weight"
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false,
+        "launch_data": false
+      },
+      "forbidden_observations": [
+        "break-tie-by-name",
+        "break-tie-by-traversal",
+        "publish-on-refusal",
+        "select-store-from-package",
+        "apply-precedence-before-validation",
+        "emit-launch-data"
+      ]
+    },
+    {
+      "name": "winning-tie-root",
+      "entry": "curator env resolve",
+      "input": {
+        "contributions": [
+          {
+            "package": "first",
+            "weight": 10,
+            "role": "root",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          },
+          {
+            "package": "second",
+            "weight": 10,
+            "role": "root",
+            "settings": {
+              "cli_auth_credentials_store": "keyring"
+            }
+          }
+        ],
+        "winner": "higher-weight"
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false,
+        "launch_data": false
+      },
+      "forbidden_observations": [
+        "break-tie-by-name",
+        "break-tie-by-traversal",
+        "publish-on-refusal",
+        "select-store-from-package",
+        "apply-precedence-before-validation",
+        "emit-launch-data"
+      ]
+    },
+    {
+      "name": "coalesce-winning-origins",
+      "entry": "curator env resolve",
+      "input": {
+        "contributions": [
+          {
+            "package": "first",
+            "weight": 10,
+            "role": "requirement",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          },
+          {
+            "package": "second",
+            "weight": 10,
+            "role": "requirement",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          }
+        ],
+        "winner": "higher-weight"
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false,
+        "launch_data": false
+      },
+      "forbidden_observations": [
+        "discard-winning-origin",
+        "select-store-from-package",
+        "apply-precedence-before-validation",
+        "emit-launch-data"
+      ]
+    },
+    {
+      "name": "losing-tie-superseded",
+      "entry": "curator env resolve",
+      "input": {
+        "contributions": [
+          {
+            "package": "first",
+            "weight": 0,
+            "role": "requirement",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          },
+          {
+            "package": "second",
+            "weight": 0,
+            "role": "requirement",
+            "settings": {
+              "cli_auth_credentials_store": "keyring"
+            }
+          },
+          {
+            "package": "overlay",
+            "weight": 100,
+            "role": "overlay",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          }
+        ],
+        "winner": "higher-weight"
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false,
+        "launch_data": false
+      },
+      "forbidden_observations": [
+        "select-store-from-package",
+        "apply-precedence-before-validation",
+        "emit-launch-data"
+      ]
+    },
+    {
+      "name": "empty-does-not-clear",
+      "entry": "curator env resolve",
+      "input": {
+        "contributions": [
+          {
+            "package": "root",
+            "weight": 0,
+            "role": "root",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          },
+          {
+            "package": "overlay",
+            "weight": 100,
+            "role": "overlay",
+            "settings": {}
+          }
+        ],
+        "winner": "higher-weight"
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false,
+        "launch_data": false
+      },
+      "forbidden_observations": [
+        "clear-with-empty-object",
+        "select-store-from-package",
+        "apply-precedence-before-validation",
+        "emit-launch-data"
+      ]
+    },
+    {
+      "name": "invalid-loser-11",
+      "entry": "curator profile install/update",
+      "input": {
+        "contributions": [
+          {
+            "package": "dependency",
+            "weight": 0,
+            "settings": {
+              "sandbox_mode": "off"
+            }
+          },
+          {
+            "package": "overlay",
+            "weight": 100,
+            "role": "overlay",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false,
+        "launch_data": false
+      },
+      "forbidden_observations": [
+        "validate-winners-only",
+        "modify-previous-state",
+        "select-store-from-package",
+        "apply-precedence-before-validation",
+        "emit-launch-data"
+      ]
+    },
+    {
+      "name": "invalid-loser-12",
+      "entry": "curator profile install/update",
+      "input": {
+        "contributions": [
+          {
+            "package": "dependency",
+            "weight": 0,
+            "settings": {
+              "cli_auth_credentials_store": "auto"
+            }
+          },
+          {
+            "package": "overlay",
+            "weight": 100,
+            "role": "overlay",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false,
+        "launch_data": false
+      },
+      "forbidden_observations": [
+        "validate-winners-only",
+        "modify-previous-state",
+        "select-store-from-package",
+        "apply-precedence-before-validation",
+        "emit-launch-data"
+      ]
+    },
+    {
+      "name": "invalid-loser-13",
+      "entry": "curator profile install/update",
+      "input": {
+        "contributions": [
+          {
+            "package": "dependency",
+            "weight": 0,
+            "settings": {
+              "cli_auth_credentials_store": null
+            }
+          },
+          {
+            "package": "overlay",
+            "weight": 100,
+            "role": "overlay",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false,
+        "launch_data": false
+      },
+      "forbidden_observations": [
+        "validate-winners-only",
+        "modify-previous-state",
+        "select-store-from-package",
+        "apply-precedence-before-validation",
+        "emit-launch-data"
+      ]
+    },
+    {
+      "name": "invalid-loser-14",
+      "entry": "curator profile install/update",
+      "input": {
+        "contributions": [
+          {
+            "package": "dependency",
+            "weight": 0,
+            "settings": {
+              "cli_auth_credentials_store.alias": "file"
+            }
+          },
+          {
+            "package": "overlay",
+            "weight": 100,
+            "role": "overlay",
+            "settings": {
+              "cli_auth_credentials_store": "file"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false,
+        "launch_data": false
+      },
+      "forbidden_observations": [
+        "validate-winners-only",
+        "modify-previous-state",
+        "select-store-from-package",
+        "apply-precedence-before-validation",
+        "emit-launch-data"
+      ]
+    },
+    {
+      "name": "decode-duplicate",
+      "entry": "curator profile install/update",
+      "input": {
+        "encoding": "utf-8",
+        "settings_bytes": "{\"cli_auth_credentials_store\":\"keyring\",\"cli_auth_credentials_store\":\"file\"}"
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false
+      },
+      "forbidden_observations": [
+        "decode-last-key-wins",
+        "replace-invalid-encoding"
+      ]
+    },
+    {
+      "name": "decode-invalid-utf8-hex",
+      "entry": "curator profile install/update",
+      "input": {
+        "encoding": "hex",
+        "settings_bytes": "ff"
+      },
+      "expected": {
+        "diagnostic": "context_manifest_invalid",
+        "fragment": false,
+        "replacement_lock": false
+      },
+      "forbidden_observations": [
+        "decode-last-key-wins",
+        "replace-invalid-encoding"
+      ]
+    },
+    {
+      "name": "storage-shared-absent-file",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "shared",
+        "native": "absent",
+        "credential_store": "file"
+      },
+      "expected": {
+        "outcome": "admit-native-file"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-shared-absent-keyring",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "shared",
+        "native": "absent",
+        "credential_store": "keychain"
+      },
+      "expected": {
+        "outcome": "environment_credential_conflict"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-shared-file-file",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "shared",
+        "native": "file",
+        "credential_store": "file"
+      },
+      "expected": {
+        "outcome": "admit-native-file"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-shared-file-keyring",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "shared",
+        "native": "file",
+        "credential_store": "keychain"
+      },
+      "expected": {
+        "outcome": "environment_credential_conflict"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-shared-keyring-file",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "shared",
+        "native": "keyring",
+        "credential_store": "file"
+      },
+      "expected": {
+        "outcome": "environment_credential_conflict"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-shared-keyring-keyring",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "shared",
+        "native": "keyring",
+        "credential_store": "keychain"
+      },
+      "expected": {
+        "outcome": "admit-ambient-keyring"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-shared-auto-file",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "shared",
+        "native": "auto",
+        "credential_store": "file"
+      },
+      "expected": {
+        "outcome": "environment_credential_conflict"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-shared-auto-keyring",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "shared",
+        "native": "auto",
+        "credential_store": "keychain"
+      },
+      "expected": {
+        "outcome": "environment_credential_conflict"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-isolated-absent-file",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "isolated",
+        "native": "absent",
+        "credential_store": "file"
+      },
+      "expected": {
+        "outcome": "admit-private-file"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-isolated-absent-keyring",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "isolated",
+        "native": "absent",
+        "credential_store": "keychain"
+      },
+      "expected": {
+        "outcome": "environment_isolated_unsupported"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-isolated-file-file",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "isolated",
+        "native": "file",
+        "credential_store": "file"
+      },
+      "expected": {
+        "outcome": "admit-private-file"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-isolated-file-keyring",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "isolated",
+        "native": "file",
+        "credential_store": "keychain"
+      },
+      "expected": {
+        "outcome": "environment_isolated_unsupported"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-isolated-keyring-file",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "isolated",
+        "native": "keyring",
+        "credential_store": "file"
+      },
+      "expected": {
+        "outcome": "admit-private-file"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-isolated-keyring-keyring",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "isolated",
+        "native": "keyring",
+        "credential_store": "keychain"
+      },
+      "expected": {
+        "outcome": "environment_isolated_unsupported"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-isolated-auto-file",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "isolated",
+        "native": "auto",
+        "credential_store": "file"
+      },
+      "expected": {
+        "outcome": "admit-private-file"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-isolated-auto-keyring",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "isolated",
+        "native": "auto",
+        "credential_store": "keychain"
+      },
+      "expected": {
+        "outcome": "environment_isolated_unsupported"
+      },
+      "forbidden_observations": [
+        "native-link-in-isolated",
+        "cross-backend-credential-conversion",
+        "secret-output"
+      ]
+    },
+    {
+      "name": "storage-read-failure",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "isolated",
+        "native": "read-failure",
+        "credential_store": "file"
+      },
+      "expected": {
+        "outcome": "refuse-before-link-or-invocation",
+        "storage": "unknown"
+      },
+      "forbidden_observations": [
+        "treat-failed-read-as-absent",
+        "use-native-default"
+      ]
+    },
+    {
+      "name": "storage-parse-failure",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "isolated",
+        "native": "parse-failure",
+        "credential_store": "file"
+      },
+      "expected": {
+        "outcome": "refuse-before-link-or-invocation",
+        "storage": "unknown"
+      },
+      "forbidden_observations": [
+        "treat-failed-read-as-absent",
+        "use-native-default"
+      ]
+    },
+    {
+      "name": "storage-unrecognized",
+      "entry": "curator profile prepare / env login",
+      "input": {
+        "mode": "isolated",
+        "native": "unrecognized",
+        "credential_store": "file"
+      },
+      "expected": {
+        "outcome": "refuse-before-link-or-invocation",
+        "storage": "unsupported"
+      },
+      "forbidden_observations": [
+        "treat-failed-read-as-absent",
+        "use-native-default"
+      ]
+    },
+    {
+      "name": "storage-no-explicit-setting",
+      "entry": "curator env resolve",
+      "input": {
+        "mode": "isolated",
+        "native": "auto",
+        "credential_store": "native"
+      },
+      "expected": {
+        "outcome": "environment_isolated_unsupported"
+      },
+      "forbidden_observations": [
+        "apply-explicit-file-exception-without-setting"
+      ]
+    },
+    {
+      "name": "delivery-interactive",
+      "entry": "curator-run / Codex host / Codex plugin",
+      "input": {
+        "form": "interactive",
+        "settings": {
+          "cli_auth_credentials_store": "file"
+        },
+        "credential_store": "file"
+      },
+      "expected": {
+        "settings_argv": [
+          "-c",
+          "cli_auth_credentials_store=\"file\""
+        ]
+      },
+      "forbidden_observations": [
+        "drop-settings-on-interactive",
+        "write-profile-setting-to-config",
+        "emit-after-prompt-boundary"
+      ]
+    },
+    {
+      "name": "delivery-exec",
+      "entry": "curator-run / Codex host / Codex plugin",
+      "input": {
+        "form": "exec",
+        "settings": {
+          "cli_auth_credentials_store": "file"
+        },
+        "credential_store": "file"
+      },
+      "expected": {
+        "settings_argv": [
+          "-c",
+          "cli_auth_credentials_store=\"file\""
+        ]
+      },
+      "forbidden_observations": [
+        "drop-settings-on-exec",
+        "write-profile-setting-to-config",
+        "emit-after-prompt-boundary"
+      ]
+    },
+    {
+      "name": "delivery-hosted-app-server",
+      "entry": "curator-run / Codex host / Codex plugin",
+      "input": {
+        "form": "hosted-app-server",
+        "settings": {
+          "cli_auth_credentials_store": "file"
+        },
+        "credential_store": "file"
+      },
+      "expected": {
+        "settings_argv": [
+          "-c",
+          "cli_auth_credentials_store=\"file\""
+        ]
+      },
+      "forbidden_observations": [
+        "drop-settings-on-hosted-app-server",
+        "write-profile-setting-to-config",
+        "emit-after-prompt-boundary"
+      ]
+    },
+    {
+      "name": "delivery-login",
+      "entry": "curator-run / Codex host / Codex plugin",
+      "input": {
+        "form": "login",
+        "settings": {
+          "cli_auth_credentials_store": "file"
+        },
+        "credential_store": "file"
+      },
+      "expected": {
+        "settings_argv": [
+          "-c",
+          "cli_auth_credentials_store=\"file\""
+        ]
+      },
+      "forbidden_observations": [
+        "drop-settings-on-login",
+        "write-profile-setting-to-config",
+        "emit-after-prompt-boundary"
+      ]
+    },
+    {
+      "name": "delivery-resume",
+      "entry": "curator-run / Codex host / Codex plugin",
+      "input": {
+        "form": "resume",
+        "settings": {
+          "cli_auth_credentials_store": "file"
+        },
+        "credential_store": "file"
+      },
+      "expected": {
+        "settings_argv": [
+          "-c",
+          "cli_auth_credentials_store=\"file\""
+        ]
+      },
+      "forbidden_observations": [
+        "drop-settings-on-resume",
+        "write-profile-setting-to-config",
+        "emit-after-prompt-boundary"
+      ]
+    },
+    {
+      "name": "delivery-tracked-dispatch",
+      "entry": "curator-run / Codex host / Codex plugin",
+      "input": {
+        "form": "tracked-dispatch",
+        "settings": {
+          "cli_auth_credentials_store": "file"
+        },
+        "credential_store": "file"
+      },
+      "expected": {
+        "settings_argv": [
+          "-c",
+          "cli_auth_credentials_store=\"file\""
+        ]
+      },
+      "forbidden_observations": [
+        "drop-settings-on-tracked-dispatch",
+        "write-profile-setting-to-config",
+        "emit-after-prompt-boundary"
+      ]
+    },
+    {
+      "name": "competing-source-43",
+      "entry": "Codex BuildPlan / host client and resume",
+      "input": {
+        "settings": {
+          "cli_auth_credentials_store": "file"
+        },
+        "raw": [
+          "-c",
+          "cli_auth_credentials_store=\"keyring\""
+        ],
+        "credential_store": "file"
+      },
+      "expected": {
+        "diagnostic": "codex_settings_delivery_conflict",
+        "exec": false
+      },
+      "forbidden_observations": [
+        "scan-split-short-option-only",
+        "check-start-but-not-resume"
+      ]
+    },
+    {
+      "name": "competing-source-44",
+      "entry": "Codex BuildPlan / host client and resume",
+      "input": {
+        "settings": {
+          "cli_auth_credentials_store": "file"
+        },
+        "raw": [
+          "--config=cli_auth_credentials_store=\"keyring\""
+        ],
+        "credential_store": "file"
+      },
+      "expected": {
+        "diagnostic": "codex_settings_delivery_conflict",
+        "exec": false
+      },
+      "forbidden_observations": [
+        "scan-split-short-option-only",
+        "check-start-but-not-resume"
+      ]
+    },
+    {
+      "name": "competing-source-45",
+      "entry": "Codex BuildPlan / host client and resume",
+      "input": {
+        "settings": {
+          "cli_auth_credentials_store": "file"
+        },
+        "raw": [
+          "-p",
+          "alternate"
+        ],
+        "credential_store": "file"
+      },
+      "expected": {
+        "diagnostic": "codex_settings_delivery_conflict",
+        "exec": false
+      },
+      "forbidden_observations": [
+        "scan-split-short-option-only",
+        "check-start-but-not-resume"
+      ]
+    },
+    {
+      "name": "competing-source-46",
+      "entry": "Codex BuildPlan / host client and resume",
+      "input": {
+        "settings": {
+          "cli_auth_credentials_store": "file"
+        },
+        "raw": [
+          "--profile=alternate"
+        ],
+        "credential_store": "file"
+      },
+      "expected": {
+        "diagnostic": "codex_settings_delivery_conflict",
+        "exec": false
+      },
+      "forbidden_observations": [
+        "scan-split-short-option-only",
+        "check-start-but-not-resume"
+      ]
+    },
+    {
+      "name": "identity-tampered-payload",
+      "entry": "curator-run exec / dispatcher / host resume",
+      "input": {
+        "fault": "tampered-payload",
+        "settings_required": true
+      },
+      "expected": {
+        "outcome": "refuse-before-exec"
+      },
+      "forbidden_observations": [
+        "downgrade-to-old-fragment",
+        "read-overlay-again",
+        "ignore-identity-change"
+      ]
+    },
+    {
+      "name": "identity-missing-required-payload",
+      "entry": "curator-run exec / dispatcher / host resume",
+      "input": {
+        "fault": "missing-required-payload",
+        "settings_required": true
+      },
+      "expected": {
+        "outcome": "refuse-before-exec"
+      },
+      "forbidden_observations": [
+        "downgrade-to-old-fragment",
+        "read-overlay-again",
+        "ignore-identity-change"
+      ]
+    },
+    {
+      "name": "identity-unsupported-revision",
+      "entry": "curator-run exec / dispatcher / host resume",
+      "input": {
+        "fault": "unsupported-revision",
+        "settings_required": true
+      },
+      "expected": {
+        "outcome": "refuse-before-exec"
+      },
+      "forbidden_observations": [
+        "downgrade-to-old-fragment",
+        "read-overlay-again",
+        "ignore-identity-change"
+      ]
+    },
+    {
+      "name": "identity-host-reuse-identity-mismatch",
+      "entry": "curator-run exec / dispatcher / host resume",
+      "input": {
+        "fault": "host-reuse-identity-mismatch",
+        "settings_required": true
+      },
+      "expected": {
+        "outcome": "refuse-or-explicit-new-session"
+      },
+      "forbidden_observations": [
+        "downgrade-to-old-fragment",
+        "read-overlay-again",
+        "ignore-identity-change"
+      ]
+    },
+    {
+      "name": "seed-A",
+      "entry": "curator env resolve / repair / launch",
+      "input": {
+        "seed_revision": "A",
+        "settings": {
+          "cli_auth_credentials_store": "file"
+        },
+        "credential_store": "file"
+      },
+      "expected": {
+        "config_bytes": "unchanged",
+        "seed_record": "unchanged"
+      },
+      "forbidden_observations": [
+        "rewrite-config-on-launch",
+        "repair-to-apply-settings"
+      ]
+    },
+    {
+      "name": "seed-B",
+      "entry": "curator env resolve / repair / launch",
+      "input": {
+        "seed_revision": "B",
+        "settings": {
+          "cli_auth_credentials_store": "file"
+        },
+        "credential_store": "file"
+      },
+      "expected": {
+        "config_bytes": "unchanged",
+        "seed_record": "unchanged"
+      },
+      "forbidden_observations": [
+        "rewrite-config-on-launch",
+        "repair-to-apply-settings"
+      ]
+    },
+    {
+      "name": "qualification-login",
+      "entry": "supported Codex release storage probe",
+      "input": {
+        "path": "login",
+        "qualification": "unknown"
+      },
+      "expected": {
+        "outcome": "codex_settings_unsupported",
+        "invocation": false
+      },
+      "forbidden_observations": [
+        "infer-cli-effect-from-native-config",
+        "enable-unqualified-producer"
+      ]
+    },
+    {
+      "name": "qualification-app-server",
+      "entry": "supported Codex release storage probe",
+      "input": {
+        "path": "app-server",
+        "qualification": "unknown"
+      },
+      "expected": {
+        "outcome": "codex_settings_unsupported",
+        "invocation": false
+      },
+      "forbidden_observations": [
+        "infer-cli-effect-from-native-config",
+        "enable-unqualified-producer"
+      ]
+    },
+    {
+      "name": "qualification-token-refresh",
+      "entry": "supported Codex release storage probe",
+      "input": {
+        "path": "token-refresh",
+        "qualification": "unknown"
+      },
+      "expected": {
+        "outcome": "codex_settings_unsupported",
+        "invocation": false
+      },
+      "forbidden_observations": [
+        "infer-cli-effect-from-native-config",
+        "enable-unqualified-producer"
+      ]
+    },
+    {
+      "name": "qualification-conflicting-seed",
+      "entry": "supported Codex release storage probe",
+      "input": {
+        "path": "conflicting-seed",
+        "qualification": "unknown"
+      },
+      "expected": {
+        "outcome": "codex_settings_unsupported",
+        "invocation": false
+      },
+      "forbidden_observations": [
+        "infer-cli-effect-from-native-config",
+        "enable-unqualified-producer"
+      ]
+    },
+    {
+      "name": "machine-selected-file",
+      "entry": "curator env resolve / Codex plugin",
+      "input": {
+        "package": {},
+        "credential_store": "file",
+        "native": "file",
+        "mode": "shared",
+        "qualified_backend": true
+      },
+      "expected": {
+        "settings": {
+          "cli_auth_credentials_store": "file"
+        },
+        "settings_argv": [
+          "-c",
+          "cli_auth_credentials_store=\"file\""
+        ]
+      },
+      "forbidden_observations": [
+        "select-store-from-package",
+        "rewrite-config",
+        "emit-duplicate-store-owner"
+      ]
+    },
+    {
+      "name": "machine-selected-keyring",
+      "entry": "curator env resolve / Codex plugin",
+      "input": {
+        "package": {},
+        "credential_store": "keychain",
+        "native": "keyring",
+        "mode": "shared",
+        "qualified_backend": true
+      },
+      "expected": {
+        "settings": {
+          "cli_auth_credentials_store": "keyring"
+        },
+        "settings_argv": [
+          "-c",
+          "cli_auth_credentials_store=\"keyring\""
+        ]
+      },
+      "forbidden_observations": [
+        "select-store-from-package",
+        "rewrite-config",
+        "emit-duplicate-store-owner"
+      ]
+    },
+    {
+      "name": "package-without-settings",
+      "entry": "curator env resolve",
+      "input": {
+        "package": {},
+        "credential_store": "native"
+      },
+      "expected": {
+        "settings": {},
+        "diagnostics": []
+      },
+      "forbidden_observations": [
+        "reject-all-packages",
+        "invent-store-override"
+      ]
+    },
+    {
+      "name": "package-empty-settings",
+      "entry": "curator env resolve",
+      "input": {
+        "package": {
+          "codex_settings": {}
+        },
+        "credential_store": "native"
+      },
+      "expected": {
+        "settings": {},
+        "diagnostics": []
+      },
+      "forbidden_observations": [
+        "reject-all-packages",
+        "invent-store-override"
+      ]
+    }
+  ]
+}

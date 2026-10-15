@@ -105,8 +105,8 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0011](CIP-0011-credential-broker-and-agent-users.md) | Credential broker leases and agent OS users | Draft |
 | [CIP-0012](CIP-0012-symlinked-seed-files.md) | Symlinked seed files | Rejected |
 | [CIP-0013](CIP-0013-machine-base-context.md) | Machine base context | Draft |
-| [CIP-0014](CIP-0014-managed-home-snapshots.md) | Managed-home snapshots: `curator env materialize` | Draft |
-| [CIP-0015](CIP-0015-login-readiness-and-profile-preparation.md) | Login readiness and profile preparation | Draft |
-| [CIP-0016](CIP-0016-local-hosted-launches.md) | Local hosted launches through curator-run | Draft |
+| [CIP-0014](CIP-0014-managed-home-snapshots.md) | Managed-home snapshots: `curator env materialize` | Accepted |
+| [CIP-0015](CIP-0015-login-readiness-and-profile-preparation.md) | Login readiness and profile preparation | Accepted |
+| [CIP-0016](CIP-0016-local-hosted-launches.md) | Local hosted launches through curator-run | Accepted |
 | [CIP-0017](CIP-0017-muse-root-context-and-credential-store.md) | Muse root-context fragment member and credential store | Accepted |
-| [CIP-0018](CIP-0018-profile-level-codex-settings.md) | Profile-level Codex settings as launch overrides | Draft |
+| [CIP-0018](CIP-0018-profile-level-codex-settings.md) | Profile-level Codex settings as launch overrides (D14: machine-owned credential store) | Accepted |

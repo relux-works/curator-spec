@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "profile": "example",
+  "environment": "claude_code",
+  "current": true,
+  "login": "present",
+  "login_detail": {
+    "source": "per-home",
+    "store": "native",
+    "backend": "keychain",
+    "session": "caller",
+    "reason": "candidate-present",
+    "keychain_access": "available"
+  }
+}

@@ -8,6 +8,12 @@ transport in section 10.2, managed Muse file credentials in section 7.4,
 and the version-separated qualification/release sequence in section 7.9.
 Released schema and corpus bytes are unchanged. This specification does not
 claim implementation or Muse 1.4.8 exclusion qualification.
+**Snapshot-lifetime amendment (2026-10-15).**
+[CIP-0014 leaf 1](managed-home-snapshots.md) adds `env materialize`. Live
+sessions MUST consume their own verified snapshot, never a managed home.
+Managed homes remain provisioning/verification inputs; the historical launch
+guidance below is superseded by this amendment. Released fragment bytes are
+unchanged; archive transport and protected runtime activation remain gated.
 
 **Revision-1 foreign-context amendment (2026-10-14).** Section 7.1 records
 the verified Muse 1.4.7 probes P1–P4: native root context suppresses foreign
@@ -259,6 +265,10 @@ undecodable bytes, content that fails parsing or schema validation — is
 entry-class `environment_store_untrusted` (section 4), never
 `profile_unknown`, and is never rebuilt from (section 8.4.1, lock row).
 
+The unreleased [profile Codex settings amendment](profile-codex-settings.md#2-inheritance-and-identity-environments-sections-13-6-82-12)
+requires new lock carriers binding settings and contribution provenance.
+The frozen v1/v2 lock shapes above do not admit those members.
+
 ### 1.4 Versions, ranges, and resolution
 
 **Versions.** Version tags are strict Semantic Versioning 2.0 with a
@@ -496,6 +506,10 @@ an umbrella; any context package — umbrella or not — installs as a root. A
 role umbrella whose modules are empty is a valid, common shape. Discovery by
 directory layout does not exist: a directory without `agent-context.json` at
 the addressed root is not a context package.
+
+The unreleased [profile Codex settings vocabulary](profile-codex-settings.md#1-closed-manifest-vocabulary-environments-section-2)
+adds a closed typed `codex_settings` member in a successor manifest, not in
+schema 1. Existing schema-1 readers retain their unknown-field rejection.
 
 ### 2.1 Diagnostics
 
@@ -1230,8 +1244,11 @@ resolution time — snapshot validation stays position-independent — so a
 package authored as a root MAY be reused as a dependency exactly when its
 map is empty or absent.
 
-**Precedence policy.** Weights order chapters and nothing else in this
-revision. They never merge instruction text and they never resolve a
+**Precedence policy.** Weights order chapters. The unreleased
+[Codex settings amendment](profile-codex-settings.md#2-inheritance-and-identity-environments-sections-13-6-82-12)
+also uses effective weights for closed per-key scalar selection, with
+winning disagreement refused and placement irrelevant. They never merge
+instruction text and they never resolve a
 version constraint: an empty range intersection fails regardless of
 weights. Machine configuration declares the precedence policy as two
 independent, closed primitives:
@@ -1493,6 +1510,14 @@ Application is the launcher's surface, behind its explicit opt-in and
 warnings, under Decision 0013 Decision 6.3 and the launcher specification.
 
 ### 7.4 Credential passthrough, provisioning seeds, and isolation
+
+**Login-readiness amendment.** Implementations adopting
+[login readiness revision 1](login-readiness.md) follow its §§1–2 for
+metadata-only caller-session readiness and user-owned store selection. Its
+explicit Codex override supersedes the native-only selector rule below only
+when selected; no-copy, link liveness, isolation refusal and migration remain.
+Its Claude session-qualified facts refine backend selection, without changing
+shared-mode refusal. Muse admission remains separately owned.
 
 Credentials are never profile content and never managed surfaces. Each
 adapter declares the closed **passthrough** set a managed home shares with
@@ -1822,6 +1847,13 @@ provisioning stops rather than seeding whole or skipping.
 | `opencode` | per profile | **machine-current profile** (split-brain, section 7.1) | per profile for config-home state; `XDG_DATA_HOME`/`XDG_STATE_HOME` state is shared and ambient | shared, always | XDG-seeded allowlist links, reconciled |
 | `pi` | per profile | per profile | per profile | shared by default, `isolated` available | seeded once (`settings.json`, `models.json`), then per home |
 
+The unreleased [explicit Codex settings eligibility matrix](profile-codex-settings.md#5-credential-eligibility-amendment-environments-section-74)
+amends this section only when an explicit machine store selection is active in a
+qualified successor launch. In particular, isolated/file can use a separately
+prepared private credential even under native keyring/auto; native sharing
+still follows native storage. All rules above remain in force without an
+explicit setting. Native-read failure never counts as an absent selector.
+
 ### 7.5 Shadowing paths
 
 An adapter declares its known **shadowing paths**: higher-precedence
@@ -2042,9 +2074,10 @@ A profile materializes into an environment in exactly one of three modes:
   the home are symlinks into the profile store, with copies where a surface
   or platform requires bytes. The environment's own mutable state — session
   logs, history, caches, trust records — lives beside them, owned by the
-  tool, giving each profile naturally isolated session state. A managed
-  home is activated only by consuming a resolved fragment (section 10);
-  nothing in this document applies one to a running process.
+  tool. Under the snapshot-lifetime amendment, live sessions instead keep
+  their state in private session homes; they MUST NOT point at this mutable
+  provisioning home. A resolved fragment is an input to snapshot composition
+  (section 10.5), never authority to launch directly against the managed home.
 - **`linked`** — in-place materialization into the environment's native
   default home as symlinks into the profile store (except the
   `claude_code` root-context surface, below): the manager §5
@@ -2079,14 +2112,15 @@ one journaled transaction. Every write in that transaction is a section
 8.3.1 write. The **first-resolve notice** accompanies that
 provisioning and every first resolve of a home: the manager prints the
 managed-home path, states that the tool will treat the home as its own
-state root — sessions, trust records, and approvals accrue there and not in
-the native home — and names any first-run step the seeds do not cover for
+state root in the historical direct-home path; live sessions now require
+their own snapshot-backed private state root — and names first-run steps for
 that adapter. The notice is informative and never suppressed by
 configuration.
 
 **Two doors.** A native launch of a tool and a `curator run` launch of the
 same profile use different homes — the native home under `linked` or
-`copied` mode, and the managed home under `managed-home` — and keep separate
+`copied` mode, and a private snapshot-backed session home derived from the
+`managed-home` provisioning input — and keep separate
 session histories, trust records, and approvals. This revision keeps the
 split and makes it loud rather than routing the machine-current profile's
 managed launches into the native home: the section 10.3 boundary requires
@@ -2196,6 +2230,10 @@ contract makes the profile `environment_store_untrusted` (section 10.1),
 distinct from `environment_marker_unreadable`, which means the marker
 cannot be read or parsed, and from `environment_marker_invalid`, which
 keeps meaning unsupported marker version.
+
+A successor marker for the [Codex settings extension](profile-codex-settings.md#2-inheritance-and-identity-environments-sections-13-6-82-12)
+MUST bind effective settings and the successor lock pin. Marker schemas 1–3
+remain closed and unchanged; this requirement does not widen them.
 
 ### 8.3 Ledger discipline and backups
 
@@ -2506,7 +2544,8 @@ per-scope current profiles under section 9.3.
 2. updates the recorded current profile for the affected scope;
 3. warns that already-running agent sessions keep the previous context in
    memory and may write state derived from it, and recommends launching
-   through managed homes for concurrent multi-profile work.
+   through verified per-session snapshots for concurrent multi-profile work;
+   a live session MUST NOT point at the managed home (section 10.5).
 
 The switch attempts **every** entry of the scope and reports per-adapter and
 per-target results. The new current profile is recorded only when the whole
@@ -3046,6 +3085,14 @@ declaration (section 2.2) — reassembly emits no `requires.mcp` entry.
 shape; `--use` takes no name. Section 2.3 surfacing emits no diagnostic
 and never fails an operation.
 
+### 9.8 Login and profile preparation
+
+[Login readiness revision 1 §§3–4](login-readiness.md) defines the normative
+`env login` and `profile prepare` lifecycle: trusted interactive child login,
+shared refusal, no activation, report-only headless preparation, strict
+aggregate results and partial-failure/idempotence rules. These operations do
+not weaken existing install, resolve, source or ownership-migration gates.
+
 ## 10. Resolution and the launch fragment
 
 ### 10.1 `env resolve`
@@ -3055,7 +3102,7 @@ liveness rules before publishing v4, and derive its root-context fact only
 from successfully verified materialization (section 10.2). Failed resolution
 or repair emits no fragment; credential repair never manufactures a root fact.
 
-The manager's only execution-facing primitive is:
+The manager's resolution primitive is (snapshot export is section 10.5):
 
 ```text
 env resolve <env-id> [--profile <name>] [--repair [--preserve-lock]] [--format json|env|shell]
@@ -3247,12 +3294,13 @@ unprovisioned homes and separates currency from integrity.
 The two lock classes this document names are the **mutation lock** (manager
 §2.5: every write below the manager home, `profile use`, `profile update`,
 `profile sync`, repair, garbage collection) and the **status read**, which
-holds no lock. There is no per-home lock in revision 1. The window between
-a completed repair and the child process's first read of the home is a
+holds no lock. There is no per-home lock in revision 1. The historical window between
+a completed repair and a direct-home child process's first read is a
 **recorded residual**: another same-user process can write into the home in
 that window, and the marker is a record, not a signature (section 8.2). The
-launcher MAY re-verify the recorded surface hashes immediately before exec
-under its own specification; nothing here requires it.
+launcher MAY re-verify the recorded surface hashes under its own specification.
+That observation does not authorize a live-home session; section 10.5
+requires a separate verified snapshot.
 
 `--format json` prints the supported launch environment fragment object as its CCJ-1
 bytes ([`registry.md`](registry.md) §1) followed by exactly one LF — the
@@ -3268,9 +3316,11 @@ unregistered `<env-id>` is `environment_unknown`; an uninstalled `--profile`
 operand is `profile_unknown`.
 
 **`curator run`.** The launcher, `curator-run`, is the single composer of a
-launch under Decision 0013 (Option A): it resolves the fragment first with
-`--repair`, builds the interactive plan against the fragment's managed-home
-path, composes argv as plan ++ system-prompt channel flags (under its
+launch under Decision 0013 (Option A). The following describes historical
+fragment composition; section 10.5 now requires materialization and binding
+its portable descriptor to a private session home before launch. Resolving
+with `--repair` prepares a source; its managed-home path MUST NOT be the live
+session target. The launcher composes argv as plan ++ system-prompt channel flags (under its
 opt-in) ++ MCP channel flags ++ native arguments after `--`, composes the
 untracked environment as `Plan.Env` ⊕ fragment `env` ⊕ the engaged
 `variable`-kind channel. In both modes the plan request takes the launcher's
@@ -3291,6 +3341,19 @@ in revision 1 — no agents-management system plugin exists for it — while
 `env resolve opencode` and its managed homes are fully specified here and
 an operator applies the fragment by hand. `env_unsupported` is the
 launcher's diagnostic, not this document's.
+
+**Local hosted amendment (owner decision 2026-10-15).** For the separately
+selected CIP-0016 local hosted mode, [Local hosted launches](local-hosted-launches.md)
+§§1–8 supersedes the preceding managed-home launch description: Curator
+materializes a private session snapshot, agents-management spells all runtime
+argv/channels, the caller composes/seals the full process environment, and
+`tb-sessiond` executes it exactly without resolving profiles or rebuilding
+homes. Native selection never probes that receiver. The local mode requires
+Claude Code, Codex and Muse together; Muse mapping and explicit `root_context`
+consumption are activation requirements, not a claim that current launchers
+support them. Existing fragment schemas and non-hosted resolution semantics
+are unchanged. Successor wire publication and provider qualification remain
+gated as described there; this amendment enables no production receiver.
 
 **Permission mode.** Under Decision 0018 (adopted) every `curator run`
 launch resolves one permission mode, `native` or `yolo`, per launch,
@@ -3355,6 +3418,13 @@ passes the resolved mode and MUST refuse an unsupported mapping with
 the interactive launch-plan builder supports Muse.
 
 ### 10.2 The launch environment fragment
+
+**Coordinated successor contract.** [Login readiness §2.1](login-readiness.md)
+freezes a store-policy projection for the next coordinated fragment revision,
+including one Muse backend literal exception. It allocates no full-fragment
+revision token: v1–v3 below remain closed, path-only, and MUST reject that
+policy member or literal. Publication must coordinate the pending fragment
+changes before emission; no downgrade or silent policy loss is permitted.
 
 Four fragment revisions exist, `launch-env-fragment-v1`,
 `launch-env-fragment-v2`, `launch-env-fragment-v3`, and
@@ -3575,10 +3645,21 @@ shape:
   default — never as an explicit `native` naming. With
   `source: "profile"` the profile level names `mode`.
 
+The unreleased [Codex settings delivery amendment](profile-codex-settings.md#3-fragment-and-delivery-environments-sections-73-78-102)
+adds a typed member in a successor fragment only. The existing v1/v2/v3
+revisions and section 7.3/7.8 descriptor grammars remain closed and unchanged.
+Allocation is coordinated under that amendment's section 7, not inferred
+from its schema-module revision. Unsupported nonempty delivery MUST refuse.
+
 ### 10.3 The profile-influence boundary
 
+The coordinated successor in [login readiness §2.1](login-readiness.md) permits
+only the machine-selected Muse backend literal; this never gives profile
+bytes authority to select names, backend values, sources or accounts. The
+path-only fragment revisions below keep their existing boundary.
+
 Fragment variable names come only from the closed adapter registry.
-Fragment values are absolute paths below the manager-owned environments
+Fragment `env` values are absolute paths below the manager-owned environments
 root, except for v4's registry-owned Muse constant
 `TBH_CREDENTIAL_BACKEND=file`. That literal is not profile-controlled and
 MUST NOT admit arbitrary names or non-path values. The typed root-context
@@ -3587,12 +3668,19 @@ not package-provided argv or environment maps. Profile bytes MUST NOT
 select, add, rename, or retarget an
 environment variable and MUST NOT move a value outside that root; the only
 profile-derived component of a value is the profile-name path segment,
-bounded by the core §2 grammar — no separators, no traversal. A profile
-chooses what the context says, never how a process is launched. This is the
+bounded by the core §2 grammar — no separators, no traversal. The
+[Codex settings machinery](profile-codex-settings.md#4-ownership-and-the-bounded-exception-environments-sections-103-121)
+retains a bounded exception only for future reviewed package keys; none is
+admitted in this revision under D14. Credential-store launch overrides come
+only from CIP-0015's machine selector, never profile bytes. A profile chooses
+what the context says, never a credential store. No variable names, paths,
+raw argv or host policy are admitted; all other existing profile-influence
+restrictions remain in force.
+This is the
 package-influence boundary of the core execution policies, applied to
 environment injection.
 
-`env_names` are the one place package bytes name something about a launch,
+`env_names` are the place package bytes name operator variables for a launch,
 and they name only which operator variables the launcher may pass through —
 never a value. They never enter the fragment's `env`; they reach a launch
 plan only through the launcher's environment-name allowlist, bounded twice
@@ -3669,6 +3757,22 @@ that no reader mistakes the surfacing rows for an execution sandbox.
 | S4 profile `s4-warn`: launch composition passes an operator variable outside the configured `passable_env_names` (warning, names the variables and the knob) | `mcp_env_passthrough_unlisted` |
 | S4 profile `s4-enforce`: launch composition drops a requested name outside the effective `passable_env_names` (warning, names the variables) | `mcp_env_passthrough_dropped` |
 | explicit `passable_env_names: null` under the `hardened` posture at profile install, profile update, or launch composition (refusal, names the knob; old lock stands) | `passable_env_names_unbounded_refused` |
+
+### 10.5 `env materialize` and session lifetime
+
+The additive [managed-home snapshot contract](managed-home-snapshots.md)
+defines the command, no-follow destination boundary, closed content closure,
+relocation, consistent non-recovering lock capture, source-bound manifest,
+portable descriptor, diagnostic names and consumer requirements. It is
+normative alongside this document. It supersedes direct managed-home launch
+and concurrency guidance in §§8.1, 9.2 and 10.1; resolve remains available
+for preparation and inspection with unchanged fragment versions.
+
+A launcher MUST refuse a managed-profile session when it cannot consume the
+snapshot contract; lack of support cannot fall back to a live home or a
+consumer-maintained copy list. No source paths may be inferred from the
+snapshot descriptor. Exact archive encoding/caps and protected runtime B
+remain separate publication/confirmation gates, not implementation claims.
 
 ## 11. Umbrella subcommand discovery
 
@@ -3891,7 +3995,12 @@ Revision and always-on gates report `shipped` provenance; knob gates
 report `profile`, `explicit`, or `lock`. Both commands follow
 the manager §10 discipline exactly: recompute and report, never mutate — no
 fetch, no repair, no adoption, no channel application, no onboarding.
-`--check` returns non-zero when any row is non-current.
+`--check` returns non-zero when any row is non-current. Implementations
+adopting [login readiness revision 1 §1](login-readiness.md) additionally emit
+the three-value login row and require every participating login present for
+check success. Content currency stays independent. This strict aggregate
+deliberately cannot pass for currently unmeasurable ambient OpenCode; ordinary
+status remains available and no login gate is added to launch.
 
 `environment_repair_needs_lock_migration` is a resolve-operation refusal,
 not an additional home-currency verdict. A v1 lock alone does not make a
@@ -3979,6 +4088,13 @@ inside managed homes is never collected, and backups are never collected.
 
 ### 12.1 Machine configuration knobs
 
+[Login readiness revision 1 §2](login-readiness.md) adds the user-owned,
+non-lockable `credential_store.<profile>.<env-id>` selector
+(`native | file | keychain`, default `native`) in a coordinated successor
+configuration revision. Its standalone subtree grammar is frozen separately;
+manager-config v1–v3 remain closed and unchanged. It is not inserted into
+the schema-2 list below or made selectable by profile bytes or system locks.
+
 Every machine-configuration surface this document names is one of the
 following closed list, carried by `manager-config` schema 2 (the next
 batch) under one `environments` object, so that no knob lives in an
@@ -4063,6 +4179,10 @@ line — and each machine applies it; there is no fleet-push surface and no
 knob is read from a package. Informative CLI rows (`profile compose`, `env
 config`) that edit these knobs are the next batch's `cli/curator.md` work.
 
+The [Codex settings extension](profile-codex-settings.md#4-ownership-and-the-bounded-exception-environments-sections-103-121)
+does not add a machine permission knob or transfer permission consent to
+package data. Profile settings remain disjoint from all host policy keys.
+
 ### 12.2 Lockable knobs
 
 The manager §1 `locked` set is extended, for managers implementing this
@@ -4123,6 +4243,12 @@ index under its own review. This is the phasing statement the review asked
 for.
 
 ## 13. Conformance surfaces
+
+The separate [snapshot corpus](../conformance/managed-home-snapshot-v1/README.md)
+publishes leaf-1 metadata bytes, schema cases and semantic counterexamples.
+It leaves the released core corpus unchanged and does not qualify materialize
+syscalls, concurrent capture or any launcher/dispatcher/runtime behavior.
+
 
 The following surfaces of this document are conformance-vector surfaces,
 with schemas and vectors delivered separately (`schemas/v1/`, positive and
@@ -4357,3 +4483,7 @@ and negatives whose absence-shaped observation (stale, unknown,
 provisioned-through, detached, reported-empty) — or, for the lock,
 rebuild-shaped observation — is non-conforming, checked by
 `validate_environments_read_failure_vectors`.
+
+The unreleased [profile Codex settings corpus](../conformance/profile-codex-settings-v1/README.md)
+checks the extension member schemas separately; semantic entrypoint qualification
+and coordinated successor carrier allocation remain explicit rollout gates.

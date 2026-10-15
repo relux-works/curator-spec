@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/profile-codex-settings-v1/marker-members-v1.schema.json",
+  "description": "Added members only; not a complete environment marker. The marker lock pin binds the contribution provenance.",
+  "type": "object",
+  "required": [
+    "codex_settings"
+  ],
+  "properties": {
+    "codex_settings": {
+      "$ref": "codex-settings-v1.schema.json"
+    }
+  },
+  "additionalProperties": false
+}

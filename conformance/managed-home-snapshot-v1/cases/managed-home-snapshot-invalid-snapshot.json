@@ -1,0 +1,43 @@
+{
+  "snapshot": "managed-home-snapshot-v2",
+  "adapter": "codex_cli",
+  "profile": {
+    "name": "sample",
+    "lock_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "curator_version": "1.0.0-rc.14",
+  "fragment_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+  "launch_sha256": "991fa12d6db3ce6f26a0c59016bf120d90e8bd8baf0116d2039b0eb7bad4bd2e",
+  "files": [
+    {
+      "path": "home/.agent-context/system-prompt.md",
+      "size": 38,
+      "sha256": "891236d85b05d13e2825b88562e500db5d5c73148d75ae37f6e890a1a5e66257",
+      "mode": "0600"
+    },
+    {
+      "path": "home/AGENTS.md",
+      "size": 36,
+      "sha256": "d9d628028c9813634fa680bf07aaa3af08ac5127ff9b87f0912e62a3f2fa00ed",
+      "mode": "0600"
+    },
+    {
+      "path": "home/curator-mcp.config.toml",
+      "size": 23,
+      "sha256": "bbbf150661f2aa720984b845caacf2f1190369442aa500504426db6c5a9fe806",
+      "mode": "0600"
+    },
+    {
+      "path": "home/skills/sample/SKILL.md",
+      "size": 40,
+      "sha256": "f59f564f7959816889de8bc3199a14c747e1c985103e89c42ecd53ce79c42fb4",
+      "mode": "0600"
+    },
+    {
+      "path": "home/skills/sample/run.sh",
+      "size": 26,
+      "sha256": "bd557f3282ee9f8009e13547f642ef198e0546c9cbb73f9e960dd11167616793",
+      "mode": "0700"
+    }
+  ]
+}

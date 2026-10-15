@@ -1,0 +1,236 @@
+[
+  {
+    "name": "present-row",
+    "schema": "login-row-v1.schema.json",
+    "instance": "schema-cases/present-row.json",
+    "valid": true
+  },
+  {
+    "name": "absent-row",
+    "schema": "login-row-v1.schema.json",
+    "instance": "schema-cases/absent-row.json",
+    "valid": true
+  },
+  {
+    "name": "unknown-row",
+    "schema": "login-row-v1.schema.json",
+    "instance": "schema-cases/unknown-row.json",
+    "valid": true
+  },
+  {
+    "name": "ambient-unknown-row",
+    "schema": "login-row-v1.schema.json",
+    "instance": "schema-cases/ambient-unknown-row.json",
+    "valid": true
+  },
+  {
+    "name": "claude-session-row",
+    "schema": "login-row-v1.schema.json",
+    "instance": "schema-cases/claude-session-row.json",
+    "valid": true
+  },
+  {
+    "name": "invalid-login",
+    "schema": "login-row-v1.schema.json",
+    "instance": "schema-cases/invalid-login.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-session",
+    "schema": "login-row-v1.schema.json",
+    "instance": "schema-cases/invalid-session.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-secret",
+    "schema": "login-row-v1.schema.json",
+    "instance": "schema-cases/invalid-secret.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-extra-row",
+    "schema": "login-row-v1.schema.json",
+    "instance": "schema-cases/invalid-extra-row.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-reason",
+    "schema": "login-row-v1.schema.json",
+    "instance": "schema-cases/invalid-reason.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-unknown-backend-present",
+    "schema": "login-row-v1.schema.json",
+    "instance": "schema-cases/invalid-unknown-backend-present.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-nonclaude-keychain-access",
+    "schema": "login-row-v1.schema.json",
+    "instance": "schema-cases/invalid-nonclaude-keychain-access.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-row-version",
+    "schema": "login-row-v1.schema.json",
+    "instance": "schema-cases/invalid-row-version.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-missing-detail",
+    "schema": "login-row-v1.schema.json",
+    "instance": "schema-cases/invalid-missing-detail.json",
+    "valid": false
+  },
+  {
+    "name": "selectors",
+    "schema": "credential-store-config-v1.schema.json",
+    "instance": "schema-cases/selectors.json",
+    "valid": true
+  },
+  {
+    "name": "selectors-default",
+    "schema": "credential-store-config-v1.schema.json",
+    "instance": "schema-cases/selectors-default.json",
+    "valid": true
+  },
+  {
+    "name": "invalid-selector",
+    "schema": "credential-store-config-v1.schema.json",
+    "instance": "schema-cases/invalid-selector.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-adapter",
+    "schema": "credential-store-config-v1.schema.json",
+    "instance": "schema-cases/invalid-adapter.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-profile",
+    "schema": "credential-store-config-v1.schema.json",
+    "instance": "schema-cases/invalid-profile.json",
+    "valid": false
+  },
+  {
+    "name": "native-claude_code",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/native-claude_code.json",
+    "valid": true
+  },
+  {
+    "name": "native-codex_cli",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/native-codex_cli.json",
+    "valid": true
+  },
+  {
+    "name": "native-muse",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/native-muse.json",
+    "valid": true
+  },
+  {
+    "name": "native-pi",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/native-pi.json",
+    "valid": true
+  },
+  {
+    "name": "native-opencode",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/native-opencode.json",
+    "valid": true
+  },
+  {
+    "name": "codex-file",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/codex-file.json",
+    "valid": true
+  },
+  {
+    "name": "codex-keychain",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/codex-keychain.json",
+    "valid": true
+  },
+  {
+    "name": "muse-file",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/muse-file.json",
+    "valid": true
+  },
+  {
+    "name": "invalid-file-claude_code",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/invalid-file-claude_code.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-file-pi",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/invalid-file-pi.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-file-opencode",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/invalid-file-opencode.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-muse-keychain",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/invalid-muse-keychain.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-muse-missing-literal",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/invalid-muse-missing-literal.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-muse-literal",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/invalid-muse-literal.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-muse-HOME",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/invalid-muse-HOME.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-policy-extra",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/invalid-policy-extra.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-codex-missing-override",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/invalid-codex-missing-override.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-codex-override",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/invalid-codex-override.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-codex-extra-override",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/invalid-codex-extra-override.json",
+    "valid": false
+  },
+  {
+    "name": "invalid-codex-muse-literal",
+    "schema": "store-projection-v1.schema.json",
+    "instance": "schema-cases/invalid-codex-muse-literal.json",
+    "valid": false
+  }
+]

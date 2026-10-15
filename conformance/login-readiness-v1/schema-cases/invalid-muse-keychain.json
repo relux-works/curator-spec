@@ -1,0 +1,7 @@
+{
+  "environment": "muse",
+  "credential_store": {
+    "selection": "keychain"
+  },
+  "env": {}
+}

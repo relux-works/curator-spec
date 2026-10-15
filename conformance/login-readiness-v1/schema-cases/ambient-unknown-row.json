@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "profile": "example",
+  "environment": "opencode",
+  "current": true,
+  "login": "unknown",
+  "login_detail": {
+    "source": "ambient",
+    "store": "native",
+    "backend": "unknown",
+    "session": "caller",
+    "reason": "ambient"
+  }
+}

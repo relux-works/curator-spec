@@ -1,0 +1,10 @@
+{
+  "environment": "codex_cli",
+  "credential_store": {
+    "selection": "file",
+    "config_overrides": {
+      "cli_auth_credentials_store": "keyring"
+    }
+  },
+  "env": {}
+}
