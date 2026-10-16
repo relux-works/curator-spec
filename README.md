@@ -101,6 +101,14 @@ unreleased and separate from frozen rc.14 artifacts. Coordinated successor carri
 supported-release qualification and strict covered delivery remain open before
 producer activation; see [unresolved adoption questions](UNRESOLVED_QUESTIONS.md).
 
+## Local setup-token source publication
+
+[Protected local source](protocol/local-setup-token-source.md) publishes the
+same-user/same-host Claude slice, closed [schemas](schemas/local-setup-token-v1/README.md)
+and [publication corpus](conformance/local-setup-token-v1/README.md). Native
+login stays default. Vendor execution and route qualification remain unverified;
+launcher companion publication gates producer emission.
+
 ## Proposals
 
 [Managed-home snapshots](protocol/managed-home-snapshots.md) specify the
@@ -238,3 +246,15 @@ This project is part of the open-source ecosystem of
 - Contact: ivan@relux.works
 
 <!-- relux-ecosystem:end -->
+
+### Local-source publication tools
+
+`python3 tools/local_setup_token.py` checks the metadata-only publication
+corpus; `python3 -B -m unittest discover -s tools -p 'test_local_setup_token.py' -v`
+runs paired refusal tests. `python3 tools/check_local_setup_token_controls.py`
+runs narrowing mutants; its `--plant secret` and `--plant branch` commands
+intentionally exit 1 for disposable forbidden-field/unknown-branch plants.
+`make validate` includes the publication checker and tests. Inputs live under
+`schemas/local-setup-token-v1/` and `conformance/local-setup-token-v1/`;
+transient logs go under `.temp/`. These commands never access credential stores
+or execute a vendor harness.

@@ -1,0 +1,239 @@
+{
+  "credential-source-config-v1": {
+    "example": {
+      "claude_code": "node:root"
+    }
+  },
+  "node-source-v1": {
+    "mode": "node",
+    "source_ref": "local:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "harness_channel": "CLAUDE_CODE_OAUTH_TOKEN"
+  },
+  "source-projection-v1": {
+    "source": {
+      "mode": "node",
+      "source_ref": "local:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "harness_channel": "CLAUDE_CODE_OAUTH_TOKEN"
+    },
+    "source_generation": 1,
+    "policy_generation": 1
+  },
+  "registration-v1": {
+    "registration": "local-setup-token-registration-v1",
+    "harness": "claude_code",
+    "kind": "claude-oauth-token",
+    "label": "root",
+    "source_ref": "local:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "source_generation": 1,
+    "policy_generation": 1,
+    "state": "active",
+    "enrolled_at": "2026-10-16T00:00:00Z",
+    "expires_at": "unknown"
+  },
+  "local-binding-v1": {
+    "binding": "credential_binding/1",
+    "scope": "local",
+    "executing_uid": 1000,
+    "host_ref": "local:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "profile": "example",
+    "harness": "claude_code",
+    "node": "root",
+    "source_ref": "local:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "source_generation": 1,
+    "harness_channel": "CLAUDE_CODE_OAUTH_TOKEN",
+    "approved_endpoint": "https://api.anthropic.com",
+    "executable_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "policy_generation": 1
+  },
+  "manager-config-v6": {
+    "schema_version": 6,
+    "skills_root": "/manager/skills",
+    "projects": {},
+    "environments": {
+      "credential_store": {
+        "example": {
+          "muse": "native",
+          "codex_cli": "file"
+        }
+      },
+      "credential_source": {
+        "example": {
+          "claude_code": "node:root"
+        }
+      }
+    }
+  },
+  "agent-environment-marker-v6": {
+    "version": 6,
+    "hash_version": 2,
+    "profile": {
+      "name": "example",
+      "root": "example",
+      "kind": "local",
+      "lock_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "members": [
+      {
+        "name": "example",
+        "version": "1.0.0",
+        "weight": 0,
+        "overlay": false,
+        "state_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    ],
+    "precedence": {
+      "winner": "higher-weight",
+      "placement": "winner-last"
+    },
+    "mode": "managed-home",
+    "surfaces": {},
+    "passthrough": [],
+    "seeds": [],
+    "codex_settings": {},
+    "credential_source": {
+      "source": {
+        "mode": "node",
+        "source_ref": "local:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "harness_channel": "CLAUDE_CODE_OAUTH_TOKEN"
+      },
+      "source_generation": 1,
+      "policy_generation": 1
+    }
+  },
+  "launch-env-fragment-v6": {
+    "env": {
+      "CLAUDE_CONFIG_DIR": "/manager/environments/example/claude_code"
+    },
+    "environment": "claude_code",
+    "fragment": "launch-env-fragment-v6",
+    "permissions": {
+      "locked": false,
+      "mode": "native",
+      "source": "profile"
+    },
+    "precedence": {
+      "placement": "winner-last",
+      "winner": "higher-weight"
+    },
+    "profile": {
+      "lock_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "name": "example"
+    },
+    "credential_store": {
+      "selection": "native"
+    },
+    "credential_source": {
+      "source": {
+        "mode": "node",
+        "source_ref": "local:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "harness_channel": "CLAUDE_CODE_OAUTH_TOKEN"
+      },
+      "source_generation": 1,
+      "policy_generation": 1
+    }
+  },
+  "env-status-v2": {
+    "status": "env-status-v2",
+    "rows": [
+      {
+        "readiness": {
+          "schema_version": 1,
+          "profile": "example",
+          "environment": "claude_code",
+          "current": true,
+          "login": "present",
+          "login_detail": {
+            "source": "node",
+            "store": "native",
+            "backend": "file",
+            "session": "caller",
+            "reason": "candidate-present"
+          }
+        },
+        "mode": "managed-home",
+        "lock_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "recorded_tool_version": null,
+        "detected_tool_version": null,
+        "configured_store": "native",
+        "native_storage": "file",
+        "effective_store": "native",
+        "surfaces": [],
+        "observations": []
+      }
+    ],
+    "codex_settings": [
+      {
+        "profile": "example",
+        "codex_settings": {},
+        "codex_settings_contributions": [],
+        "precedence": {
+          "winner": "higher-weight",
+          "placement": "winner-last"
+        }
+      }
+    ],
+    "observations": []
+  },
+  "local-final-exec-v1": {
+    "plan": "local-final-exec-v1",
+    "route": "task-board-headless-local",
+    "fragment": {
+      "env": {
+        "CLAUDE_CONFIG_DIR": "/manager/environments/example/claude_code"
+      },
+      "environment": "claude_code",
+      "fragment": "launch-env-fragment-v6",
+      "permissions": {
+        "locked": false,
+        "mode": "native",
+        "source": "profile"
+      },
+      "precedence": {
+        "placement": "winner-last",
+        "winner": "higher-weight"
+      },
+      "profile": {
+        "lock_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "name": "example"
+      },
+      "credential_store": {
+        "selection": "native"
+      },
+      "credential_source": {
+        "source": {
+          "mode": "node",
+          "source_ref": "local:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "harness_channel": "CLAUDE_CODE_OAUTH_TOKEN"
+        },
+        "source_generation": 1,
+        "policy_generation": 1
+      }
+    },
+    "required_extensions": {
+      "works.relux.curator.credential/1": {
+        "mode": "node",
+        "source_ref": "local:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "harness_channel": "CLAUDE_CODE_OAUTH_TOKEN"
+      }
+    },
+    "source_generation": 1,
+    "policy_generation": 1,
+    "invocation": {
+      "binary": "/qualified/bin/claude",
+      "executable_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "cwd": "/workspace",
+      "argv": [
+        "--print",
+        "sentinel prompt"
+      ],
+      "environment": {
+        "PATH": "/qualified/bin"
+      },
+      "endpoint": "https://api.anthropic.com",
+      "stdin": "null"
+    }
+  },
+  "refusal-v1": {
+    "code": "credential_binding_mismatch"
+  }
+}

@@ -222,3 +222,13 @@ applicable gates. Snapshot/hosted/archive enablement remains separately owned.
 Muse v4 work is not held behind future package vocabulary or Codex qualification.
 No measurement of credential custody, vendor execution, no-partial-output at a
 runtime renderer, or metadata reader safety is claimed by schema conformance.
+
+## 6. Subsequent local-source allocation
+
+[Local setup-token revision 1 §5](local-setup-token-source.md#5-closed-carriers)
+serializes the next allocation after this joint L15-0/C0 publication:
+config/marker/fragment 6 and status 2, in a dedicated schema namespace.
+This publication's six carriers remain unchanged. Manifest 2 and lock 4 still
+reject source/account policy. Source marker provenance never changes package
+identity. Node emission is independently gated and is not a prerequisite for
+unrelated existing v4 Muse delivery.

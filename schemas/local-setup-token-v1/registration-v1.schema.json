@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/local-setup-token-v1/registration-v1.schema.json",
+  "title": "registration-v1",
+  "type": "object",
+  "properties": {
+    "registration": {
+      "const": "local-setup-token-registration-v1"
+    },
+    "harness": {
+      "const": "claude_code"
+    },
+    "kind": {
+      "const": "claude-oauth-token"
+    },
+    "label": {
+      "$ref": "../v1/common.schema.json#/$defs/identifier"
+    },
+    "source_ref": {
+      "type": "string",
+      "pattern": "^local:[0-9a-f]{32}(?![\\s\\S])"
+    },
+    "source_generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "policy_generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "state": {
+      "enum": [
+        "active",
+        "revoked",
+        "recovery-required"
+      ]
+    },
+    "enrolled_at": {
+      "$ref": "../v1/common.schema.json#/$defs/timestamp"
+    },
+    "issued_at": {
+      "$ref": "../v1/common.schema.json#/$defs/timestamp"
+    },
+    "expires_at": {
+      "oneOf": [
+        {
+          "$ref": "../v1/common.schema.json#/$defs/timestamp"
+        },
+        {
+          "const": "unknown"
+        }
+      ]
+    }
+  },
+  "required": [
+    "registration",
+    "harness",
+    "kind",
+    "label",
+    "source_ref",
+    "source_generation",
+    "policy_generation",
+    "state",
+    "enrolled_at",
+    "expires_at"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "issued_at"
+        ]
+      },
+      "then": {
+        "properties": {
+          "expires_at": {
+            "$ref": "../v1/common.schema.json#/$defs/timestamp"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "expires_at": {
+            "const": "unknown"
+          }
+        }
+      }
+    }
+  ]
+}

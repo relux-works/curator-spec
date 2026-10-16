@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/local-setup-token-v1/local-binding-v1.schema.json",
+  "title": "local-binding-v1",
+  "type": "object",
+  "properties": {
+    "binding": {
+      "const": "credential_binding/1"
+    },
+    "scope": {
+      "const": "local"
+    },
+    "executing_uid": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4294967295
+    },
+    "host_ref": {
+      "type": "string",
+      "pattern": "^local:[0-9a-f]{32}(?![\\s\\S])"
+    },
+    "profile": {
+      "$ref": "../v1/common.schema.json#/$defs/identifier"
+    },
+    "harness": {
+      "const": "claude_code"
+    },
+    "node": {
+      "$ref": "../v1/common.schema.json#/$defs/identifier"
+    },
+    "source_ref": {
+      "type": "string",
+      "pattern": "^local:[0-9a-f]{32}(?![\\s\\S])"
+    },
+    "source_generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "harness_channel": {
+      "const": "CLAUDE_CODE_OAUTH_TOKEN"
+    },
+    "approved_endpoint": {
+      "type": "string",
+      "pattern": "^https://[A-Za-z0-9.-]+(?::[0-9]{1,5})?(?:/[A-Za-z0-9._~/-]*)?(?![\\s\\S])",
+      "maxLength": 4096
+    },
+    "executable_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    },
+    "policy_generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "binding",
+    "scope",
+    "executing_uid",
+    "host_ref",
+    "profile",
+    "harness",
+    "node",
+    "source_ref",
+    "source_generation",
+    "harness_channel",
+    "approved_endpoint",
+    "executable_sha256",
+    "policy_generation"
+  ],
+  "additionalProperties": false
+}

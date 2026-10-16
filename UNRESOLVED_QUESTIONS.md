@@ -133,3 +133,16 @@ The accepted [normative text](protocol/profile-codex-settings.md#7-wire-allocati
 and [CIP questions 4–5](cips/CIP-0018-profile-level-codex-settings.md#open-questions-for-the-operator)
 define the required decisions and evidence. These are later adoption gates,
 not behavior inferred or implemented by the normative leaf.
+
+## Local setup-token activation gates
+
+The [local-source publication](protocol/local-setup-token-source.md) settles
+the C7 same-user sequencing carve-out, carriers and public facade contract.
+Remaining delivery gates are the separately reviewed launcher SPEC entry/plan
+companion, the T3a public API module pin, T1/T2 custody/policy implementation,
+T3b real final-executor qualification and T4 real task-board headless uptake.
+No supported tuple is established by the metadata corpus. Direct-only and
+interactive hosted rows remain distinct. `tb-sessiond` lookup/restart is
+refused under existing hosted §§4/6; enabling it requires an explicit later
+amendment, not a callback or hidden wrapper. Unqualified vendor child-leak or
+settings-reload behavior keeps capability unavailable.

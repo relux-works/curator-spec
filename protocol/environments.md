@@ -1511,6 +1511,12 @@ warnings, under Decision 0013 Decision 6.3 and the launcher specification.
 
 ### 7.4 Credential passthrough, provisioning seeds, and isolation
 
+The [local setup-token amendment](local-setup-token-source.md) adopts only
+same-host/same-UID Claude node delivery, with protected file custody and
+source-first resolution. Native per-home remains default. Node adoption uses
+inspect → plan → apply, never repair migration or native-login extraction.
+No snapshot or source presence grants final-execution authority.
+
 **Login-readiness amendment.** Implementations adopting
 [login readiness revision 1](login-readiness.md) follow its §§1–2 for
 metadata-only caller-session readiness and user-owned store selection. Its
@@ -3423,6 +3429,12 @@ the interactive launch-plan builder supports Muse.
 
 ### 10.2 The launch environment fragment
 
+The separately adopted [local setup-token source](local-setup-token-source.md#5-closed-carriers)
+allocates full fragment v6 after the joint v5 carrier. Node metadata is
+required-understanding; v4/v5 stay closed, and no producer emits it until the
+launcher companion and final route are supported. Source metadata never
+becomes an env literal, secret path or snapshot member.
+
 **Coordinated successor contract.** [Login readiness §2.1](login-readiness.md)
 freezes a store-policy projection for the next coordinated fragment revision,
 including one Muse backend literal exception. It allocates no full-fragment
@@ -3665,6 +3677,12 @@ meaning. Runtime qualification and strict covered consumers still gate Codex
 producer enablement; direct login consumes typed policy without shell eval.
 
 ### 10.3 The profile-influence boundary
+
+The [local node source](local-setup-token-source.md#6-local-binding-and-final-boundary-l6)
+adds no package authority. Its injected channel is reserved in every input
+layer, including literals, env-name requests and MCP interpolation. Competing
+source/settings/provider/endpoint/startup inputs refuse before secret lookup;
+only the approved final Claude child may receive the token.
 
 The coordinated successor in [login readiness §2.1](login-readiness.md) permits
 only the machine-selected Muse backend literal; this never gives profile
@@ -4107,6 +4125,14 @@ versions are honest; readiness status executes no agent executable.
 
 ### 12.1 Machine configuration knobs
 
+[Local setup-token revision 1](local-setup-token-source.md) adds only the
+user-owned, non-lockable `credential_source.<profile>.claude_code` selector
+(`per-home | node:<label>`, default `per-home`) through complete manager-config
+v6. This is not an addition to old closed configuration schemas. Resolve
+source → store → isolation admission → link strategy; node requires native
+home-store selection and explicit home adoption. Status v2 retains the
+frozen login row, with lifecycle and executor capability reported separately.
+
 [Login readiness revision 1 §2](login-readiness.md) adds the user-owned,
 non-lockable `credential_store.<profile>.<env-id>` selector
 (`native | file | keychain`, default `native`) in a coordinated successor
@@ -4203,6 +4229,11 @@ does not add a machine permission knob or transfer permission consent to
 package data. Profile settings remain disjoint from all host policy keys.
 
 ### 12.2 Lockable knobs
+
+Local setup-token source selection MUST NOT be carried or locked by system
+configuration. Existing isolation locks remain authoritative; an applicable
+shared lock conflicts with the node's linkless strategy and MUST NOT be
+silently overwritten. See [local source §3](local-setup-token-source.md#3-policy-and-home-adoption-l3).
 
 The manager §1 `locked` set is extended, for managers implementing this
 capability, by exactly these keys under `environments`:

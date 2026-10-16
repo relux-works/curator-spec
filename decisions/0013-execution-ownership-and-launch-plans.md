@@ -799,3 +799,21 @@ construction and is reported as such.
    Claude's nested-session refusal. Whether ax's provider independently
    filters these values is unknown here. This records a limit, not a new
    ax field, implementation, or bypass.
+
+## Required-understanding local-source amendment (2026-10-16)
+
+[Local setup-token source revision 1](../protocol/local-setup-token-source.md)
+adds the closed required-understanding `works.relux.curator.credential/1`
+node branch and the dedicated `local-final-exec-v1` plan. Existing ax and
+hosted plan shapes are not widened by a standalone extension. Unsupported
+semantics or an incapable final receiver refuses
+`credential_injection_unavailable`; no secret is put into caller literals,
+env-name requests, intermediate executor environment or a host payload.
+The approved `curator-run local-final-exec --plan <file|->` headless entry
+uses the Curator-owned public `pkg/localcredential` in-process facade for
+protected authorization and start, rather than a secret getter or caller
+attestation. Launcher SPEC must land the corresponding entry/carrier and an
+explicit API pin before emission. Existing composition, signal, terminal and
+cancellation ownership remains. This independently qualified same-user spawn
+route neither amends CIP-0016 exact-process/restart policy nor authorizes
+`tb-sessiond` lookup. No runtime qualification is claimed here.

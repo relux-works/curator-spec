@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/local-setup-token-v1/source-projection-v1.schema.json",
+  "title": "source-projection-v1",
+  "type": "object",
+  "properties": {
+    "source": {
+      "$ref": "node-source-v1.schema.json"
+    },
+    "source_generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "policy_generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  },
+  "required": [
+    "source",
+    "source_generation",
+    "policy_generation"
+  ],
+  "additionalProperties": false
+}

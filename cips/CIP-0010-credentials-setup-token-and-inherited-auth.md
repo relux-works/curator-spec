@@ -148,6 +148,23 @@ So "inherited authentication" for Claude is one token from `setup-token`, enroll
 
 **C7. Sequencing and what is not here (F25).** Slice 0 is the **minimal peer-authenticated broker interface**: `credential_binding/1` served over a Unix socket with peer credentials from the operator's user to a final executor running as another OS user, proving one authorized chain end to end (wrong peer, wrong account, expired binding refused) before nodes are generalised or any donor is deployed. Not in this CIP: the full broker (leases, concurrency bounded to one person's volume), proxy injection (research), Team/Enterprise plans (owner: not for the first release), `CLAUDE_CODE_OAUTH_REFRESH_TOKEN` provisioning (UNVERIFIED semantics).
 
+## Narrow C7 amendment: local same-user publication (2026-10-16)
+
+Owner decision 2026-10-16 requires support for the local setup-token slice.
+[Protected local source revision 1](../protocol/local-setup-token-source.md)
+adopts C1–C4/C6 for Claude on the same host and executing UID before C7's
+broker-first sequence. C7 continues to govern cross-user/broker work; this
+exception grants no peer, broker-generation, remote or lease authority.
+Native per-home source-policy v1 defaults and login behavior remain unchanged.
+The local binding specializes C3.4 with executing UID and protected host/source
+generations instead of broker peer identity. The bounded stdin contract
+supersedes C4's informal piping wording: supply only the deliberately selected
+token, never a captured vendor transcript. Registration/lifecycle metadata is
+separate from the frozen readiness row. Node mode requires its published
+successor carriers and independent final-route qualification; this amendment
+claims neither implementation nor qualification. Full broker sequencing and
+all unrelated CIP proposals retain their existing status.
+
 ## Security considerations
 
 - **One person, one subscription.** The node is per OS user and per account label; Curator never multiplies an account across users; the Codex auth owner serialises one account to one refresher; the broker, later, bounds concurrency to one person's volume (owner decision). Vendor terms are quoted in RESEARCH §F; the posture here is the documented one (a setup-token in automation).

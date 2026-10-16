@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/local-setup-token-v1/refusal-v1.schema.json",
+  "title": "refusal-v1",
+  "type": "object",
+  "properties": {
+    "code": {
+      "enum": [
+        "usage",
+        "environment_credential_store_unsupported",
+        "environment_isolation_lock_conflict",
+        "credential_node_missing",
+        "credential_store_unreadable",
+        "credential_source_conflict",
+        "credential_injection_unavailable",
+        "credential_binding_mismatch",
+        "credential_source_stale",
+        "credential_source_migration_required",
+        "credential_enrollment_input_invalid",
+        "credential_source_revoked",
+        "credential_source_expired",
+        "credential_source_enrollment_required"
+      ]
+    }
+  },
+  "required": [
+    "code"
+  ],
+  "additionalProperties": false
+}

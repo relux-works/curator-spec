@@ -11954,6 +11954,16 @@ def validate_login_readiness() -> None:
     print(f"login-readiness schema cases: {total}/{total}; negatives: {negatives}/{negatives}; runtime cases: unrun")
 
 
+def validate_local_setup_token() -> None:
+    import local_setup_token
+
+    try:
+        total, negatives = local_setup_token.check_corpus(ROOT, load_json, validate_wire_semantics)
+    except (ValueError, OSError, SchemaError) as exc:
+        raise ValidationFailure(f"local setup-token publication: {exc}") from exc
+    print(f"local source cases: {total}/{total}; negatives: {negatives}/{negatives}; runtime qualification: unverified")
+
+
 def validate_rc7_carriers() -> None:
     import rc7_carriers
 
@@ -11972,6 +11982,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_managed_home_snapshots,
         validate_login_readiness,
         validate_rc7_carriers,
+        validate_local_setup_token,
         validate_draft_source_schemas,
         validate_draft_sources_manifest,
         validate_repository_descriptor_identity,

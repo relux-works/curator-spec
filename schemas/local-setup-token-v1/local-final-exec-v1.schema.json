@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/local-setup-token-v1/local-final-exec-v1.schema.json",
+  "title": "local-final-exec-v1",
+  "type": "object",
+  "properties": {
+    "plan": {
+      "const": "local-final-exec-v1"
+    },
+    "route": {
+      "const": "task-board-headless-local"
+    },
+    "fragment": {
+      "allOf": [
+        {
+          "$ref": "launch-env-fragment-v6.schema.json"
+        },
+        {
+          "required": [
+            "credential_source"
+          ]
+        }
+      ]
+    },
+    "required_extensions": {
+      "type": "object",
+      "properties": {
+        "works.relux.curator.credential/1": {
+          "$ref": "node-source-v1.schema.json"
+        }
+      },
+      "required": [
+        "works.relux.curator.credential/1"
+      ],
+      "additionalProperties": false
+    },
+    "source_generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "policy_generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "invocation": {
+      "type": "object",
+      "properties": {
+        "binary": {
+          "type": "string",
+          "pattern": "^/[^\\u0000-\\u001f\\u007f]*(?![\\s\\S])",
+          "maxLength": 4096
+        },
+        "executable_sha256": {
+          "$ref": "../v1/common.schema.json#/$defs/sha256"
+        },
+        "cwd": {
+          "type": "string",
+          "pattern": "^/[^\\u0000-\\u001f\\u007f]*(?![\\s\\S])",
+          "maxLength": 4096
+        },
+        "argv": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": {
+            "type": "string",
+            "maxLength": 65536
+          }
+        },
+        "environment": {
+          "type": "object",
+          "maxProperties": 256,
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*(?![\\s\\S])",
+            "not": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "CLAUDE_CODE_OAUTH_TOKEN",
+                    "ANTHROPIC_API_KEY",
+                    "ANTHROPIC_AUTH_TOKEN",
+                    "CLAUDE_CODE_OAUTH_REFRESH_TOKEN",
+                    "CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR",
+                    "CLAUDE_SECURESTORAGE_CONFIG_DIR",
+                    "ANTHROPIC_BASE_URL"
+                  ]
+                },
+                {
+                  "pattern": "^(?:LD_|DYLD_|NODE_|PYTHON)"
+                }
+              ]
+            }
+          },
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 65536
+          }
+        },
+        "endpoint": {
+          "type": "string",
+          "pattern": "^https://[A-Za-z0-9.-]+(?::[0-9]{1,5})?(?:/[A-Za-z0-9._~/-]*)?(?![\\s\\S])",
+          "maxLength": 4096
+        },
+        "stdin": {
+          "enum": [
+            "null",
+            "payload"
+          ]
+        }
+      },
+      "required": [
+        "binary",
+        "executable_sha256",
+        "cwd",
+        "argv",
+        "environment",
+        "endpoint",
+        "stdin"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "plan",
+    "route",
+    "fragment",
+    "required_extensions",
+    "source_generation",
+    "policy_generation",
+    "invocation"
+  ],
+  "additionalProperties": false
+}

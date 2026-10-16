@@ -328,3 +328,18 @@ never a hidden status fallback. Metadata-reader platform qualification, Windows
 backends, Codex keyring identity/precedence, Muse refresh, broker
 adoption and destination authentication remain with their owning follow-ups.
 This leaf decides no new snapshot, broker, tool custody or credential transport.
+
+## 6. Adopted local node source
+
+[Local setup-token revision 1](local-setup-token-source.md) specializes §§1–4
+without widening `login-row-v1`: Claude node uses node/native/file/caller
+(or unknown backend when unestablished). Its §4 table distinguishes successful
+absence from denied/unsafe/incomplete metadata, empty candidates and conflicts.
+The full status v2 successor enforces that relation; status 1 remains frozen.
+Registration lifecycle and route capability do not enter readiness: a known
+expired candidate can remain present, while exec refuses. Status never reads
+material or executes an agent. Node env login refuses
+`credential_source_enrollment_required`; prepare neither enrolls nor invokes
+native login for node absence/unknown, and retains current+present aggregate
+semantics. Config v6 selects only user-owned source policy, and node mode
+requires native home-store selection. Package/lock authority remains forbidden.
