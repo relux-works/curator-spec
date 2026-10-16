@@ -84,8 +84,8 @@ production receiver and changes no released schema.
 
 [Login readiness revision 1](protocol/login-readiness.md) freezes CIP-0015
 leaf 1 with [standalone schemas](schemas/login-readiness-v1/README.md) and
-[a separate corpus](conformance/login-readiness-v1/README.md). Containing
-configuration/status/fragment revisions remain coordinated publication work;
+[a separate corpus](conformance/login-readiness-v1/README.md). [Containing carriers](protocol/rc7-carriers.md) allocates complete
+configuration/status/fragment successors;
 released schema bytes and v1–v3 fragment rules remain unchanged. Acceptance
 does not claim implementation or platform qualification.
 
@@ -97,8 +97,8 @@ inheritance, machine-owned credential-store launch delivery and explicit
 eligibility rules. Its
 [member schemas](schemas/profile-codex-settings-v1/README.md) and
 [conformance corpus](conformance/profile-codex-settings-v1/README.md) are
-unreleased and separate from frozen rc.14 artifacts. Coordinated successor
-carrier allocation and supported-release qualification remain open before
+unreleased and separate from frozen rc.14 artifacts. Coordinated successor carriers are [published](schemas/rc7-carriers-v1/README.md);
+supported-release qualification and strict covered delivery remain open before
 producer activation; see [unresolved adoption questions](UNRESOLVED_QUESTIONS.md).
 
 ## Proposals
@@ -169,6 +169,14 @@ Validation requires local release tags (fetch tags in shallow checkouts).
   positive/negative cases and semantic-vector inventory. These tests also run
   in `make validate`; they do not qualify runtime entrypoints. Corpus outputs
   live in `conformance/profile-codex-settings-v1/`; logs belong in `.temp/`.
+- Whole-carrier publication: `python3 tools/rc7_carriers.py` and
+  `python3 -B -m unittest discover -s tools -p 'test_rc7_carriers.py' -v`
+  validate the complete successor corpus, including old/new compatibility.
+  Status checks include the Muse home-source/file-backend relation and bounded
+  cross-document execution prohibitions, with regression/narrowing controls.
+  `python3 tools/check_rc7_carrier_controls.py` reports narrowing mutants and
+  a bounded invalid-carrier plant. Fixtures are in `conformance/rc7-carriers-v1/`;
+  these checks qualify no vendor runtime. Local logs belong in `.temp/`.
 - Go: `go test ./tools/...` tests specification tooling;
   `go run ./tools/generate-vectors -root .` regenerates the released corpus
   under `conformance/v1/`, its release metadata, and the independent

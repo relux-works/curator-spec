@@ -1,0 +1,27 @@
+{
+  "schema_version": 4,
+  "hash_version": 2,
+  "root": "example",
+  "members": [
+    {
+      "kind": "context",
+      "name": "example",
+      "version": "1.0.0",
+      "state_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "weight": 0,
+      "overlay": false,
+      "required_by": []
+    }
+  ],
+  "codex_settings": {},
+  "codex_settings_contributions": [
+    {
+      "package": "example",
+      "settings": {}
+    }
+  ],
+  "precedence": {
+    "winner": "higher-weight",
+    "placement": "winner-last"
+  }
+}

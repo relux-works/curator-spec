@@ -1,0 +1,102 @@
+[
+  {
+    "id": "muse-default",
+    "clause": "Muse configured absent or native",
+    "outcome": "effective file, selector unchanged",
+    "forbidden_effects": [
+      "selector rewrite",
+      "native credential copy"
+    ]
+  },
+  {
+    "id": "muse-explicit-file",
+    "clause": "Muse configured file",
+    "outcome": "effective file",
+    "forbidden_effects": [
+      "native credential copy"
+    ]
+  },
+  {
+    "id": "muse-explicit-keychain",
+    "clause": "Muse explicit keychain",
+    "outcome": "environment_credential_store_unsupported",
+    "forbidden_effects": [
+      "fragment",
+      "link",
+      "login",
+      "launch"
+    ]
+  },
+  {
+    "id": "muse-ambient-backend",
+    "clause": "Muse ambient backend keychain or another inherited backend value",
+    "outcome": "mandatory file literal wins",
+    "forbidden_effects": [
+      "ambient backend replacing mandatory literal"
+    ]
+  },
+  {
+    "id": "muse-explicit-backend",
+    "clause": "Muse explicit plan/backend override incompatible with file",
+    "outcome": "environment_credential_conflict",
+    "forbidden_effects": [
+      "exec",
+      "second owner"
+    ]
+  },
+  {
+    "id": "source-conflict",
+    "clause": "Competing inherited credential source under the selected source policy",
+    "outcome": "existing source-conflict refusal",
+    "forbidden_effects": [
+      "source stripping",
+      "backend fallback"
+    ]
+  },
+  {
+    "id": "native-unsupported",
+    "clause": "Unsupported native storage selector",
+    "outcome": "environment_credential_unsupported",
+    "forbidden_effects": [
+      "link",
+      "launch"
+    ]
+  },
+  {
+    "id": "zero-agent-status",
+    "clause": "Adopting readiness status executes no agent binary, including --version or auth status.",
+    "outcome": "Detected version is honestly unknown",
+    "forbidden_effects": [
+      "agent exec",
+      "auth status",
+      "secret read"
+    ]
+  },
+  {
+    "id": "nonempty-env-shell",
+    "clause": "Nonempty Codex settings refuse with",
+    "outcome": "codex_settings_unsupported",
+    "forbidden_effects": [
+      "partial output",
+      "usable launch omitting settings"
+    ]
+  },
+  {
+    "id": "single-owner",
+    "clause": "Legacy config_overrides is forbidden in v5",
+    "outcome": "codex_settings",
+    "forbidden_effects": [
+      "duplicate policy payload",
+      "seed rewrite"
+    ]
+  },
+  {
+    "id": "strict-aggregate",
+    "clause": "Strict status --check and prepare require every participant current and present",
+    "outcome": "Participating OpenCode remains unknown/ambient",
+    "forbidden_effects": [
+      "unknown counted as satisfied",
+      "implicit launch authorization"
+    ]
+  }
+]

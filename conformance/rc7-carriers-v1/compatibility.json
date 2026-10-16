@@ -1,0 +1,34 @@
+[
+  {
+    "old_schema": "agent-context-v1",
+    "new_schema": "agent-context-v2",
+    "old_control": "conformance/v1/schema-cases/agent-context-v1/valid.json",
+    "new_control": "cases/manifest-absent.json",
+    "discriminator": "schema_version",
+    "new_value": 2
+  },
+  {
+    "old_schema": "context-lock-v2",
+    "new_schema": "context-lock-v4",
+    "old_control": "conformance/v1/schema-cases/context-lock-v2/valid.json",
+    "new_control": "cases/lock-empty.json",
+    "discriminator": "schema_version",
+    "new_value": 4
+  },
+  {
+    "old_schema": "agent-environment-marker-v3",
+    "new_schema": "agent-environment-marker-v5",
+    "old_control": "conformance/v1/schema-cases/agent-environment-marker-v3/valid.json",
+    "new_control": "cases/marker-empty.json",
+    "discriminator": "version",
+    "new_value": 5
+  },
+  {
+    "old_schema": "launch-env-fragment-v4",
+    "new_schema": "launch-env-fragment-v5",
+    "old_control": "conformance/environments-muse-v4/schema-cases/valid-codex-file.json",
+    "new_control": "cases/fragment-file.json",
+    "discriminator": "fragment",
+    "new_value": "launch-env-fragment-v5"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "instance": "cases/config-valid.json",
+    "bytes": "canonical/manager-config-v5.ccj",
+    "sha256": "716c141a0d590a1c9492a73dceda4df3ef09b859bfcebd52d27ccf8287c28b09"
+  },
+  {
+    "instance": "cases/manifest-absent.json",
+    "bytes": "canonical/agent-context-v2.ccj",
+    "sha256": "8122e7dc8b475e7f8dab0ff171715197b4a0386deff3c0f5bbd9c4dd32243127"
+  },
+  {
+    "instance": "cases/lock-empty.json",
+    "bytes": "canonical/context-lock-v4.ccj",
+    "sha256": "f00839a79ad42e706cdd936b3a0c48c0c747e2c6bcb759719f2a79f49bc881eb"
+  },
+  {
+    "instance": "cases/marker-empty.json",
+    "bytes": "canonical/agent-environment-marker-v5.ccj",
+    "sha256": "fdc85e76f2b02ffa4a69948801e1f79e7b61fe9f36ce596e5b93286062d7cd23"
+  },
+  {
+    "instance": "cases/fragment-file.json",
+    "bytes": "canonical/launch-env-fragment-v5.ccj",
+    "sha256": "7295efab379bfa98d8b95c0771a511763f95d26079f7a26abfcb3d30ca0ade91"
+  },
+  {
+    "instance": "cases/status-present.json",
+    "bytes": "canonical/env-status-v1.ccj",
+    "sha256": "d4261a56f55091f9e0dfedd484b19d0fcc77db07b815f0ac3962c56b68d86275"
+  }
+]

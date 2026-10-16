@@ -330,3 +330,9 @@ credential-store agreement transport. The index is consumed by
 `python3 tools/validate.py`, with controls in `tools/test_muse_v4.py`.
 This corpus remains outside frozen rc.14 bytes and does not claim runtime
 qualification or executed Muse 1.4.8 exclusion/refresh probes.
+
+## Coordinated containing publication
+
+The [whole-carrier corpus](rc7-carriers-v1/README.md) validates the allocated successors, canonical bytes
+and old/new reader compatibility. The earlier member/row fixtures remain
+frozen inputs; runtime qualification remains separate.

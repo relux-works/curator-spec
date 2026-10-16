@@ -7,12 +7,24 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Publish the coordinated login/store and Codex full carriers in a separate
+  unreleased namespace: manager-config 5, env-status-v1, context manifest 2,
+  lock 4, marker 5 and fragment 5. V5 has one typed Codex payload and rejects
+  legacy config_overrides; v4 and historical release bytes are unchanged.
+  Add canonical and compatibility vectors, closed-carrier negatives and
+  bounded checker controls. Reconcile managed Muse native-to-file mapping,
+  explicit-map taxonomy, ambient backend precedence and zero-agent status.
+  Strict check/prepare includes unknown OpenCode and cannot currently pass
+  with that participant. Nonempty Codex env/shell projections refuse with no
+  partial output; structured login consumes typed policy. Grammar publication
+  enables no runtime; qualification and strict covered consumers remain gates.
+
 - Accept CIP-0015 leaf 1: [login readiness revision 1](protocol/login-readiness.md),
   metadata-only caller-session presence, user-owned store selection and
   prepare/login lifecycle, with standalone schemas and structural cases.
   Strict check/prepare requires every participant present, so ambient OpenCode
-  cannot currently return green. Full containing config/status/fragment
-  revisions and native qualification remain pending; released schemas and
+  cannot currently return green. Containing config/status/fragment revisions
+  are published above; native qualification remains pending; released schemas and
   fragment v1–v3 stay unchanged. No implementation conformance is claimed.
 
 - Environments revision 1 adds `env resolve --repair --preserve-lock`: repair

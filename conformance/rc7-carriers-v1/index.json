@@ -1,0 +1,392 @@
+[
+  {
+    "name": "config-valid",
+    "schema": "manager-config-v5",
+    "instance": "cases/config-valid.json",
+    "error": null
+  },
+  {
+    "name": "config-missing-enclosing-field",
+    "schema": "manager-config-v5",
+    "instance": "cases/config-missing-enclosing-field.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "config-unknown-store",
+    "schema": "manager-config-v5",
+    "instance": "cases/config-unknown-store.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "config-unknown-environment",
+    "schema": "manager-config-v5",
+    "instance": "cases/config-unknown-environment.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "config-unknown-enclosing-field",
+    "schema": "manager-config-v5",
+    "instance": "cases/config-unknown-enclosing-field.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "manifest-absent",
+    "schema": "agent-context-v2",
+    "instance": "cases/manifest-absent.json",
+    "error": null
+  },
+  {
+    "name": "manifest-empty",
+    "schema": "agent-context-v2",
+    "instance": "cases/manifest-empty.json",
+    "error": null
+  },
+  {
+    "name": "manifest-package-store",
+    "schema": "agent-context-v2",
+    "instance": "cases/manifest-package-store.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "manifest-package-account",
+    "schema": "agent-context-v2",
+    "instance": "cases/manifest-package-account.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "manifest-unknown-member",
+    "schema": "agent-context-v2",
+    "instance": "cases/manifest-unknown-member.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "manifest-missing-name",
+    "schema": "agent-context-v2",
+    "instance": "cases/manifest-missing-name.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "lock-empty",
+    "schema": "context-lock-v4",
+    "instance": "cases/lock-empty.json",
+    "error": null
+  },
+  {
+    "name": "lock-losing-package-store",
+    "schema": "context-lock-v4",
+    "instance": "cases/lock-losing-package-store.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "lock-empty-contribution-entry",
+    "schema": "context-lock-v4",
+    "instance": "cases/lock-empty-contribution-entry.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "lock-machine-store",
+    "schema": "context-lock-v4",
+    "instance": "cases/lock-machine-store.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "lock-missing-root",
+    "schema": "context-lock-v4",
+    "instance": "cases/lock-missing-root.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "lock-missing-empty-settings",
+    "schema": "context-lock-v4",
+    "instance": "cases/lock-missing-empty-settings.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "lock-wrong-root",
+    "schema": "context-lock-v4",
+    "instance": "cases/lock-wrong-root.json",
+    "error": "carrier_semantics_invalid"
+  },
+  {
+    "name": "marker-empty",
+    "schema": "agent-environment-marker-v5",
+    "instance": "cases/marker-empty.json",
+    "error": null
+  },
+  {
+    "name": "marker-missing-empty-settings",
+    "schema": "agent-environment-marker-v5",
+    "instance": "cases/marker-missing-empty-settings.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "marker-package-store",
+    "schema": "agent-environment-marker-v5",
+    "instance": "cases/marker-package-store.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "marker-machine-selector",
+    "schema": "agent-environment-marker-v5",
+    "instance": "cases/marker-machine-selector.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "marker-missing-profile",
+    "schema": "agent-environment-marker-v5",
+    "instance": "cases/marker-missing-profile.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "fragment-file",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-file.json",
+    "error": null
+  },
+  {
+    "name": "fragment-keyring-grammar-only",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-keyring-grammar-only.json",
+    "error": null
+  },
+  {
+    "name": "fragment-native",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-native.json",
+    "error": null
+  },
+  {
+    "name": "fragment-native-absent",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-native-absent.json",
+    "error": null
+  },
+  {
+    "name": "fragment-dropped-transport",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-dropped-transport.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "fragment-selection-mismatch",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-selection-mismatch.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "fragment-competing-owner",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-competing-owner.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "fragment-unbound-payload",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-unbound-payload.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "fragment-empty-payload",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-empty-payload.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "fragment-missing-profile",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-missing-profile.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "fragment-invented-token",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-invented-token.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "fragment-home-variable",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-home-variable.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "fragment-muse-five-values",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-muse-five-values.json",
+    "error": null
+  },
+  {
+    "name": "fragment-muse-foreign-parent",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-muse-foreign-parent.json",
+    "error": "carrier_semantics_invalid"
+  },
+  {
+    "name": "fragment-muse-codex-payload",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-muse-codex-payload.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "fragment-muse-wrong-backend",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-muse-wrong-backend.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "fragment-claude_code-native",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-claude_code-native.json",
+    "error": null
+  },
+  {
+    "name": "fragment-claude_code-codex-payload",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-claude_code-codex-payload.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "fragment-pi-native",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-pi-native.json",
+    "error": null
+  },
+  {
+    "name": "fragment-pi-codex-payload",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-pi-codex-payload.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "fragment-opencode-native",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-opencode-native.json",
+    "error": null
+  },
+  {
+    "name": "fragment-opencode-codex-payload",
+    "schema": "launch-env-fragment-v5",
+    "instance": "cases/fragment-opencode-codex-payload.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "status-present",
+    "schema": "env-status-v1",
+    "instance": "cases/status-present.json",
+    "error": null
+  },
+  {
+    "name": "status-missing-enclosing-field",
+    "schema": "env-status-v1",
+    "instance": "cases/status-missing-enclosing-field.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "status-invalid-imported-row",
+    "schema": "env-status-v1",
+    "instance": "cases/status-invalid-imported-row.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "status-secret-field",
+    "schema": "env-status-v1",
+    "instance": "cases/status-secret-field.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "status-account-field",
+    "schema": "env-status-v1",
+    "instance": "cases/status-account-field.json",
+    "error": "carrier_schema_invalid"
+  },
+  {
+    "name": "status-mismatch-effective",
+    "schema": "env-status-v1",
+    "instance": "cases/status-mismatch-effective.json",
+    "error": "carrier_semantics_invalid"
+  },
+  {
+    "name": "status-duplicate-row",
+    "schema": "env-status-v1",
+    "instance": "cases/status-duplicate-row.json",
+    "error": "carrier_semantics_invalid"
+  },
+  {
+    "name": "status-missing-settings-provenance",
+    "schema": "env-status-v1",
+    "instance": "cases/status-missing-settings-provenance.json",
+    "error": "carrier_semantics_invalid"
+  },
+  {
+    "name": "status-muse-native",
+    "schema": "env-status-v1",
+    "instance": "cases/status-muse-native.json",
+    "error": null
+  },
+  {
+    "name": "status-muse-file",
+    "schema": "env-status-v1",
+    "instance": "cases/status-muse-file.json",
+    "error": null
+  },
+  {
+    "name": "status-opencode-unknown",
+    "schema": "env-status-v1",
+    "instance": "cases/status-opencode-unknown.json",
+    "error": null
+  },
+  {
+    "name": "status-opencode-invented-present",
+    "schema": "env-status-v1",
+    "instance": "cases/status-opencode-invented-present.json",
+    "error": "carrier_semantics_invalid"
+  },
+  {
+    "name": "status-muse-native-per-home-keychain",
+    "schema": "env-status-v1",
+    "instance": "cases/status-muse-native-per-home-keychain.json",
+    "error": "carrier_semantics_invalid"
+  },
+  {
+    "name": "status-muse-file-per-home-keychain",
+    "schema": "env-status-v1",
+    "instance": "cases/status-muse-file-per-home-keychain.json",
+    "error": "carrier_semantics_invalid"
+  },
+  {
+    "name": "status-muse-native-shared-keychain",
+    "schema": "env-status-v1",
+    "instance": "cases/status-muse-native-shared-keychain.json",
+    "error": "carrier_semantics_invalid"
+  },
+  {
+    "name": "status-muse-file-shared-keychain",
+    "schema": "env-status-v1",
+    "instance": "cases/status-muse-file-shared-keychain.json",
+    "error": "carrier_semantics_invalid"
+  },
+  {
+    "name": "status-muse-absent-keychain",
+    "schema": "env-status-v1",
+    "instance": "cases/status-muse-absent-keychain.json",
+    "error": "carrier_semantics_invalid"
+  },
+  {
+    "name": "status-muse-shared-file",
+    "schema": "env-status-v1",
+    "instance": "cases/status-muse-shared-file.json",
+    "error": null
+  },
+  {
+    "name": "status-muse-source-conflict",
+    "schema": "env-status-v1",
+    "instance": "cases/status-muse-source-conflict.json",
+    "error": null
+  },
+  {
+    "name": "status-muse-environment-source",
+    "schema": "env-status-v1",
+    "instance": "cases/status-muse-environment-source.json",
+    "error": null
+  }
+]

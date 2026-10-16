@@ -82,13 +82,20 @@ Module owners are the pinned [broker specification](https://github.com/relux-wor
 
 This is the single coordination table for these CIPs. A named candidate is a reservation/proposal, not a shipped schema. Existing frozen shapes remain unchanged. Manager/fragment/marker v4 proposals in CIP-0002, CIP-0003 and CIP-0006 must be published together with the credential amendments, or explicitly deferred; they cannot each allocate incompatible v4 shapes. Exact release pins and still-unallocated candidate numbers must be checked at publication.
 
+The [login/store and Codex containing publication](../protocol/rc7-carriers.md)
+now allocates manager config 5, context manifest 2, lock 4, environment marker 5
+and fragment 5, plus env-status-v1. Draft base/project/source/settings-policy
+additions remain explicitly deferred; config 4, lock 3 and marker 4 reservations
+are not repurposed. Published Muse fragment 4 remains unchanged, and no draft
+may widen it. Runtime qualification remains separate.
+
 | Schema / contract | Owner and normative landing | Version / naming disposition | Adoption limit |
 |---|---|---|---|
 | Project declaration, composition, approval and lease | CIP-0002; Curator manager and environments contracts | Closed grammar/references/limits pending; no new fixed version | Draft operator model, not supported project CLI |
-| Manager machine configuration | Curator manager / environments §12; CIPs 0002/0003/0006/0010/0011 | `manager-config-v4` candidate after v3; coordinate project, settings and source members | Unpublished coordinated revision |
+| Manager machine configuration | Curator manager / environments §12; CIPs 0002/0003/0006/0010/0011 | `manager-config-v5` published for the machine store subtree; v4 remains reserved for deferred work | No draft project/settings/source member is adopted |
 | System configuration | Manager system policy; CIP-0006 | `system-config-v3` candidate after v2 for settings policy | Credentials remain user-owned and not lock-selected |
-| Launch fragment and PATH transform | Environments §10, manager emitter, launcher consumer; CIPs 0002/0003/0006/0007 | `launch-env-fragment-v4` candidate after v3; exact D-PATH/context/settings/source grammar pending | Reserved field or accepted PATH is not implemented transport |
-| Environment marker | Manager materialization / environments §8; CIPs 0003/0006/0010 | `agent-environment-marker-v4` candidate after v3; metadata only | No login/backend attestation from GOOS or marker alone |
+| Launch fragment and PATH transform | Environments §10, manager emitter, launcher consumer; CIPs 0002/0003/0006/0007 | Published v4 is unchanged; `launch-env-fragment-v5` publishes the sole typed Codex payload | Draft D-PATH/project/source grammar remains deferred; publication is not runtime qualification |
+| Environment marker | Manager materialization / environments §8; CIPs 0003/0006/0010 | `agent-environment-marker-v5` publishes empty package settings; v4 reservation deferred | No login/backend attestation from GOOS or marker alone |
 | Credential launch-plan extension | Decision 0013 §6.4, launcher SPEC; CIPs 0010/0011 | Required `works.relux.curator.credential/1` proposal | Old/unsupported executors refuse; never secret values |
 | Credential binding and injection capability | CIPs 0010 C3 / 0011 §2; broker §8.2 and launcher intake | `credential_binding/1`, `credential-injection/1` | Protected destination resolution and qualification; capability alone is not authority |
 | Narrow one-shot plan intake | Launcher SPEC §10 and [Decision 0021 amendment v1](../decisions/0021-sessions-enter-through-curator-run.md#amendment-v1--agent-account-one-shot-execution-2026-10-11) | Separate versioned intake/release pending; no number invented | D-EXECUTOR rails accepted; activation waits for publication and qualification |

@@ -53,3 +53,9 @@ allocation. Producer activation remains gated on those cases, CIP-0015 matrix
 adoption and supported-release qualification, including scalar precedence over
 a conflicting seed, login, app-server and token refresh. No released or native
 platform conformance claim is made here.
+
+## Coordinated containing publication
+
+The [whole-carrier corpus](../rc7-carriers-v1/README.md) validates the allocated successors, canonical bytes
+and old/new reader compatibility. The earlier member/row fixtures remain
+frozen inputs; runtime qualification remains separate.

@@ -1,0 +1,22 @@
+{
+  "schema_version": 4,
+  "hash_version": 2,
+  "root": "missing",
+  "members": [
+    {
+      "kind": "context",
+      "name": "example",
+      "version": "1.0.0",
+      "state_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "weight": 0,
+      "overlay": false,
+      "required_by": []
+    }
+  ],
+  "codex_settings": {},
+  "codex_settings_contributions": [],
+  "precedence": {
+    "winner": "higher-weight",
+    "placement": "winner-last"
+  }
+}

@@ -1,0 +1,299 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "status": {
+      "const": "env-status-v1"
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "readiness": {
+            "$ref": "../login-readiness-v1/login-row-v1.schema.json"
+          },
+          "mode": {
+            "enum": [
+              "managed-home",
+              "linked",
+              "copied"
+            ]
+          },
+          "lock_sha256": {
+            "oneOf": [
+              {
+                "$ref": "../v1/common.schema.json#/$defs/hex256"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "recorded_tool_version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "detected_tool_version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "configured_store": {
+            "enum": [
+              "native",
+              "file",
+              "keychain"
+            ]
+          },
+          "native_storage": {
+            "enum": [
+              "file",
+              "keyring",
+              "keychain",
+              "auto",
+              "ambient",
+              "unknown"
+            ]
+          },
+          "effective_store": {
+            "enum": [
+              "native",
+              "file",
+              "keychain"
+            ]
+          },
+          "surfaces": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "enum": [
+                    "root-context",
+                    "skills",
+                    "mcp",
+                    "system-prompt"
+                  ]
+                },
+                "current": {
+                  "type": "boolean"
+                },
+                "form": {
+                  "enum": [
+                    "monolithic",
+                    "referenced",
+                    null
+                  ]
+                },
+                "paths": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "../v1/common.schema.json#/$defs/nonEmptyString"
+                  }
+                },
+                "diagnostics": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "../v1/common.schema.json#/$defs/identifier"
+                  }
+                }
+              },
+              "required": [
+                "name",
+                "current",
+                "form",
+                "paths",
+                "diagnostics"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "observations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "posture",
+                    "store-trust",
+                    "passthrough",
+                    "seed",
+                    "target",
+                    "shadow",
+                    "scope",
+                    "backup",
+                    "provider",
+                    "orphan",
+                    "source-signer",
+                    "context",
+                    "system-module",
+                    "diagnostic"
+                  ]
+                },
+                "name": {
+                  "$ref": "../v1/common.schema.json#/$defs/nonEmptyString"
+                },
+                "state": {
+                  "enum": [
+                    "current",
+                    "non-current",
+                    "unknown",
+                    "warning",
+                    "info"
+                  ]
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "integer",
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "path": {
+                  "$ref": "../v1/common.schema.json#/$defs/nonEmptyString"
+                },
+                "provenance": {
+                  "enum": [
+                    "shipped",
+                    "profile",
+                    "explicit",
+                    "lock",
+                    "default"
+                  ]
+                }
+              },
+              "required": [
+                "kind",
+                "name",
+                "state",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "readiness",
+          "mode",
+          "lock_sha256",
+          "recorded_tool_version",
+          "detected_tool_version",
+          "configured_store",
+          "native_storage",
+          "effective_store",
+          "surfaces",
+          "observations"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "codex_settings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "profile": {
+            "$ref": "../v1/common.schema.json#/$defs/identifier"
+          },
+          "codex_settings": {
+            "$ref": "../profile-codex-settings-v1/codex-settings-v1.schema.json"
+          },
+          "codex_settings_contributions": {
+            "type": "array",
+            "maxItems": 0
+          },
+          "precedence": {
+            "$ref": "../v1/agent-environment-marker-v1.schema.json#/$defs/precedence"
+          }
+        },
+        "required": [
+          "profile",
+          "codex_settings",
+          "codex_settings_contributions",
+          "precedence"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "enum": [
+              "posture",
+              "store-trust",
+              "passthrough",
+              "seed",
+              "target",
+              "shadow",
+              "scope",
+              "backup",
+              "provider",
+              "orphan",
+              "source-signer",
+              "context",
+              "system-module",
+              "diagnostic"
+            ]
+          },
+          "name": {
+            "$ref": "../v1/common.schema.json#/$defs/nonEmptyString"
+          },
+          "state": {
+            "enum": [
+              "current",
+              "non-current",
+              "unknown",
+              "warning",
+              "info"
+            ]
+          },
+          "value": {
+            "type": [
+              "string",
+              "integer",
+              "boolean",
+              "null"
+            ]
+          },
+          "path": {
+            "$ref": "../v1/common.schema.json#/$defs/nonEmptyString"
+          },
+          "provenance": {
+            "enum": [
+              "shipped",
+              "profile",
+              "explicit",
+              "lock",
+              "default"
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "name",
+          "state",
+          "value"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "status",
+    "rows",
+    "codex_settings",
+    "observations"
+  ],
+  "additionalProperties": false,
+  "$id": "https://relux-works.github.io/curator-spec/schemas/rc7-carriers-v1/env-status-v1.schema.json",
+  "title": "env-status-v1"
+}

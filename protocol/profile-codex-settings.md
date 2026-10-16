@@ -93,7 +93,8 @@ Protected-boundary checks, explicit update and migration rules still apply.
 
 ## 3. Fragment and delivery (environments sections 7.3, 7.8, 10.2)
 
-A new closed fragment revision MUST admit OPTIONAL `codex_settings`, with
+The allocated [closed v5 fragment](rc7-carriers.md) admits OPTIONAL
+`codex_settings`, with
 a closed typed launch-override object, only for `environment=codex_cli`.
 It carries reviewed package settings and Curator's machine-selected override;
 the latter is not a package contribution and MUST NOT enter package locks or
@@ -244,14 +245,16 @@ MUST NOT insert them into any old envelope, including with an old version
 token. Full successor envelopes MUST retain all existing constraints, change
 their version discriminants, and include these exact member contracts.
 
-The coordinated allocation of successor manifest, lock, marker and fragment
-versions remains OPEN with the parallel base-context, root-context and snapshot
-amendments. Recommended resolution: one jointly reviewed allocation if shipped
-together, independently versioned strict readers otherwise. No existing or
-parallel proposed version is repurposed here. Full carrier schemas and
-positive/negative carrier cases MUST be published in that allocation before
-producer enablement; this leaf's modules MUST NOT be used as envelope validators.
-The later curator-spec qualification leaf records this remaining rollout gate.
+[Containing carriers](rc7-carriers.md) allocates manifest 2, lock 4, marker 5
+and fragment 5, separately from snapshot descriptors. Its complete schemas,
+canonical bytes and old/new cases close the grammar-publication gate.
+V5 retains `credential_store.selection` as agreement metadata only;
+`codex_settings` is the sole typed argv payload and legacy `config_overrides`
+is forbidden. V4 is unchanged. Nonempty Codex env/shell projection refuses
+`codex_settings_unsupported` with no partial output; direct structured login
+consumes typed policy without shell evaluation. Qualification and strict
+consumer/covered-route support still gate producer enablement. The member
+modules MUST NOT be used as full envelope validators.
 
 The [conformance corpus](../conformance/profile-codex-settings-v1/README.md)
 publishes executable structural cases and semantic vectors for cross-repository

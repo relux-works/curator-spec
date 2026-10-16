@@ -11954,6 +11954,16 @@ def validate_login_readiness() -> None:
     print(f"login-readiness schema cases: {total}/{total}; negatives: {negatives}/{negatives}; runtime cases: unrun")
 
 
+def validate_rc7_carriers() -> None:
+    import rc7_carriers
+
+    try:
+        total, negatives = rc7_carriers.check_corpus(ROOT, load_json, ccj1_bytes, validate_wire_semantics)
+    except (ValueError, OSError, SchemaError) as exc:
+        raise ValidationFailure(f"containing carriers: {exc}") from exc
+    print(f"containing carrier cases: {total}/{total}; negatives: {negatives}/{negatives}; runtime cases: unrun")
+
+
 def main(*, release_history_only: bool = False) -> int:
     checks = [
         validate_released_record_immutability,
@@ -11961,6 +11971,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_schemas,
         validate_managed_home_snapshots,
         validate_login_readiness,
+        validate_rc7_carriers,
         validate_draft_source_schemas,
         validate_draft_sources_manifest,
         validate_repository_descriptor_identity,
