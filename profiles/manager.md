@@ -2511,6 +2511,11 @@ A `shadow_acknowledged` entry naming that environment and path downgrades
 exactly that row to a reported, current warning; the shadowing file itself
 is never touched.
 
+Implementations adopting [readiness status](../protocol/rc7-carriers.md#5-status-boundary-cli-and-activation)
+execute no agent binary, including version probes and auth status. Detected
+release remains unknown unless established without agent execution; any later
+vendor diagnostic is explicit, with no implicit status call site.
+
 Each adapter records the tool release its facts were verified on
 (environments §7.9). `env status` reports that recorded release beside the
 best-effort detected release of the installed tool, read-only, and warns

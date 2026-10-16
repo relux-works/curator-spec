@@ -1,0 +1,12 @@
+{
+  "schema_version": 5,
+  "projects": {},
+  "environments": {
+    "credential_store": {
+      "example": {
+        "muse": "native",
+        "codex_cli": "file"
+      }
+    }
+  }
+}

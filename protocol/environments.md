@@ -1539,9 +1539,10 @@ default remains `native` for other adapters. For a managed Muse home only,
 unset and `native` MUST resolve to effective `file`, as does explicit `file`;
 Curator MUST report this adapter-specific mapping and MUST NOT rewrite the
 stored selector. Explicit `keychain` MUST refuse with
-`environment_credential_unsupported` and a file-selection hint. This widens
-that diagnostic from unknown native storage selectors to unsupported explicit
-backend mappings; it never permits silent fallback or credential migration.
+`environment_credential_store_unsupported` and a file-selection hint, under
+the coordinated [one Muse decision table](rc7-carriers.md#4-one-muse-decision-table).
+Unknown native selectors retain `environment_credential_unsupported`. Neither
+case permits silent fallback or credential migration.
 The resolved file policy MUST agree with the section 10.2 fragment at login
 and every launch. No profile-package environment map or second selector is added.
 
@@ -1951,7 +1952,8 @@ identifier not declared by the registry is `environment_target_unknown`.
 | recorded passthrough entry is no longer a symlink to the native entry (non-current) | `environment_passthrough_detached` |
 | recorded passthrough entry whose link state cannot be established — `lstat` or `readlink` fails with permission, I/O, or path errors (non-current, currency unknown; never "detached") | `environment_passthrough_unreadable` |
 | recorded passthrough link path holds a regular file or a symlink to an unexpected target at repair, or an isolated system lock engages while a provisioned home still has a recorded shared passthrough (refusal, no fragment; the latter directs to explicit migration and never unlinks silently) | `environment_credential_conflict` |
-| credential strategy cannot be established — native storage selector outside the verified set or explicitly selected backend has no admitted mapping, including managed Muse `keychain` (refusal, no fragment) | `environment_credential_unsupported` |
+| native storage selector outside the verified set (refusal, no fragment) | `environment_credential_unsupported` |
+| explicit machine store map has no admitted mapping, including managed Muse `keychain` (refusal, no fragment) | `environment_credential_store_unsupported` |
 | provisioning seed exists but cannot be read — a native-home file or a named XDG entry | `environment_seed_unreadable` |
 | unrecorded entry in a managed `opencode` parent shadows an allowlisted operator entry (warning) | `environment_seed_shadowed` |
 | first `auto` write into a secondary target's home without recorded consent | `environment_target_consent_required` |
@@ -2028,8 +2030,10 @@ fixed by the verification sprint of 2026-09-05 (claude 2.1.261, codex
 | `profile_flag` | — | `-p (single, silent-if-missing)` (**verified**) | — | — |
 
 `env status` reports, per adapter, the recorded verified release and the
-best-effort detected release of the installed tool (`<tool> --version` or
-the adapter's documented equivalent, read-only); a detected release that
+detected release of the installed tool. Adopting readiness status MUST execute
+no agent binary, including `--version` and `auth status`; detected release is
+unknown unless established without agent execution. A later explicit vendor
+diagnostic has no implicit status call site. A detected release that
 differs from the recorded one is the warning
 `environment_tool_version_unverified` — the facts may still hold, and
 nothing in this document is gated on the warning, but the operator is told
@@ -3651,6 +3655,15 @@ revisions and section 7.3/7.8 descriptor grammars remain closed and unchanged.
 Allocation is coordinated under that amendment's section 7, not inferred
 from its schema-module revision. Unsupported nonempty delivery MUST refuse.
 
+**Coordinated successor v5.** [Containing carriers](rc7-carriers.md) allocates
+the complete successor: selection is agreement metadata, `codex_settings` is
+the sole Codex typed payload, and legacy `config_overrides` is forbidden. V4
+above remains unchanged. Nonempty Codex env/shell requests refuse with
+`codex_settings_unsupported` and no partial output. Native/empty projections
+and the five-value Muse projection retain their limited environment-only
+meaning. Runtime qualification and strict covered consumers still gate Codex
+producer enablement; direct login consumes typed policy without shell eval.
+
 ### 10.3 The profile-influence boundary
 
 The coordinated successor in [login readiness §2.1](login-readiness.md) permits
@@ -3746,7 +3759,8 @@ that no reader mistakes the surfacing rows for an execution sandbox.
 | recorded passthrough entry unreadable at resolve (no fragment; non-current, currency unknown; never "detached", never a stale-home reason; `--repair` does not re-link it) | `environment_passthrough_unreadable` |
 | profile explicitly requests `shared` for a profile × environment whose system lock requires `isolated` (refusal; no fragment) | `environment_isolation_lock_conflict` |
 | recorded passthrough link path holds a regular file or an unexpected symlink target under `--repair`, or an isolated system lock engages while a provisioned home still has a recorded shared passthrough (no fragment; the latter directs to explicit migration and never unlinks silently) | `environment_credential_conflict` |
-| native credential storage selector outside the verified set or unsupported explicit backend mapping, including managed Muse `keychain`, at provisioning or repair (no fragment) | `environment_credential_unsupported` |
+| native credential storage selector outside the verified set at provisioning or repair (no fragment) | `environment_credential_unsupported` |
+| unsupported explicit machine store mapping, including managed Muse `keychain`, at provisioning or repair (no fragment) | `environment_credential_store_unsupported` |
 | store entry, lock, or marker file fails the §4 protected-boundary contract or its pin hash, or a `path` source directory fails its §4 boundary checks, at resolve (no fragment; non-current) | `environment_store_untrusted` |
 | enclosing boundary (environments root or store root) cannot be proven at resolve (no fragment; non-current; nothing rebuilt) | `environment_store_untrusted` |
 | dry-run evaluation of an entry-class failure of a store entry or a marker file, or of a lock file that fails its boundary checks (no mutation; a real operation would rebuild it) | `would-rebuild-untrusted-store` |
@@ -4085,6 +4099,11 @@ contract is retained, never collected, and reported; collection never
 rebuilds an entry — rebuild is repair's work (section 10.1).
 Environment-owned mutable state
 inside managed homes is never collected, and backups are never collected.
+
+The full versioned readiness matrix is [env-status-v1](rc7-carriers.md#2-identity-and-status).
+Its frozen login row is validated together with enclosing currency, native
+storage, effective store and inspection metadata. Unknown detected tool
+versions are honest; readiness status executes no agent executable.
 
 ### 12.1 Machine configuration knobs
 

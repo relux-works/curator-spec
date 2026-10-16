@@ -15,8 +15,8 @@ as exactly `present`, `absent`, or `unknown`, independently of content
 [`login-row-v1`](../schemas/login-readiness-v1/login-row-v1.schema.json).
 It is not a replacement schema for the entire existing status matrix.
 Implementations MUST NOT add these fields silently to a closed older wire
-contract. The containing status revision remains a coordinated publication
-question (§7); the standalone row is frozen here.
+contract. The complete `env-status-v1` carrier is allocated in
+[containing carriers](rc7-carriers.md); the standalone row remains frozen.
 
 - `present`: metadata establishes an accessible candidate for the selected
   source in the calling session under qualified adapter rules.
@@ -72,7 +72,7 @@ passthrough remains independently non-current under environments §7.4.
 | Codex, effective file | Resolve source/store first; inspect managed `auth.json`, or the compatible verified native shared link. | No parsing or validity claim. |
 | Codex, keyring/auto | Report unknown pending a qualified metadata-only identity and precedence probe. | Existing isolated refusal remains. No guessed per-home keyring scope. |
 | Muse, explicit file | Inspect `$XDG_CONFIG_HOME/muse/auth.json` in the managed projection. | Admission and shared-link compatibility belong to the separate Muse follow-up. Refresh writes remain unqualified. |
-| Muse, native | Query global service `ai.meta.dev.credentials` metadata only with established backend and nonprompting access. | Global is not per-home. Failed queries cannot trigger file fallback; uncertain precedence is unknown. |
+| Muse, configured absent/native | Managed Muse resolves to effective file; inspect the managed file under the same metadata-only rules as explicit file. | Native global Keychain presence does not establish managed readiness. Do not rewrite the configured selector or guess fallback. |
 | Pi | Inspect adapter-declared `auth.json` and any verified native link under §7.4. | Unknown source/backend stays unknown. No Pi login wrapper is added. |
 | OpenCode | Report unknown, source/reason `ambient`, backend `unknown`. | Authentication is outside the swapped config home. No home-local candidate is invented. |
 | Node/helper | Use protected registration/accessibility metadata under the separately adopted source policy. | Registration is not token validity. No helper secret output is requested. |
@@ -128,9 +128,10 @@ It is a subtree schema, not a new complete manager-config revision.
 The machine CLI spelling is
 `curator env config set credential_store.<profile>.<env-id> native|file|keychain`. Every
 other configuration member retains its previous meaning. Closed older
-manager-config versions MUST reject this new member. The coordinated
-containing revision remains pending (§7); no field is inserted into released
-manager-config schemas.
+manager-config versions MUST reject this new member. The complete
+`manager-config-v5` carrier imports this subtree under
+`environments.credential_store`; [containing carriers](rc7-carriers.md)
+allocates it without changing manager-config versions 1–3.
 
 Profile packages, overlays, system locks and repositories MUST NOT select a
 store, credential source or account. This knob is user-owned and not lockable;
@@ -140,7 +141,7 @@ admission → link strategy, in that order.
 | Adapter | native | file | keychain |
 |---|---|---|---|
 | Codex | Native `config.toml`; absent selector means file; no override. | Typed `cli_auth_credentials_store` override `file` at both login and launch. | Typed override `keyring` only on a qualified macOS backend; otherwise refuse. |
-| Muse | Preserve native selection, measured global Keychain with fallback. | Matching literal `TBH_CREDENTIAL_BACKEND=file` at login and launch. | Refuse until a force-Keychain interface is qualified. |
+| Muse (managed) | Configured absent/native resolves to effective **file**, without rewriting the configured selector. | Matching literal `TBH_CREDENTIAL_BACKEND=file` at login and launch. | Refuse `environment_credential_store_unsupported`. |
 | Claude | Session-qualified native choice. | Refuse: no established force-file interface. | Refuse: no established force-Keychain interface. |
 | Pi/OpenCode | Preserve existing behavior. | Refuse pending a qualified mapping. | Refuse pending a qualified mapping. |
 
@@ -171,7 +172,9 @@ a closed `credential_store` object with `selection` and, for explicit Codex,
 one `config_overrides` member, plus `env` containing only backend literals
 (the home-path variables are omitted from this projection).
 
-Native selection carries neither overrides nor backend literals. Codex file
+The frozen standalone projection retains its original native shape. Managed
+Muse is the exception: configured absent/native maps to effective file before
+projection. Its generic native shape is not a second Muse admission rule. Codex file
 and keychain require exactly `cli_auth_credentials_store: "file"` and
 `"keyring"`, respectively. Muse file requires exactly
 `TBH_CREDENTIAL_BACKEND: "file"` in `env`, with no Codex override. Unknown
@@ -179,7 +182,8 @@ keys, missing or contradictory projections MUST be rejected. Structural
 admission of Codex keychain does not prove platform qualification or isolated
 admission. Those semantic gates still apply.
 
-The next coordinated full fragment revision MUST retain §10.2's closed
+The allocated [v5 full fragment](rc7-carriers.md#3-single-payload-and-producerconsumer-transition)
+MUST retain §10.2's closed
 registry/path rules except for this **single** non-path literal: Muse file
 selection carries `TBH_CREDENTIAL_BACKEND=file`, derived only from effective
 machine policy. Muse still carries all four XDG paths with one protected
@@ -188,17 +192,23 @@ forbid profile-selected names, literals, retargeting and source selection.
 The literal is not a package-controlled passthrough variable.
 
 Revisions v1–v3 remain closed and MUST reject both the new policy member and
-the Muse literal. A new revision token is REQUIRED before full-fragment
-emission; this leaf deliberately does not allocate it independently of pending
-credential, Muse-root-context and Codex-settings work. Old readers MUST reject
-the new token, never drop the required policy or downgrade to v1–v3.
+the Muse literal. The containing publication allocates v5 for the single
+Codex payload;
+v4 retains its existing transport unchanged. Old readers MUST reject the new
+token, never drop required policy or downgrade. The frozen standalone
+`store-projection-v1` is not a v5 full-envelope validator; v5 imports selection
+as agreement metadata and carries Codex argv only in `codex_settings`.
 
 Curator projects policy; the launcher applies it without reading home files
 or inferring stores. Codex argv uses `-c cli_auth_credentials_store="file"`
 or `-c cli_auth_credentials_store="keyring"`; Muse gets the literal environment
-variable. Both direct and hosted paths MUST apply identical policy. Conflicting
-operator argv or inherited backend variables MUST refuse, never win by argv
-order. No shell command string is admitted.
+variable. Both direct and hosted paths MUST apply identical policy.
+Conflicting explicit operator argv/backend overrides MUST refuse, never win
+by argv order. For managed Muse, the mandatory file literal overrides ambient
+backend variables; inherited credential-source conflicts remain separate and
+retain their source-policy refusal. The [one Muse decision table](rc7-carriers.md#4-one-muse-decision-table)
+applies at resolve, login and every launch path. No shell command string
+is admitted.
 
 ## 3. `env login`
 
@@ -308,12 +318,13 @@ implementations MUST exercise the real status/prepare/login and direct/hosted
 composition paths for the semantic rows, and retain reviewer regressions.
 Metadata fixtures do not qualify platform probes or Muse refresh safety.
 
-## 7. Deferred publication and qualification
+## 7. Containing publication and deferred qualification
 
-The coordinated full fragment token and containing manager-config/status
-revisions remain open; preserve released bytes and reject unsupported semantics
-until publication. Optional vendor diagnostics remain a later explicit command,
+[Containing carriers](rc7-carriers.md) publishes manager-config 5,
+`env-status-v1` and fragment 5 together with Codex carriers. Released bytes
+remain unchanged; unsupported identities or delivery MUST refuse. Optional
+vendor diagnostics remain a later explicit command,
 never a hidden status fallback. Metadata-reader platform qualification, Windows
-backends, Codex keyring identity/precedence, Muse admission/refresh, broker
+backends, Codex keyring identity/precedence, Muse refresh, broker
 adoption and destination authentication remain with their owning follow-ups.
 This leaf decides no new snapshot, broker, tool custody or credential transport.

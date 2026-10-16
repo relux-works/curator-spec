@@ -344,3 +344,24 @@ and validates a fresh complete capability receipt. Any failure is terminal for
 that operation and MUST NOT trigger a portable retry. The CLI should display the
 selected mode, provider id and binary digest, or the fail-closed diagnostic.
 Provider installation is not a skill-install command.
+
+## Coordinated login/store carrier adoption
+
+[Containing carriers](../protocol/rc7-carriers.md) allocates full configuration
+and readiness-status revisions. The command surface remains
+`curator env login <env-id> [--profile <name>]` and
+`curator profile prepare <source-or-name> [--non-interactive]`. Prepare uses
+install's explicit source grammar and default name, never implicit update or
+activation. Native storage and effective launch storage are separate reports.
+Managed Muse configured absent/native/file resolves to effective file without
+rewriting the selector. Adopting status invokes no agent binary, including
+version probes and auth status; detected version can be unknown.
+
+Strict `env status --check` and prepare require every participating home
+current and login present. Participating ambient OpenCode remains unknown and
+therefore prevents a green aggregate. Ordinary status and explicit
+install/resolve remain available; launch authorization is unchanged. Full v5
+JSON is required for nonempty Codex typed delivery; env/shell projection
+refuses `codex_settings_unsupported` with no partial output. Direct login
+consumes structured policy, never shell output. These are published contracts,
+not a claim that a runtime consumer is qualified or shipped.

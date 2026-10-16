@@ -109,21 +109,20 @@ local activation must not defer Codex, wait for dispatcher, or use live homes.
 
 [CIP-0015](cips/CIP-0015-login-readiness-and-profile-preparation.md) is Accepted;
 [login readiness revision 1](protocol/login-readiness.md) freezes leaf 1's row,
-selector and store projection. Full containing manager-config/status revisions
-and the coordinated fragment token remain open with pending fragment work.
+selector and store projection. Full containing manager-config/status revisions and fragment 5 are now
+[published](protocol/rc7-carriers.md) with the Codex successors.
 No v1–v3 fragment extension is admitted. Metadata-only platform probes, Codex
-keyring scope/precedence, Windows, Muse admission/refresh, optional explicit
+keyring scope/precedence, Windows, Muse refresh, optional explicit
 vendor diagnostics, broker adoption and destination readiness remain later-leaf
 work. The strict all-participants aggregate is decided: a participating ambient
 OpenCode row currently prevents green check/prepare, deliberately and visibly.
 
 ## Profile Codex settings (CIP-0018)
 
-1. **Coordinated carrier allocation.** Allocate successor context-manifest,
-   lock, marker and launch-fragment envelopes together with parallel
-   base-context, root-context and snapshot amendments, or independently if
-   they ship separately. The accepted member schemas do not assign these
-   wire versions. Full carrier schemas/cases must precede producer activation.
+1. **Carrier allocation published.** [Containing carriers](protocol/rc7-carriers.md)
+   allocates manifest 2, lock 4, marker 5 and fragment 5 with one policy payload;
+   snapshot descriptors remain separate. Runtime enablement still needs the
+   following qualification and strict covered consumer support.
 2. **Supported-release qualification.** Establish scalar CLI precedence over
    a conflicting seed and backend selection for login, app-server and token
    refresh on every supported Codex release. Until measured, these capabilities

@@ -62,3 +62,9 @@ real authentication, native keyring scope, token expiry, Muse refresh writes,
 source/broker adoption and destination authentication are not established by
 this corpus's structural check. These are explicit later-leaf limits, not
 permission to fabricate presence.
+
+## Coordinated containing publication
+
+The [whole-carrier corpus](../rc7-carriers-v1/README.md) validates the allocated successors, canonical bytes
+and old/new reader compatibility. The earlier member/row fixtures remain
+frozen inputs; runtime qualification remains separate.

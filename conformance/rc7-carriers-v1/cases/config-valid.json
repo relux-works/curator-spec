@@ -1,0 +1,13 @@
+{
+  "schema_version": 5,
+  "skills_root": "/manager/skills",
+  "projects": {},
+  "environments": {
+    "credential_store": {
+      "example": {
+        "muse": "native",
+        "codex_cli": "file"
+      }
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{"codex_settings":{},"codex_settings_contributions":[],"hash_version":2,"members":[{"kind":"context","name":"example","overlay":false,"required_by":[],"state_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","version":"1.0.0","weight":0}],"precedence":{"placement":"winner-last","winner":"higher-weight"},"root":"example","schema_version":4}

@@ -10,8 +10,8 @@ namespace; released core schemas remain unchanged.
 | `store-projection-v1` | Environment/policy plus backend-literal-only env projection |
 
 The projection omits home-path variables and is **not** a full fragment.
-Containing status/config/fragment revision publication remains open. No schema
-here licenses adding fields to released closed objects or qualifies a native
-backend. Semantic refusal, metadata-only access, source policy and isolation
+[Containing carriers](../rc7-carriers-v1/README.md) now allocate full
+config/status/fragment successors. These frozen modules alone never license
+adding fields to old closed objects or qualify a native backend. Semantic refusal, metadata-only access, source policy and isolation
 remain [normative prose](../../protocol/login-readiness.md) obligations.
 Run `python3 tools/validate.py` and the [corpus checks](../../conformance/login-readiness-v1/README.md).

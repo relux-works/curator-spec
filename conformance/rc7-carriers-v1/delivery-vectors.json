@@ -1,0 +1,346 @@
+[
+  {
+    "name": "json-native-unsupported",
+    "format": "json",
+    "settings": {},
+    "supported_consumer": false,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "json-native-supported",
+    "format": "json",
+    "settings": {},
+    "supported_consumer": true,
+    "expected": {
+      "diagnostic": null,
+      "usable_output": true,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "json-file-unsupported",
+    "format": "json",
+    "settings": {
+      "cli_auth_credentials_store": "file"
+    },
+    "supported_consumer": false,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "json-file-supported",
+    "format": "json",
+    "settings": {
+      "cli_auth_credentials_store": "file"
+    },
+    "supported_consumer": true,
+    "expected": {
+      "diagnostic": null,
+      "usable_output": true,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "json-keyring-unsupported",
+    "format": "json",
+    "settings": {
+      "cli_auth_credentials_store": "keyring"
+    },
+    "supported_consumer": false,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "json-keyring-supported",
+    "format": "json",
+    "settings": {
+      "cli_auth_credentials_store": "keyring"
+    },
+    "supported_consumer": true,
+    "expected": {
+      "diagnostic": null,
+      "usable_output": true,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "env-native-unsupported",
+    "format": "env",
+    "settings": {},
+    "supported_consumer": false,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "env-native-supported",
+    "format": "env",
+    "settings": {},
+    "supported_consumer": true,
+    "expected": {
+      "diagnostic": null,
+      "usable_output": true,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "env-file-unsupported",
+    "format": "env",
+    "settings": {
+      "cli_auth_credentials_store": "file"
+    },
+    "supported_consumer": false,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "env-file-supported",
+    "format": "env",
+    "settings": {
+      "cli_auth_credentials_store": "file"
+    },
+    "supported_consumer": true,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "env-keyring-unsupported",
+    "format": "env",
+    "settings": {
+      "cli_auth_credentials_store": "keyring"
+    },
+    "supported_consumer": false,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "env-keyring-supported",
+    "format": "env",
+    "settings": {
+      "cli_auth_credentials_store": "keyring"
+    },
+    "supported_consumer": true,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "shell-native-unsupported",
+    "format": "shell",
+    "settings": {},
+    "supported_consumer": false,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "shell-native-supported",
+    "format": "shell",
+    "settings": {},
+    "supported_consumer": true,
+    "expected": {
+      "diagnostic": null,
+      "usable_output": true,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "shell-file-unsupported",
+    "format": "shell",
+    "settings": {
+      "cli_auth_credentials_store": "file"
+    },
+    "supported_consumer": false,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "shell-file-supported",
+    "format": "shell",
+    "settings": {
+      "cli_auth_credentials_store": "file"
+    },
+    "supported_consumer": true,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "shell-keyring-unsupported",
+    "format": "shell",
+    "settings": {
+      "cli_auth_credentials_store": "keyring"
+    },
+    "supported_consumer": false,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "shell-keyring-supported",
+    "format": "shell",
+    "settings": {
+      "cli_auth_credentials_store": "keyring"
+    },
+    "supported_consumer": true,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "direct-login-native-unsupported",
+    "format": "direct-login",
+    "settings": {},
+    "supported_consumer": false,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "direct-login-native-supported",
+    "format": "direct-login",
+    "settings": {},
+    "supported_consumer": true,
+    "expected": {
+      "diagnostic": null,
+      "usable_output": true,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "direct-login-file-unsupported",
+    "format": "direct-login",
+    "settings": {
+      "cli_auth_credentials_store": "file"
+    },
+    "supported_consumer": false,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "direct-login-file-supported",
+    "format": "direct-login",
+    "settings": {
+      "cli_auth_credentials_store": "file"
+    },
+    "supported_consumer": true,
+    "expected": {
+      "diagnostic": null,
+      "usable_output": true,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "direct-login-keyring-unsupported",
+    "format": "direct-login",
+    "settings": {
+      "cli_auth_credentials_store": "keyring"
+    },
+    "supported_consumer": false,
+    "expected": {
+      "diagnostic": "codex_settings_unsupported",
+      "usable_output": false,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  },
+  {
+    "name": "direct-login-keyring-supported",
+    "format": "direct-login",
+    "settings": {
+      "cli_auth_credentials_store": "keyring"
+    },
+    "supported_consumer": true,
+    "expected": {
+      "diagnostic": null,
+      "usable_output": true,
+      "partial_output": false,
+      "config_write": false,
+      "vendor_execution": false
+    }
+  }
+]

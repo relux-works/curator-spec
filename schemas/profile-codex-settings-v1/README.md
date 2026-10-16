@@ -15,11 +15,10 @@ and precedence definitions by relative reference.
 
 These are closed **member projections**, not full wire envelopes. They MUST
 NOT be substituted for complete manifest, lock, marker or fragment validation.
-Existing wire revisions still reject the additions. The module revision does
-not allocate enclosing version numbers: coordinated carrier allocation remains
-open with the parallel amendments, as the CIP specifies. No producer can emit
-settings until strict successor envelopes and their carrier cases are published
-and qualified. This avoids repurposing a parallel proposal's version number.
+Existing wire revisions still reject the additions. The module revision does not allocate enclosing version numbers.
+[Containing carriers](../rc7-carriers-v1/README.md) separately publishes full
+successors and cases. Runtime qualification, strict consumers and covered
+delivery remain required before producer enablement.
 
 Schema checks cannot prove duplicate-key/encoding rejection, package closure
 membership, declaration/pin equality, weight selection, identity currency,

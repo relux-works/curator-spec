@@ -1,0 +1,28 @@
+{
+  "version": 5,
+  "hash_version": 2,
+  "profile": {
+    "name": "example",
+    "root": "example",
+    "kind": "local",
+    "lock_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "members": [
+    {
+      "name": "example",
+      "version": "1.0.0",
+      "weight": 0,
+      "overlay": false,
+      "state_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ],
+  "precedence": {
+    "winner": "higher-weight",
+    "placement": "winner-last"
+  },
+  "mode": "managed-home",
+  "surfaces": {},
+  "passthrough": [],
+  "seeds": [],
+  "codex_settings": {}
+}

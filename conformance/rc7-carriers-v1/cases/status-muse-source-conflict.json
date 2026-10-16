@@ -1,0 +1,42 @@
+{
+  "status": "env-status-v1",
+  "rows": [
+    {
+      "readiness": {
+        "schema_version": 1,
+        "profile": "example",
+        "environment": "muse",
+        "current": true,
+        "login": "unknown",
+        "login_detail": {
+          "source": "per-home",
+          "store": "file",
+          "backend": "keychain",
+          "session": "caller",
+          "reason": "source-conflict"
+        }
+      },
+      "mode": "managed-home",
+      "lock_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "recorded_tool_version": null,
+      "detected_tool_version": null,
+      "configured_store": "native",
+      "native_storage": "file",
+      "effective_store": "file",
+      "surfaces": [],
+      "observations": []
+    }
+  ],
+  "codex_settings": [
+    {
+      "profile": "example",
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    }
+  ],
+  "observations": []
+}
