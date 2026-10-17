@@ -1814,6 +1814,19 @@ in which case there is no inherited server and the mismatch warns
 nothing. A managed `codex_cli` home whose marker predates the rule — the
 record is absent — reports the same warning with the same hint.
 
+**Accepted workspace-trust direction (not yet adopted here).**
+[CIP-0020](../cips/CIP-0020-workspace-trust-ledger.md) defines the machine-local,
+environment-scoped ledger that will govern the launch-directory exception
+below and managed Claude/Codex trust projection on resolve and repair. It
+records explicit, launch and repository-binding consent; permits only exact
+paths and recorded tooling-created derivatives; and defines identity lapse,
+shared-binding revocation and preservation of tool-written state. Its stricter
+no-link admission does not inherit permission from the historical literal-path
+observation below. The CIP specifies the target and qualification gates; it
+adds no released marker fields or implementation claim. Until its separate
+adoption, the seed behavior and version/confidence bounds below remain the
+current contract.
+
 A seed is one-time by definition: a native-home change after provisioning
 does not propagate, and the tool's later writes in the managed home are
 its own state. The one per-launch-directory exception is the `claude_code`

@@ -118,6 +118,11 @@ Its [separate schemas](schemas/managed-home-snapshot-v1/README.md) and
 schema bytes and core-suite identities. Archive bytes/caps and runtime
 projection remain gated; no implementation support is claimed.
 
+The accepted [workspace trust ledger direction](cips/CIP-0020-workspace-trust-ledger.md)
+specifies machine-local exact-path consent, repository binding and bounded
+revocation for managed Claude/Codex homes. It is a proposal for subsequent
+adoption and adapter qualification; no ledger implementation is shipped here.
+
 Protocol and implementation designs are recorded as
 [Curator Improvement Proposals](cips/README.md). Start with the
 [CIP template](cips/TEMPLATE.md) and the Accepted process in
