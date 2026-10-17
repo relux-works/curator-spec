@@ -58,6 +58,15 @@ Versioning for the complete specification set.
 
 ### Changed
 
+- Define environments §9.1 network contacts for the undeclared-network audit:
+  loopback and multi-label names ending in `test`, `example`, `invalid`, or
+  `localhost` are exempt after ASCII IDNA, case and trailing-dot normalization.
+  Bare labels, lookalikes, `example.com`/`.net`/`.org` and their subdomains stay
+  contacts; mixed files retain each real finding and the static canary remains
+  independent. Section 9.4 migration uses the same rule. Add an executable
+  unreleased detector supplement and narrowing controls, leaving frozen rc.14
+  artifacts unchanged; manager runtime consumption remains unverified.
+
 - Record verified Muse 1.4.7 foreign personal-context probes P1–P4:
   native root context suppresses foreign personal rules fallback, foreign
   personal skills persist, and the interactive form rejects the `exec`

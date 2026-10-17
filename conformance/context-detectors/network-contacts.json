@@ -1,0 +1,811 @@
+{
+  "schema_version": 1,
+  "capability": "agent-environments",
+  "capability_revision": 1,
+  "status": "unreleased",
+  "normative_sections": [
+    "protocol/environments.md §9.1",
+    "protocol/environments.md §9.4"
+  ],
+  "execution": {
+    "operations": [
+      "profile install (strict member audit)",
+      "legacy global skill migration (strict member audit)"
+    ],
+    "input": "UTF-8 file contents and the skill manifest capability projection; absent manifest or network declaration means no covering declaration",
+    "projection": "Compare every normalized undeclared network contact by host and file. Exempt hosts do not clear other findings. static_canary_blocks is independent of capability_check_passes; a true value always blocks the static canary gate.",
+    "fixture_extraction_bound": "HTTP(S) URL hosts only; this corpus does not constrain other source-code detection syntax or claim a manager consumed the vectors."
+  },
+  "cases": [
+    {
+      "name": "loopback-localhost",
+      "files": {
+        "fixture.txt": "https://localhost/fixture\n"
+      },
+      "expected": {
+        "findings": [],
+        "capability_check_passes": true,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "loopback-ipv4",
+      "files": {
+        "fixture.txt": "https://127.0.0.1/fixture\n"
+      },
+      "expected": {
+        "findings": [],
+        "capability_check_passes": true,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "loopback-ipv6",
+      "files": {
+        "fixture.txt": "https://[::1]/fixture\n"
+      },
+      "expected": {
+        "findings": [],
+        "capability_check_passes": true,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "loopback-case-dot",
+      "files": {
+        "fixture.txt": "https://LOCALHOST./fixture\n"
+      },
+      "expected": {
+        "findings": [],
+        "capability_check_passes": true,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "reserved-test",
+      "files": {
+        "fixture.txt": "https://api.test/fixture\n"
+      },
+      "expected": {
+        "findings": [],
+        "capability_check_passes": true,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "reserved-example",
+      "files": {
+        "fixture.txt": "https://api.example/fixture\n"
+      },
+      "expected": {
+        "findings": [],
+        "capability_check_passes": true,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "reserved-invalid",
+      "files": {
+        "fixture.txt": "https://api.invalid/fixture\n"
+      },
+      "expected": {
+        "findings": [],
+        "capability_check_passes": true,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "reserved-localhost",
+      "files": {
+        "fixture.txt": "https://api.localhost/fixture\n"
+      },
+      "expected": {
+        "findings": [],
+        "capability_check_passes": true,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "reserved-nested",
+      "files": {
+        "fixture.txt": "https://a.b.test/fixture\n"
+      },
+      "expected": {
+        "findings": [],
+        "capability_check_passes": true,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "reserved-case-dot",
+      "files": {
+        "fixture.txt": "https://API.TeSt./fixture\n"
+      },
+      "expected": {
+        "findings": [],
+        "capability_check_passes": true,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "reserved-idn",
+      "files": {
+        "fixture.txt": "https://é.test/fixture\n"
+      },
+      "expected": {
+        "findings": [],
+        "capability_check_passes": true,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "reserved-punycode",
+      "files": {
+        "fixture.txt": "https://xn--9ca.test/fixture\n"
+      },
+      "expected": {
+        "findings": [],
+        "capability_check_passes": true,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "lookalike-nested-test",
+      "files": {
+        "fixture.txt": "https://x.test.evil.com/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "x.test.evil.com",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "lookalike-nested-example",
+      "files": {
+        "fixture.txt": "https://test.example.com.evil.org/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "test.example.com.evil.org",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "lookalike-hyphen",
+      "files": {
+        "fixture.txt": "https://test-example.com/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "test-example.com",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "bare-test",
+      "files": {
+        "fixture.txt": "https://test/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "test",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "bare-example",
+      "files": {
+        "fixture.txt": "https://example/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "example",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "bare-invalid",
+      "files": {
+        "fixture.txt": "https://invalid/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "invalid",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "bare-test-dot",
+      "files": {
+        "fixture.txt": "https://TEST./fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "test",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "lookalike-idn-label",
+      "files": {
+        "fixture.txt": "https://api.tеst/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "api.xn--tst-rdd",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "lookalike-punycode-label",
+      "files": {
+        "fixture.txt": "https://api.xn--tst-rdd/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "api.xn--tst-rdd",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "lookalike-idn-real-tld",
+      "files": {
+        "fixture.txt": "https://tést.example.com/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "xn--tst-bma.example.com",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "lookalike-case-dot",
+      "files": {
+        "fixture.txt": "https://X.TeSt.EVIL.COM./fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "x.test.evil.com",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "documentation-com",
+      "files": {
+        "fixture.txt": "https://example.com/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "example.com",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "documentation-net",
+      "files": {
+        "fixture.txt": "https://example.net/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "example.net",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "documentation-org",
+      "files": {
+        "fixture.txt": "https://example.org/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "example.org",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "documentation-subdomain-com",
+      "files": {
+        "fixture.txt": "https://api.example.com/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "api.example.com",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "documentation-subdomain-net",
+      "files": {
+        "fixture.txt": "https://api.example.net/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "api.example.net",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "documentation-subdomain-org",
+      "files": {
+        "fixture.txt": "https://api.example.org/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "api.example.org",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "documentation-case-dot",
+      "files": {
+        "fixture.txt": "https://API.EXAMPLE.COM./fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "api.example.com",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "canary-undeclared",
+      "files": {
+        "fixture.txt": "https://exfiltrate.example.com/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "exfiltrate.example.com",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": true
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "canary-declared",
+      "files": {
+        "fixture.txt": "https://exfiltrate.example.com/fixture\n"
+      },
+      "expected": {
+        "findings": [],
+        "capability_check_passes": true,
+        "static_canary_blocks": true
+      },
+      "manifest": {
+        "capabilities": {
+          "network": [
+            "*.example.com"
+          ]
+        }
+      }
+    },
+    {
+      "name": "mixed-reserved-first",
+      "files": {
+        "fixture.txt": "https://api.test/fixture\nhttps://api.example.com/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "api.example.com",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "mixed-real-first",
+      "files": {
+        "fixture.txt": "https://api.example.com/fixture\nhttps://api.test/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "api.example.com",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "mixed-cross-file",
+      "files": {
+        "fixture.txt": "https://api.test/fixture\n",
+        "real.txt": "https://api.example.com/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "api.example.com",
+            "file": "real.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": "none"
+        }
+      }
+    },
+    {
+      "name": "declared-exact",
+      "files": {
+        "fixture.txt": "https://api.example.com/fixture\n"
+      },
+      "expected": {
+        "findings": [],
+        "capability_check_passes": true,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": [
+            "api.example.com"
+          ]
+        }
+      }
+    },
+    {
+      "name": "declared-glob",
+      "files": {
+        "fixture.txt": "https://api.example.com/fixture\n"
+      },
+      "expected": {
+        "findings": [],
+        "capability_check_passes": true,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": [
+            "*.example.com"
+          ]
+        }
+      }
+    },
+    {
+      "name": "declared-other-host",
+      "files": {
+        "fixture.txt": "https://api.example.com/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "api.example.com",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {
+        "capabilities": {
+          "network": [
+            "other.example.com"
+          ]
+        }
+      }
+    },
+    {
+      "name": "missing-manifest",
+      "files": {
+        "fixture.txt": "https://api.test/fixture\nhttps://api.example.com/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "api.example.com",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      }
+    },
+    {
+      "name": "missing-network-declaration",
+      "files": {
+        "fixture.txt": "https://api.test/fixture\nhttps://api.example.com/fixture\n"
+      },
+      "expected": {
+        "findings": [
+          {
+            "class": "audit.capability.network-undeclared",
+            "host": "api.example.com",
+            "file": "fixture.txt"
+          }
+        ],
+        "capability_check_passes": false,
+        "static_canary_blocks": false
+      },
+      "manifest": {}
+    }
+  ]
+}

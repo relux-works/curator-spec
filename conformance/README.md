@@ -215,6 +215,13 @@ checks closed member schemas and publishes semantic entrypoint vectors without
 altering rc.14 pins. Full successor carrier allocation and runtime qualification
 remain open; member-schema success does not establish implementation conformance.
 
+The unreleased [section 9.1 network-contact supplement](context-detectors/README.md)
+adds executable host-classification vectors alongside the released detector
+classes. It covers section 9.4 migration with the same per-host rule, preserves
+the frozen rc.14 corpus and pins, and includes expected-red narrowing controls.
+`make validate` checks its URL-fixture model; manager runtime consumption is
+unverified.
+
 ## 4. Execution
 
 The hand-authored

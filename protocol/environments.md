@@ -2484,8 +2484,30 @@ mode over every member; an advisory profile install does not exist. When a
 skill member carries its own package manifest (`agent-skill.json`, or the
 legacy read alias `csk-skill.json`), the audit MUST use that manifest's
 declared capabilities under core §3 and §4.3. A declaration covering a
-detected network host satisfies the network-declaration check, but does not
-clear other audit findings. A `path` snapshot audits identically to a `git`
+detected network contact satisfies the network-declaration check, but does not
+clear other audit findings.
+
+For `audit.capability.network-undeclared`, a detected host is a **network
+contact** except when it is `localhost`, `127.0.0.1`, or `::1`, or is a
+multi-label DNS name whose normalized last label is `test`, `example`,
+`invalid`, or `localhost` (the RFC 6761 special-use TLDs). The manager MUST
+compare hosts in lowercase ASCII, converting IDNs to their ASCII
+IDNA/punycode form and removing exactly one trailing dot before classification.
+URL brackets and ports are not part of a detected host. Classification MUST
+use the last label only, never a substring or prefix. A bare single label
+such as `test`, `example`, or `invalid` remains a contact; `localhost` is
+the explicit loopback exception. Thus `api.test` and `service.invalid` are
+exempt, while `x.test.evil.com`, `test.example.com.evil.org`, and
+`test-example.com` remain contacts. `example.com`, `example.net`,
+`example.org`, and all their subdomains remain contacts, including the static
+exfiltration canary `exfiltrate.example.com`. Exempting one host MUST NOT
+suppress findings for other hosts in the same file. This exemption affects
+only the network-declaration finding; the static canary and every other
+audit gate remain unchanged. Executable host-classification cases supplement
+the released section 9.1 detector vectors in
+[`conformance/context-detectors/network-contacts.json`](../conformance/context-detectors/network-contacts.json).
+
+A `path` snapshot audits identically to a `git`
 snapshot. A `path` package has no network identity: its identity for local
 revocation is its state hash,
 the core §6.1 network allowlist does not apply (local sources bypass it),
@@ -2826,8 +2848,10 @@ Every migrated legacy global skill MUST pass the strict member audit of
 section 9.1 using its own package manifest's capabilities, when present;
 the synthesized `local` root and the machine's global declarations do not
 supply capabilities for a skill. A skill whose manifest declares a
-`capabilities.network` host glob covering the detected host passes that
-check exactly like any other skill member. Without a covering declaration
+`capabilities.network` host glob covering a detected network contact, as
+defined in section 9.1, passes that check exactly like any other skill member.
+Section 9.1's loopback and reserved-last-label exemptions apply per host
+during migration as well. For a network contact without a covering declaration
 — including no manifest, no network declaration, or `network: "none"` —
 migration MUST refuse with the blocking finding
 `audit.capability.network-undeclared`. The diagnostic MUST name the skill,

@@ -195,6 +195,15 @@ Validation requires local release tags (fetch tags in shallow checkouts).
   under `conformance/v1/`, its release metadata, and the independent
   `conformance/skillfile-sources-v1/manifest.json` pin. It does not fold the
   accepted source-extension vectors into the core corpus.
+- Network-contact classification: `python3 tools/network_contacts.py` checks
+  the unreleased [section 9.1 detector supplement](conformance/context-detectors/README.md).
+  Run `python3 -B -m unittest discover -s tools -p 'test_network_contacts.py' -v`
+  for regression and negative controls, included in `make validate`.
+  `python3 tools/check_network_contact_controls.py --mutant example-domain`
+  and the same command with `--mutant substring` plant bounded mutants;
+  both are expected to exit 1 with a named vector-test failure. Corpus inputs
+  live in `conformance/context-detectors/`; local logs go in `.temp/`.
+  These checks qualify no manager runtime.
 - Make: `make validate` runs the existing Python/Go checks;
   `make regenerate-check` checks generator reproducibility against Git.
 - Lychee: `lychee --no-progress --max-retries 3 --retry-wait-time 2 --accept 200,206,429,502,503,504 '**/*.md'`

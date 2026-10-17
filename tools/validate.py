@@ -11974,6 +11974,16 @@ def validate_rc7_carriers() -> None:
     print(f"containing carrier cases: {total}/{total}; negatives: {negatives}/{negatives}; runtime cases: unrun")
 
 
+def validate_network_contacts() -> None:
+    import network_contacts
+
+    try:
+        total = network_contacts.validate()
+    except (ValueError, OSError) as exc:
+        raise ValidationFailure(f"network contacts: {exc}") from exc
+    print(f"network contact vectors: {total}/{total}; manager runtime: unverified")
+
+
 def main(*, release_history_only: bool = False) -> int:
     checks = [
         validate_released_record_immutability,
@@ -12000,6 +12010,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_environments_path_kind_admission_vectors,
         validate_context_version_vectors,
         validate_context_detector_vectors,
+        validate_network_contacts,
         validate_content_hash_v2_vectors,
         validate_snapshot_acquisition_vectors,
         validate_shell_hook_trust_vectors,
