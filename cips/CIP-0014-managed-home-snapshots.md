@@ -356,7 +356,10 @@ The new destination, recovery, capture-drift, relocation, mismatch and
 unsupported-adapter codes are frozen in [snapshot §5](../protocol/managed-home-snapshots.md#5-consistent-capture-and-refusals).
 They are new normative names, not claims of existing implementation support.
 
-For absent targets, stage beside the target and publish by no-replace rename.
+For absent targets, stage beside the target in a private staging directory
+created by this invocation with an unpredictable name, and publish by
+no-replace rename. Publication MUST NOT overwrite the target, including a
+competing entry at the destination name.
 For a prior snapshot, first verify its entire inventory, metadata, actual
 file bytes, sizes, modes, complete entry set and absence of extras. An identical
 manifest is a no-op only after this verification. A different generation MUST
@@ -367,6 +370,21 @@ substitution; see [snapshot §2](../protocol/managed-home-snapshots.md#2-destina
 Thus re-materialization is idempotent without mutating an active snapshot.
 Failure preserves the target, including any competing replacement, and emits no success;
 cleanup removes only this invocation's privately created staging entries.
+
+A process with the same user's authority that mutates entries inside this
+invocation's private staging directory is outside the guarantee. Unlink and
+rename cannot be made conditional on a retained inode: substitution after
+the last no-follow identity check can change what unlink removes or rename
+moves; no-replace rename protects only the destination name. This authority
+can already damage the user's files, including published snapshots. The
+boundary leaves validation without writes, no-follow ancestors and target,
+protected-root exclusions, the absent-or-intact-prior destination rule,
+no-replace/no-overwrite, prior verification and staging-only cleanup unchanged.
+
+Success MUST be emitted only after the published tree verifies against the
+captured manifest: actual file bytes, sizes, modes and the complete entry set
+with no extras. A mismatch MUST emit no success and MUST leave the published
+entry for the operator, without destructive rollback.
 
 #### 5. Adapter consumption and session overlays
 
@@ -591,7 +609,8 @@ helper tests alone cannot qualify materialization or launch.
 | Named test / production entry | Positive and negative property |
 |---|---|
 | `MaterializeCLI_ContentClosure` / `curator env materialize` | Root, referenced supports, skill assets, system and MCP content are exact; native seeds, hidden credentials, state and marker internals never appear |
-| `MaterializeCLI_DestinationBoundary` / same | Absent destination under an existing caller-owned private parent succeeds; existing empty directory refuses without writes with `environment_materialize_destination_invalid`; nonempty foreign, protected ancestry, foreign ownership, linked ancestor/target, reparse point and concurrent replacement refuse without writes outside own staging or alteration of the target |
+| `MaterializeCLI_DestinationBoundary` / same | Absent destination under an existing caller-owned private parent uses invocation-created private staging with an unpredictable name; existing empty directory refuses without writes with `environment_materialize_destination_invalid`; nonempty foreign, protected ancestry, foreign ownership, linked ancestor/target and reparse point refuse; destination-name competition refuses without overwrite or alteration of the competing entry; cleanup removes only invocation-created staging entries. Same-user mutation inside that private staging directory is outside the guarantee in snapshot §2 |
+| `MaterializeCLI_PublicationVerification` / same | Matching published bytes, sizes, modes and complete entry set permit success only after verification against the captured manifest; changed bytes, size or mode and extra or missing entries emit no success and leave the published entry for the operator without destructive rollback |
 | `MaterializeCLI_NoTornGeneration` / same | Race repair, profile use and global sync against multi-file capture; result is one verified generation or refusal; inject same-fragment ABA and external store-byte mutation |
 | `MaterializeCLI_SourceRefusals` / same | Stale/unprovisioned, lock timeout, unreadable marker/store/passthrough, unknown surface and pending recovery refuse; no repair, native fallback or credential reads |
 | `MaterializeCLI_PortableIdentity` / both forms | Manifest-only equals exported bytes; relocation survives source-home removal; sizes, modes and complete entry set match; different version/descriptor changes digest |

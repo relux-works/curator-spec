@@ -64,13 +64,31 @@ hard-link identity MUST NOT be imported. Executability does not grant
 authority to execute outside the existing execution policy.
 
 Validate without writes first. After capture and revalidation (§5), stage
-beside the absent target and publish by no-replace rename. For a prior snapshot, verify all
+beside the absent target in a private staging directory created by this
+invocation with an unpredictable name, and publish by no-replace rename.
+Publication MUST NOT overwrite the target, including a competing entry at
+the destination name. For a prior snapshot, verify all
 metadata, actual file bytes, sizes, modes, the complete entry set and absence
 of extras. Identical manifest bytes are a no-op only after this verification.
 A different generation MUST refuse with `environment_materialize_snapshot_mismatch`
 and require a fresh absent destination.
 Failure MUST preserve the target, including any competing replacement, and emit no success. Cleanup may
 remove only staging entries privately created by this invocation.
+
+A process with the same user's authority that mutates entries inside this
+invocation's private staging directory is outside the guarantee. No available
+operation makes unlink or rename conditional on a retained inode: after the
+last no-follow identity check, unlink by name can remove a substituted entry,
+and no-replace rename protects the destination name but moves the current
+source entry. The same authority can already damage the user's files,
+including published snapshots. This boundary does not relax destination
+no-replace/no-overwrite, no-follow ancestor and target checks, prior-snapshot
+verification, or cleanup limited to this invocation's staging entries.
+
+Success MUST be emitted only after the published tree verifies against the
+captured manifest, including actual file bytes, sizes, modes and the complete
+entry set with no extras. A mismatch MUST emit no success and MUST leave the
+published entry for the operator; destructive rollback MUST NOT be attempted.
 
 An existing empty target cannot be replaced portably conditional on its
 retained identity. No-replace rename refuses an existing name; rechecking

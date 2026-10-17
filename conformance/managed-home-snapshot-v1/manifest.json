@@ -371,7 +371,7 @@
     },
     {
       "path": "protocol/managed-home-snapshots.md",
-      "sha256": "sha256:4f129b7d3ac0508f9f92d7a0f5b12165ad44b08e0f6bee1f3c20e90f8ab03df0"
+      "sha256": "sha256:57b2a563ff16d2e91cb1b5cdecf09cdb8f241096146398e6d6c17d4e6c440509"
     },
     {
       "path": "schemas/managed-home-snapshot-v1/README.md",
