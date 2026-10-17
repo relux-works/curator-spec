@@ -1,7 +1,8 @@
 # CIP-0020: Workspace trust ledger for managed homes
 
-- **Status:** Accepted
+- **Status:** Adopted in part (A1)
 - **Accepted:** 2026-10-17, operator-approved direction in TASK-261017-2qvl57; implementation and adapter qualification are separate work.
+- **A1 adoption:** [Environments §7.10](../protocol/environments.md#710-workspace-trust-ledger) and [Decision 0026](../decisions/0026-workspace-trust-ledger-and-bindings.md) adopt sections 1–3 and ledger/reference revocation from section 6; private record v1 and executable specification vectors are published. A2 (projection/adapters) and A3 (derivatives/task-board hints) remain deferred; no implementation qualification is claimed.
 - **Owner:** Curator maintainers; decision: operator
 - **Created:** 2026-10-17
 - **Related:** TASK-261017-2qvl57 — cip-workspace-trust-ledger; STORY-261017-cgq25o — workspace trust; [CIP-0014](CIP-0014-managed-home-snapshots.md) (snapshot boundary)

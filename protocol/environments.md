@@ -1814,18 +1814,15 @@ in which case there is no inherited server and the mismatch warns
 nothing. A managed `codex_cli` home whose marker predates the rule — the
 record is absent — reports the same warning with the same hint.
 
-**Accepted workspace-trust direction (not yet adopted here).**
-[CIP-0020](../cips/CIP-0020-workspace-trust-ledger.md) defines the machine-local,
-environment-scoped ledger that will govern the launch-directory exception
-below and managed Claude/Codex trust projection on resolve and repair. It
-records explicit, launch and repository-binding consent; permits only exact
-paths and recorded tooling-created derivatives; and defines identity lapse,
-shared-binding revocation and preservation of tool-written state. Its stricter
-no-link admission does not inherit permission from the historical literal-path
-observation below. The CIP specifies the target and qualification gates; it
-adds no released marker fields or implementation claim. Until its separate
-adoption, the seed behavior and version/confidence bounds below remain the
-current contract.
+**Workspace-trust adoption boundary.** Section 7.10 adopts the private ledger,
+consent and binding portion (A1) of
+[CIP-0020](../cips/CIP-0020-workspace-trust-ledger.md). Native seeds and
+`seeded_projects` are not ledger consent. Its no-link admission does not inherit
+permission from the historical literal-path observation below. Managed-home
+projection and adapter qualification (A2, CIP sections 5–6) remain deferred;
+the seed bytes and recorded vendor version/confidence bounds below do not
+change. A1 alone neither activates ledger-driven vendor edits nor qualifies an
+adapter. Tooling-created derivatives (A3, CIP section 4) remain deferred too.
 
 A seed is one-time by definition: a native-home change after provisioning
 does not propagate, and the tool's later writes in the managed home are
@@ -1980,6 +1977,16 @@ identifier not declared by the registry is `environment_target_unknown`.
 | native `mcp_servers` entries inherited into a managed `codex_cli` home under seed-rule revision A (warning; section 7.4) | `mcp_native_servers_ungoverned` |
 | native `mcp_servers` entries stripped from a managed `codex_cli` seed under seed-rule revision B (warning; section 7.4) | `mcp_native_servers_not_inherited` |
 | managed `codex_cli` home with an unstripped seed — marker lacks the seed record (pre-rule provisioning), or the recorded seed revision is `A` with a non-empty snapshot while the manager ships revision `B` (warning, re-provision hint; section 7.4) | `mcp_seed_unstripped` |
+| unknown/unsupported trust adapter or no selected environment at bind (no grant) | `workspace_trust_environment_unsupported` |
+| trust operand relative, broad, wildcard, filesystem root or blanket user home | `workspace_trust_path_invalid` |
+| trust operand or any component is a symlink; no realpath substitution | `workspace_trust_symlink` |
+| add/launch/bind path missing or wrong kind | `workspace_trust_path_missing` / `workspace_trust_path_kind` |
+| bind source outside a repository | `workspace_trust_repository_required` |
+| repository root/remote/root ancestor unavailable, ambiguous, credential-bearing or indeterminate (unknown, no authority) | `workspace_trust_repository_unverifiable` |
+| checked repository tuple differs (lapse; fresh consent required) | `workspace_trust_repository_changed` |
+| no active valid grant for this exact path and environment | `workspace_untrusted` |
+| trust ledger or binding transaction record unreadable, malformed, unsupported or unsafe (unknown; no empty fallback or fragment) | `workspace_trust_ledger_unreadable` |
+| binding transaction fails or is interrupted (no active grant without committed binding; recover/retry recorded transaction) | `workspace_trust_binding_failed` |
 
 ### 7.8 MCP launch channels
 
@@ -2080,6 +2087,164 @@ this table names is corrected by an erratum on the decision that introduced
 it and a rewrite of the affected row here, within revision 1 — the Decision
 0010 erratum of 2026-09-05 is the pattern — never by an implementation
 working around the recorded fact silently.
+
+### 7.10 Workspace trust ledger
+
+This section adopts CIP-0020 A1: sections 1–3 and ledger/reference revocation
+from section 6. [Decision 0026](../decisions/0026-workspace-trust-ledger-and-bindings.md)
+records the boundary. A2 will specify managed-home projection and adapter
+qualification (CIP sections 5–6); A3 will specify tooling-created derivatives
+and task-board refusal hints (CIP sections 4 and 7). A1 grants no inheritance
+or vendor-write authority through those forward references.
+
+#### 7.10.1 Private records and exact admission
+
+The manager MUST retain grants in private, operator-owned machine-local state,
+separate from the section 8.2 surface marker and the core skill adapter ledger.
+Each event conforms to
+[`workspace-trust-record-v1`](../schemas/workspace-trust-v1/workspace-trust-record-v1.schema.json).
+It MUST NOT appear in profiles, package snapshots, locks, exported state or
+managed-home snapshots. Portable input MUST NOT import, supply or reactivate
+consent. A native seed or `seeded_projects` entry alone is not consent.
+
+Each record carries `record: workspace-trust-record-v1`, stable machine-local
+`grant_id`, one supported adapter `environment` (never a wildcard), exact
+absolute `path`, `repository` when applicable, `event`, `operator`, `time`,
+`reason` and `state`. `event` is exactly `explicit-grant`, `implicit-launch`
+or `implicit-bind`. `operator` records stable OS `uid` and `name`, plus only
+the public `signing_key` identity for a signed action. `time` is RFC 3339 UTC.
+`reason` is nonblank operator text for explicit events and an action description
+for implicit events. `state` records `status` (`active`, `revoked`, `lapsed`),
+transition `time` and nonblank `reason`; `state_history` retains prior states
+in order. Transitions retain event provenance and history, never overwrite
+the consent event. Unsupported versions refuse
+with `workspace_trust_ledger_unreadable`, never an empty-ledger fallback.
+
+For add, launch and bind, validate the operand and **every path component**
+without following links before repository discovery. Reject relative paths,
+wildcards, prefix/range expressions, filesystem roots, the operator home as a
+blanket workspace grant, missing paths and wrong kinds. A grant path MUST be
+an existing directory; a binding source MAY be a regular profile/Skillfile or
+context file within the checked repository. No symlink component is allowed,
+even one pointing inside the repository. Do not discover and grant a realpath
+through a link. Hold no-follow validation through use with safe handles or
+equivalent race-resistant operations; preflight `lstat` followed by unchecked
+open is insufficient. Authorization is exact equality of environment and path,
+never profile name, an ancestor prefix, a sibling or a descendant. Explicit
+and actual-launch events MAY admit a concrete non-repository directory; such
+a directory cannot be a binding source or inheritance parent.
+
+#### 7.10.2 Repository identity and lapse
+
+`repository` is the tuple `root` (checked absolute repository root),
+`primary_remote` (credential-free URL or explicit JSON `null` for no remote)
+and `root_commit` (full object ID of HEAD's unique root ancestor). The remote
+is `origin` when present, otherwise the sole configured remote; multiple
+non-origin remotes refuse. No commit, multiple roots or incomplete history
+that cannot establish the root refuses. Obtain metadata without executing
+repository hooks or configuration-defined commands. Reject embedded
+credentials and secret URL components before persistence or diagnostics;
+never retain them in reasons, paths or generated provenance either.
+
+Before every authorization use, including bare resolve, repair and launch,
+recheck this tuple after path admission. Ordinary commits and branch changes
+with the same tuple preserve consent. A changed root, remote or root ancestor
+at the recorded path lapses that event durably with transition time/reason;
+it cannot authorize use. Unreadable or indeterminate metadata is **unknown**,
+never equality or absence; refuse use without silently rebinding. Resolve,
+repair and profile update MUST NOT mint consent, renew revoked/lapsed records
+or copy trust from native tool state. New consent requires a fresh valid
+operator event. This tuple cannot detect an identical clone or malicious
+content within unchanged history: it is consent provenance, not attestation.
+
+#### 7.10.3 Commands and consent events
+
+```text
+curator env trust add <env> <path> --reason <text>
+curator env trust list <env>
+curator env trust remove <env> <path>
+```
+
+`add` validates the environment, path and repository identity when applicable,
+then records `explicit-grant`. Successful Curator launch selection records
+`implicit-launch` for the exact working directory and selected adapter;
+failed selection or admission records no grant. A repository subdirectory
+launch records its containing tuple but grants only that subdirectory, not
+its root. The event records consent, not vendor adapter qualification.
+
+`list` is read-only and reports IDs, exact paths, environments, events,
+operator/time, reasons, repository tuples, binding references and validity,
+including retained revoked/lapsed provenance. It reports dependent paths and
+projection/revocation conflicts when the separately adopted A2/A3 records
+exist, without inferring their absence from a read failure. An unreadable
+ledger is an error, never an empty list. Diagnostics MUST carry the selected
+environment, sanitized exact path, failed check and recovery action and MUST
+exclude credentials and secret URL components. A refusal emits no authorized
+fragment. Section 7.7 owns the A1 diagnostic rows.
+
+#### 7.10.4 Binding and lifecycle
+
+A successful operator profile add (section 9.1's local repository install)
+or context extraction from a repository MUST automatically record an
+`implicit-bind` grant for the repository root, without a second trust
+confirmation. Require selected environment(s), never infer all adapters;
+record a separate grant for each. Downloads, transitive dependencies,
+portable imports and unrelated reads are not binding actions. Validate the
+source, its enclosing repository and all section 7.10.1–2 provenance first.
+The actual grant path is the checked repository root, not the selected source:
+before committing any binding or reference, independently apply every section
+7.10.1 exact-path admission rule to that root and verify its section 7.10.2
+identity. In particular, a source below the operator home does not permit a
+home-root grant; a filesystem-root repository is also refused with
+`workspace_trust_path_invalid`. Check the root's existence, directory kind
+and every path component without following links, holding those checks through
+commit. Any root admission or identity failure leaves the entire binding,
+grant, reference and transaction state unchanged for all selected environments.
+
+`binding` is required exactly on `implicit-bind` events and carries stable
+`binding_id`, `profile` identity, `trigger` (`profile-add` or `context-extract`)
+and exact repository-local `source_path`. Each such record's `grant_id` is
+one reference belonging to that binding, environment and repository root.
+Different bindings, even of the same profile/repository, have separate
+references. Repeating the same action/transaction is idempotent: it cannot
+duplicate references, reactivate revoked/lapsed events or change their
+provenance. A genuinely new binding action has a fresh binding identity.
+
+Under the machine mutation lock, journal the binding and its references as
+one transaction; publish them together only after all binding gates pass.
+Failure or interruption before commit leaves no active grant without a
+committed binding, including multi-environment binds. Recovery retries the
+recorded transaction and cannot turn a prepared or aborted binding into
+authority. Report the automatic grant, exact environments and root.
+
+#### 7.10.5 Revocation and recovery
+
+Binding removal removes only its reference (retaining revoked provenance).
+At a repository root in one environment, another active binding preserves
+authority; removing the last reference revokes binding-derived authority.
+Independent explicit/launch events and every other environment are untouched.
+Profile removal (section 9.2) removes all references owned by its bindings in
+the same transaction, even when managed homes are retained.
+
+`trust remove` revokes **all** events and binding references for exactly its
+environment/path pair. Bindings stay installed but revoked. The operation is
+idempotent for an absent grant and need not find the former directory: it uses
+the recorded exact spelling without traversing or trusting it. Reject broad
+operands and symlink aliases; never resolve an alias to a recorded path. When
+an existing component can be inspected it MUST NOT be followed if linked; a
+failure to establish the operand or ledger is unknown, not successful removal.
+Repair and update cannot recreate removed consent; a fresh explicit grant,
+actual launch or new binding action is required. Independent grants at other
+paths or in other environments remain unchanged.
+
+Durably journal reference changes and revocation before reporting success.
+Retries MUST NOT duplicate references or restore revoked authorization.
+Retain pending cleanup and report failure when dependent state is unreadable;
+do not claim vendor cleanup succeeded. A2 owns per-key projection journals,
+ownership/conflicts and retry of owned-key cleanup; A3 owns invalidation of
+dependent tooling derivatives. Those deferred contracts MUST NOT be replaced
+with deletion of tool state or prefix grants here. Revocation does not erase
+independent vendor consent or terminate running sessions.
 
 ## 8. Materialization modes and the environment marker
 
@@ -2267,6 +2432,12 @@ preceding marker records and MUST fail with
 file. Skill entries keep the core §11 adapter ledger; the two records never
 merge.
 
+The section 7.10 trust ledger is a third, separate private consent record,
+not surface ownership. Its reads follow section 8.4.1's workspace-trust row;
+an unreadable ledger never authorizes removal, replacement, fresh provisioning
+as if empty, or a usable launch fragment. Bind/reference transactions also
+follow that row and section 8.3.1 write discipline.
+
 Takeover and onboarding backups (section 9.5) land in **versioned**
 backup sets `.agent-environment-backup/<n>/` beside the marker, where `<n>`
 is a decimal generation counter starting at `1` and incremented per
@@ -2306,7 +2477,8 @@ were absent.
 Every materialization, takeover, repair, or backup write this document
 directs at a managed surface in any mode (`copied`, `linked`,
 `managed-home`), a section 8.3 backup, the section 8.2 marker, or the
-adapter ledger — a closed list of write classes over a closed list of
+adapter ledger, or the section 7.10 private trust ledger and binding transaction
+records — a closed list of write classes over a closed list of
 destinations — replaces the directory entry and never follows a symbolic
 link. The manager creates the new regular file or link under an
 operation-private name in the same directory, then renames over the
@@ -2382,7 +2554,8 @@ check (section 10.1): a marker that belongs to another lock is
 
 For every file the manager reads as state or surface — marker, lock,
 ledger, backup record, provisioning seed, passthrough entry, recorded
-surface, inventory candidate, a closed list — the outcomes "absent" and
+surface, inventory candidate, workspace-trust ledger and binding transaction
+record, a closed list — the outcomes "absent" and
 "present but unreadable or malformed" are distinct facts. "Absent" means
 ENOENT-class on `lstat` or `open` of the exact path: no entry exists there.
 "Present but unreadable or malformed" means the path resolves to an entry
@@ -2405,6 +2578,7 @@ row's diagnostic, never a local restatement:
 | marker | no marker file: the home is unprovisioned (`environment_home_stale` at resolve) | `environment_marker_unreadable` — non-current, currency unknown; surfaces treated as unmanaged, nothing removed or replaced | 8.2 |
 | lock | no lock file: the profile is not installed (`profile_unknown`) | `environment_store_untrusted` (entry-class) — never `profile_unknown`; resolve emits no fragment, status is non-current with currency unknown, and no mutating operation (install, update, use, sync, repair, garbage collection) rebuilds, re-materializes, or replaces anything from the unreadable evidence — recovery is an explicit operator action (reinstall from the profile source, or the section 9.2 retained previous lock) that never reads the unreadable file as input | 1.3 |
 | ledger | the ledger is absent with its home (unprovisioned) | the marker as ledger of record unreadable is `environment_marker_unreadable`; no remove or replace (attempted writes meet `environment_surface_unmanaged_conflict`) | 8.3 |
+| workspace-trust ledger / binding transaction record | verified absent ledger: no recorded consent; an absent transaction alone cannot prove an installed binding; no imported or seed-derived grant | `workspace_trust_ledger_unreadable` — unknown authorization/currency, no empty-list fallback, no grant/reference mutation or fragment; preserve evidence and recover from readable private state | 7.10 |
 | backup record | no generations: nothing to restore; the next generation proceeds; status reports zero | `environment_backup_record_unreadable` — the backup inventory is unknown: status reports the backup row non-current with currency unknown; restore, scrub, and retention pruning stop before mutating; the next-generation check never proceeds as if the generation were absent | 8.3 |
 | provisioning seed | the seed is not seeded | `environment_seed_unreadable` — provisioning stops before the first write | 7.4 |
 | passthrough entry | the recorded link is missing, replaced, or retargeted: `environment_passthrough_detached` — a missing link, or a directory at the entry path, is re-linked by `--repair`; a regular file or an unexpected retarget is `environment_credential_conflict` at repair, never removed or re-pointed | `environment_passthrough_unreadable` — non-current, currency unknown, never "detached"; repair leaves the entry untouched | 7.4 |
@@ -2442,6 +2616,13 @@ lock, marker, or store file, never an unreadable code (sections 1.3, 4,
 | a write that would traverse a symlink below the managed root, or open through a symlink at a backup, marker, or ledger destination, that the manager did not create | `environment_write_would_follow_link` |
 
 ## 9. Profile lifecycle
+
+Local repository installation and context extraction additionally follow the
+section 7.10 binding transaction. The install/extract gates and binding/grant
+commit form one operation: failure leaves no active bind consent. A valid
+bind automatically records one reference per selected environment without a
+second confirmation. Portable imports and closure members confer no consent.
+An absent or unreadable grant cannot be reconstructed from a profile lock.
 
 ### 9.1 Installation, resolution, and audit
 
@@ -2723,6 +2904,14 @@ removed with their markers and backups after the notice. Store entries no
 other lock names become GC-eligible. Retained homes without a profile are
 **orphans**: `env status` reports each orphan by path, and `env unmanage`
 or a later `--purge` removes it.
+
+Removal also revokes the removed bindings' section 7.10 references atomically,
+whether or not `--purge` is used. Another binding, an independent explicit or
+launch event, and another environment remain authorized by their own valid
+records. `profile use`, update, resolve and repair never create new bind consent
+or reactivate an explicitly revoked or lapsed record. Context extraction from
+a repository uses the same `context-extract` transaction and removal rules;
+failure to read ledger or transaction evidence stops under section 8.4.1.
 
 **`env unmanage [--restore-backups] [--env <env-id>] [--target <target-id>]`**
 takes every in-place surface set of the named scope (default: every scope)
@@ -4574,3 +4763,8 @@ rebuild-shaped observation — is non-conforming, checked by
 The unreleased [profile Codex settings corpus](../conformance/profile-codex-settings-v1/README.md)
 checks the extension member schemas separately; semantic entrypoint qualification
 and coordinated successor carrier allocation remain explicit rollout gates.
+
+The independent unreleased [workspace-trust A1 corpus](../conformance/workspace-trust-v1/README.md)
+executes private-record schema admission and deterministic ledger transition
+vectors for the six A1 CIP-0020 test-plan rows. It is specification-data
+conformance, not filesystem, Git, persistence, Curator or vendor qualification.

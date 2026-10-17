@@ -12150,6 +12150,16 @@ def validate_network_contacts() -> None:
     print(f"network contact vectors: {total}/{total}; manager runtime: unverified")
 
 
+def validate_workspace_trust() -> None:
+    import workspace_trust
+
+    try:
+        cases, vectors = workspace_trust.check_corpus(ROOT)
+    except (ValueError, OSError, SchemaError) as exc:
+        raise ValidationFailure(f"workspace trust A1: {exc}") from exc
+    print(f"workspace-trust schema cases: {cases}/{cases}; transition vectors: {vectors}/{vectors}; runtime cases: unrun")
+
+
 def main(*, release_history_only: bool = False) -> int:
     checks = [
         validate_released_record_immutability,
@@ -12159,6 +12169,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_login_readiness,
         validate_rc7_carriers,
         validate_local_setup_token,
+        validate_workspace_trust,
         validate_draft_source_schemas,
         validate_draft_sources_manifest,
         validate_source_marker_ownership_vectors,

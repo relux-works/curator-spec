@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/workspace-trust-v1/workspace-trust-record-v1.schema.json",
+  "title": "Private machine workspace trust event, version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record", "grant_id", "environment", "path", "event", "operator", "time", "reason", "state", "state_history"],
+  "properties": {
+    "record": {"const": "workspace-trust-record-v1"},
+    "grant_id": {"$ref": "#/$defs/text"},
+    "environment": {"enum": ["claude_code", "codex_cli", "opencode", "pi", "muse"]},
+    "path": {"$ref": "#/$defs/path"},
+    "repository": {"$ref": "#/$defs/repository"},
+    "event": {"enum": ["explicit-grant", "implicit-launch", "implicit-bind"]},
+    "operator": {
+      "type": "object", "additionalProperties": false, "required": ["uid", "name"],
+      "properties": {
+        "uid": {"$ref": "#/$defs/text"}, "name": {"$ref": "#/$defs/text"},
+        "signing_key": {"$ref": "#/$defs/text"}
+      }
+    },
+    "time": {"$ref": "#/$defs/time"},
+    "reason": {"$ref": "#/$defs/text"},
+    "binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["binding_id", "profile", "trigger", "source_path"],
+      "properties": {
+        "binding_id": {"$ref": "#/$defs/text"}, "profile": {"$ref": "#/$defs/text"},
+        "trigger": {"enum": ["profile-add", "context-extract"]},
+        "source_path": {"$ref": "#/$defs/path"}
+      }
+    },
+    "state": {"$ref": "#/$defs/state"},
+    "state_history": {"type": "array", "items": {"$ref": "#/$defs/state"}}
+  },
+  "allOf": [{
+    "if": {"properties": {"event": {"const": "implicit-bind"}}, "required": ["event"]},
+    "then": {"required": ["binding", "repository"]},
+    "else": {"not": {"required": ["binding"]}}
+  }],
+  "$defs": {
+    "text": {"type": "string", "minLength": 1, "pattern": "\\S"},
+    "path": {"type": "string", "minLength": 2, "pattern": "^(?:/|[A-Za-z]:[\\\\/]|\\\\\\\\)"},
+    "time": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "state": {
+      "type": "object", "additionalProperties": false, "required": ["status", "time", "reason"],
+      "properties": {
+        "status": {"enum": ["active", "revoked", "lapsed"]},
+        "time": {"$ref": "#/$defs/time"}, "reason": {"$ref": "#/$defs/text"}
+      }
+    },
+    "repository": {
+      "type": "object", "additionalProperties": false, "required": ["root", "primary_remote", "root_commit"],
+      "properties": {
+        "root": {"$ref": "#/$defs/path"},
+        "primary_remote": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/text"}]},
+        "root_commit": {"type": "string", "pattern": "^[0-9a-f]+$", "oneOf": [{"minLength": 40, "maxLength": 40}, {"minLength": 64, "maxLength": 64}]}
+      }
+    }
+  }
+}

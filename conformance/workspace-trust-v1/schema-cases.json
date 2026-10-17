@@ -1,0 +1,1760 @@
+[
+  {
+    "name": "explicit-valid",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": null
+  },
+  {
+    "name": "nonrepository-valid",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": null
+  },
+  {
+    "name": "null-remote",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": null,
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": null
+  },
+  {
+    "name": "ssh-remote",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "ssh://git@example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": null
+  },
+  {
+    "name": "scp-remote",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "git@example.invalid:repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": null
+  },
+  {
+    "name": "oid-40",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": null
+  },
+  {
+    "name": "oid-64",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": null
+  },
+  {
+    "name": "implicit-bind-valid",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "implicit-bind",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [],
+      "binding": {
+        "binding_id": "binding-a",
+        "profile": "sample-profile",
+        "trigger": "profile-add",
+        "source_path": "/work/repository/profile.json"
+      }
+    },
+    "expected": null
+  },
+  {
+    "name": "implicit-launch-valid",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "implicit-launch",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": null
+  },
+  {
+    "name": "missing-record",
+    "instance": {
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-grant_id",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-environment",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-path",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-repository",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": null
+  },
+  {
+    "name": "missing-event",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-operator",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-time",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-reason",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-state",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-state_history",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      }
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "invalid-record-20",
+    "instance": {
+      "record": "workspace-trust-record-v2",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "invalid-environment-21",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "*",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "invalid-environment-22",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "unknown",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "invalid-path-23",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "relative",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "invalid-path-24",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "invalid-path-25",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/*",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "invalid-path-26",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/../repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "invalid-reason-27",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "  ",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "invalid-time-28",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00+00:00",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "invalid-time-29",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "not-a-time",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "explicit-cannot-carry-binding",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [],
+      "binding": {
+        "binding_id": "binding-a",
+        "profile": "sample-profile",
+        "trigger": "profile-add",
+        "source_path": "/work/repository/profile.json"
+      }
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "bind-missing-reference",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "implicit-bind",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "binding-missing-binding_id",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "implicit-bind",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [],
+      "binding": {
+        "profile": "sample-profile",
+        "trigger": "profile-add",
+        "source_path": "/work/repository/profile.json"
+      }
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "binding-missing-profile",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "implicit-bind",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [],
+      "binding": {
+        "binding_id": "binding-a",
+        "trigger": "profile-add",
+        "source_path": "/work/repository/profile.json"
+      }
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "binding-missing-trigger",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "implicit-bind",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [],
+      "binding": {
+        "binding_id": "binding-a",
+        "profile": "sample-profile",
+        "source_path": "/work/repository/profile.json"
+      }
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "binding-missing-source_path",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "implicit-bind",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [],
+      "binding": {
+        "binding_id": "binding-a",
+        "profile": "sample-profile",
+        "trigger": "profile-add"
+      }
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "secret-remote-36",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://user:sample-secret@example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "secret-remote-37",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git?sample-secret=value",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "secret-remote-38",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git#sample-secret",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "secret-remote-39",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "ssh://git:sample-secret@example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "repository-invalid-root",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/elsewhere",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "repository-invalid-root_commit",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "repository-invalid-primary_remote",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "repository-missing-root",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "repository-missing-root_commit",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "repository-missing-primary_remote",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "unknown-token",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [],
+      "token": "sample-value"
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "unknown-private_key",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [],
+      "private_key": "sample-value"
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "unknown-profile",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [],
+      "profile": "sample-value"
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "unknown-trust_level",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [],
+      "trust_level": "sample-value"
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "unknown-projection",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [],
+      "projection": "sample-value"
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "revoked-valid",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "revoked",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [
+        {
+          "status": "active",
+          "time": "2026-10-18T00:00:00Z",
+          "reason": "consent recorded"
+        }
+      ]
+    },
+    "expected": null
+  },
+  {
+    "name": "lapsed-valid",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "lapsed",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [
+        {
+          "status": "active",
+          "time": "2026-10-18T00:00:00Z",
+          "reason": "consent recorded"
+        }
+      ]
+    },
+    "expected": null
+  },
+  {
+    "name": "active-reactivation-refused",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [
+        {
+          "status": "active",
+          "time": "2026-10-18T00:00:00Z",
+          "reason": "consent recorded"
+        }
+      ]
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "source-outside-repository",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "implicit-bind",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [],
+      "binding": {
+        "binding_id": "binding-a",
+        "profile": "sample-profile",
+        "trigger": "profile-add",
+        "source_path": "/elsewhere/profile"
+      }
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "root-object-id-newline",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111\n"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "lapsed-then-revoked-valid",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "revoked",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [
+        {
+          "status": "active",
+          "time": "2026-10-18T00:00:00Z",
+          "reason": "consent recorded"
+        },
+        {
+          "status": "lapsed",
+          "time": "2026-10-18T00:00:00Z",
+          "reason": "consent recorded"
+        }
+      ]
+    },
+    "expected": null
+  },
+  {
+    "name": "backdated-transition",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "lapsed",
+        "time": "2026-10-17T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": [
+        {
+          "status": "active",
+          "time": "2026-10-18T00:00:00Z",
+          "reason": "consent recorded"
+        }
+      ]
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "private-key-refused",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator",
+        "private_key": "sample-value"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "public-key-identity-valid",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator",
+        "signing_key": "SHA256:sample-public-key-identity"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "active",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": null
+  },
+  {
+    "name": "revoked-without-original-state",
+    "instance": {
+      "record": "workspace-trust-record-v1",
+      "grant_id": "sample-event",
+      "environment": "codex_cli",
+      "path": "/work/repository",
+      "repository": {
+        "root": "/work/repository",
+        "primary_remote": "https://example.invalid/repository.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "event": "explicit-grant",
+      "operator": {
+        "uid": "1000",
+        "name": "sample-operator"
+      },
+      "time": "2026-10-18T00:00:00Z",
+      "reason": "Inspect sample workspace",
+      "state": {
+        "status": "revoked",
+        "time": "2026-10-18T00:00:00Z",
+        "reason": "consent recorded"
+      },
+      "state_history": []
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  }
+]

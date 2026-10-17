@@ -7,6 +7,14 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Adopt CIP-0020 A1: normative environment-scoped exact-path consent ledger,
+  full repository identity/lapse, implicit profile/context bindings without a
+  second confirmation, reference revocation and read-failure/lifecycle diagnostics.
+  Publish private workspace-trust record v1, executable positive/negative
+  transition vectors, three narrowing controls and Decision 0026. Released
+  schemas and pins stay unchanged; A2 projection/adapters and A3 derivatives
+  remain deferred. Specification conformance enables no runtime.
+
 - Publish the coordinated login/store and Codex full carriers in a separate
   unreleased namespace: manager-config 5, env-status-v1, context manifest 2,
   lock 4, marker 5 and fragment 5. V5 has one typed Codex payload and rejects

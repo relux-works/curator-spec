@@ -118,10 +118,12 @@ Its [separate schemas](schemas/managed-home-snapshot-v1/README.md) and
 schema bytes and core-suite identities. Archive bytes/caps and runtime
 projection remain gated; no implementation support is claimed.
 
-The accepted [workspace trust ledger direction](cips/CIP-0020-workspace-trust-ledger.md)
-specifies machine-local exact-path consent, repository binding and bounded
-revocation for managed Claude/Codex homes. It is a proposal for subsequent
-adoption and adapter qualification; no ledger implementation is shipped here.
+[Workspace trust A1](protocol/environments.md#710-workspace-trust-ledger) adopts
+[CIP-0020](cips/CIP-0020-workspace-trust-ledger.md)'s private exact-path ledger,
+repository binding consent and revocation. The
+[record schema](schemas/workspace-trust-v1/README.md) and
+[executable corpus](conformance/workspace-trust-v1/README.md) qualify specification
+consistency only. A2 projection/adapters and A3 tooling derivatives remain deferred.
 
 Protocol and implementation designs are recorded as
 [Curator Improvement Proposals](cips/README.md). Start with the
@@ -198,6 +200,15 @@ Validation requires local release tags (fetch tags in shallow checkouts).
   `python3 tools/check_rc7_carrier_controls.py` reports narrowing mutants and
   a bounded invalid-carrier plant. Fixtures are in `conformance/rc7-carriers-v1/`;
   these checks qualify no vendor runtime. Local logs belong in `.temp/`.
+- Workspace trust A1: `python3 tools/workspace_trust.py` validates private record
+  schemas and deterministic transition vectors; `python3 -B -m unittest discover
+  -s tools -p 'test_workspace_trust.py' -v` runs the paired assertions.
+  `python3 tools/check_workspace_trust_controls.py` reports the three required narrowing
+  mutants plus binding-trigger, retry and bind grant-root admission controls;
+  its `--mutant NAME` mode intentionally exits 1 on the named failure.
+  Inputs live in `schemas/workspace-trust-v1/` and `conformance/workspace-trust-v1/`;
+  logs go in `.temp/`. `make validate` includes the publication entry and tests.
+  No filesystem, Git, crash-recovery or vendor runtime is qualified.
 - Go: `go test ./tools/...` tests specification tooling;
   `go run ./tools/generate-vectors -root .` regenerates the released corpus
   under `conformance/v1/`, its release metadata, and the independent
