@@ -52,7 +52,10 @@
       "const": 6
     },
     "skill_schema_version": {
-      "type": "integer",
+      "type": [
+        "integer",
+        "null"
+      ],
       "minimum": 1,
       "maximum": 9
     },
@@ -334,6 +337,63 @@
             {
               "required": [
                 "substituted"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "skill_schema_version": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "skill_schema_version"
+        ]
+      },
+      "then": {
+        "properties": {
+          "commands": {
+            "maxItems": 0
+          },
+          "dependencies": {
+            "maxItems": 0
+          },
+          "runtime_roots": {
+            "maxItems": 0
+          },
+          "build_roots": {
+            "maxItems": 0
+          },
+          "builds": {
+            "maxProperties": 0
+          },
+          "activation": {
+            "properties": {
+              "commands": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "build_source"
+              ]
+            },
+            {
+              "required": [
+                "requirements"
+              ]
+            },
+            {
+              "required": [
+                "mcp_servers"
               ]
             }
           ]

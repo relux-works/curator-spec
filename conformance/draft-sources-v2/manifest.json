@@ -2,15 +2,23 @@
   "files": [
     {
       "path": "conformance/draft-sources-v2/README.md",
-      "sha256": "sha256:9e7e545129e301ae6d7a920317614e596da427a0a001d7ade3d0469907f416a9"
+      "sha256": "sha256:9581f238780e6e9583932bd3269079906cb83ff792356f1ff7cb1bafb8a2a76d"
     },
     {
       "path": "conformance/draft-sources-v2/index.json",
-      "sha256": "sha256:1a4e113834bc110e478b55584e037e678bfbff2b3dfee2811f64ba21023f3f46"
+      "sha256": "sha256:ff82f12f9d8a626b86082d88b454b8cecbe61938af9c7a7c083b21b098d0a996"
     },
     {
       "path": "conformance/draft-sources-v2/manifest-dependency-directories.json",
       "sha256": "sha256:cfc37ce63c8322e386cce8460ea866020d5017b11e2a06c95454e484ff54b24e"
+    },
+    {
+      "path": "conformance/draft-sources-v2/marker-ownership-cases.json",
+      "sha256": "sha256:bc538d25fd868b7931e1fb53ab4f3ce607b6411532a63647332074d454a1a602"
+    },
+    {
+      "path": "conformance/draft-sources-v2/marker-writer-cases.json",
+      "sha256": "sha256:6958890ab7fd25b946aeb2382e94a173d70e73f1401ff984f0a2aaa46068db5b"
     },
     {
       "path": "conformance/draft-sources-v2/schema-cases/agent-skill-v9/invalid-directory-absolute.json",
@@ -105,8 +113,104 @@
       "sha256": "sha256:d928486860e238484c431a0d6e3fa3f2d309d514c44142d059938e0c82f9dcdc"
     },
     {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid-absent-skill-schema-version.json",
+      "sha256": "sha256:2b0a09a569779ab9d1605ee80fe7b10f4d717d6a8dc959714d4b144aa65a9b2a"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid-fabricated-version-zero.json",
+      "sha256": "sha256:ba916516b180666ab8b8ddf5f663ef371a5d325794343be7ebec9bb7882ec7fa"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid-manifest-and-no-manifest-flag.json",
+      "sha256": "sha256:5e296ad7294903bc0ff42b992d76b9203f6a6254482060f1255462d7284f1e25"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid-manifest-version-and-null-array.json",
+      "sha256": "sha256:594fccf856e2346d51b17a51b64d667679d20e1d83883a14a661ba9b7dfcb304"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid-manifestless-activation.json",
+      "sha256": "sha256:f85119587288de8fa4d71465a58a269ddac1eb915bc04acb503d9213fb9ea307"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid-manifestless-build_roots.json",
+      "sha256": "sha256:e2ea18df079b36e4f3792b62e4c7b146dd542b29508321eec2ad69d12fa70c62"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid-manifestless-build_source.json",
+      "sha256": "sha256:2bc5a56bf3d8a5c595fa3874e66e26b542504177b814f6ddf34af8363200d855"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid-manifestless-builds.json",
+      "sha256": "sha256:159bcf6d407c110d8b1a5c91f3ed95e4d6ec8448db871cb53626317f3820690d"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid-manifestless-commands.json",
+      "sha256": "sha256:acc53a07e113c7b6d38bb3552008267ee0589bfdc21a93a927368b214b684d64"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid-manifestless-dependencies.json",
+      "sha256": "sha256:cabc9b62e205aec35e08191c82aae883e70583bc3274d2af6d28f9d99e11dd56"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid-manifestless-mcp_servers.json",
+      "sha256": "sha256:3fc39f28677de261f6ddc4bde2e2490746db7f938b87c545b51e878e3023c65e"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid-manifestless-requirements.json",
+      "sha256": "sha256:be031265ce7190064e0a68a3317553ef6c1e77566d196d8b11527e1f5738728d"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid-manifestless-runtime_roots.json",
+      "sha256": "sha256:276f75a2c69fe9e8e045fa46d4c475866a259e8e74e51666c180441430d95646"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid-manifestless-with-manifest-version.json",
+      "sha256": "sha256:ba0f42f92393b28817841f202c07733760ad4536d34d0183a9d5daf1e5bbf61c"
+    },
+    {
       "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/invalid.json",
       "sha256": "sha256:575d77d1235dc85c4c82ccabedff5fd995f6f86b08aedc40c8209a8cfbf78333"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/valid-manifest-activation.json",
+      "sha256": "sha256:94832e87a635b0bcc278bc27ec51cbf1bb8eca619077b981ad34b805f845d508"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/valid-manifest-build_roots.json",
+      "sha256": "sha256:ea9379a22515b1d77eec4c2a417e5e8370237cbdf02a13fbc8c3340462b5432b"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/valid-manifest-build_source.json",
+      "sha256": "sha256:ddf6c3789b08dda3237b2c5c37bac83d16e0accb5a611a168dff900208518273"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/valid-manifest-builds.json",
+      "sha256": "sha256:1ee7b0303c811fb8e35de3983a0d4f1aa54045d3d3f1b3a5857353bd383b3b9a"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/valid-manifest-commands.json",
+      "sha256": "sha256:d5ea13f077a33ba557c8be1dbb2729f89a67534eaa3918e236cab7e5b4f403bc"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/valid-manifest-dependencies.json",
+      "sha256": "sha256:36bc32116cca647e83e641ab343855e3d3e859d0e525df7d84e9131d0b3fea5f"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/valid-manifest-mcp_servers.json",
+      "sha256": "sha256:f2712626420ab3798d8e1e170e8178f80fba2e2df6f685455f30a727046b11d8"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/valid-manifest-requirements.json",
+      "sha256": "sha256:d434bc7f12966d2db21cb550b26eeac8943f17e02c60e48bd3e6c1814cb93e59"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/valid-manifest-runtime_roots.json",
+      "sha256": "sha256:976977c8b7c937bca6a4ae02681b56a50663c567531d8df503ae254ea9362a18"
+    },
+    {
+      "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/valid-manifestless.json",
+      "sha256": "sha256:9a53b1018a84e15b7baa0c9d7e1bf7b376c5cc24f368091cc16481a7ddf95140"
     },
     {
       "path": "conformance/draft-sources-v2/schema-cases/install-marker-v6/valid.json",
@@ -114,11 +218,11 @@
     },
     {
       "path": "protocol/skillfile-sources.md",
-      "sha256": "sha256:ff4ea2ccdf64805cc6d401e17658bda6491e17d7f256349b83ad3ac4ee2324b3"
+      "sha256": "sha256:b0c3c33e566b25f0c11d403dd5dd4b91189ac692acebea97de0aca44b17412d7"
     },
     {
       "path": "schemas/draft-sources-v2/README.md",
-      "sha256": "sha256:98634447a1126a1feb01eca5f68de48cd3fc6306868295e18b8154b56d424d74"
+      "sha256": "sha256:1316374ac9d7019c32a2f4519ad9cd4199e95fbcf4c69482e266f3d3d0b2aef8"
     },
     {
       "path": "schemas/draft-sources-v2/agent-skill-v9.schema.json",
@@ -130,7 +234,7 @@
     },
     {
       "path": "schemas/draft-sources-v2/install-marker-v6.schema.json",
-      "sha256": "sha256:483c23021791cdb914c567134f08ab247248915ac8b3bac658feb18140f9e584"
+      "sha256": "sha256:afe60811279d4dbb5f5c98f799dfa9eea402e8337500c0f8d963ffd8ed75d9df"
     }
   ],
   "suite": "draft-sources-v2"

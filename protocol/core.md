@@ -166,6 +166,12 @@ the same object shape and schema-version semantics through
 and its legacy-name equivalent in the draft source namespace; it is not
 part of rc.14.
 
+A pure context package without a manifest declares no commands, runtime or
+build. Its explicit no-manifest marker representation is defined in
+[source section 4](skillfile-sources.md#4-runtime-builds-audit-and-persistent-records)
+using draft marker v6; absence MUST NOT be encoded as a fabricated manifest
+version. Invalid or unreadable manifests are errors, not manifest absence.
+
 Readers resolve manifests in this order:
 
 1. When only `agent-skill.json` exists, read it.
@@ -1800,10 +1806,12 @@ garbage-collection paths remain implementation-specific.
 
 The following writer-version rules describe legacy installations. The
 [source extension](skillfile-sources.md) requires marker schema 5 for every
-Skillfile schema-2 installation. A manager that accepts manifest schema 9
+Skillfile schema-2 installation except for the draft-v6 cases below.
+A manager that installs a package without a manifest or accepts manifest schema 9
 MUST also support draft marker schema 6 and use it for every
-schema-9 installation mutation, because neither a core marker nor
-source-extension marker v5 can represent the dependency package directory.
+manifestless or schema-9 installation mutation, because neither a core marker
+nor source-extension marker v5 represents manifest absence or the schema-9
+dependency package directory.
 The source extension preserves these legacy read meanings.
 
 Every installed closure node has `.csk-install.json`. Managers supporting
@@ -1919,6 +1927,13 @@ object fetch MUST NOT substitute for that assertion.
 
 Unsupported or unreadable markers are not current. A moved tag is a warning,
 or an error under strict-tag policy.
+
+For source installations, canonical node ownership is determined separately
+from currentness and full marker validity by
+[source section 4.1](skillfile-sources.md#41-canonical-ownership-before-publication).
+Install MUST prove that ownership before replacing or removing canonical nodes;
+unrecognized markers never authorize deletion. Invalid build/evidence fields
+in an ownership-proven marker require re-derivation, not an unmanaged takeover.
 
 The marker and its referenced receipt hashes are not signatures and MUST NOT be
 used as authorization tokens or provenance proof. Registry attestations are

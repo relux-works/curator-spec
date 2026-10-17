@@ -1,0 +1,180 @@
+[
+  {
+    "id": "manifestless-schema1",
+    "input": {
+      "operation": "install",
+      "skillfile_schema_version": 1,
+      "manifest": {
+        "state": "absent"
+      },
+      "package_declarations": []
+    },
+    "expected": {
+      "status": "accepted",
+      "marker_schema_version": 6,
+      "marker_skill_schema_version": null,
+      "rewrite_existing_markers": false
+    }
+  },
+  {
+    "id": "manifestless-schema2",
+    "input": {
+      "operation": "install",
+      "skillfile_schema_version": 2,
+      "manifest": {
+        "state": "absent"
+      },
+      "package_declarations": []
+    },
+    "expected": {
+      "status": "accepted",
+      "marker_schema_version": 6,
+      "marker_skill_schema_version": null,
+      "rewrite_existing_markers": false
+    }
+  },
+  {
+    "id": "schema9-schema1",
+    "input": {
+      "operation": "install",
+      "skillfile_schema_version": 1,
+      "manifest": {
+        "state": "valid",
+        "schema_version": 9
+      },
+      "package_declarations": []
+    },
+    "expected": {
+      "status": "accepted",
+      "marker_schema_version": 6,
+      "marker_skill_schema_version": 9,
+      "rewrite_existing_markers": false
+    }
+  },
+  {
+    "id": "manifest8-schema2",
+    "input": {
+      "operation": "install",
+      "skillfile_schema_version": 2,
+      "manifest": {
+        "state": "valid",
+        "schema_version": 8
+      },
+      "package_declarations": []
+    },
+    "expected": {
+      "status": "accepted",
+      "marker_schema_version": 5,
+      "marker_skill_schema_version": 8,
+      "rewrite_existing_markers": false
+    }
+  },
+  {
+    "id": "manifestless-declares-command",
+    "input": {
+      "operation": "install",
+      "manifest": {
+        "state": "absent"
+      },
+      "package_declarations": [
+        "command"
+      ],
+      "candidate_marker": "schema-cases/install-marker-v6/valid-manifestless.json"
+    },
+    "expected": {
+      "status": "refused",
+      "reason": "manifestless-package-not-pure-context",
+      "destructive_publications": 0,
+      "prior_state": "byte-identical"
+    }
+  },
+  {
+    "id": "manifestless-declares-runtime",
+    "input": {
+      "operation": "install",
+      "manifest": {
+        "state": "absent"
+      },
+      "package_declarations": [
+        "runtime"
+      ],
+      "candidate_marker": "schema-cases/install-marker-v6/valid-manifestless.json"
+    },
+    "expected": {
+      "status": "refused",
+      "reason": "manifestless-package-not-pure-context",
+      "destructive_publications": 0,
+      "prior_state": "byte-identical"
+    }
+  },
+  {
+    "id": "manifestless-declares-build",
+    "input": {
+      "operation": "install",
+      "manifest": {
+        "state": "absent"
+      },
+      "package_declarations": [
+        "build"
+      ],
+      "candidate_marker": "schema-cases/install-marker-v6/valid-manifestless.json"
+    },
+    "expected": {
+      "status": "refused",
+      "reason": "manifestless-package-not-pure-context",
+      "destructive_publications": 0,
+      "prior_state": "byte-identical"
+    }
+  },
+  {
+    "id": "manifestless-declares-legacy-agents-runtime",
+    "input": {
+      "operation": "install",
+      "manifest": {
+        "state": "absent"
+      },
+      "package_declarations": [
+        "legacy-agents-runtime"
+      ],
+      "candidate_marker": "schema-cases/install-marker-v6/valid-manifestless.json"
+    },
+    "expected": {
+      "status": "refused",
+      "reason": "manifestless-package-not-pure-context",
+      "destructive_publications": 0,
+      "prior_state": "byte-identical"
+    }
+  },
+  {
+    "id": "invalid-manifest-is-not-absence",
+    "input": {
+      "operation": "install",
+      "manifest": {
+        "state": "invalid"
+      },
+      "package_declarations": []
+    },
+    "expected": {
+      "status": "refused",
+      "reason": "manifest-invalid",
+      "fallback_to_manifestless": false,
+      "prior_state": "byte-identical"
+    }
+  },
+  {
+    "id": "unreadable-manifest-is-not-absence",
+    "input": {
+      "operation": "install",
+      "manifest": {
+        "state": "unreadable"
+      },
+      "package_declarations": []
+    },
+    "expected": {
+      "status": "refused",
+      "reason": "manifest-unreadable",
+      "fallback_to_manifestless": false,
+      "prior_state": "byte-identical"
+    }
+  }
+]

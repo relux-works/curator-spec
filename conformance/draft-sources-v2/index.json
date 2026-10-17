@@ -110,9 +110,79 @@
     "valid": true
   },
   {
+    "schema": "install-marker-v5.schema.json",
+    "instance": "schema-cases/install-marker-v5/invalid-skill-schema-version-9.json",
+    "valid": false
+  },
+  {
     "schema": "install-marker-v6.schema.json",
-    "instance": "schema-cases/install-marker-v6/valid.json",
-    "valid": true
+    "instance": "schema-cases/install-marker-v6/invalid-absent-skill-schema-version.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/invalid-fabricated-version-zero.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/invalid-manifest-and-no-manifest-flag.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/invalid-manifest-version-and-null-array.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/invalid-manifestless-activation.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/invalid-manifestless-build_roots.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/invalid-manifestless-build_source.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/invalid-manifestless-builds.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/invalid-manifestless-commands.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/invalid-manifestless-dependencies.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/invalid-manifestless-mcp_servers.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/invalid-manifestless-requirements.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/invalid-manifestless-runtime_roots.json",
+    "valid": false
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/invalid-manifestless-with-manifest-version.json",
+    "valid": false
   },
   {
     "schema": "install-marker-v6.schema.json",
@@ -120,8 +190,58 @@
     "valid": false
   },
   {
-    "schema": "install-marker-v5.schema.json",
-    "instance": "schema-cases/install-marker-v5/invalid-skill-schema-version-9.json",
-    "valid": false
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/valid-manifest-activation.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/valid-manifest-build_roots.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/valid-manifest-build_source.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/valid-manifest-builds.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/valid-manifest-commands.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/valid-manifest-dependencies.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/valid-manifest-mcp_servers.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/valid-manifest-requirements.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/valid-manifest-runtime_roots.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/valid-manifestless.json",
+    "valid": true
+  },
+  {
+    "schema": "install-marker-v6.schema.json",
+    "instance": "schema-cases/install-marker-v6/valid.json",
+    "valid": true
   }
 ]

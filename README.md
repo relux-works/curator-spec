@@ -182,6 +182,14 @@ Validation requires local release tags (fetch tags in shallow checkouts).
   positive/negative cases and semantic-vector inventory. These tests also run
   in `make validate`; they do not qualify runtime entrypoints. Corpus outputs
   live in `conformance/profile-codex-settings-v1/`; logs belong in `.temp/`.
+- Draft source marker: `python3 -B -m unittest discover -s tools -p 'test_source_marker.py' -v`
+  validates manifestless v6 positives/negatives and narrowing controls through
+  the published JSON Schema. `python3 tools/validate.py` also recomputes all
+  ownership-vector refusal, preservation and re-derivation obligations from
+  their inputs; marker tests include narrowing controls through that entry point.
+  Fixtures live in `conformance/draft-sources-v2/`;
+  logs go under `.temp/`. Ownership filesystem behavior requires a manager
+  harness and is not executed by these specification checks.
 - Whole-carrier publication: `python3 tools/rc7_carriers.py` and
   `python3 -B -m unittest discover -s tools -p 'test_rc7_carriers.py' -v`
   validate the complete successor corpus, including old/new compatibility.

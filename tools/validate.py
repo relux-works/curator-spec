@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import base64
+import copy
 import hashlib
 import json
 import re
@@ -3646,6 +3647,151 @@ def draft_sources_schema_registry() -> tuple[Registry, dict[str, Path], dict[str
     return registry, draft_paths, accepted_paths
 
 
+def source_marker_ownership_scenarios() -> dict[str, dict[str, Any]]:
+    """Pin required scenarios to independent, frozen positive marker seeds.
+
+    This is specification data checking, not a simulated filesystem installer.
+    Keeping the input obligations separate prevents a self-consistent rewrite
+    of a refusal row into a positive row from silently removing its coverage.
+    """
+    seed_dir = ROOT / "conformance/skillfile-sources-v1/schema-cases/install-marker-v5"
+    base = dict(load_json(seed_dir / "valid-no-builds.json"), name="review")
+
+    def marker(value: Any = base, **changes: Any) -> dict[str, Any]:
+        return dict(file_type="regular", readable=True, json=copy.deepcopy(value), **changes)
+
+    def node(value: Any = None, kind: str = "directory") -> dict[str, Any]:
+        return {"node_type": kind, "marker": value}
+
+    def install(entries: dict[str, Any], selected: Any = None, **changes: Any) -> dict[str, Any]:
+        return dict(operation="install", selected=["review"] if selected is None else selected,
+                    canonical_entries=entries, **changes)
+
+    scenarios = {
+        "unowned-sibling-preserved-and-named": install({
+            "personal": node(), "owned": node(marker(dict(base, name="owned")))}),
+        "unowned-selected-destination-no-partial-change": install({"review": node()}, ["new-node", "review"]),
+        "all-unowned-paths-named": install({"personal": node(), "review": node()}, ["new-node", "review"]),
+    }
+    for name, value in {
+        "unreadable-marker": dict(marker(), readable=False),
+        "unparseable-marker": {"file_type": "regular", "readable": True, "raw": "{"},
+        "nonobject-marker": marker([]),
+        "wrong-name-marker": marker(dict(base, name="other")),
+        "missing-schema-identity": marker({k: v for k, v in base.items() if k != "schema_version"}),
+        "unknown-schema-identity": marker(dict(base, schema_version=77)),
+        "string-schema-version": marker(dict(base, schema_version="5")),
+        "symlink-marker": dict(marker(), file_type="symlink", target_type="regular"),
+        "special-marker": dict(marker(), file_type="fifo"),
+    }.items():
+        scenarios[name] = install({"review": node(value)})
+    scenarios.update({
+        "symlink-canonical-node": install({"review": node(marker(), "symlink")}),
+        "symlink-canonical-parent": install({"review": node(marker())}, canonical_parent_type="symlink"),
+        "special-canonical-entry": install({"review": node(kind="fifo")}),
+        "v6-reader-unaware": install({"review": node(marker(dict(base, schema_version=6)))},
+                                     recognized_source_marker_versions=[5]),
+        "ownership-changed-before-publication": install({"review": node(marker())},
+                                                       recheck_canonical_entries={"review": node()}),
+        "owned-stale-cleanup": install({"review": node(marker())}, []),
+        "new-destination-without-preceding-marker": install({}),
+    })
+    invalid = dict(load_json(seed_dir / "valid-external-substitution.json"), name="review")
+    for record in invalid["builds"].values():
+        record["execution_policy"] = "invalid-policy"
+    for version in (5, 6):
+        scenarios[f"owned-v{version}-invalid-execution-policy-rederived"] = {
+            "operations": ["status", "repair", "install"], "selected": ["review"],
+            "canonical_entries": {"review": node(marker(dict(invalid, schema_version=version)))},
+        }
+    return scenarios
+
+
+def source_marker_owned(name: str, entry: dict[str, Any], parent: str, versions: list[int]) -> bool:
+    """Evaluate only the modeled no-follow/read/identity ownership evidence."""
+    marker = entry.get("marker")
+    if (parent != "directory" or entry.get("node_type") != "directory"
+            or not isinstance(marker, dict) or marker.get("file_type") != "regular"
+            or marker.get("readable") is not True):
+        return False
+    try:
+        value = json.loads(marker["raw"]) if "raw" in marker else marker.get("json")
+    except (ValueError, TypeError):
+        return False
+    return (isinstance(value, dict) and type(value.get("schema_version")) is int
+            and value["schema_version"] in versions and value.get("name") == name)
+
+
+def validate_source_marker_ownership_vectors(*, case_ids: set[str] | None = None) -> None:
+    """Recompute every ownership-vector outcome from section 4.1, not its pin.
+
+    The preservation labels are corpus obligations, not observed disk effects.
+    Real read errors, races and filesystem writes still require manager tests.
+    """
+    rows = load_json(DRAFT_SOURCES_SUITE / "marker-ownership-cases.json")
+    scenarios = source_marker_ownership_scenarios()
+    if (not isinstance(rows, list) or len(rows) != len(scenarios)
+            or any(not isinstance(row, dict) for row in rows)
+            or {row.get("id") for row in rows} != set(scenarios)):
+        raise ValidationFailure("source marker ownership: required scenario inventory differs")
+    registry, draft, accepted = draft_sources_schema_registry()
+    validators = {v: Draft202012Validator(load_json(paths[f"install-marker-v{v}.schema.json"]), registry=registry)
+                  for v, paths in ((5, accepted), (6, draft))}
+    refusals = 0
+    checked = 0
+    for row in rows:
+        name = row["id"]
+        inputs = row.get("input")
+        if inputs != scenarios[name]:
+            raise ValidationFailure(f"source marker ownership {name}: required scenario inputs differ")
+        if case_ids is not None and name not in case_ids:
+            continue
+        checked += 1
+        entries = inputs["canonical_entries"]
+        versions = inputs.get("recognized_source_marker_versions", [5, 6])
+        parent = inputs.get("canonical_parent_type", "directory")
+        unowned = {node for node, entry in entries.items()
+                   if not source_marker_owned(node, entry, parent, versions)}
+        # Both the initial scan and the serialized pre-publication recheck
+        # contribute refusals. Never stop after the first unowned path.
+        unowned.update(node for node, entry in inputs.get("recheck_canonical_entries", {}).items()
+                       if not source_marker_owned(node, entry, parent, versions))
+        if unowned:
+            expected = {
+                "status": "refused", "error": "source_ownership_unproven",
+                "paths": [".agents/skills/" + node for node in sorted(unowned)],
+                **{field: "byte-identical" for field in
+                   ("canonical_entries", "lock", "adapters", "runtime", "shims")},
+                "destructive_publications": 0,
+            }
+            refusals += 1
+        elif any(not validators[entry["marker"]["json"]["schema_version"]].is_valid(entry["marker"]["json"])
+                 for entry in entries.values()):
+            # Full schema validity is checked only after ownership. Invalid
+            # build evidence cannot turn an owned node into a refusal.
+            expected = {
+                "ownership": "proven", "status": "noncurrent-nonzero-read-only",
+                "repair": "revalidate-exact-locked-source-rebuild-not-adopt",
+                "install": "rederive-under-existing-gates", "on_failure": "all-prior-state-byte-identical",
+            }
+            if row.get("retained_case") != "external-evidence-mismatch-execution_policy":
+                raise ValidationFailure(f"source marker ownership {name}: retained repair case differs")
+        else:
+            selected = set(inputs["selected"])
+            removed = sorted(set(entries) - selected)
+            expected = {"status": "accepted"}
+            if removed:
+                expected["removed"] = [".agents/skills/" + node for node in removed]
+            if selected:
+                expected["published"] = [".agents/skills/" + node for node in sorted(selected)]
+        if row.get("expected") != expected:
+            raise ValidationFailure(f"source marker ownership {name}: outcome differs; required {expected!r}")
+    total = len(scenarios) if case_ids is None else len(case_ids)
+    if checked != total:
+        raise ValidationFailure("source marker ownership: requested cases were not checked")
+    print(f"source marker ownership vectors: {checked}/{total}; refusals: {refusals}/{refusals}; manager execution: unrun")
+
+
 def validate_draft_source_schemas() -> None:
     registry, draft_paths, accepted_paths = draft_sources_schema_registry()
     draft_names = {path.name for path in DRAFT_SOURCES_SCHEMAS.glob("*.json")}
@@ -3703,19 +3849,39 @@ def validate_draft_source_schemas() -> None:
     marker_v6 = load_json(draft_paths["install-marker-v6.schema.json"])
     if marker_v6["properties"]["schema_version"] != {"const": 6}:
         raise ValidationFailure("draft marker v6 does not select schema version 6")
-    if marker_v6["properties"]["skill_schema_version"] != {"type": "integer", "minimum": 1, "maximum": 9}:
-        raise ValidationFailure("draft marker v6 does not record manifest versions through 9")
+    if marker_v6["properties"]["skill_schema_version"] != {"type": ["integer", "null"], "minimum": 1, "maximum": 9}:
+        raise ValidationFailure("draft marker v6 does not record manifest versions through 9 or explicit absence")
     if marker_v6["properties"]["package"] != {
         "$ref": "../skillfile-sources-v1/source-types-v1.schema.json#/$defs/package"
     }:
         raise ValidationFailure("draft marker v6 does not reuse the accepted package identity")
+    # The only additional v6 branch is the constrained no-manifest form.
+    manifestless = {
+        "if": {
+            "properties": {"skill_schema_version": {"type": "null"}},
+            "required": ["skill_schema_version"],
+        },
+        "then": {
+            "properties": {
+                **{key: {"maxItems": 0} for key in
+                   ("commands", "dependencies", "runtime_roots", "build_roots")},
+                "builds": {"maxProperties": 0},
+                "activation": {"properties": {"commands": {"maxItems": 0}}},
+            },
+            "not": {"anyOf": [{"required": [key]} for key in
+                                ("build_source", "requirements", "mcp_servers")]},
+        },
+    }
+    if marker_v6["allOf"] != marker_v5["allOf"] + [manifestless]:
+        raise ValidationFailure("draft marker v6 must add exactly the constrained no-manifest branch")
+    marker_v6["allOf"].pop()
     marker_v5.pop("$id", None)
     marker_v6.pop("$id", None)
     marker_v6["properties"]["schema_version"] = {"const": 5}
     marker_v6["properties"]["skill_schema_version"] = {"type": "integer", "minimum": 1, "maximum": 8}
     marker_v6["properties"]["package"] = {"$ref": "source-types-v1.schema.json#/$defs/package"}
     if marker_v5 != marker_v6:
-        raise ValidationFailure("draft marker v6 differs from marker v5 beyond schema and manifest versions")
+        raise ValidationFailure("draft marker v6 differs from marker v5 beyond versions and the no-manifest form")
 
     previous, previous_paths = schema_registry()
     old_manifest = load_json(previous_paths["agent-skill-v8.schema.json"])
@@ -11995,6 +12161,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_local_setup_token,
         validate_draft_source_schemas,
         validate_draft_sources_manifest,
+        validate_source_marker_ownership_vectors,
         validate_repository_descriptor_identity,
         validate_manifest,
         validate_review_evidence,
