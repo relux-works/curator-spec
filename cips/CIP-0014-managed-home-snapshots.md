@@ -192,8 +192,10 @@ provisions, logs in, updates a profile, or launches a tool.
 
 `--into` may be relative to the caller's working directory; Curator records
 only its validated absolute handle internally, never in the portable manifest.
-The destination MUST be absent with an existing caller-owned parent, an empty
-caller-owned directory, or an intact prior materialization of this version.
+The destination MUST be absent with an existing caller-owned private parent,
+or an intact prior snapshot of this version accepted only as a verified no-op.
+An existing empty directory MUST refuse without writes with
+`environment_materialize_destination_invalid`.
 Curator MUST reject non-directory targets, non-empty unrelated directories,
 unknown snapshot versions, unreadable ownership evidence and modified prior
 snapshots. An existing manifest is inventory evidence, not permission to
@@ -355,13 +357,15 @@ unsupported-adapter codes are frozen in [snapshot §5](../protocol/managed-home-
 They are new normative names, not claims of existing implementation support.
 
 For absent targets, stage beside the target and publish by no-replace rename.
-For an empty target, require exclusive ownership and recheck emptiness by
-handle before replacing that directory entry. For a prior snapshot, first
-verify its entire inventory, metadata and absence of extras. An identical
-manifest is a no-op after byte verification. A different generation is not
-overwritten at that path: refuse and require a fresh empty destination.
+For a prior snapshot, first verify its entire inventory, metadata, actual
+file bytes, sizes, modes, complete entry set and absence of extras. An identical
+manifest is a no-op only after this verification. A different generation MUST
+refuse with `environment_materialize_snapshot_mismatch` and require a fresh
+absent destination. An existing empty target refuses because no portable
+operation replaces it conditionally on its retained identity under same-user
+substitution; see [snapshot §2](../protocol/managed-home-snapshots.md#2-destination-and-publication).
 Thus re-materialization is idempotent without mutating an active snapshot.
-Staging failure leaves the prior generation untouched and no success output;
+Failure preserves the target, including any competing replacement, and emits no success;
 cleanup removes only this invocation's privately created staging entries.
 
 #### 5. Adapter consumption and session overlays
@@ -587,11 +591,11 @@ helper tests alone cannot qualify materialization or launch.
 | Named test / production entry | Positive and negative property |
 |---|---|
 | `MaterializeCLI_ContentClosure` / `curator env materialize` | Root, referenced supports, skill assets, system and MCP content are exact; native seeds, hidden credentials, state and marker internals never appear |
-| `MaterializeCLI_DestinationBoundary` / same | Absent/empty destinations succeed; nonempty foreign, protected ancestry, foreign ownership, linked ancestor/target, reparse point and concurrent replacement refuse without writes outside staging |
+| `MaterializeCLI_DestinationBoundary` / same | Absent destination under an existing caller-owned private parent succeeds; existing empty directory refuses without writes with `environment_materialize_destination_invalid`; nonempty foreign, protected ancestry, foreign ownership, linked ancestor/target, reparse point and concurrent replacement refuse without writes outside own staging or alteration of the target |
 | `MaterializeCLI_NoTornGeneration` / same | Race repair, profile use and global sync against multi-file capture; result is one verified generation or refusal; inject same-fragment ABA and external store-byte mutation |
 | `MaterializeCLI_SourceRefusals` / same | Stale/unprovisioned, lock timeout, unreadable marker/store/passthrough, unknown surface and pending recovery refuse; no repair, native fallback or credential reads |
 | `MaterializeCLI_PortableIdentity` / both forms | Manifest-only equals exported bytes; relocation survives source-home removal; sizes, modes and complete entry set match; different version/descriptor changes digest |
-| `MaterializeCLI_Idempotence` / same | Identical verified target is unchanged; changed content, forged manifest, extra file or new source generation refuses and preserves the existing target |
+| `MaterializeCLI_Idempotence` / same | Intact prior snapshot of this version with identical manifest is unchanged only after full verification; changed content, forged manifest, extra file or new source generation refuses with `environment_materialize_snapshot_mismatch` and preserves the target; a different generation requires a fresh absent destination |
 | `HostedStart_SnapshotAndPolicy` / `curator-run --hosted` | Claude/Codex/Muse use private content, exact policy overlay and separate credentials; Codex MCP cannot disappear or merge ambient servers; missing layer and duplicate `-p` refuse |
 | `HostedAttachResume_ContentDrift` / task-board attach/native resume | Exact content resumes after managed-home mutation; altered file, overlay, descriptor, extra entry, missing baseline and failed read refuse without updating baseline |
 | `ExecFD3_SnapshotArchive` / `curator-run exec` | Valid admitted archive starts; wrong expected digest, self-minted plan, unknown contract, missing/extra entries, links, traversal, tar aliases, truncation and size/depth excess refuse before child code |

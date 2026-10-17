@@ -279,7 +279,7 @@
     },
     {
       "path": "conformance/managed-home-snapshot-v1/operation-vector-notes.md",
-      "sha256": "sha256:8199827d44df9b6f0f87b1b5a52bffe9d106134c6feb8b026c23f6c2478b6f9d"
+      "sha256": "sha256:a953415f6eca3f41e8c2c51f478cf57711263f0fc28f25b709dde141626f768c"
     },
     {
       "path": "conformance/managed-home-snapshot-v1/semantic/adapter-binding-manifest.json",
@@ -371,7 +371,7 @@
     },
     {
       "path": "protocol/managed-home-snapshots.md",
-      "sha256": "sha256:7cf997ce8f0c7468a5fbbe3412ad3b542b9ff128391acbcb54598372a01f9ad8"
+      "sha256": "sha256:4f129b7d3ac0508f9f92d7a0f5b12165ad44b08e0f6bee1f3c20e90f8ab03df0"
     },
     {
       "path": "schemas/managed-home-snapshot-v1/README.md",

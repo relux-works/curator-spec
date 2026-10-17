@@ -38,8 +38,9 @@ MUST NOT disclose content, secrets or credential-source metadata.
 
 `--into` may be caller-relative. The validated absolute handle is internal
 and MUST NOT be serialized. The destination MUST be absent with an existing
-caller-owned parent, an empty caller-owned directory, or an intact prior
-snapshot of this version. Non-directories, unrelated nonempty directories,
+caller-owned private parent, or an intact prior snapshot of this version
+accepted only as a verified no-op. An existing empty directory MUST refuse
+with `environment_materialize_destination_invalid`. Non-directories, unrelated nonempty directories,
 unknown versions, uncertain ownership and modified snapshots MUST refuse.
 An existing manifest does not authorize replacing arbitrary paths. There is
 no force, takeover or recursive-cleanup mode.
@@ -63,14 +64,19 @@ hard-link identity MUST NOT be imported. Executability does not grant
 authority to execute outside the existing execution policy.
 
 Validate without writes first. After capture and revalidation (§5), stage
-beside an absent target and publish by no-replace rename. For an empty
-directory, require exclusive ownership and recheck emptiness by handle
-before replacing its directory entry. For a prior snapshot, verify all
+beside the absent target and publish by no-replace rename. For a prior snapshot, verify all
 metadata, actual file bytes, sizes, modes, the complete entry set and absence
 of extras. Identical manifest bytes are a no-op only after this verification.
-A different generation MUST refuse and require a fresh empty destination.
-Failure MUST preserve the previous target and emit no success. Cleanup may
+A different generation MUST refuse with `environment_materialize_snapshot_mismatch`
+and require a fresh absent destination.
+Failure MUST preserve the target, including any competing replacement, and emit no success. Cleanup may
 remove only staging entries privately created by this invocation.
+
+An existing empty target cannot be replaced portably conditional on its
+retained identity. No-replace rename refuses an existing name; rechecking
+then removing or replacing the entry can affect a same-user competing
+replacement. Advisory locks do not exclude that substitution. Requiring an
+absent target permits no-replace publication without replacing a competing entry.
 
 ## 3. Content closure and relocation
 
