@@ -7,6 +7,17 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Accept CIP-0021 (operator decision 2026-10-18), adopted by Decision 0027:
+  profile `requires.skills` may select a portable git-snapshot `directory`,
+  using the context/MCP path discipline and existing diagnostics. Bind the
+  directory in current locks, audit only the selected package tree and link
+  it as the skill root in managed homes and in-place surfaces. Extend only
+  the already allocated unreleased rc.7 manifest-v2/lock-v4 carriers;
+  published manifest 1 and locks 1–2 stay byte-identical, and schema 1 still
+  refuses skill `directory`. Add separate positive
+  and negative conformance vectors; released corpus pins and legacy global
+  migration remain unchanged. No implementation conformance is claimed.
+
 - Adopt CIP-0020 A1: normative environment-scoped exact-path consent ledger,
   full repository identity/lapse, implicit profile/context bindings without a
   second confirmation, reference revocation and read-failure/lifecycle diagnostics.

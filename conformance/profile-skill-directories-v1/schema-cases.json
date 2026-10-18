@@ -1,0 +1,1572 @@
+[
+  {
+    "name": "manifest-v2-retargeted-selected-skill",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/formatter"
+          }
+        }
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "manifest-v2-retargeted-tag-selected-skill",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "directory": "skills/formatter",
+            "tag": "v1.0.0"
+          }
+        }
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "manifest-v2-retargeted-range-selected-skill",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "directory": "skills/formatter",
+            "range": "^1"
+          }
+        }
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "manifest-v2-retargeted-root-skill",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567"
+          }
+        }
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "manifest-v2-retargeted-runtime-selection",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/formatter",
+            "mode": "runtime",
+            "commands": [
+              "format"
+            ]
+          }
+        }
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "manifest-v2-retargeted-parent-prefix",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "../formatter"
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-retargeted-parent-component",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/../formatter"
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-retargeted-absolute",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "/skills/formatter"
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-retargeted-drive",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "C:/skills/formatter"
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-retargeted-backslash",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills\\formatter"
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-retargeted-dot",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "."
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-retargeted-empty",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": ""
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-retargeted-null",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": null
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-retargeted-double-slash",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills//formatter"
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-retargeted-path-source",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "path": "/snapshot",
+            "directory": "skills/formatter"
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-retargeted-unknown-member",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/formatter",
+            "unexpected": true
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "context_manifest_invalid"
+  },
+  {
+    "name": "manifest-v2-retargeted-commands-with-context",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/formatter",
+            "mode": "context",
+            "commands": [
+              "format"
+            ]
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "context_manifest_invalid"
+  },
+  {
+    "name": "manifest-v2-selected-skill",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/formatter"
+          }
+        }
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "manifest-v2-tag-selected-skill",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "directory": "skills/formatter",
+            "tag": "v1.0.0"
+          }
+        }
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "manifest-v2-range-selected-skill",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "directory": "skills/formatter",
+            "range": "^1"
+          }
+        }
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "manifest-v2-root-skill",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567"
+          }
+        }
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "manifest-v2-runtime-selection",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/formatter",
+            "mode": "runtime",
+            "commands": [
+              "format"
+            ]
+          }
+        }
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "manifest-v2-parent-prefix",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "../formatter"
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-parent-component",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/../formatter"
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-absolute",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "/skills/formatter"
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-drive",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "C:/skills/formatter"
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-backslash",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills\\formatter"
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-dot",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "."
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-empty",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": ""
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-null",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": null
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-double-slash",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills//formatter"
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-path-source",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "path": "/snapshot",
+            "directory": "skills/formatter"
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "profile_source_invalid"
+  },
+  {
+    "name": "manifest-v2-unknown-member",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/formatter",
+            "unexpected": true
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "context_manifest_invalid"
+  },
+  {
+    "name": "manifest-v2-commands-with-context",
+    "schema": "schemas/rc7-carriers-v1/agent-context-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/formatter",
+            "mode": "context",
+            "commands": [
+              "format"
+            ]
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "context_manifest_invalid"
+  },
+  {
+    "name": "lock-v4-retargeted-selected-skill",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "lock-v4-retargeted-versioned-selected-skill",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false,
+          "version": "1.0.0"
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "lock-v4-retargeted-root-skill",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "lock-v4-retargeted-parent-prefix",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "../formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "environment_store_untrusted"
+  },
+  {
+    "name": "lock-v4-retargeted-parent-component",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/../formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "environment_store_untrusted"
+  },
+  {
+    "name": "lock-v4-retargeted-absolute",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "/skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "environment_store_untrusted"
+  },
+  {
+    "name": "lock-v4-retargeted-state-skill",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false,
+          "state_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "environment_store_untrusted"
+  },
+  {
+    "name": "lock-v4-retargeted-overlay-skill",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": true
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "environment_store_untrusted"
+  },
+  {
+    "name": "lock-v4-retargeted-unknown-member",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false,
+          "unexpected": true
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "environment_store_untrusted"
+  },
+  {
+    "name": "lock-v4-retargeted-context-needs-version",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "environment_store_untrusted"
+  },
+  {
+    "name": "lock-v4-selected-skill",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "lock-v4-versioned-selected-skill",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false,
+          "version": "1.0.0"
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "lock-v4-root-skill",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": true,
+    "expected_diagnostic": null
+  },
+  {
+    "name": "lock-v4-parent-prefix",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "../formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "environment_store_untrusted"
+  },
+  {
+    "name": "lock-v4-parent-component",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/../formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "environment_store_untrusted"
+  },
+  {
+    "name": "lock-v4-absolute",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "/skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "environment_store_untrusted"
+  },
+  {
+    "name": "lock-v4-state-skill",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false,
+          "state_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "environment_store_untrusted"
+  },
+  {
+    "name": "lock-v4-overlay-skill",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": true
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "environment_store_untrusted"
+  },
+  {
+    "name": "lock-v4-unknown-member",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false,
+          "unexpected": true
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "environment_store_untrusted"
+  },
+  {
+    "name": "lock-v4-context-needs-version",
+    "schema": "schemas/rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "environment_store_untrusted"
+  },
+  {
+    "name": "historical-lock-v1-rejects-skill-directory",
+    "schema": "schemas/v1/context-lock-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ]
+    },
+    "valid": false,
+    "expected_diagnostic": "environment_store_untrusted"
+  },
+  {
+    "name": "manifest-v1-still-refuses-skill-directory",
+    "schema": "schemas/v1/agent-context-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "name": "sample-profile",
+      "version": "1.0.0",
+      "requires": {
+        "skills": {
+          "formatter": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/formatter"
+          }
+        }
+      }
+    },
+    "valid": false,
+    "expected_diagnostic": "context_manifest_invalid"
+  }
+]

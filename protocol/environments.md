@@ -2,6 +2,15 @@
 
 This document is normative for the agent-environments capability, revision 1.
 
+**CIP-0021 amendment (2026-10-18).** Profile skill requirements MAY select
+`directory` only in context manifest schema 2, with skill lock members
+recorded in context lock schema 4. These already allocated
+[rc.7 successor carriers](rc7-carriers.md) are unreleased and extended by
+this amendment; published manifest schema 1 and lock schemas 1–2 remain
+unchanged. Schema 1 carrying a skill `directory` remains refused.
+Sections 1.3, 1.4, 2, 9.1 and 9.4 apply selection only through these
+successors; legacy global-skill migration is unchanged.
+
 **CIP-0017 amendment (2026-10-15).** Owner decision 2026-10-15 (D9,
 D10, D12) adopts the v4 root-context fact and coordinated credential-store
 transport in section 10.2, managed Muse file credentials in section 7.4,
@@ -144,7 +153,7 @@ machine configuration.
 | profile name violates the core §2 grammar | `profile_name_invalid` |
 | operation names a profile that is not installed | `profile_unknown` |
 | installed profile's lock file is present but cannot be read or parsed | `environment_store_untrusted` (entry-class; never `profile_unknown`) |
-| no candidate satisfies a name's effective constraint, or a final constraint is unsatisfied (names every requirer, its range or exact form, and the candidates considered) | `context_range_conflict` |
+| no candidate satisfies a name's effective constraint, a final constraint is unsatisfied, or requirers disagree on source identity or directory (names every requirer, its constraint, source and directory, and the candidates considered) | `context_range_conflict` |
 | `git` source with a signer allowlist whose selected candidate carries neither a tag signature nor a commit signature (names the source and the tag or commit) | `context_source_unsigned` |
 | `git` source with a signer allowlist whose candidate signature verifies against no allowed signer, or fails verification (names the source, the tag or commit, and the signer seen) | `context_source_signer_rejected` |
 | `git` source with no signer allowlist under `require_source_signers` (names the source) | `context_source_signers_missing` |
@@ -210,14 +219,22 @@ no version tag peeling to that commit); its pin — `commit`, or
 (section 6); its `required_by` list — the sorted names of its direct
 requirers, empty for the root and, for an overlay, the sorted names of any
 members that also require it; and `overlay`, true
-exactly for a machine overlay. Members are sorted by (`kind`, `name`),
+exactly for a machine overlay. Under [the rc.7 successor allocation](rc7-carriers.md),
+a schema-2 manifest's git skill requirement that declares `directory` MUST
+produce a schema-4 lock whose skill member records it, exactly as a context
+member does. Lock schemas 1–2 continue to forbid `directory` on skills.
+The recorded directory participates in the CCJ-1 lock bytes and lock hash;
+changing it changes lock identity even at the same source and commit.
+Members are sorted by (`kind`, `name`),
 bytewise. A `path` member's source path stays in machine configuration and
 the environment marker; it never enters the lock, so the lock hash is the
 same on every machine that locks the same bytes.
 
 The frozen `context-lock-v1` shape remains readable as framing version 1.
 `context-lock-v2` adds REQUIRED top-level `hash_version: 2`, which applies to
-each member's `state_sha256`. New writers MUST use the v2 lock and MUST record
+each member's `state_sha256`. Writers adopting the rc.7 successor allocation
+MUST use lock schema 4 with its required precedence and empty settings fields;
+other revision-1 writers MUST use the v2 lock. Both MUST record
 the unprefixed 64-character lowercase hexadecimal digest from core §8 in
 `state_sha256`. An absent `hash_version` in a v1 lock means version 1; a v1
 lock MUST NOT be interpreted as carrying a v2 identity.
@@ -334,7 +351,14 @@ is no machine-wide prerelease admission switch in revision 1.
 
 **Resolution.** Resolution is the core §7 closure with its admission rule
 generalized from exact refs to constraints. Every requirement on one
-package name MUST agree on the canonical source identity (unchanged). A
+package name MUST agree on the canonical source identity and selected
+`directory`, including every schema-2 requirer of a skill name. Schema-1
+skill requirements remain root-addressed and MUST NOT declare `directory`.
+Omission selects the
+snapshot root; an explicit directory must agree across requirers. A source
+or directory disagreement fails `context_range_conflict`, naming every
+requirer and its source and directory, as for contexts; it MUST NOT select
+one requirer's directory or install a second copy. A
 requirement contributes a **constraint**: a `range` as written; an exact
 `tag` or `revision` as a fixed candidate. The **effective constraint** of a
 name is the intersection of every current constraint on it; an exact
@@ -426,7 +450,9 @@ that admits no signer: every candidate of that source fails — unsigned as
 
 A **context package** is a git snapshot, or a directory within one named by
 `directory`, or a `path` directory, whose root contains `agent-context.json`,
-a strict schema-1 object:
+a strict schema-1 object, or a schema-2 object under the unreleased
+[rc.7 successor allocation](rc7-carriers.md). The following example uses
+the unchanged schema-1 vocabulary:
 
 ```json
 {
@@ -462,8 +488,11 @@ a strict schema-1 object:
 ```
 
 Validation is strict under core §1: readers MUST reject duplicate keys,
-unknown fields at every level, invalid UTF-8, and a `schema_version` other
-than `1`.
+unknown fields at every level, invalid UTF-8, and unsupported schema versions.
+Schema-1 readers accept only `schema_version: 1`; readers adopting the rc.7
+successor explicitly dispatch `schema_version: 2` to its complete closed
+schema, retaining its absent/empty-only `codex_settings` vocabulary. They
+MUST NOT relabel schema 1 as schema 2 to admit new fields.
 
 - **`name`** (REQUIRED) is a portable identifier (core §2) and MUST equal the
   name every requirer uses for it.
@@ -490,13 +519,27 @@ than `1`.
   OPTIONAL object keyed by package name. Every entry carries a canonical
   `git` source (core §6.1) and exactly one of `range` (section 1.4), `tag`,
   or `revision` (the core §4.4 exact forms). A context or MCP requirement
-  MAY carry `directory`, a portable relative path naming the package's
-  directory within the snapshot — spelled `directory` so that it is never
-  confused with the `path` source kind of section 1, which is an
-  operator-local directory. A skill requirement carries no `directory`: a
-  skill package is addressed exactly as core §4.4 addresses it, and `mode`
-  and `commands` keep their core §4.4 meaning. A context requirement MAY
-  carry `weight` to override the required package's own default (section 6).
+  MAY carry `directory`; a skill requirement MAY carry it only in manifest
+  schema 2. A schema-1 skill requirement with `directory` MUST be refused as
+  `context_manifest_invalid`. The selector is a portable relative path
+  (core §2) naming the package directory within the git snapshot. All three kinds
+  use the same grammar and snapshot discipline: the selected directory
+  MUST exist, MUST remain within the snapshot, and MUST NOT traverse a
+  symlink at any component, even one targeting another directory inside
+  the snapshot. Invalid paths, escapes, and symlink traversal fail
+  `profile_source_invalid` (section 1.1). Omission selects the snapshot root;
+  `.` is not a portable path and MUST be omitted for root selection.
+  `directory` is never the `path` source kind of section 1: requirements
+  carry `git`, and a `path` source with `directory` is
+  `profile_source_invalid`. For a skill, the selected directory is the
+  package root: `SKILL.md` (core §3), `agent-skill.json` or its legacy alias
+  (core §4), and all package-relative paths are read there, never at the
+  repository root or a sibling. Core §4's optional manifest for a pure
+  context skill and manifest precedence remain unchanged. Missing or
+  invalid required skill package content fails `manifest_invalid`; no
+  fallback to another directory is permitted. Skill `mode` and `commands`
+  keep their core §4.4 meaning. A context requirement MAY carry `weight`
+  to override the required package's own default (section 6).
 - **`CONTEXT.md`** at the package root is informative and never
   materialized. Files not named by the manifest are inert: they participate
   in snapshot identity and audit and are never materialized.
@@ -516,6 +559,7 @@ schema 1. Existing schema-1 readers retain their unknown-field rejection.
 | Condition | Diagnostic |
 | --- | --- |
 | `agent-context.json` absent at the addressed root, malformed, unknown field, wrong `schema_version`, invalid `name`, `version`, `weight`, `weights`, or `requires` entry; `context` present without `context/` | `context_manifest_invalid` |
+| required `SKILL.md` absent or invalid at the selected skill root, or a required skill manifest absent or invalid there (core §3–§4; a pure context skill may omit its manifest) | `manifest_invalid` |
 | `agent-mcp.json` absent at the addressed root, malformed, unknown field, wrong `schema_version`, or a `server` rule of section 2.2 violated | `mcp_declaration_invalid` |
 | an MCP declaration package's canonical source identity is outside the machine's MCP package allowlist | `mcp_package_not_allowed` |
 | MCP declaration carried by a `path`-kind package — a root, an overlay, or an onboarding import — at resolution (names the package and the declaration) | `mcp_declaration_path_source_refused` |
@@ -2668,6 +2712,16 @@ declared capabilities under core §3 and §4.3. A declaration covering a
 detected network contact satisfies the network-declaration check, but does not
 clear other audit findings.
 
+For a schema-2 skill requirement with `directory`, recorded in lock schema 4,
+the audit subject is the selected
+package tree, not the enclosing repository: findings, declared capabilities,
+and core §8 content identity MUST be computed below that directory, with
+paths relative to it. Repository-root or sibling manifests MUST NOT supply
+capabilities, and files outside the selected tree MUST NOT enter its skill
+content hash or findings. Source admission, signer verification and snapshot
+validation still apply to the git snapshot under sections 1 and 4; selection
+cannot bypass those gates. Manifest read failures are errors, never absence.
+
 For `audit.capability.network-undeclared`, a detected host is a **network
 contact** except when it is `localhost`, `127.0.0.1`, or `::1`, or is a
 multi-label DNS name whose normalized last label is `test`, `example`,
@@ -2955,7 +3009,13 @@ a direct declaration is a constraint attributed to the machine, in the exact
 the unchanged closure, audit, build, and runtime machinery; the resolved
 skills materialize into that profile's managed homes and — for the current
 profile of each scope — the in-place adapter surfaces under the manager §5
-discipline. Global skill operations act on the current profile and accept
+discipline. When a schema-4 lock skill member records `directory` from a
+schema-2 manifest, managed homes and
+in-place adapter surfaces MUST link that selected directory as the skill
+root, so the surface's `SKILL.md` and package-relative content come from it,
+not from the enclosing repository. The section 4 protected-store and
+section 8 write disciplines continue to apply. Global skill operations act
+on the current profile and accept
 `--profile <name>` and `--all-profiles`. The `global add` and `global
 install` operations carry no takeover flag: they are outside the section
 9.5 closed set and fail closed on
@@ -3024,7 +3084,12 @@ root-context surface (section 2), so no root-context file is written for
 to the strict audit below, a machine that never installs another profile
 observes no behavior change: `default` simply is the current profile and
 existing global installations
-keep their behavior byte-for-byte. Migration reads each global skill's
+keep their behavior byte-for-byte. This migration is unchanged by
+[CIP-0021](../cips/CIP-0021-profile-skill-directories.md): legacy install
+records carry no directory, so migrated legacy global skills retain
+repository-root addressing. Migration MUST NOT infer a directory from
+repository layout or rewrite those records to select a subdirectory.
+Migration reads each global skill's
 install record to synthesize the lock; a record it cannot read is a loss
 with reason under the section 8.4.1 inventory-candidate row — never "not
 installed" — and migration stops before any write with
@@ -4768,3 +4833,14 @@ The independent unreleased [workspace-trust A1 corpus](../conformance/workspace-
 executes private-record schema admission and deterministic ledger transition
 vectors for the six A1 CIP-0020 test-plan rows. It is specification-data
 conformance, not filesystem, Git, persistence, Curator or vendor qualification.
+
+### 13.1 Profile skill directory amendment
+
+The unreleased [profile skill directory vectors](../conformance/profile-skill-directories-v1/README.md)
+cover section 2 selection, section 1.3 lock identity, section 1.4 agreement,
+section 9.1 audit subjects, section 9.4 materialization and unchanged legacy
+migration, with section 1.1 snapshot/path refusals. They supplement rather
+than regenerate the frozen rc.14 corpus. Selection cases bind to manifest
+schema 2 and lock schema 4; a separate structural case proves schema 1 still
+refuses skill `directory`. Implementation consumption remains
+unverified until the manager drives the declared lifecycle entry points.

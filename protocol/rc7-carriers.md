@@ -16,10 +16,24 @@ The [whole-object schemas](../schemas/rc7-carriers-v1/README.md) allocate:
 |---|---|---|
 | Manager configuration | `schema_version: 5` | Configuration 3, plus optional `environments.credential_store` importing frozen `credential-store-config-v1` |
 | Readiness status | `status: "env-status-v1"` | First explicitly versioned full readiness matrix; required `rows`, `codex_settings`, `observations` |
-| Context manifest | `schema_version: 2` | Manifest 1, plus optional empty-only `codex_settings` |
-| Context lock | `schema_version: 4`, `hash_version: 2` | Lock 2, plus REQUIRED `precedence`, `codex_settings: {}`, `codex_settings_contributions: []` |
+| Context manifest | `schema_version: 2` | Manifest 1, plus optional empty-only `codex_settings` and optional `requires.skills` directory (CIP-0021) |
+| Context lock | `schema_version: 4`, `hash_version: 2` | Lock 2, plus skill-member directory (CIP-0021) and REQUIRED `precedence`, `codex_settings: {}`, `codex_settings_contributions: []` |
 | Environment marker | `version: 5`, `hash_version: 2` | Marker 3, plus REQUIRED `codex_settings: {}` |
 | Launch fragment | `fragment: "launch-env-fragment-v5"` | Fragment 4, replacing only Codex payload ownership as section 3 specifies |
+
+[CIP-0021](../cips/CIP-0021-profile-skill-directories.md), adopted by
+[Decision 0027](../decisions/0027-profile-skill-directories.md), extends the
+already allocated manifest 2 and lock 4 above with optional skill `directory`.
+Both are unreleased extension carriers and may grow before release; no new
+identity is allocated. Environments §§1.3, 1.4, 2, 9.1 and 9.4 bind agreement,
+lock identity, audit and materialization to the selected directory, using the
+existing context/MCP path grammar and snapshot discipline. Manifest 1 still
+refuses skill `directory`; lock 1–2 still forbid it on skill members. Their
+published bytes, frozen negative cases and pins remain unchanged. A selected
+directory participates in the complete schema-4 CCJ-1 lock identity, retaining
+precedence and empty settings/provenance fields. Legacy migration stays
+root-addressed. The separate [skill-directory corpus](../conformance/profile-skill-directories-v1/README.md)
+binds to these successor identities; its lifecycle execution is unverified.
 
 Draft CIP-0013 reserves proposed config 4, lock 3 and environment marker 4
 for separate base-context semantics. This publication skips those numbers;

@@ -1,0 +1,81 @@
+{
+  "selected": {
+    "lock": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/formatter",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "ccj1": "{\"codex_settings\":{},\"codex_settings_contributions\":[],\"hash_version\":2,\"members\":[{\"commit\":\"1111111111111111111111111111111111111111\",\"kind\":\"context\",\"name\":\"sample-profile\",\"overlay\":false,\"required_by\":[],\"source\":\"github.com/example/sample-profile\",\"version\":\"1.0.0\",\"weight\":0},{\"commit\":\"0123456789abcdef0123456789abcdef01234567\",\"directory\":\"skills/formatter\",\"kind\":\"skill\",\"name\":\"formatter\",\"overlay\":false,\"required_by\":[\"sample-profile\"],\"source\":\"github.com/example/skill-packages\",\"weight\":0}],\"precedence\":{\"placement\":\"winner-last\",\"winner\":\"higher-weight\"},\"root\":\"sample-profile\",\"schema_version\":4}",
+    "lock_sha256": "sha256:c60b77a330a42eb7c23e8eb7797d25955efcdf6355cf0d18558f1368fee73007"
+  },
+  "alternate": {
+    "lock": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/sample-profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "formatter",
+          "source": "github.com/example/skill-packages",
+          "commit": "0123456789abcdef0123456789abcdef01234567",
+          "directory": "skills/alternate",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "ccj1": "{\"codex_settings\":{},\"codex_settings_contributions\":[],\"hash_version\":2,\"members\":[{\"commit\":\"1111111111111111111111111111111111111111\",\"kind\":\"context\",\"name\":\"sample-profile\",\"overlay\":false,\"required_by\":[],\"source\":\"github.com/example/sample-profile\",\"version\":\"1.0.0\",\"weight\":0},{\"commit\":\"0123456789abcdef0123456789abcdef01234567\",\"directory\":\"skills/alternate\",\"kind\":\"skill\",\"name\":\"formatter\",\"overlay\":false,\"required_by\":[\"sample-profile\"],\"source\":\"github.com/example/skill-packages\",\"weight\":0}],\"precedence\":{\"placement\":\"winner-last\",\"winner\":\"higher-weight\"},\"root\":\"sample-profile\",\"schema_version\":4}",
+    "lock_sha256": "sha256:802ffb39a6ea1add365b1dd9ecc54e13e51fb85c0a151271d03a95d48deb91c9"
+  },
+  "difference": "Only members[1].directory changes; lock_sha256 MUST differ."
+}

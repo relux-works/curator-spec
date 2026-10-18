@@ -250,6 +250,9 @@
           "items": {
             "$ref": "../v1/common.schema.json#/$defs/identifier"
           }
+        },
+        "directory": {
+          "$ref": "../v1/common.schema.json#/$defs/portablePath"
         }
       },
       "additionalProperties": false,

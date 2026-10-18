@@ -1,0 +1,528 @@
+{
+  "schema_version": 1,
+  "capability": "agent-environments",
+  "amendment": "CIP-0021",
+  "released_corpus": false,
+  "cases": [
+    {
+      "name": "profile-install-selected-root",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {},
+      "expected": {
+        "outcome": "materialized",
+        "diagnostic": null,
+        "skill_lock_directory": "skills/formatter",
+        "skill_lock_sha256": "sha256:c60b77a330a42eb7c23e8eb7797d25955efcdf6355cf0d18558f1368fee73007",
+        "skill_audit_root": "skills/formatter",
+        "skill_capabilities_from": "skills/formatter/agent-skill.json",
+        "skill_content_paths": [
+          "SKILL.md",
+          "agent-skill.json",
+          "notes.md"
+        ],
+        "undeclared_network_findings": [],
+        "skill_link_targets": {
+          "managed-home": "skills/formatter",
+          "in-place": "skills/formatter"
+        }
+      },
+      "forbidden_observations": [
+        "repository root or sibling contributes skill content, capabilities or findings",
+        "directory dropped from skill lock member",
+        "either surface links the repository root"
+      ]
+    },
+    {
+      "name": "profile-update-selected-root",
+      "entry": "profile update",
+      "fixture": "fixtures.json",
+      "changes": {},
+      "expected": {
+        "outcome": "materialized",
+        "diagnostic": null,
+        "skill_lock_directory": "skills/formatter",
+        "skill_lock_sha256": "sha256:c60b77a330a42eb7c23e8eb7797d25955efcdf6355cf0d18558f1368fee73007",
+        "skill_audit_root": "skills/formatter",
+        "skill_capabilities_from": "skills/formatter/agent-skill.json",
+        "skill_content_paths": [
+          "SKILL.md",
+          "agent-skill.json",
+          "notes.md"
+        ],
+        "undeclared_network_findings": [],
+        "skill_link_targets": {
+          "managed-home": "skills/formatter",
+          "in-place": "skills/formatter"
+        }
+      },
+      "forbidden_observations": [
+        "repository root or sibling contributes skill content, capabilities or findings",
+        "directory dropped from skill lock member",
+        "either surface links the repository root"
+      ]
+    },
+    {
+      "name": "profile-sync-selected-root",
+      "entry": "profile sync",
+      "fixture": "fixtures.json",
+      "changes": {},
+      "expected": {
+        "outcome": "materialized",
+        "diagnostic": null,
+        "skill_lock_directory": "skills/formatter",
+        "skill_lock_sha256": "sha256:c60b77a330a42eb7c23e8eb7797d25955efcdf6355cf0d18558f1368fee73007",
+        "skill_audit_root": "skills/formatter",
+        "skill_capabilities_from": "skills/formatter/agent-skill.json",
+        "skill_content_paths": [
+          "SKILL.md",
+          "agent-skill.json",
+          "notes.md"
+        ],
+        "undeclared_network_findings": [],
+        "skill_link_targets": {
+          "managed-home": "skills/formatter",
+          "in-place": "skills/formatter"
+        }
+      },
+      "forbidden_observations": [
+        "repository root or sibling contributes skill content, capabilities or findings",
+        "directory dropped from skill lock member",
+        "either surface links the repository root"
+      ]
+    },
+    {
+      "name": "selected-root-undeclared-contact",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "snapshot.files.skills/formatter/agent-skill.json": "{\"schema_version\":3,\"commands\":{},\"capabilities\":{\"network\":\"none\"}}\n"
+      },
+      "expected": {
+        "outcome": "refused",
+        "diagnostic": "audit.capability.network-undeclared",
+        "finding_file": "notes.md",
+        "finding_host": "api.example.net",
+        "published_writes": []
+      },
+      "forbidden_observations": [
+        "repository-root or sibling capabilities clear the selected finding",
+        "lock or surfaces published after audit refusal"
+      ]
+    },
+    {
+      "name": "root-addressing-unchanged",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "requirement.remove": [
+          "directory"
+        ],
+        "snapshot": "root_skill_snapshot"
+      },
+      "expected": {
+        "outcome": "materialized",
+        "diagnostic": null,
+        "skill_lock_directory_present": false,
+        "skill_audit_root": ".",
+        "skill_link_targets": {
+          "managed-home": ".",
+          "in-place": "."
+        }
+      },
+      "forbidden_observations": []
+    },
+    {
+      "name": "manifestless-context-selected-root",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "snapshot": "context_skill_snapshot",
+        "requirement.mode": "context"
+      },
+      "expected": {
+        "outcome": "materialized",
+        "diagnostic": null,
+        "skill_manifest": null,
+        "skill_commands": [],
+        "skill_link_targets": {
+          "managed-home": "skills/formatter",
+          "in-place": "skills/formatter"
+        }
+      },
+      "forbidden_observations": []
+    },
+    {
+      "name": "parent-prefix-refused",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "requirement.directory": "../formatter"
+      },
+      "expected": {
+        "outcome": "refused",
+        "diagnostic": "profile_source_invalid",
+        "published_writes": []
+      },
+      "forbidden_observations": []
+    },
+    {
+      "name": "parent-component-refused",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "requirement.directory": "skills/../formatter"
+      },
+      "expected": {
+        "outcome": "refused",
+        "diagnostic": "profile_source_invalid",
+        "published_writes": []
+      },
+      "forbidden_observations": []
+    },
+    {
+      "name": "absolute-refused",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "requirement.directory": "/skills/formatter"
+      },
+      "expected": {
+        "outcome": "refused",
+        "diagnostic": "profile_source_invalid",
+        "published_writes": []
+      },
+      "forbidden_observations": []
+    },
+    {
+      "name": "symlinked-component-refused",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "snapshot.symlinks": {
+          "skills": "packages"
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "diagnostic": "profile_source_invalid",
+        "published_writes": []
+      },
+      "forbidden_observations": [
+        "following a link whose target remains inside the snapshot"
+      ]
+    },
+    {
+      "name": "symlinked-leaf-inside-refused",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "snapshot.symlinks": {
+          "skills/formatter": "../sibling"
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "diagnostic": "profile_source_invalid",
+        "published_writes": []
+      },
+      "forbidden_observations": [
+        "following a link whose target remains inside the snapshot"
+      ]
+    },
+    {
+      "name": "symlinked-leaf-outside-refused",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "snapshot.symlinks": {
+          "skills/formatter": "../../outside"
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "diagnostic": "profile_source_invalid",
+        "published_writes": []
+      },
+      "forbidden_observations": [
+        "following a link whose target remains inside the snapshot"
+      ]
+    },
+    {
+      "name": "missing-directory-refused",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "requirement.directory": "skills/missing"
+      },
+      "expected": {
+        "outcome": "refused",
+        "diagnostic": "profile_source_invalid",
+        "published_writes": []
+      },
+      "forbidden_observations": []
+    },
+    {
+      "name": "missing-skill-md-refused",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "snapshot.remove": [
+          "skills/formatter/SKILL.md"
+        ]
+      },
+      "expected": {
+        "outcome": "refused",
+        "diagnostic": "manifest_invalid",
+        "published_writes": []
+      },
+      "forbidden_observations": [
+        "fall back to repository-root SKILL.md"
+      ]
+    },
+    {
+      "name": "missing-runtime-manifest-refused",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "snapshot.remove": [
+          "skills/formatter/agent-skill.json"
+        ],
+        "requirement.mode": "runtime",
+        "requirement.commands": [
+          "format"
+        ]
+      },
+      "expected": {
+        "outcome": "refused",
+        "diagnostic": "manifest_invalid",
+        "published_writes": []
+      },
+      "forbidden_observations": [
+        "use repository-root manifest",
+        "silently accept requested command absent from selected package"
+      ]
+    },
+    {
+      "name": "invalid-selected-manifest-refused",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "snapshot.files.skills/formatter/agent-skill.json": "{\n"
+      },
+      "expected": {
+        "outcome": "refused",
+        "diagnostic": "manifest_invalid",
+        "published_writes": []
+      },
+      "forbidden_observations": [
+        "treat invalid selected manifest as absent",
+        "read repository-root manifest instead"
+      ]
+    },
+    {
+      "name": "directory-disagreement-refused",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "requirers": {
+          "consumer-a": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/formatter"
+          },
+          "consumer-b": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/alternate"
+          }
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "diagnostic": "context_range_conflict",
+        "diagnostic_requirers": [
+          "consumer-a",
+          "consumer-b"
+        ],
+        "diagnostic_fields": [
+          "source",
+          "directory"
+        ],
+        "published_writes": []
+      },
+      "forbidden_observations": []
+    },
+    {
+      "name": "source-disagreement-refused",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "requirers": {
+          "consumer-a": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/formatter"
+          },
+          "consumer-b": {
+            "git": "https://github.com/example/other-skills.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/formatter"
+          }
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "diagnostic": "context_range_conflict",
+        "diagnostic_requirers": [
+          "consumer-a",
+          "consumer-b"
+        ],
+        "diagnostic_fields": [
+          "source",
+          "directory"
+        ],
+        "published_writes": []
+      },
+      "forbidden_observations": []
+    },
+    {
+      "name": "omitted-versus-selected-disagreement-refused",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "requirers": {
+          "consumer-a": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/formatter"
+          },
+          "consumer-b": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567"
+          }
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "diagnostic": "context_range_conflict",
+        "diagnostic_requirers": [
+          "consumer-a",
+          "consumer-b"
+        ],
+        "diagnostic_fields": [
+          "source",
+          "directory"
+        ],
+        "published_writes": []
+      },
+      "forbidden_observations": []
+    },
+    {
+      "name": "agreeing-requirers-unify",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "requirers": {
+          "consumer-a": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/formatter"
+          },
+          "consumer-b": {
+            "git": "https://github.com/example/skill-packages.git",
+            "revision": "0123456789abcdef0123456789abcdef01234567",
+            "directory": "skills/formatter"
+          }
+        }
+      },
+      "expected": {
+        "outcome": "materialized",
+        "diagnostic": null,
+        "skill_members": 1,
+        "skill_lock_directory": "skills/formatter",
+        "skill_required_by": [
+          "consumer-a",
+          "consumer-b"
+        ]
+      },
+      "forbidden_observations": []
+    },
+    {
+      "name": "path-source-directory-refused",
+      "entry": "profile install",
+      "fixture": "fixtures.json",
+      "changes": {
+        "requirement": {
+          "path": "/snapshot",
+          "directory": "skills/formatter"
+        }
+      },
+      "expected": {
+        "outcome": "refused",
+        "diagnostic": "profile_source_invalid",
+        "published_writes": []
+      },
+      "forbidden_observations": []
+    },
+    {
+      "name": "legacy-migration-keeps-root",
+      "entry": "first profile-surface use",
+      "fixture": "fixtures.json",
+      "changes": {
+        "legacy_install_record": {
+          "name": "formatter",
+          "git": "https://github.com/example/skill-packages.git",
+          "revision": "0123456789abcdef0123456789abcdef01234567"
+        },
+        "snapshot": "root_skill_snapshot"
+      },
+      "expected": {
+        "outcome": "migrated",
+        "diagnostic": null,
+        "profile": "default",
+        "skill_lock_directory_present": false,
+        "skill_audit_root": ".",
+        "skill_link_targets": {
+          "managed-home": ".",
+          "in-place": "."
+        },
+        "inferred_directory": false
+      },
+      "forbidden_observations": []
+    },
+    {
+      "name": "sibling-edit-preserves-skill-identity",
+      "entry": "profile update",
+      "fixture": "fixtures.json",
+      "changes": {
+        "snapshot.files.skills/sibling/notes.md": "Unrelated changed bytes.\n"
+      },
+      "expected": {
+        "outcome": "materialized",
+        "diagnostic": null,
+        "skill_content_sha256_equal_to_base": true,
+        "skill_content_paths": [
+          "SKILL.md",
+          "agent-skill.json",
+          "notes.md"
+        ]
+      },
+      "forbidden_observations": []
+    },
+    {
+      "name": "selected-edit-changes-skill-identity",
+      "entry": "profile update",
+      "fixture": "fixtures.json",
+      "changes": {
+        "snapshot.files.skills/formatter/notes.md": "Changed formatting guidance.\n"
+      },
+      "expected": {
+        "outcome": "materialized",
+        "diagnostic": null,
+        "skill_content_sha256_equal_to_base": false
+      },
+      "forbidden_observations": []
+    }
+  ]
+}
