@@ -20,8 +20,11 @@ It lets `werkstatt up` use the same exact-plan route as attached launches,
 without host-side process composition. Advertise and retire delegated routing
 per manager/runtime, preserving CIP-0016's initial joint Claude/Codex/Muse
 release gate. An admitted CIP-0002 project composition becomes a verified
-snapshot input, never a live session dependency. This Draft specifies the
-intended final contract; schema publication and runtime qualification remain
+snapshot input, never a source of live content reads by the session. Its
+original home still carries CIP-0002's session lease until termination and
+reconciliation, separately from snapshot capture and GC pins. This Draft
+specifies the intended final contract; schema publication and runtime
+qualification remain
 owned follow-ups, not support claimed by this document.
 
 ## Motivation and user stories
@@ -58,12 +61,13 @@ detached requests and `werkstatt up` therefore use `launch-delegated/1`.
 The withdrawn trial flag does not gate accepted delegated launches. These
 are supplied interface facts, not newly measured implementation probes.
 
-The named `cip02-ready-for-acceptance` branch was absent in a successful
-remote-head lookup during this task. The project interface below explicitly
-assumes the current [CIP-0002 admission/composition contract](CIP-0002-project-context-in-managed-launches.md#admission-and-composition)
-and its stable-home/lease proposal. Adoption must reconcile it with the
-candidate when published. No runtime source audit, provider launch, credential
-read or native qualification is claimed.
+The project interface below is reconciled with the published Draft
+[CIP-0002 candidate at `f202f41ba4718b82cdfefac28c8dfaa9af3a7de5`](https://github.com/relux-works/curator-spec/blob/f202f41ba4718b82cdfefac28c8dfaa9af3a7de5/cips/CIP-0002-project-context-in-managed-launches.md#stable-homes-leases-and-login)
+on `cip02-ready-for-acceptance`, including its closed lease state machine and
+[exact-route retention rule](https://github.com/relux-works/curator-spec/blob/f202f41ba4718b82cdfefac28c8dfaa9af3a7de5/cips/CIP-0002-project-context-in-managed-launches.md#launch-route-binding).
+This is a candidate dependency, not adoption or implementation evidence.
+No runtime source audit, provider launch, credential read or native
+qualification is claimed.
 
 ## Design
 
@@ -301,20 +305,33 @@ as exact/3. Retirement of one runtime does not affect another runtime's state.
 
 #### 6. Admitted project composition as snapshot input
 
-Assume CIP-0002 supplies a protected registration, selected profile lock,
-individually admitted project generation, derived composition record and
-stable-home lease. Add a Curator-owned capture input for that **exact admitted
-composition**, not a receiver command to copy the project or its stable home.
+Use the pinned CIP-0002 candidate's protected registration, selected profile
+lock, individually admitted project generation, derived composition record
+and original-home **session lease**. Add a distinct Curator-owned **capture
+lease** for that **exact admitted composition**, not a receiver command to
+copy the project or its stable home. Neither lease substitutes for the other.
 The closed `inputs.project` is:
 `{project_ref, admitted_generation, admission_sha256, composition_sha256,
-profile_lock_sha256, capture_lease_ref, capture_lease_sha256}`.
+profile_lock_sha256, session_lease_ref, session_lease_sha256,
+capture_lease_ref, capture_lease_sha256}`.
 Its profile lock equals `inputs.profile_lock_sha256`. The protected composition
 record binds checkout identity, adapter/release, policy ceilings, approved
-item/closure digests and canonical CWD membership. The lease is authenticated
-protected state, never an on-repository approval or a bearer substitute.
+item/closure digests and canonical CWD membership. Both lease references resolve
+to authenticated protected state, never on-repository approvals or bearer
+substitutes. `session_lease_ref` and its digest identify CIP-0002's immutable
+`project-lease/1` binding: the same composition, original home, checkout,
+environment, owner, reserved session and generation. Its mutable lifecycle
+state remains separate from that digest. The capture binding is a separately
+versioned Curator-owned record covering this composition/session-lease tuple
+and prepared capture locations; its protected lifecycle pins source dependencies
+and snapshot roots as they are produced. The owning capture contract must
+publish that closed record and serialized root accounting before activation.
 
-Acquire/revalidate the composition capture lease under CIP-0002's stable-home
-rules. Curator captures the effective admitted project-plus-profile closure
+The manager acquires the original-home session lease in `prepared` state
+before fragment publication, capture or collection of the view is possible.
+Under the same lifecycle serialization, Curator acquires the separate capture
+lease before reading/materializing the composition. Curator captures the
+effective admitted project-plus-profile closure
 through its renderer/store, including approved instructions, knowledge, skill
 payloads and supported MCP/context surfaces. Unaccepted candidate files, native
 project configuration, executable discovery, credentials, memory and session
@@ -327,18 +344,50 @@ members. Curator must publish a successor manifest/descriptor or a separately
 versioned composition receipt binding exact snapshot bytes to the full project
 input. Refuse until that owning contract and verification API exist. Recheck
 admission, ceilings, revocation, project/CWD identity, snapshot correspondence
-and the lease at final admission, and bind them in the immutable session record.
+and both lease bindings at final admission. Bind them in the protected session
+provenance covered by the admitted plan; the public record's plan digest and
+project composition digest identify that provenance without adding fields to
+the closed result in §3.
 
-At durable admission transfer the required lifetime roots to the session:
-sealed snapshot/receipt, immutable composition and approved dependencies,
-protected tool artifacts, policy and any independently required resource
-leases. Release a **capture-only** stable-home lease only after this transfer,
-and only when the qualified projection proves no later live-home dependency.
-If a resource still requires a session lease, retain it explicitly; cannot
-qualify a snapshot route with an accidental live stable-home read.
+Before provider start, durable admission transfers the session lease to the
+actual tracked session/runner as `active`, before the launching process exits.
+The same recoverable admission transaction durably roots the sealed snapshot/
+receipt, immutable composition and approved dependencies, protected tool
+artifacts, policy and other required resources in that session. A failed or
+uncertain ownership/root transfer cannot authorize a start or a second start.
+
+Curator may release **only the capture lease** after capture and verification
+are complete and durable session-root handoff is established. A failed capture
+may release its capture lease only after authoritative completion/abort and
+proof that no capture worker or untransferred resource still depends on it.
+An interrupted capture or uncertain handoff retains the capture lease and its
+roots until Curator's recovery reconciles them. A capture-lease release never
+releases the session lease, even for a fully self-contained snapshot.
+
+The manager/session lifecycle owner releases the original-home session lease
+only after authoritative confirmed termination, including retained descendants,
+and reconciliation of the session's authority/state ownership, as CIP-0002
+requires. A failed pre-start preparation may release it only after absence of
+a started child and the same authority/state reconciliation are established.
+Detach, caller exit, successful capture, PID disappearance and elapsed TTL are
+not release conditions. Interrupted session recovery enters `unknown` and
+retains the original home, composition and artifacts until session/process-
+generation reconciliation establishes `active` or permits `released`.
+Capture and session recovery establish their own facts independently: a known
+completed capture can release its own pin after proven durable handoff while
+an unknown session continues to hold its session lease and roots.
+
+While any prepared, active or unknown session lease holds the original home,
+repair, profile switching, skill/CLI sync and changed-composition publication
+targeting it wait or refuse with CIP-0002's proposed `project_view_busy`, before
+writes. Releasing the capture lease cannot make the home idle. Only after all
+home leases end may an idle transactional update proceed, with the lease state
+rechecked under the same serialization before publication.
 The stable home remains CIP-0002's authoring/provisioning input, not the running
-session home. Native discovery exclusion still needs real adapter qualification
-at startup, reload, nested reads, resume and child entry: copying approved
+session home; keeping its session lease is mandatory authority/state protection,
+not permission for accidental live stable-home reads. Native discovery exclusion
+still needs real adapter qualification at startup, reload, nested reads, resume
+and child entry: copying approved
 files alone cannot keep unapproved checkout control files inert.
 
 #### 7. Resume, recycle, recovery and GC
@@ -360,6 +409,14 @@ not rehashed as initial snapshot content; verify the protected baseline and
 separately enforce the qualified mutable-state/projection contract. Do not
 rewrite an initial receipt to bless provider writes.
 
+Resume rechecks CIP-0002's original composition/home binding and current
+authority. A live or unknown generation retains its session lease; a released
+binding cannot be silently resurrected. Any next-generation session lease
+requires the owning CIP-0002 preparation/transfer contract for that recorded
+composition and reserved generation before start. Failure cannot become a
+fresh launch. Resume does not reacquire a capture lease merely to recapture
+today's home or replace the stored baseline.
+
 Define **session recycle** explicitly: stop and establish terminal liveness,
 then either typed resume on its retained baseline or an explicitly requested
 fresh session with a fresh snapshot and identity. A fresh recycle never carries
@@ -372,17 +429,26 @@ cannot prove death or justify a duplicate start.
 
 GC runs under the owning lifecycle serialization. Roots include prepared
 reservations, admitted/starting/ready/unknown sessions, stopped but resumable
-session records, retained resume generations, in-flight journals, leases and
-pending doorbell deliveries. Retain every referenced snapshot, manifest,
+session records, retained resume generations, in-flight journals, both capture
+and session leases, and pending doorbell deliveries. Retain every referenced
+snapshot, manifest,
 projection, composition, artifact and policy record. Client detach/exit,
 profile removal and elapsed reservation TTL do not collect a live/unknown
 session's roots. Release resumable generations only by explicit session forget
 or a documented operator retention policy after liveness/ref checks; pending
 notifications remain separately rooted or are explicitly cancelled and recorded.
 Unreadable records/ref graphs fail safe, retaining uncertain resources.
+An in-flight or unknown capture pins its produced snapshot roots even before
+provider admission. After capture release, an active or unknown session still
+pins those roots and its original home independently. Reconciled termination
+may release the session lease without collecting a snapshot still rooted by
+a stopped/resumable record or pending delivery. GC requires the absence of
+**both** lease roots and every other lifetime root before collecting an object.
 Expired **unconsumed** preparations may release only their own allocations once
-no admission/recovery root exists. Cleanup uses protected handles/no-follow
-operations and never follows links into managed/native homes or workspaces.
+no admission/recovery root exists and §6's owner-specific release conditions
+are met; expiry alone cannot release either lease. Cleanup uses protected
+handles/no-follow operations and never follows links into managed/native homes
+or workspaces.
 
 #### 8. Refusals and lifecycle outcomes
 
@@ -467,7 +533,8 @@ After owner review, record a Decision for exact/3, the complete detached/
 doorbell lifecycle and retirement lineage. Amend local hosted §§1–7 and
 CIP-0016's interim retirement pointer without changing historical acceptance.
 Coordinate CIP-0014 composition capture, protected-input verification and
-runtime projection with CIP-0002 approved generations and lifetime roots.
+runtime projection with CIP-0002 approved generations, retained original-home
+session leases and distinct capture leases/lifetime roots.
 
 The **launcher and manager owners jointly publish** preparation, exact payload,
 record/status, capability/retirement, notification binding/event and restart
@@ -483,11 +550,11 @@ proposal filing. This change adds only the CIP and discovery/index pointers.
 
 | Order | Leaf | Size | Required exit |
 |---|---|---|---|
-| 1 | Review owner questions; reconcile CIP-0002 candidate | S | Decisions recorded, assumed project interface resolved. |
+| 1 | Review owner questions; freeze joint capture/lease contract | S | Decisions recorded; separate capture binding and retained session lease agree with the pinned CIP-0002 candidate. |
 | 2 | Joint wire/registry and Curator companion publication | M per owner | Closed contracts, byte vectors, full plan bindings and snapshot/lease verification agree before producer activation. |
 | 3 | Per-runtime exact forms and host lifecycle | M per runtime | Real Claude/Codex/Muse matrix including detached, doorbells, cold resume and recovery; no host composer. |
 | 4 | Selection, durable retirement and legacy continuation | M | Stale clients cannot launch delegated after retirement; native zero lookup and no fallback preserved. |
-| 5 | Project snapshot capture after first CIP-0002 slice | M | Exact approved generation captured, leases transferred, unapproved native discovery excluded or refused. |
+| 5 | Project snapshot capture after first CIP-0002 slice | M | Exact approved generation captured; session lease active before start, capture lease released only after verified durable root handoff; unapproved native discovery excluded or refused. |
 | 6 | Joint qualification, rollout and lifecycle/GC | M | All three initial rows, crash/recycle/outbox/GC controls and upgrade-without-hangup evidence; then per-runtime retirement. |
 
 Each implementation leaf uses real entry points and disposable private homes;
@@ -511,6 +578,10 @@ and a narrowing mutant that must fail for its intended reason.
 | Reservation/recovery | Exact retry returns recorded outcome; expired/mismatched or changed-payload retry refuses. Crash before/after admission/start/outbox persistence preserves one-start and references; unknown liveness blocks new execution. | Treat timeout or missing PID as no prior start. |
 | Runtime-specific enforcement | Real Claude PTY, Codex app-server/cold-resume policy, Muse musepty/exclusions and goals survive poisoned daemon defaults, conflicting config and repeated attach. | Merge ambient env, rewrite Codex config, or infer Muse context from layout. |
 | Project capture | Approved P plus selected profile Y yields correct snapshot; candidate changes, revoked item, wrong project/CWD/profile, symlinked input or lease drift refuse. Live-home update cannot change admitted bytes. | Copy stable home wholesale or bind root generation without transitive item digests. |
+| Distinct session/capture leases | Completed verified capture and durable root handoff release only the capture lease; a running detached session retains its original-home session lease. Reconciled terminal state permits session-lease release; successful capture alone never does. | Alias both lease refs, make the session lease optional for a self-contained projection, or release it with the capture lease. |
+| Busy original-home update | After capture release, a prepared/active/unknown session lease still makes repair, profile switching and skill/CLI sync wait or refuse `project_view_busy` with no writes. After all home leases end, an idle transactional update may publish under a rechecked lease state. | Treat snapshot completion as an idle home or check busy state before, but not during, publication. |
+| Lease crash/ownership handoff | Known failed pre-start preparation with no child and reconciled ownership can release its session lease; known completed capture with durable handoff can release only its capture lease. Crash before/after admission or handoff with unknown capture/session liveness retains the corresponding lease/roots and never duplicates start. | Release both leases on caller exit/TTL, infer death from PID alone, or drop roots between owners. |
+| Capture/session GC roots | Live/unknown capture keeps produced snapshot roots before admission; live/unknown session keeps snapshot/composition/artifact roots after capture release. Only absence of both lease roots and all resumable/journal/outbox roots permits collection. | Root snapshots only in the capture phase or only after a ready session; collect at capture release. |
 | Resume/recycle | Known stopped typed resume retains baseline; explicit fresh recycle gets new identity. Missing/read-failed/mismatched receipt, changed protected content, revoked admission and unknown liveness refuse without resolve/new-session fallback. | Re-materialize current profile on a missing snapshot or rehash mutable state as original. |
 | Lifetime/GC | Live, detached, resumable, indeterminate, journal and pending-outbox refs survive profile removal and expiry. Explicit forget of unreferenced terminal state permits collection; unreadable graph retains it. | Root only ready sessions, omit stopped resume refs, collect by TTL or unlink through a substituted path. |
 
@@ -545,8 +616,11 @@ here; their future acceptance requirements are listed above.
    must be frozen by its owner; do not promise exactly-once external delivery.
 4. **Project capture interface:** recommend Curator-owned capture of exact
    admitted composition, with a successor carrier or closed companion receipt
-   and explicit capture-to-session lease transfer. Reconcile the absent candidate
-   branch before adoption; no receiver-authored inventory or live-home shortcut.
+   and two distinct protected bindings: retain the pinned CIP-0002 original-home
+   session lease through termination/reconciliation, while Curator releases only
+   its capture lease after verified durable root handoff. Freeze the separate
+   capture contract with its owners before adoption; no receiver-authored
+   inventory or live-home shortcut.
 5. **Projection, credentials and native policy:** retain CIP-0014's pending
    protection/shared-login decisions and CIP-0016's real Codex cold-resume policy
    gate. Recommend supported native APIs and separately verified state slots;
