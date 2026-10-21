@@ -114,3 +114,4 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0020](CIP-0020-workspace-trust-ledger.md) | Workspace trust ledger for managed homes | Adopted in part (A1) |
 | [CIP-0021](CIP-0021-profile-skill-directories.md) | Package directories in profile skill requirements | Accepted |
 | [CIP-0022](CIP-0022-mcp-server-declarations-in-project-skillfile.md) | MCP server declarations in the project Skillfile | Draft |
+| [CIP-0023](CIP-0023-exact-plan-hosted-launches.md) | Exact-plan hosted launches with detached sessions and doorbells | Draft |

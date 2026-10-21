@@ -140,6 +140,11 @@ proposes project schema 3, package-first resolution and digest-approved inline
 contributions. It remains Draft; no normative schema or implementation support
 is changed.
 
+[CIP-0023: Exact-plan hosted launches](cips/CIP-0023-exact-plan-hosted-launches.md)
+proposes a snapshot-bound successor with detached sessions, doorbells, durable
+records, per-runtime delegated retirement and admitted project snapshot inputs.
+It remains Draft and publishes no wire schema or runtime capability.
+
 ## CIP diagram sources
 
 [Source index and phase/authority notes](cips/diagrams/README.md) map the B4 module views to their defining CIP sections. These views describe current contracts and proposed targets; they do not assert implementation or qualification.

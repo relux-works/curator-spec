@@ -168,3 +168,12 @@ The closed leaf-1 candidate and its vectors still need coordinated publication,
 an unused project-capable outer carrier and per-runtime source-exclusion/route
 qualification. Published fragment v4/v5 remain unchanged; no implementation
 support follows from filing this candidate.
+
+## Exact-plan successor (CIP-0023)
+
+[Draft CIP-0023](cips/CIP-0023-exact-plan-hosted-launches.md#open-questions-for-the-operator)
+proposes detached sessions, doorbells and durable session records on exact
+snapshots. Initial joint runtime qualification versus later per-runtime
+retirement, control/wire publication, doorbell delivery policy, CIP-0002 capture
+bindings, native protection/credential gates and legacy retention remain owner
+questions. No schema or production capability is activated by this Draft.
