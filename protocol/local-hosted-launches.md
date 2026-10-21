@@ -7,6 +7,15 @@ not a deployable wire format. The
 [Decision 0021 amendment](../decisions/0021-sessions-enter-through-curator-run.md#amendment-v2--local-hosted-launches-2026-10-15)
 records compatibility with earlier entry-point decisions.
 
+The numbered sections below describe the snapshot-based exact-plan route.
+The owner accepted a transitional delegated route on 2026-10-21 in
+[CIP-0016's dated revision](../cips/CIP-0016-local-hosted-launches.md#revision-delegated-local-launches-2026-10-21).
+That revision separately records its caller-side composition, live-home and
+provenance limits, registry selection, per-runtime activation and retirement.
+Its home-lease and exclusive-profile conditions remain proposed, not accepted.
+Delegated request and record schemas belong to curator-run; this pointer
+publishes no wire schema and does not qualify either route.
+
 ## 1. Scope and activation
 
 `curator-run <env> --hosted` selects local primary-session hosting through the

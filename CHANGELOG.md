@@ -77,6 +77,14 @@ Versioning for the complete specification set.
 
 ### Changed
 
+- Record the owner-accepted CIP-0016 delegated-launch amendment (2026-10-21):
+  caller-side composition through agents-management against a live managed
+  home, profile-pin/fragment-digest provenance, registry backend selection and
+  per-runtime activation and retirement. Preserve typed resume and no native
+  fallback. Home leases and exclusive profile homes remain pending operator
+  confirmation. Add the protocol pointer without new wire schemas or claims
+  of implementation or runtime qualification.
+
 - Define environments §9.1 network contacts for the undeclared-network audit:
   loopback and multi-label names ending in `test`, `example`, `invalid`, or
   `localhost` are exempt after ASCII IDNA, case and trailing-dot normalization.

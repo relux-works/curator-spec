@@ -79,6 +79,10 @@ ownership, selection and receiver summary. Its
 and forbidden selection outcomes. Successor wire publication, four named
 questions and real adapter qualification remain gated; acceptance enables no
 production receiver and changes no released schema.
+The [delegated-launch revision accepted on 2026-10-21](cips/CIP-0016-local-hosted-launches.md#revision-delegated-local-launches-2026-10-21)
+records a transitional live-home route with per-runtime activation and
+retirement. Home leases and exclusive profile homes remain proposed; filing
+the amendment claims no implementation or qualification.
 
 ## Accepted login-readiness amendment
 

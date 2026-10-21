@@ -8,6 +8,87 @@
 - **Related:** CIP-0014 (session materialization, proposed companion); owner decisions 2026-10-15 D1–D6, D9–D13
 - **Affects:** curator-agent-launcher SPEC §§3, 4.6, 4.8–4.9, 10; skill-project-management sessionmanager and tb-sessiond; skill-agents-management hosted planning; swarma-session-host SH1 compatibility boundary
 
+## Revision: delegated local launches (2026-10-21)
+
+**Accepted by the owner on 2026-10-21.** This amendment adopts the transitional
+delegated launch direction proposed on 2026-10-18. It qualifies the original
+design below for this route only. The snapshot-based exact-plan design and
+its joint three-runtime release gate remain the successor target. Acceptance
+does not claim implementation or runtime qualification. The request and
+record schemas belong to curator-run; this amendment publishes no new wire
+schema or extensions to a frozen plan.
+
+Until a registered local session manager advertises the exact-plan successor
+capability for a runtime, it MAY host that runtime's interactive sessions
+through `launch-delegated/1` of the curator-run session-manager protocol,
+subject to the detached-launch transition below.
+
+### Division of work
+
+- `curator-run` remains the front door. It resolves the profile and fragment,
+  model and effort, permissions, system-prompt opt-in, typed resume intent
+  and credentials, then hands the manager a closed request naming them.
+- The manager's caller-side component composes the process through the same
+  agents-management construction site defined by
+  [Decision 0019](../decisions/0019-fragment-consumers-and-one-construction-site.md),
+  against the profile's managed home.
+- The manager MUST refuse when its fragment digest differs from the request's.
+  It MUST NOT add profile content, change any resolved value or enable Remote
+  Control.
+
+### Stated limits
+
+There is no session snapshot. A running session uses the live managed home,
+so repair, profile switching and skill sync can change it underneath the
+session. The isolation required by
+[CIP-0014](CIP-0014-managed-home-snapshots.md) does not hold. A profile pin and
+fragment digest do not attest immutable session content.
+
+The rule that a host never composes holds for the daemon only, not for the
+manager's caller-side component. CIP-0016's digest-covered provenance is
+replaced by the request's profile pin and fragment digest. These are explicit
+compatibility and security limits of the delegated route, not changes to the
+exact-plan successor's guarantees.
+
+### Retained rules
+
+Typed resume never creates a new session. Hosted refusals never fall back
+to native execution.
+
+### Activation
+
+Activation is per runtime: Claude Code and Codex first, Muse once the
+manager's v4 consumer is qualified. The joint three-runtime rule continues
+to govern the exact-plan release.
+
+### Retirement and backend selection
+
+The mode is declared per manager and per runtime. For a given runtime,
+delegated mode retires once that manager advertises the exact-plan capability
+for that runtime together with a detached form; curator-run then uses exact
+plan for attached launches of that runtime. Until the exact form supports
+detach, detached launches keep the delegated route. Exact support for one
+runtime retires nothing for another.
+
+For the delegated route, the curator-run session-manager registry answers the
+backend-selection question retained in
+[local hosted launches section 2](../protocol/local-hosted-launches.md#2-selection-and-refusals).
+An absent backend selection means no registered manager. task-board's
+installer registers task-board.
+
+### Proposed conditions (pending operator confirmation)
+
+The following conditions are proposed and are **not yet accepted**. They do
+not remove the live-home limits stated above.
+
+(a) **Home lease.** While a hosted session runs in a profile's managed home,
+repair, profile switch and skill sync targeting that home refuse with a
+typed error and remediation, or wait. They never change the home underneath
+the session.
+
+(b) **One profile per Werkstatt.** A Werkstatt's sessions use a profile home
+that no other Werkstatt or ad-hoc launch shares.
+
 ## Summary
 
 `curator-run <env> --hosted` should launch a local task-board session before
