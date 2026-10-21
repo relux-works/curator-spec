@@ -293,7 +293,7 @@ required unless marked optional; null never means absent. ID is
 `[a-z][a-z0-9_-]{0,63}`. REF is `TAG:ID`, at most 96 ASCII bytes, where TAG is
 one of `registration`, `snapshot`, `approval`, `composition`, `lease`, `home`,
 `worktree`, `policy`, `adapter`, `session`, `principal`, `grant`, `tool`,
-`dispatcher` or `command`. A REF resolves only in protected manager state,
+`dispatcher`, `command` or `lock`. A REF resolves only in protected manager state,
 never as a path, URL or bearer credential; its tag must match the field.
 HEX is exactly 64 lowercase hexadecimal characters. All manager refs are
 scoped to the issuing manager and immutable allocation identity; the same
@@ -309,7 +309,7 @@ retained filesystem identity, not a lexical prefix alone.
 | Object | Closed members and meaning |
 |---|---|
 | Registration | `kind: "project-registration/1"`, `checkout_id: ID`, `project_root: absolute path`, `root_identity: HEX`, `profile: {name, lock_sha256}`, `environment: ENV`, `home_ref: REF`, `worktree_ref: REF`. ENV is `claude_code`, `codex_cli` or `muse` in this slice. Profile name uses the existing profile grammar; lock digest is HEX. `root_identity` hashes the closed binding defined below, retained privately; re-registration/replacement cannot retain old authority merely by reusing a path. Home and sparse worktree are protected manager allocations outside the source tree. |
-| Item | `kind: "project-item/1"`, `id: ID`, `type: "context" \| "skill" \| "mcp"`, `environment: ENV`, `required: boolean`, `payload: PAYLOAD`. Context and skill payloads are exactly `{snapshot_ref, snapshot_sha256}`. MCP payload is exactly `{name, server, server_sha256}` as described below. No raw native-settings, permission, hook, plugin or shell arm exists. |
+| Item | `kind: "project-item/1"`, `id: ID`, `type: "context" \| "skill" \| "mcp"`, `environment: ENV`, `required: boolean`, `payload: PAYLOAD`. A context payload is exactly `{snapshot_ref, snapshot_sha256, lock_ref, lock_sha256}`; a skill payload remains exactly `{snapshot_ref, snapshot_sha256}`. Context lock references have tag `lock`, and their digest is HEX. MCP payload is exactly `{name, server, server_sha256}` as described below. No raw native-settings, permission, hook, plugin or shell arm exists. |
 | Approval | `kind: "project-approval/1"`, `checkout_id`, `item_id`, `item_sha256`, `environment`, `approver_ref`, `ceiling_sha256`, optional `grant_ref`. IDs, HEX and tagged refs follow the common types. An agent approver requires a live manager-issued grant covering this exact act and ceiling; a human approval cannot exceed hard denies either. The protected revocation ledger is checked at preparation/start and dispatch; the repository cannot mint approval. |
 | Generation | `kind: "project-generation/1"`, `registration_ref`, `registration_sha256`, `items: [{item_id, item_sha256, approval_ref}]`. References have the matching tags. Item IDs are unique; this ordered list is the admitted rendering order. Every item must match checkout, profile policy and environment, and have current approval. No implicit filesystem discovery contributes extra members. |
 | Composition | `kind: "project-composition/1"`, `registration_ref`, `registration_sha256`, `generation_sha256`, `profile: {name, lock_sha256}`, `environment`, `adapter_ref`, `adapter_sha256`, `policy_ref`, `policy_sha256`, `memory: "off"`, `home_ref`, `worktree_ref`, `materialization_sha256`, `command_owners: [{name, item_id, artifact_sha256}]`, `omitted: [{item_id, reason}]`. Generation bytes are retained under their digest in protected state. Owner names use the existing command grammar, are unique, and bind full audited artifacts, never checkout executables. `item_id` names the selected effective skill from the approved generation or selected profile lock; at most one exported command is enabled in this slice. Omission reason is `disabled` or `unsupported` and requires approved optionality/effective preview; required items cannot be omitted. The policy reference names protected manager-programmed harness policy with default deny and only effective granted permissions, never a repository permission payload. |
@@ -336,6 +336,95 @@ set, bytes, sizes and modes, not only an asserted manifest hash. References
 and imports must close over this inventory. A skill snapshot also passes
 the existing whole-package manifest, pin, audit and activation contracts;
 this slice does not admit an arbitrary directory as an executable skill.
+
+**Context package inheritance.** A context item is the snapshot of one selected
+context-package root, not an arbitrary Markdown directory. Its root contains
+`agent-context.json` conforming to the existing
+[context manifest schema 2](../schemas/rc7-carriers-v1/agent-context-v2.schema.json),
+including the selected-root rules of
+[environments §2](../protocol/environments.md#2-context-package-shape) and
+[CIP-0021](CIP-0021-profile-skill-directories.md). Only the manifest's explicit `context.modules` list selects package-local
+modules; each path names a regular file below that package's `context/`
+directory. Leaf 1 requires `context` at this selected root; an umbrella with
+no local modules declares `context: {modules: []}` explicitly. No filename, directory scan or adapter preference chooses
+an entry. Files not selected as applicable modules remain inert snapshot/audit
+content; the same file cannot be declared twice, including once in each role
+`root` and `system`. Duplicate JSON keys, including duplicate `class`, refuse.
+
+The item inherits context-package validation, root and module selection,
+environment selectors, default/root/system classes, module order, effective
+weights, topological tie order, system-module admission and exact byte/rendering
+rules from [environments §§3–6](../protocol/environments.md#3-context-modules).
+Modules are opaque UTF-8 Markdown with LF endings and exactly one trailing LF;
+no normalization, templating or inclusion is performed. Every selected module
+must exist inside the complete immutable snapshot at its manifest path, without
+symlink traversal or path aliasing. A bare `AGENTS.md` or other instruction
+file without the manifest is not admitted in leaf 1. An operator may explicitly
+package such bytes with a manifest before preview and approval; the manager
+never synthesizes an unapproved entry selection.
+
+`lock_ref` names the manager-resolved, retained
+[context lock schema 4](../schemas/rc7-carriers-v1/context-lock-v4.schema.json),
+with the existing [lock identity rules](../protocol/environments.md#13-the-lock-is-the-identity).
+The lock's `root` names this selected package; its root pin must match the
+verified snapshot bytes. The lock lists the complete resolved context closure,
+including exact source, selected directory, pin, version, effective weight,
+requirer and overlay records. Each member resolves to its verified protected
+store snapshot under environments §4, never today's checkout or an unpinned
+fetch. Apply the owning content-hash framing to pins; the inventory's CCJ-1
+`snapshot_sha256` is a separate digest and cannot substitute for a content pin.
+`lock_sha256` is the unprefixed HEX of SHA-256(CCJ-1(lock)), without LF; the
+owning lock spelling adds `sha256:` when required. The recorded precedence
+must equal the selected profile's protected precedence. Retain the manifest,
+lock and complete pinned closure before approval; preparation never implicitly
+re-resolves it. Unknown, missing, stale or inconsistent lock/member evidence
+refuses before materialization.
+
+For this slice the context item's lock contains context members only.
+In every closure member, non-empty `requires.skills` or `requires.mcp` and
+non-empty `codex_settings` are refused: context approval cannot activate a skill, MCP server or native
+setting. Whole skill and inline MCP items keep their separate approvals.
+The inherited lock carries empty `codex_settings` and
+`codex_settings_contributions`; context requirements, weights and their owning
+conflict checks remain supported. At least one applicable root module must
+exist in the pinned context closure for this item's environment; an umbrella
+with an explicit empty module list may select it through its declared
+requirements, never discovery. A root with no `context` contributes no root
+surface under the inherited contract and is refused as a leaf-1 context item.
+
+Within each item, render the pinned closure in `monolithic` form using
+environments §5's exact header, chapter, module and LF-joining rules, with the
+lock's root/pins/precedence and the selected environment. Applicable root
+modules follow manifest order within each package; package weights and
+topological ties follow the inherited emitted order. System modules use only
+the separately admitted environments §5.5/§7.3 channel and its exact bytes;
+they are never promoted into root context. The generation's ordered item list
+still orders project items: append each rendered root-context document after
+the base profile's document, with exactly one additional LF between non-empty
+documents. Append admitted system parts in the same item order using the owning
+part-joining rule. An adapter that cannot reproduce these additive outputs
+refuses rather than selecting a different entry or replacing base context.
+
+Native import directives are not an entry-selection or support-file mechanism
+in leaf 1. A construct the qualified adapter would follow as a control-file
+import refuses, even if its target is inventoried; in particular an import
+outside the pinned closure cannot cause a native read. Ordinary prose references
+remain opaque data, not a discovery grant. Future import dialects need a separate
+closed contract and qualification; no adapter may infer one here.
+
+The approved item digest covers `snapshot_sha256` and `lock_sha256` through its
+closed payload. The inventory includes the exact `agent-context.json` bytes;
+the lock binds every transitive manifest and module through its content pins.
+Changing selected root, `context.modules` paths/order/classes/selectors,
+weights, a closure member, or any supporting bytes changes the snapshot and/or
+lock digest, hence the item digest and required approval. A later output hash
+cannot retroactively approve an entry choice. For example, with distinct files
+`context/entry.md` and `context/reference.md`, a manifest selecting only the
+first and a manifest selecting only the second are two items with different
+snapshot/item/approval bindings and different rendered module bytes. Keeping
+one approval while changing that manifest is `project_item_unapproved`; missing
+or changed stored bytes under an already approved digest is
+`project_context_drift`, never a new baseline.
 
 The composition's `materialization_sha256` covers a closed control receipt:
 `{version: 1, files, adapter_sha256, policy_sha256, worktree_ref}`. `files`
@@ -433,6 +522,9 @@ positive has a nearby negative and a narrowing control for the future checker:
 |---|---|---|
 | `ProjectRegistrationBinding` | Valid registered checkout/profile/ENV prepares; replaced root, nested foreign registration and worktree substitution refuse. | Compare root strings only, ignore retained identity. |
 | `ProjectItemApproval` | Approved context and complete skill snapshot load; wrong-project replay, changed transitive asset and revoked/absent approval refuse. | Check only root content or item name. |
+| `ProjectContextSelectionBinding` | Two valid schema-2 packages inventory the same two distinct Markdown bodies but select different root modules in their manifest; snapshot/item digests and approval bindings differ, and each materializes only its selected bytes. A changed selection under the old approval refuses. | Omit manifest bytes from inventory identity or check only Markdown bodies; permit one approval for both selections. |
+| `ProjectContextPackageValidation` | Valid manifest/lock and complete context closure load in inherited order; missing manifest/module, outside-snapshot entry, native import escaping the closure, invalid UTF-8/LF, duplicate path/role or duplicate class key refuse before output/native reads. An inside-closure native import also refuses; a declared second module is the positive alternative. | Infer entries by filename, deduplicate conflicting roles, normalize bytes or let native includes discover support files. |
+| `ProjectContextClosureRendering` | Pinned context requirements, weights and topological ties reproduce environments rendering; changed root/directory/module order/weight/member pin needs re-approval. A mismatched or unavailable lock and nested skill/MCP/settings activation refuse without re-resolution. | Hash only the selected package, ignore the lock/ordering, or inherit unapproved side effects through context requirements. |
 | `ProjectInlineMCP` | URL/expanded SERVER normalize identically and approved server loads; endpoint/arg/env/NAME changes, unapproved server and raw install authority refuse. | Hash URL only or trust raw Skillfile approval. |
 | `ProjectSourcesClaudeCodexMuse` | Each runtime loads approved home context/skill and explicit MCP set; planted ancestor/nested/late instructions, skills, hooks, permissions, plugins and memory do not activate. | Suppress startup only or only one runtime. |
 | `ProjectPermissionsAndMemory` | Manager grant within ceiling is enforced; project allow/deny settings and implicit memory opt-in never apply. | Let native project permissions or memory override the manager. |
@@ -447,7 +539,8 @@ same-home writers; replacement root/system context; conditional rule dialects,
 mutable knowledge/private-memory delivery; native settings/hooks/plugins;
 permission-file import (forbidden, not a future authority source); multi-command
 and generic executable integrations; OpenCode and Pi adapters; Windows and
-new provider/platform qualification. The 2026-10-10 broader model remains the
+bare instruction-file items without a context manifest, native context-import
+dialects, and new provider/platform qualification. The 2026-10-10 broader model remains the
 design target, with no implicit activation of these deferred arms.
 
 #### Launch route binding
