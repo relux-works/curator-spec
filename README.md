@@ -131,6 +131,11 @@ Protocol and implementation designs are recorded as
 [CIP-0001](cips/CIP-0001-curator-improvement-proposals.md); adoption follows
 [GOVERNANCE.md](GOVERNANCE.md).
 
+[CIP-0022: MCP server declarations in the project Skillfile](cips/CIP-0022-mcp-server-declarations-in-project-skillfile.md)
+proposes project schema 3, package-first resolution and digest-approved inline
+contributions. It remains Draft; no normative schema or implementation support
+is changed.
+
 ## CIP diagram sources
 
 [Source index and phase/authority notes](cips/diagrams/README.md) map the B4 module views to their defining CIP sections. These views describe current contracts and proposed targets; they do not assert implementation or qualification.

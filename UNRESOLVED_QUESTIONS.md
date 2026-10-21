@@ -146,3 +146,11 @@ interactive hosted rows remain distinct. `tb-sessiond` lookup/restart is
 refused under existing hosted §§4/6; enabling it requires an explicit later
 amendment, not a callback or hidden wrapper. Unqualified vendor child-leak or
 settings-reload behavior keeps capability unavailable.
+
+## Project Skillfile MCP declarations (CIP-0022)
+
+[Draft CIP-0022](cips/CIP-0022-mcp-server-declarations-in-project-skillfile.md#open-questions-for-the-operator)
+keeps the stage-A adapter set, nested `install` contract, runtime pin grammar,
+inline audit waivers and versioned carrier/writer details open for operator
+review. Its package-first and digest-approved inline design is proposed only;
+filing the Draft enables no native writer or managed-launch admission.

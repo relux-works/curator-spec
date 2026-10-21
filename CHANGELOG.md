@@ -7,6 +7,12 @@ Versioning for the complete specification set.
 
 ### Added
 
+- File Draft [CIP-0022](cips/CIP-0022-mcp-server-declarations-in-project-skillfile.md):
+  project Skillfile schema 3 with MCP declaration packages first, then inline
+  contributions approved by normalized server digest under CIP-0002. Propose
+  neutral writer-local `install` options and total per-environment reporting.
+  No normative schema, conformance corpus or implementation behavior changes.
+
 - Accept CIP-0021 (operator decision 2026-10-18), adopted by Decision 0027:
   profile `requires.skills` may select a portable git-snapshot `directory`,
   using the context/MCP path discipline and existing diagnostics. Bind the

@@ -113,3 +113,4 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0019](CIP-0019-carrier-admission-by-public-key.md) | Carrier admission by public key (swarma-registrar) | Draft |
 | [CIP-0020](CIP-0020-workspace-trust-ledger.md) | Workspace trust ledger for managed homes | Adopted in part (A1) |
 | [CIP-0021](CIP-0021-profile-skill-directories.md) | Package directories in profile skill requirements | Accepted |
+| [CIP-0022](CIP-0022-mcp-server-declarations-in-project-skillfile.md) | MCP server declarations in the project Skillfile | Draft |
