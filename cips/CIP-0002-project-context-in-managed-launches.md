@@ -3,7 +3,7 @@
 - **Status:** Draft
 - **Owner:** orchestrator; decision: operator
 - **Created:** 2026-10-04
-- **Related:** TASK-261004-2asduq — launch-command-environment-fragment-design; STORY-261004-1ffwh8 — design-launch-project-views; TASK-261004-34brhn — research-claude-login-transfer-modes; Decisions 0013, 0017, 0018 and 0019
+- **Related:** TASK-261004-2asduq: launch-command-environment-fragment-design; STORY-261004-1ffwh8: design-launch-project-views; TASK-261004-34brhn: research-claude-login-transfer-modes; Decisions 0013, 0017, 0018 and 0019
 - **Affects:** curator-spec environments §§1–5, 7–12; manager §§3, 5, 6, 10, 12; fragment and manager schemas; Curator, curator-run, agents-management and the tracked-session launch-plan consumer
 
 ## Operative summary
@@ -14,7 +14,7 @@
 | Boundary | Repository inputs are candidates; only protected, individually approved snapshots enter strict launches. Unaccepted candidate files remain untrusted review data; exact-candidate acceptance confers no control-context admission. |
 | Authority owner | Operator approves within fleet/manager ceilings; manager owns registrations, admissions, compositions and leases; launcher owns composition. |
 | Inputs → outputs | Registered checkout, selected profile lock, approved generation and adapter contract → protected view, metadata fragment and context-bound launch plan. |
-| Phase | Draft; D-PATH decided, home choice and coordinated v4 grammar/qualification pending. |
+| Phase | Draft; proposed for acceptance. Werkstatt home, trusted first wave and the leaf-1 candidate grammar are specified below; publication and qualification remain gates. |
 | Normative links and proposed landing | [Environments §§1–5](../protocol/environments.md#1-environment-profiles-and-sources), [§10](../protocol/environments.md#10-resolution-and-the-launch-fragment), [Manager §12](../profiles/manager.md#12-agent-environments-manager-profile); amendments: [Specification changes](#specification-changes). |
 
 R-TRANSFER review at stage T is the first required consumer of the strict-context boundary. The board first supplies exact-C diffs and blobs as inert, read-only resources bound by digest and placed outside every consuming harness's discovery roots, using the R-NET-TOOL task-resource path. This applies to reviewers, orchestrators reading C for rework and testers reading candidate data. No harness may automatically adopt candidate instructions, hooks, MCP servers, permissions, skills or executable discovery at startup, reload, nested discovery, resume or child-agent entry, before or after flagged-hunk acknowledgement. Acceptance of C is not admission of its control surfaces; activation remains a separate CIP-0002 control-context decision.
@@ -25,13 +25,43 @@ Materializing or entering an unaccepted candidate tree in a discovery-capable ha
 
 R-TRANSFER's inert exact-C resources are the first review consumer; discovery-capable candidate-tree entry waits for a qualified strict adapter. Verdict acceptance never admits control surfaces. The wider project-context direction remains open; no implementation or qualification is claimed.
 
-## Operative disposition (2026-10-11)
+## Operative disposition: Proposed for acceptance (2026-10-21)
 
-- **Decided:** The operator input of 2026-10-10 governs project registration, saved composites, profile alternatives/stacks, approval ceilings and protected admission. D-PATH (2026-10-11) settles the managed-launch PATH recipe; see the shared contract below. The CIP remains Draft.
-- **Open:** Home architecture (persistent view versus serialized profile home or launch overlay), certified adapter delivery and the closed context/lease/transform grammar remain proposed. The questions at the end retain their stated options; deciding PATH does not adopt fragment v4.
-- **Superseded:** The repository-bin PATH recipe in CIP-0007 and the choice between raw project/global bins and one protected dispatcher are superseded by D-PATH. Shell activation approvals in CIP-0004 confer no project-context admission.
+**Status remains Draft.** This is the candidate text for owner acceptance,
+not an Accepted CIP, published schema or implementation claim. The dated
+owner decisions below supersede older recommendations where they conflict.
 
-[Cross-CIP contract, schema owners and versions](platform-contract-disposition.md) records the canonical values and owner decisions. Acceptance records design disposition; schema publication, implementation and runtime qualification are separate. Current-state observations and companion probes below are historical at their stated pins, not rerun evidence.
+- **Decided:** The 2026-10-10 operator model remains in force. On 2026-10-18
+  the owner selected option A, the persistent checkout × profile × environment
+  home now called a Werkstatt, a repository overlay and sparse worktree,
+  trusted mode first, manager-controlled permissions with default deny,
+  explicit grants for agent changes, native memory off by default, busy-home
+  wait/refusal, the checked D-PATH transform and inert foreign-candidate diffs.
+- **First wave, updated 2026-10-21:** Claude Code, Codex and Muse together in
+  the delivery plan. OpenCode and Pi remain in the design for later delivery.
+  This replaces the old Pi-first ordering, not the qualification gates.
+- **Certified delivery:** A separately versioned optional capability per
+  environment advertises its certified surfaces. An unsupported required
+  item refuses with a typed diagnostic. A home path or native trust flag is
+  not certification. The [leaf-1 grammar](#leaf-1-candidate-grammar) fixes
+  the proposed smallest slice; larger surfaces are explicitly deferred there.
+- **Accepted companion directions, 2026-10-21:** Inline project Skillfile MCP
+  declarations enter as individually approved, normalized-server-digest-bound
+  items. The interim `launch-delegated/1` route composes the same approved
+  Werkstatt context through the shared construction site; the later exact-plan
+  route binds its snapshot and complete process instead.
+- **Deferred, not unresolved architecture:** Multi-profile/stack execution,
+  replacement root/system context, rule dialects, native settings, hooks,
+  plugins, private-memory delivery, advanced commands and other platforms
+  follow the first slice. Their accepted operator model is retained below.
+  The remaining owner questions concern replacement and memory retention,
+  not the chosen home, permission, PATH, adapter or review model.
+
+[Cross-CIP contract, schema owners and versions](platform-contract-disposition.md)
+remains the publication coordination register. This candidate does not widen
+published fragments v4/v5 or any frozen carrier. Design disposition, schema
+publication and native qualification are separate. Historical evidence below
+has not been rerun.
 
 ## Operator input (2026-10-10)
 
@@ -45,14 +75,60 @@ The operator confirmed the model: a project layer composed over a profile, outsi
 - **Composition today.** Machine overlays (`curator profile compose <profile> add`) already join packages to a profile's closure for every launch of that profile on the machine; a profile-plus-project composite that leaves the profile untouched is new in this CIP. Per-launch PATH entries are also new: the fragment's `path_prepend` is reserved and not emitted today, and profile commands are unavailable in managed-home launches.
 - **Follow-ups:** the surfaces the Skillfile does not cover yet (curator issue #113), and modular instruction files assembled from chapters at launch (curator issue #114).
 
+## Operator decisions (2026-10-18 and 2026-10-21)
+
+The owner answered the eight former questions on 2026-10-18, with the
+first-wave correction and companion decisions on 2026-10-21:
+
+1. **Home:** option A, persistent per checkout × profile × environment,
+   named Werkstatt. Claude login uses setup-token through the separately
+   admitted credential channel, not copied native login state.
+2. **Workspace:** repository as an approved overlay in the Werkstatt home,
+   with a sparse Werkstatt worktree outside the repository tree; trusted mode
+   first. The worktree does not itself establish source exclusion or hostile
+   code containment.
+3. **Permissions:** default deny, managed programmatically for every harness.
+   Agents change permissions only through protected grants within their
+   ceiling. Project-shipped permission settings never apply.
+4. **Memory:** native harness memory is off by default and requires an explicit
+   opt-in parameter. Repository knowledge approval is not memory opt-in.
+5. **Busy home:** update waits or refuses; it never changes leased surfaces.
+6. **PATH:** D-PATH with its checked destination transform is accepted; skills
+   and CLIs are scoped to the Werkstatt, not machine-current state.
+7. **Adapters:** the owner updated the first wave on 2026-10-21 to Claude,
+   Codex and Muse. OpenCode and Pi follow; all five remain in the design.
+8. **Review:** R-TRANSFER shows a foreign candidate as an inert diff; accepting
+   code never admits candidate control surfaces.
+
+On 2026-10-21 the owner also accepted inline MCP in the project Skillfile as
+an individually approved project contribution, bound to the normalized
+`server` object digest. The companion draft, **MCP server declarations in the
+project Skillfile**, is on branch `cip-mcp-in-project-skillfile`; this base has
+no numbered main-branch entry for it, so this proposal refers to it by title.
+It owns Skillfile parsing and server normalization, not launch authority.
+
+The same date's accepted CIP-0016 amendment admits `launch-delegated/1` as an
+interim local hosted route. [Launch route binding](#launch-route-binding)
+states its different provenance and home guarantees without claiming that
+its wire or the exact-plan successor is implemented.
+
 ## Summary
 
-Allow a registered project X to contribute individually approved context, rules, knowledge, MCP servers, permissions, skills and commands when launched with profile Y. Recommend a persistent manager-owned home for each checkout × profile × environment, backed by a digest-bound composition record and leased for the session lifetime. Repository files are candidate inputs to admission; native tools receive generated, protected copies and must not discover unapproved project configuration implicitly. A proposed fragment v4 carries the context identity and a single manager dispatcher directory through a typed channel, with the combined D-PATH recipe performed after child-environment admission. This proposal asks for design decisions; it neither authorizes implementation nor claims that every native adapter can enforce the proposed boundary today.
+Compose individually approved project context, rules, knowledge, MCP servers,
+skills and commands over selected profile Y in a persistent manager-owned
+Werkstatt per checkout × profile × environment. Repository control files are
+candidate inputs, never authority; native tools consume approved protected
+copies while certified adapters exclude unapproved discovery. Permissions
+come only from manager policy and grants, with default deny; project-shipped
+permissions never apply. Native memory defaults off. The typed context,
+lease and D-PATH transform bind one launch to that composition. Claude,
+Codex and Muse are the first wave. The first slice is specified below for
+acceptance review, with publication and runtime qualification still pending.
 
 ## Motivation and user stories
 
 - An operator launches project X with profile Y and gets X's approved instructions, knowledge, skills and commands together with Y's base environment. Another project using Y must not inherit X's context, approvals or session state.
-- A project can request its own MCP servers, AGENTS.md/CLAUDE.md equivalents, environment-specific rules and permission changes. The operator can enable a category, select individual items, inspect the effective result, and revoke them without editing Y.
+- A project can request its own MCP servers, AGENTS.md/CLAUDE.md equivalents and environment-specific rules; permission needs are proposals to the manager grant flow, never imported permission settings. The operator can enable a category, select individual items, inspect the effective result, and revoke them without editing Y.
 - An unfamiliar or hostile checkout remains ordinary work data. Opening it must not implicitly execute hooks/extensions, grant permissions, start MCP servers, import secrets or make its `.agents/bin` authoritative.
 - A tracked run must resolve the same admitted context and command owners as a direct launch. Detach, resume, native subagents and garbage collection must preserve that identity.
 - A macOS user should see the first-login cost before choosing isolated project homes. The design must not depend on credential copying or an unverified shared Keychain strategy.
@@ -67,7 +143,7 @@ Evidence below is pinned to Curator main `ca1b776`, curator-spec `43bf0a2` (the 
 - Claude's strict MCP flag is conditional: Curator creates the MCP member only for a recorded, resolved MCP surface; the launcher appends `--strict-mcp-config` only inside its non-nil MCP branch. An empty profile MCP set does **not** establish an exclusive empty set. Curator `internal/envprofile/managed.go:2290–2312`; launcher `internal/composition/composition.go:93–122`. E4.
 - The launcher passes the real launch CWD to the admitted plan. It launches Claude, Codex and Pi; OpenCode has no provider mapping, and its parser accepts only fragment v1/v2, so Muse's v3 is not consumable at this pin. A five-adapter manager registry is not a five-adapter launcher. E5.
 - Tracked composition transports owned environment literals and environment-name lookups, not an operation on the destination's PATH. Existing fragment hashing cannot identify a project composition absent from the fragment. Decision 0013 §§3.2, 6.4; launcher `internal/composition/composition.go:33–46,74–90`. E6.
-- Managed credential isolation is not a sandbox. Decision 0017 keeps Claude/macOS shared mode unsupported and records evidence inconsistent with the older Keychain-suffix explanation. First login per distinct home is the supported planning assumption; the mechanism and transfer options remain under TASK-261004-34brhn — research-claude-login-transfer-modes, whose outcome was not yet available when checked. E7.
+- Managed credential isolation is not a sandbox. Decision 0017 keeps Claude/macOS shared mode unsupported and records evidence inconsistent with the older Keychain-suffix explanation. First login per distinct home is the supported planning assumption; the mechanism and transfer options remain under TASK-261004-34brhn: research-claude-login-transfer-modes, whose outcome was not yet available when checked. E7.
 
 ### Native project inventory
 
@@ -97,30 +173,32 @@ Evidence below is pinned to Curator main `ca1b776`, curator-spec `43bf0a2` (the 
 
 | Option | Mechanism | Advantages | Costs and security tradeoffs |
 |---|---|---|---|
-| **A. Persistent checkout × profile homes** | `environments/project-views/<checkout-id>/<profile>/<env>/`, with an immutable composition record and a stable native state/auth root. | Separates projects, approvals and memory; reuses a home's login; fits existing materialization/marker concepts; easy to explain. | More homes and storage; first login may recur per new home; generated surfaces cannot change while leased. Still needs native project-source suppression and OS protection of authority. **Recommended.** |
+| **A. Persistent checkout × profile homes** | `environments/project-views/<checkout-id>/<profile>/<env>/`, with an immutable composition record and a stable native state/auth root. | Separates projects, approvals and memory; reuses a home's login; fits existing materialization/marker concepts; easy to explain. | More homes and storage; first login may recur per new home; generated surfaces cannot change while leased. Still needs native project-source suppression and OS protection of authority. **Selected 2026-10-18; called Werkstatt.** |
 | **B. Composed view inside profile Y's existing home** | Select or rewrite a project composition at Y's native fixed paths; store records alongside Y. | Reuses existing login and configuration/state roots; smaller migration. | A config switch is visible to late reads by every session using Y. Safe only by serializing all differing project views on that home, or proving complete per-session native indirection. Shared trust/memory remain cross-project. A symlink swap does not solve this. |
 | **C. Launch-time overlay** | Generate temporary files and pass explicit native flags/config roots for each launch; retain Y only for authentication where supported. | Immutable session inputs, simple cleanup ownership, natural plan identity. | Uneven native channels; root/rule/skill discovery often follows CWD independently. A new native home per run multiplies login cost; reusing Y can leak mutable state. Acceptable later for adapters with independently proven config/state/auth separation. |
 
-None of these home layouts alone provides the hostile-repository boundary. This proposal does not hide that missing boundary behind a copied workspace, an empty fake repository, broad native trust, or credential transfer.
+None of these home layouts alone provides the hostile-repository boundary. The selected sparse worktree supports trusted-mode delivery; it is not evidence of a hostile-repository boundary. Native trust cannot replace individual admission or source-exclusion qualification.
 
 ### Recommendation
 
 The [configuration publication figure](diagrams/configuration-publication.puml) shows the proposed admission, composition, lease and destination PATH boundaries, with the independent shell/settings lanes.
 
-Adopt option A as an **optional, separately versioned project-context capability**. Keep rc.14's existing environment capability intact. Release a strict adapter only when it can both exclude unadmitted native sources and expose the declared admitted surfaces; otherwise return a typed refusal for the requested capability.
+Option A was selected on 2026-10-18. Deliver it as an **optional, separately versioned project-context capability** per environment. Keep rc.14's existing environment capability intact. Release a strict adapter only when it can both exclude unadmitted native sources and expose the declared admitted surfaces; otherwise return a typed refusal for the requested capability.
 
 #### Operator control surface
 
-The following names are proposed, not implemented CLI/config promises:
+The following wider operator model includes deferred surfaces; only the
+closed leaf-1 subset below is proposed for initial publication. These names
+are not implemented CLI/config promises:
 
 | Control | Semantics and default |
 |---|---|
 | `projects.<checkout-id>.context.mode` | Closed enum `off \| admitted`. New registrations default `off`: a certified launch admits profile context only and suppresses project-native discovery. `admitted` adds the selected project generation. |
 | `context.environments.<env-id>` | Per-environment enablement. Enabling an environment does not enable all items. Unknown adapter or unsupported required item refuses. |
-| `context.categories.<kind>` | Category ceiling for `context`, `rules`, `knowledge`, `mcp`, `permissions`, `skills`, `commands`, `native-settings`; default disabled until the operator selects it. |
+| `context.categories.<kind>` | Category ceiling for `context`, `rules`, `knowledge`, `mcp`, `skills`, `commands`, `native-settings`; default disabled until the operator selects it. Permission requests go to the separate manager grant flow, never an imported permission category. |
 | `context.items.<id>` | `enabled \| disabled`, pinned digest and optionality. Newly discovered items remain unapproved. Exact item/closure approval is required, even inside an enabled category. |
-| `context.project_grants` | `deny \| review`, default `deny`; `review` permits presenting permission-expansion requests, never automatically grants them. Fleet ceilings cannot be overridden. |
-| `context.memory` | `off \| private`, default `off`; private mutable memory stays in the view's state, separate from approved repository knowledge and admission records. |
+| `context.project_grants` | `deny \| review`, default `deny`; `review` presents requests to the protected manager grant flow. Only manager-programmed grants change harness permissions; project permission bytes never apply and fleet denies remain binding. |
+| `context.memory` | `off \| private`, default `off`; `private` requires an explicit opt-in parameter and a certified environment. Private mutable memory stays in Werkstatt state, separate from repository knowledge and admission; delivery is deferred beyond leaf 1. |
 | Proposed `context inspect / preview / approve / revoke` | Discovery report, effective diff, explicit approval of its digest, and revocation. No preview executes or sources a file. A launch-time `--project-context=off` can narrow an admitted launch. |
 
 Existing launches remain in an explicitly reported **legacy compatibility state** until enrolled; legacy means today's native discovery behavior, not `off` and not strict isolation. Fleet policy may require enrollment and refuse legacy launches. Unregistered checkouts never gain project context implicitly. This distinction prevents an “opt out” switch from silently re-enabling raw native repository settings.
@@ -129,7 +207,7 @@ Existing launches remain in an explicitly reported **legacy compatibility state*
 
 1. The manager binds an opaque checkout ID to a canonical root through its own registration operation, then proves launch CWD belongs to that registration. Nested registrations use the most specific **registered** containing root; ambiguity, a replaced root, unreadability or a moved checkout requires an explicit repair/rebind. Repository names, `.git` content and profile bytes cannot choose the registration or dispatcher path.
 2. Discovery reads a bounded inventory as **untrusted data**, with no-follow/path-kind checks. It may offer imports of AGENTS/CLAUDE files, `.mcp.json`, native config, rules and knowledge; it never executes a parser hook, sources a shell file, fetches a referenced URL implicitly, installs a package or connects an MCP server.
-3. Normalize into a closed, versioned declaration: stable item ID, kind, environment selector, scope/path applicability, immutable content or dependency digest, requested capability, dependencies, optionality and source provenance. Native config import accepts a named dialect and allowlisted fields; unknown/executable fields are rejected or shown as separate executable items. It is not a general JSON/TOML pass-through.
+3. Normalize into a closed, versioned declaration: stable item ID, kind, environment selector, scope/path applicability, immutable content or dependency digest, requested capability, dependencies, optionality and source provenance. Project permission settings are never imported. Other native config import accepts a named dialect and allowlisted fields; unknown/executable fields are rejected or shown as separate executable items. It is not a general JSON/TOML pass-through.
 4. Snapshot candidate bytes and their transitive file references into the protected store. Resolve imports and finite glob matches at admission; reject escaping paths, cycles, symlinks/reparse points crossing the boundary, malformed reads and unbounded expansion. Pin every referenced knowledge file. Native auto-imports must resolve to those snapshots, never back into the checkout. Each approved executable uses the existing audit/build/activation contract.
 5. Present an itemized semantic diff and a digest of the entire review package, including dependency changes, command owners, MCP endpoints/transports and permission effects. Record operator approval against manager identity, checkout ID, digest, allowed environments and policy ceiling. A hash is an identity, not proof of approval; a repository-supplied approval file is never authority.
 6. Compose admitted project generation P over **selected profile Y's lock**. Identical skill pins deduplicate. A project replacement substitutes the entire same-identity skill, including its context, commands and providers; recheck every requirement against that replacement. Incompatible required providers and multiple skill identities exporting one command refuse. Hybrid inputs, if needed, must first become explicit admitted P members; do not inherit machine-current/hybrid state implicitly.
@@ -140,11 +218,11 @@ Existing launches remain in an explicitly reported **legacy compatibility state*
 
 | Surface | Proposed composition rule |
 |---|---|
-| Root context | Retain Y's base context and system prompt. Add approved project-general context, then environment-specific project context in recorded order; deeper approved scope follows shallower scope. Replacement of Y's root/system prompt is a separately approved item and can be prohibited by policy. Record precedence as intent, not a claim that an LLM enforces it. |
+| Root context | Retain Y's base context and system prompt. Add approved project-general context, then environment-specific project context in recorded order; deeper approved scope follows shallower scope. Leaf 1 is additive only; replacement of Y's root/system prompt is deferred pending the owner question below. Record precedence as intent, not a claim that an LLM enforces it. |
 | Rules | Preserve kind and applicability. Support a bounded prose-rule subset: UTF-8 Markdown and explicitly parsed metadata for description, relative path globs and `alwaysApply`; environment-specific formats have separate dialect revisions. Cursor-style `.mdc` is an import format, not a new Cursor launcher adapter. Do not convert conditional rules into unconditional prose or turn execution-policy rules into advice. Unsupported semantics refuse or omit only explicitly optional items. |
 | Knowledge | Approved immutable files, indexed under the managed view and loaded eagerly or by explicit reference as chosen per item. An instruction cannot escape the approved reference graph via a native import. Ordinary source reads remain untrusted task data, not newly admitted knowledge. |
 | MCP | Union of approved profile/project servers. Same stable ID and digest deduplicates; a differing same-ID server requires explicit replacement approval, otherwise refuses. Pin executable/args or endpoint/transport and declared environment **names**. Manager policy bounds tool capabilities, network access and secret references. Empty means an explicitly enforced empty set. |
-| Permissions | Fleet/manager ceilings and immutable denies apply first. Project restrictions may narrow. New grants require `review`, exact approval and compatibility with the ceiling. Use versioned adapter-native rule atoms and evaluate their effective meaning; there is no universal scalar ordering of permission modes. Keep legacy `native/yolo` transport and its lock intact; project settings cannot select bypass or weaken that lock. |
+| Permissions | Default deny under fleet/manager ceilings and immutable denies. The manager programs each harness policy; agents can change it only through protected grants within their ceiling. Project-shipped permission rules, including restrictions, never apply. They may be displayed as inert requests for an independent manager grant. A legacy `native/yolo` transport constant is not authority to bypass this policy; an adapter unable to enforce it refuses. |
 | Skills and shell commands | Whole-skill overlay and unique command ownership as above. Project P falls back to Y, never machine-current. Disabling a required skill/command/provider refuses composition rather than silently breaking a dependency. |
 | Native settings and mutable memory | Allow only reviewed fields with known semantics. Deny auth stores, provider redirection, updater/download controls, PATH/home overrides, arbitrary hooks/plugins and shell initialization by default. Separate executable integrations need their own pinned admission. Runtime memory/approval writes cannot mint project admission or alter generated policy. |
 
@@ -152,50 +230,271 @@ Native trust flags approve a whole folder and may activate more than one of thes
 
 #### Stable homes, leases and login
 
-Use a stable native home at `environments/project-views/<checkout-id>/<profile>/<env>/`, with generated surfaces recorded separately from native writable state. Immutable composition records live in a manager-owned records area; the fragment binds their content digest, not a mutable `current` alias. The exact native layout remains adapter-owned, including Muse's four XDG parents and OpenCode's parent/child shape.
+The selected Werkstatt uses a stable native home at `environments/project-views/<checkout-id>/<profile>/<env>/`, with generated surfaces recorded separately from native writable state. Immutable composition records live in a manager-owned records area; the fragment binds their content digest, not a mutable `current` alias. The exact native layout remains adapter-owned, including Muse's four XDG parents and OpenCode's parent/child shape.
 
-One home has at most one materialized composition while any session leases it. Concurrent launches may share the same composition only where the native adapter supports concurrent state access. A changed composition waits for all old leases to end or refuses with `project_view_busy`; it never swaps generated files beneath running sessions. Reuse the same home after an idle, transactional update to avoid a new login for each digest. Creating an additional separately named home is an explicit operator choice with its own login/state cost, not an automatic fallback.
+The repository overlay contains only approved control items, projected into
+this home. Its sparse Werkstatt worktree is outside the source repository
+and manager authority/store roots. Bind the source checkout identity, sparse
+selection and worktree identity to the composition; changes require explicit
+preparation, not an automatic sync. Skills, their protected command artifacts
+and CLIs belong to this Werkstatt. A native trust decision applies only to
+this prepared worktree and never approves other items or grants permissions.
+Exclude unapproved native control paths, including lazy nested discovery;
+copying only some files is not a qualification result.
+
+One home has at most one materialized composition while any session leases it. Concurrent launches may share the same composition only where the native adapter supports concurrent state access. Repair, profile switching, skill/CLI sync and any changed composition targeting this home wait for all old leases to end or refuse with proposed `project_view_busy` plus remediation to wait or end the owning session; it never swaps generated files beneath running sessions. Reuse the same home after an idle, transactional update to avoid a new login for each digest. Creating an additional separately named home is an explicit operator choice with its own login/state cost, not an automatic fallback.
 
 Acquire the lease before the view can be collected and bind it to the launch context; transfer ownership to the actual tracked session/runner before the launching process exits. Detach and descendants retain it. Resume uses the recorded composition, not today's active generation. PID alone and elapsed TTL alone are insufficient proof of termination: recovery establishes process/session identity, and unknown liveness retains the lease. GC cannot remove leased homes, compositions or runtime artifacts. Revocation prevents new launches and new dispatcher admissions; already running native processes need an explicit stop/restart or an enforcing runtime channel. File replacement is not revocation of already loaded context.
 
-Default to existing adapter credential strategies. Do not copy/export secrets, re-point credentials on a launch, or preserve login by sharing a mutable profile home behind the operator's back. Claude/macOS may require one login for each new checkout × profile home. Auth sharing experiments and future mechanisms belong to TASK-261004-34brhn — research-claude-login-transfer-modes; this recommendation does not depend on a positive result there.
+Claude Werkstatt login uses setup-token through the admitted credential
+source/channel, as decided on 2026-10-18. Follow the
+[local setup-token source publication](../protocol/local-setup-token-source.md)
+and the launcher's credential capability gates; token unavailability or expiry
+refuses with its owning diagnostic, never copied native login or a silent
+fallback. Other adapters retain their separately selected credential strategy.
+No credential bytes enter project declarations, snapshots, leases or public
+outcomes. This design performs no login or credential probe.
 
-#### Fragment v4 and the command dispatcher
+#### Project fragment and the command dispatcher
 
-Reserve the next unused outer fragment revision, currently **`launch-env-fragment-v4`**; v3 already names Muse. V4 retains applicable v2 permissions/v3 home semantics and adds a closed project-context descriptor even for views without commands. Separate context admission from command transport so a context-only opt-in does not require PATH modification.
-
-Candidate shapes, with symbolic values rather than executable configuration:
-
-```json
-{
-  "project_context": {
-    "version": 1,
-    "mode": "admitted",
-    "context_ref": "<manager-owned immutable record reference>",
-    "context_sha256": "<64 lowercase hex>",
-    "project_root": "<canonical registered absolute root>",
-    "lease_ref": "<manager-issued launch lease reference>"
-  },
-  "command_environment": {
-    "version": 1,
-    "operation": "append",
-    "dispatcher_dir": "<canonical protected manager dispatcher directory>",
-    "context_ref": "<same context reference>",
-    "context_sha256": "<same digest>",
-    "project_root": "<same root or null for a profile-only context>"
-  }
-}
-```
-
-These are draft members, not an accepted schema. The illustrated append is only the final dispatcher step of D-PATH; the normative transform must also bind the protected tool prefix and admitted base PATH into the resolved plan and its digest. The normative revision must fix reference grammar, null/absence rules, bounds and diagnostics. Proposed invariants: object fields and enums are closed; one dispatcher directory; no append-list grammar, executable fragments, arbitrary environment maps or repository command root. Duplicate keys, unknown versions, mismatched context references/digests/roots and conflicting `path_prepend` are invalid. The project root is the sole typed external path exception; home, record and dispatcher paths remain manager-owned. Validators must stop deriving the environments root by stripping two path segments from a home: the project-view layout is deeper. E9.
+The original project proposal used the label `launch-env-fragment-v4`.
+That label is historical: Muse now owns published v4 and the login/store and
+Codex publication owns v5. Neither accepts new project members. The
+[leaf-1 candidate grammar](#leaf-1-candidate-grammar) freezes separate project
+members and their required vectors, historically called the fragment-v4
+vectors. Coordinated publication must allocate an unused outer successor
+and its required-understanding capability; this Draft does not reserve v6
+or reinterpret any released carrier. Unsupported consumers refuse before
+session creation. A context-only launch requires no command-dispatcher append; its CLI still
+comes from the protected Werkstatt tool allocation, with the admitted tool
+prefix applied by the shared launch construction site.
 
 The original sketch's at-most-two project/global roots is rejected in favor of **one manager dispatcher directory**. The effective project-then-profile precedence lives in the protected owner map; it does not require two search roots. Forwarders execute a manager-owned dispatcher by absolute identity, which resolves the captured context/lease, revalidates protected activation and invokes the admitted runtime/artifact. Never execute `.agents/bin` or source `.agents/env.sh`, `.envrc`, profile shell bytes or repository hooks. Context references are lookups, not bearer authority; the dispatcher authenticates its managed session binding independently.
 
 Migrate existing manager-owned singleton forwarders to dispatch through the same context binding, or refuse when an older forwarder would shadow the new view. Appending cannot outrank such a shim. For unmanaged earlier executables with an admitted command's name, report/refuse ambiguous ordinary-command availability and offer an explicit manager command invocation; never silently invoke the wrong skill. Reserve all `curator-*` names and add the dispatcher directory and aliases to umbrella provider-discovery refusals, even if placed in a configured provider trust root. E3, E10, P6.
 
-D-PATH (accepted 2026-10-11) defines one managed-launch order: protected tool directory of this launch (CIP-0007), admitted base PATH of this user in its existing order, then one protected manager dispatcher directory. Project commands run through that dispatcher only after admission and execution checks; repository `.agents/bin` is never executed in a managed launch. Use the platform separator; deduplicate by identity and preserve the existing position of the manager dispatcher directory when it is already in the admitted base PATH, otherwise append it. Do not move an existing dispatcher entry to the tail. The protected launch tool directory remains first; the admitted base entries retain their order. The closed transform grammar must preserve the accepted order; it is not adopted by this example. Reject malformed/unreadable manager roots and ambiguous PATH entries required for command selection. If PATH is absent or excluded by the environment policy, refuse command capability rather than recreate an environment variable that admission removed. Empty/relative/CWD-sensitive components and repository-writable search roots require explicit treatment in the upstream PATH-admission contract; strict mode must not accept them by accident. Native settings may not subsequently replace PATH or shell initialization defeat the recipe. Claude `settings.env` and Codex `shell_environment_policy.set` are assignment surfaces, not append operators. D2, D5.
+D-PATH (accepted 2026-10-11) defines one managed-launch order: protected tool directory of this launch (CIP-0007), admitted base PATH of this user in its existing order, then one protected manager dispatcher directory. Project commands run through that dispatcher only after admission and execution checks; repository `.agents/bin` is never executed in a managed launch. Use the platform separator; deduplicate by identity and preserve the existing position of the manager dispatcher directory when it is already in the admitted base PATH, otherwise append it. Do not move an existing dispatcher entry to the tail. The protected launch tool directory remains first; the admitted base entries retain their order. The leaf-1 closed transform below preserves this accepted order; its publication remains separate from this Draft. Reject malformed/unreadable manager roots and ambiguous PATH entries required for command selection. If PATH is absent or excluded by the environment policy, refuse command capability rather than recreate an environment variable that admission removed. Leaf 1 refuses empty, relative, CWD-sensitive or repository-writable base components rather than guessing their intended authority. Absolute components still require protected destination admission and identity checks. Native settings may not subsequently replace PATH or shell initialization defeat the recipe. Claude `settings.env` and Codex `shell_environment_policy.set` are assignment surfaces, not append operators. D2, D5.
 
 Apply the operation on the **admitted child PATH**, not the parent shell's PATH. In tracked mode the destination performs the same typed transformation after its own environment admission and records both the operation/context digest and resolved PATH in the immutable effective plan identity. Do not transport the caller's inherited PATH as an owned literal. The launcher remains the only semantic composer; the destination evaluates its admitted transform and the provider translates the resulting plan without recomposition. Until the tracked schema, consumer and provider reproduce this contract, refuse tracked requests for command capability. A resume must reproduce the pinned effective plan or refuse a changed destination context.
+
+#### Leaf-1 candidate grammar
+
+This is the closed design slice **proposed for acceptance**, not a published
+JSON Schema. Leaf 1 must publish these definitions and positive/negative
+vectors together before a producer emits them. It covers one registered
+checkout, one selected profile, one environment, one approved generation and
+one launch. Context, whole skills and inline MCP items are included. Source
+exclusion, manager permissions, memory-off and leases are mandatory. The
+optional command arm covers one protected skill command, not arbitrary scripts.
+
+**Common encoding and bounds.** JSON objects reject duplicate/unknown members,
+invalid UTF-8, trailing input and unknown versions. All listed members are
+required unless marked optional; null never means absent. ID is
+`[a-z][a-z0-9_-]{0,63}`. REF is `TAG:ID`, at most 96 ASCII bytes, where TAG is
+one of `registration`, `snapshot`, `approval`, `composition`, `lease`, `home`,
+`worktree`, `policy`, `adapter`, `session`, `principal`, `grant`, `tool`,
+`dispatcher` or `command`. A REF resolves only in protected manager state,
+never as a path, URL or bearer credential; its tag must match the field.
+HEX is exactly 64 lowercase hexadecimal characters. All manager refs are
+scoped to the issuing manager and immutable allocation identity; the same
+text from another manager conveys no authority. Record identities use SHA-256
+of CCJ-1 bytes without a trailing LF, excluding no member. A record does not
+contain its own digest. Arrays preserve order unless explicitly
+sets; sets are unique and sorted by UTF-8 bytes. Bound each record to 1 MiB
+and depth 16, with at most 256 items per generation and 256 bytes per
+ordinary string unless a referenced owning schema provides its own bound.
+Absolute root paths are bounded to 4096 UTF-8 bytes and validated through
+retained filesystem identity, not a lexical prefix alone.
+
+| Object | Closed members and meaning |
+|---|---|
+| Registration | `kind: "project-registration/1"`, `checkout_id: ID`, `project_root: absolute path`, `root_identity: HEX`, `profile: {name, lock_sha256}`, `environment: ENV`, `home_ref: REF`, `worktree_ref: REF`. ENV is `claude_code`, `codex_cli` or `muse` in this slice. Profile name uses the existing profile grammar; lock digest is HEX. `root_identity` hashes the closed binding defined below, retained privately; re-registration/replacement cannot retain old authority merely by reusing a path. Home and sparse worktree are protected manager allocations outside the source tree. |
+| Item | `kind: "project-item/1"`, `id: ID`, `type: "context" \| "skill" \| "mcp"`, `environment: ENV`, `required: boolean`, `payload: PAYLOAD`. Context and skill payloads are exactly `{snapshot_ref, snapshot_sha256}`. MCP payload is exactly `{name, server, server_sha256}` as described below. No raw native-settings, permission, hook, plugin or shell arm exists. |
+| Approval | `kind: "project-approval/1"`, `checkout_id`, `item_id`, `item_sha256`, `environment`, `approver_ref`, `ceiling_sha256`, optional `grant_ref`. IDs, HEX and tagged refs follow the common types. An agent approver requires a live manager-issued grant covering this exact act and ceiling; a human approval cannot exceed hard denies either. The protected revocation ledger is checked at preparation/start and dispatch; the repository cannot mint approval. |
+| Generation | `kind: "project-generation/1"`, `registration_ref`, `registration_sha256`, `items: [{item_id, item_sha256, approval_ref}]`. References have the matching tags. Item IDs are unique; this ordered list is the admitted rendering order. Every item must match checkout, profile policy and environment, and have current approval. No implicit filesystem discovery contributes extra members. |
+| Composition | `kind: "project-composition/1"`, `registration_ref`, `registration_sha256`, `generation_sha256`, `profile: {name, lock_sha256}`, `environment`, `adapter_ref`, `adapter_sha256`, `policy_ref`, `policy_sha256`, `memory: "off"`, `home_ref`, `worktree_ref`, `materialization_sha256`, `command_owners: [{name, item_id, artifact_sha256}]`, `omitted: [{item_id, reason}]`. Generation bytes are retained under their digest in protected state. Owner names use the existing command grammar, are unique, and bind full audited artifacts, never checkout executables. `item_id` names the selected effective skill from the approved generation or selected profile lock; at most one exported command is enabled in this slice. Omission reason is `disabled` or `unsupported` and requires approved optionality/effective preview; required items cannot be omitted. The policy reference names protected manager-programmed harness policy with default deny and only effective granted permissions, never a repository permission payload. |
+| Lease binding | `kind: "project-lease/1"`, `lease_id`, `context_ref`, `context_sha256`, `checkout_id`, `environment`, `home_ref`, `owner_ref`, `session_ref`, `generation`. Generation is a positive integer at most 2^53-1. Owner is a principal reference; session is reserved before composition. The immutable tuple binds a specific composition and session generation. State and liveness are stored separately, not rewritten into this digest. |
+| Fragment members | Required `project_context: {version: 1, mode: "off" \| "admitted", context_ref, context_sha256, project_root, lease_ref}`; optional `command_environment: {version: 1, operation: "checked-d-path/1", tool_ref, dispatcher_ref, context_ref, context_sha256}`. Context refs name the same protected composition. Project root must equal its registration. `off` has no project items but still requires certified source exclusion. No arbitrary environment map, append list or executable command text is accepted. Command members require a command-certified adapter and cannot coexist with `path_prepend`. |
+
+The root binding is exactly `{repository, filesystem}`. `repository` is the
+closed workspace-trust repository object (`root`, `primary_remote`,
+`root_commit`), including its specified null-remote case. `filesystem` is
+exactly `{device, inode}`, each a canonical unsigned decimal string, no
+leading zeros except `0`, at most 20 digits and at most 2^64-1. Both native
+identities and repository binding must still match at use; replacing a root
+with equal Git metadata cannot reuse the old registration. This slice's
+macOS/Linux filesystem binding does not allocate a Windows identity grammar.
+
+The referenced context/skill snapshot manifest is closed:
+`{version: 1, files: [{path, size, sha256, mode}]}`. Paths are unique sorted
+portable relative paths, with no absolute/dot/parent/empty segments, links,
+case/normalization aliases or file/ancestor collisions. Modes are `0600` or
+`0700`; size is the exact nonnegative integer byte count. Caps are 10,000
+files, depth 32, 240 UTF-8 bytes per path, 16 MiB per file and 64 MiB total.
+The manifest digest covers its canonical bytes; verify the complete entry
+set, bytes, sizes and modes, not only an asserted manifest hash. References
+and imports must close over this inventory. A skill snapshot also passes
+the existing whole-package manifest, pin, audit and activation contracts;
+this slice does not admit an arbitrary directory as an executable skill.
+
+The composition's `materialization_sha256` covers a closed control receipt:
+`{version: 1, files, adapter_sha256, policy_sha256, worktree_ref}`. `files`
+uses the same complete sorted file-entry grammar above, for generated
+agent-visible control outputs only, relative to the Werkstatt home. Mutable
+native state, credentials and the ordinary source worktree are not control
+files. Verify outputs against the receipt and qualified source-exclusion
+contract before start; the receiver cannot bless changed files by replacing
+this baseline. The receipt and its hash contain metadata, not credential bytes.
+
+**Inline MCP.** NAME and SERVER reuse the companion **MCP server declarations
+in the project Skillfile** grammar and environments §2.2: SERVER has exactly
+`transport`, either `command`/`args` for `stdio` or `url` for `http`, and
+optional `env_names`/`environments`. All owning bounds and secret-name rules
+apply. Expand URL shorthand; set absent `env_names` to `[]`; sort unique
+names and explicit environments; preserve argument order and scalar bytes;
+leave absent `environments` absent. `server_sha256` is `sha256:` followed by
+SHA-256 of CCJ-1 of that normalized SERVER, without LF. Approval binds
+(checkout identity, NAME, normalized server digest); the item approval also
+binds its environment, required flag and effective policy. Changing an
+endpoint, argument, environment name or selected environments needs new
+approval. Renaming or moving the item cannot replay it. Raw manifest and
+normalized declaration digests remain separate. Writer-local `install`
+options have no authority in this slice; an option affecting control
+configuration must be separately specified/approved or refuse.
+
+**Lease state machine.** Preparation creates `prepared` before publishing a
+fragment. Durable transfer to the reserved session/runner creates `active`
+before provider start; detached sessions and descendants retain that owner.
+A failed pre-start preparation releases only after absence of a started child
+is established. `active` becomes `released` only on authoritative confirmed
+termination. Interrupted recovery enters `unknown`, which retains the home
+and artifacts; it can become `active` or `released` only through session and
+process-generation reconciliation. Neither PID reuse nor TTL alone releases
+a lease. Resume checks the original binding and current authority; failure
+cannot become a new launch. An idle update is transactional and rechecks
+lease state before publication; a concurrent acquisition cannot race a write.
+
+**Checked destination transform.** Resolve tool/dispatcher refs to protected
+Werkstatt directories at the destination, after child-environment admission.
+Reject missing/excluded PATH, unreadable roots, identity aliases between the
+two roots, unsafe base components and stale command owners. Prepend the
+protected tool directory exactly once. Deduplicate base entries by filesystem
+identity while retaining their first admitted order; retain a dispatcher
+already among them at that position, otherwise append it once. Never import
+the caller's PATH literal or a repository command root. Record the context,
+lease, transform and actual resolved PATH in the effective launch identity;
+exact-plan mode covers them with the complete process digest. Native settings
+or shell initialization cannot replace the result. Profile-only/null-root
+transforms and general remote/tracked transport are deferred, not guessed.
+
+**Certified adapter delivery.** A protected capability record is exactly
+`{kind: "project-adapter/1", environment, provider_version, platform, surfaces}`.
+Platform is `macos` or `linux` for the first slice; provider version is an
+exact bounded release string, not a range. Surfaces are a set drawn from
+`context`, `skills`, `mcp`, `commands`, `permissions`, `memory-off`,
+`native-source-exclusion`. Capability advertisement is optional per environment
+and bound to real qualification on that release/platform. Every first-slice
+launch requires `permissions`, `memory-off` and `native-source-exclusion`,
+plus every required selected surface. No environment borrows another's result.
+
+For Claude, Codex and Muse independently, exclusion qualification covers
+ancestor/current/nested instructions, config and permission files, native and
+compatibility skill roots, MCP, hooks/plugins, auto-memory and late discovery,
+including reload, resume and child entry. Re-admit only protected selected
+context/skills/MCP; enforce an explicit empty MCP set where none is approved.
+An unsupported required surface refuses even if an install report says
+`skipped: unsupported`. Trusted mode is the first delivery target; this loader
+boundary does not claim containment of hostile same-user executable code.
+
+| Proposed refusal | Exact trigger and preserved effect |
+|---|---|
+| `project_context_invalid` | Malformed/duplicate/unknown fields, invalid refs, closed enums or bounds, inconsistent context/lease/roots or forbidden PATH arm. No fragment, child or partial publication. |
+| `project_registration_mismatch` | Missing/replaced/moved checkout or CWD/worktree outside its registered binding. No substitution of another project/profile. |
+| `project_item_unapproved` | Missing, revoked, wrong-project/item/environment approval or insufficient approver grant/ceiling. No native write, MCP connection or provider start. |
+| `project_context_drift` | Changed/missing snapshot entry, policy, adapter contract, protected composition or digest. No repair or baseline update during launch. |
+| `project_context_unreadable` | Failed read of required authority, inventory, PATH or liveness evidence. Never treat this as absence/optional omission. |
+| `project_context_unsupported` | Missing certified environment/surface, non-enforcing permission or memory adapter, or unsupported required route/consumer. No omission of required items or downgrade to legacy/native. |
+| `project_view_busy` | Repair, profile switch, sync or update while a home has a live/unknown lease. Wait or refuse before writes; remediation identifies the owning session and advises waiting/ending it. |
+| `project_lease_mismatch` | Wrong owner/session/generation, stale lease, release replay or invalid transition. No new session or lease takeover. |
+| `project_path_refused` | Missing/excluded/unsafe PATH, invalid protected roots, command shadowing or stale/ambiguous owner. No PATH reconstruction or wrong executable. |
+
+These names are proposed for joint diagnostic-registry publication with leaf
+1; no exit numbers or new members are smuggled into an existing registry.
+Before any authority lookup, old/unsupported outer carriers retain their own
+published version refusal. The new code applies only after project-capability
+negotiation. Every failure preserves existing home/approval state and emits
+no success fragment; permitted refusal telemetry is redacted.
+
+**Required fragment-v4 design vectors.** These names retain the historical
+project design label, not permission to modify published fragment v4. Each
+positive has a nearby negative and a narrowing control for the future checker:
+
+| Vector family | Positive control and negative witness | Narrowing control that must fail |
+|---|---|---|
+| `ProjectRegistrationBinding` | Valid registered checkout/profile/ENV prepares; replaced root, nested foreign registration and worktree substitution refuse. | Compare root strings only, ignore retained identity. |
+| `ProjectItemApproval` | Approved context and complete skill snapshot load; wrong-project replay, changed transitive asset and revoked/absent approval refuse. | Check only root content or item name. |
+| `ProjectInlineMCP` | URL/expanded SERVER normalize identically and approved server loads; endpoint/arg/env/NAME changes, unapproved server and raw install authority refuse. | Hash URL only or trust raw Skillfile approval. |
+| `ProjectSourcesClaudeCodexMuse` | Each runtime loads approved home context/skill and explicit MCP set; planted ancestor/nested/late instructions, skills, hooks, permissions, plugins and memory do not activate. | Suppress startup only or only one runtime. |
+| `ProjectPermissionsAndMemory` | Manager grant within ceiling is enforced; project allow/deny settings and implicit memory opt-in never apply. | Let native project permissions or memory override the manager. |
+| `ProjectLeaseLifecycle` | One prepared/active launch retains its home across detach/resume; busy repair/switch/sync, PID reuse, stale generation, unknown liveness and TTL-only collection refuse without writes. | Release at caller exit or key by PID alone. |
+| `ProjectDestinationPATH` | Tool/base/dispatcher order, existing dispatcher position and identity dedup match D-PATH; absent/relative/writable PATH and command shadowing refuse. | Use caller PATH or always move dispatcher to the tail. |
+| `ProjectLaunchRoutes` | Same admitted Werkstatt tuple composes through delegated and exact-plan routes under their own capabilities; changed fragment, missing route understanding and failed resume refuse. | Drop the project binding or claim a delegated pin proves snapshot isolation. |
+| `ProjectClosedGrammar` | Minimal valid records and context-only launch pass; unknown fields, duplicate keys, nulls, excessive bounds and project fields in frozen v4/v5 refuse. | Accept unknown fields or parse before version negotiation. |
+
+**Explicitly deferred.** Multi-profile alternatives/stacks and profile-only
+launches; cross-account/remote/tracked transform carriers; simultaneous
+same-home writers; replacement root/system context; conditional rule dialects,
+mutable knowledge/private-memory delivery; native settings/hooks/plugins;
+permission-file import (forbidden, not a future authority source); multi-command
+and generic executable integrations; OpenCode and Pi adapters; Windows and
+new provider/platform qualification. The 2026-10-10 broader model remains the
+design target, with no implicit activation of these deferred arms.
+
+#### Launch route binding
+
+The approved Werkstatt composition is selected before either route. Resolve
+the selected profile plus approved project generation, acquire its home lease,
+and use the same agents-management construction site. The project-capable
+fragment names the leased Werkstatt home, not a shared machine-current profile
+home. Unsupported home indirection or source exclusion refuses; it does not
+silently launch against the base profile alone.
+
+On the **delegated route**, curator-run resolves the profile/fragment,
+model/effort, permissions, system-prompt opt-in, typed resume and credential
+intent, then sends the closed request. The manager's caller-side component
+composes using the leased Werkstatt home and certified adapter; it checks
+its fragment digest against the request and changes no resolved value,
+adds no unapproved profile content and enables no Remote Control. The
+project tuple must be conveyed or securely bound by curator-run's own
+required-understanding contract before this route advertises project support;
+this CIP does not add private fields to `launch-delegated/1` requests/records.
+A shared-profile-home-only consumer is unsupported for a Werkstatt launch.
+The route retains live-home/profile-pin/fragment-digest provenance, not
+CIP-0014 snapshot isolation. This CIP's selected busy-Werkstatt lease rule
+protects cooperating updates; it does not relabel CIP-0016's proposed general
+home-lease/exclusive-profile conditions as accepted or protect arbitrary
+same-user mutations.
+
+On the **exact-plan route**, the caller materializes the approved content
+through the [CIP-0014](CIP-0014-managed-home-snapshots.md) contract into the
+reserved session home and composes the full process before sealing it.
+Bind the Werkstatt tuple, lease, snapshot/manifest, policy overlay and resolved
+PATH in that process identity. The host executes the admitted process and
+never composes or repairs it. Snapshot support for the approved project
+inventory, native-state placement and source exclusion must be qualified;
+there is no raw home-copy fallback. The original Werkstatt remains leased
+until the session's authority/state ownership is reconciled on termination.
+
+[CIP-0016](CIP-0016-local-hosted-launches.md) owns the hosted direction.
+Its amendment accepted 2026-10-21 activates delegated support per runtime,
+Claude/Codex first and Muse after the manager's v4 consumer is qualified.
+This is distinct from published fragment-v4 and the project design vector
+label. The project first-wave plan covers Claude/Codex/Muse, but each row
+still requires its project capability and route qualification; no test-only
+or unsupported row is advertised. The joint three-runtime exact-plan release
+gate remains. Retirement is per manager/runtime when exact-plan with detach
+is advertised; detached launches retain delegated until exact detach exists.
+Typed resume never creates a session; any hosted refusal has no native fallback.
 
 ## Security considerations
 
@@ -205,7 +504,15 @@ The trust boundary is operator approval → protected manager records/store → 
 
 Appending preserves precedence but provides **no integrity guarantee** for earlier PATH entries or a writable appended directory. Protect the dispatcher and its artifacts from repository writes, and admit the base PATH separately. Also audit the command's own runtime launch behavior: the older portable command lane can prepend project/global directories (manager §3), and enforced script commands have a different boundary. The dispatcher must enter a context-bound protected activation lane, not just wrap an old shim that reintroduces the checkout's bin directory.
 
-A manager-owned directory writable by the same unrestricted UID is not protection from an already executing hostile process. Strict-mode qualification must prove that the child, its native configuration loader and executable integrations cannot modify manager admission/store/dispatcher state; use an actual sandbox/process boundary where required. If only initial file discovery is controlled, describe that narrower property and do not claim hostile-code containment. Native `yolo`, unrestricted extensions or an unisolated same-user process cannot be made safe by chmod or hashing alone.
+The first slice is trusted-code delivery: the operator authorizes worktree
+code under manager-programmed grants, while strict control-source admission
+still excludes unapproved automatic loading. It does not claim hostile-code
+containment. A manager-owned directory writable by the same unrestricted UID
+cannot protect against an already executing hostile process. A later mode
+claiming that protection must prove that the child, its native loader and
+executable integrations cannot modify manager admission/store/dispatcher
+state, using an actual sandbox/process boundary. Startup-only discovery
+suppression, native `yolo` or chmod/hashing alone cannot establish it.
 
 Instructions and knowledge can still contain prompt injection. Snapshotting makes their provenance stable; it does not make their advice safe. Tool permissions, process confinement and secret-scoped MCP access enforce capabilities independently of prose. Ordinary source reads may expose malicious text without converting it into trusted instructions. An adapter that cannot keep unadmitted control files from its automatic loading path cannot claim strict admission, even if those files appear absent at launch.
 
@@ -213,9 +520,9 @@ Credential values never enter declarations, composition records, digests of publ
 
 ## Compatibility and migration
 
-Existing installations and profile locks remain valid. V1–v3 schemas remain byte-identical; older readers reject v4 and do not fall back. Command capability requires the new transport end to end. The old single-root `path_prepend` is not reinterpreted as append, and arbitrary `PATH`/project-root values do not enter the existing fragment `env` map.
+Existing installations and profile locks remain valid. All published fragment versions, including v4/v5, remain byte-identical; older readers reject a project-capable successor and do not fall back. Command capability requires the new transport end to end. The old single-root `path_prepend` is not reinterpreted as append, and arbitrary `PATH`/project-root values do not enter the existing fragment `env` map.
 
-Introduce a new closed manager configuration revision for registrations, item policy and legacy/enrolled state. Introduce separate schemas for project declarations, protected admissions, composition records, leases and v4 context/command members. Keep immutable content identity separate from lease identity: repeated launches can share a composition digest while each launch has its own lease, and the canonical fragment/plan hash includes whichever launch binding it transports.
+Introduce a new closed manager configuration revision for registrations, item policy and legacy/enrolled state. Introduce separate schemas for project declarations, protected admissions, composition records, leases and the separately published project context/command members. Keep immutable content identity separate from lease identity: repeated launches can share a composition digest while each launch has its own lease, and the canonical fragment/plan hash includes whichever launch binding it transports.
 
 Enroll projects by explicit preview/approval; import nothing automatically. Existing profile homes can continue to serve legacy launches. Project homes are provisioned lazily on an accepted strict launch preparation, with first-login and state-retention implications shown. Required unsupported surfaces fail with an actionable diagnostic; an optional item can be omitted only when that omission is in the approved record and effective preview. No silent conversion of a context-only adapter into full project support.
 
@@ -227,28 +534,36 @@ Proposed normative text, subject to operator acceptance:
 2. **Identity:** The manager MUST bind each composition to a registered checkout, selected profile lock, approved project generation and adapter contract. It MUST NOT mutate the selected profile or substitute machine-current as fallback.
 3. **Native isolation:** Strict `off` and `admitted` modes MUST exclude unadmitted sources at startup, reload, nested file discovery, resume and child-agent entry points. A tool version whose boundary is unproven MUST refuse that strict capability.
 4. **Concurrency:** Leased generated surfaces MUST remain unchanged. Updating a busy stable home MUST wait or refuse; collection MUST retain live or indeterminate leases and all referenced artifacts.
-5. **Commands:** A v4 command environment MUST name one protected dispatcher and fixed append semantics. Launcher/provider discovery MUST exclude skill-published command locations and the dispatcher from `curator-*` provider selection. The selected owner map MUST govern every managed forwarder in the child PATH.
-6. **Tracking:** The tracked launch plan MUST represent destination-side PATH append, bind the composition/lease, and hash the resolved effective plan. A consumer lacking this capability MUST refuse before creating a session or child.
+5. **Commands:** A project-capable command environment MUST name one protected dispatcher and fixed append semantics. Launcher/provider discovery MUST exclude skill-published command locations and the dispatcher from `curator-*` provider selection. The selected owner map MUST govern every managed forwarder in the child PATH.
+6. **Tracking (deferred after the first slice):** The tracked launch plan MUST represent destination-side PATH append, bind the composition/lease, and hash the resolved effective plan. A consumer lacking this capability MUST refuse before creating a session or child.
 7. **Secrets:** Imports, approvals and generated evidence MUST NOT copy credential bytes. Existing credential-mode prohibitions continue to apply.
+8. **Permissions and memory:** Harness permissions MUST be programmed by the manager with default deny; agent changes MUST require protected grants within ceilings. Project-shipped permissions MUST NOT apply. Native harness memory MUST remain off absent explicit opt-in; the first-slice grammar supports off only.
+9. **Routes:** A delegated caller-side composer MUST preserve the approved Werkstatt binding without claiming snapshot provenance. An exact-plan host MUST consume the covered snapshot/process without recomposition. Missing required route understanding MUST refuse before launch.
 
-Adopt decision records covering (a) project-context authority and stable-home/lease semantics, (b) typed command-environment v4 and tracked PATH evaluation, and (c) per-adapter certified source controls. Amend environments §§1–5 for declaration/admission/composition, §§7–8 for materialization and source suppression, §9.4 for command scope, §10 for fragments, §11 for provider refusal, §12 for control/status/GC; amend manager §§3/12 and Decision 0013's owned-literal transport. Correct the Pi trust notice and reconcile credential/Muse evidence through the existing erratum process rather than treating this draft as an erratum itself.
+Adopt decision records covering (a) project-context authority and stable-home/lease semantics, (b) typed command environment and tracked PATH evaluation, and (c) per-adapter certified source controls. Amend environments §§1–5 for declaration/admission/composition, §§7–8 for materialization and source suppression, §9.4 for command scope, §10 for fragments, §11 for provider refusal, §12 for control/status/GC; amend manager §§3/12 and Decision 0013's owned-literal transport. Correct the Pi trust notice and reconcile credential/Muse evidence through the existing erratum process rather than treating this draft as an erratum itself.
 
 ## Implementation plan
 
-These are proposed leaves **after** operator acceptance and prioritization; no tasks or producers are scheduled by this research. Sizes are relative: S = one narrow contract/change; M = one subsystem; L = a cross-component slice that must be split before execution. No second general research prerequisite is proposed.
+These leaves follow owner acceptance and prioritization, not this Draft's
+filing. Sizes are relative; cross-component slices are split before execution.
+The first delivery wave is Claude, Codex and Muse, with no implementation or
+native qualification claimed by this table.
 
 | Order | Leaf | Size | Reviewable exit |
 |---|---|---|---|
-| 1 | Spec decisions, closed declaration/admission/composition subset and fragment-v4 vectors | M | Freeze the smallest executable slice and refusal vocabulary; retain released schemas. |
-| 2 | First vertical slice: registered project + approved context/skill command + Pi 0.84.2 source exclusions + manager resolve + direct curator-run | L | One real launch reads the approved snapshot and invokes its protected command; changed/untrusted repository sources do not activate. Unsupported MCP/permission items refuse. Split into bounded producer leaves at acceptance. |
-| 3 | Stable home publication, session lease transfer, busy-update refusal, resume and GC | M | Concurrent projects cannot switch one another's surfaces; crash/detach cases retain correct state. Required before advertising concurrent use. |
-| 4 | Dispatcher/activation lane, legacy forwarder migration and umbrella provider exclusion | M | Real command entry proves selected P→Y ownership and prevents repository-bin reintroduction. Required parts land with leaf 2, not afterward. |
-| 5 | Tracked schema, destination environment evaluation and effective-plan identity | M | Direct/tracked equivalence for identical admitted destination input; unsupported consumer refuses. |
-| 6 | Claude and Codex adapters, separately: full source exclusion and per-item re-admission | M each | Pinned native entry probes cover config, lazy context, skills, hooks/plugins, empty/nonempty MCP and permission atoms. Preserve approved authentication strategy. |
-| 7 | OpenCode launcher/version contract; Muse launcher/version/target contract | M each | Establish actual native support first; required unknown surfaces remain refused. No adapter-name-only support claim. |
-| 8 | Remaining rule dialects, MCP/permission atoms, knowledge and private memory; enrollment/status UX | M per dialect/surface | Per-item preview, approval, disable/revoke and negative vectors; no raw-config pass-through. |
+| 1 | Publish the leaf-1 closed grammar, diagnostic registry and project fragment vectors | M | Exact member schemas, canonical positive/negative bytes and narrowing controls match this candidate; coordinate a new outer carrier without changing published v4/v5. |
+| 2 | Werkstatt registration, protected item admission and persistent home/sparse worktree preparation | M | One checkout/profile/environment generation and approved context/skill/MCP inventory; no raw project permissions, credential copying or implicit item approval. |
+| 3 | Werkstatt lease transfer, busy-update refusal, resume and recovery | M | Acquire before publication/start; repair/switch/sync wait/refuse; detach and unknown liveness retain state. This precedes the first hosted launch. |
+| 4 | Claude, Codex and Muse source-exclusion and re-admission adapters, in the first wave | M each | Each real entry point qualifies instructions/config, skills, hooks/plugins, MCP, manager-programmed permissions and memory-off for its exact release/platform; required unsupported surfaces refuse. Claude setup-token uses its owning admitted channel. |
+| 5 | Protected Werkstatt tools/skills, checked D-PATH and command dispatch | M | One admitted skill command binds full artifact/owner identity; legacy shadowing, repository bins, unsafe PATH and provider discovery refuse. Required parts precede any command-capable launch. |
+| 6 | One direct/hosted launch with the approved Werkstatt tuple | M per runtime/route | First wave has Claude/Codex/Muse rows. Delegated caller composition and later exact-plan snapshot execution obey the route binding above; version/capability mismatch and resume failure never downgrade. |
+| 7 | Tracked destination transform and complete effective-plan transport | M | Later closed carrier and consumer qualify identical admitted destination behavior; absence refuses tracked command capability. |
+| 8 | OpenCode and Pi delivery | M each | Later native/version contracts and source exclusions qualify independently; neither disappears from the design or substitutes for first-wave rows. |
+| 9 | Deferred stacks, rule dialects, replacement/memory decisions and advanced surfaces | M per surface | Separate owner disposition where required, per-item grammar, preview/revocation and negative qualification; no general native-config pass-through. |
 
-Spec and implementation changes land in lockstep for each certified surface. The initial slice consumes this proposal directly once its decisions are accepted; platform probes belong to the implementing adapter leaves. The output of this research is a recommendation, not authorization to begin those leaves.
+Schema, consumer and real adapter checks gate each advertised surface. The
+minimal context-only launch need not wait for command or tracked delivery;
+command requests must wait for the corresponding protected transform lane.
 
 ## Test plan
 
@@ -260,21 +575,32 @@ Use the repositories' existing Go tests and conformance-vector machinery. Drive 
 | Native discovery | Approved context/skill loads; unapproved ancestor/nested instructions, dynamic rules, settings, MCP, hooks, plugin resources and late-created files do not activate. Observe loader/tool behavior, not an LLM claim that it ignored a file. | Suppress only startup files; suppress config but leave rules/skills. |
 | Composition | Same pin deduplicates; whole-skill replacement works; incompatible required provider, command collision and MCP same-ID conflict refuse. | Compare command names only in project, omitting profile or transitive providers. |
 | PATH/dispatch | D-PATH tool-prefix/base/dispatcher order, one dispatcher, duplicates and profile-only/null root; project P then selected Y; old singleton shims, symlinked dispatcher, missing PATH, hostile earlier entry, empty/relative segment and runtime re-prepend negatives. | Reject only direct `.agents/bin`, admitting a canonical alias or nested writable root. |
-| Permissions/secrets | Approved grants within ceiling and added denies work; project bypass, secret-name widening, native PATH assignment, forbidden hooks and dialect ambiguity refuse. | Enforce global lock only on CLI flags, leaving imported native settings. |
+| Permissions/secrets | Manager-programmed grants within ceiling work; raw project grants and denies never apply. Project bypass, secret-name widening, native PATH assignment, forbidden hooks and dialect ambiguity refuse. Native memory stays disabled without explicit opt-in. | Enforce global lock only on CLI flags, leaving imported native settings. |
 | Leases/TOCTOU | Two projects on Y, two identical view sessions, busy update, revocation, detach, descendant, resume, crash and unknown liveness. No GC of referenced artifacts. | Key lease only by PID; release at launcher exit; collect on TTL alone. |
 | Tracking | Same effective child environment at the destination, digest changes with composition/PATH/policy, replay and context substitution refuse before child creation. | Hash declared transform but omit resolved PATH or composition identity. |
 
 Platform matrix: macOS and Linux for each qualified native version; Windows only after path separator, executable suffix, canonical path/reparse-point, case-folding, permissions and lease tests pass. OpenCode V1/V2 are separate rows. Claude login behavior is version/OS-specific. Record the number passed over the enumerated cases and the uncovered surfaces; an absent binary, skipped native test or failed read is not green coverage.
 
-Research validation is limited to the file/source audit and P1–P6 in the companion. No product test suite was rerun and no implementation conformance is claimed.
+The historical research evidence remains limited to the file/source audit
+and P1–P6 in the companion. This acceptance candidate adds no native probes
+or implementation conformance claim. Documentation validation and published
+carrier controls are recorded separately in the task outcome.
 
 ## Open questions for the operator
 
-1. **Home architecture and macOS login cost:** Accept A's persistent checkout × profile × environment home and potentially one initial login per home? **Recommend yes**, provision lazily and retain native state. If login reuse is mandatory, choose B with serialized differing project views; do not invent credential sharing. Revisit only against the outcome of TASK-261004-34brhn — research-claude-login-transfer-modes.
-2. **Strict boundary versus existing behavior:** Require certified exclusion of unadmitted native sources for `off` and `admitted`, with typed refusal where unsupported? **Recommend yes**, while exposing existing unenrolled launches as legacy compatibility. Do not market a home change as repository isolation.
-3. **Permission expansion:** Allow project permission requests at all? **Recommend default deny, explicit per-project `review` opt-in**, exact per-item approval within fleet/manager ceilings; preserve all hard denies and the existing permission-mode lock.
-4. **Context replacement and memory:** May projects replace Y's root/system prompt or carry mutable memory? **Recommend additive context and memory off by default**, separately approved replacement, private per-view memory opt-in, and no auto-promotion of generated memory into admission.
-5. **Busy view updates:** Wait for active leases or allocate a fresh home automatically? **Recommend wait/refuse**, reusing the stable home after it becomes idle. An explicit additional view may incur another login; never silently switch active sessions.
-6. **PATH selection — decided; transport still open:** D-PATH selects one protected dispatcher after the protected tool directory and admitted base PATH. Raw repository/global command roots are superseded. The remaining owner choice is the versioned destination transform and stale/ambiguous owner handling: adopt the proposed checked transform with refusal until supported, or defer command capability. Caller-PATH literals cannot replace destination admission.
-7. **Adapter delivery contract:** Accept a separately versioned optional capability whose certified environments/surfaces are advertised explicitly, with Pi as the first proposed direct slice? **Recommend yes**, with Claude/Codex next and OpenCode/Muse after their native contracts are established. All five remain in the design; an unsupported required feature refuses rather than being omitted.
-8. **Required R-TRANSFER review consumer:** Stage T board/harness review uses inert exact-C diffs/blobs first. Would need publication of the digest-bound resource and acknowledgement record, and real-tool-path qualification for each supported harness before discovery-capable tree entry: candidate hook, MCP entry, instruction file and skill remain data without automatic loading or execution at launch, reload, nested read, resume and child entry, while every flagged hunk is recorded in the verdict. A strict adapter or equivalent ambient-discovery exclusion must precede that entry; this does not require the full project-context rollout or decide its open home/grammar choices.
+The former eight questions are resolved by the dated owner decisions above.
+Publication of the candidate grammar/diagnostics and qualification of actual
+adapters remain engineering gates, not reopened home, PATH or adapter choices.
+Only these later-surface owner decisions remain:
+
+1. **Replacement of profile root/system context:** permit a separately
+   approved replacement in a later slice, or retain additive-only context?
+   **Recommend additive-only for the first release**, with a separately
+   specified replacement item and immutable policy ceiling before any later
+   opt-in. The selected repository overlay does not itself authorize replacement.
+2. **Private memory retention after explicit opt-in:** retain memory in the
+   Werkstatt until explicit deletion, or expire it at an operator-selected
+   retention limit? **Recommend private per-Werkstatt retention with explicit
+   deletion**, never publication, cross-Werkstatt reuse or automatic promotion
+   to approved knowledge. Memory remains off by default; the first slice
+   accepts only `memory: "off"` and defers the opt-in delivery grammar.

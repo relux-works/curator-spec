@@ -146,3 +146,17 @@ interactive hosted rows remain distinct. `tb-sessiond` lookup/restart is
 refused under existing hosted §§4/6; enabling it requires an explicit later
 amendment, not a callback or hidden wrapper. Unqualified vendor child-leak or
 settings-reload behavior keeps capability unavailable.
+
+## Project context acceptance candidate (CIP-0002)
+
+[CIP-0002's proposed-for-acceptance disposition](cips/CIP-0002-project-context-in-managed-launches.md#operative-disposition-proposed-for-acceptance-2026-10-21)
+keeps Status Draft while incorporating the owner decisions of 2026-10-18 and
+2026-10-21. Werkstatt home architecture, trusted first delivery, permissions,
+memory default, busy-update behavior, checked D-PATH and the Claude/Codex/Muse
+first wave are decided. Remaining owner questions are later root/system
+context replacement and retention after explicit private-memory opt-in;
+[each has a recommendation](cips/CIP-0002-project-context-in-managed-launches.md#open-questions-for-the-operator).
+The closed leaf-1 candidate and its vectors still need coordinated publication,
+an unused project-capable outer carrier and per-runtime source-exclusion/route
+qualification. Published fragment v4/v5 remain unchanged; no implementation
+support follows from filing this candidate.
