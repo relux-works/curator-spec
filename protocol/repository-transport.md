@@ -31,38 +31,6 @@ No shared field may contain a password, token or credential-provider reference.
 SSH usernames allowed by the existing grammar are connection labels, not
 repository identity or authorization grants.
 
-### Covered lanes
-
-Sections 1–3 MUST govern network Git acquisition in each of these lanes;
-each lane's own section points back here:
-
-- Skillfile sources, including individual and collection selections.
-- Legacy skill sources and configured network source repositories, in project,
-  global and hybrid scopes.
-- Skill dependencies and network development substitutions.
-- Profile installs and their complete closure: Git roots, Git overlays and
-  all direct and transitive Git requirements, including required skills.
-- Git-sourced context packages containing `agent-context.json`.
-- Git-sourced MCP declaration packages containing `agent-mcp.json`.
-- External skill build repositories used by `go-repository-v1`, including
-  network development substitutions, with their stricter endpoint and
-  execution rules retained.
-
-Coverage follows the source through install, update/refresh, upgrade, repair
-and locked-snapshot reacquisition whenever the owning lane calls for network
-Git I/O; it does not make a read-only or store-only operation fetch. In
-particular, for a profile's declared SSH skill requirement with no applicable
-machine-policy entry, §2 requires one attempt at that declared SSH endpoint;
-canonical `host/path` identity does not authorize synthesizing an HTTPS URL.
-
-Local filesystem acquisition, `file:` sources and committed-HEAD local
-substitutions are not network endpoint selection and retain their own rules.
-Registry HTTP requests and MCP server connections are not Git package
-acquisition; this protocol does not govern their transports or authorize
-installing a server. This list does not widen any lane's declaration grammar,
-ref rules or capabilities; logical `repository` declarations remain exclusive
-to new Skillfile sources.
-
 ## 2. Machine policy and bounded resolution
 
 The operator-owned `source-policy.json`, stored with machine configuration
@@ -159,8 +127,8 @@ open items are tracked in
 Revision 2 decides the advanced endpoint mappings that revision 1 left
 undecided: explicit non-default ports on listed endpoints, operator-declared
 mirrors, and operator-declared host aliases. It specifies machine endpoint
-properties only. These rules apply to the [covered lanes in §1](#covered-lanes),
-subject to the revision-2 endpoint restrictions below. For the strict
+properties only. These rules apply to new Skillfile sources and to the existing
+Git acquisition lanes implemented under this protocol. For the strict
 external-build lane (manager section 11) only the port-free, alias-free subset
 applies: endpoints with an explicit port (URL port or alias port) or an `alias`
 field are refused there with the lane's grammar diagnostic (section 7) and are
