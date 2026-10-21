@@ -448,6 +448,10 @@ that admits no signer: every candidate of that source fails — unsigned as
 
 ## 2. Context package shape
 
+Network acquisition of context packages is a Git acquisition lane under
+[repository-transport §1–§3](repository-transport.md#1-identity-and-declarations);
+a declared URL supplies identity and a connection hint, not a transport pin.
+
 A **context package** is a git snapshot, or a directory within one named by
 `directory`, or a `path` directory, whose root contains `agent-context.json`,
 a strict schema-1 object, or a schema-2 object under the unreleased
@@ -573,6 +577,10 @@ schema 1. Existing schema-1 readers retain their unknown-field rejection.
 shape they described; no implementation ever emitted them.
 
 ### 2.2 MCP declaration packages
+
+Network acquisition of Git-sourced MCP declaration packages is a Git acquisition
+lane under [repository-transport §1–§3](repository-transport.md#1-identity-and-declarations);
+a declared URL supplies identity and a connection hint, not a transport pin.
 
 An **MCP declaration package** is a third package kind on the same
 machinery: a git snapshot, or a directory within one, whose root contains

@@ -1137,6 +1137,10 @@ the schema defaults above remain the declared-only reading.
 
 ### 4.4 Dependencies
 
+Network acquisition of skill dependencies is a Git acquisition lane under
+[repository-transport §1–§3](repository-transport.md#1-identity-and-declarations);
+a declared URL supplies identity and a connection hint, not a transport pin.
+
 `dependencies.commands` contains system requirements. Its legacy `type:
 "skill"` form remains readable, does not create a shim, and produces a
 migration warning.
@@ -1187,6 +1191,11 @@ as the legacy object `{ "commands": { <name>: <portable-relative-path> } }`.
 Writers MUST NOT create this legacy form.
 
 ## 5. Project manifests
+
+Network acquisition of legacy skill sources, configured network source
+repositories and network development substitutions is a Git acquisition lane
+under [repository-transport §1–§3](repository-transport.md#1-identity-and-declarations);
+a declared URL supplies identity and a connection hint, not a transport pin.
 
 The accepted [Skillfile sources revision 1](skillfile-sources.md) adds
 project schema 2 and package snapshot identities. The rules below remain
