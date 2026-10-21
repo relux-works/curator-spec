@@ -7,6 +7,12 @@ Versioning for the complete specification set.
 
 ### Added
 
+- File Draft [CIP-0023](cips/CIP-0023-exact-plan-hosted-launches.md):
+  snapshot-bound exact-plan hosting with detached/doorbell/session-record
+  support, per-runtime delegated retirement, project composition capture and
+  resume/recycle/GC rules. No wire schema, normative corpus or runtime support
+  is published by filing this proposal.
+
 - Accept CIP-0021 (operator decision 2026-10-18), adopted by Decision 0027:
   profile `requires.skills` may select a portable git-snapshot `directory`,
   using the context/MCP path discipline and existing diagnostics. Bind the

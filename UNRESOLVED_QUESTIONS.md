@@ -146,3 +146,12 @@ interactive hosted rows remain distinct. `tb-sessiond` lookup/restart is
 refused under existing hosted §§4/6; enabling it requires an explicit later
 amendment, not a callback or hidden wrapper. Unqualified vendor child-leak or
 settings-reload behavior keeps capability unavailable.
+
+## Exact-plan successor (CIP-0023)
+
+[Draft CIP-0023](cips/CIP-0023-exact-plan-hosted-launches.md#open-questions-for-the-operator)
+proposes detached sessions, doorbells and durable session records on exact
+snapshots. Initial joint runtime qualification versus later per-runtime
+retirement, control/wire publication, doorbell delivery policy, CIP-0002 capture
+bindings, native protection/credential gates and legacy retention remain owner
+questions. No schema or production capability is activated by this Draft.

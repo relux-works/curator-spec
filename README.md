@@ -131,6 +131,11 @@ Protocol and implementation designs are recorded as
 [CIP-0001](cips/CIP-0001-curator-improvement-proposals.md); adoption follows
 [GOVERNANCE.md](GOVERNANCE.md).
 
+[CIP-0023: Exact-plan hosted launches](cips/CIP-0023-exact-plan-hosted-launches.md)
+proposes a snapshot-bound successor with detached sessions, doorbells, durable
+records, per-runtime delegated retirement and admitted project snapshot inputs.
+It remains Draft and publishes no wire schema or runtime capability.
+
 ## CIP diagram sources
 
 [Source index and phase/authority notes](cips/diagrams/README.md) map the B4 module views to their defining CIP sections. These views describe current contracts and proposed targets; they do not assert implementation or qualification.
