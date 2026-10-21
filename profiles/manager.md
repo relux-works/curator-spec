@@ -1562,6 +1562,11 @@ explicit `audit.mode: advisory` under `hardened`) is reported with
 
 ## 11. External repository manager profile
 
+External build repository network acquisition, including network development
+substitutions, is a Git acquisition lane under
+[repository-transport §1–§3](../protocol/repository-transport.md#1-identity-and-declarations);
+a declared URL supplies identity and a connection hint, not a transport pin.
+
 The accepted [repository transport revisions 1 and 2](../protocol/repository-transport.md)
 define how an operator-permitted endpoint is selected before this lane runs.
 Every selected endpoint remains subject to this section’s closed executor, SSH
@@ -2656,6 +2661,11 @@ a link the manager does not own is refused with
 | recorded passthrough entry whose link state cannot be established (non-current, currency unknown; never "detached") | `environment_passthrough_unreadable` |
 
 ### 12.3 Profile lifecycle
+
+Network acquisition of the profile root, Git overlays and every direct or
+transitive closure member is a Git acquisition lane under
+[repository-transport §1–§3](../protocol/repository-transport.md#1-identity-and-declarations);
+a declared URL supplies identity and a connection hint, not a transport pin.
 
 `profile install <source>` takes a git URL or a `path` operand, told apart
 syntactically and never probed (environments §9.1). One install names one

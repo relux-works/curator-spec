@@ -506,7 +506,7 @@
     },
     {
       "path": "protocol/repository-transport.md",
-      "sha256": "sha256:d7ca91bf07ca9c1ccd40914ffbf1e8c42e00abb512d2be2a76d495565a04d54e"
+      "sha256": "sha256:0dda2254fc374599e3c364326d27542dff131882f1a5f9cf8c781a28f57144e9"
     },
     {
       "path": "protocol/skillfile-sources.md",

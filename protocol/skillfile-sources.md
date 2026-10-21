@@ -15,6 +15,10 @@ force. Definitions reused from `schemas/v1` are unchanged.
 
 ## 1. Acquisition and selection
 
+Network source acquisition is a Git acquisition lane under
+[repository-transport §1–§3](repository-transport.md#1-identity-and-declarations);
+a declared URL supplies identity and a connection hint, not a transport pin.
+
 This revision defines project-scope Skillfiles. Machine-global Skillfiles
 follow [environments §9.4 profile locks](environments.md#94-profile-scoped-skills-and-migration)
 when the manager implements that capability. A manager without machine-global
