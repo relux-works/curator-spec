@@ -44,3 +44,10 @@ enum; each must fail its named witness while valid controls still pass.
 Full-document CCJ-1 manifest identity is tested independently of MCP
 normalization, with whitespace/key-order, semantic-edit and faulty-canonicalizer
 controls. These checks do not establish external source or protected authority.
+
+Leaf-1 review follow-up also closes inherited final-LF schema matches. The
+stage-A oracle builds a private catalog with shared true-end guards while
+preserving released schema bytes. Eleven schema-boundary witnesses pair valid
+siblings with actual field-specific guard-removal plants and an unrelated
+unknown-field refusal. Existing lexical negative-zero cases now exercise the
+same shared integer hook used by the leaf-1 decoder.

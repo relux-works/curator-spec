@@ -324,3 +324,9 @@ intentionally exit 1 for disposable forbidden-field/unknown-branch plants.
 `schemas/local-setup-token-v1/` and `conformance/local-setup-token-v1/`;
 transient logs go under `.temp/`. These commands never access credential stores
 or execute a vendor harness.
+
+The stage-A grammar oracle reuses `tools/ccj1_grammar.py` for lexical integer
+spelling and private-catalog true-end guards. Run the shared positive, negative
+and narrowing controls with
+`python3 -B -m unittest discover -s tools -p test_ccj1_grammar.py`. These tests
+emit no files and do not rewrite released schema documents.

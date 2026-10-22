@@ -296,6 +296,52 @@ class StageATests(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError, 'MCP carrier mismatch: '+witness+'$'):
                         m.check_case(self.cases[witness])
 
+    # Inherited whole-string patterns reject final LF at the stage-A schema
+    # boundary. Every field has a passing sibling, a field-specific guard plant
+    # admitting its LF witness, and an unrelated unknown-field rejection.
+    # No released schema bytes or semantic/hash checks are bypassed in product.
+    def test_inherited_pattern_final_lf_controls(self):
+        from referencing import Resource
+        lock = copy.deepcopy(self.cases['lock-valid']['instance'])
+        plan = copy.deepcopy(self.cases['plan-valid']['instance'])
+        common = 'v1/common'
+        agent = 'v1/agent-mcp-v1'
+        cases = [
+            ('skillfile-v3', {'schema_version':3,'skills':[],'agents':['sample']}, ['agents',0], common, ['$defs','identifier','allOf',0,'pattern']),
+            ('declaration-v1', {'server':{'transport':'stdio','command':'sample-tool','args':[]}}, ['server','command'], agent, ['$defs','bareCommand','pattern']),
+            ('declaration-v1', {'server':{'transport':'stdio','command':'sample-tool','args':[],'env_names':['SAMPLE_A']}}, ['server','env_names',0], common, ['$defs','identifier','allOf',0,'pattern']),
+            ('declaration-v1', {'server':{'transport':'http','url':'https://example.invalid/mcp'}}, ['server','url'], agent, ['$defs','httpsUrl','pattern']),
+            ('declaration-v1', {'package':{'git':'https://example.invalid/repo.git','revision':'a'*40}}, ['package','revision'], common, ['$defs','commit','pattern']),
+            ('declaration-v1', {'package':{'git':'https://example.invalid/repo.git','tag':'v1.2.3','directory':'mcp'}}, ['package','directory'], common, ['$defs','portablePath','pattern']),
+            ('skillfile-v3', {'schema_version':3,'skills':[],'locale':'en-US'}, ['locale'], common, ['$defs','locale','pattern']),
+            ('declaration-v1', {'package':{'git':'https://example.invalid/repo.git','range':'^1.2.3'}}, ['package','range'], 'v1/agent-context-v1', ['$defs','range','pattern']),
+            ('mcp-lock-v1', lock, ['entries',0,'resolved','version'], 'v1/agent-context-v1', ['$defs','packageVersion','pattern']),
+            ('mcp-lock-v1', lock, ['entries',0,'resolved','commit'], common, ['$defs','commit','pattern']),
+            ('mcp-plan-v1', plan, ['manifest_sha256'], common, ['$defs','sha256','pattern']),
+        ]
+        catalog = m.registry()
+        for name, sibling, path, schema_name, pattern_path in cases:
+            with self.subTest(schema=name, path=path):
+                self.assertTrue(m.schema_valid(name, sibling))
+                witness = copy.deepcopy(sibling)
+                node = witness
+                for key in path[:-1]: node = node[key]
+                node[path[-1]] += '\n'
+                self.assertFalse(m.schema_valid(name, witness))
+                uri = 'https://relux-works.github.io/curator-spec/schemas/'+schema_name+'.schema.json'
+                changed = copy.deepcopy(catalog.contents(uri))
+                node = changed
+                for key in pattern_path[:-1]: node = node[key]
+                guarded = node[pattern_path[-1]]
+                self.assertTrue(guarded.endswith(r'(?![\s\S])'))
+                node[pattern_path[-1]] = guarded[:-len(r'(?![\s\S])')]
+                narrowed = catalog.with_resource(uri,Resource.from_contents(changed))
+                with patch.object(m,'registry',return_value=narrowed):
+                    self.assertTrue(m.schema_valid(name,sibling))
+                    self.assertTrue(m.schema_valid(name,witness))
+                    unknown = copy.deepcopy(sibling); unknown['unknown_field'] = True
+                    self.assertFalse(m.schema_valid(name,unknown))
+
     # Claim R5: the released full-document CCJ-1 identity includes every parsed member
     # (even sig), ignores whitespace/key order, and changes after a semantic edit.
     def test_manifest_ccj1_identity_regression(self):
