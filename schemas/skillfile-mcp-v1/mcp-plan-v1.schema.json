@@ -18,7 +18,14 @@
       "$ref": "../v1/common.schema.json#/$defs/sha256"
     },
     "lock_sha256": {
-      "$ref": "../v1/common.schema.json#/$defs/sha256"
+      "oneOf": [
+        {
+          "$ref": "../v1/common.schema.json#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "dry_run": {
       "type": "boolean"
@@ -30,7 +37,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$"
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}(?![\\s\\S])"
           },
           "environment": {
             "enum": [
@@ -66,9 +73,21 @@
             ]
           },
           "code": {
-            "type": [
-              "string",
-              "null"
+            "enum": [
+              null,
+              "mcp_declaration_invalid",
+              "mcp_package_not_allowed",
+              "mcp_package_allowlist_empty",
+              "mcp_inline_approval_unsupported",
+              "mcp_contribution_policy_refused",
+              "mcp_native_entry_conflict",
+              "context-secret-material",
+              "source_snapshot_unavailable",
+              "source_snapshot_changed",
+              "source_lock_stale",
+              "context_source_signer_rejected",
+              "environment_surface_unreadable",
+              "profile_source_invalid"
             ]
           }
         },
@@ -89,7 +108,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$"
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}(?![\\s\\S])"
           },
           "option": {
             "type": "string"

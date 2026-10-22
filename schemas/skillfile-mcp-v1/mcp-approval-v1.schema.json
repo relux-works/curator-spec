@@ -19,7 +19,7 @@
     },
     "name": {
       "type": "string",
-      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$"
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}(?![\\s\\S])"
     },
     "server_sha256": {
       "$ref": "../v1/common.schema.json#/$defs/sha256"

@@ -40,7 +40,9 @@ productions above, not npm's larger accepted language, are normative here.
 Arguments are exactly one of `[UV_PIN, SERVER_ARG*]` or
 `["--from", DIST_PIN, EXEC, SERVER_ARG*]`.
 UV_PIN is `DIST@VERSION`. DIST_PIN is `DIST==VERSION`.
-DIST matches `[a-z0-9](?:[a-z0-9._-]*[a-z0-9])?`, maximum 214 characters;
+DIST is one lowercase ASCII letter/digit, or a string beginning and ending
+with `[a-z0-9]` whose intervening characters match `[a-z0-9._-]*`; maximum
+214 characters;
 VERSION is the same three-component decimal form as §1. EXEC is an ordinary
 bare command under environments §2.2 and MUST NOT start with `-`.
 All operands are separate argv strings. No extras, markers, inequalities,

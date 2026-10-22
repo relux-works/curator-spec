@@ -57,6 +57,16 @@ behavior not expressible in a schema. Conformance vectors define exact bytes
 and required outcomes. If these sources disagree, the release is defective;
 an implementation is never the normative oracle.
 
+## Project Skillfile MCP stage A
+
+[Stage A revision 1](protocol/skillfile-mcp.md) and
+[Decision 0029](decisions/0029-project-skillfile-mcp-stage-a.md) publish project
+schema 3, package-first MCP trust, the [closed runtime-pin sheet](protocol/mcp-runtime-pins.md),
+[versioned carriers](schemas/skillfile-mcp-v1/README.md) and
+[a separate corpus](conformance/skillfile-mcp-v1/README.md). Inline arms remain
+refused pending CIP-0002 admission. No native writer or launch qualification
+is claimed by these specification artifacts.
+
 ## Accepted source extension
 
 [Skillfile sources revision 1](protocol/skillfile-sources.md) defines the
@@ -169,6 +179,12 @@ runtime capability.
 | Audit transport | [audit-transport.puml](cips/diagrams/audit-transport.puml) | [Recommendation §§1–7](cips/CIP-0005-audit-backends-and-cli-secret-transport.md#recommendation) |
 
 ## Tools
+
+- Skillfile MCP stage-A gate: `python3 tools/validate.py` dispatches
+  `tools/skillfile_mcp.py`; focused controls run with
+  `python3 -B -m unittest discover -s tools -p 'test_skillfile_mcp.py'`.
+  Inputs and expected verdicts live in `conformance/skillfile-mcp-v1/`; checks
+  report to stdout and do not acquire packages or write native configuration.
 
 Published `release/<version>.json` records are byte-frozen against release
 tags. Regeneration updates [candidate metadata](conformance/candidate.json)

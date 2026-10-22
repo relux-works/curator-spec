@@ -1192,6 +1192,11 @@ Writers MUST NOT create this legacy form.
 
 ## 5. Project manifests
 
+Project-only schema 3 is defined by [Skillfile MCP stage A](skillfile-mcp.md).
+It inherits all schema-2 skill/source semantics and adds optional `mcp_servers`;
+schemas 1/2 reject that member. Unsupported readers and machine-global schema 3
+fail with the existing upgrade error, without fallback or implicit migration.
+
 Network acquisition of legacy skill sources, configured network source
 repositories and network development substitutions is a Git acquisition lane
 under [repository-transport §1–§3](repository-transport.md#1-identity-and-declarations);
