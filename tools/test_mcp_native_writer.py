@@ -377,7 +377,8 @@ class NativeWriterTests(unittest.TestCase):
             result = m.evaluate(f)
             self.assertEqual(result['code'], m.UNREADABLE)
             self.assertEqual(result['effects'], [])
-            self.assertTrue(all(r['outcome'] == 'refused' and r['code'] == m.UNREADABLE for r in result['rows']))
+            self.assertEqual([(r['outcome'], r['code']) for r in result['rows']],
+                             [('refused', m.UNREADABLE), ('skipped: drift', None)])
             self.assertEqual(f, before)
             source = inspect.getsource(m.compose_ownership)
             old = 'any(document != documents[0] for document in documents[1:])'
