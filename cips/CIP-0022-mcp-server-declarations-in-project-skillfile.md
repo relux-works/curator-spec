@@ -1,6 +1,6 @@
 # CIP-0022: MCP server declarations in the project Skillfile
 
-- **Status:** Draft
+- **Status:** Accepted; decision: operator, 2026-10-22
 - **Owner:** orchestrator; decision: operator
 - **Created:** 2026-10-21
 - **Related:** TASK-261021-yiyrus — cip-mcp-in-project-skillfile;
@@ -11,6 +11,39 @@
   contribution admission; environments §2.2; manager §§6 and 12;
   future schema, lock, approval and conformance artifacts
 
+## Operative summary
+
+| Field | Contract |
+|---|---|
+| Phase | Accepted; publication of the normative grammar and native qualification remain gates. |
+
+## Owner decisions (2026-10-22)
+
+The operator accepted this CIP and the recommended answers to all five questions:
+
+1. **Staged boundary (Q1):** Adopt package resolution and native writers first.
+   Block every inline arm until the relevant CIP-0002 admission contracts exist.
+   Each advertised adapter still requires its normative contract and qualification.
+2. **Install options (Q2):** Leave the nested `install` vocabulary undefined,
+   report ignored options explicitly and initially ignore all options. Typed
+   headers/auth require a later contract and separate effective-configuration
+   approval; server approval confers no such authority.
+3. **Runtime pins and lexical guards (Q3):** Adopt the listed URL character
+   guards. The normative leaf must define a shared closed `npx`/`uvx` pin grammar,
+   including exact flags, package forms and bypass negatives before enforcement
+   claims. External documents or implementation validators are not authority.
+4. **Inline audit waivers (Q4):** Permit none initially. Existing package waiver
+   semantics remain unchanged. Any later inline waiver needs protected
+   project/name/digest/field identity, exact finding scope and visible evidence.
+5. **Carriers and writers (Q5):** Use a separate versioned namespace, distinct
+   server/declaration/manifest identities and per-entry ownership, preserving
+   released bytes. Freeze exact native paths, transaction scope, drift/removal
+   controls and stage capability advertisement in the adoption leaf before
+   claiming a supported writer.
+
+These decisions accept the design; normative grammar publication and native
+qualification remain gates. No schema, writer or managed capability is published.
+
 ## Summary
 
 Propose project-only Skillfile schema 3: schema 2 plus an optional
@@ -19,9 +52,9 @@ source allowlist and audit gates, then inline declarations as individually
 approved CIP-0002 project contributions. Reuse the closed `agent-mcp.json`
 `server` object, one environment-id vocabulary and normalized declaration
 digests. An optional neutral `install` member contains writer-local options
-whose handling is explicit in the plan. This is a Draft for operator
-review: no released grammar, native writer or managed-launch capability is
-changed or claimed here.
+whose handling is explicit in the plan. The operator accepted this design on
+2026-10-22; no released grammar, native writer or managed-launch capability
+is changed or claimed here.
 
 ## Motivation and user stories
 
@@ -59,15 +92,16 @@ resolve/status. [Manager §6](../profiles/manager.md#6-mcp-requirements)
 checks requirements read-only; it does not authorize installing a server.
 The environments introduction explicitly leaves native MCP write management
 for separate review. These contracts must be extended through adoption,
-not inferred from this Draft.
+not inferred from design acceptance.
 
 [CIP-0002](CIP-0002-project-context-in-managed-launches.md#operator-input-2026-10-10)
 requires individual protected project contributions, attributed approvals,
 fleet/manager ceilings and suppression of unadmitted native discovery. It
-remains Draft. Schema-3 parsing alone cannot satisfy those launch gates.
+was accepted on 2026-10-22; normative publication and native qualification
+remain gates. Schema-3 parsing alone cannot satisfy those launch gates.
 The operator decisions of 2026-10-21 fix the neutral `install` name, the
 environment rule, package-first sequencing and digest-bound inline approval;
-the remaining choices are listed below.
+the remaining choices were resolved by the 2026-10-22 owner decisions above.
 
 ## Design
 
@@ -81,7 +115,7 @@ the remaining choices are listed below.
 
 ### Recommendation
 
-Adopt the third option, subject to operator review and normative publication.
+The operator accepted the third option; normative publication remains a gate.
 The following capitalized requirements describe the proposed contract only.
 
 #### Schema and scope
@@ -387,8 +421,8 @@ Skillfile schema upgrade occurs.
 
 ## Specification changes
 
-On acceptance, write a Decision record for schema 3, package-first trust and
-project/name/server-digest approval. Amend core §5 and the source extension
+Following design acceptance, separately publish a Decision record for schema 3,
+package-first trust and project/name/server-digest approval. Amend core §5 and the source extension
 for inheritance and version dispatch; environments §2.2 for reuse and §2.3
 for surfacing; manager §§6/12 for explicit write-management capability,
 ownership and the separation from read-only requirement checks. Coordinate
@@ -396,28 +430,28 @@ CIP-0002 contribution, approval, composition and launch transport changes.
 
 Publish separate schema-3, lock/approval/plan schemas and conformance artifacts
 only after their complete grammar is reviewed. Do not rewrite closed released
-carriers or core-suite pins. This Draft adds only this CIP and discovery/index
-entries. Governance and CIP-0001 do not require executable vector stubs for
-a filed Draft; proposed vectors are listed below instead.
+carriers or core-suite pins. This acceptance record publishes no schemas or
+vectors. Proposed vectors remain listed below for the normative adoption leaf.
 
 ## Implementation plan
 
 | Order | Leaf | Size | Exit evidence |
 |---|---|---|---|
-| 1 | Operator review of this Draft and remaining questions | S | Recorded decisions; Draft advances only by owner decision. |
+| 1 | Record operator acceptance and answers | S | Completed by the 2026-10-22 owner decisions; subsequent publication and qualification gates remain. |
 | 2 | Normative stage-A grammar, versioned carriers and vector namespace | M | Schemas, prose, positive/negative corpus and Decision agree; frozen release bytes unchanged. |
 | 3 | Package resolver and qualified native writer | M per adapter | Real install/preview/status paths preserve allowlist/audit/ownership gates, report all pairs and start no server. |
 | 4 | CIP-0002 inline authority and protected carriers | M | Project/name/digest approvals, ceilings, revocation and replay tests pass before inline activation. |
 | 5 | Stage-B writer and separately qualified managed delivery | M per adapter | Exact approved snapshot delivered; unadmitted native discovery excluded, or launch refuses with evidence. |
 
 No implementation task, native binary installation or runtime qualification
-is authorized by filing this proposal. Split cross-component leaves before
+is authorized by this acceptance record. Split cross-component leaves before
 implementation and record exact tool/platform versions at qualification.
 
 ## Test plan
 
 The following are **vectors to add at adoption**, not tests claimed to pass
-in this Draft. Each gate needs nearby valid controls and a narrowing mutant
+by this acceptance record. Each gate needs nearby valid controls and a
+narrowing mutant
 that fails for the intended invariant, not unrelated setup errors.
 
 | Family / claim | Positive controls and forbidden outcomes | Narrowing mutant |
@@ -433,37 +467,51 @@ that fails for the intended invariant, not unrelated setup errors.
 | Ownership and reporting | Owned updates/removals and mixed supported/unsupported pairs report once each; foreign entries, unreadable preimages, drift and publication failure preserve complete prior state. Dry-run is read-only. | Treat failed reads as absence, omit refusal rows or publish first pair before all gates pass. |
 | No execution and launch boundary | Install/preview/status with instrumented fake runtimes start no server and contact no endpoint; qualified managed launch uses approved snapshot, otherwise refuses. | Run command as a readiness probe, or treat native write success as strict launch admission. |
 
-Runtime pin conformance vectors remain pending the closed grammar decision;
-they must cover both valid pinned invocations and bypass variants. Native
+Runtime pin conformance vectors remain pending normative publication of the
+accepted closed-grammar direction; they must cover both valid pinned invocations
+and bypass variants. Native
 writer qualification runs on each advertised adapter/platform/version using
 disposable homes with no real credentials. Schema tests establish structural
 validity only; they cannot prove native loading or isolation.
 
-For this documentation-only change, validate template sections, Draft/index
-agreement, local links and unchanged normative paths. Exercise the link checker
+For this documentation-only change, validate template sections,
+Accepted status/date/index agreement, local links and unchanged normative paths. Exercise the link checker
 with a bounded broken-link control. No product behavior changes, so executable
 runtime regression tests and runtime mutants are inapplicable to this delta.
 
 ## Open questions for the operator
 
+All entries below are resolved; original questions and recommendations
+are retained as historical text.
+
 1. **Accept this Draft's staged boundary?** Recommend package resolution/native
    writer adoption first, with every inline arm blocked until the relevant
    CIP-0002 admission contracts exist. Does the owner want a narrower first
    native-adapter set before the stage-A normative leaf?
+   **Resolved:** [2026-10-22 owner decision 1](#owner-decisions-2026-10-22)
+   adopts the recommendation above.
 2. **Standardize `install` now?** Recommend leaving its nested vocabulary
    undefined, explicitly reporting ignored options, and initially ignoring
    all of them. Typed headers/auth need a later contract and separate effective
    configuration approval; they cannot inherit authority from server approval.
+   **Resolved:** [2026-10-22 owner decision 2](#owner-decisions-2026-10-22)
+   adopts the recommendation above.
 3. **Runtime pin and lexical guards?** Recommend adopting the listed URL
    character guards and defining a shared closed `npx`/`uvx` pin grammar in
    the normative leaf. Exact allowed flags, package forms and bypass negatives
    must be specified before a reader claims enforcement; no external document
    or implementation-specific validator becomes authority by reference.
+   **Resolved:** [2026-10-22 owner decision 3](#owner-decisions-2026-10-22)
+   adopts the recommendation above.
 4. **Inline audit waivers?** Recommend none initially. Existing package waiver
    semantics remain unchanged; any later inline waiver needs protected
    project/name/digest/field identity, exact finding scope and visible evidence.
+   **Resolved:** [2026-10-22 owner decision 4](#owner-decisions-2026-10-22)
+   adopts the recommendation above.
 5. **Carrier and writer contracts?** Recommend a separate versioned namespace,
    distinct server/declaration/manifest identities and per-entry ownership,
    preserving released bytes. Freeze exact native paths, transaction scope,
    drift/removal controls and stage capability advertisement in the adoption
    leaf before claiming a supported writer.
+   **Resolved:** [2026-10-22 owner decision 5](#owner-decisions-2026-10-22)
+   adopts the recommendation above.

@@ -1,6 +1,6 @@
 # CIP-0023: Exact-plan hosted launches with detached sessions and doorbells
 
-- **Status:** Draft
+- **Status:** Accepted; decision: operator, 2026-10-22
 - **Owner:** orchestrator; decision: operator
 - **Created:** 2026-10-21
 - **Related:** TASK-261021-vb3z6f — exact-plan-final-form;
@@ -12,6 +12,48 @@
   and exact-plan protocol; agents-management hosted forms; session-manager
   preparation, records, doorbells, resume and garbage collection
 
+## Operative summary
+
+| Field | Contract |
+|---|---|
+| Phase | Accepted; publication of the normative grammar and native qualification remain gates. |
+
+## Owner decisions (2026-10-22)
+
+The operator accepted this CIP and the recommended answers to all six questions:
+
+1. **Initial cohort and retirement (Q1):** Retain the joint first
+   Claude/Codex/Muse release gate, then retire delegated routing per runtime
+   with durable manager-owned tombstones. Partial staging is not public support;
+   independent initial rollout would require an explicit CIP-0016 amendment.
+2. **Wire publication (Q2):** Adopt the separate exact/3 capability family and
+   the closed records below. Launcher and manager owners jointly freeze the
+   containing control versions and existing argv/env limits before activation.
+   This decision allocates no containing protocol number and extends no older
+   closed payload.
+3. **Doorbells (Q3):** Use a prepared protected route and private outbox with
+   bounded at-least-once delivery, recipient dedup and visible pending/failed
+   status. The owner must publish transport schema, retry horizon and
+   cancellation/retention policy; exactly-once external delivery is not promised.
+4. **Project capture (Q4):** Curator captures the exact admitted composition
+   through a successor carrier or closed companion receipt. Retain two distinct
+   protected bindings: the CIP-0002 original-home session lease through
+   termination/reconciliation, and Curator's capture lease until verified
+   durable root handoff. Freeze the capture contract with its owners before
+   adoption; receiver-authored inventory and live-home shortcuts are forbidden.
+5. **Native policy and credentials (Q5):** Retain CIP-0014's pending native
+   protection/shared-login decisions and CIP-0016's real Codex cold-resume policy
+   gate. Use supported native APIs and separately verified state slots; if
+   unavailable, refuse the capability and seek a supported mechanism decision.
+6. **Legacy retention (Q6):** Grandfather typed continuation with visible
+   delegated limits. Exact migration requires an explicit fresh session;
+   deleting resumable roots requires explicit forget/operator retention.
+   Never import state automatically, restart the daemon or reset retirement
+   on upgrade.
+
+Acceptance publishes no wire schema or runtime capability. Normative grammar
+publication, the joint release gate and native qualification remain in force.
+
 ## Summary
 
 Propose `launch-exact/3`: a closed, snapshot-bound hosted launch with attached
@@ -22,10 +64,9 @@ per manager/runtime, preserving CIP-0016's initial joint Claude/Codex/Muse
 release gate. An admitted CIP-0002 project composition becomes a verified
 snapshot input, never a source of live content reads by the session. Its
 original home still carries CIP-0002's session lease until termination and
-reconciliation, separately from snapshot capture and GC pins. This Draft
-specifies the intended final contract; schema publication and runtime
-qualification remain
-owned follow-ups, not support claimed by this document.
+reconciliation, separately from snapshot capture and GC pins. This accepted
+design specifies the intended final contract; schema publication and runtime
+qualification remain owned follow-ups, not support claimed by this document.
 
 ## Motivation and user stories
 
@@ -61,11 +102,13 @@ detached requests and `werkstatt up` therefore use `launch-delegated/1`.
 The withdrawn trial flag does not gate accepted delegated launches. These
 are supplied interface facts, not newly measured implementation probes.
 
-The project interface below is reconciled with the published Draft
+The project interface below was reconciled with the historical Draft
 [CIP-0002 candidate at `f202f41ba4718b82cdfefac28c8dfaa9af3a7de5`](https://github.com/relux-works/curator-spec/blob/f202f41ba4718b82cdfefac28c8dfaa9af3a7de5/cips/CIP-0002-project-context-in-managed-launches.md#stable-homes-leases-and-login)
 on `cip02-ready-for-acceptance`, including its closed lease state machine and
 [exact-route retention rule](https://github.com/relux-works/curator-spec/blob/f202f41ba4718b82cdfefac28c8dfaa9af3a7de5/cips/CIP-0002-project-context-in-managed-launches.md#launch-route-binding).
-This is a candidate dependency, not adoption or implementation evidence.
+That pin preserves the design-review baseline. CIP-0002 was accepted on
+2026-10-22; its normative publication and native qualification remain gates.
+Neither the historical pin nor acceptance is implementation evidence.
 No runtime source audit, provider launch, credential read or native
 qualification is claimed.
 
@@ -81,11 +124,11 @@ qualification is claimed.
 
 ### Recommendation
 
-File a **new Draft CIP** rather than change CIP-0016's Accepted status or
-rewrite its historical release requirements. CIP-0001 assigns new identities
-to successor proposals; this one proposes a new capability and references
-both the accepted target and interim amendment. CIP-0022 is already allocated
-to the separately filed MCP proposal. Capitalized requirements below are
+This separately accepted successor CIP preserves CIP-0016's Accepted status
+and historical release requirements. CIP-0001 assigns new identities to
+successor proposals; this one records a new capability and references both
+the accepted target and interim amendment. CIP-0022 remains the separate MCP
+CIP. Capitalized requirements below are
 proposed, not normative changes to the linked published contracts.
 
 #### 1. Complete capability and qualification
@@ -529,8 +572,8 @@ remote/account execution and `task-board spawn` retain separate adoption gates.
 
 ## Specification changes
 
-After owner review, record a Decision for exact/3, the complete detached/
-doorbell lifecycle and retirement lineage. Amend local hosted §§1–7 and
+Following design acceptance, separately publish a Decision for exact/3, the
+complete detached/doorbell lifecycle and retirement lineage. Amend local hosted §§1–7 and
 CIP-0016's interim retirement pointer without changing historical acceptance.
 Coordinate CIP-0014 composition capture, protected-input verification and
 runtime projection with CIP-0002 approved generations, retained original-home
@@ -543,14 +586,14 @@ snapshot manifest/descriptor/receipt and verification API; agents-management own
 closed hosted/restart forms. Containing control versions must be allocated
 jointly rather than inferring them from `/3`. No partial publication can activate
 a producer, bypass the three-runtime release gate or extend a frozen carrier.
-Draft conformance vectors are listed below; CIP-0001 does not require stubs at
-proposal filing. This change adds only the CIP and discovery/index pointers.
+Proposed conformance vectors remain listed below for adoption. This acceptance
+record publishes no normative contract, schema or corpus.
 
 ## Implementation plan
 
 | Order | Leaf | Size | Required exit |
 |---|---|---|---|
-| 1 | Review owner questions; freeze joint capture/lease contract | S | Decisions recorded; separate capture binding and retained session lease agree with the pinned CIP-0002 candidate. |
+| 1 | Record owner answers; freeze joint capture/lease contract | S | Acceptance and answers recorded on 2026-10-22; separate capture binding and retained session lease still require joint publication consistent with CIP-0002. |
 | 2 | Joint wire/registry and Curator companion publication | M per owner | Closed contracts, byte vectors, full plan bindings and snapshot/lease verification agree before producer activation. |
 | 3 | Per-runtime exact forms and host lifecycle | M per runtime | Real Claude/Codex/Muse matrix including detached, doorbells, cold resume and recovery; no host composer. |
 | 4 | Selection, durable retirement and legacy continuation | M | Stale clients cannot launch delegated after retirement; native zero lookup and no fallback preserved. |
@@ -558,9 +601,9 @@ proposal filing. This change adds only the CIP and discovery/index pointers.
 | 6 | Joint qualification, rollout and lifecycle/GC | M | All three initial rows, crash/recycle/outbox/GC controls and upgrade-without-hangup evidence; then per-runtime retirement. |
 
 Each implementation leaf uses real entry points and disposable private homes;
-no installation, provider process or service restart is authorized by filing
-this Draft. Stop activation for an unsupported native mechanism decision rather
-than add an alternate composer, config rewrite or live-home fallback.
+no installation, provider process or service restart is authorized by this
+acceptance record. Stop activation for an unsupported native mechanism
+decision rather than add an alternate composer, config rewrite or live-home fallback.
 
 ## Test plan
 
@@ -592,7 +635,8 @@ each claimed tuple; unsupported/unmeasured tuples remain refused. Windows or
 other platforms require separate qualification. Specification-data checks
 alone do not qualify projection, credential refresh, goals or native discovery.
 
-For this documentation delta, check template and Draft/index agreement, links,
+For this documentation delta, check template and Accepted status/date/index
+agreement, links,
 closed-payload/record inventories and consistency with the supplied interim
 retirement rule; run the repository validator and a bounded broken-link
 control. Verify normative/schema/corpus/tool paths remain unchanged. No product
@@ -601,19 +645,28 @@ here; their future acceptance requirements are listed above.
 
 ## Open questions for the operator
 
+All entries below are resolved; original questions and recommendations
+are retained as historical text.
+
 1. **Initial cohort and retirement lineage:** recommend retaining the joint
    first Claude/Codex/Muse release gate, then per-runtime retirement with durable
    manager-owned tombstones. Partial staging is not public support. If independent
    initial public rollout is desired, explicitly amend CIP-0016 §1; do not infer
    that amendment from per-runtime retirement alone.
+   **Resolved:** [2026-10-22 owner decision 1](#owner-decisions-2026-10-22)
+   adopts the recommendation above.
 2. **Wire publication:** recommend exact/3 plus the closed records above,
    with containing control versions and existing argv/env limits jointly frozen
    by launcher/manager owners. Is a major protocol revision preferred over a
    separately negotiated family? Neither may extend an older closed payload.
+   **Resolved:** [2026-10-22 owner decision 2](#owner-decisions-2026-10-22)
+   adopts the recommendation above.
 3. **Doorbell delivery:** recommend a prepared protected route and private
    outbox with bounded at-least-once delivery, recipient dedup and visible pending/
    failed status. Transport schema, retry horizon and cancellation/retention policy
    must be frozen by its owner; do not promise exactly-once external delivery.
+   **Resolved:** [2026-10-22 owner decision 3](#owner-decisions-2026-10-22)
+   adopts the recommendation above.
 4. **Project capture interface:** recommend Curator-owned capture of exact
    admitted composition, with a successor carrier or closed companion receipt
    and two distinct protected bindings: retain the pinned CIP-0002 original-home
@@ -621,11 +674,17 @@ here; their future acceptance requirements are listed above.
    its capture lease after verified durable root handoff. Freeze the separate
    capture contract with its owners before adoption; no receiver-authored
    inventory or live-home shortcut.
+   **Resolved:** [2026-10-22 owner decision 4](#owner-decisions-2026-10-22)
+   adopts the recommendation above.
 5. **Projection, credentials and native policy:** retain CIP-0014's pending
    protection/shared-login decisions and CIP-0016's real Codex cold-resume policy
    gate. Recommend supported native APIs and separately verified state slots;
    if unavailable, refuse that capability and seek a supported mechanism decision.
+   **Resolved:** [2026-10-22 owner decision 5](#owner-decisions-2026-10-22)
+   adopts the recommendation above.
 6. **Legacy session retention:** recommend grandfathered typed continuation
    with visible delegated limits, fresh exact migration by explicit new session,
    and explicit forget/operator retention before deleting resumable roots. No
    automatic state import, daemon restart or retirement reset on upgrade.
+   **Resolved:** [2026-10-22 owner decision 6](#owner-decisions-2026-10-22)
+   adopts the recommendation above.

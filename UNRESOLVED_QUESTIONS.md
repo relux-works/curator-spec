@@ -149,31 +149,33 @@ settings-reload behavior keeps capability unavailable.
 
 ## Project Skillfile MCP declarations (CIP-0022)
 
-[Draft CIP-0022](cips/CIP-0022-mcp-server-declarations-in-project-skillfile.md#open-questions-for-the-operator)
-keeps the stage-A adapter set, nested `install` contract, runtime pin grammar,
-inline audit waivers and versioned carrier/writer details open for operator
-review. Its package-first and digest-approved inline design is proposed only;
-filing the Draft enables no native writer or managed-launch admission.
+[CIP-0022 owner decisions, 2026-10-22](cips/CIP-0022-mcp-server-declarations-in-project-skillfile.md#owner-decisions-2026-10-22)
+resolve all five questions with the recommended answers: package-first staging,
+initially ignored install options, shared closed runtime pin grammar, no initial
+inline audit waivers and separate carrier/writer contracts. Normative publication
+and per-adapter native qualification remain engineering gates, not open owner
+questions; no native writer or managed admission is enabled by acceptance.
 
 ## Project context acceptance candidate (CIP-0002)
 
-[CIP-0002's proposed-for-acceptance disposition](cips/CIP-0002-project-context-in-managed-launches.md#operative-disposition-proposed-for-acceptance-2026-10-21)
-keeps Status Draft while incorporating the owner decisions of 2026-10-18 and
-2026-10-21. Werkstatt home architecture, trusted first delivery, permissions,
-memory default, busy-update behavior, checked D-PATH and the Claude/Codex/Muse
-first wave are decided. Remaining owner questions are later root/system
-context replacement and retention after explicit private-memory opt-in;
-[each has a recommendation](cips/CIP-0002-project-context-in-managed-launches.md#open-questions-for-the-operator).
-The closed leaf-1 candidate and its vectors still need coordinated publication,
-an unused project-capable outer carrier and per-runtime source-exclusion/route
-qualification. Published fragment v4/v5 remain unchanged; no implementation
-support follows from filing this candidate.
+[CIP-0002 owner decisions, 2026-10-22](cips/CIP-0002-project-context-in-managed-launches.md#owner-decisions-2026-10-22)
+record acceptance and resolve both remaining questions. Project context is always
+additive after the profile root context in the composed managed-home file;
+project-general precedes environment-specific context, deeper after shallower.
+The separate root/system override item is withdrawn, not deferred. Explicitly
+opted-in private memory stays per Werkstatt until explicit deletion, never
+published, reused across Werkstätten or promoted to knowledge. Default and
+first-slice memory remain off. Earlier home, permission, PATH and first-wave
+choices remain decided. Closed grammar/vectors, a new outer carrier and actual
+source-exclusion/route qualification still need publication and qualification;
+published fragment v4/v5 remain unchanged.
 
 ## Exact-plan successor (CIP-0023)
 
-[Draft CIP-0023](cips/CIP-0023-exact-plan-hosted-launches.md#open-questions-for-the-operator)
-proposes detached sessions, doorbells and durable session records on exact
-snapshots. Initial joint runtime qualification versus later per-runtime
-retirement, control/wire publication, doorbell delivery policy, CIP-0002 capture
-bindings, native protection/credential gates and legacy retention remain owner
-questions. No schema or production capability is activated by this Draft.
+[CIP-0023 owner decisions, 2026-10-22](cips/CIP-0023-exact-plan-hosted-launches.md#owner-decisions-2026-10-22)
+resolve all six questions as recommended: joint first runtime cohort followed
+by per-runtime retirement, jointly published exact/3 contracts, protected
+at-least-once doorbells, Curator-owned capture with distinct session/capture
+leases, retained native-policy/credential gates and explicit legacy retention.
+Normative schema publication and actual runtime qualification remain gates.
+No production capability is activated by acceptance.

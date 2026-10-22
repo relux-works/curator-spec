@@ -93,7 +93,7 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | Number | Title | Status |
 |---|---|---|
 | [CIP-0001](CIP-0001-curator-improvement-proposals.md) | Curator Improvement Proposals | Accepted |
-| [CIP-0002](CIP-0002-project-context-in-managed-launches.md) | Project context in managed launches | Draft |
+| [CIP-0002](CIP-0002-project-context-in-managed-launches.md) | Project context in managed launches | Accepted |
 | [CIP-0003](CIP-0003-claude-managed-home-credential-modes.md) | Claude managed-home credential modes | Accepted |
 | [CIP-0004](CIP-0004-shell-hook-without-sourcing-and-path-append.md) | Shell hook without sourcing and PATH append | Accepted |
 | [CIP-0005](CIP-0005-audit-backends-and-cli-secret-transport.md) | Audit backends and CLI secret transport | Accepted |
@@ -113,5 +113,5 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0019](CIP-0019-carrier-admission-by-public-key.md) | Carrier admission by public key (swarma-registrar) | Draft |
 | [CIP-0020](CIP-0020-workspace-trust-ledger.md) | Workspace trust ledger for managed homes | Adopted in part (A1) |
 | [CIP-0021](CIP-0021-profile-skill-directories.md) | Package directories in profile skill requirements | Accepted |
-| [CIP-0022](CIP-0022-mcp-server-declarations-in-project-skillfile.md) | MCP server declarations in the project Skillfile | Draft |
-| [CIP-0023](CIP-0023-exact-plan-hosted-launches.md) | Exact-plan hosted launches with detached sessions and doorbells | Draft |
+| [CIP-0022](CIP-0022-mcp-server-declarations-in-project-skillfile.md) | MCP server declarations in the project Skillfile | Accepted |
+| [CIP-0023](CIP-0023-exact-plan-hosted-launches.md) | Exact-plan hosted launches with detached sessions and doorbells | Accepted |

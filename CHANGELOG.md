@@ -7,6 +7,13 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Record operator acceptance of CIP-0002, CIP-0022 and CIP-0023 on 2026-10-22,
+  with dated answers to all remaining questions. Project context is permanently
+  additive below profile root context; the separate root/system override item
+  is withdrawn. Private memory remains off by default and private per Werkstatt
+  until explicit deletion after opt-in. Normative grammar publication and native
+  qualification remain gates; this record publishes no schemas or vectors.
+
 - File Draft [CIP-0022](cips/CIP-0022-mcp-server-declarations-in-project-skillfile.md):
   project Skillfile schema 3 with MCP declaration packages first, then inline
   contributions approved by normalized server digest under CIP-0002. Propose

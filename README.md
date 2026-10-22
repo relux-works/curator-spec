@@ -137,13 +137,16 @@ Protocol and implementation designs are recorded as
 
 [CIP-0022: MCP server declarations in the project Skillfile](cips/CIP-0022-mcp-server-declarations-in-project-skillfile.md)
 proposes project schema 3, package-first resolution and digest-approved inline
-contributions. It remains Draft; no normative schema or implementation support
-is changed.
+contributions. It was accepted by the operator on 2026-10-22; normative grammar
+publication and native qualification remain gates. No implementation support
+is claimed.
 
 [CIP-0023: Exact-plan hosted launches](cips/CIP-0023-exact-plan-hosted-launches.md)
 proposes a snapshot-bound successor with detached sessions, doorbells, durable
 records, per-runtime delegated retirement and admitted project snapshot inputs.
-It remains Draft and publishes no wire schema or runtime capability.
+It was accepted by the operator on 2026-10-22; normative grammar publication
+and native qualification remain gates. Acceptance publishes no wire schema or
+runtime capability.
 
 ## CIP diagram sources
 
