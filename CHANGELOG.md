@@ -7,6 +7,14 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Adopt the normative prose half of CIP-0002 leaf 1 through Decision 0028:
+  protected project admission, closed records, additive managed-home context,
+  source-exclusion gates, stable Werkstatt/session leases, checked command
+  members and nine typed refusals. Preserve the operator's permanent ban on
+  replacing profile root/system context. Schemas/vectors are a coordinated
+  separate leaf; existing closed carriers stay unchanged. No implementation,
+  native qualification or outer-carrier emission is claimed.
+
 - Record operator acceptance of CIP-0002, CIP-0022 and CIP-0023 on 2026-10-22,
   with dated answers to all remaining questions. Project context is permanently
   additive below profile root context; the separate root/system override item

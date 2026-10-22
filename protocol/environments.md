@@ -2,6 +2,15 @@
 
 This document is normative for the agent-environments capability, revision 1.
 
+**Project-context leaf-1 amendment (2026-10-22).**
+[Decision 0028](../decisions/0028-project-context-and-werkstatt-leases.md) adopts
+[project context leaf 1](project-context.md) as a separate optional capability.
+Its closed authority, records, additive composition, protected Werkstatt,
+source-exclusion, lease and command-member rules govern enrolled project
+launches only. Existing profile-only and released carrier contracts remain
+unchanged. Member publication does not allocate an outer carrier, qualify an
+adapter or activate a route.
+
 **CIP-0021 amendment (2026-10-18).** Profile skill requirements MAY select
 `directory` only in context manifest schema 2, with skill lock members
 recorded in context lock schema 4. These already allocated
@@ -78,6 +87,13 @@ never presented as verified. A verified fact that later fails to reproduce is
 corrected through the section 7.9 erratum path.
 
 ## 1. Environment profiles and sources
+
+For the separate [project-context capability](project-context.md#1-capability-and-authority),
+a manager MUST distinguish legacy launches from strict `off` and `admitted`.
+It MUST bind a registered checkout, selected profile lock and individually
+approved generation through the closed [leaf-1 records](project-context.md#2-closed-records-and-identities).
+Repository files, registration paths and native trust MUST NOT confer approval
+or mutate the selected profile. New registrations MUST default to strict `off`.
 
 An **environment profile** is a named, versioned set of global agent context
 installed from a declared source. A profile is exactly: a **root context
@@ -448,6 +464,12 @@ that admits no signer: every candidate of that source fails — unsigned as
 
 ## 2. Context package shape
 
+A [leaf-1 context item](project-context.md#3-snapshot-context-selection-and-rendering)
+MUST use schema-2 `agent-context.json` and its explicit module selection, plus
+a retained schema-4 context-only closure. A bare instruction file or inferred
+entry MUST NOT be admitted. Whole-skill and inline-MCP items MUST retain their
+separate package/approval contracts; context approval MUST NOT activate them.
+
 Network acquisition of context packages is a Git acquisition lane under
 [repository-transport §1–§3](repository-transport.md#1-identity-and-declarations);
 a declared URL supplies identity and a connection hint, not a transport pin.
@@ -695,6 +717,11 @@ and never fails the operation.
 
 ## 3. Context modules
 
+Project context MUST retain the module bytes, selectors, roles and ordering
+specified here through [leaf-1 snapshot/lock verification](project-context.md#3-snapshot-context-selection-and-rendering).
+A native import, duplicate file/role or changed selection under an old approval
+MUST refuse; non-selected inventory files MUST remain inert.
+
 The `context` member of `agent-context.json` carries the module manifest:
 
 ```json
@@ -792,6 +819,13 @@ never depends on the machine policy.
 | transitive system module under the `error` policy | `context_system_module_transitive` |
 
 ## 4. Profile store
+
+Project snapshots, approvals, compositions, policies and lease bindings MUST
+resolve through protected manager state under the
+[leaf-1 authority contract](project-context.md#2-closed-records-and-identities).
+Consumers MUST verify complete inventory bytes, identities and closure pins;
+a matching asserted digest or mutable checkout path MUST NOT substitute for
+protected evidence or permit preparation-time re-resolution.
 
 Every closure member has exactly one store entry below the manager home,
 keyed by its pin: the resolved commit for a `git` package, the state hash
@@ -916,6 +950,16 @@ Rollout is direct (impact row "S5"). Rollout of the `path`-directory
 extension is direct (impact row "E6": under the hood).
 
 ## 5. Deterministic materialization
+
+For enrolled project launches, the
+[leaf-1 additive rendering rule](project-context.md#3-snapshot-context-selection-and-rendering)
+MUST preserve the base profile root-context document first in the composed
+managed-home instruction file, followed by each approved project root-context
+document in item order with exactly one additional LF between non-empty documents.
+Project-general context MUST precede environment-specific context, deeper scope
+MUST follow shallower within those groups, and system parts MUST retain their
+own §§5.5/7.3 channel and joining rule. A project MUST NOT replace profile root
+or system context in any slice; the separate replacement item is withdrawn.
 
 Materialized root context is a pure function of (lock, precedence policy,
 environment identifier, form). Identical inputs MUST yield byte-identical
@@ -1244,6 +1288,12 @@ marker like every other managed surface.
 
 ## 6. Composition
 
+The separate [project composition](project-context.md#4-individually-approved-skills-and-inline-mcp)
+MUST use the selected profile lock without modifying it. Whole-skill overlay
+MUST recheck providers and command ownership and MUST NOT authorize overriding
+the profile root/system context. The profile-overlay rules below remain the
+profile contract; project items MUST NOT become implicit machine overlays.
+
 A machine MAY declare, per installed profile, an ordered list of
 **overlays**. An overlay is an ordinary context package named by a `git`
 source with a range or exact form, or by a `path` source under the section
@@ -1354,6 +1404,12 @@ resolution the condition it described is `context_range_conflict` or a
 unification.
 
 ## 7. Environment adapter registry
+
+A [project-capable adapter](project-context.md#5-werkstatt-materialization-and-native-exclusion)
+MUST be qualified for its exact environment, release, platform and required
+surfaces. Existing adapter registration, native trust or a home layout MUST NOT
+stand in for native-source exclusion, manager-programmed permissions or memory-off.
+An unsupported required surface MUST refuse, never fall back to native discovery.
 
 The manager §5 agent-adapter table generalizes to a closed **environment
 adapter registry**. Adapters are manager code, never package code. Admitting
@@ -2299,6 +2355,16 @@ with deletion of tool state or prefix grants here. Revocation does not erase
 independent vendor consent or terminate running sessions.
 
 ## 8. Materialization modes and the environment marker
+
+An enrolled project launch MUST use the protected stable
+[Werkstatt allocation and receipt](project-context.md#5-werkstatt-materialization-and-native-exclusion),
+with generated controls separated from native mutable state and a sparse
+worktree outside source and manager authority/store roots. It MUST acquire and
+retain the [session lease](project-context.md#6-leases-busy-updates-resume-and-collection)
+before fragment publication; repair/switch/sync MUST wait or refuse while busy.
+These records MUST NOT be inserted into an existing closed environment marker.
+Profile-only materialization and snapshot requirements below remain unchanged;
+project route activation has the separate gates in project-context §7.
 
 ### 8.1 Modes
 
@@ -3728,6 +3794,15 @@ the interactive launch-plan builder supports Muse.
 
 ### 10.2 The launch environment fragment
 
+The separate [leaf-1 members](project-context.md#7-fragment-members-commands-and-launch-routes)
+are required `project_context` version 1 and optional `command_environment`
+version 1. Their complete closed shapes and protected context/lease binding
+MUST be validated only after project-capable outer-carrier negotiation.
+A producer MUST NOT insert them into fragments v1–v6 or emit them before a
+complete new outer carrier and required-understanding consumer are published
+and supported. Optional commands MUST use checked D-PATH and MUST NOT coexist
+with `path_prepend`; caller PATH is not an owned literal.
+
 The separately adopted [local setup-token source](local-setup-token-source.md#5-closed-carriers)
 allocates full fragment v6 after the joint v5 carrier. Node metadata is
 required-understanding; v4/v5 stay closed, and no producer emits it until the
@@ -4105,7 +4180,40 @@ consumer-maintained copy list. No source paths may be inferred from the
 snapshot descriptor. Exact archive encoding/caps and protected runtime B
 remain separate publication/confirmation gates, not implementation claims.
 
+### 10.6 Project-context diagnostics
+
+The following leaf-1 codes have one meaning each under
+[project context](project-context.md). They apply only after complete
+project-capable outer-carrier negotiation; an unsupported outer version MUST
+retain its published version refusal before project authority lookup. This
+registry allocates no exit numbers and changes no existing closed error object.
+
+| Condition and preserved effect | Diagnostic |
+|---|---|
+| Malformed/duplicate/unknown fields, invalid refs/enums/bounds, inconsistent context/lease/roots or forbidden PATH arm; no fragment, child or partial publication | `project_context_invalid` |
+| Missing/replaced/moved checkout or CWD/worktree outside the registered binding; no substitution of another project/profile | `project_registration_mismatch` |
+| Missing, revoked, wrong-project/item/environment approval or insufficient approver grant/ceiling; no native write, MCP connection or provider start | `project_item_unapproved` |
+| Changed/missing snapshot entry, policy, adapter contract, protected composition or digest; no repair or baseline update during launch | `project_context_drift` |
+| Failed read of required authority, inventory, PATH or liveness evidence; never absence or optional omission | `project_context_unreadable` |
+| Missing certified environment/surface, non-enforcing permission/memory adapter or unsupported required route/consumer; no required-item omission or legacy/native downgrade | `project_context_unsupported` |
+| Repair, profile switch, skill/CLI sync or update while a home has a live/unknown lease; wait or refuse before writes, identify the owning session and advise waiting/ending it | `project_view_busy` |
+| Wrong owner/session/generation, stale lease, release replay or invalid transition; no new session or lease takeover | `project_lease_mismatch` |
+| Missing/excluded/unsafe PATH, invalid protected roots, command shadowing or stale/ambiguous owner; no PATH reconstruction or wrong executable | `project_path_refused` |
+
+Every refusal MUST preserve existing home/approval state and emit no success
+fragment, child, MCP connection or partial control publication. Permitted
+telemetry MUST be redacted. A failed read MUST use the unreadable distinction,
+never be reported as missing authority or an unsafe-but-readable PATH. Credential
+failures retain their owning diagnostics. The busy condition waits or refuses;
+waiting MUST NOT publish or mutate controls while the conflicting lease remains.
+
 ## 11. Umbrella subcommand discovery
+
+For [project command delivery](project-context.md#7-fragment-members-commands-and-launch-routes),
+a manager MUST reserve `curator-*` and exclude both the protected dispatcher
+and skill-command directories from provider discovery, even within configured
+trust roots. It MUST NOT execute repository `.agents/bin` as a managed provider
+or select a different executable after a command/owner refusal.
 
 A CLI subcommand the manager does not implement resolves to an executable
 named `curator-<name>` searched as the rollout profiles below state and is
@@ -4238,6 +4346,15 @@ conformance profiles:
 | a trust root that cannot be read — the install directory or a `provider_directories` entry — under either revision; names the first unreadable root in search order; never absence, never a fallback | `subcommand_provider_root_unreadable` |
 
 ## 12. Status, machine configuration, and garbage collection
+
+Project control/status and collection MUST follow the
+[leaf-1 lease and state contract](project-context.md#6-leases-busy-updates-resume-and-collection).
+Status MUST report admitted generation, candidate drift, lease owner/session
+and unknown evidence read-only, never approve, fetch or rebaseline. Busy updates
+MUST wait or refuse before writes and recheck leases at publication. Collection
+MUST retain live/unknown leases, homes, compositions and referenced artifacts;
+read failure or TTL alone MUST NOT establish absence or permission to collect.
+Existing snapshot, resumable-session and transaction roots remain live roots.
 
 `profile list` reports every installed profile: name, root package name,
 source identity, declared requirement (`range`, `tag`, or `revision` as

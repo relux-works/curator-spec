@@ -663,6 +663,15 @@ depends on the generated paths being ignored, not on comment spelling.
 
 ## 3. Runtime and project environment
 
+For enrolled [project-context launches](../protocol/project-context.md#7-fragment-members-commands-and-launch-routes),
+the manager MUST use protected Werkstatt tool/dispatcher and captured command
+owners. It MUST NOT execute repository `.agents/bin`, source project environment
+files or reuse machine-current forwarders as authority. The optional checked
+D-PATH transform MUST operate on admitted destination PATH, not caller literals,
+and MUST preserve the protected tool/base/dispatcher order. Unsupported enforced
+command policy, stale owners or ambiguous shadowing MUST refuse. The legacy
+portable command locations below do not authorize them in strict managed launches.
+
 For the optional, accepted project-scope Skillfile schema-2 lane,
 [source revision 1](../protocol/skillfile-sources.md) supplies the physical
 input/output guards and versioned local runtime, marker, audit and build-cache
@@ -2404,6 +2413,15 @@ timestamp/notary service, fallback, or diagnostic rendering.
 
 ## 12. Agent-environments manager profile
 
+The separate optional [project-context leaf-1 amendment](../protocol/project-context.md)
+adds protected registration, item admission, composition and Werkstatt leases
+under [Decision 0028](../decisions/0028-project-context-and-werkstatt-leases.md).
+A manager adopting it MUST implement its complete closed records, default-deny
+permissions, memory-off and certified exclusion gates per advertised environment;
+it MUST NOT infer these from revision-1 environment support or add project knobs
+to existing closed manager configuration. Normative member publication alone
+MUST NOT advertise runtime capability or authorize outer-carrier emission.
+
 This section is the revision-1 manager profile for the agent-environments
 capability. [`protocol/environments.md`](../protocol/environments.md) is the
 normative source for every object, byte rule, wire identity, and diagnostic
@@ -3155,3 +3173,36 @@ fails the contract is retained,
 never collected, and reported; collection never rebuilds an entry.
 Environment-owned mutable state inside managed homes is never collected,
 and backups are never collected by any revision-1 rule.
+
+### 12.8 Project Werkstatt lifecycle
+
+The manager MUST bind the checkout's repository/filesystem identity, selected
+profile and environment before discovering candidate items; it MUST retain
+manifest, verified snapshots and full context locks before attributed approval.
+Preparation MUST verify current approvals/grants/ceilings, revocation, exact
+adapter/policy records, output receipt and source exclusion through the
+[leaf-1 contract](../protocol/project-context.md#1-capability-and-authority).
+It MUST NOT adopt repository permissions, hidden discovery, native memory or
+changed bytes under an old approval. Optional omission MUST be approved and
+previewed; missing required authority or unreadable evidence MUST refuse.
+
+The manager MUST allocate the stable home and sparse worktree outside source
+and authority/store roots, publish only verified controls and bind the immutable
+composition digest rather than a mutable alias. It MUST reserve the session,
+create `prepared` before fragment publication and transfer durable ownership to
+the actual runner as `active` before provider start. Detach, caller exit,
+snapshot completion or elapsed TTL MUST NOT release the original-home session
+lease. Authoritative termination and ownership/state reconciliation MUST precede
+release; unknown liveness MUST retain the home, composition and artifacts.
+Busy repair/switch/sync MUST wait or refuse without writes, and idle publication
+MUST serialize its lease recheck against acquisition. Resume MUST retain the
+original composition/current authority and MUST NOT create a replacement session.
+
+Status MUST expose generation, drift, lease owner/session and unreadable/unknown
+state without repair or approval. Collection MUST retain every live/unknown
+lease and referenced composition/snapshot/artifact, existing resume roots and
+transaction roots. Revocation MUST block new launch/dispatch admissions without
+claiming to erase loaded context. Refusals MUST use the
+[environments §10.6 registry](../protocol/environments.md#106-project-context-diagnostics),
+preserve prior home/approval state, emit no success fragment and never downgrade
+to legacy discovery or native execution.

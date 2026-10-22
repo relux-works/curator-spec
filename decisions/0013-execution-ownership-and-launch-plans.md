@@ -817,3 +817,17 @@ explicit API pin before emission. Existing composition, signal, terminal and
 cancellation ownership remains. This independently qualified same-user spawn
 route neither amends CIP-0016 exact-process/restart policy nor authorizes
 `tb-sessiond` lookup. No runtime qualification is claimed here.
+
+## Project-context owned-literal boundary (2026-10-22)
+
+[Decision 0028](0028-project-context-and-werkstatt-leases.md) adopts the
+[leaf-1 project members and checked D-PATH contract](../protocol/project-context.md#7-fragment-members-commands-and-launch-routes).
+These members MUST NOT be encoded as `env_literals`, caller PATH, repository
+paths or private additions to the existing closed tracked launch plan.
+The launcher MUST apply the transform only to the destination's admitted child
+PATH and bind the context/lease and resolved effective PATH in its process
+identity. General tracked/remote transport remains deferred until a separately
+published required-understanding carrier and consumer reproduce that operation;
+without them a tracked project-command request MUST refuse before a session or
+child is created. This note changes no existing plan member, extension or limit,
+and grants no native fallback or additional composer.

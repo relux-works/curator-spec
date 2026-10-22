@@ -148,6 +148,17 @@ It was accepted by the operator on 2026-10-22; normative grammar publication
 and native qualification remain gates. Acceptance publishes no wire schema or
 runtime capability.
 
+## Project-context leaf 1
+
+[Project-context authority and Werkstatt leases](protocol/project-context.md),
+adopted by [Decision 0028](decisions/0028-project-context-and-werkstatt-leases.md),
+define the normative leaf-1 records, permanently additive context order,
+protected admission, exclusion gates, leases and checked command members.
+[Typed refusals](protocol/environments.md#106-project-context-diagnostics)
+have one registry. Member schemas/vectors are a coordinated separate leaf;
+complete outer-carrier publication, consumer support and native qualification
+remain gates. This publication enables no launch or runtime capability.
+
 ## CIP diagram sources
 
 [Source index and phase/authority notes](cips/diagrams/README.md) map the B4 module views to their defining CIP sections. These views describe current contracts and proposed targets; they do not assert implementation or qualification.
