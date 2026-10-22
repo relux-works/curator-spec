@@ -1,0 +1,1 @@
+{"environment":"codex_cli","id":"mcp","kind":"project-item/1","payload":{"name":"Sample_1","server":{"args":["--mode","sample"],"command":"sample-tool","environments":["claude_code","codex_cli"],"transport":"stdio"},"server_sha256":"sha256:0a43cec3ad422444ae3c72a515dd13895e68cdc05049be9914eaf8650794a301"},"required":false,"type":"mcp"}

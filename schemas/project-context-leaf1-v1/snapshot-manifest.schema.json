@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/project-context-leaf1-v1/snapshot-manifest.schema.json",
+  "title": "Project context leaf 1: snapshot-manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "files"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "files": {
+      "$ref": "common.schema.json#/$defs/files"
+    }
+  }
+}

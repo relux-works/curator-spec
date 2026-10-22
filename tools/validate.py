@@ -12150,6 +12150,16 @@ def validate_network_contacts() -> None:
     print(f"network contact vectors: {total}/{total}; manager runtime: unverified")
 
 
+def validate_project_context_leaf1() -> None:
+    import project_context_leaf1
+
+    try:
+        positive, negative = project_context_leaf1.check_corpus(ROOT)
+    except (ValueError, OSError, SchemaError) as exc:
+        raise ValidationFailure(f"project context leaf 1: {exc}") from exc
+    print(f"project context leaf-1 grammar: {positive} positive, {negative} negative; runtime unverified")
+
+
 def validate_workspace_trust() -> None:
     import workspace_trust
 
@@ -12170,6 +12180,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_rc7_carriers,
         validate_local_setup_token,
         validate_workspace_trust,
+        validate_project_context_leaf1,
         validate_draft_source_schemas,
         validate_draft_sources_manifest,
         validate_source_marker_ownership_vectors,

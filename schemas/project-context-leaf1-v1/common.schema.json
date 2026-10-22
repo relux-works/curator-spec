@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/project-context-leaf1-v1/common.schema.json",
+  "title": "Project context leaf 1: common",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "hex": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "environment": {
+      "enum": [
+        "claude_code",
+        "codex_cli",
+        "muse"
+      ]
+    },
+    "root": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "^/"
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "lock_sha256"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "../v1/common.schema.json#/$defs/identifier"
+        },
+        "lock_sha256": {
+          "$ref": "common.schema.json#/$defs/hex"
+        }
+      }
+    },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "size",
+        "sha256",
+        "mode"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "../v1/common.schema.json#/$defs/portablePath"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 16777216
+        },
+        "sha256": {
+          "$ref": "common.schema.json#/$defs/hex"
+        },
+        "mode": {
+          "enum": [
+            "0600",
+            "0700"
+          ]
+        }
+      }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/file"
+      },
+      "maxItems": 10000
+    },
+    "u64": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]{0,19})$(?![\\s\\S])"
+    },
+    "server": {
+      "allOf": [
+        {
+          "$ref": "../v1/agent-mcp-v1.schema.json#/properties/server"
+        },
+        {
+          "required": [
+            "env_names"
+          ]
+        }
+      ]
+    },
+    "registration_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^registration:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "snapshot_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^snapshot:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "approval_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^approval:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "composition_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^composition:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "lease_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^lease:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "home_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^home:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "worktree_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^worktree:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "policy_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^policy:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "adapter_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^adapter:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "session_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^session:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "principal_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^principal:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "grant_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^grant:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "tool_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^tool:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "dispatcher_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^dispatcher:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "command_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^command:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "lock_ref": {
+      "type": "string",
+      "maxLength": 96,
+      "pattern": "^lock:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    }
+  }
+}

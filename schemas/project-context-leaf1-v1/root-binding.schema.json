@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/project-context-leaf1-v1/root-binding.schema.json",
+  "title": "Project context leaf 1: root-binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "repository",
+    "filesystem"
+  ],
+  "properties": {
+    "repository": {
+      "$ref": "../workspace-trust-v1/workspace-trust-record-v1.schema.json#/$defs/repository"
+    },
+    "filesystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "device",
+        "inode"
+      ],
+      "properties": {
+        "device": {
+          "$ref": "common.schema.json#/$defs/u64"
+        },
+        "inode": {
+          "$ref": "common.schema.json#/$defs/u64"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/project-context-leaf1-v1/composition.schema.json",
+  "title": "Project context leaf 1: composition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "registration_ref",
+    "registration_sha256",
+    "generation_sha256",
+    "profile",
+    "environment",
+    "adapter_ref",
+    "adapter_sha256",
+    "policy_ref",
+    "policy_sha256",
+    "memory",
+    "home_ref",
+    "worktree_ref",
+    "materialization_sha256",
+    "command_owners",
+    "omitted"
+  ],
+  "properties": {
+    "kind": {
+      "const": "project-composition/1"
+    },
+    "registration_ref": {
+      "$ref": "common.schema.json#/$defs/registration_ref"
+    },
+    "registration_sha256": {
+      "$ref": "common.schema.json#/$defs/hex"
+    },
+    "generation_sha256": {
+      "$ref": "common.schema.json#/$defs/hex"
+    },
+    "profile": {
+      "$ref": "common.schema.json#/$defs/profile"
+    },
+    "environment": {
+      "$ref": "common.schema.json#/$defs/environment"
+    },
+    "adapter_ref": {
+      "$ref": "common.schema.json#/$defs/adapter_ref"
+    },
+    "adapter_sha256": {
+      "$ref": "common.schema.json#/$defs/hex"
+    },
+    "policy_ref": {
+      "$ref": "common.schema.json#/$defs/policy_ref"
+    },
+    "policy_sha256": {
+      "$ref": "common.schema.json#/$defs/hex"
+    },
+    "memory": {
+      "const": "off"
+    },
+    "home_ref": {
+      "$ref": "common.schema.json#/$defs/home_ref"
+    },
+    "worktree_ref": {
+      "$ref": "common.schema.json#/$defs/worktree_ref"
+    },
+    "materialization_sha256": {
+      "$ref": "common.schema.json#/$defs/hex"
+    },
+    "command_owners": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "item_id",
+          "artifact_sha256"
+        ],
+        "properties": {
+          "name": {
+            "$ref": "../v1/common.schema.json#/$defs/identifier"
+          },
+          "item_id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "artifact_sha256": {
+            "$ref": "common.schema.json#/$defs/hex"
+          }
+        }
+      },
+      "maxItems": 1
+    },
+    "omitted": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "item_id",
+          "reason"
+        ],
+        "properties": {
+          "item_id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "reason": {
+            "enum": [
+              "disabled",
+              "unsupported"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

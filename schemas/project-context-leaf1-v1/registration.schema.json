@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/project-context-leaf1-v1/registration.schema.json",
+  "title": "Project context leaf 1: registration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "checkout_id",
+    "project_root",
+    "root_identity",
+    "profile",
+    "environment",
+    "home_ref",
+    "worktree_ref"
+  ],
+  "properties": {
+    "kind": {
+      "const": "project-registration/1"
+    },
+    "checkout_id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "project_root": {
+      "$ref": "common.schema.json#/$defs/root"
+    },
+    "root_identity": {
+      "$ref": "common.schema.json#/$defs/hex"
+    },
+    "profile": {
+      "$ref": "common.schema.json#/$defs/profile"
+    },
+    "environment": {
+      "$ref": "common.schema.json#/$defs/environment"
+    },
+    "home_ref": {
+      "$ref": "common.schema.json#/$defs/home_ref"
+    },
+    "worktree_ref": {
+      "$ref": "common.schema.json#/$defs/worktree_ref"
+    }
+  }
+}

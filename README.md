@@ -308,6 +308,20 @@ This project is part of the open-source ecosystem of
 
 <!-- relux-ecosystem:end -->
 
+### Project-context leaf-1 grammar tools
+
+`python3 tools/project_context_leaf1.py` checks the
+[member schemas and byte corpus](conformance/project-context-leaf1-v1/README.md).
+`python3 -B -m unittest discover -s tools -p 'test_project_context_leaf1.py' -v`
+runs paired cases and publication controls; `make validate` includes them.
+`python3 tools/check_project_context_leaf1_controls.py` runs narrowing controls
+against actual schemas/decoder gates. Its `--mutant NAME` mode intentionally
+exits 1 after the named assertion fails. Use
+`python3 tools/generate_project_context_vectors.py --check` to verify exact
+regeneration, or omit `--check` to write reviewed outputs under
+`conformance/project-context-leaf1-v1/`. Logs go under `.temp/`. These commands
+check grammar and metadata, without manager authorization or native launches.
+
 ### Local-source publication tools
 
 `python3 tools/local_setup_token.py` checks the metadata-only publication

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/project-context-leaf1-v1/approval.schema.json",
+  "title": "Project context leaf 1: approval",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "checkout_id",
+    "item_id",
+    "item_sha256",
+    "environment",
+    "approver_ref",
+    "ceiling_sha256"
+  ],
+  "properties": {
+    "kind": {
+      "const": "project-approval/1"
+    },
+    "checkout_id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "item_id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "item_sha256": {
+      "$ref": "common.schema.json#/$defs/hex"
+    },
+    "environment": {
+      "$ref": "common.schema.json#/$defs/environment"
+    },
+    "approver_ref": {
+      "$ref": "common.schema.json#/$defs/principal_ref"
+    },
+    "ceiling_sha256": {
+      "$ref": "common.schema.json#/$defs/hex"
+    },
+    "grant_ref": {
+      "$ref": "common.schema.json#/$defs/grant_ref"
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{"environment":"codex_cli","id":"skill","kind":"project-item/1","payload":{"lock_ref":"lock:sample","snapshot_ref":"snapshot:sample","snapshot_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},"required":true,"type":"skill"}
