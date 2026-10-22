@@ -71,7 +71,7 @@ def mutated(case):
     else:
         import types
         module = types.ModuleType('leaf1_mutant')
-        source = leaf.Path(leaf.__file__).read_text()
+        source = leaf.Path(leaf.__file__).read_text(encoding='utf-8')
         if 'source' in control:
             old, new = REPLACEMENTS[control['source']]
             if source.count(old) != 1:

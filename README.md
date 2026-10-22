@@ -320,6 +320,10 @@ No files are emitted by those tests.
 [member schemas and byte corpus](conformance/project-context-leaf1-v1/README.md).
 `python3 -B -m unittest discover -s tools -p 'test_project_context_leaf1.py' -v`
 runs paired cases and publication controls; `make validate` includes them.
+`python3 -B -m unittest discover -s tools -p 'test_project_context_encoding.py' -v`
+checks the validator, generator and source-control loader with an emulated
+cp1252 text default. The tooling reads UTF-8 explicitly on every platform;
+these tests emit no repository artifacts.
 `python3 tools/check_project_context_leaf1_controls.py` runs narrowing controls
 against actual schemas/decoder gates. Its `--mutant NAME` mode intentionally
 exits 1 after the named assertion fails. Use

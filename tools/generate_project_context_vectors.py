@@ -67,7 +67,7 @@ def schema_mutant(schema, path, value, *, terminal=True):
     # Preserve exact-end enforcement when narrowing another pattern gate.
     if path[-1] == 'pattern' and terminal:
         file = ROOT / 'schemas' / ((schema if '/' in schema else leaf.NAMESPACE + '/' + schema) + '.schema.json')
-        original = json.loads(file.read_text())
+        original = json.loads(file.read_text(encoding='utf-8'))
         for key in path:
             original = original[key]
         guard = r'(?![\s\S])'
@@ -150,7 +150,7 @@ def main():
     for record, path, schema_name, schema_path in nested:
         schema_file = (ROOT / 'schemas' / (schema_name + '.schema.json') if '/' in schema_name else
                        ROOT / 'schemas' / leaf.NAMESPACE / (schema_name + '.schema.json'))
-        node = json.loads(schema_file.read_text())
+        node = json.loads(schema_file.read_text(encoding='utf-8'))
         for part in schema_path: node = node[part]
         current = base[record]
         for part in path: current = current[part]
@@ -313,7 +313,7 @@ def main():
     bad('mcp-wrong-digest', 'item', changed, {'source': 'server-digest'}, 'server-digest', 'item-mcp-stdio')
     absent = copy.deepcopy(mcp); del absent['payload']['server']['env_names']; absent['payload']['server_sha256'] = 'sha256:' + leaf.identity(absent['payload']['server'])
     bad('mcp-absent-normalized-env', 'item', absent, schema_mutant('common', ['$defs', 'server', 'allOf', 1, 'required'], []), sibling='item-mcp-stdio')
-    mcp_bad('mcp-reserved-env', ['env_names'], ['PATH'], schema_mutant('v1/agent-mcp-v1', ['$defs', 'envNames', 'items', 'allOf', 1, 'not', 'pattern'], json.loads((ROOT / 'schemas/v1/agent-mcp-v1.schema.json').read_text())['$defs']['envNames']['items']['allOf'][1]['not']['pattern'].replace('PATH|HOME', 'HOME')))
+    mcp_bad('mcp-reserved-env', ['env_names'], ['PATH'], schema_mutant('v1/agent-mcp-v1', ['$defs', 'envNames', 'items', 'allOf', 1, 'not', 'pattern'], json.loads((ROOT / 'schemas/v1/agent-mcp-v1.schema.json').read_text(encoding='utf-8'))['$defs']['envNames']['items']['allOf'][1]['not']['pattern'].replace('PATH|HOME', 'HOME')))
     mcp_bad('mcp-env-duplicate', ['env_names'], ['SAMPLE_A', 'SAMPLE_A'], schema_mutant('v1/agent-mcp-v1', ['$defs', 'envNames', 'uniqueItems'], False))
     mcp_bad('mcp-command-path', ['command'], '/sample-tool', schema_mutant('v1/agent-mcp-v1', ['$defs', 'bareCommand', 'pattern'], r'^(?!\.{1,2}$)[^\\\s\u0000-\u001f\u007f]+$'))
     mcp_bad('mcp-argument-too-long', ['args'], ['a' * 8193], schema_mutant('v1/agent-mcp-v1', ['properties', 'server', 'oneOf', 0, 'properties', 'args', 'items', 'maxLength'], 8193))
@@ -371,18 +371,18 @@ def main():
         for label, path in [('middle-dot', 'context./root.md'), ('middle-space', 'context /root.md')]:
             bad(record + '-' + label, record, set_at(base[record], ['files', 0, 'path'], path),
                 {'source': 'path-component'}, 'path-component')
-        old_path = json.loads((ROOT/'schemas/v1/common.schema.json').read_text())['$defs']['portablePath']['pattern']
+        old_path = json.loads((ROOT/'schemas/v1/common.schema.json').read_text(encoding='utf-8'))['$defs']['portablePath']['pattern']
         bad(record + '-path-final-lf', record,
             set_at(base[record], ['files', 0, 'path'], 'context/root.md\n'),
             schema_mutant('v1/common', ['$defs', 'portablePath', 'pattern'], old_path, terminal=False))
-    legacy = json.loads((ROOT/'schemas/v1/common.schema.json').read_text())
+    legacy = json.loads((ROOT/'schemas/v1/common.schema.json').read_text(encoding='utf-8'))
     identifier = legacy['$defs']['identifier']['allOf'][0]['pattern']
     for record, path in [('registration', ['profile', 'name']), ('composition', ['profile', 'name']),
                          ('composition', ['command_owners', 0, 'name'])]:
         bad(record + '-' + '-'.join(map(str, path)) + '-final-lf', record,
             set_at(base[record], path, 'sample\n'),
             schema_mutant('v1/common', ['$defs', 'identifier', 'allOf', 0, 'pattern'], identifier, terminal=False))
-    owning = json.loads((ROOT/'schemas/v1/agent-mcp-v1.schema.json').read_text())
+    owning = json.loads((ROOT/'schemas/v1/agent-mcp-v1.schema.json').read_text(encoding='utf-8'))
     for label, path, replacement, schema_name, schema_path, original, sibling in [
         ('command', ['command'], 'sample-tool\n', 'v1/agent-mcp-v1', ['$defs', 'bareCommand', 'pattern'], owning['$defs']['bareCommand']['pattern'], 'item-mcp-stdio'),
         ('env', ['env_names'], ['SAMPLE_A\n'], 'v1/common', ['$defs', 'identifier', 'allOf', 0, 'pattern'], identifier, 'item-mcp-stdio'),
@@ -393,7 +393,7 @@ def main():
             json.dumps(changed['payload']['server'], ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
         bad('mcp-' + label + '-final-lf', 'item', changed,
             schema_mutant(schema_name, schema_path, original, terminal=False), sibling=sibling)
-    commit_pattern = json.loads((ROOT/'schemas/workspace-trust-v1/workspace-trust-record-v1.schema.json').read_text())['$defs']['repository']['properties']['root_commit']['pattern']
+    commit_pattern = json.loads((ROOT/'schemas/workspace-trust-v1/workspace-trust-record-v1.schema.json').read_text(encoding='utf-8'))['$defs']['repository']['properties']['root_commit']['pattern']
     for length in (40, 64):
         sibling = positive('root-commit-' + str(length), 'root-binding',
             set_at(base['root-binding'], ['repository', 'root_commit'], 'b' * length))
@@ -416,7 +416,7 @@ def main():
         return changed
     for label, suffix in [('unicode', '/é'), ('encoded-dollar', '/%24')]:
         positive('mcp-url-' + label, 'item', http_url('https://example.invalid' + suffix))
-    url_guard = json.loads((ROOT/'schemas'/leaf.NAMESPACE/'common.schema.json').read_text())[
+    url_guard = json.loads((ROOT/'schemas'/leaf.NAMESPACE/'common.schema.json').read_text(encoding='utf-8'))[
         '$defs']['server']['allOf'][2]['properties']['url']['not']['pattern']
     for label, char in [('nul', '\0'), ('control', '\1'), ('del', '\x7f'), ('c1', '\x80'),
                         ('format', '\u200b'), ('bom', '\ufeff'), ('dollar', '$'),
