@@ -1,0 +1,1 @@
+{"environment":"codex_cli","kind":"project-adapter/1","platform":"linux","provider_version":"^1.0.0","surfaces":["commands","context","mcp","memory-off","native-source-exclusion","permissions","skills"]}

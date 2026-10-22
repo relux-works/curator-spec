@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/project-context-leaf1-v1/control-receipt.schema.json",
+  "title": "Project context leaf 1: control-receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "files",
+    "adapter_sha256",
+    "policy_sha256",
+    "worktree_ref"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "files": {
+      "$ref": "common.schema.json#/$defs/files"
+    },
+    "adapter_sha256": {
+      "$ref": "common.schema.json#/$defs/hex"
+    },
+    "policy_sha256": {
+      "$ref": "common.schema.json#/$defs/hex"
+    },
+    "worktree_ref": {
+      "$ref": "common.schema.json#/$defs/worktree_ref"
+    }
+  }
+}

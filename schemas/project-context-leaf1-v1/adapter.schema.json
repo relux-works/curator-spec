@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/project-context-leaf1-v1/adapter.schema.json",
+  "title": "Project context leaf 1: adapter",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "environment",
+    "provider_version",
+    "platform",
+    "surfaces"
+  ],
+  "properties": {
+    "kind": {
+      "const": "project-adapter/1"
+    },
+    "environment": {
+      "$ref": "common.schema.json#/$defs/environment"
+    },
+    "provider_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[^\\s*<>=^~|,]+$(?![\\s\\S])"
+    },
+    "platform": {
+      "enum": [
+        "macos",
+        "linux"
+      ]
+    },
+    "surfaces": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "context",
+          "skills",
+          "mcp",
+          "commands",
+          "permissions",
+          "memory-off",
+          "native-source-exclusion"
+        ]
+      },
+      "uniqueItems": true
+    }
+  }
+}

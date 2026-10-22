@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/project-context-leaf1-v1/generation.schema.json",
+  "title": "Project context leaf 1: generation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "registration_ref",
+    "registration_sha256",
+    "items"
+  ],
+  "properties": {
+    "kind": {
+      "const": "project-generation/1"
+    },
+    "registration_ref": {
+      "$ref": "common.schema.json#/$defs/registration_ref"
+    },
+    "registration_sha256": {
+      "$ref": "common.schema.json#/$defs/hex"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "item_id",
+          "item_sha256",
+          "approval_ref"
+        ],
+        "properties": {
+          "item_id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "item_sha256": {
+            "$ref": "common.schema.json#/$defs/hex"
+          },
+          "approval_ref": {
+            "$ref": "common.schema.json#/$defs/approval_ref"
+          }
+        }
+      },
+      "maxItems": 256
+    }
+  }
+}

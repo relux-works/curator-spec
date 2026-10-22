@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/project-context-leaf1-v1/command-environment.schema.json",
+  "title": "Project context leaf 1: command-environment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "operation",
+    "tool_ref",
+    "dispatcher_ref",
+    "context_ref",
+    "context_sha256"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "operation": {
+      "const": "checked-d-path/1"
+    },
+    "tool_ref": {
+      "$ref": "common.schema.json#/$defs/tool_ref"
+    },
+    "dispatcher_ref": {
+      "$ref": "common.schema.json#/$defs/dispatcher_ref"
+    },
+    "context_ref": {
+      "$ref": "common.schema.json#/$defs/composition_ref"
+    },
+    "context_sha256": {
+      "$ref": "common.schema.json#/$defs/hex"
+    }
+  }
+}

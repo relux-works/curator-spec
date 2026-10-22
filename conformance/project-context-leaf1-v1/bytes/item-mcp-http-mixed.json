@@ -1,0 +1,1 @@
+{"environment":"codex_cli","id":"mcp","kind":"project-item/1","payload":{"name":"Sample_1","server":{"command":"sample-tool","env_names":["SAMPLE_A","SAMPLE_B"],"environments":["claude_code","codex_cli"],"transport":"http","url":"https://example.invalid/mcp"},"server_sha256":"sha256:9eb46097eab3ab59b88882d08c24fd28ce52b433bac9384d7333777ea109aabf"},"required":false,"type":"mcp"}
