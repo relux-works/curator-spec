@@ -224,5 +224,96 @@ class StageATests(unittest.TestCase):
                     self.assertGreater(applied.call_count,0)
 
 
+    # Claim R1–R4: reviewer witnesses fail for the named contract, valid neighbors pass,
+    # and removing each actual gate produces its intended corpus verdict mismatch.
+    # Limits: synthetic selection/source facts are not external snapshot attestations.
+    def test_review_regressions_and_controls(self):
+        controls = []
+        for field in ['command', 'args', 'url']:
+            for prefix in ['package-byte-', 'lock-byte-']:
+                controls.append(('package_byte_bounds', prefix+field+'-over',
+                                 prefix+field+'-within', self.narrowed(
+                                     'package_byte_bounds',
+                                     {'url': "len(server['url'].encode('utf-8')) <= 4096",
+                                      'command': "len(server['command'].encode('utf-8')) <= 255",
+                                      'args': "len(arg.encode('utf-8')) <= 8192"}[field],
+                                     {'url': "len(server['url'].encode('utf-8')) <= 4098",
+                                      'command': "len(server['command'].encode('utf-8')) <= 256",
+                                      'args': "len(arg.encode('utf-8')) <= 8194"}[field])))
+            m.check_case(self.cases['inline-scalar-'+field])
+        for selector in ['revision', 'range']:
+            controls.append(('selection_matches', 'lock-selector-'+selector+'-mismatch',
+                             'lock-selector-'+selector+'-match', self.narrowed(
+                                 'selection_matches',
+                                 "if 'revision' in selector and selector['revision'] != resolved['commit']:"
+                                 if selector == 'revision' else
+                                 "if version is None or not validate.range_satisfies(validate.range_parse(selector['range']), version):",
+                                 'if False:')))
+        controls.append(('strict_integer', 'ccj1-negative-zero', 'ccj1-zero', int))
+        controls.append(('strict_integer', 'ccj1-nested-negative-zero', 'ccj1-negative', int))
+        for function, witness, sibling, replacement in controls:
+            with self.subTest(gate=function, witness=witness):
+                m.check_case(self.cases[witness]); m.check_case(self.cases[sibling])
+                with patch.object(m, function, side_effect=replacement) as applied:
+                    m.check_case(self.cases[sibling])
+                    # An unrelated refusal still holds under each narrowing plant.
+                    m.check_case(self.cases['allowlist-denied'])
+                    with self.assertRaisesRegex(ValueError, 'MCP (?:verdict|carrier) mismatch: '+witness+'$'):
+                        m.check_case(self.cases[witness])
+                    self.assertGreater(applied.call_count, 0)
+        gates = [
+            ("if facts.get('source_allowlist_empty', False):", 'source_allowlist_empty'),
+            ("if resolved.get('signed', True) is not True:", 'context_source_unsigned'),
+            ("if resolved.get('signers_present', True) is not True:", 'context_source_signers_missing'),
+            ("if resolved.get('version_matches', True) is not True:", 'context_version_mismatch'),
+        ]
+        for old, code in gates:
+            witness = 'source-gate-'+code
+            m.check_case(self.cases[witness]); m.check_case(self.cases['package-valid'])
+            narrowed = self.narrowed('evaluate', old, 'if False:')
+            with self.subTest(gate=code), patch.object(m, 'evaluate', side_effect=narrowed):
+                m.check_case(self.cases['package-valid'])
+                with self.assertRaisesRegex(ValueError, 'MCP verdict mismatch: '+witness+'$'):
+                    m.check_case(self.cases[witness])
+            # Mutate the actual schema enum, not a simulated schema verdict.
+            schema = json.loads((m.ROOT/'schemas/skillfile-mcp-v1/mcp-plan-v1.schema.json').read_text())
+            for remove in [True, False]:
+                mutated = copy.deepcopy(schema)
+                enum = mutated['properties']['rows']['items']['properties']['code']['enum']
+                if remove:
+                    enum.remove(code)
+                else:
+                    enum.append(code+'_unknown')
+                reader = Draft202012Validator(mutated, registry=m.registry())
+                original = m.schema_valid
+                def changed_enum(name, value, root=m.ROOT):
+                    return reader.is_valid(value) if name == 'mcp-plan-v1' else original(name, value, root)
+                suffix = 'valid' if remove else 'unknown'
+                witness = 'plan-source-'+code+'-'+suffix
+                m.check_case(self.cases[witness])
+                with self.subTest(code=code, enum_removal=remove), patch.object(m, 'schema_valid', side_effect=changed_enum):
+                    m.check_case(self.cases['plan-valid'])
+                    with self.assertRaisesRegex(ValueError, 'MCP carrier mismatch: '+witness+'$'):
+                        m.check_case(self.cases[witness])
+
+    # Claim R5: the released full-document CCJ-1 identity includes every parsed member
+    # (even sig), ignores whitespace/key order, and changes after a semantic edit.
+    def test_manifest_ccj1_identity_regression(self):
+        import hashlib
+        raw = '{"schema_version":3,"skills":[],"sig":"data"}'
+        variant = ' { "sig": "data", "skills": [], "schema_version": 3 }\n'
+        expected = 'sha256:'+hashlib.sha256(b'{"schema_version":3,"sig":"data","skills":[]}').hexdigest()
+        def check():
+            self.assertEqual(m.digest(m.strict_load(raw)), expected)
+            self.assertEqual(m.digest(m.strict_load(variant)), expected)
+            self.assertNotEqual(m.digest(m.strict_load(raw.replace('data', 'edit'))), expected)
+        check()
+        # Canonicalizing without key sorting is the bounded faulty instrument.
+        narrowed = self.narrowed('canonical', 'sort_keys=True', 'sort_keys=False')
+        with patch.object(m, 'canonical', side_effect=narrowed):
+            with self.assertRaises(AssertionError):
+                check()
+
+
 if __name__ == '__main__':
     unittest.main()

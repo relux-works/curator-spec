@@ -98,7 +98,8 @@
                       }
                     }
                   }
-                ]
+                ],
+                "$comment": "In addition to schema scalar limits, enforce legacy UTF-8 byte ceilings: URL 4096, command 255, each argument 8192. The selector must match resolved commit/version; these are semantic checks."
               },
               "server_sha256": {
                 "$ref": "../v1/common.schema.json#/$defs/sha256"

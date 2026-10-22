@@ -31,3 +31,16 @@ runtimes/endpoints: no server, package runtime, auth or endpoint may be invoked.
 A successful native write never proves CIP-0002 managed-launch admission.
 Claude, Codex and Muse are the first adoption wave; no adapter/platform/version
 is qualified by this specification corpus.
+
+Review regression witnesses separate legacy package byte ceilings from inline
+scalar limits for command, argument and URL; both planning and fully rehashed
+locks are checked beside valid byte-bound siblings. Lock selectors cover exact
+revision/OID-width and range/prerelease consistency. Raw negative zero is
+rejected inside ignored options beside zero and negative-integer controls.
+Existing source-signature/version/allowlist diagnostics have exact refusal rows
+and closed-carrier valid/unknown-code siblings. Unit narrowing plants relax
+individual byte, selector, parser and source gates and reproduce the old closed
+enum; each must fail its named witness while valid controls still pass.
+Full-document CCJ-1 manifest identity is tested independently of MCP
+normalization, with whitespace/key-order, semantic-edit and faulty-canonicalizer
+controls. These checks do not establish external source or protected authority.
