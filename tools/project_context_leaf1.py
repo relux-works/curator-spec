@@ -15,6 +15,7 @@ from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
 from ccj1_grammar import integer, exact_patterns
+from mcp_url_grammar import url_valid
 
 ROOT = Path(__file__).resolve().parents[1]
 NAMESPACE = 'project-context-leaf1-v1'
@@ -194,6 +195,8 @@ def semantic(record, value):
     if record == 'item' and value['type'] == 'mcp':
         payload = value['payload']
         server = payload['server']
+        if server['transport'] == 'http' and not url_valid(server['url']):
+            raise ContractError('schema')
         for field in ('env_names', 'environments'):
             if field in server and server[field] != sorted(set(server[field]), key=lambda s: s.encode('utf-8')):
                 raise ContractError('server-normalization')

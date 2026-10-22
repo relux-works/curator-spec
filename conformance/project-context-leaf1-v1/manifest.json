@@ -9037,6 +9037,284 @@
       "expected": null,
       "claim": "adapter: accepts this closed record",
       "record_sha256": "d1b23c6b7d897028af8abbc4336c40283d343925f261bc3cc9a5a62240ec5499"
+    },
+    {
+      "name": "mcp-url-unicode",
+      "record": "item",
+      "file": "bytes/mcp-url-unicode.json",
+      "bytes_sha256": "c686101901c5516fee7b74db2d86ebbd42eae2d812035e0fdae8a532309d7bc1",
+      "expected": null,
+      "claim": "item: accepts this closed record",
+      "record_sha256": "c686101901c5516fee7b74db2d86ebbd42eae2d812035e0fdae8a532309d7bc1"
+    },
+    {
+      "name": "mcp-url-encoded-dollar",
+      "record": "item",
+      "file": "bytes/mcp-url-encoded-dollar.json",
+      "bytes_sha256": "69e914c52c7bf9af3668af0d1bfcf2a7ebcbedaef21be18f924286087974285d",
+      "expected": null,
+      "claim": "item: accepts this closed record",
+      "record_sha256": "69e914c52c7bf9af3668af0d1bfcf2a7ebcbedaef21be18f924286087974285d"
+    },
+    {
+      "name": "mcp-url-nul",
+      "record": "item",
+      "file": "bytes/mcp-url-nul.json",
+      "bytes_sha256": "b27695c40e963986b93e6bac9d78e7cbb11a67b50a8ab05776eed7b3a3fecc9b",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "item: a correctly hashed HTTP server refuses literal URL nul under adopted CIP-0022 Q3; ordinary HTTP sibling remains valid",
+      "positive": "item-mcp-http",
+      "mutant": {
+        "schema": "common",
+        "path": [
+          "$defs",
+          "server",
+          "allOf",
+          2,
+          "properties",
+          "url",
+          "not",
+          "pattern"
+        ],
+        "value": "(?!\u0000)[\\u0000-\\u0008\\u000e-\\u001b\\u007f-\\u0084\\u0086-\\u009f\\u00ad\\u0600-\\u0605\\u061c\\u06dd\\u070f\\u0890-\\u0891\\u08e2\\u180e\\u200b-\\u200f\\u202a-\\u202e\\u2060-\\u2064\\u2066-\\u206f\\ufeff\\ufff9-\\ufffb𑂽𑃍𓐰-𓐿𛲠-𛲣𝅳-𝅺󠀁󠀠-󠁿${}\\\\]"
+      }
+    },
+    {
+      "name": "mcp-url-control",
+      "record": "item",
+      "file": "bytes/mcp-url-control.json",
+      "bytes_sha256": "f4a6bbc38c86aa5c4b65e2df4cdc6c87bf32274d16087f07374683c492ca4414",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "item: a correctly hashed HTTP server refuses literal URL control under adopted CIP-0022 Q3; ordinary HTTP sibling remains valid",
+      "positive": "item-mcp-http",
+      "mutant": {
+        "schema": "common",
+        "path": [
+          "$defs",
+          "server",
+          "allOf",
+          2,
+          "properties",
+          "url",
+          "not",
+          "pattern"
+        ],
+        "value": "(?!\u0001)[\\u0000-\\u0008\\u000e-\\u001b\\u007f-\\u0084\\u0086-\\u009f\\u00ad\\u0600-\\u0605\\u061c\\u06dd\\u070f\\u0890-\\u0891\\u08e2\\u180e\\u200b-\\u200f\\u202a-\\u202e\\u2060-\\u2064\\u2066-\\u206f\\ufeff\\ufff9-\\ufffb𑂽𑃍𓐰-𓐿𛲠-𛲣𝅳-𝅺󠀁󠀠-󠁿${}\\\\]"
+      }
+    },
+    {
+      "name": "mcp-url-del",
+      "record": "item",
+      "file": "bytes/mcp-url-del.json",
+      "bytes_sha256": "f40157761ec6387007ceeccabfa88e8592e9bd4701ff03ac5e41a6e4e51d8c71",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "item: a correctly hashed HTTP server refuses literal URL del under adopted CIP-0022 Q3; ordinary HTTP sibling remains valid",
+      "positive": "item-mcp-http",
+      "mutant": {
+        "schema": "common",
+        "path": [
+          "$defs",
+          "server",
+          "allOf",
+          2,
+          "properties",
+          "url",
+          "not",
+          "pattern"
+        ],
+        "value": "(?!)[\\u0000-\\u0008\\u000e-\\u001b\\u007f-\\u0084\\u0086-\\u009f\\u00ad\\u0600-\\u0605\\u061c\\u06dd\\u070f\\u0890-\\u0891\\u08e2\\u180e\\u200b-\\u200f\\u202a-\\u202e\\u2060-\\u2064\\u2066-\\u206f\\ufeff\\ufff9-\\ufffb𑂽𑃍𓐰-𓐿𛲠-𛲣𝅳-𝅺󠀁󠀠-󠁿${}\\\\]"
+      }
+    },
+    {
+      "name": "mcp-url-c1",
+      "record": "item",
+      "file": "bytes/mcp-url-c1.json",
+      "bytes_sha256": "a2d0fcf6720198529068915137dfe7915d2ecadbf52c195fb55e655f7e704842",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "item: a correctly hashed HTTP server refuses literal URL c1 under adopted CIP-0022 Q3; ordinary HTTP sibling remains valid",
+      "positive": "item-mcp-http",
+      "mutant": {
+        "schema": "common",
+        "path": [
+          "$defs",
+          "server",
+          "allOf",
+          2,
+          "properties",
+          "url",
+          "not",
+          "pattern"
+        ],
+        "value": "(?!)[\\u0000-\\u0008\\u000e-\\u001b\\u007f-\\u0084\\u0086-\\u009f\\u00ad\\u0600-\\u0605\\u061c\\u06dd\\u070f\\u0890-\\u0891\\u08e2\\u180e\\u200b-\\u200f\\u202a-\\u202e\\u2060-\\u2064\\u2066-\\u206f\\ufeff\\ufff9-\\ufffb𑂽𑃍𓐰-𓐿𛲠-𛲣𝅳-𝅺󠀁󠀠-󠁿${}\\\\]"
+      }
+    },
+    {
+      "name": "mcp-url-format",
+      "record": "item",
+      "file": "bytes/mcp-url-format.json",
+      "bytes_sha256": "af5d1376df66add06e3847dfe450e4b66c100c8c992a354e829c448a329228ba",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "item: a correctly hashed HTTP server refuses literal URL format under adopted CIP-0022 Q3; ordinary HTTP sibling remains valid",
+      "positive": "item-mcp-http",
+      "mutant": {
+        "schema": "common",
+        "path": [
+          "$defs",
+          "server",
+          "allOf",
+          2,
+          "properties",
+          "url",
+          "not",
+          "pattern"
+        ],
+        "value": "(?!​)[\\u0000-\\u0008\\u000e-\\u001b\\u007f-\\u0084\\u0086-\\u009f\\u00ad\\u0600-\\u0605\\u061c\\u06dd\\u070f\\u0890-\\u0891\\u08e2\\u180e\\u200b-\\u200f\\u202a-\\u202e\\u2060-\\u2064\\u2066-\\u206f\\ufeff\\ufff9-\\ufffb𑂽𑃍𓐰-𓐿𛲠-𛲣𝅳-𝅺󠀁󠀠-󠁿${}\\\\]"
+      }
+    },
+    {
+      "name": "mcp-url-bom",
+      "record": "item",
+      "file": "bytes/mcp-url-bom.json",
+      "bytes_sha256": "645c5a29d2a5f7ba6fbfb764b9e5013301d2aae4c9cb54ba895fe77f3b8f9791",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "item: a correctly hashed HTTP server refuses literal URL bom under adopted CIP-0022 Q3; ordinary HTTP sibling remains valid",
+      "positive": "item-mcp-http",
+      "mutant": {
+        "schema": "common",
+        "path": [
+          "$defs",
+          "server",
+          "allOf",
+          2,
+          "properties",
+          "url",
+          "not",
+          "pattern"
+        ],
+        "value": "(?!﻿)[\\u0000-\\u0008\\u000e-\\u001b\\u007f-\\u0084\\u0086-\\u009f\\u00ad\\u0600-\\u0605\\u061c\\u06dd\\u070f\\u0890-\\u0891\\u08e2\\u180e\\u200b-\\u200f\\u202a-\\u202e\\u2060-\\u2064\\u2066-\\u206f\\ufeff\\ufff9-\\ufffb𑂽𑃍𓐰-𓐿𛲠-𛲣𝅳-𝅺󠀁󠀠-󠁿${}\\\\]"
+      }
+    },
+    {
+      "name": "mcp-url-dollar",
+      "record": "item",
+      "file": "bytes/mcp-url-dollar.json",
+      "bytes_sha256": "f69a44352bb87808aefc20ae6eef2d484f2624f7852fa68ea96bea759a9e3f87",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "item: a correctly hashed HTTP server refuses literal URL dollar under adopted CIP-0022 Q3; ordinary HTTP sibling remains valid",
+      "positive": "item-mcp-http",
+      "mutant": {
+        "schema": "common",
+        "path": [
+          "$defs",
+          "server",
+          "allOf",
+          2,
+          "properties",
+          "url",
+          "not",
+          "pattern"
+        ],
+        "value": "(?!\\$)[\\u0000-\\u0008\\u000e-\\u001b\\u007f-\\u0084\\u0086-\\u009f\\u00ad\\u0600-\\u0605\\u061c\\u06dd\\u070f\\u0890-\\u0891\\u08e2\\u180e\\u200b-\\u200f\\u202a-\\u202e\\u2060-\\u2064\\u2066-\\u206f\\ufeff\\ufff9-\\ufffb𑂽𑃍𓐰-𓐿𛲠-𛲣𝅳-𝅺󠀁󠀠-󠁿${}\\\\]"
+      }
+    },
+    {
+      "name": "mcp-url-brace-open",
+      "record": "item",
+      "file": "bytes/mcp-url-brace-open.json",
+      "bytes_sha256": "d09ad36f5080cd725c8f06e15139d2abb298ffac113c13f4d04b21f6a5334038",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "item: a correctly hashed HTTP server refuses literal URL brace-open under adopted CIP-0022 Q3; ordinary HTTP sibling remains valid",
+      "positive": "item-mcp-http",
+      "mutant": {
+        "schema": "common",
+        "path": [
+          "$defs",
+          "server",
+          "allOf",
+          2,
+          "properties",
+          "url",
+          "not",
+          "pattern"
+        ],
+        "value": "(?!\\{)[\\u0000-\\u0008\\u000e-\\u001b\\u007f-\\u0084\\u0086-\\u009f\\u00ad\\u0600-\\u0605\\u061c\\u06dd\\u070f\\u0890-\\u0891\\u08e2\\u180e\\u200b-\\u200f\\u202a-\\u202e\\u2060-\\u2064\\u2066-\\u206f\\ufeff\\ufff9-\\ufffb𑂽𑃍𓐰-𓐿𛲠-𛲣𝅳-𝅺󠀁󠀠-󠁿${}\\\\]"
+      }
+    },
+    {
+      "name": "mcp-url-brace-close",
+      "record": "item",
+      "file": "bytes/mcp-url-brace-close.json",
+      "bytes_sha256": "8f72861ec637216f9be87f0b42c256e82d08c5cc66e662554e4362a8a2c9552e",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "item: a correctly hashed HTTP server refuses literal URL brace-close under adopted CIP-0022 Q3; ordinary HTTP sibling remains valid",
+      "positive": "item-mcp-http",
+      "mutant": {
+        "schema": "common",
+        "path": [
+          "$defs",
+          "server",
+          "allOf",
+          2,
+          "properties",
+          "url",
+          "not",
+          "pattern"
+        ],
+        "value": "(?!\\})[\\u0000-\\u0008\\u000e-\\u001b\\u007f-\\u0084\\u0086-\\u009f\\u00ad\\u0600-\\u0605\\u061c\\u06dd\\u070f\\u0890-\\u0891\\u08e2\\u180e\\u200b-\\u200f\\u202a-\\u202e\\u2060-\\u2064\\u2066-\\u206f\\ufeff\\ufff9-\\ufffb𑂽𑃍𓐰-𓐿𛲠-𛲣𝅳-𝅺󠀁󠀠-󠁿${}\\\\]"
+      }
+    },
+    {
+      "name": "mcp-url-backslash",
+      "record": "item",
+      "file": "bytes/mcp-url-backslash.json",
+      "bytes_sha256": "297d73329475b30f1da42ac02a7ec2989d2ac7033056874872cb45d6a4e2b10b",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "item: a correctly hashed HTTP server refuses literal URL backslash under adopted CIP-0022 Q3; ordinary HTTP sibling remains valid",
+      "positive": "item-mcp-http",
+      "mutant": {
+        "schema": "common",
+        "path": [
+          "$defs",
+          "server",
+          "allOf",
+          2,
+          "properties",
+          "url",
+          "not",
+          "pattern"
+        ],
+        "value": "(?!\\\\)[\\u0000-\\u0008\\u000e-\\u001b\\u007f-\\u0084\\u0086-\\u009f\\u00ad\\u0600-\\u0605\\u061c\\u06dd\\u070f\\u0890-\\u0891\\u08e2\\u180e\\u200b-\\u200f\\u202a-\\u202e\\u2060-\\u2064\\u2066-\\u206f\\ufeff\\ufff9-\\ufffb𑂽𑃍𓐰-𓐿𛲠-𛲣𝅳-𝅺󠀁󠀠-󠁿${}\\\\]"
+      }
     }
   ]
 }
