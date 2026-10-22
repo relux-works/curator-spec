@@ -33,7 +33,7 @@ class ProjectContextLeaf1Tests(unittest.TestCase):
     # Every published positive and typed negative is reached by make validate;
     # missing siblings, changed bytes and incomplete record coverage also fail.
     def test_publication_entry(self):
-        self.assertEqual(leaf.check_corpus(), (53, 341))
+        self.assertEqual(leaf.check_corpus(), (55, 351))
         import validate
         validate.validate_project_context_leaf1()
 
@@ -54,7 +54,7 @@ class ProjectContextLeaf1Tests(unittest.TestCase):
         with patch.object(leaf.Path, 'read_text', planted):
             with self.assertRaisesRegex(validate.ValidationFailure, 'lease-zero: expected None'):
                 validate.validate_project_context_leaf1()
-        self.assertEqual(leaf.check_corpus(), (53, 341))
+        self.assertEqual(leaf.check_corpus(), (55, 351))
 
     # The publication oracle reaches the lexical negative-zero gate. Its
     # ordinary-zero sibling stays valid when only the shared integer hook is
@@ -68,6 +68,58 @@ class ProjectContextLeaf1Tests(unittest.TestCase):
             with self.assertRaisesRegex(validate.ValidationFailure, 'snapshot-manifest-negative-zero: expected'):
                 validate.validate_project_context_leaf1()
         validate.validate_project_context_leaf1()
+
+    # Both the new schema constraint and the shared predicate reject the ten
+    # literal witnesses after independent rehashing. Narrowing only the schema
+    # still reaches a typed oracle refusal; narrowing both is caught by the
+    # publication entry, with its ordinary HTTP sibling still passing.
+    def test_url_publication_and_independent_guards(self):
+        from referencing import Resource
+        import mcp_url_grammar as shared
+        import validate
+        self.assertIs(leaf.url_valid, shared.url_valid)
+        uri = ('https://relux-works.github.io/curator-spec/schemas/' + leaf.NAMESPACE +
+               '/common.schema.json')
+        document = copy.deepcopy(CATALOG[1].contents(uri))
+        document['$defs']['server']['allOf'][2]['properties']['url']['not']['pattern'] = r'(?!)'
+        narrowed = CATALOG[0], CATALOG[1].with_resource(uri, Resource.from_contents(document))
+        sibling = next(c for c in MANIFEST['cases'] if c['name'] == 'item-mcp-http')
+        assert_case(self, sibling, catalog=narrowed)
+        for name in ('nul', 'control', 'del', 'c1', 'format', 'bom', 'dollar',
+                     'brace-open', 'brace-close', 'backslash'):
+            case = next(c for c in MANIFEST['cases'] if c['name'] == 'mcp-url-' + name)
+            raw = (CORPUS / case['file']).read_bytes()
+            value = json.loads(raw)
+            independent = json.dumps(value['payload']['server'], ensure_ascii=False,
+                                     sort_keys=True, separators=(',', ':')).encode()
+            self.assertEqual(value['payload']['server_sha256'],
+                             'sha256:' + hashlib.sha256(independent).hexdigest())
+            validator = Draft202012Validator(narrowed[0]['item'], registry=narrowed[1])
+            self.assertTrue(validator.is_valid(value), name + ': isolated oracle witness')
+            self.assertEqual(leaf.verdict('item', raw, narrowed), case['expected'])
+        original = leaf.url_valid
+        with patch.object(leaf, 'schemas', return_value=narrowed), patch.object(
+                leaf, 'url_valid', lambda url: original(url.replace(chr(0), ''))):
+            assert_case(self, sibling, catalog=narrowed)
+            with self.assertRaisesRegex(validate.ValidationFailure, 'mcp-url-nul: expected .*got None'):
+                validate.validate_project_context_leaf1()
+        validate.validate_project_context_leaf1()
+
+    # The additive schema covers every current Unicode Cc/Cf scalar, including
+    # supplementary formats, while ordinary and percent-escaped scalars pass.
+    # Whitespace remains covered by the existing HTTPS constraint.
+    def test_url_schema_scalar_classes(self):
+        import unicodedata
+        common = CATALOG[1].contents('https://relux-works.github.io/curator-spec/schemas/' +
+                                    leaf.NAMESPACE + '/common.schema.json')
+        validator = Draft202012Validator({'$ref': common['$id'] + '#/$defs/server'}, registry=CATALOG[1])
+        for char in (chr(n) for n in range(0x110000)
+                     if unicodedata.category(chr(n)) in {'Cc', 'Cf'} or chr(n).isspace()):
+            self.assertFalse(validator.is_valid({'transport': 'http', 'env_names': [],
+                'url': 'https://example.invalid/a' + char + 'b'}), hex(ord(char)))
+        for suffix in ('/path', '/é', '/%24', '/%00', '/%7B', '/%5C'):
+            self.assertTrue(validator.is_valid({'transport': 'http', 'env_names': [],
+                'url': 'https://example.invalid' + suffix}), suffix)
 
     # Deterministic regeneration checks the actual committed bytes without
     # rewriting them. Every CI unit-test invocation executes this command path.
@@ -86,7 +138,7 @@ class ProjectContextLeaf1Tests(unittest.TestCase):
         with patch('sys.argv', ['check_project_context_leaf1_controls.py']):
             with contextlib.redirect_stdout(output):
                 self.assertEqual(controls.main(), 0)
-        self.assertIn('343 narrowing controls killed', output.getvalue())
+        self.assertIn('353 narrowing controls killed', output.getvalue())
 
     # Record identity includes all members, including sig; JSON spelling/order
     # and optional-member presence do not silently drop bytes from CCJ-1 input.

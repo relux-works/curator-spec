@@ -3,6 +3,7 @@
 import copy
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -403,6 +404,29 @@ def main():
         bad('adapter-wildcard-' + str(index), 'adapter', {**base['adapter'], 'provider_version': token},
             schema_mutant('adapter', ['properties', 'provider_version', 'pattern'], r'^[^\s*<>=^~|,]+$'))
     positive('adapter-concrete-prerelease', 'adapter', {**base['adapter'], 'provider_version': '1.2.3-x+build.4'})
+
+    # Adopted CIP-0022 Q3 applies to normalized inline HTTP items too.
+    # Rehash each server independently so a digest error cannot mask its URL.
+    http = json.loads(generated['bytes/item-mcp-http.json'])
+    def http_url(url):
+        changed = set_at(http, ['payload', 'server', 'url'], url)
+        changed['payload']['server_sha256'] = 'sha256:' + hashlib.sha256(
+            json.dumps(changed['payload']['server'], ensure_ascii=False, sort_keys=True,
+                       separators=(',', ':')).encode()).hexdigest()
+        return changed
+    for label, suffix in [('unicode', '/é'), ('encoded-dollar', '/%24')]:
+        positive('mcp-url-' + label, 'item', http_url('https://example.invalid' + suffix))
+    url_guard = json.loads((ROOT/'schemas'/leaf.NAMESPACE/'common.schema.json').read_text())[
+        '$defs']['server']['allOf'][2]['properties']['url']['not']['pattern']
+    for label, char in [('nul', '\0'), ('control', '\1'), ('del', '\x7f'), ('c1', '\x80'),
+                        ('format', '\u200b'), ('bom', '\ufeff'), ('dollar', '$'),
+                        ('brace-open', '{'), ('brace-close', '}'), ('backslash', '\\')]:
+        add('mcp-url-' + label, 'item', http_url('https://example.invalid/a' + char + 'b'),
+            gate='schema', positive='item-mcp-http',
+            mutant=schema_mutant('common', ['$defs', 'server', 'allOf', 2,
+                'properties', 'url', 'not', 'pattern'], '(?!' + re.escape(char) + ')' + url_guard),
+            claim='item: a correctly hashed HTTP server refuses literal URL ' + label +
+                  ' under adopted CIP-0022 Q3; ordinary HTTP sibling remains valid')
 
     manifest = dict(version=1, scope='closed member grammar only; no carrier or runtime qualification', cases=cases)
     generated['manifest.json'] = (json.dumps(manifest, ensure_ascii=False, indent=2) + '\n').encode('utf-8')
