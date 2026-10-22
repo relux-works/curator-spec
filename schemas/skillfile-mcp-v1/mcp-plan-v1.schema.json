@@ -87,7 +87,11 @@
               "source_lock_stale",
               "context_source_signer_rejected",
               "environment_surface_unreadable",
-              "profile_source_invalid"
+              "profile_source_invalid",
+              "context_source_unsigned",
+              "context_source_signers_missing",
+              "context_version_mismatch",
+              "source_allowlist_empty"
             ]
           }
         },

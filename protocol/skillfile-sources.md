@@ -17,8 +17,8 @@ force. Definitions reused from `schemas/v1` are unchanged.
 
 [Skillfile MCP stage A](skillfile-mcp.md) adds project schema 3 as schema 2
 plus optional `mcp_servers`. Source aliases, skill selection, immutable
-snapshots and raw `manifest_sha256` retain this revision’s meanings; normalized
-MCP digests never replace that raw manifest identity. Schema 1/2 reject the new
+snapshots and full-document CCJ-1 `manifest_sha256` retain this revision’s meanings; normalized
+MCP digests never replace that full-document CCJ-1 manifest identity. Schema 1/2 reject the new
 member; unsupported or machine-global schema 3 fails with the upgrade error.
 No writer implicitly upgrades a file. New MCP carriers live in a separate
 namespace and do not extend the released source lock in place.

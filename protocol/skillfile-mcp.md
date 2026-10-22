@@ -18,8 +18,9 @@ input, fails with the existing upgrade error, before acquisition or writes.
 Machine-global profile locks retain their existing role.
 
 Parse strict UTF-8 JSON: duplicate keys, non-scalar strings, non-JSON constants,
-non-integral numbers and integers outside CCJ-1's safe range refuse. Unknown
-members, mixed declaration arms and null refuse as `mcp_declaration_invalid`.
+non-integral numbers, negative zero (`-0`) and integers outside CCJ-1's safe
+range refuse. Reject negative zero before integer conversion, including inside
+ignored `install` data. Unknown members, mixed declaration arms and null refuse as `mcp_declaration_invalid`.
 An absent/empty map has no declarations; it does not enroll or remove foreign
 native entries. NAME is case-sensitive and matches
 `^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$`.
@@ -32,13 +33,22 @@ native entries. NAME is case-sensitive and matches
 - Inline object: exactly `{"server":SERVER,"install"?:OPTIONS}`.
 - Package object: exactly `{"package":PACKAGE,"install"?:OPTIONS}`.
 
-SERVER is the **unchanged** closed environments §2.2 server object:
+SERVER has the closed environments §2.2 server member vocabulary:
 `stdio` requires `transport`, bare `command` and `args`; `http` requires
 `transport` and `url`. Both optionally contain `env_names` and `environments`.
 No headers, auth, inline environment values, shell recipe or unknown SERVER
-member is admitted. Retain its command/argument length bounds, reserved-name
-exclusions and machine passability ceilings. The stage-A lane additionally
-applies [the closed runtime-pin sheet](mcp-runtime-pins.md) and §3 below to
+member is admitted. Inline command length is 1–255 Unicode scalars; each
+inline argument is at most 8192 Unicode scalars. Inline URL length is defined
+in §3. Retain reserved-name exclusions and machine passability ceilings.
+
+Resolved `agent-mcp.json` packages MUST first pass their unchanged legacy
+UTF-8 **byte** ceilings: URL 4096 bytes, command 255 bytes, each argument 8192
+bytes. The package path is stricter than inline syntax for multibyte values;
+a value within the inline scalar ceiling can still be invalid in a package.
+Both planning and locked replay enforce these byte ceilings in addition to
+schema scalar limits. Released package schemas remain unchanged; JSON Schema
+`maxLength` alone cannot establish a UTF-8 byte ceiling. The stage-A lane
+additionally applies [the closed runtime-pin sheet](mcp-runtime-pins.md) and §3 below to
 resolved packages; it does not alter legacy package acceptance outside this
 new lane.
 
@@ -58,7 +68,8 @@ cannot enable stage B. Structurally malformed declarations still receive
 
 ## 3. URLs, audit and ignored options
 
-URLs have 9–4096 Unicode scalar values, the HTTPS scheme and ASCII host, with
+Inline URLs have 9–4096 Unicode scalar values (packages additionally obey §2’s
+4096-byte ceiling), the HTTPS scheme and ASCII host, with
 no userinfo, query or fragment, as environments §2.2. Additionally reject
 Unicode whitespace, control and format characters, `$`, `{`, `}`, and `\`.
 Check the lexical string before parsing it. Perform no interpolation,
@@ -96,9 +107,9 @@ version/commit, content identity and normalized server digest. Validate package
 schema/name and all additional stage-A gates on the resolved candidate. No
 moving ref is resolved by status or launch. Replay a missing snapshot under
 the existing source replay rules; changed content is `source_snapshot_changed`,
-unavailable input is `source_snapshot_unavailable`, and changed raw manifest
-identity is `source_lock_stale`. Update re-audits the candidate. Failure retains
-previous native files, skills, lock, approvals and ownership state.
+unavailable input is `source_snapshot_unavailable`, and changed full-document
+CCJ-1 manifest identity is `source_lock_stale`. Update re-audits the candidate.
+Failure retains previous native files, skills, lock, approvals and ownership state.
 
 Schema-3 parsing or package allowlisting does not authorize managed project
 control context. CIP-0002 admission, protected composition, ceilings, exact
@@ -137,15 +148,20 @@ setup/login hints are printed and never executed.
 The complete closed schemas live in
 [schemas/skillfile-mcp-v1](../schemas/skillfile-mcp-v1/README.md). They are new
 carriers, not added members of released locks. `mcp-lock-v1` encloses an
-unchanged source `skills_lock`, raw `manifest_sha256`, manager-registered
-`project_id`, and sorted unique NAME entries with normalized declaration and
+unchanged source `skills_lock`, full-document CCJ-1 `manifest_sha256`,
+manager-registered `project_id`, and sorted unique NAME entries with normalized declaration and
 exact resolved package/server identities. A source lock's manifest identity
-MUST equal the outer manifest identity. Bind the current project and raw
-manifest on every replay; a well-formed repository-supplied lock is not trust.
+MUST equal the outer manifest identity. Bind the current project and parsed
+manifest identity on every replay; a well-formed repository-supplied lock is
+not trust.
 `resolved.directory` is null for the root, otherwise exactly the declared
 portable directory. Resolved source identity is the canonical identity of the
-declared Git source; transport policy never enters it. Require normalized
-server/declaration bytes, recompute their digests and the enclosed source-lock
+declared Git source; transport policy never enters it. An explicit revision
+MUST equal `resolved.commit` (including OID width); a declared range MUST
+contain `resolved.version` under the existing source SemVer range semantics,
+including prerelease rules. Rehashing cannot legitimize a contradictory
+selection. Tag-to-commit and snapshot attestations remain external requirements.
+Require normalized server/declaration bytes, recompute their digests and the enclosed source-lock
 digest, and reject duplicate or unsorted names. Compare each plan’s complete
 pair set against its exact lock and current capabilities; a standalone plan
 schema cannot establish completeness or protected authority.
@@ -168,7 +184,8 @@ a successful nonempty plan MUST bind a real lock digest. Only `refused` rows hav
 code; unsupported rows have null path/code. Plans containing a refusal/conflict
 have no successful mutation outcomes. Plans are observations, not approval.
 Hash the complete carrier using CCJ-1 after omitting only its own digest field:
-`lock_sha256` or `plan_sha256`. Neither hash replaces raw manifest identity.
+`lock_sha256` or `plan_sha256`. Neither hash replaces the full-document
+CCJ-1 manifest identity.
 
 Maintain per-record protected ownership keyed by project/NAME/environment/path,
 binding native entry preimage and last installed digest; owning a file does
@@ -217,6 +234,16 @@ object-key ordering alone do not change the parsed-manifest hash.
 | `mcp_inline_approval_unsupported` | Any valid inline arm at stage A, regardless of purported approval. |
 | `mcp_contribution_policy_refused` | Protected ownership action violates current policy/authority. |
 | `mcp_native_entry_conflict` | Foreign/conflicting native record; no takeover. |
+| `context_source_unsigned` | Required package signature is absent. |
+| `context_source_signers_missing` | Required trusted signer configuration is absent. |
+| `context_version_mismatch` | Selected package version contradicts the required selection. |
+| `source_allowlist_empty` | Hardened general-source policy requires a nonempty source allowlist. |
+
+The four existing source diagnostics above are admitted verbatim in the closed
+plan-row code enum: preserving the gate’s exact refusal avoids recoding it as
+an unsupported pair. When enumeration is impossible, emit the declaration-level
+diagnostic; retain refusals on independently determinable supported pairs and
+null-code skips on known unsupported pairs.
 
 `mcp_inline_approval_required` and `mcp_install_option_invalid` are reserved
 for later inline admission and supported install-option contracts respectively;

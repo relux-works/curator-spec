@@ -99,5 +99,6 @@
         "muse"
       ]
     }
-  }
+  },
+  "$comment": "maxLength counts Unicode scalars for inline SERVER. Resolved packages additionally require legacy UTF-8 byte ceilings: URL 4096, command 255, each argument 8192; enforce semantically."
 }

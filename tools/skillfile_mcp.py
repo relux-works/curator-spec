@@ -61,6 +61,13 @@ def scalar_tree(value):
         invalid()
 
 
+def strict_integer(token):
+    # CCJ-1 forbids the spelling before Python collapses it to zero.
+    if token == '-0':
+        invalid()
+    return int(token)
+
+
 def strict_load(raw):
     def pairs(items):
         result = {}
@@ -72,7 +79,7 @@ def strict_load(raw):
     try:
         if isinstance(raw, bytes):
             raw = raw.decode('utf-8', errors='strict')
-        value = json.loads(raw, object_pairs_hook=pairs,
+        value = json.loads(raw, object_pairs_hook=pairs, parse_int=strict_integer,
                            parse_constant=lambda _: invalid())
         scalar_tree(value)
         return value
@@ -160,6 +167,26 @@ def server_valid(server, root=ROOT):
             and (url_valid(server['url']) if server['transport'] == 'http'
                  else (re.fullmatch(r'(?!\.{1,2}$)[^/\\\s\x00-\x1f\x7f]{1,255}', server['command'])
                        and runtime_pin(server['command'], server['args']))))
+
+
+def package_byte_bounds(server):
+    """Legacy agent-mcp byte ceilings, additional to inline scalar bounds."""
+    if server['transport'] == 'http':
+        return len(server['url'].encode('utf-8')) <= 4096
+    return (len(server['command'].encode('utf-8')) <= 255
+            and all(len(arg.encode('utf-8')) <= 8192 for arg in server['args']))
+
+
+def selection_matches(selector, resolved):
+    """Check available internal facts; tag-to-commit attestation stays external."""
+    import validate
+    if 'revision' in selector and selector['revision'] != resolved['commit']:
+        return False
+    if 'range' in selector:
+        version = validate.semver_parse(resolved['version'])
+        if version is None or not validate.range_satisfies(validate.range_parse(selector['range']), version):
+            return False
+    return True
 
 
 def package_valid(package):
@@ -276,13 +303,22 @@ def evaluate(raw, facts=None, root=ROOT):
                 raise Refusal('source_snapshot_changed')
             if resolved.get('directory_components', []) and any(c != 'directory' for c in resolved['directory_components']):
                 raise Refusal('profile_source_invalid')
+            if facts.get('source_allowlist_empty', False):
+                raise Refusal('source_allowlist_empty')
+            if resolved.get('signed', True) is not True:
+                raise Refusal('context_source_unsigned')
+            if resolved.get('signers_present', True) is not True:
+                raise Refusal('context_source_signers_missing')
+            if resolved.get('version_matches', True) is not True:
+                raise Refusal('context_version_mismatch')
             if resolved.get('signer_allowed', True) is not True:
                 raise Refusal('context_source_signer_rejected')
             package = resolved.get('manifest')
             # Real consumers must establish committed tree/name/version/path facts.
             schema = json.loads((root/'schemas/v1/agent-mcp-v1.schema.json').read_text())
             if (not Draft202012Validator(schema, registry=registry(root)).is_valid(package)
-                    or package['name'] != name or not server_valid(package['server'], root)):
+                    or package['name'] != name or not server_valid(package['server'], root)
+                    or not package_byte_bounds(package['server'])):
                 invalid()
             if not audit_clear(package, root):
                 raise Refusal('context-secret-material')
@@ -360,6 +396,8 @@ def carrier_valid(name, value, root=ROOT):
                     or entry['declaration_sha256'] != digest(model)
                     or not audit_clear(model, root) or not audit_clear(resolved['server'], root)
                     or not server_valid(resolved['server'], root)
+                    or not package_byte_bounds(resolved['server'])
+                    or not selection_matches(model['package'], resolved)
                     or resolved['server'] != normalize_server(resolved['server'])
                     or resolved['server_sha256'] != digest(resolved['server'])
                     or resolved['source'] != identity(model['package']['git'])
