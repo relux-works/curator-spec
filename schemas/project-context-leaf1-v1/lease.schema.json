@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/project-context-leaf1-v1/lease.schema.json",
+  "title": "Project context leaf 1: lease",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "lease_id",
+    "context_ref",
+    "context_sha256",
+    "checkout_id",
+    "environment",
+    "home_ref",
+    "owner_ref",
+    "session_ref",
+    "generation"
+  ],
+  "properties": {
+    "kind": {
+      "const": "project-lease/1"
+    },
+    "lease_id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "context_ref": {
+      "$ref": "common.schema.json#/$defs/composition_ref"
+    },
+    "context_sha256": {
+      "$ref": "common.schema.json#/$defs/hex"
+    },
+    "checkout_id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "environment": {
+      "$ref": "common.schema.json#/$defs/environment"
+    },
+    "home_ref": {
+      "$ref": "common.schema.json#/$defs/home_ref"
+    },
+    "owner_ref": {
+      "$ref": "common.schema.json#/$defs/principal_ref"
+    },
+    "session_ref": {
+      "$ref": "common.schema.json#/$defs/session_ref"
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{"checkout_id":"sample","context_ref":"composition:sample","context_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","environment":"codex_cli","generation":1,"home_ref":"home:sample","kind":"project-lease/1","lease_id":"sample","owner_ref":"principal:sample","session_ref":"command:sample"}

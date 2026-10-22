@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/project-context-leaf1-v1/item.schema.json",
+  "title": "Project context leaf 1: item",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "id",
+    "type",
+    "environment",
+    "required",
+    "payload"
+  ],
+  "properties": {
+    "kind": {
+      "const": "project-item/1"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "type": {
+      "enum": [
+        "context",
+        "skill",
+        "mcp"
+      ]
+    },
+    "environment": {
+      "$ref": "common.schema.json#/$defs/environment"
+    },
+    "required": {
+      "type": "boolean"
+    },
+    "payload": {}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "context"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "snapshot_ref",
+              "snapshot_sha256",
+              "lock_ref",
+              "lock_sha256"
+            ],
+            "properties": {
+              "snapshot_ref": {
+                "$ref": "common.schema.json#/$defs/snapshot_ref"
+              },
+              "snapshot_sha256": {
+                "$ref": "common.schema.json#/$defs/hex"
+              },
+              "lock_ref": {
+                "$ref": "common.schema.json#/$defs/lock_ref"
+              },
+              "lock_sha256": {
+                "$ref": "common.schema.json#/$defs/hex"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "skill"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "snapshot_ref",
+              "snapshot_sha256"
+            ],
+            "properties": {
+              "snapshot_ref": {
+                "$ref": "common.schema.json#/$defs/snapshot_ref"
+              },
+              "snapshot_sha256": {
+                "$ref": "common.schema.json#/$defs/hex"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "mcp"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "server",
+              "server_sha256"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$(?![\\s\\S])"
+              },
+              "server": {
+                "$ref": "common.schema.json#/$defs/server"
+              },
+              "server_sha256": {
+                "$ref": "../v1/common.schema.json#/$defs/sha256"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"command_environment":{"context_ref":"composition:sample","context_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","dispatcher_ref":"dispatcher:sample","operation":"checked-d-path/1","tool_ref":"tool:sample","version":1}}

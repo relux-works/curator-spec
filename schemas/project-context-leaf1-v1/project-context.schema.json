@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/project-context-leaf1-v1/project-context.schema.json",
+  "title": "Project context leaf 1: project-context",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "mode",
+    "context_ref",
+    "context_sha256",
+    "project_root",
+    "lease_ref"
+  ],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "mode": {
+      "enum": [
+        "off",
+        "admitted"
+      ]
+    },
+    "context_ref": {
+      "$ref": "common.schema.json#/$defs/composition_ref"
+    },
+    "context_sha256": {
+      "$ref": "common.schema.json#/$defs/hex"
+    },
+    "project_root": {
+      "$ref": "common.schema.json#/$defs/root"
+    },
+    "lease_ref": {
+      "$ref": "common.schema.json#/$defs/lease_ref"
+    }
+  }
+}

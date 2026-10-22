@@ -1,0 +1,2 @@
+# Malformed JSON and exact encoding/size counterexamples are raw byte fixtures.
+bytes/json-*.json -text -diff

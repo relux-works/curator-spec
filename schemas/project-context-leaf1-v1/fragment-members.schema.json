@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/project-context-leaf1-v1/fragment-members.schema.json",
+  "title": "Project context leaf 1: fragment-members",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "project_context"
+  ],
+  "properties": {
+    "project_context": {
+      "$ref": "project-context.schema.json"
+    },
+    "command_environment": {
+      "$ref": "command-environment.schema.json"
+    }
+  }
+}
