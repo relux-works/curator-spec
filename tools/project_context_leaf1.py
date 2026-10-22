@@ -14,6 +14,8 @@ from pathlib import Path, PurePosixPath
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
+from ccj1_grammar import integer, exact_patterns
+
 ROOT = Path(__file__).resolve().parents[1]
 NAMESPACE = 'project-context-leaf1-v1'
 RECORDS = (
@@ -87,7 +89,7 @@ def decode(raw):
 
     try:
         value = json.loads(raw.decode('utf-8'), object_pairs_hook=pairs,
-                           parse_float=non_integer, parse_constant=non_integer)
+                           parse_int=integer, parse_float=non_integer, parse_constant=non_integer)
     except ContractError:
         raise
     except (UnicodeError, json.JSONDecodeError, RecursionError) as exc:
@@ -114,6 +116,8 @@ def schemas(root=ROOT):
     for namespace in ('v1', 'workspace-trust-v1', NAMESPACE):
         for path in sorted((root / 'schemas' / namespace).glob('*.schema.json')):
             schema = json.loads(path.read_text())
+            if namespace != NAMESPACE:
+                schema = exact_patterns(schema)
             Draft202012Validator.check_schema(schema)
             resources.append((schema['$id'], Resource.from_contents(schema)))
             if namespace == NAMESPACE and path.stem != 'common.schema':
@@ -152,6 +156,8 @@ def files_error(files):
         raise ContractError('file-order')
     if any(len(p.split('/')) > MAX_PATH_DEPTH for p in paths):
         raise ContractError('path-depth')
+    if any(component.endswith(('.', ' ')) for p in paths for component in p.split('/')):
+        raise ContractError('path-component')
     # Aliases are refused, not silently normalized into a different manifest.
     normalized = [unicodedata.normalize('NFC', p).casefold() for p in paths]
     if len(set(normalized)) != len(normalized):

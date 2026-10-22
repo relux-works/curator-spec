@@ -1,7 +1,7 @@
 # Project context leaf-1 grammar corpus
 
 This corpus accompanies the [closed member schemas](../../schemas/project-context-leaf1-v1/README.md).
-It publishes 48 positive and 317 negative complete-record byte fixtures across
+It publishes 53 positive and 341 negative complete-record byte fixtures across
 all 13 record/projection schemas. `manifest.json` binds every raw fixture by
 SHA-256, names its claim and exact expected diagnostic/gate, and gives every
 negative a positive sibling of the same record type. Positive fixtures are
@@ -37,7 +37,7 @@ scratch belong under `.temp/`; committed outputs live in this corpus.
 
 The controls runner mutates real schema definitions or compiles a changed copy
 of the actual decoder/semantic checker in memory. It changes no published
-schema, fixture, expected verdict or product state. Each of the 317 negative
+schema, fixture, expected verdict or product state. Each of the 341 negative
 fixtures carries a narrowing control: admit only its field/subclass or relax
 one boundary, preserving neighboring rejection. The runner first checks the
 baseline and valid sibling, requires the mutant to retain that positive and a
@@ -45,7 +45,7 @@ different closed-record rejection, then requires the target's named assertion
 to fail. A skipped plant, crash, setup error or surviving assertion is failure.
 A separate 10,000/10,001 file-count schema test/control checks that limit in
 memory, since those complete records exceed the earlier 1 MiB cap. An additional identity control drops only `sig` from hashing and must fail
-the full-member identity assertion. All 319 controls must be killed; the aggregate command exits 0 on that success.
+the full-member identity assertion. All 343 controls must be killed; the aggregate command exits 0 on that success.
 
 An individual control is deliberately red:
 
@@ -82,3 +82,8 @@ Those require actual manager/runner/provider and native adapter evidence after
 normative amendments, diagnostics and carrier coordination. The schema tests
 also do not replace whole-skill/package audit, protected snapshot acquisition,
 revocation or lease liveness checks.
+
+Review regressions also cover lexical negative zero in both inventory records,
+final-LF rejection throughout inherited patterns, portable component suffixes
+and semver x/X wildcard selectors. The private schema catalog adds true-end
+guards to inherited whole-string patterns without editing released schemas.

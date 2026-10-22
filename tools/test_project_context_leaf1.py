@@ -33,7 +33,7 @@ class ProjectContextLeaf1Tests(unittest.TestCase):
     # Every published positive and typed negative is reached by make validate;
     # missing siblings, changed bytes and incomplete record coverage also fail.
     def test_publication_entry(self):
-        self.assertEqual(leaf.check_corpus(), (48, 317))
+        self.assertEqual(leaf.check_corpus(), (53, 341))
         import validate
         validate.validate_project_context_leaf1()
 
@@ -54,7 +54,20 @@ class ProjectContextLeaf1Tests(unittest.TestCase):
         with patch.object(leaf.Path, 'read_text', planted):
             with self.assertRaisesRegex(validate.ValidationFailure, 'lease-zero: expected None'):
                 validate.validate_project_context_leaf1()
-        self.assertEqual(leaf.check_corpus(), (48, 317))
+        self.assertEqual(leaf.check_corpus(), (53, 341))
+
+    # The publication oracle reaches the lexical negative-zero gate. Its
+    # ordinary-zero sibling stays valid when only the shared integer hook is
+    # narrowed, and the publication failure names the forbidden spelling.
+    def test_negative_zero_publication_control(self):
+        import validate
+        sibling = next(c for c in MANIFEST['cases'] if c['name'] == 'snapshot-manifest-zero-size')
+        assert_case(self, sibling)
+        with patch.object(leaf, 'integer', int):
+            assert_case(self, sibling)
+            with self.assertRaisesRegex(validate.ValidationFailure, 'snapshot-manifest-negative-zero: expected'):
+                validate.validate_project_context_leaf1()
+        validate.validate_project_context_leaf1()
 
     # Deterministic regeneration checks the actual committed bytes without
     # rewriting them. Every CI unit-test invocation executes this command path.
@@ -73,7 +86,7 @@ class ProjectContextLeaf1Tests(unittest.TestCase):
         with patch('sys.argv', ['check_project_context_leaf1_controls.py']):
             with contextlib.redirect_stdout(output):
                 self.assertEqual(controls.main(), 0)
-        self.assertIn('319 narrowing controls killed', output.getvalue())
+        self.assertIn('343 narrowing controls killed', output.getvalue())
 
     # Record identity includes all members, including sig; JSON spelling/order
     # and optional-member presence do not silently drop bytes from CCJ-1 input.
