@@ -16,6 +16,8 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
+from ccj1_grammar import integer as strict_integer, exact_patterns
+
 ROOT = Path(__file__).resolve().parents[1]
 NAMESPACE = 'skillfile-mcp-v1'
 ENVIRONMENTS = frozenset({'claude_code', 'codex_cli', 'opencode', 'pi', 'muse'})
@@ -61,13 +63,6 @@ def scalar_tree(value):
         invalid()
 
 
-def strict_integer(token):
-    # CCJ-1 forbids the spelling before Python collapses it to zero.
-    if token == '-0':
-        invalid()
-    return int(token)
-
-
 def strict_load(raw):
     def pairs(items):
         result = {}
@@ -83,7 +78,7 @@ def strict_load(raw):
                            parse_constant=lambda _: invalid())
         scalar_tree(value)
         return value
-    except (UnicodeError, json.JSONDecodeError, TypeError):
+    except (ValueError, UnicodeError, TypeError):
         invalid()
 
 
@@ -99,7 +94,7 @@ def digest(value):
 
 @lru_cache(maxsize=8)
 def registry(root=ROOT):
-    documents = [json.loads(p.read_text()) for p in (root/'schemas').rglob('*.schema.json')]
+    documents = [exact_patterns(json.loads(p.read_text())) for p in (root/'schemas').rglob('*.schema.json')]
     for document in documents:
         Draft202012Validator.check_schema(document)
     return Registry().with_resources((d['$id'], Resource.from_contents(d)) for d in documents)
@@ -107,7 +102,7 @@ def registry(root=ROOT):
 
 def schema_valid(name, value, root=ROOT):
     path = root/'schemas'/NAMESPACE/(name+'.schema.json')
-    return Draft202012Validator(json.loads(path.read_text()), registry=registry(root)).is_valid(value)
+    return Draft202012Validator(exact_patterns(json.loads(path.read_text())), registry=registry(root)).is_valid(value)
 
 
 def url_valid(url):
@@ -315,7 +310,7 @@ def evaluate(raw, facts=None, root=ROOT):
                 raise Refusal('context_source_signer_rejected')
             package = resolved.get('manifest')
             # Real consumers must establish committed tree/name/version/path facts.
-            schema = json.loads((root/'schemas/v1/agent-mcp-v1.schema.json').read_text())
+            schema = exact_patterns(json.loads((root/'schemas/v1/agent-mcp-v1.schema.json').read_text()))
             if (not Draft202012Validator(schema, registry=registry(root)).is_valid(package)
                     or package['name'] != name or not server_valid(package['server'], root)
                     or not package_byte_bounds(package['server'])):
