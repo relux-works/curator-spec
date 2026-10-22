@@ -115,3 +115,4 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0021](CIP-0021-profile-skill-directories.md) | Package directories in profile skill requirements | Accepted |
 | [CIP-0022](CIP-0022-mcp-server-declarations-in-project-skillfile.md) | MCP server declarations in the project Skillfile | Accepted |
 | [CIP-0023](CIP-0023-exact-plan-hosted-launches.md) | Exact-plan hosted launches with detached sessions and doorbells | Accepted |
+| [CIP-0024](CIP-0024-agent-stations.md) | Agent stations | Draft |
