@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/skillfile-mcp-v1/mcp-lock-v1.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "capability": {
+      "const": "skillfile-mcp-stage-a-v1"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "manifest_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    },
+    "skills_lock": {
+      "$ref": "../skillfile-sources-v1/skillfile-lock-v1.schema.json"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$"
+          },
+          "declaration": {
+            "type": "object",
+            "properties": {
+              "package": {
+                "$ref": "../v1/agent-context-v1.schema.json#/$defs/mcpRequirement"
+              },
+              "install": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "package",
+              "install"
+            ],
+            "additionalProperties": false
+          },
+          "declaration_sha256": {
+            "$ref": "../v1/common.schema.json#/$defs/sha256"
+          },
+          "resolved": {
+            "type": "object",
+            "properties": {
+              "source": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096
+              },
+              "directory": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "$ref": "../v1/common.schema.json#/$defs/portablePath"
+                  }
+                ]
+              },
+              "commit": {
+                "$ref": "../v1/common.schema.json#/$defs/commit"
+              },
+              "version": {
+                "$ref": "../v1/agent-context-v1.schema.json#/$defs/packageVersion"
+              },
+              "content_sha256": {
+                "$ref": "../v1/common.schema.json#/$defs/sha256"
+              },
+              "server": {
+                "allOf": [
+                  {
+                    "$ref": "../v1/agent-mcp-v1.schema.json#/properties/server"
+                  },
+                  {
+                    "properties": {
+                      "environments": {
+                        "type": "array",
+                        "minItems": 1,
+                        "uniqueItems": true,
+                        "items": {
+                          "enum": [
+                            "claude_code",
+                            "codex_cli",
+                            "opencode",
+                            "pi",
+                            "muse"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "server_sha256": {
+                "$ref": "../v1/common.schema.json#/$defs/sha256"
+              }
+            },
+            "required": [
+              "source",
+              "directory",
+              "commit",
+              "version",
+              "content_sha256",
+              "server",
+              "server_sha256"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "name",
+          "declaration",
+          "declaration_sha256",
+          "resolved"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "lock_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    }
+  },
+  "required": [
+    "schema_version",
+    "capability",
+    "project_id",
+    "manifest_sha256",
+    "skills_lock",
+    "entries",
+    "lock_sha256"
+  ],
+  "additionalProperties": false
+}

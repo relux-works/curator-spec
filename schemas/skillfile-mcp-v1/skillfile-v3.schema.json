@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/skillfile-mcp-v1/skillfile-v3.schema.json",
+  "type": "object",
+  "properties": {
+    "project": {
+      "$ref": "../skillfile-sources-v1/skillfile-v2.schema.json#/properties/project"
+    },
+    "agents": {
+      "$ref": "../skillfile-sources-v1/skillfile-v2.schema.json#/properties/agents"
+    },
+    "locale": {
+      "$ref": "../skillfile-sources-v1/skillfile-v2.schema.json#/properties/locale"
+    },
+    "sources": {
+      "$ref": "../skillfile-sources-v1/skillfile-v2.schema.json#/properties/sources"
+    },
+    "skills": {
+      "$ref": "../skillfile-sources-v1/skillfile-v2.schema.json#/properties/skills"
+    },
+    "schema_version": {
+      "const": 3
+    },
+    "mcp_servers": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$"
+      },
+      "additionalProperties": {
+        "$ref": "declaration-v1.schema.json"
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "skills"
+  ],
+  "additionalProperties": false
+}
