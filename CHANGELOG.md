@@ -21,6 +21,11 @@ Versioning for the complete specification set.
   is withdrawn. Private memory remains off by default and private per Werkstatt
   until explicit deletion after opt-in. Normative grammar publication and native
   qualification remain gates; this record publishes no schemas or vectors.
+- Publish [Skillfile MCP stage A](protocol/skillfile-mcp.md) under Decision 0029:
+  project schema 3, package-first trust, closed runtime pins, separate
+  lock/ownership-action/plan carriers and conformance vectors. Inline remains
+  unsupported; existing released schemas and pins stay unchanged. Native
+  writer and managed-launch qualification remain separate.
 
 - File Draft [CIP-0022](cips/CIP-0022-mcp-server-declarations-in-project-skillfile.md):
   project Skillfile schema 3 with MCP declaration packages first, then inline

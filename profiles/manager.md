@@ -1104,6 +1104,11 @@ atomic per entry. Unknown agent identifiers produce a warning and no output.
 
 ## 6. MCP requirements
 
+[Skillfile MCP stage A](../protocol/skillfile-mcp.md) is a separate explicit
+write-management capability. Its package trust, protected per-record ownership,
+whole-operation planning and no-follow transaction rules never authorize
+mutation during the read-only requirement checks below.
+
 MCP verification is read-only. A manager MUST NOT launch, install, enable, or
 modify an MCP server while checking a skill requirement.
 
@@ -2425,6 +2430,13 @@ permissions, memory-off and certified exclusion gates per advertised environment
 it MUST NOT infer these from revision-1 environment support or add project knobs
 to existing closed manager configuration. Normative member publication alone
 MUST NOT advertise runtime capability or authorize outer-carrier emission.
+
+[Project Skillfile MCP stage A](../protocol/skillfile-mcp.md) separately defines
+write-management capability advertisement, per-entry ownership, complete
+transactional publication and pair reporting. No registry row, profile
+resolution or schema-3 parse implicitly enables that writer. Claude, Codex and
+Muse are its first qualification wave; qualified native writes and CIP-0002
+managed project-contribution admission remain separate claims.
 
 This section is the revision-1 manager profile for the agent-environments
 capability. [`protocol/environments.md`](../protocol/environments.md) is the

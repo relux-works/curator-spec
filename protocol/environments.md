@@ -600,6 +600,11 @@ shape they described; no implementation ever emitted them.
 
 ### 2.2 MCP declaration packages
 
+[Project Skillfile MCP stage A](skillfile-mcp.md) reuses this closed Git package
+and server grammar under independent schema-3 dispatch and existing package
+allowlist/audit gates. Only that new lane adds its lexical URL/runtime-pin
+checks. No legacy package schema or profile closure grammar changes here.
+
 Network acquisition of Git-sourced MCP declaration packages is a Git acquisition
 lane under [repository-transport §1–§3](repository-transport.md#1-identity-and-declarations);
 a declared URL supplies identity and a connection hint, not a transport pin.
@@ -684,6 +689,12 @@ no canonical identity for the allowlist above and is never verified
 is total over canonical identities.
 
 ### 2.3 MCP declaration surfacing
+
+The [project Skillfile lane](skillfile-mcp.md#5-environment-selection-and-reporting)
+also requires pre-publication surfacing and total NAME/environment pair plans,
+including unsupported targets, ignored install-option names and refusals.
+Those plans supplement this profile-package surfacing; they do not change its
+closed columns or authorize an MCP process.
 
 A `stdio` declaration names a program the agent tool executes at launch
 (section 10.3), so the operator sees every declaration before it can run.

@@ -15,6 +15,14 @@ force. Definitions reused from `schemas/v1` are unchanged.
 
 ## 1. Acquisition and selection
 
+[Skillfile MCP stage A](skillfile-mcp.md) adds project schema 3 as schema 2
+plus optional `mcp_servers`. Source aliases, skill selection, immutable
+snapshots and raw `manifest_sha256` retain this revision’s meanings; normalized
+MCP digests never replace that raw manifest identity. Schema 1/2 reject the new
+member; unsupported or machine-global schema 3 fails with the upgrade error.
+No writer implicitly upgrades a file. New MCP carriers live in a separate
+namespace and do not extend the released source lock in place.
+
 Network source acquisition is a Git acquisition lane under
 [repository-transport §1–§3](repository-transport.md#1-identity-and-declarations);
 a declared URL supplies identity and a connection hint, not a transport pin.

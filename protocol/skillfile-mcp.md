@@ -142,6 +142,13 @@ unchanged source `skills_lock`, raw `manifest_sha256`, manager-registered
 exact resolved package/server identities. A source lock's manifest identity
 MUST equal the outer manifest identity. Bind the current project and raw
 manifest on every replay; a well-formed repository-supplied lock is not trust.
+`resolved.directory` is null for the root, otherwise exactly the declared
+portable directory. Resolved source identity is the canonical identity of the
+declared Git source; transport policy never enters it. Require normalized
+server/declaration bytes, recompute their digests and the enclosed source-lock
+digest, and reject duplicate or unsorted names. Compare each plan’s complete
+pair set against its exact lock and current capabilities; a standalone plan
+schema cannot establish completeness or protected authority.
 
 `mcp-approval-v1` is a **protected package ownership-action authorization**,
 not an inline contribution approval. It binds project/NAME/server/content
@@ -155,7 +162,9 @@ with no accepted stage-A instance or inline admission path.
 
 `mcp-plan-v1` binds project, manifest and lock identities, dry-run state,
 sorted unique pair rows and ignored-option names. A missing target path is
-JSON null (`unavailable` when rendered). Only `refused` rows have a refusal
+JSON null (`unavailable` when rendered). The plan lock digest MAY be null
+when input is unavailable and the plan refuses, or when there are no pairs;
+a successful nonempty plan MUST bind a real lock digest. Only `refused` rows have a refusal
 code; unsupported rows have null path/code. Plans containing a refusal/conflict
 have no successful mutation outcomes. Plans are observations, not approval.
 Hash the complete carrier using CCJ-1 after omitting only its own digest field:
@@ -191,8 +200,11 @@ represents absent `install` as `{}`. Its CCJ-1 SHA-256 is
 digests. `install` changes declaration/plan identity, not server identity.
 Resolved packages bind selected exact bytes and server digest in addition.
 All option keys, including a key spelled `sig`, remain declaration data.
-Neither normalized digest replaces schema-2 `manifest_sha256`: textual edits
-can change raw manifest identity while preserving normalized MCP identities.
+Neither normalized digest replaces schema-2 `manifest_sha256`, the CCJ-1
+SHA-256 of the entire parsed declaring Skillfile, with no MCP expansion or
+default insertion. Switching shorthand to its expanded object can change that
+manifest identity while preserving normalized MCP identities; whitespace and
+object-key ordering alone do not change the parsed-manifest hash.
 
 ## 8. Refusals and reserved later-stage conditions
 

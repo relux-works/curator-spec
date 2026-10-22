@@ -12160,6 +12160,16 @@ def validate_workspace_trust() -> None:
     print(f"workspace-trust schema cases: {cases}/{cases}; transition vectors: {vectors}/{vectors}; runtime cases: unrun")
 
 
+def validate_skillfile_mcp() -> None:
+    import skillfile_mcp
+
+    try:
+        total, negatives = skillfile_mcp.check_corpus(ROOT)
+    except (ValueError, OSError, SchemaError) as exc:
+        raise ValidationFailure(f"Skillfile MCP stage A: {exc}") from exc
+    print(f"Skillfile MCP stage-A cases: {total}/{total}; negatives: {negatives}/{negatives}; native writer qualification: unrun")
+
+
 def main(*, release_history_only: bool = False) -> int:
     checks = [
         validate_released_record_immutability,
@@ -12170,6 +12180,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_rc7_carriers,
         validate_local_setup_token,
         validate_workspace_trust,
+        validate_skillfile_mcp,
         validate_draft_source_schemas,
         validate_draft_sources_manifest,
         validate_source_marker_ownership_vectors,
