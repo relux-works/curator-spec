@@ -188,6 +188,8 @@ multiple skill identities exporting one command and unapproved MCP conflicts
 MUST refuse. A derived composition MUST NOT mutate or replace the profile lock.
 Whole-skill context does not authorize overriding the profile's root/system
 context (§3). Hybrid inputs MUST first become explicit admitted project members.
+Identical MCP stable ID and normalized server digest MUST deduplicate; a
+differing same-ID server MUST require explicit approval or refuse.
 
 Inline MCP NAME/SERVER MUST follow
 [CIP-0022's approved companion grammar](../cips/CIP-0022-mcp-server-declarations-in-project-skillfile.md#schema-and-scope)
@@ -276,7 +278,7 @@ unknown, never absent; uncertainty MUST retain the corresponding roots.
 ## 7. Fragment members, commands and launch routes
 
 The required member is exactly
-`project_context: {version: 1, mode: "off" \| "admitted", context_ref,
+`project_context: {version: 1, mode: "off" | "admitted", context_ref,
 context_sha256, project_root, lease_ref}`. Context names the protected
 composition; lease names its binding. `project_root` MUST equal its registration;
 context/lease MUST match the same checkout, environment, home and generation.
