@@ -14,6 +14,8 @@ from test_project_context_leaf1 import CATALOG, CORPUS, MANIFEST, assert_case
 # general gate. No fixture, expected verdict or runtime result is rewritten.
 REPLACEMENTS = {
     'identity-sig': ("def identity(value):\n    return", "def identity(value):\n    if isinstance(value, dict):\n        value = {k: v for k, v in value.items() if k != 'sig'}\n    return"),
+    'negative-zero': ('parse_int=integer', 'parse_int=int'),
+    'path-component': ("component.endswith(('.', ' '))", "component in ('.', '..')"),
     'file-order': ("if paths != sorted(paths, key=lambda p: p.encode('utf-8')):",
                    "if len(paths) != 2 and paths != sorted(paths, key=lambda p: p.encode('utf-8')):"),
     'file-duplicate': ('if len(set(normalized)) != len(normalized):',
@@ -36,9 +38,9 @@ REPLACEMENTS = {
                       "if payload['server_sha256'][8:] != ('sha256:' + identity(server))[8:]:"),
     'duplicate-member': ('if key in result:', "if key in result and key != 'checkout_id':"),
     'utf8': ("raw.decode('utf-8')", "raw.decode('utf-8', errors='replace')"),
-    'trailing-input': ("value = json.loads(raw.decode('utf-8'), object_pairs_hook=pairs,\n                           parse_float=non_integer, parse_constant=non_integer)",
-                       "value = json.JSONDecoder(object_pairs_hook=pairs, parse_float=non_integer, parse_constant=non_integer).raw_decode(raw.decode('utf-8'))[0]"),
-    'oversized-integer': ('parse_float=non_integer', "parse_int=lambda n: 0 if len(n) > 4300 else int(n), parse_float=non_integer"),
+    'trailing-input': ("value = json.loads(raw.decode('utf-8'), object_pairs_hook=pairs,\n                           parse_int=integer, parse_float=non_integer, parse_constant=non_integer)",
+                       "value = json.JSONDecoder(object_pairs_hook=pairs, parse_int=integer, parse_float=non_integer, parse_constant=non_integer).raw_decode(raw.decode('utf-8'))[0]"),
+    'oversized-integer': ('parse_int=integer', "parse_int=lambda n: 0 if len(n) > 4300 else integer(n)"),
     'fraction': ('parse_float=non_integer', "parse_float=lambda n: int(n[:-2]) if n.endswith('.0') else non_integer(n)"),
     'surrogate': ('ensure_ascii=False', 'ensure_ascii=True'),
 }

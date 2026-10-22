@@ -310,6 +310,12 @@ This project is part of the open-source ecosystem of
 
 ### Project-context leaf-1 grammar tools
 
+The oracle reuses `tools/ccj1_grammar.py` for lexical integer spelling and
+private-catalog full-string pattern guards. Run its independent positive,
+negative and narrowing controls with
+`python3 -B -m unittest discover -s tools -p test_ccj1_grammar.py`.
+No files are emitted by those tests.
+
 `python3 tools/project_context_leaf1.py` checks the
 [member schemas and byte corpus](conformance/project-context-leaf1-v1/README.md).
 `python3 -B -m unittest discover -s tools -p 'test_project_context_leaf1.py' -v`

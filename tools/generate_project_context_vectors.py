@@ -358,6 +358,52 @@ def main():
         record = 'lease' if name in ('json-fraction', 'json-unsafe-integer', 'json-oversized-integer') else 'registration'
         add(name, record, raw=data, gate=gate, mutant=mutant)
 
+
+    # Review regression witnesses preserve valid siblings, independent MCP
+    # digests and exact refusal gates. Each plant narrows only its own rule.
+    for record in ('snapshot-manifest', 'control-receipt'):
+        zero = set_at(base[record], ['files', 0, 'size'], 0)
+        sibling = positive(record + '-zero-size', record, zero)
+        add(record + '-negative-zero', record,
+            raw=leaf.ccj1_bytes(zero).replace(b'"size":0', b'"size":-0'),
+            gate='ccj1', positive=sibling, mutant={'source': 'negative-zero'})
+        for label, path in [('middle-dot', 'context./root.md'), ('middle-space', 'context /root.md')]:
+            bad(record + '-' + label, record, set_at(base[record], ['files', 0, 'path'], path),
+                {'source': 'path-component'}, 'path-component')
+        old_path = json.loads((ROOT/'schemas/v1/common.schema.json').read_text())['$defs']['portablePath']['pattern']
+        bad(record + '-path-final-lf', record,
+            set_at(base[record], ['files', 0, 'path'], 'context/root.md\n'),
+            schema_mutant('v1/common', ['$defs', 'portablePath', 'pattern'], old_path, terminal=False))
+    legacy = json.loads((ROOT/'schemas/v1/common.schema.json').read_text())
+    identifier = legacy['$defs']['identifier']['allOf'][0]['pattern']
+    for record, path in [('registration', ['profile', 'name']), ('composition', ['profile', 'name']),
+                         ('composition', ['command_owners', 0, 'name'])]:
+        bad(record + '-' + '-'.join(map(str, path)) + '-final-lf', record,
+            set_at(base[record], path, 'sample\n'),
+            schema_mutant('v1/common', ['$defs', 'identifier', 'allOf', 0, 'pattern'], identifier, terminal=False))
+    owning = json.loads((ROOT/'schemas/v1/agent-mcp-v1.schema.json').read_text())
+    for label, path, replacement, schema_name, schema_path, original, sibling in [
+        ('command', ['command'], 'sample-tool\n', 'v1/agent-mcp-v1', ['$defs', 'bareCommand', 'pattern'], owning['$defs']['bareCommand']['pattern'], 'item-mcp-stdio'),
+        ('env', ['env_names'], ['SAMPLE_A\n'], 'v1/common', ['$defs', 'identifier', 'allOf', 0, 'pattern'], identifier, 'item-mcp-stdio'),
+        ('url', ['url'], 'https://example.invalid/mcp\n', 'v1/agent-mcp-v1', ['$defs', 'httpsUrl', 'pattern'], owning['$defs']['httpsUrl']['pattern'], 'item-mcp-http'),
+    ]:
+        changed = set_at(json.loads(generated['bytes/' + sibling + '.json']), ['payload', 'server'] + path, replacement)
+        changed['payload']['server_sha256'] = 'sha256:' + hashlib.sha256(
+            json.dumps(changed['payload']['server'], ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+        bad('mcp-' + label + '-final-lf', 'item', changed,
+            schema_mutant(schema_name, schema_path, original, terminal=False), sibling=sibling)
+    commit_pattern = json.loads((ROOT/'schemas/workspace-trust-v1/workspace-trust-record-v1.schema.json').read_text())['$defs']['repository']['properties']['root_commit']['pattern']
+    for length in (40, 64):
+        sibling = positive('root-commit-' + str(length), 'root-binding',
+            set_at(base['root-binding'], ['repository', 'root_commit'], 'b' * length))
+        bad('root-commit-final-lf-' + str(length), 'root-binding',
+            set_at(base['root-binding'], ['repository', 'root_commit'], 'b' * (length - 1) + '\n'),
+            schema_mutant('workspace-trust-v1/workspace-trust-record-v1', ['$defs', 'repository', 'properties', 'root_commit', 'pattern'], commit_pattern, terminal=False), sibling=sibling)
+    for index, token in enumerate(('x', 'X', '1.x', '1.X', '1.2.x', '1.x.2', 'v1.x', '1.x-beta')):
+        bad('adapter-wildcard-' + str(index), 'adapter', {**base['adapter'], 'provider_version': token},
+            schema_mutant('adapter', ['properties', 'provider_version', 'pattern'], r'^[^\s*<>=^~|,]+$'))
+    positive('adapter-concrete-prerelease', 'adapter', {**base['adapter'], 'provider_version': '1.2.3-x+build.4'})
+
     manifest = dict(version=1, scope='closed member grammar only; no carrier or runtime qualification', cases=cases)
     generated['manifest.json'] = (json.dumps(manifest, ensure_ascii=False, indent=2) + '\n').encode('utf-8')
     existing = {str(path.relative_to(CORPUS)) for path in CORPUS.rglob('*.json')}
