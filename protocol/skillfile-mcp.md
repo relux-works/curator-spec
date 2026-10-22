@@ -19,8 +19,11 @@ Machine-global profile locks retain their existing role.
 
 Parse strict UTF-8 JSON: duplicate keys, non-scalar strings, non-JSON constants,
 non-integral numbers, negative zero (`-0`) and integers outside CCJ-1's safe
-range refuse. Reject negative zero before integer conversion, including inside
-ignored `install` data. Unknown members, mixed declaration arms and null refuse as `mcp_declaration_invalid`.
+range refuse. Reject negative zero and integer tokens with more than 16
+decimal digits (excluding a leading minus) before integer conversion, including
+inside ignored `install` data; reject remaining out-of-range values after
+conversion. Unknown members, mixed declaration arms and null refuse as
+`mcp_declaration_invalid`.
 An absent/empty map has no declarations; it does not enroll or remove foreign
 native entries. NAME is case-sensitive and matches
 `^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$`.
@@ -155,8 +158,9 @@ MUST equal the outer manifest identity. Bind the current project and parsed
 manifest identity on every replay; a well-formed repository-supplied lock is
 not trust.
 `resolved.directory` is null for the root, otherwise exactly the declared
-portable directory. Resolved source identity is the canonical identity of the
-declared Git source; transport policy never enters it. An explicit revision
+portable directory. Apply core §2 filename rules to every directory component,
+including intermediate components ending in a dot or space. Resolved source
+identity is the canonical identity of the declared Git source; transport policy never enters it. An explicit revision
 MUST equal `resolved.commit` (including OID width); a declared range MUST
 contain `resolved.version` under the existing source SemVer range semantics,
 including prerelease rules. Rehashing cannot legitimize a contradictory
@@ -174,10 +178,12 @@ protected record for those explicit actions; ordinary package install still
 uses existing package source/audit authority. Refuse effective policy/operation
 violations as `mcp_contribution_policy_refused`; never consume repository
 records as authority. Stage B's inline approval carrier namespace is reserved,
-with no accepted stage-A instance or inline admission path.
+with no accepted stage-A instance or inline admission path. Version, commit and
+digest strings consume the complete value; a terminal LF is never ignored.
 
 `mcp-plan-v1` binds project, manifest and lock identities, dry-run state,
-sorted unique pair rows and ignored-option names. A missing target path is
+sorted unique pair rows and ignored-option names. Every non-null row path
+satisfies core §2 for each component. A missing target path is
 JSON null (`unavailable` when rendered). The plan lock digest MAY be null
 when input is unavailable and the plan refuses, or when there are no pairs;
 a successful nonempty plan MUST bind a real lock digest. Only `refused` rows have a refusal

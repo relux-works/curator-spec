@@ -16,7 +16,7 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
-from ccj1_grammar import integer as strict_integer, exact_patterns
+from ccj1_grammar import integer as strict_integer, exact_patterns, portable_path
 
 ROOT = Path(__file__).resolve().parents[1]
 NAMESPACE = 'skillfile-mcp-v1'
@@ -188,9 +188,7 @@ def package_valid(package):
     import validate
     if validate.validate_repository_git(package['git']) is not None:
         return False
-    if package.get('directory') == '.':
-        return False
-    if any(unicodedata.category(c) == 'Cc' for c in package.get('directory', '')):
+    if 'directory' in package and not portable_path(package['directory']):
         return False
     if 'tag' in package and validate.validate_git_ref_name(package['tag']) is not None:
         return False
@@ -407,7 +405,8 @@ def carrier_valid(name, value, root=ROOT):
             return False
         successes = {'added','updated','unchanged','restored','removed','released'}
         for row in value['rows']:
-            if ((row['outcome'] == 'refused') != (row['code'] is not None)
+            if (row['path'] is not None and not portable_path(row['path'])
+                    or (row['outcome'] == 'refused') != (row['code'] is not None)
                     or row['outcome'] == 'skipped: unsupported' and row['path'] is not None
                     or row['outcome'] in successes and row['path'] is None
                     or refusals and row['outcome'] in successes):
@@ -431,7 +430,8 @@ def check_case(case, root=ROOT):
             raise ValueError('MCP verdict mismatch: '+case['id'])
         return False
     if case['kind'] == 'planning':
-        result = evaluate(case['raw'], case['facts'], root)
+        raw = case['raw'].encode('utf-8') if case.get('raw_bytes', False) else case['raw']
+        result = evaluate(raw, case['facts'], root)
         expected = case['expected']
         actual = {key:result.get(key) for key in expected}
         if actual != expected or result.get('mutated') is not False:
