@@ -17,6 +17,7 @@ from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
 from ccj1_grammar import integer as strict_integer, exact_patterns, portable_path
+from mcp_url_grammar import url_valid
 
 ROOT = Path(__file__).resolve().parents[1]
 NAMESPACE = 'skillfile-mcp-v1'
@@ -104,12 +105,6 @@ def schema_valid(name, value, root=ROOT):
     path = root/'schemas'/NAMESPACE/(name+'.schema.json')
     return Draft202012Validator(exact_patterns(json.loads(path.read_text())), registry=registry(root)).is_valid(value)
 
-
-def url_valid(url):
-    return (isinstance(url, str) and 9 <= len(url) <= 4096
-            and not any(c.isspace() or unicodedata.category(c) in {'Cc', 'Cf'}
-                        or c in '${}\\' for c in url)
-            and re.fullmatch(r'https://[A-Za-z0-9][A-Za-z0-9.-]*(?::[0-9]{1,5})?(?:/[^\s?#@]*)?', url) is not None)
 
 
 def runtime_pin(command, args):
