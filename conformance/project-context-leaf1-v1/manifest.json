@@ -5190,7 +5190,7 @@
               "type": "string",
               "minLength": 1,
               "maxLength": 256,
-              "pattern": "^[^\\s*<>=^~|,]+$(?![\\s\\S])"
+              "pattern": "^(?!(?:v?[0-9]+\\.)*[xX](?:[.+-]|$))[^\\s*<>=^~|,]+$(?![\\s\\S])"
             },
             {
               "type": "null"
@@ -8512,6 +8512,531 @@
       "mutant": {
         "source": "surrogate"
       }
+    },
+    {
+      "name": "snapshot-manifest-zero-size",
+      "record": "snapshot-manifest",
+      "file": "bytes/snapshot-manifest-zero-size.json",
+      "bytes_sha256": "546aac43921f2e12107e8ae65d24f42b345df17ba67235e606c13c33514e1b88",
+      "expected": null,
+      "claim": "snapshot-manifest: accepts this closed record",
+      "record_sha256": "546aac43921f2e12107e8ae65d24f42b345df17ba67235e606c13c33514e1b88"
+    },
+    {
+      "name": "snapshot-manifest-negative-zero",
+      "record": "snapshot-manifest",
+      "file": "bytes/snapshot-manifest-negative-zero.json",
+      "bytes_sha256": "fea209839e1e65f5b1e6a177983a7efe76c26e9a9f34e08ce549fe89436ed937",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "ccj1"
+      },
+      "claim": "snapshot-manifest: refuses snapshot-manifest-negative-zero",
+      "positive": "snapshot-manifest-zero-size",
+      "mutant": {
+        "source": "negative-zero"
+      }
+    },
+    {
+      "name": "snapshot-manifest-middle-dot",
+      "record": "snapshot-manifest",
+      "file": "bytes/snapshot-manifest-middle-dot.json",
+      "bytes_sha256": "40729f153b920bffbac65201b0962186931a9cd8311400fcb3a2741d4f0c85b0",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "path-component"
+      },
+      "claim": "snapshot-manifest: refuses snapshot-manifest-middle-dot",
+      "positive": "snapshot-manifest-valid",
+      "mutant": {
+        "source": "path-component"
+      }
+    },
+    {
+      "name": "snapshot-manifest-middle-space",
+      "record": "snapshot-manifest",
+      "file": "bytes/snapshot-manifest-middle-space.json",
+      "bytes_sha256": "e57b99c5b7781cbb95313ece1b599738b2d0c83f2082509b05b72890c7010a69",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "path-component"
+      },
+      "claim": "snapshot-manifest: refuses snapshot-manifest-middle-space",
+      "positive": "snapshot-manifest-valid",
+      "mutant": {
+        "source": "path-component"
+      }
+    },
+    {
+      "name": "snapshot-manifest-path-final-lf",
+      "record": "snapshot-manifest",
+      "file": "bytes/snapshot-manifest-path-final-lf.json",
+      "bytes_sha256": "49c1c2a3077bbd70657092a1d6b998a33cb3b7259926db8656ad1e92fbcb11fa",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "snapshot-manifest: refuses snapshot-manifest-path-final-lf",
+      "positive": "snapshot-manifest-valid",
+      "mutant": {
+        "schema": "v1/common",
+        "path": [
+          "$defs",
+          "portablePath",
+          "pattern"
+        ],
+        "value": "^[^/\\\\:\\u0000-\\u001f\\u007f-\\u009f](?:[^\\\\:\\u0000-\\u001f\\u007f-\\u009f]*[^/ .\\\\:\\u0000-\\u001f\\u007f-\\u009f])?$"
+      }
+    },
+    {
+      "name": "control-receipt-zero-size",
+      "record": "control-receipt",
+      "file": "bytes/control-receipt-zero-size.json",
+      "bytes_sha256": "4dc48cac40c176e0baa024d7ba1d8d50bfc42fcce68b27a46ec0b6b529ea459c",
+      "expected": null,
+      "claim": "control-receipt: accepts this closed record",
+      "record_sha256": "4dc48cac40c176e0baa024d7ba1d8d50bfc42fcce68b27a46ec0b6b529ea459c"
+    },
+    {
+      "name": "control-receipt-negative-zero",
+      "record": "control-receipt",
+      "file": "bytes/control-receipt-negative-zero.json",
+      "bytes_sha256": "8d1b0af2f4fbe09682a97045242ba8c8e4b26ac8317a931a998d6fc179c924d7",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "ccj1"
+      },
+      "claim": "control-receipt: refuses control-receipt-negative-zero",
+      "positive": "control-receipt-zero-size",
+      "mutant": {
+        "source": "negative-zero"
+      }
+    },
+    {
+      "name": "control-receipt-middle-dot",
+      "record": "control-receipt",
+      "file": "bytes/control-receipt-middle-dot.json",
+      "bytes_sha256": "6d0c5537f2505df842af26910e18b2ec8a32f061ca8001972bcef351194192d8",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "path-component"
+      },
+      "claim": "control-receipt: refuses control-receipt-middle-dot",
+      "positive": "control-receipt-valid",
+      "mutant": {
+        "source": "path-component"
+      }
+    },
+    {
+      "name": "control-receipt-middle-space",
+      "record": "control-receipt",
+      "file": "bytes/control-receipt-middle-space.json",
+      "bytes_sha256": "15494f2a7ab4b585845bf8a1854d7cc32993322aacbc7372cd8e2f08f7d06a5f",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "path-component"
+      },
+      "claim": "control-receipt: refuses control-receipt-middle-space",
+      "positive": "control-receipt-valid",
+      "mutant": {
+        "source": "path-component"
+      }
+    },
+    {
+      "name": "control-receipt-path-final-lf",
+      "record": "control-receipt",
+      "file": "bytes/control-receipt-path-final-lf.json",
+      "bytes_sha256": "88ddb82a21e804d10b0f8fa291a9a2ee8709a39777b6c8beab72892bbb8a1c02",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "control-receipt: refuses control-receipt-path-final-lf",
+      "positive": "control-receipt-valid",
+      "mutant": {
+        "schema": "v1/common",
+        "path": [
+          "$defs",
+          "portablePath",
+          "pattern"
+        ],
+        "value": "^[^/\\\\:\\u0000-\\u001f\\u007f-\\u009f](?:[^\\\\:\\u0000-\\u001f\\u007f-\\u009f]*[^/ .\\\\:\\u0000-\\u001f\\u007f-\\u009f])?$"
+      }
+    },
+    {
+      "name": "registration-profile-name-final-lf",
+      "record": "registration",
+      "file": "bytes/registration-profile-name-final-lf.json",
+      "bytes_sha256": "2b4a94e5949359fe65f8512999fdd45f376400c135b04fd2e315fd5e1834f5e7",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "registration: refuses registration-profile-name-final-lf",
+      "positive": "registration-valid",
+      "mutant": {
+        "schema": "v1/common",
+        "path": [
+          "$defs",
+          "identifier",
+          "allOf",
+          0,
+          "pattern"
+        ],
+        "value": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9_-])?$"
+      }
+    },
+    {
+      "name": "composition-profile-name-final-lf",
+      "record": "composition",
+      "file": "bytes/composition-profile-name-final-lf.json",
+      "bytes_sha256": "685d61f06345ec617cad26a78374ac8898f0043f3c5376a9d6745478260c62a3",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "composition: refuses composition-profile-name-final-lf",
+      "positive": "composition-valid",
+      "mutant": {
+        "schema": "v1/common",
+        "path": [
+          "$defs",
+          "identifier",
+          "allOf",
+          0,
+          "pattern"
+        ],
+        "value": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9_-])?$"
+      }
+    },
+    {
+      "name": "composition-command_owners-0-name-final-lf",
+      "record": "composition",
+      "file": "bytes/composition-command_owners-0-name-final-lf.json",
+      "bytes_sha256": "735c0bc21d0d6efded72239044ac1a2b37201fbd81baccfb5b7f0c67dd001966",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "composition: refuses composition-command_owners-0-name-final-lf",
+      "positive": "composition-valid",
+      "mutant": {
+        "schema": "v1/common",
+        "path": [
+          "$defs",
+          "identifier",
+          "allOf",
+          0,
+          "pattern"
+        ],
+        "value": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9_-])?$"
+      }
+    },
+    {
+      "name": "mcp-command-final-lf",
+      "record": "item",
+      "file": "bytes/mcp-command-final-lf.json",
+      "bytes_sha256": "a3d9ba265027948a11c0e2bf7ec475ff0281087e9d35ec63c2c5f41debbe11f0",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "item: refuses mcp-command-final-lf",
+      "positive": "item-mcp-stdio",
+      "mutant": {
+        "schema": "v1/agent-mcp-v1",
+        "path": [
+          "$defs",
+          "bareCommand",
+          "pattern"
+        ],
+        "value": "^(?!\\.{1,2}$)[^/\\\\\\s\\u0000-\\u001f\\u007f]+$"
+      }
+    },
+    {
+      "name": "mcp-env-final-lf",
+      "record": "item",
+      "file": "bytes/mcp-env-final-lf.json",
+      "bytes_sha256": "3dfc04ad33f144f0af290877a6b11e69d841d7bce9845c95c4455375f6f89038",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "item: refuses mcp-env-final-lf",
+      "positive": "item-mcp-stdio",
+      "mutant": {
+        "schema": "v1/common",
+        "path": [
+          "$defs",
+          "identifier",
+          "allOf",
+          0,
+          "pattern"
+        ],
+        "value": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9_-])?$"
+      }
+    },
+    {
+      "name": "mcp-url-final-lf",
+      "record": "item",
+      "file": "bytes/mcp-url-final-lf.json",
+      "bytes_sha256": "aacbbe0cd53abdfaff67e3e51e708936fea4445002148d05ff491ef07e795d87",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "item: refuses mcp-url-final-lf",
+      "positive": "item-mcp-http",
+      "mutant": {
+        "schema": "v1/agent-mcp-v1",
+        "path": [
+          "$defs",
+          "httpsUrl",
+          "pattern"
+        ],
+        "value": "^https://[A-Za-z0-9][A-Za-z0-9.-]*(?::[0-9]{1,5})?(?:/[^\\s?#@]*)?$"
+      }
+    },
+    {
+      "name": "root-commit-40",
+      "record": "root-binding",
+      "file": "bytes/root-commit-40.json",
+      "bytes_sha256": "1d6ee265bdfa5deac0889c919536ba1f4daf5b2a9d72e54504e37ab16901f183",
+      "expected": null,
+      "claim": "root-binding: accepts this closed record",
+      "record_sha256": "1d6ee265bdfa5deac0889c919536ba1f4daf5b2a9d72e54504e37ab16901f183"
+    },
+    {
+      "name": "root-commit-final-lf-40",
+      "record": "root-binding",
+      "file": "bytes/root-commit-final-lf-40.json",
+      "bytes_sha256": "9c34802f19b5b156fbe3d1346af6267236565f42b152f6292c99527506fd920f",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "root-binding: refuses root-commit-final-lf-40",
+      "positive": "root-commit-40",
+      "mutant": {
+        "schema": "workspace-trust-v1/workspace-trust-record-v1",
+        "path": [
+          "$defs",
+          "repository",
+          "properties",
+          "root_commit",
+          "pattern"
+        ],
+        "value": "^[0-9a-f]+$"
+      }
+    },
+    {
+      "name": "root-commit-64",
+      "record": "root-binding",
+      "file": "bytes/root-commit-64.json",
+      "bytes_sha256": "039c19248ba9cca96c7a12fd14b659aef6439e129e378d494ad8375a59a75c86",
+      "expected": null,
+      "claim": "root-binding: accepts this closed record",
+      "record_sha256": "039c19248ba9cca96c7a12fd14b659aef6439e129e378d494ad8375a59a75c86"
+    },
+    {
+      "name": "root-commit-final-lf-64",
+      "record": "root-binding",
+      "file": "bytes/root-commit-final-lf-64.json",
+      "bytes_sha256": "7458dc7dd5151eaad8cdff14fb45830ebd3ef0952afe5ad0b8f61333b40155cf",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "root-binding: refuses root-commit-final-lf-64",
+      "positive": "root-commit-64",
+      "mutant": {
+        "schema": "workspace-trust-v1/workspace-trust-record-v1",
+        "path": [
+          "$defs",
+          "repository",
+          "properties",
+          "root_commit",
+          "pattern"
+        ],
+        "value": "^[0-9a-f]+$"
+      }
+    },
+    {
+      "name": "adapter-wildcard-0",
+      "record": "adapter",
+      "file": "bytes/adapter-wildcard-0.json",
+      "bytes_sha256": "1a079b2e1be5501dba229b0f442fd262f8860fd586d8eea7d49c49c681615570",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "adapter: refuses adapter-wildcard-0",
+      "positive": "adapter-valid",
+      "mutant": {
+        "schema": "adapter",
+        "path": [
+          "properties",
+          "provider_version",
+          "pattern"
+        ],
+        "value": "^[^\\s*<>=^~|,]+$(?![\\s\\S])"
+      }
+    },
+    {
+      "name": "adapter-wildcard-1",
+      "record": "adapter",
+      "file": "bytes/adapter-wildcard-1.json",
+      "bytes_sha256": "c08c2be127c04888cb502ced8588ec15e2187f60b8d2f22bbece3b5f41297c4f",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "adapter: refuses adapter-wildcard-1",
+      "positive": "adapter-valid",
+      "mutant": {
+        "schema": "adapter",
+        "path": [
+          "properties",
+          "provider_version",
+          "pattern"
+        ],
+        "value": "^[^\\s*<>=^~|,]+$(?![\\s\\S])"
+      }
+    },
+    {
+      "name": "adapter-wildcard-2",
+      "record": "adapter",
+      "file": "bytes/adapter-wildcard-2.json",
+      "bytes_sha256": "e2f95fd27122705db64aad2c9fd32adf58709bae0ecd5af762165dbe40596736",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "adapter: refuses adapter-wildcard-2",
+      "positive": "adapter-valid",
+      "mutant": {
+        "schema": "adapter",
+        "path": [
+          "properties",
+          "provider_version",
+          "pattern"
+        ],
+        "value": "^[^\\s*<>=^~|,]+$(?![\\s\\S])"
+      }
+    },
+    {
+      "name": "adapter-wildcard-3",
+      "record": "adapter",
+      "file": "bytes/adapter-wildcard-3.json",
+      "bytes_sha256": "ae5dd7cb545bcb4f81bc0cfc0d7ca5b8365c215d9111eae21c612264db1f786c",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "adapter: refuses adapter-wildcard-3",
+      "positive": "adapter-valid",
+      "mutant": {
+        "schema": "adapter",
+        "path": [
+          "properties",
+          "provider_version",
+          "pattern"
+        ],
+        "value": "^[^\\s*<>=^~|,]+$(?![\\s\\S])"
+      }
+    },
+    {
+      "name": "adapter-wildcard-4",
+      "record": "adapter",
+      "file": "bytes/adapter-wildcard-4.json",
+      "bytes_sha256": "8e920e4022c9a3f60bcb8c22e86c9f0fa6af9f102b9b5376ccec97b0299ce541",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "adapter: refuses adapter-wildcard-4",
+      "positive": "adapter-valid",
+      "mutant": {
+        "schema": "adapter",
+        "path": [
+          "properties",
+          "provider_version",
+          "pattern"
+        ],
+        "value": "^[^\\s*<>=^~|,]+$(?![\\s\\S])"
+      }
+    },
+    {
+      "name": "adapter-wildcard-5",
+      "record": "adapter",
+      "file": "bytes/adapter-wildcard-5.json",
+      "bytes_sha256": "0c2e7ba76ebee164126029bc2e08f6bcf5aa86f2f4d09d52172330de21c9d4bb",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "adapter: refuses adapter-wildcard-5",
+      "positive": "adapter-valid",
+      "mutant": {
+        "schema": "adapter",
+        "path": [
+          "properties",
+          "provider_version",
+          "pattern"
+        ],
+        "value": "^[^\\s*<>=^~|,]+$(?![\\s\\S])"
+      }
+    },
+    {
+      "name": "adapter-wildcard-6",
+      "record": "adapter",
+      "file": "bytes/adapter-wildcard-6.json",
+      "bytes_sha256": "f3b717b40b4e313fb85fdf2e5a1ad6695be44abe2b98085891a41d22f58e0255",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "adapter: refuses adapter-wildcard-6",
+      "positive": "adapter-valid",
+      "mutant": {
+        "schema": "adapter",
+        "path": [
+          "properties",
+          "provider_version",
+          "pattern"
+        ],
+        "value": "^[^\\s*<>=^~|,]+$(?![\\s\\S])"
+      }
+    },
+    {
+      "name": "adapter-wildcard-7",
+      "record": "adapter",
+      "file": "bytes/adapter-wildcard-7.json",
+      "bytes_sha256": "04f3356b418418997c49085071e823ab6ebb25a269a36c4491954327088bba0f",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "adapter: refuses adapter-wildcard-7",
+      "positive": "adapter-valid",
+      "mutant": {
+        "schema": "adapter",
+        "path": [
+          "properties",
+          "provider_version",
+          "pattern"
+        ],
+        "value": "^[^\\s*<>=^~|,]+$(?![\\s\\S])"
+      }
+    },
+    {
+      "name": "adapter-concrete-prerelease",
+      "record": "adapter",
+      "file": "bytes/adapter-concrete-prerelease.json",
+      "bytes_sha256": "d1b23c6b7d897028af8abbc4336c40283d343925f261bc3cc9a5a62240ec5499",
+      "expected": null,
+      "claim": "adapter: accepts this closed record",
+      "record_sha256": "d1b23c6b7d897028af8abbc4336c40283d343925f261bc3cc9a5a62240ec5499"
     }
   ]
 }
