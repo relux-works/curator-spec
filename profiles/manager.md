@@ -664,13 +664,17 @@ depends on the generated paths being ignored, not on comment spelling.
 ## 3. Runtime and project environment
 
 For enrolled [project-context launches](../protocol/project-context.md#7-fragment-members-commands-and-launch-routes),
-the manager MUST use protected Werkstatt tool/dispatcher and captured command
-owners. It MUST NOT execute repository `.agents/bin`, source project environment
-files or reuse machine-current forwarders as authority. The optional checked
-D-PATH transform MUST operate on admitted destination PATH, not caller literals,
-and MUST preserve the protected tool/base/dispatcher order. Unsupported enforced
-command policy, stale owners or ambiguous shadowing MUST refuse. The legacy
-portable command locations below do not authorize them in strict managed launches.
+the manager MUST use the protected Werkstatt tool allocation. Only launches
+carrying the optional `command_environment` member MUST additionally use the
+protected dispatcher and captured command owners, apply checked D-PATH to admitted
+destination PATH rather than caller literals, preserve the protected
+tool/base/dispatcher order, and refuse unsupported enforced command policy,
+stale owners or ambiguous shadowing. A context-only launch requires no command
+dispatcher or command-owner resolution; its protected tool prefix still applies
+through the shared launch construction site. For every enrolled launch, the
+manager MUST NOT execute repository `.agents/bin`, source project environment
+files or reuse machine-current forwarders as authority. The legacy portable
+command locations below do not authorize them in strict managed launches.
 
 For the optional, accepted project-scope Skillfile schema-2 lane,
 [source revision 1](../protocol/skillfile-sources.md) supplies the physical
