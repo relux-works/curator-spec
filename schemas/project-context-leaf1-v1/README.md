@@ -8,19 +8,19 @@ project generation. First-wave environments are `claude_code`, `codex_cli` and
 
 | Schema | Closed record or projection |
 |---|---|
-| `registration.schema.json` | Checkout, retained root binding digest, selected profile, protected home and worktree refs |
+| `registration.schema.json` | Checkout, retained root binding digest, selected profile, source mode, protected home and worktree refs |
 | `item.schema.json` | Context, whole-skill or normalized inline-MCP payload, environment and requiredness |
 | `approval.schema.json` | Checkout/item/environment, principal, ceiling and optional grant ref |
 | `generation.schema.json` | Registration binding and ordered, unique admitted item IDs; at most 256 entries |
 | `composition.schema.json` | Profile, generation, policy, adapter, materialization, memory-off, command owner and omissions |
 | `lease.schema.json` | Immutable composition/session/owner binding and positive safe generation number |
-| `project-context.schema.json` | Required project-context fragment member, including off mode |
+| `project-context.schema.json` | Required source mode and independent off/admitted admission, plus context/lease refs |
 | `command-environment.schema.json` | Optional checked destination-PATH operation and protected refs |
 | `fragment-members.schema.json` | Required project context and optional command environment together |
 | `root-binding.schema.json` | Existing closed workspace-trust repository binding plus decimal device/inode identity |
 | `snapshot-manifest.schema.json` | Complete immutable context/skill inventory descriptor |
 | `control-receipt.schema.json` | Generated agent-visible control inventory, policy, adapter and worktree binding |
-| `adapter.schema.json` | Exact provider release string, environment, platform and sorted capability set |
+| `adapter.schema.json` | Exact provider release string, environment, platform, sorted modes and capability sets |
 
 `common.schema.json` supplies ID, field-specific REF, HEX, profile, inventory
 and normalized SERVER definitions. ID is exactly `[a-z][a-z0-9_-]{0,63}`;
@@ -63,12 +63,24 @@ input), name/selector sets are sorted unique, scalar strings and argument
 order are unchanged, and absent `environments` remains absent. Shorthand or
 writer-local install options are not members of this normalized payload.
 
-Generation item order is retained. A project never replaces the profile root
-context: the composed managed-home instruction file MUST retain the profile
-root first, followed by approved project-general context, then applicable
-environment-specific project context. Owning module selectors, pinned closure
-rendering and LF joining still apply. These member schemas do not qualify an
-adapter's actual rendering or its separate admitted system channel.
+Source mode is the required closed `strict | native-project` member of
+registration, composition and project-context; their values MUST agree.
+Project-context independently carries required `admission: off | admitted`.
+New registrations default strict/off; only a protected explicit operator update
+enables native-project per Werkstatt. Adapter `modes` is a sorted unique set of
+those two values, separate from `surfaces`. An empty set advertises no mode.
+Required members cannot be absent or null; unknown values fail closed.
+
+Generation item order is retained. Strict keeps the profile root first, then
+approved project-general and environment-specific context under the owning
+module/closure/LF rules. Native-project permits only approved whole skills and
+MCP in Curator's selected generation; context items refuse. Its managed-home
+instruction document is the profile root only. Native repository sources may
+load under harness rules and status/launch MUST report **project sources not
+isolated**. Both modes require certified manager permissions and memory-off;
+strict additionally requires certified exclusion, without native fallback.
+These schemas and static mode projections do not qualify actual native
+rendering, discovery, permissions, memory or the separate system channel.
 
 ## Carrier and authority boundary
 

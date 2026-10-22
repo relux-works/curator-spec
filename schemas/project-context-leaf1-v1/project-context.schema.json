@@ -10,17 +10,15 @@
     "context_ref",
     "context_sha256",
     "project_root",
-    "lease_ref"
+    "lease_ref",
+    "admission"
   ],
   "properties": {
     "version": {
       "const": 1
     },
     "mode": {
-      "enum": [
-        "off",
-        "admitted"
-      ]
+      "$ref": "common.schema.json#/$defs/source_mode"
     },
     "context_ref": {
       "$ref": "common.schema.json#/$defs/composition_ref"
@@ -33,6 +31,12 @@
     },
     "lease_ref": {
       "$ref": "common.schema.json#/$defs/lease_ref"
+    },
+    "admission": {
+      "enum": [
+        "off",
+        "admitted"
+      ]
     }
   }
 }

@@ -13,10 +13,15 @@ Project context is an optional, separately versioned capability per environment.
 Adopting it MUST NOT reinterpret the existing environments capability or turn
 an unenrolled launch into a strict launch. Existing unenrolled launches remain
 explicitly reported legacy compatibility, with their native discovery limits.
-New registrations MUST default to `off`. Strict `off` MUST suppress unadmitted
-project-native discovery while admitting no project items; `admitted` MUST add
-only the selected approved generation. Fleet policy MAY refuse legacy launches.
-An unsupported strict request MUST refuse, never downgrade to legacy.
+New registrations MUST default to `mode: "strict"` and `admission: "off"`.
+Source mode is exactly `strict` or `native-project`; admission is independently
+`off` or `admitted`. Off admission MUST deliver no project items; admitted MUST
+deliver only the selected approved generation within its mode's limits. Strict
+MUST suppress unadmitted project-native discovery even with off admission.
+Native-project MUST require explicit protected operator enablement per
+Werkstatt and retains native discovery even with off admission (§5). Fleet
+policy MAY refuse legacy or native-project launches. An unsupported strict
+request MUST refuse, never downgrade to legacy or native-project.
 
 Repository files MUST be treated as candidate data, never manager authority.
 Discovery and preview MUST NOT execute parser hooks, source shell files, fetch
@@ -63,11 +68,11 @@ filesystem identity, not lexical prefixes. ENV is exactly `claude_code`,
 
 | Record | Closed members |
 |---|---|
-| Registration | `kind: "project-registration/1"`, `checkout_id: ID`, `project_root: absolute path`, `root_identity: HEX`, `profile: {name, lock_sha256}`, `environment: ENV`, `home_ref`, `worktree_ref`. |
+| Registration | `kind: "project-registration/1"`, `checkout_id: ID`, `project_root: absolute path`, `root_identity: HEX`, `profile: {name, lock_sha256}`, `environment: ENV`, `mode: "strict" \| "native-project"`, `home_ref`, `worktree_ref`. |
 | Item | `kind: "project-item/1"`, `id: ID`, `type: "context" \| "skill" \| "mcp"`, `environment: ENV`, `required: boolean`, `payload`. Context payload is exactly `{snapshot_ref, snapshot_sha256, lock_ref, lock_sha256}`; skill payload exactly `{snapshot_ref, snapshot_sha256}`; MCP payload exactly `{name, server, server_sha256}` (§4). |
 | Approval | `kind: "project-approval/1"`, `checkout_id`, `item_id`, `item_sha256`, `environment`, `approver_ref`, `ceiling_sha256`, optional `grant_ref`. Approver references have tag `principal`. |
 | Generation | `kind: "project-generation/1"`, `registration_ref`, `registration_sha256`, `items: [{item_id, item_sha256, approval_ref}]`. Item IDs are unique and the list is the approved rendering order. |
-| Composition | `kind: "project-composition/1"`, `registration_ref`, `registration_sha256`, `generation_sha256`, `profile: {name, lock_sha256}`, `environment`, `adapter_ref`, `adapter_sha256`, `policy_ref`, `policy_sha256`, `memory: "off"`, `home_ref`, `worktree_ref`, `materialization_sha256`, `command_owners: [{name, item_id, artifact_sha256}]`, `omitted: [{item_id, reason}]`. |
+| Composition | `kind: "project-composition/1"`, `registration_ref`, `registration_sha256`, `generation_sha256`, `profile: {name, lock_sha256}`, `environment`, `mode: "strict" \| "native-project"`, `adapter_ref`, `adapter_sha256`, `policy_ref`, `policy_sha256`, `memory: "off"`, `home_ref`, `worktree_ref`, `materialization_sha256`, `command_owners: [{name, item_id, artifact_sha256}]`, `omitted: [{item_id, reason}]`. |
 | Lease binding | `kind: "project-lease/1"`, `lease_id`, `context_ref`, `context_sha256`, `checkout_id`, `environment`, `home_ref`, `owner_ref`, `session_ref`, `generation`. Generation is a positive integer at most 2^53-1; owner has tag `principal`, context has tag `composition`. State/liveness are stored separately from these immutable bytes. |
 
 All digest fields except `server_sha256` are HEX; `server_sha256` has the
@@ -144,7 +149,7 @@ At least one applicable root module MUST exist in the pinned closure for the
 item's environment. An explicit empty-module umbrella MAY select it through
 requirements; discovery or a root without `context` MUST NOT supply that surface.
 
-Each context item MUST render its pinned closure in `monolithic` form with
+In strict mode, each context item MUST render its pinned closure in `monolithic` form with
 environments §5's exact header/chapter/module/LF rules and selected environment.
 The approved generation list MUST order project-general before environment-specific
 context and deeper approved scope after shallower scope within those groups.
@@ -158,9 +163,13 @@ append in the same item order through environments §§5.5/7.3's separate channe
 and owning part-joining rule, never promoted into root context. A project MUST
 NOT replace profile root or system context, now or in any later slice; the
 separate replacement item is withdrawn, not deferred. An adapter unable to
-reproduce these additive outputs MUST refuse, never choose a different entry.
+reproduce these additive strict-mode outputs MUST refuse, never choose a
+different entry. Native-project MUST NOT admit a context item in its selected
+generation or append project root/system documents. Its managed instruction
+document MUST be exactly the selected profile root document; the profile system
+channel is retained. Whole-skill content retains its owning skill channel.
 
-A native control-file import the qualified adapter would follow MUST refuse,
+In strict mode, a native control-file import the qualified adapter would follow MUST refuse,
 even when its target is inventoried; leaf 1 admits no native import dialect.
 Ordinary prose references remain opaque data. Changing the manifest selection,
 order, class, selectors, weights, closure or supporting bytes MUST change the
@@ -174,8 +183,8 @@ The composition's `materialization_sha256` covers exactly
 complete sorted file-entry grammar. It inventories generated agent-visible
 control outputs relative to the Werkstatt home only. Native mutable state,
 credentials and the source worktree MUST NOT enter that receipt. Before start,
-the consumer MUST verify outputs and the qualified exclusion contract against
-the receipt; it MUST NOT bless changed files by replacing the baseline.
+the consumer MUST verify outputs and the mode-specific qualified adapter
+contract against the receipt; it MUST NOT bless changed files by replacing the baseline.
 The receipt contains metadata, never credential bytes.
 
 ## 4. Individually approved skills and inline MCP
@@ -220,9 +229,10 @@ implicitly. Immutable composition records MUST reside in protected manager
 state; a fragment MUST bind their digest, never a mutable current alias.
 Generated control surfaces MUST be recorded separately from native mutable state.
 
-The manager MUST project only approved control items into this home. Native trust MUST apply
+The manager MUST project only approved control items into this home. In strict
+mode, native trust MUST apply
 only to the prepared worktree and MUST NOT approve another item or grant a
-permission. A certified adapter MUST suppress unadmitted ancestor/current/nested
+permission. A strict-certified adapter MUST suppress unadmitted ancestor/current/nested
 instructions, native/project config and permissions, compatibility/native skill
 roots, MCP, hooks/plugins and automatic memory, including startup, reload, late
 discovery, resume and child entry. It MUST re-admit only selected protected
@@ -232,15 +242,56 @@ trust alone MUST NOT count as qualification. Trusted mode is the first delivery
 target; this loader boundary does not contain hostile same-user executable code.
 
 A protected adapter record is exactly
-`{kind: "project-adapter/1", environment, provider_version, platform, surfaces}`.
+`{kind: "project-adapter/1", environment, provider_version, platform, modes, surfaces}`.
 Platform is `macos` or `linux`; provider_version is an exact bounded release
 string, never a range. Surfaces form a unique sorted set from `context`, `skills`,
 `mcp`, `commands`, `permissions`, `memory-off`, `native-source-exclusion`.
-Every first-slice launch MUST require `permissions`, `memory-off`,
-`native-source-exclusion` and every required selected surface. Advertisement MUST
+The unique UTF-8-sorted `modes` set contains only `native-project` and `strict`.
+Every launch MUST require its advertised mode, certified `permissions`,
+`memory-off` and every required selected surface. Strict MUST additionally
+require certified `native-source-exclusion`; absence MUST refuse without a
+native-project fallback. Advertisement MUST
 bind real qualification for that exact environment/release/platform; one runtime
 MUST NOT borrow another's evidence. Unsupported required surfaces or consumers
 MUST refuse without optional omission, native fallback or a downgraded claim.
+
+### 5.1 Explicit native-project mode
+
+The protected registration selects the mode per checkout × profile × environment;
+the composition and fragment MUST carry the same value. Unknown modes or
+inconsistent bindings MUST refuse `project_context_invalid` before publication.
+Changing mode MUST require an explicit operator update and new registration/
+composition identities, preserving busy-home and lease rules. Repository files,
+a failed strict qualification or an adapter default MUST NOT enable this mode.
+
+In native-project the harness reads repository-native instructions, config,
+skills, MCP, hooks and plugins under its own rules. Curator MUST deliver from
+the project only approved whole skills and approved MCP; their pins, audit,
+item approval and protected ownership remain required. Curator MUST NOT
+concatenate project root/system context into the managed-home instruction
+document: it is the profile root only, avoiding a second managed copy of
+instructions that the harness reads natively. A selected context item MUST
+refuse `project_context_unsupported`, including when optional; the operator may
+choose a generation without that item, never an implicit omission.
+
+Manager-programmed permissions MUST remain default deny; project permission
+files MUST NOT alter that policy, even as restrictions. Native memory MUST
+remain off. An adapter unable to enforce either contract MUST refuse
+`project_context_unsupported`. Qualification covers their actual effects at
+startup, reload, resume and child entry, not merely advertised booleans. Status
+and launch output MUST name the selected mode and say exactly
+**project sources not isolated** for native-project. Off admission does not
+remove this notice or suppress native discovery.
+
+This mode protects the approved Curator-delivered whole-skill/MCP pins and
+audits, manager permission policy and memory-off contract. It provides no
+isolation from repository content. Native instructions, config, skills, MCP,
+hooks and plugins may load beyond Curator's approved inventory under the
+harness's rules; native trust is not Curator item approval. It does not contain
+hostile same-user executable code. Strict retains exclusion and additive
+approved project context, and remains refused until its exact runtime tuple
+qualifies. Native-project qualification MUST NOT be reported as strict
+qualification or used for the unaccepted-candidate R-TRANSFER boundary.
 
 ## 6. Leases, busy updates, resume and collection
 
@@ -278,11 +329,13 @@ unknown, never absent; uncertainty MUST retain the corresponding roots.
 ## 7. Fragment members, commands and launch routes
 
 The required member is exactly
-`project_context: {version: 1, mode: "off" | "admitted", context_ref,
+`project_context: {version: 1, mode: "strict" | "native-project",
+admission: "off" | "admitted", context_ref,
 context_sha256, project_root, lease_ref}`. Context names the protected
 composition; lease names its binding. `project_root` MUST equal its registration;
 context/lease MUST match the same checkout, environment, home and generation.
-Strict `off` MUST have no project items and still require certified exclusion.
+`admission: "off"` MUST have no project items. Strict still requires certified
+exclusion; native-project still permits native discovery and emits its notice.
 No arbitrary env map, append list or executable text is admitted through it.
 
 The optional member is exactly
@@ -341,7 +394,10 @@ resume failures MUST NOT fall back to native execution or mint a new session.
 
 The typed refusal registry is
 [environments §10.6](environments.md#106-project-context-diagnostics).
-Failures MUST preserve existing home/approval state and emit no success fragment,
+Unknown or inconsistent modes/admission use `project_context_invalid`. Missing
+mode advertisement, required permissions/memory-off or strict exclusion, and
+selected native-project context items use `project_context_unsupported`. No
+new diagnostic code is allocated. Failures MUST preserve existing home/approval state and emit no success fragment,
 child, MCP connection or partial control publication. Permitted refusal telemetry
 MUST be redacted. Read failure MUST NOT become absence, optional omission or a
 new baseline. Existing version and credential diagnostics retain their ownership.

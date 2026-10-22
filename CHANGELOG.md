@@ -7,6 +7,14 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Amend CIP-0002 leaf 1 with explicit `native-project` and `strict` source
+  modes, separate off/admitted admission, closed mode bindings and adapter
+  advertisement. Native-project keeps profile-root-only managed instructions
+  and reports "project sources not isolated"; approved skills/MCP, manager
+  permissions and memory-off remain required. Strict never silently falls back.
+  Paired grammar/static policy vectors and narrowing controls qualify no runtime
+  and leave frozen carriers unchanged.
+
 - Adopt the normative prose half of CIP-0002 leaf 1 through Decision 0028:
   protected project admission, closed records, additive managed-home context,
   source-exclusion gates, stable Werkstatt/session leases, checked command

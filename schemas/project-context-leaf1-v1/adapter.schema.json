@@ -9,7 +9,8 @@
     "environment",
     "provider_version",
     "platform",
-    "surfaces"
+    "surfaces",
+    "modes"
   ],
   "properties": {
     "kind": {
@@ -42,6 +43,13 @@
           "memory-off",
           "native-source-exclusion"
         ]
+      },
+      "uniqueItems": true
+    },
+    "modes": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/source_mode"
       },
       "uniqueItems": true
     }

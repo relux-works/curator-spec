@@ -28,13 +28,26 @@ manager-programmed default-deny policy and grants; memory is off in leaf 1.
 Inline MCP additionally waits for its companion normative grammar and admission.
 
 Apply the operator's amended Q1 permanently: preserve the profile's root and
-system context. Approved project context is additive only, below the profile
+system context. In strict mode, approved project context is additive only, below the profile
 root in the managed home's composed AGENTS.md/CLAUDE.md. Render the base profile
 document, then project-general and environment-specific documents in approved
 item order, deeper scope after shallower, with exactly one additional LF between
 non-empty documents. System parts retain their separate channel and joining
 rule. The separate replacement item is withdrawn, not deferred to a later slice.
 Whole-skill overlay does not override that profile context invariant.
+
+The operator's further 2026-10-22 amendment admits an explicitly enabled
+`native-project` mode per Werkstatt. The managed instruction document is the
+profile root only; the harness reads repository instructions natively, without
+a second managed concatenation. Curator delivers only approved whole skills
+and MCP from the project, with pins and audit unchanged. Manager permissions
+and memory-off remain mandatory and certified. Native instructions, config,
+skills, MCP, hooks and plugins may load under harness rules; status and launch
+say **project sources not isolated**. Strict retains additive context and
+certified exclusion; missing qualification refuses without native-project
+fallback. Mode is bound in registration, composition and fragment; admission
+remains independently off/admitted. This does not relax unaccepted-candidate
+review entry or claim repository isolation in native-project.
 
 Use a persistent protected checkout × profile × environment Werkstatt and sparse
 worktree, with immutable control records separate from native mutable state.
@@ -78,7 +91,7 @@ remote/tracked transforms remain deferred, not inferred from these records.
 Approval binds the exact checkout, item/closure, environment and ceiling;
 repository bytes cannot grant it. Complete snapshot/lock/receipt verification
 prevents entry substitution and changed native controls from becoming a baseline.
-Qualified exclusion covers startup, late discovery, resume and child entry,
+In strict mode, qualified exclusion covers startup, late discovery, resume and child entry,
 with manager-controlled permissions, memory-off and explicit empty MCP sets.
 Refusal preserves prior home/approval state. Credential delivery retains its
 separate channel; no secret enters project metadata. The first trusted-mode

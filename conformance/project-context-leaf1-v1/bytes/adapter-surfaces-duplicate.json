@@ -1,1 +1,1 @@
-{"environment":"codex_cli","kind":"project-adapter/1","platform":"linux","provider_version":"0.162.1","surfaces":["context","context"]}
+{"environment":"codex_cli","kind":"project-adapter/1","modes":["strict"],"platform":"linux","provider_version":"0.162.1","surfaces":["context","context"]}

@@ -1,1 +1,1 @@
-{"environment":"pi","kind":"project-adapter/1","platform":"linux","provider_version":"0.162.1","surfaces":["commands","context","mcp","memory-off","native-source-exclusion","permissions","skills"]}
+{"environment":"pi","kind":"project-adapter/1","modes":["strict"],"platform":"linux","provider_version":"0.162.1","surfaces":["commands","context","mcp","memory-off","native-source-exclusion","permissions","skills"]}

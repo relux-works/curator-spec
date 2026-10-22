@@ -190,6 +190,8 @@ def semantic(record, value):
     if record in ('snapshot-manifest', 'control-receipt'):
         files_error(value['files'])
     if record == 'adapter':
+        if value['modes'] != sorted(value['modes'], key=lambda s: s.encode('utf-8')):
+            raise ContractError('mode-order')
         if value['surfaces'] != sorted(value['surfaces'], key=lambda s: s.encode('utf-8')):
             raise ContractError('surface-order')
     if record == 'item' and value['type'] == 'mcp':
@@ -232,6 +234,59 @@ def verdict(record, raw, catalog=None):
     return None
 
 
+MODE_ITEM_SURFACES = {'context': 'context', 'skill': 'skills', 'mcp': 'mcp'}
+
+
+def mode_projection(facts):
+    """Static mode/byte contract only; no certificate or manager authority is proven.
+
+    Inputs are conformance-test projections of independently validated protected
+    records and certified surfaces. Project roots represent potential documents;
+    only strict may copy approved ones. This is not a launch/approval operation.
+    """
+    mode = facts['mode']
+    admission = facts['admission']
+    types = facts['item_types']
+    invalid = mode not in ('strict', 'native-project') or admission not in ('off', 'admitted')
+    mismatch = facts['registration_mode'] != mode or facts['composition_mode'] != mode
+    if invalid or mismatch or any(t not in MODE_ITEM_SURFACES for t in types):
+        return dict(code=INVALID, managed_root=None, notice=None)
+    if admission == 'off' and types:
+        return dict(code=INVALID, managed_root=None, notice=None)
+    required = {'permissions', 'memory-off'}
+    if mode == 'strict':
+        required.add('native-source-exclusion')
+    if mode not in facts['advertised_modes'] or not required.issubset(facts['surfaces']):
+        return dict(code='project_context_unsupported', managed_root=None, notice=None)
+    if mode == 'native-project' and 'context' in types:
+        return dict(code='project_context_unsupported', managed_root=None, notice=None)
+    if any(MODE_ITEM_SURFACES[t] not in facts['surfaces'] for t in types):
+        return dict(code='project_context_unsupported', managed_root=None, notice=None)
+    document = facts['profile_root']
+    if mode == 'strict' and admission == 'admitted':
+        document = '\n'.join(d for d in [document, *facts['project_roots']] if d)
+    notice = 'project sources not isolated' if mode == 'native-project' else None
+    return dict(code=None, managed_root=document, notice=notice)
+
+
+def check_mode_vectors(root=ROOT):
+    """Check enumerated static policy/rendering vectors, never native behavior."""
+    path = root / 'conformance' / NAMESPACE / 'mode-cases.json'
+    cases = json.loads(path.read_text())['cases']
+    by_name = {case['name']: case for case in cases}
+    if len(by_name) != len(cases):
+        raise ValueError('duplicate mode case name')
+    for case in cases:
+        actual = mode_projection(case['facts'])
+        if actual != case['expected']:
+            raise ValueError(f"{case['name']}: expected {case['expected']}, got {actual}")
+        if 'positive' in case:
+            sibling = by_name.get(case['positive'])
+            if sibling is None or sibling['expected']['code'] is not None:
+                raise ValueError(f"{case['name']}: missing positive mode control")
+    return len(cases)
+
+
 def check_corpus(root=ROOT):
     corpus = root / 'conformance' / NAMESPACE
     manifest = json.loads((corpus / 'manifest.json').read_text())
@@ -264,6 +319,7 @@ def check_corpus(root=ROOT):
     if {c['record'] for c in positives.values()} != set(RECORDS) or {
             c['record'] for c in negatives.values()} != set(RECORDS):
         raise ValueError('every record needs positive and negative bytes')
+    check_mode_vectors(root)
     return len(positives), len(negatives)
 
 

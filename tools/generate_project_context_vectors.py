@@ -18,8 +18,8 @@ def examples():
     profile = {'name': 'sample', 'lock_sha256': H}
     registration = dict(kind='project-registration/1', checkout_id='sample',
                         project_root='/example/project', root_identity=H, profile=profile,
-                        environment='codex_cli', home_ref='home:sample', worktree_ref='worktree:sample')
-    context = dict(version=1, mode='admitted', context_ref='composition:sample',
+                        environment='codex_cli', mode='strict', home_ref='home:sample', worktree_ref='worktree:sample')
+    context = dict(version=1, mode='strict', admission='admitted', context_ref='composition:sample',
                    context_sha256=H, project_root='/example/project', lease_ref='lease:sample')
     command = dict(version=1, operation='checked-d-path/1', tool_ref='tool:sample',
                    dispatcher_ref='dispatcher:sample', context_ref='composition:sample', context_sha256=H)
@@ -34,7 +34,7 @@ def examples():
         'generation': dict(kind='project-generation/1', registration_ref='registration:sample',
                            registration_sha256=H, items=[dict(item_id='context', item_sha256=H, approval_ref='approval:sample')]),
         'composition': dict(kind='project-composition/1', registration_ref='registration:sample',
-                            registration_sha256=H, generation_sha256=H, profile=profile, environment='codex_cli',
+                            registration_sha256=H, generation_sha256=H, profile=profile, environment='codex_cli', mode='strict',
                             adapter_ref='adapter:sample', adapter_sha256=H, policy_ref='policy:sample', policy_sha256=H,
                             memory='off', home_ref='home:sample', worktree_ref='worktree:sample',
                             materialization_sha256=H, command_owners=[dict(name='sample', item_id='skill', artifact_sha256=H)],
@@ -49,9 +49,93 @@ def examples():
                          'filesystem': {'device': '0', 'inode': '18446744073709551615'}},
         'snapshot-manifest': dict(version=1, files=files),
         'control-receipt': dict(version=1, files=files, adapter_sha256=H, policy_sha256=H, worktree_ref='worktree:sample'),
-        'adapter': dict(kind='project-adapter/1', environment='codex_cli', provider_version='0.162.1', platform='linux',
+        'adapter': dict(kind='project-adapter/1', environment='codex_cli', provider_version='0.162.1', platform='linux', modes=['strict'],
                         surfaces=['commands', 'context', 'mcp', 'memory-off', 'native-source-exclusion', 'permissions', 'skills']),
     }
+
+
+def mode_examples():
+    # Independent expected verdicts/bytes: no call to the projection under test.
+    native = dict(mode='native-project', registration_mode='native-project',
+                  composition_mode='native-project', admission='admitted',
+                  advertised_modes=['native-project'],
+                  surfaces=['mcp', 'memory-off', 'permissions', 'skills'],
+                  item_types=['skill', 'mcp'], profile_root='profile root\n',
+                  project_roots=['project general\n', 'project environment\n'])
+    strict = dict(native, mode='strict', registration_mode='strict', composition_mode='strict',
+                  advertised_modes=['strict'], item_types=['context', 'skill', 'mcp'],
+                  surfaces=['context', 'mcp', 'memory-off', 'native-source-exclusion', 'permissions', 'skills'])
+    profile = dict(code=None, managed_root='profile root\n', notice='project sources not isolated')
+    additive = dict(code=None, managed_root='profile root\n\nproject general\n\nproject environment\n', notice=None)
+    invalid = dict(code='project_context_invalid', managed_root=None, notice=None)
+    unsupported = dict(code='project_context_unsupported', managed_root=None, notice=None)
+    cases = []
+    def add(name, facts, expected, claim, *, positive=None, mutant=None):
+        case = dict(name=name, facts=facts, expected=expected, claim=claim)
+        if positive: case.update(positive=positive, mutant=mutant)
+        cases.append(case)
+    add('mode-native-admitted', native, profile,
+        'Native-project delivers approved skills/MCP without exclusion, retains exact profile root only, and reports no isolation.',
+        positive='mode-native-off', mutant='native-root')
+    add('mode-native-off', dict(native, admission='off', item_types=[]), profile,
+        'Off admission delivers no managed project items but native discovery still requires the exact notice.',
+        positive='mode-native-admitted', mutant='native-notice')
+    add('mode-strict-admitted', strict, additive,
+        'Strict with all certified surfaces appends approved project roots in order with one additional LF.',
+        positive='mode-strict-off', mutant='strict-root')
+    add('mode-strict-off', dict(strict, admission='off', item_types=[]),
+        dict(code=None, managed_root='profile root\n', notice=None),
+        'Strict off keeps profile-only managed instructions and still requires exclusion.',
+        positive='mode-native-off', mutant='strict-off-root')
+    add('mode-native-with-exclusion', dict(native, advertised_modes=['native-project', 'strict'],
+        surfaces=strict['surfaces']), profile,
+        'Advertising exclusion as well never silently switches a selected native-project mode to strict.')
+    add('mode-strict-both-advertised', dict(strict, advertised_modes=['native-project', 'strict']), additive,
+        'Advertising both modes preserves explicit strict selection and additive order.')
+    def bad(name, facts, result, mutant, claim, sibling='mode-native-admitted'):
+        add(name, facts, result, claim, positive=sibling, mutant=mutant)
+    bad('mode-unknown', dict(native, mode='automatic', registration_mode='automatic',
+        composition_mode='automatic', advertised_modes=['automatic']), invalid, 'unknown-mode',
+        'Unknown mode refuses instead of selecting a known source policy.')
+    bad('mode-admission-unknown', dict(native, admission='automatic'), invalid, 'unknown-admission',
+        'Unknown admission is invalid even with a known source mode.')
+    bad('mode-registration-mismatch', dict(native, registration_mode='strict'), invalid, 'registration-binding',
+        'Fragment mode cannot differ from the protected registration choice.')
+    bad('mode-composition-mismatch', dict(native, composition_mode='strict'), invalid, 'composition-binding',
+        'Fragment mode cannot differ from the protected composition identity.')
+    bad('mode-unadvertised-native', dict(native, advertised_modes=['strict']), unsupported, 'mode-advertisement-native',
+        'Native-project requires its own exact advertised qualification; strict evidence is not a fallback.')
+    bad('mode-strict-no-fallback', dict(strict, advertised_modes=['native-project']), unsupported, 'mode-advertisement-strict',
+        'An unadvertised strict request refuses even when native-project is advertised.', 'mode-strict-admitted')
+    for mode, base, sibling in [('native',native,'mode-native-admitted'), ('strict',strict,'mode-strict-admitted')]:
+        for surface in ['permissions','memory-off'] + (['native-source-exclusion'] if mode=='strict' else []):
+            bad('mode-'+mode+'-missing-'+surface, dict(base, surfaces=[x for x in base['surfaces'] if x!=surface]),
+                unsupported, 'required-'+surface,
+                'Missing certified '+surface+' refuses '+mode+' mode with no output or alternate mode.', sibling)
+    bad('mode-strict-exclusion-no-fallback',
+        dict(strict, advertised_modes=['native-project', 'strict'],
+             surfaces=[x for x in strict['surfaces'] if x!='native-source-exclusion']),
+        unsupported, 'required-native-source-exclusion',
+        'Missing strict exclusion refuses even when native-project is explicitly available; no mode fallback.',
+        'mode-strict-both-advertised')
+    for surface in ['permissions', 'memory-off']:
+        bad('mode-native-off-missing-'+surface,
+            dict(native, admission='off', item_types=[], surfaces=[x for x in native['surfaces'] if x!=surface]),
+            unsupported, 'off-required-'+surface,
+            'Native-project off still requires '+surface+' certification and cannot bypass it.', 'mode-native-off')
+    bad('mode-strict-off-missing-exclusion',
+        dict(strict, admission='off', item_types=[], surfaces=[x for x in strict['surfaces'] if x!='native-source-exclusion']),
+        unsupported, 'off-required-exclusion', 'Strict off still refuses without certified source exclusion.', 'mode-strict-off')
+    bad('mode-native-context', dict(native, item_types=['context'], surfaces=strict['surfaces']), unsupported,
+        'native-context', 'A context item is refused in native-project rather than silently omitted or concatenated.')
+    bad('mode-off-items', dict(native, admission='off', item_types=['skill']), invalid, 'off-items',
+        'Off admission refuses a selected project item instead of delivering it.', 'mode-native-off')
+    bad('mode-unknown-item', dict(native, item_types=['rules']), invalid, 'unknown-item',
+        'No new project item arm is inferred from native discovery.')
+    for item,surface in [('skill','skills'),('mcp','mcp')]:
+        bad('mode-missing-'+item, dict(native, item_types=[item], surfaces=[x for x in native['surfaces'] if x!=surface]),
+            unsupported, 'selected-'+item, 'Selected approved '+item+' still requires its own certified delivery surface.')
+    return cases
 
 
 def set_at(value, path, replacement):
@@ -195,14 +279,14 @@ def main():
         bad(name, 'item', changed, mutant, gate, 'item-mcp-stdio')
 
     positive('approval-grant', 'approval', {**base['approval'], 'grant_ref': 'grant:sample'})
-    positive('project-context-off', 'project-context', {**base['project-context'], 'mode': 'off'})
+    positive('project-context-off', 'project-context', {**base['project-context'], 'admission': 'off'})
     positive('fragment-no-command', 'fragment-members', {'project_context': base['project-context']})
     positive('composition-no-command', 'composition', {**base['composition'], 'command_owners': []})
     positive('generation-empty', 'generation', {**base['generation'], 'items': []})
     positive('lease-max-generation', 'lease', {**base['lease'], 'generation': leaf.SAFE_INTEGER})
     positive('root-binding-remote', 'root-binding', set_at(base['root-binding'], ['repository', 'primary_remote'], 'https://example.invalid/repo.git'))
     positive('adapter-macos', 'adapter', {**base['adapter'], 'platform': 'macos'})
-    positive('adapter-no-capabilities', 'adapter', {**base['adapter'], 'surfaces': []})
+    positive('adapter-no-capabilities', 'adapter', {**base['adapter'], 'modes': [], 'surfaces': []})
     positive('snapshot-empty', 'snapshot-manifest', {'version': 1, 'files': []})
     positive('control-empty', 'control-receipt', {**base['control-receipt'], 'files': []})
     positive('id-max', 'registration', {**base['registration'], 'checkout_id': 'a' * 64})
@@ -334,7 +418,11 @@ def main():
         schema_mutant('common', ['$defs', 'home_ref', 'pattern'], '^home:[a-z][a-z0-9_-]{0,63}$', terminal=False))
     for record, path, token, schema_name, schema_path, allowed in [
         ('item', ['type'], 'shell', 'item', ['properties', 'type', 'enum'], ['context', 'skill', 'mcp']),
-        ('project-context', ['mode'], 'automatic', 'project-context', ['properties', 'mode', 'enum'], ['off', 'admitted']),
+        ('project-context', ['mode'], 'automatic', 'common', ['$defs', 'source_mode', 'enum'], ['native-project', 'strict']),
+        ('registration', ['mode'], 'automatic', 'common', ['$defs', 'source_mode', 'enum'], ['native-project', 'strict']),
+        ('composition', ['mode'], 'automatic', 'common', ['$defs', 'source_mode', 'enum'], ['native-project', 'strict']),
+        ('project-context', ['admission'], 'automatic', 'project-context', ['properties', 'admission', 'enum'], ['off', 'admitted']),
+        ('adapter', ['modes'], ['automatic'], 'common', ['$defs', 'source_mode', 'enum'], ['native-project', 'strict']),
         ('composition', ['omitted', 0, 'reason'], 'missing', 'composition', ['properties', 'omitted', 'items', 'properties', 'reason', 'enum'], ['disabled', 'unsupported']),
         ('adapter', ['platform'], 'windows', 'adapter', ['properties', 'platform', 'enum'], ['macos', 'linux']),
         ('adapter', ['surfaces'], ['hooks'], 'adapter', ['properties', 'surfaces', 'items', 'enum'], ['context', 'skills', 'mcp', 'commands', 'permissions', 'memory-off', 'native-source-exclusion']),
@@ -428,8 +516,22 @@ def main():
             claim='item: a correctly hashed HTTP server refuses literal URL ' + label +
                   ' under adopted CIP-0022 Q3; ordinary HTTP sibling remains valid')
 
+    # Both source modes remain explicit closed values, independent of admission.
+    for record in ('registration', 'composition', 'project-context'):
+        positive(record + '-native-project', record, {**base[record], 'mode': 'native-project'})
+    positive('project-context-native-off', 'project-context',
+             {**base['project-context'], 'mode': 'native-project', 'admission': 'off'})
+    positive('adapter-native-project', 'adapter', {**base['adapter'], 'modes': ['native-project'],
+             'surfaces': ['mcp', 'memory-off', 'permissions', 'skills']})
+    positive('adapter-both-modes', 'adapter', {**base['adapter'], 'modes': ['native-project', 'strict']})
+    bad('adapter-modes-unsorted', 'adapter', {**base['adapter'], 'modes': ['strict', 'native-project']},
+        {'source': 'mode-order'}, 'mode-order')
+    bad('adapter-modes-duplicate', 'adapter', {**base['adapter'], 'modes': ['strict', 'strict']},
+        schema_mutant('adapter', ['properties', 'modes', 'uniqueItems'], False))
+
     manifest = dict(version=1, scope='closed member grammar only; no carrier or runtime qualification', cases=cases)
     generated['manifest.json'] = (json.dumps(manifest, ensure_ascii=False, indent=2) + '\n').encode('utf-8')
+    generated['mode-cases.json'] = (json.dumps(dict(version=1, scope='static mode policy and instruction-byte projection; no manager/native qualification', cases=mode_examples()), ensure_ascii=False, indent=2) + '\n').encode('utf-8')
     existing = {str(path.relative_to(CORPUS)) for path in CORPUS.rglob('*.json')}
     if existing - set(generated):
         raise ValueError('obsolete corpus files: ' + ', '.join(sorted(existing - set(generated))))

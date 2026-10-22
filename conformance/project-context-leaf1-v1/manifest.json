@@ -6,16 +6,16 @@
       "name": "registration-valid",
       "record": "registration",
       "file": "bytes/registration-valid.json",
-      "bytes_sha256": "45e4286878bbfc631ed72a3513a39c93d82aabe1c33d1d6ba1be44c4023444f6",
+      "bytes_sha256": "021016900469de06689c108155628ad4b5075c57796bb35dfb8dbaccdb6afc6e",
       "expected": null,
       "claim": "registration: accepts this closed record",
-      "record_sha256": "45e4286878bbfc631ed72a3513a39c93d82aabe1c33d1d6ba1be44c4023444f6"
+      "record_sha256": "021016900469de06689c108155628ad4b5075c57796bb35dfb8dbaccdb6afc6e"
     },
     {
       "name": "registration-missing-kind",
       "record": "registration",
       "file": "bytes/registration-missing-kind.json",
-      "bytes_sha256": "db5dfb2fb7d073920135e4c621e41425076dba0b152f20b3a691ec781afb382e",
+      "bytes_sha256": "b63a4c6207c71931cd008de8628ea3472560e883f0fa8330d47137f909f9b05b",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -34,7 +34,8 @@
           "profile",
           "environment",
           "home_ref",
-          "worktree_ref"
+          "worktree_ref",
+          "mode"
         ]
       }
     },
@@ -42,7 +43,7 @@
       "name": "registration-null-kind",
       "record": "registration",
       "file": "bytes/registration-null-kind.json",
-      "bytes_sha256": "4cf128baf36aae100d802de25cb389c64d5dcb0a39a85654e98b1bc3dc460433",
+      "bytes_sha256": "3315f8166575a4d297f9a3f8ce70373c2cb4c609f7f84a1d8dd6511526707c41",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -71,7 +72,7 @@
       "name": "registration-missing-checkout_id",
       "record": "registration",
       "file": "bytes/registration-missing-checkout_id.json",
-      "bytes_sha256": "eace80d28df38386b8229fcf147be1d42c85b644aa7b6ad7560882e0f9ab6064",
+      "bytes_sha256": "86e2f2d5c738180484d1d2a627e80324fbf908dcf8b0af41e67a0b2e96c47571",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -90,7 +91,8 @@
           "profile",
           "environment",
           "home_ref",
-          "worktree_ref"
+          "worktree_ref",
+          "mode"
         ]
       }
     },
@@ -98,7 +100,7 @@
       "name": "registration-null-checkout_id",
       "record": "registration",
       "file": "bytes/registration-null-checkout_id.json",
-      "bytes_sha256": "31458002271663ee609db0fb25be4fcafe1eb083156a7790f3108d1003fd14c5",
+      "bytes_sha256": "ba283e80d5353ea6d30a5759ea33b749d9bf8ab06ae60fc6fdad6b4e17b71360",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -127,7 +129,7 @@
       "name": "registration-missing-project_root",
       "record": "registration",
       "file": "bytes/registration-missing-project_root.json",
-      "bytes_sha256": "e5d18c9e6782e87c7a8a766d5550f12b75245613326c59997006e7eeebe4a407",
+      "bytes_sha256": "7cc0492e7342efa2b8759a0983294ab0418105f08460f9c4392e1527926fd10a",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -146,7 +148,8 @@
           "profile",
           "environment",
           "home_ref",
-          "worktree_ref"
+          "worktree_ref",
+          "mode"
         ]
       }
     },
@@ -154,7 +157,7 @@
       "name": "registration-null-project_root",
       "record": "registration",
       "file": "bytes/registration-null-project_root.json",
-      "bytes_sha256": "635943f2739984c4846bba0552449313a65ea82f120c5da1d64a8268d1d2690a",
+      "bytes_sha256": "ca53289b40624ba283329a86cadb09c0732c24b1185ab8ff3a0ebefcec6decbd",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -183,7 +186,7 @@
       "name": "registration-missing-root_identity",
       "record": "registration",
       "file": "bytes/registration-missing-root_identity.json",
-      "bytes_sha256": "8e8b9fae5c728b021fe6bfcf8384b4aee07116010b75c61858ae3e593d4805c1",
+      "bytes_sha256": "ad4cc79128afef4af8d00f4c67f7819336cc1c09027d5b94e03c13797ac30687",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -202,7 +205,8 @@
           "profile",
           "environment",
           "home_ref",
-          "worktree_ref"
+          "worktree_ref",
+          "mode"
         ]
       }
     },
@@ -210,7 +214,7 @@
       "name": "registration-null-root_identity",
       "record": "registration",
       "file": "bytes/registration-null-root_identity.json",
-      "bytes_sha256": "c811b859df4c1d81b518eda85250f069951dcea0146c380b98bc90b4b23d90db",
+      "bytes_sha256": "d97d79157622dd6e8d2dec17e8f7d65498c99a39f311ca6e3df350b066ebe80f",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -239,7 +243,7 @@
       "name": "registration-missing-profile",
       "record": "registration",
       "file": "bytes/registration-missing-profile.json",
-      "bytes_sha256": "124d86f87987dd6937c0be597eb8531a2efa78c18bbf83762272128555896d39",
+      "bytes_sha256": "4b84675a15a992aaa66b544f2e4f0be6a342405133153b62e0424584fa14c3cc",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -258,7 +262,8 @@
           "root_identity",
           "environment",
           "home_ref",
-          "worktree_ref"
+          "worktree_ref",
+          "mode"
         ]
       }
     },
@@ -266,7 +271,7 @@
       "name": "registration-null-profile",
       "record": "registration",
       "file": "bytes/registration-null-profile.json",
-      "bytes_sha256": "a4979782a3fd90aa17791e740d2f5eaae6d38b48e60198de1c7cb6b2850131cf",
+      "bytes_sha256": "401984e4a8c20f3bca884f427223ebec521845bf8dfd6cf7ad272c5d28cd854d",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -295,7 +300,7 @@
       "name": "registration-missing-environment",
       "record": "registration",
       "file": "bytes/registration-missing-environment.json",
-      "bytes_sha256": "0b23f70e738f4dd121b7037dbc34cdc020b88b63117249437393bf7b249359cb",
+      "bytes_sha256": "712753014ed07b701d557e659760e5b20eee9009b05dc49436e9b2ea3b360696",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -314,7 +319,8 @@
           "root_identity",
           "profile",
           "home_ref",
-          "worktree_ref"
+          "worktree_ref",
+          "mode"
         ]
       }
     },
@@ -322,7 +328,7 @@
       "name": "registration-null-environment",
       "record": "registration",
       "file": "bytes/registration-null-environment.json",
-      "bytes_sha256": "7af4d5fcefd313b2051380d639d8e71104bf9722677ae0aa0ad845522bd0c537",
+      "bytes_sha256": "69e87624735fe21fa500ee3da980bbed907686fa9044b521af8293291679c935",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -351,7 +357,7 @@
       "name": "registration-missing-home_ref",
       "record": "registration",
       "file": "bytes/registration-missing-home_ref.json",
-      "bytes_sha256": "6b76ff4f34a53947ad2c7cac6c9f8ddb03ea08fd14c9f9a6c4c86575e059d150",
+      "bytes_sha256": "9fea02d8fbcaa263cd3bbfb209deeaaa8d35bcf5eea3907a6389ea63b08f469b",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -370,7 +376,8 @@
           "root_identity",
           "profile",
           "environment",
-          "worktree_ref"
+          "worktree_ref",
+          "mode"
         ]
       }
     },
@@ -378,7 +385,7 @@
       "name": "registration-null-home_ref",
       "record": "registration",
       "file": "bytes/registration-null-home_ref.json",
-      "bytes_sha256": "7365cb4da11c79323a3d2e551b7903e718ba7e620af225479b40d25e95e73d06",
+      "bytes_sha256": "9fc38ea440c28e1e0639185f0f95157317c26daa982bf9090f23f7b48753fc02",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -407,7 +414,7 @@
       "name": "registration-missing-worktree_ref",
       "record": "registration",
       "file": "bytes/registration-missing-worktree_ref.json",
-      "bytes_sha256": "a2a177b5eb0d8711c0399534c589ea0e4b1e7c001008cb3c75b903345832921b",
+      "bytes_sha256": "72c129c1838a9e43910236c5825dc305e8afa9f605a49c560aa4cb4ac91e384b",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -426,7 +433,8 @@
           "root_identity",
           "profile",
           "environment",
-          "home_ref"
+          "home_ref",
+          "mode"
         ]
       }
     },
@@ -434,7 +442,7 @@
       "name": "registration-null-worktree_ref",
       "record": "registration",
       "file": "bytes/registration-null-worktree_ref.json",
-      "bytes_sha256": "4e33fa4190f367acc5f3512ee65e4db15850a767b92b317041d476cc0e4fb90f",
+      "bytes_sha256": "c281fd2caeeedd1cd7cec274c8e3998ae87e003134278e1dde24f19285e3da36",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -460,10 +468,67 @@
       }
     },
     {
+      "name": "registration-missing-mode",
+      "record": "registration",
+      "file": "bytes/registration-missing-mode.json",
+      "bytes_sha256": "45e4286878bbfc631ed72a3513a39c93d82aabe1c33d1d6ba1be44c4023444f6",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "registration: refuses registration-missing-mode",
+      "positive": "registration-valid",
+      "mutant": {
+        "schema": "registration",
+        "path": [
+          "required"
+        ],
+        "value": [
+          "kind",
+          "checkout_id",
+          "project_root",
+          "root_identity",
+          "profile",
+          "environment",
+          "home_ref",
+          "worktree_ref"
+        ]
+      }
+    },
+    {
+      "name": "registration-null-mode",
+      "record": "registration",
+      "file": "bytes/registration-null-mode.json",
+      "bytes_sha256": "8603645babfec0f9d01852e2964bfd378ae2c975d6df84a88e42d414614f050a",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "registration: refuses registration-null-mode",
+      "positive": "registration-valid",
+      "mutant": {
+        "schema": "registration",
+        "path": [
+          "properties",
+          "mode"
+        ],
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/source_mode"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
       "name": "registration-unknown",
       "record": "registration",
       "file": "bytes/registration-unknown.json",
-      "bytes_sha256": "c0efbf00cfacda0aabb841501829de68d38e5b388422733ce4286bea20b8ce43",
+      "bytes_sha256": "075a1671d29a5742961b9394af1e0ab4ff54e637363cd7b57f52cb3e66e144b5",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -485,7 +550,7 @@
       "name": "registration-future-version",
       "record": "registration",
       "file": "bytes/registration-future-version.json",
-      "bytes_sha256": "e2d946ceb1c34233765e8c6ec4b2c6b8c7b40f869899231bc5bed8fabb629347",
+      "bytes_sha256": "ae68650128a2660dfd1cc7345e38c6a9ed5f4f4097e860af66634417e016d2c8",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -510,7 +575,7 @@
       "name": "registration-later-environment",
       "record": "registration",
       "file": "bytes/registration-later-environment.json",
-      "bytes_sha256": "45b901a5fcb5dc5aa03a36c8db4fa4a7cce49d81f9d2171fdbe7dafa123fb626",
+      "bytes_sha256": "d7eb60687343d8f17333d768be3c51308be6aefc90dfc9293174a73217349367",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -536,19 +601,19 @@
       "name": "registration-claude_code",
       "record": "registration",
       "file": "bytes/registration-claude_code.json",
-      "bytes_sha256": "3550a6ebf86fb9a4cbaa8284595136e55178bac54f007e85560dfa6e0a3b1826",
+      "bytes_sha256": "76b2b57f0706e92f6b867e1b3b59b500586b5b54297e16412c875a9f313caeff",
       "expected": null,
       "claim": "registration: accepts this closed record",
-      "record_sha256": "3550a6ebf86fb9a4cbaa8284595136e55178bac54f007e85560dfa6e0a3b1826"
+      "record_sha256": "76b2b57f0706e92f6b867e1b3b59b500586b5b54297e16412c875a9f313caeff"
     },
     {
       "name": "registration-muse",
       "record": "registration",
       "file": "bytes/registration-muse.json",
-      "bytes_sha256": "9564b78661c15437c15d7461bf9123dabc63f65055858c5e86f66aaf45291857",
+      "bytes_sha256": "1f4a52597628f2583545abe870b0fe6bcf549a607ee2b90186b4c2bf64f0e2f8",
       "expected": null,
       "claim": "registration: accepts this closed record",
-      "record_sha256": "9564b78661c15437c15d7461bf9123dabc63f65055858c5e86f66aaf45291857"
+      "record_sha256": "1f4a52597628f2583545abe870b0fe6bcf549a607ee2b90186b4c2bf64f0e2f8"
     },
     {
       "name": "item-valid",
@@ -1723,16 +1788,16 @@
       "name": "composition-valid",
       "record": "composition",
       "file": "bytes/composition-valid.json",
-      "bytes_sha256": "921b55398a76784599176b165cc196a5ab13e861f10dc880b351a50b40e4e6bb",
+      "bytes_sha256": "af9314dc503a7b8132005724664937741faba731f81b7a3d8bf099858fe447ec",
       "expected": null,
       "claim": "composition: accepts this closed record",
-      "record_sha256": "921b55398a76784599176b165cc196a5ab13e861f10dc880b351a50b40e4e6bb"
+      "record_sha256": "af9314dc503a7b8132005724664937741faba731f81b7a3d8bf099858fe447ec"
     },
     {
       "name": "composition-missing-kind",
       "record": "composition",
       "file": "bytes/composition-missing-kind.json",
-      "bytes_sha256": "04aacd69dd10a478cbe418f8e82aef8da9b2d8b044158edc5bc1b48ae831f6f4",
+      "bytes_sha256": "ce59720488472e3f2fecb6aa9bd4626548805a8a6669685d6f609cc23ba810ef",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -1759,7 +1824,8 @@
           "worktree_ref",
           "materialization_sha256",
           "command_owners",
-          "omitted"
+          "omitted",
+          "mode"
         ]
       }
     },
@@ -1767,7 +1833,7 @@
       "name": "composition-null-kind",
       "record": "composition",
       "file": "bytes/composition-null-kind.json",
-      "bytes_sha256": "62b9f332f98e16fc8fc94ff390687037e19e3d8e60f8f60b8cef7da1195c7b7a",
+      "bytes_sha256": "76dd5e0f677650b6a2cb6195db8b09b662c291f59db9641c7f72c99927627b36",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -1796,7 +1862,7 @@
       "name": "composition-missing-registration_ref",
       "record": "composition",
       "file": "bytes/composition-missing-registration_ref.json",
-      "bytes_sha256": "a2c91f8fe74767b0b3de7ba76ea27b4587cc049845e530aa9f8a8b3c66ef16b5",
+      "bytes_sha256": "4a274d335b19613b3151a20850af1256bbc52b4a32cd0ffa90f2af74b4d5634f",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -1823,7 +1889,8 @@
           "worktree_ref",
           "materialization_sha256",
           "command_owners",
-          "omitted"
+          "omitted",
+          "mode"
         ]
       }
     },
@@ -1831,7 +1898,7 @@
       "name": "composition-null-registration_ref",
       "record": "composition",
       "file": "bytes/composition-null-registration_ref.json",
-      "bytes_sha256": "8f8435272cb39e57f69ca30cdb0e750deebb637b3bcaa88b2b47d6448e8ed4f8",
+      "bytes_sha256": "55c7aa052ed4c5b2b79f649f828724dd45e53f8be8f7e16af6131d51ecd6174b",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -1860,7 +1927,7 @@
       "name": "composition-missing-registration_sha256",
       "record": "composition",
       "file": "bytes/composition-missing-registration_sha256.json",
-      "bytes_sha256": "090d3d661fb618cf38d5dad84399fb12ce867205ad570e9a0134c84f61e16f58",
+      "bytes_sha256": "c669d144a973d95c9abbd2dac0a11a47e8fc250bf5399b8eeba7f0cdb536a4bf",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -1887,7 +1954,8 @@
           "worktree_ref",
           "materialization_sha256",
           "command_owners",
-          "omitted"
+          "omitted",
+          "mode"
         ]
       }
     },
@@ -1895,7 +1963,7 @@
       "name": "composition-null-registration_sha256",
       "record": "composition",
       "file": "bytes/composition-null-registration_sha256.json",
-      "bytes_sha256": "786ba27b84c43e43fa079014be3186113c38e0a7847ab1150e3c17e30880f7ab",
+      "bytes_sha256": "2b058a4039f2277e4d3edfec51fcfad4609f6952be073a39b5bcd328196f8450",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -1924,7 +1992,7 @@
       "name": "composition-missing-generation_sha256",
       "record": "composition",
       "file": "bytes/composition-missing-generation_sha256.json",
-      "bytes_sha256": "7b75d2541fa1490c210a80c27f6bce30b39e5ba562737159f0a573d6c8220f15",
+      "bytes_sha256": "5645eb24bade88e8a53c20428fcddd5fcbe91a970eb6f3f9973eea2e8be00ddb",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -1951,7 +2019,8 @@
           "worktree_ref",
           "materialization_sha256",
           "command_owners",
-          "omitted"
+          "omitted",
+          "mode"
         ]
       }
     },
@@ -1959,7 +2028,7 @@
       "name": "composition-null-generation_sha256",
       "record": "composition",
       "file": "bytes/composition-null-generation_sha256.json",
-      "bytes_sha256": "1342f0de797a3e502a58605a679b75ce782093d3dfa4f57d6fa97defc441d13d",
+      "bytes_sha256": "858694ea7bf3deea1b977a4001a9963433596608ea687100fb5ca6c26d162066",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -1988,7 +2057,7 @@
       "name": "composition-missing-profile",
       "record": "composition",
       "file": "bytes/composition-missing-profile.json",
-      "bytes_sha256": "22e573a93bed55d9f8c857668ef8f1044ddfa824d39573fbc38ece1c9ce08473",
+      "bytes_sha256": "353146286b3b942c3f61b91c1df819b8021d736809e17f791897b5c8eba397ef",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2015,7 +2084,8 @@
           "worktree_ref",
           "materialization_sha256",
           "command_owners",
-          "omitted"
+          "omitted",
+          "mode"
         ]
       }
     },
@@ -2023,7 +2093,7 @@
       "name": "composition-null-profile",
       "record": "composition",
       "file": "bytes/composition-null-profile.json",
-      "bytes_sha256": "0c6d5f0d480f463df09e3086c6414f19ff4234a6d6e9cf81e5f480b654ea019a",
+      "bytes_sha256": "f85f9705dc4102143c3c04210eb64c35a5a8daf4f1e6b0f519e9804586791bb4",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2052,7 +2122,7 @@
       "name": "composition-missing-environment",
       "record": "composition",
       "file": "bytes/composition-missing-environment.json",
-      "bytes_sha256": "d31124b76308c2cfa2425a95ac3dd2eaba5a13a7d4b1644078f3cf323cd9ce31",
+      "bytes_sha256": "52810821e1f0073cbb53aee66f7831bc289a5b6a1d8d46ccdfc31e76c6f72105",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2079,7 +2149,8 @@
           "worktree_ref",
           "materialization_sha256",
           "command_owners",
-          "omitted"
+          "omitted",
+          "mode"
         ]
       }
     },
@@ -2087,7 +2158,7 @@
       "name": "composition-null-environment",
       "record": "composition",
       "file": "bytes/composition-null-environment.json",
-      "bytes_sha256": "88d397be4c449727c2d415455ad3615fc19a3520203a7e4c76840c4558bc0853",
+      "bytes_sha256": "76692f11f32844a28dd8874803bb9822a3ea7f87657dd7d5c56f49c98446ce81",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2116,7 +2187,7 @@
       "name": "composition-missing-adapter_ref",
       "record": "composition",
       "file": "bytes/composition-missing-adapter_ref.json",
-      "bytes_sha256": "a8f63e7d8f1b9fda0ef7e3b0d77422d05a8b7c54e7eae7d9597785e9f864f719",
+      "bytes_sha256": "757fc8ad3eb6302f6785e295a02a184f3ce640f741347e6328e14dfe5ad3f00d",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2143,7 +2214,8 @@
           "worktree_ref",
           "materialization_sha256",
           "command_owners",
-          "omitted"
+          "omitted",
+          "mode"
         ]
       }
     },
@@ -2151,7 +2223,7 @@
       "name": "composition-null-adapter_ref",
       "record": "composition",
       "file": "bytes/composition-null-adapter_ref.json",
-      "bytes_sha256": "e6179700b44792769322da4521c0f96b3069968f2bb6ba7ed4eb1da866bd0d83",
+      "bytes_sha256": "4f21bc6b73d5aac6724bcab348a917a691a4f4d7afb2a2485787aee7cbc9b0e7",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2180,7 +2252,7 @@
       "name": "composition-missing-adapter_sha256",
       "record": "composition",
       "file": "bytes/composition-missing-adapter_sha256.json",
-      "bytes_sha256": "3f52b02b33d4ccbff6b101e29d2c5b5a6800efef96f3311653631ccb97a93735",
+      "bytes_sha256": "6c7504114bfe6203e48807fcb5a2410ea54702e80dc15fcb4c180990100319d8",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2207,7 +2279,8 @@
           "worktree_ref",
           "materialization_sha256",
           "command_owners",
-          "omitted"
+          "omitted",
+          "mode"
         ]
       }
     },
@@ -2215,7 +2288,7 @@
       "name": "composition-null-adapter_sha256",
       "record": "composition",
       "file": "bytes/composition-null-adapter_sha256.json",
-      "bytes_sha256": "3a150172c16b52717e235a54289c3b8686e905fcf6d0567700e9205d70f66caa",
+      "bytes_sha256": "5812985e1580949df5dee1f1b044abda8ca01ab607983d9a61236d992c7fcd01",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2244,7 +2317,7 @@
       "name": "composition-missing-policy_ref",
       "record": "composition",
       "file": "bytes/composition-missing-policy_ref.json",
-      "bytes_sha256": "752a0f865c4b328f37c6fd0dc5792d0f7a30ea713ce8490db87067f0914fac36",
+      "bytes_sha256": "f7c807fd2d58c4d98774b36111965ea269380d5baf18a8d8e9d72ad6cb895091",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2271,7 +2344,8 @@
           "worktree_ref",
           "materialization_sha256",
           "command_owners",
-          "omitted"
+          "omitted",
+          "mode"
         ]
       }
     },
@@ -2279,7 +2353,7 @@
       "name": "composition-null-policy_ref",
       "record": "composition",
       "file": "bytes/composition-null-policy_ref.json",
-      "bytes_sha256": "0fcd40ed1a51e0ca59879564668c4f1847da101852a03b687225474c32168c31",
+      "bytes_sha256": "1e447bf8aa033fc99670ac0eccabd722bc9a78c6a21edfa49a2cd1f2f53d8314",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2308,7 +2382,7 @@
       "name": "composition-missing-policy_sha256",
       "record": "composition",
       "file": "bytes/composition-missing-policy_sha256.json",
-      "bytes_sha256": "a26f512c1bde35309e94ac9e47ddbfab4064b7fe31145c464d9788e8a8c226c2",
+      "bytes_sha256": "35a21cbbb3fd6d8cc69b392eafc80f02a8c98e7e3cb6702c79344607ed6da618",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2335,7 +2409,8 @@
           "worktree_ref",
           "materialization_sha256",
           "command_owners",
-          "omitted"
+          "omitted",
+          "mode"
         ]
       }
     },
@@ -2343,7 +2418,7 @@
       "name": "composition-null-policy_sha256",
       "record": "composition",
       "file": "bytes/composition-null-policy_sha256.json",
-      "bytes_sha256": "dfc82b7c3ad6983e8bae4418d062f7db9651867355f09236dfbf7b7c8127fbe4",
+      "bytes_sha256": "c2896d0cf9f23b5f440268e7035377d3b44e7210e2ad260b82c71f355fcc612e",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2372,7 +2447,7 @@
       "name": "composition-missing-memory",
       "record": "composition",
       "file": "bytes/composition-missing-memory.json",
-      "bytes_sha256": "ea7b166716b9c023d3ae553f720d86ce50505cf94699d163fdac2a0b9322d50e",
+      "bytes_sha256": "361e96dfd0ca7f31117ac21ef3a1267d8bb3f24caf2188c589464ffa7c3e02bb",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2399,7 +2474,8 @@
           "worktree_ref",
           "materialization_sha256",
           "command_owners",
-          "omitted"
+          "omitted",
+          "mode"
         ]
       }
     },
@@ -2407,7 +2483,7 @@
       "name": "composition-null-memory",
       "record": "composition",
       "file": "bytes/composition-null-memory.json",
-      "bytes_sha256": "e14e1679df602bc37ced424686613bfea0cbe9e5e710e908e09f700a19354fad",
+      "bytes_sha256": "3ac8ae74e95d3683e7350639733068fa314bcbc8dc64ba588fe174f695363708",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2436,7 +2512,7 @@
       "name": "composition-missing-home_ref",
       "record": "composition",
       "file": "bytes/composition-missing-home_ref.json",
-      "bytes_sha256": "71d03cb4d309bee45afb124fc8c222eead76b47b234ce9abe2c980ad37e87be6",
+      "bytes_sha256": "54ee57ded2d8d807cb9cdcb58b4089fdf390f62324dac9a3dd4585e0c9321bc0",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2463,7 +2539,8 @@
           "worktree_ref",
           "materialization_sha256",
           "command_owners",
-          "omitted"
+          "omitted",
+          "mode"
         ]
       }
     },
@@ -2471,7 +2548,7 @@
       "name": "composition-null-home_ref",
       "record": "composition",
       "file": "bytes/composition-null-home_ref.json",
-      "bytes_sha256": "3ad13d1dd5964750d955d9b9ed9438c22a962809d3a0ec3cb6e9ac6fbffca0b9",
+      "bytes_sha256": "6b09402448f03c6a4bd1db2fe3c043f6f8d31e9a46db3fce744cc46e69e2b07a",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2500,7 +2577,7 @@
       "name": "composition-missing-worktree_ref",
       "record": "composition",
       "file": "bytes/composition-missing-worktree_ref.json",
-      "bytes_sha256": "45961514f03331d3e38899b75ac1115449cc2721290567011bcaf436463ccbfb",
+      "bytes_sha256": "846b79113e48abb33d5ddc8377c55d5a97254be7fae29a40e86af66b0e31916c",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2527,7 +2604,8 @@
           "home_ref",
           "materialization_sha256",
           "command_owners",
-          "omitted"
+          "omitted",
+          "mode"
         ]
       }
     },
@@ -2535,7 +2613,7 @@
       "name": "composition-null-worktree_ref",
       "record": "composition",
       "file": "bytes/composition-null-worktree_ref.json",
-      "bytes_sha256": "4061859dc751737db46c453b0d79cc2ca831e5088c38d96db68497aea0553f42",
+      "bytes_sha256": "59efdd29bcad9bdad22883f97532ffa5291c7bbc4ef88c902206fcf8204aa1f5",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2564,7 +2642,7 @@
       "name": "composition-missing-materialization_sha256",
       "record": "composition",
       "file": "bytes/composition-missing-materialization_sha256.json",
-      "bytes_sha256": "1d30c1206d9a325d754f9decf102fbe72d1799e3eab4a38cd229667a3dbb4b75",
+      "bytes_sha256": "c3d99397a54d5d0210118de2eace6063b00bd31eed4e87afc80f6105aebe3085",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2591,7 +2669,8 @@
           "home_ref",
           "worktree_ref",
           "command_owners",
-          "omitted"
+          "omitted",
+          "mode"
         ]
       }
     },
@@ -2599,7 +2678,7 @@
       "name": "composition-null-materialization_sha256",
       "record": "composition",
       "file": "bytes/composition-null-materialization_sha256.json",
-      "bytes_sha256": "c52b351a42c753f6b6e11b6e9bb25fe4e67ab1f6a3ba6831f2cec292f0b3f50f",
+      "bytes_sha256": "91f214a588b7ecae5593523207a635250ef2a1f70923be3774de90eb3a5088b9",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2628,7 +2707,7 @@
       "name": "composition-missing-command_owners",
       "record": "composition",
       "file": "bytes/composition-missing-command_owners.json",
-      "bytes_sha256": "f61c69732eece662c63db6d1875afa567a7dc6ee6b1cd1968bf8767e86fe2e0a",
+      "bytes_sha256": "60e263e250aafc376f4c77341fba9999f3fed0150a8df49345850fdd55d66381",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2655,7 +2734,8 @@
           "home_ref",
           "worktree_ref",
           "materialization_sha256",
-          "omitted"
+          "omitted",
+          "mode"
         ]
       }
     },
@@ -2663,7 +2743,7 @@
       "name": "composition-null-command_owners",
       "record": "composition",
       "file": "bytes/composition-null-command_owners.json",
-      "bytes_sha256": "82874c9a1aeec27b84e7ad212fc5d8259d4068a6c08c7357bb4e9b1cf4baa194",
+      "bytes_sha256": "8aad4419fb6dada18b5534390df160c6f95bb240cebc5d6a8ca0456263a8e29e",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2713,7 +2793,7 @@
       "name": "composition-missing-omitted",
       "record": "composition",
       "file": "bytes/composition-missing-omitted.json",
-      "bytes_sha256": "06d2b38d70396ec8446b2f24ff1b82653b8c8be038400aae4986ebf3e0dfc137",
+      "bytes_sha256": "2c0bfa9e32a72187eaa08ecbc3fcfe0e4f312bb5e439d2bbce9a9ad4b5c9e0c4",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2740,7 +2820,8 @@
           "home_ref",
           "worktree_ref",
           "materialization_sha256",
-          "command_owners"
+          "command_owners",
+          "mode"
         ]
       }
     },
@@ -2748,7 +2829,7 @@
       "name": "composition-null-omitted",
       "record": "composition",
       "file": "bytes/composition-null-omitted.json",
-      "bytes_sha256": "aa6dc38cd372921e97932b404fe1bcd129733bb09437bf84ac82bf66b6f421fc",
+      "bytes_sha256": "dd44dcebdac3682efbf115c88cca9562d9747e2c94503311a59e290e2ea94d78",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2793,10 +2874,75 @@
       }
     },
     {
+      "name": "composition-missing-mode",
+      "record": "composition",
+      "file": "bytes/composition-missing-mode.json",
+      "bytes_sha256": "921b55398a76784599176b165cc196a5ab13e861f10dc880b351a50b40e4e6bb",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "composition: refuses composition-missing-mode",
+      "positive": "composition-valid",
+      "mutant": {
+        "schema": "composition",
+        "path": [
+          "required"
+        ],
+        "value": [
+          "kind",
+          "registration_ref",
+          "registration_sha256",
+          "generation_sha256",
+          "profile",
+          "environment",
+          "adapter_ref",
+          "adapter_sha256",
+          "policy_ref",
+          "policy_sha256",
+          "memory",
+          "home_ref",
+          "worktree_ref",
+          "materialization_sha256",
+          "command_owners",
+          "omitted"
+        ]
+      }
+    },
+    {
+      "name": "composition-null-mode",
+      "record": "composition",
+      "file": "bytes/composition-null-mode.json",
+      "bytes_sha256": "6b27ca8d8feb0a463c3b002509eaccd81878307988de54c2ced56e30489c5d30",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "composition: refuses composition-null-mode",
+      "positive": "composition-valid",
+      "mutant": {
+        "schema": "composition",
+        "path": [
+          "properties",
+          "mode"
+        ],
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/source_mode"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
       "name": "composition-unknown",
       "record": "composition",
       "file": "bytes/composition-unknown.json",
-      "bytes_sha256": "d34f1590fd152bb245cdd2e2bfb7dbe25a421777de0643a2e66a01bd97ba1b1d",
+      "bytes_sha256": "f816d1b75edb8fdc08f2b2ec1c76c0cdcb69248d975ea6b482cd4ac97837184a",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2818,7 +2964,7 @@
       "name": "composition-future-version",
       "record": "composition",
       "file": "bytes/composition-future-version.json",
-      "bytes_sha256": "4f613ea2d063adb736e24e48e7772766d7f01688883cffc56d73ab75b03c36f7",
+      "bytes_sha256": "15f32fc21bc42a552b503b1964be7429e5eba0249b598d203b5ffdeb5cb398fc",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2843,7 +2989,7 @@
       "name": "composition-later-environment",
       "record": "composition",
       "file": "bytes/composition-later-environment.json",
-      "bytes_sha256": "37da1dd2f7da082e6d4f6a79c9ba1769e810859a2e83a270524bc768ea32e227",
+      "bytes_sha256": "abf33a4f10fc1c9a717af17e6c543d3ce97c373f31c4d2b0698f51c2ef1ada3a",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -2869,19 +3015,19 @@
       "name": "composition-claude_code",
       "record": "composition",
       "file": "bytes/composition-claude_code.json",
-      "bytes_sha256": "c7d8e29841e73e6ad1552e310330fce255f08f650a6b5c867e70d78b50b9c30f",
+      "bytes_sha256": "f5aadd617370566d223fbf4c5442b589754f30b1397e012902c71de78b2da811",
       "expected": null,
       "claim": "composition: accepts this closed record",
-      "record_sha256": "c7d8e29841e73e6ad1552e310330fce255f08f650a6b5c867e70d78b50b9c30f"
+      "record_sha256": "f5aadd617370566d223fbf4c5442b589754f30b1397e012902c71de78b2da811"
     },
     {
       "name": "composition-muse",
       "record": "composition",
       "file": "bytes/composition-muse.json",
-      "bytes_sha256": "896de15276a5d29326f22e424f5805eb6ca0ef1e08222b7f4354e65ff79dd2e5",
+      "bytes_sha256": "b7dd4ec19462de846425674d58a0fd1a53c497f73f4668456fd76aace355d422",
       "expected": null,
       "claim": "composition: accepts this closed record",
-      "record_sha256": "896de15276a5d29326f22e424f5805eb6ca0ef1e08222b7f4354e65ff79dd2e5"
+      "record_sha256": "b7dd4ec19462de846425674d58a0fd1a53c497f73f4668456fd76aace355d422"
     },
     {
       "name": "lease-valid",
@@ -3569,16 +3715,16 @@
       "name": "project-context-valid",
       "record": "project-context",
       "file": "bytes/project-context-valid.json",
-      "bytes_sha256": "8838aa0ae49c85cd7464ed93cde057df99ffb8230420b22c835f0cf9c40d801b",
+      "bytes_sha256": "1118bb911af9dc480bc03a24a0d5667ca0abecff70d315edcc4c3bec5428d6ba",
       "expected": null,
       "claim": "project-context: accepts this closed record",
-      "record_sha256": "8838aa0ae49c85cd7464ed93cde057df99ffb8230420b22c835f0cf9c40d801b"
+      "record_sha256": "1118bb911af9dc480bc03a24a0d5667ca0abecff70d315edcc4c3bec5428d6ba"
     },
     {
       "name": "project-context-missing-version",
       "record": "project-context",
       "file": "bytes/project-context-missing-version.json",
-      "bytes_sha256": "2038eee3d47167634e405c9c3099a65a1533b4b491a375204cf18c56d48c971d",
+      "bytes_sha256": "28cf5a912c3b3fd751ed8148f5e02f45869a395113d14b410fa8fe85f0fa4cac",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -3595,7 +3741,8 @@
           "context_ref",
           "context_sha256",
           "project_root",
-          "lease_ref"
+          "lease_ref",
+          "admission"
         ]
       }
     },
@@ -3603,7 +3750,7 @@
       "name": "project-context-null-version",
       "record": "project-context",
       "file": "bytes/project-context-null-version.json",
-      "bytes_sha256": "3c6cdf58873991d38e811733732a363326d1e75b02999ec85b0f157be3535831",
+      "bytes_sha256": "92f8ea4d6a7fa899bea145265e58d25c00314fbcbb68b5339141dfeb84de9b74",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -3632,7 +3779,7 @@
       "name": "project-context-missing-mode",
       "record": "project-context",
       "file": "bytes/project-context-missing-mode.json",
-      "bytes_sha256": "f989d89f5b6b8819e46eb6bb91d7f9375e4b96132f9c02100b0ee876b00b1759",
+      "bytes_sha256": "0f8fda31907f4a5b9b4d00ed4386a7466451a4bbd7bb5f49e8f831220e1517ca",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -3649,7 +3796,8 @@
           "context_ref",
           "context_sha256",
           "project_root",
-          "lease_ref"
+          "lease_ref",
+          "admission"
         ]
       }
     },
@@ -3657,7 +3805,7 @@
       "name": "project-context-null-mode",
       "record": "project-context",
       "file": "bytes/project-context-null-mode.json",
-      "bytes_sha256": "1a05e4d074751b6bfa470b2ea7c5f08976ac6f7c5a68eb6be6305776601e21b4",
+      "bytes_sha256": "1fc7c0e6fb52ede7a2a5da5a3339a0035e78c8e73dee913439f812f832e4f10e",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -3673,10 +3821,7 @@
         "value": {
           "anyOf": [
             {
-              "enum": [
-                "off",
-                "admitted"
-              ]
+              "$ref": "common.schema.json#/$defs/source_mode"
             },
             {
               "type": "null"
@@ -3689,7 +3834,7 @@
       "name": "project-context-missing-context_ref",
       "record": "project-context",
       "file": "bytes/project-context-missing-context_ref.json",
-      "bytes_sha256": "c37323646c17aa55d315b92d99d76b746779a7bea6687b752679507c125ebca2",
+      "bytes_sha256": "f82e9f46e1156b5ecf4f863ecddd6ac2d42f62d789df2304128c4c05fc58162a",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -3706,7 +3851,8 @@
           "mode",
           "context_sha256",
           "project_root",
-          "lease_ref"
+          "lease_ref",
+          "admission"
         ]
       }
     },
@@ -3714,7 +3860,7 @@
       "name": "project-context-null-context_ref",
       "record": "project-context",
       "file": "bytes/project-context-null-context_ref.json",
-      "bytes_sha256": "07443bbc011b076bbf25aa5ade3a210a6c500fe09f0a69a42c17feabea00b41b",
+      "bytes_sha256": "5880ea0d73278ea9037ce98abecc8d0d58d81630b3d88b5bc6000db5e3c0b6a8",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -3743,7 +3889,7 @@
       "name": "project-context-missing-context_sha256",
       "record": "project-context",
       "file": "bytes/project-context-missing-context_sha256.json",
-      "bytes_sha256": "3a37b00a80717ab644986d13804914530c5d66eb5b121fc974562cbc8ff0a7ed",
+      "bytes_sha256": "b676fcfc1dd7e9d4da4fc103d9f4cb7745d4cad8e10a014b26c7ab836ca2ced6",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -3760,7 +3906,8 @@
           "mode",
           "context_ref",
           "project_root",
-          "lease_ref"
+          "lease_ref",
+          "admission"
         ]
       }
     },
@@ -3768,7 +3915,7 @@
       "name": "project-context-null-context_sha256",
       "record": "project-context",
       "file": "bytes/project-context-null-context_sha256.json",
-      "bytes_sha256": "f8dffb6aa775cb14cdbaa47575ed6fcee665dd4a6ec63b559c0d62ed3d1292d6",
+      "bytes_sha256": "124d963b0d12de5a04a756e374d10d143b1c11b4d4c1e77e33ed85ce9530a3fe",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -3797,7 +3944,7 @@
       "name": "project-context-missing-project_root",
       "record": "project-context",
       "file": "bytes/project-context-missing-project_root.json",
-      "bytes_sha256": "e611c550cee6026dd0f3a457db052dfd106c077117638a79d7b50aeafa45e7a5",
+      "bytes_sha256": "262e2e39597a40ab5cbf66799d5d9100be9247268372e276b018e5af24666314",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -3814,7 +3961,8 @@
           "mode",
           "context_ref",
           "context_sha256",
-          "lease_ref"
+          "lease_ref",
+          "admission"
         ]
       }
     },
@@ -3822,7 +3970,7 @@
       "name": "project-context-null-project_root",
       "record": "project-context",
       "file": "bytes/project-context-null-project_root.json",
-      "bytes_sha256": "6fd36f28c31f6fa3780b2a731674383231f019fcb342299c5812eb068281d8f3",
+      "bytes_sha256": "5fd538ebecaa6c27fa535540cd4084c24470f489d6a9cc843d5229679d33f0c6",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -3851,7 +3999,7 @@
       "name": "project-context-missing-lease_ref",
       "record": "project-context",
       "file": "bytes/project-context-missing-lease_ref.json",
-      "bytes_sha256": "52340ba9c2603d59fa762c5dd842f417c32a9df2516379ba69ab52066bf42096",
+      "bytes_sha256": "41a468c2698685bcde9887053376eecee1d17261ba346c7ac97c8e00e6203ec6",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -3868,7 +4016,8 @@
           "mode",
           "context_ref",
           "context_sha256",
-          "project_root"
+          "project_root",
+          "admission"
         ]
       }
     },
@@ -3876,7 +4025,7 @@
       "name": "project-context-null-lease_ref",
       "record": "project-context",
       "file": "bytes/project-context-null-lease_ref.json",
-      "bytes_sha256": "ebfe576ffd6b2f316dd1a62ab141542841d7d146a28936f57a9f91818f5f2ad1",
+      "bytes_sha256": "d92dc10cc04f0ac35fb2dffd1e8c446f84c13d1c89d7c7793ddf4bb0460a3cca",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -3902,10 +4051,68 @@
       }
     },
     {
+      "name": "project-context-missing-admission",
+      "record": "project-context",
+      "file": "bytes/project-context-missing-admission.json",
+      "bytes_sha256": "bb1df9bbbbd27d851c432381918bf8c2868f738a21d90530170cbbe320778e47",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "project-context: refuses project-context-missing-admission",
+      "positive": "project-context-valid",
+      "mutant": {
+        "schema": "project-context",
+        "path": [
+          "required"
+        ],
+        "value": [
+          "version",
+          "mode",
+          "context_ref",
+          "context_sha256",
+          "project_root",
+          "lease_ref"
+        ]
+      }
+    },
+    {
+      "name": "project-context-null-admission",
+      "record": "project-context",
+      "file": "bytes/project-context-null-admission.json",
+      "bytes_sha256": "94bbd58cc9de31efba1e8584908ce527db13ff25d6239e0c178ded43a5f4cbf9",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "project-context: refuses project-context-null-admission",
+      "positive": "project-context-valid",
+      "mutant": {
+        "schema": "project-context",
+        "path": [
+          "properties",
+          "admission"
+        ],
+        "value": {
+          "anyOf": [
+            {
+              "enum": [
+                "off",
+                "admitted"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
       "name": "project-context-unknown",
       "record": "project-context",
       "file": "bytes/project-context-unknown.json",
-      "bytes_sha256": "a8bfa672cdf6bcd713a92bdaf017880dd83f976cad74669d39fa004d2da1c3ea",
+      "bytes_sha256": "6501c3df58441ac0e7f5dc9ad20ee3ebd857565d38afb91b5fc44e4addc61eb4",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -3927,7 +4134,7 @@
       "name": "project-context-future-version",
       "record": "project-context",
       "file": "bytes/project-context-future-version.json",
-      "bytes_sha256": "28f5d7301a7c682d6442f66933bb9f9a183c9a7498d60952ba6b14622b38094c",
+      "bytes_sha256": "a7a8a562a9196ca56628e023b4b47b294be8b3237b1f9c2b135adaf57aa4e2d9",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -4332,10 +4539,10 @@
       "name": "fragment-members-valid",
       "record": "fragment-members",
       "file": "bytes/fragment-members-valid.json",
-      "bytes_sha256": "a96ef432b1a7e58beb3329c435f4c3bef44dedd46b54fd52993812f6d496a257",
+      "bytes_sha256": "b511569d18f449c65b65821c4ea55a00e75d9d6076153a1d812e2e27feae541b",
       "expected": null,
       "claim": "fragment-members: accepts this closed record",
-      "record_sha256": "a96ef432b1a7e58beb3329c435f4c3bef44dedd46b54fd52993812f6d496a257"
+      "record_sha256": "b511569d18f449c65b65821c4ea55a00e75d9d6076153a1d812e2e27feae541b"
     },
     {
       "name": "fragment-members-missing-project_context",
@@ -4389,7 +4596,7 @@
       "name": "fragment-members-unknown",
       "record": "fragment-members",
       "file": "bytes/fragment-members-unknown.json",
-      "bytes_sha256": "ac94ecfe45b42e5719e1a6cd7ae37a2c65b53794ba9b2626f98e5c5e183bb6d8",
+      "bytes_sha256": "dbe69e917de527f1893dab9f7875a174b60b70b5773f2b34360927d5f134b382",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5032,16 +5239,16 @@
       "name": "adapter-valid",
       "record": "adapter",
       "file": "bytes/adapter-valid.json",
-      "bytes_sha256": "60c65221c5fb728e91fddb04fd1e42aff275229435f39873953d3b0aba6b7638",
+      "bytes_sha256": "5d854b4140397cce47e7ae4f732814a38aa807b3f102e725dfb5da6483025d1f",
       "expected": null,
       "claim": "adapter: accepts this closed record",
-      "record_sha256": "60c65221c5fb728e91fddb04fd1e42aff275229435f39873953d3b0aba6b7638"
+      "record_sha256": "5d854b4140397cce47e7ae4f732814a38aa807b3f102e725dfb5da6483025d1f"
     },
     {
       "name": "adapter-missing-kind",
       "record": "adapter",
       "file": "bytes/adapter-missing-kind.json",
-      "bytes_sha256": "f9a422b492a503038e0a679eba45bb9987d43a3915b0eca76575c6660602e8d9",
+      "bytes_sha256": "89d0f360208e5bed9dca423e24f5154a9e5e0ee7777cac1a43631aa70e4a74ab",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5057,7 +5264,8 @@
           "environment",
           "provider_version",
           "platform",
-          "surfaces"
+          "surfaces",
+          "modes"
         ]
       }
     },
@@ -5065,7 +5273,7 @@
       "name": "adapter-null-kind",
       "record": "adapter",
       "file": "bytes/adapter-null-kind.json",
-      "bytes_sha256": "ef8e990a8ad8b82303e8a2449d0e8f33d301177546c04e8b4c170794f8bbcfcc",
+      "bytes_sha256": "35e03e7db4d269d651b40cd44dc528bea04ae93b5b66e9b88f837f00c5ba7251",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5094,7 +5302,7 @@
       "name": "adapter-missing-environment",
       "record": "adapter",
       "file": "bytes/adapter-missing-environment.json",
-      "bytes_sha256": "c7ba8975b481063fa33d421cd9df2cc590979ee3102833be80c5ec6076ec0490",
+      "bytes_sha256": "00ad806767fb84d280ba95e97fdf73c514cf5d5a252f8d43e017d681bbfd781a",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5110,7 +5318,8 @@
           "kind",
           "provider_version",
           "platform",
-          "surfaces"
+          "surfaces",
+          "modes"
         ]
       }
     },
@@ -5118,7 +5327,7 @@
       "name": "adapter-null-environment",
       "record": "adapter",
       "file": "bytes/adapter-null-environment.json",
-      "bytes_sha256": "9415fb880266d53597a89e7d1b6654ec0ba82bb1df53fe7a45fd2c81f1228fa1",
+      "bytes_sha256": "209a148e780da24c7f43b44e5a8e7b312d466361920047879268a8dc6ac36d68",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5147,7 +5356,7 @@
       "name": "adapter-missing-provider_version",
       "record": "adapter",
       "file": "bytes/adapter-missing-provider_version.json",
-      "bytes_sha256": "39b4e232885bfd0fd87f8d43c68bee771d48a96c9b59834d30847bca52d220b2",
+      "bytes_sha256": "afaca760d8d7879656ba8ef7b4fb19da92ebc96fdafc38034d246a39f0e9f5e2",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5163,7 +5372,8 @@
           "kind",
           "environment",
           "platform",
-          "surfaces"
+          "surfaces",
+          "modes"
         ]
       }
     },
@@ -5171,7 +5381,7 @@
       "name": "adapter-null-provider_version",
       "record": "adapter",
       "file": "bytes/adapter-null-provider_version.json",
-      "bytes_sha256": "4796f1fe8e561587c1715c3e6ac0ff16c8066aa2498444b5f5792d2e2b8203e7",
+      "bytes_sha256": "7ab3bcce93baaa41c2d60fdab8eb38f9553844528dbc672fa9f69001d5bc75e7",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5203,7 +5413,7 @@
       "name": "adapter-missing-platform",
       "record": "adapter",
       "file": "bytes/adapter-missing-platform.json",
-      "bytes_sha256": "72a40b9d5ea8ec42e097184d7ebc8c7f9ca7d752104213cfcddc2166c838089e",
+      "bytes_sha256": "76ccf1728260a79ed4554fd13b8642b663621788b0bba21abfba206d63eae2fe",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5219,7 +5429,8 @@
           "kind",
           "environment",
           "provider_version",
-          "surfaces"
+          "surfaces",
+          "modes"
         ]
       }
     },
@@ -5227,7 +5438,7 @@
       "name": "adapter-null-platform",
       "record": "adapter",
       "file": "bytes/adapter-null-platform.json",
-      "bytes_sha256": "44179dbc98842e26cdd99e11b3b522c1c1f1374d5c9b74b67391866d0a6dbf60",
+      "bytes_sha256": "0ca98a0e7ff17a4f949c290e698313a50f6ee8097f863618469dc029cc725139",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5259,7 +5470,7 @@
       "name": "adapter-missing-surfaces",
       "record": "adapter",
       "file": "bytes/adapter-missing-surfaces.json",
-      "bytes_sha256": "02e4fc4720b3487432e0f1b31c5ab562b3e43ab79a10c4cfe5f48343c9cc8687",
+      "bytes_sha256": "182d0ccd4c8e757e5d883b5cf35fc7437b0e85a8c4dc099fe1909e90cfb7784d",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5275,7 +5486,8 @@
           "kind",
           "environment",
           "provider_version",
-          "platform"
+          "platform",
+          "modes"
         ]
       }
     },
@@ -5283,7 +5495,7 @@
       "name": "adapter-null-surfaces",
       "record": "adapter",
       "file": "bytes/adapter-null-surfaces.json",
-      "bytes_sha256": "927e10d190635a6ee2077f41f4604471752d705827810dc36cce5e3773cf41d0",
+      "bytes_sha256": "e5257af6c1cb49ccbc0915716425c0f0c602b8d5bcc1774562f74bb5f436ed97",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5321,10 +5533,68 @@
       }
     },
     {
+      "name": "adapter-missing-modes",
+      "record": "adapter",
+      "file": "bytes/adapter-missing-modes.json",
+      "bytes_sha256": "60c65221c5fb728e91fddb04fd1e42aff275229435f39873953d3b0aba6b7638",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "adapter: refuses adapter-missing-modes",
+      "positive": "adapter-valid",
+      "mutant": {
+        "schema": "adapter",
+        "path": [
+          "required"
+        ],
+        "value": [
+          "kind",
+          "environment",
+          "provider_version",
+          "platform",
+          "surfaces"
+        ]
+      }
+    },
+    {
+      "name": "adapter-null-modes",
+      "record": "adapter",
+      "file": "bytes/adapter-null-modes.json",
+      "bytes_sha256": "4fdccb23a99dc13b411d832706df4626d4c6628569f3515e4dd38e53945d3480",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "adapter: refuses adapter-null-modes",
+      "positive": "adapter-valid",
+      "mutant": {
+        "schema": "adapter",
+        "path": [
+          "properties",
+          "modes"
+        ],
+        "value": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "common.schema.json#/$defs/source_mode"
+              },
+              "uniqueItems": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
       "name": "adapter-unknown",
       "record": "adapter",
       "file": "bytes/adapter-unknown.json",
-      "bytes_sha256": "126cf3f143994532253e976b84c73c85f474771d7899c343cfaa878209e90635",
+      "bytes_sha256": "f9999cc0a91aedd8fd431e8b84cbe2fa678aaadfbe0d73a8fea233e040a47ce2",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5346,7 +5616,7 @@
       "name": "adapter-future-version",
       "record": "adapter",
       "file": "bytes/adapter-future-version.json",
-      "bytes_sha256": "4696e0a9608a59857262364005328188c862e8fd075f45b9c29882e55e24ad99",
+      "bytes_sha256": "a7c4aeb26a74f8cb032428ba5583428f55b275d979f48cd20e8ef6133831fd22",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5371,7 +5641,7 @@
       "name": "adapter-later-environment",
       "record": "adapter",
       "file": "bytes/adapter-later-environment.json",
-      "bytes_sha256": "325219c9c754755c8d03eb8564c28a3bc86e5ad58c4bd6e6f749e3d765c7d45e",
+      "bytes_sha256": "c840375e179af329706f57e04656394d2434b78409837a807fad911252e6b130",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5397,25 +5667,25 @@
       "name": "adapter-claude_code",
       "record": "adapter",
       "file": "bytes/adapter-claude_code.json",
-      "bytes_sha256": "6140b0fd59603ab1f853acd2c905c53b7ab3853ba7755f5c2615cf7898a667f9",
+      "bytes_sha256": "b5ecfe86ba0e232cfa6f46cdabced386bc7573823ad6263a1611fda4f162ff7b",
       "expected": null,
       "claim": "adapter: accepts this closed record",
-      "record_sha256": "6140b0fd59603ab1f853acd2c905c53b7ab3853ba7755f5c2615cf7898a667f9"
+      "record_sha256": "b5ecfe86ba0e232cfa6f46cdabced386bc7573823ad6263a1611fda4f162ff7b"
     },
     {
       "name": "adapter-muse",
       "record": "adapter",
       "file": "bytes/adapter-muse.json",
-      "bytes_sha256": "9aaa759f2c73e6ed0f9002bcd8c0f847ec8555c7a0ee1cd18c6a8395017304aa",
+      "bytes_sha256": "4bc0bec42b221f8ca52fb957b9e868d45dcb879209d689b97970732e5792ed4b",
       "expected": null,
       "claim": "adapter: accepts this closed record",
-      "record_sha256": "9aaa759f2c73e6ed0f9002bcd8c0f847ec8555c7a0ee1cd18c6a8395017304aa"
+      "record_sha256": "4bc0bec42b221f8ca52fb957b9e868d45dcb879209d689b97970732e5792ed4b"
     },
     {
       "name": "registration-nested-profile-unknown",
       "record": "registration",
       "file": "bytes/registration-nested-profile-unknown.json",
-      "bytes_sha256": "609049af7bedd6170d770449b8a1ac0b34e5a824224d64e37bfebab587667550",
+      "bytes_sha256": "beb162be57ad8038a2024c9486edcc1b2bfc473d0f809533cee891aa2ba3ecc0",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5439,7 +5709,7 @@
       "name": "registration-nested-profile-missing-name",
       "record": "registration",
       "file": "bytes/registration-nested-profile-missing-name.json",
-      "bytes_sha256": "037fd85bc66d68362c1bc0a44aee8850740e7ea3ba06e5e6eabd6064b366377d",
+      "bytes_sha256": "dac1557e7aacfc486c985d3a33720867f55f8a1a11d40f391baf3381abc4c6fd",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5462,7 +5732,7 @@
       "name": "registration-nested-profile-missing-lock_sha256",
       "record": "registration",
       "file": "bytes/registration-nested-profile-missing-lock_sha256.json",
-      "bytes_sha256": "ea795777c77e29f28ac7619ee28f66eda9dfdf4977ca290f3f041558cc34fc69",
+      "bytes_sha256": "44e2112211e3af5b4996f4bf70d6aef270b35a196fac2c7ae68b6e1d7f5b5e59",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5724,7 +5994,7 @@
       "name": "composition-nested-command_owners-0-unknown",
       "record": "composition",
       "file": "bytes/composition-nested-command_owners-0-unknown.json",
-      "bytes_sha256": "bea500296f9e2c178787486472130cf59c3e877dd6f7daaf7b93db21a2920367",
+      "bytes_sha256": "701dded6762ac767ea7a6eeb2f37443e66053ce811fb212167a98d648b9e18c3",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5749,7 +6019,7 @@
       "name": "composition-nested-command_owners-0-missing-name",
       "record": "composition",
       "file": "bytes/composition-nested-command_owners-0-missing-name.json",
-      "bytes_sha256": "1a017319e9383d0b405b2c1d83f290d06ed2a297fc0cd28f30db8aacbca2e57a",
+      "bytes_sha256": "0c85289f427402c0a4b75112117a24ff98a539c7f9901568968479f2e459a78b",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5774,7 +6044,7 @@
       "name": "composition-nested-command_owners-0-missing-item_id",
       "record": "composition",
       "file": "bytes/composition-nested-command_owners-0-missing-item_id.json",
-      "bytes_sha256": "509b80d05be9aa8926b15d675f3b9b2f5523c4ab83f51681742e39614ab29091",
+      "bytes_sha256": "136afb8ca805d5145130a83dcc2139729430a8c63bdde8d93708c3ba02e31dc1",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5799,7 +6069,7 @@
       "name": "composition-nested-command_owners-0-missing-artifact_sha256",
       "record": "composition",
       "file": "bytes/composition-nested-command_owners-0-missing-artifact_sha256.json",
-      "bytes_sha256": "6e2b409bd1a475bf9d5f84d0430cfc3567d4dc1c500924f45e66700944c0d0cc",
+      "bytes_sha256": "f498f96f59f05a97fa7f8e07412cb358c068ddc8ca97e53b6dfe5fada3178b27",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5824,7 +6094,7 @@
       "name": "composition-nested-omitted-0-unknown",
       "record": "composition",
       "file": "bytes/composition-nested-omitted-0-unknown.json",
-      "bytes_sha256": "a94624ca5febab9b591369647ff17b6afaf0e96430d24a784a496cee25f49bd8",
+      "bytes_sha256": "e533c19898311e95495459078b21ea710e3a6c0c5e1db406c35361e198463fdd",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5849,7 +6119,7 @@
       "name": "composition-nested-omitted-0-missing-item_id",
       "record": "composition",
       "file": "bytes/composition-nested-omitted-0-missing-item_id.json",
-      "bytes_sha256": "661ee0c9dc08c710b917c134fcbf3a84a4e98df2d1fb7adc37469847231cfe82",
+      "bytes_sha256": "d83dfd7f8836e960cefeb80a14fd9113e2dad876f87e909c5813c9758c4d0bad",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5873,7 +6143,7 @@
       "name": "composition-nested-omitted-0-missing-reason",
       "record": "composition",
       "file": "bytes/composition-nested-omitted-0-missing-reason.json",
-      "bytes_sha256": "d5819317892099637eabf44fca4ee7da44c3a2a994e94b520ce813747dfaf460",
+      "bytes_sha256": "a2a0b643b5ccb7d9a69704e6541e12fd6a1f4490b6ec9aaa6670cf7afb4989ab",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5897,7 +6167,7 @@
       "name": "fragment-members-nested-project_context-unknown",
       "record": "fragment-members",
       "file": "bytes/fragment-members-nested-project_context-unknown.json",
-      "bytes_sha256": "8d26983191b9792e951c6dd1a5e3d15efee4edd589ad10a9e97126a87bd04c1d",
+      "bytes_sha256": "7409ef654a560c40108a5238d44ba5377ad1ef7e4152c0539a427ad9ce3c6399",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5919,7 +6189,7 @@
       "name": "fragment-members-nested-project_context-missing-version",
       "record": "fragment-members",
       "file": "bytes/fragment-members-nested-project_context-missing-version.json",
-      "bytes_sha256": "f51d894a8dc362730f2e991c97368cf0945e719ef787b40f01bdc7884281eb25",
+      "bytes_sha256": "44e25d41fe3453c5f820a412abc2c97b8875d647fae1687a36f816e667fb2d09",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5936,7 +6206,8 @@
           "context_ref",
           "context_sha256",
           "project_root",
-          "lease_ref"
+          "lease_ref",
+          "admission"
         ]
       }
     },
@@ -5944,7 +6215,7 @@
       "name": "fragment-members-nested-project_context-missing-mode",
       "record": "fragment-members",
       "file": "bytes/fragment-members-nested-project_context-missing-mode.json",
-      "bytes_sha256": "ac9fd8c0ce479a08f8f9e8bccf3ca16585bc49b5b9811854fc6112f82ef63acb",
+      "bytes_sha256": "011a96d8b49f7a37c446ef4276f195385a025e1d12d632e2b0f8ee22c63f7768",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5961,7 +6232,8 @@
           "context_ref",
           "context_sha256",
           "project_root",
-          "lease_ref"
+          "lease_ref",
+          "admission"
         ]
       }
     },
@@ -5969,7 +6241,7 @@
       "name": "fragment-members-nested-project_context-missing-context_ref",
       "record": "fragment-members",
       "file": "bytes/fragment-members-nested-project_context-missing-context_ref.json",
-      "bytes_sha256": "fa4fa0491eca324b646d5e1402e5903f4bc179392652d2a26c04016786497b66",
+      "bytes_sha256": "ef353c2d158caf2de99b09dcf4b80b9db5b7b8d2b64de5ac79271dac324c32a6",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -5986,7 +6258,8 @@
           "mode",
           "context_sha256",
           "project_root",
-          "lease_ref"
+          "lease_ref",
+          "admission"
         ]
       }
     },
@@ -5994,7 +6267,7 @@
       "name": "fragment-members-nested-project_context-missing-context_sha256",
       "record": "fragment-members",
       "file": "bytes/fragment-members-nested-project_context-missing-context_sha256.json",
-      "bytes_sha256": "1025520beed0900a4c61193bd79a320e05e6aa669ee0bb4f6be7227b59f41a5d",
+      "bytes_sha256": "01449d3dce9176d8a0a53add6568923943d8c3fa132d50092e7e9e73e9442d4c",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6011,7 +6284,8 @@
           "mode",
           "context_ref",
           "project_root",
-          "lease_ref"
+          "lease_ref",
+          "admission"
         ]
       }
     },
@@ -6019,7 +6293,7 @@
       "name": "fragment-members-nested-project_context-missing-project_root",
       "record": "fragment-members",
       "file": "bytes/fragment-members-nested-project_context-missing-project_root.json",
-      "bytes_sha256": "d4095d170726d5e90bd61db12f8ff43bbfcef1a7ca68c2dbb029fb46fef3147c",
+      "bytes_sha256": "4ae00bf32b53f95b7073120eaa7d356d5c915638fa456b7fe741502e777c358f",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6036,7 +6310,8 @@
           "mode",
           "context_ref",
           "context_sha256",
-          "lease_ref"
+          "lease_ref",
+          "admission"
         ]
       }
     },
@@ -6044,7 +6319,7 @@
       "name": "fragment-members-nested-project_context-missing-lease_ref",
       "record": "fragment-members",
       "file": "bytes/fragment-members-nested-project_context-missing-lease_ref.json",
-      "bytes_sha256": "61ed658965b969614d3399f73d7194a5dd9c8340e511442f9bd639fcf6626315",
+      "bytes_sha256": "180ce015e549cb11ece0a33de7287aeadc03f5d7c65537d0710e6562e45068c3",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6061,7 +6336,34 @@
           "mode",
           "context_ref",
           "context_sha256",
-          "project_root"
+          "project_root",
+          "admission"
+        ]
+      }
+    },
+    {
+      "name": "fragment-members-nested-project_context-missing-admission",
+      "record": "fragment-members",
+      "file": "bytes/fragment-members-nested-project_context-missing-admission.json",
+      "bytes_sha256": "12ebb7e07bdfc90f5900bdc38f83341e79aecb01c3ad5f87bf9b3040c4a4f69c",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "fragment-members: refuses fragment-members-nested-project_context-missing-admission",
+      "positive": "fragment-members-valid",
+      "mutant": {
+        "schema": "project-context",
+        "path": [
+          "required"
+        ],
+        "value": [
+          "version",
+          "mode",
+          "context_ref",
+          "context_sha256",
+          "project_root",
+          "lease_ref"
         ]
       }
     },
@@ -6069,7 +6371,7 @@
       "name": "fragment-members-nested-command_environment-unknown",
       "record": "fragment-members",
       "file": "bytes/fragment-members-nested-command_environment-unknown.json",
-      "bytes_sha256": "00d12baaf2f81da3b54cb25ac57f6cbd3096dd9b883fa1f898ec639a3976b57a",
+      "bytes_sha256": "f679013de0703b528046d27af15eab4c55ab8870791c9db7e2fb4b6caf2a9af8",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6091,7 +6393,7 @@
       "name": "fragment-members-nested-command_environment-missing-version",
       "record": "fragment-members",
       "file": "bytes/fragment-members-nested-command_environment-missing-version.json",
-      "bytes_sha256": "b792f100e8f270545ea4ff07da45ef9e843809153123ce0e125f173976ba8163",
+      "bytes_sha256": "739f90133f0f38478c35955905f92182507ed35be3564bd22d04303cad372c28",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6116,7 +6418,7 @@
       "name": "fragment-members-nested-command_environment-missing-operation",
       "record": "fragment-members",
       "file": "bytes/fragment-members-nested-command_environment-missing-operation.json",
-      "bytes_sha256": "d7b0662ea8ac247b7217e2b3762f287adc3add0d2b35fa30b1e2f0f1a0bdbd9b",
+      "bytes_sha256": "b8eca3be837aa6b3745f9559730b4f6492ef015f2a6153200c3c00ceef510371",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6141,7 +6443,7 @@
       "name": "fragment-members-nested-command_environment-missing-tool_ref",
       "record": "fragment-members",
       "file": "bytes/fragment-members-nested-command_environment-missing-tool_ref.json",
-      "bytes_sha256": "f652d612b34a3ba754d12729ef0f3b11df236382c3e36625208cc4aefcd8c79a",
+      "bytes_sha256": "a852497031b7348a98cc146eef74a839063a7d2ccdd4329e6dd7e14b165ef672",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6166,7 +6468,7 @@
       "name": "fragment-members-nested-command_environment-missing-dispatcher_ref",
       "record": "fragment-members",
       "file": "bytes/fragment-members-nested-command_environment-missing-dispatcher_ref.json",
-      "bytes_sha256": "1aca1bf18c6384a3408703332d0d3415cede5afd0e5da58051a5fc54b233cee0",
+      "bytes_sha256": "4d5759b574d98e6ee0d93836cfcb922c5ec057cb599721759b7c48339f29caa9",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6191,7 +6493,7 @@
       "name": "fragment-members-nested-command_environment-missing-context_ref",
       "record": "fragment-members",
       "file": "bytes/fragment-members-nested-command_environment-missing-context_ref.json",
-      "bytes_sha256": "c743faa5ae129a60f7bf9063ffe152c3e01d87b4fd1501e63855be21e379093c",
+      "bytes_sha256": "4aae608914afd76e943ea768005a2ab4a8379c12070f339899bbf3278e2e09fb",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6216,7 +6518,7 @@
       "name": "fragment-members-nested-command_environment-missing-context_sha256",
       "record": "fragment-members",
       "file": "bytes/fragment-members-nested-command_environment-missing-context_sha256.json",
-      "bytes_sha256": "71fa99f3dee926525100ea3c3425eb1f6ea45f38fd96e1a5947a2501571e9574",
+      "bytes_sha256": "6f2949ba56258c2ec36ba12c1b17b5825cc24e20d9b7bb96e32d358f983d6b99",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6743,28 +7045,28 @@
       "name": "project-context-off",
       "record": "project-context",
       "file": "bytes/project-context-off.json",
-      "bytes_sha256": "7d7ef2f92006144903d5820b25f6e49a0aa101cde148d468a9631e1e6d6c7d7f",
+      "bytes_sha256": "f9ceca018a39192f9878364d20f8e3796b146e9e151435ed0e8d53346f7530f5",
       "expected": null,
       "claim": "project-context: accepts this closed record",
-      "record_sha256": "7d7ef2f92006144903d5820b25f6e49a0aa101cde148d468a9631e1e6d6c7d7f"
+      "record_sha256": "f9ceca018a39192f9878364d20f8e3796b146e9e151435ed0e8d53346f7530f5"
     },
     {
       "name": "fragment-no-command",
       "record": "fragment-members",
       "file": "bytes/fragment-no-command.json",
-      "bytes_sha256": "8c695720622601dd43629abccf002de0b37021416ab17882644af36842222282",
+      "bytes_sha256": "019408b0d3b30d4a6c86a72f256ad9e6ba1045eeb1068a1a2d288c55bfae58c3",
       "expected": null,
       "claim": "fragment-members: accepts this closed record",
-      "record_sha256": "8c695720622601dd43629abccf002de0b37021416ab17882644af36842222282"
+      "record_sha256": "019408b0d3b30d4a6c86a72f256ad9e6ba1045eeb1068a1a2d288c55bfae58c3"
     },
     {
       "name": "composition-no-command",
       "record": "composition",
       "file": "bytes/composition-no-command.json",
-      "bytes_sha256": "9554a673d072491c899ced49a2a29122f9658a822bce2e661db732e783d4809a",
+      "bytes_sha256": "b648c121b11782e3738d4a2b6b3b42281e909d8ae85cdd5325515f275b3246b6",
       "expected": null,
       "claim": "composition: accepts this closed record",
-      "record_sha256": "9554a673d072491c899ced49a2a29122f9658a822bce2e661db732e783d4809a"
+      "record_sha256": "b648c121b11782e3738d4a2b6b3b42281e909d8ae85cdd5325515f275b3246b6"
     },
     {
       "name": "generation-empty",
@@ -6797,19 +7099,19 @@
       "name": "adapter-macos",
       "record": "adapter",
       "file": "bytes/adapter-macos.json",
-      "bytes_sha256": "de80fffa56e18994892aff10ab618ba5c7012db0e4bd045fefb4b4ebe23840d1",
+      "bytes_sha256": "68a751eab0c19ca0fbf1333d73575c6a578b2d418da644eb673365c8519eb765",
       "expected": null,
       "claim": "adapter: accepts this closed record",
-      "record_sha256": "de80fffa56e18994892aff10ab618ba5c7012db0e4bd045fefb4b4ebe23840d1"
+      "record_sha256": "68a751eab0c19ca0fbf1333d73575c6a578b2d418da644eb673365c8519eb765"
     },
     {
       "name": "adapter-no-capabilities",
       "record": "adapter",
       "file": "bytes/adapter-no-capabilities.json",
-      "bytes_sha256": "b6a9b0a7b30406dff425f4819d231f76f438d1743de3e092c53ebe06ead52fc3",
+      "bytes_sha256": "61457b4233e763759e7d23755a264bb0584489337ba28d2252272d61dc438c9d",
       "expected": null,
       "claim": "adapter: accepts this closed record",
-      "record_sha256": "b6a9b0a7b30406dff425f4819d231f76f438d1743de3e092c53ebe06ead52fc3"
+      "record_sha256": "61457b4233e763759e7d23755a264bb0584489337ba28d2252272d61dc438c9d"
     },
     {
       "name": "snapshot-empty",
@@ -6833,16 +7135,16 @@
       "name": "id-max",
       "record": "registration",
       "file": "bytes/id-max.json",
-      "bytes_sha256": "9763fc1b082ee9f74ea6dc8f595a4b319d8784cb8992c7fa6d786f4331c2d711",
+      "bytes_sha256": "8371d41b45db44c8da2c77a07909d521feccbb46bb872c1c035bdf50e5000f51",
       "expected": null,
       "claim": "registration: accepts this closed record",
-      "record_sha256": "9763fc1b082ee9f74ea6dc8f595a4b319d8784cb8992c7fa6d786f4331c2d711"
+      "record_sha256": "8371d41b45db44c8da2c77a07909d521feccbb46bb872c1c035bdf50e5000f51"
     },
     {
       "name": "id-uppercase",
       "record": "registration",
       "file": "bytes/id-uppercase.json",
-      "bytes_sha256": "2272b072701d3ad3bd9c8f7a1ff119a2aea0bdd54d35614f5d3d4ac7b14d00ff",
+      "bytes_sha256": "a0e11855840cf08e4e17475df79b4dd26e8cfd0df3ac96e1b735eae6cd8a014a",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6863,7 +7165,7 @@
       "name": "id-too-long",
       "record": "registration",
       "file": "bytes/id-too-long.json",
-      "bytes_sha256": "dd935bbdc927d7a8a1e9cef740a7b930d801dfca29f52d979535c52940dd2bde",
+      "bytes_sha256": "35692d132a82d7866cf92e2bb7fa8a419f63898fe10b4ea6cde0b3c5ce13632f",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6884,7 +7186,7 @@
       "name": "hex-short",
       "record": "registration",
       "file": "bytes/hex-short.json",
-      "bytes_sha256": "e00fe56e973151db4723ef33ab9b6ea0a5ddf4a99d7ff6cd9949119413ab2cd6",
+      "bytes_sha256": "04dbbba4b0b835e6afa4ee153a7372ef8f1d26a6451edfeecbac7565343854a3",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6905,7 +7207,7 @@
       "name": "hex-uppercase",
       "record": "registration",
       "file": "bytes/hex-uppercase.json",
-      "bytes_sha256": "8139593e4e556b6d347e54ef1b0a638291c0686665f91137927195881e3753b5",
+      "bytes_sha256": "b34528529429ea6518a520ee33f2cd5222e746f6556820b29ae3f12c3f5b817d",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6926,7 +7228,7 @@
       "name": "hex-prefixed",
       "record": "registration",
       "file": "bytes/hex-prefixed.json",
-      "bytes_sha256": "51989074622797f9fcdf249fb33364461e0eda9cc5823ea14d6d552d9f0ffb13",
+      "bytes_sha256": "4c5ffe6921f94822f2b5cee86da41506cb69d1e563376edc34b66bbe0aabedd4",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6947,7 +7249,7 @@
       "name": "ref-home-wrong-tag",
       "record": "registration",
       "file": "bytes/ref-home-wrong-tag.json",
-      "bytes_sha256": "0fc33cf30314e88390e73c019ba0c745ac099c82c5f419cc6d4c41da7d8966b1",
+      "bytes_sha256": "287d44c885568704118031e905a7e1ad16c258376664aa92365bc9804bf8f318",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -6968,7 +7270,7 @@
       "name": "ref-worktree-wrong-tag",
       "record": "registration",
       "file": "bytes/ref-worktree-wrong-tag.json",
-      "bytes_sha256": "2ebccfefbc7722e6bb92bb67d84c52267850c99f88d5bda05c158dd346f4b9fe",
+      "bytes_sha256": "83d12ac82651beaf02dfd2ca57e4f191471b51db3d8f618d2b7a3d75dda6fcfa",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -7115,7 +7417,7 @@
       "name": "ref-adapter-wrong-tag",
       "record": "composition",
       "file": "bytes/ref-adapter-wrong-tag.json",
-      "bytes_sha256": "e1b612525fdbc4d61c757f6fec053d70c4d5525d65a8f833046c979059108fec",
+      "bytes_sha256": "24c95bda7147d1ab5a29d5fdbcc42cff48f5f5e3e45cf5337c811f08701a2030",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -7136,7 +7438,7 @@
       "name": "ref-policy-wrong-tag",
       "record": "composition",
       "file": "bytes/ref-policy-wrong-tag.json",
-      "bytes_sha256": "389d61ba35f03df12c8a304be4860933478789835dcbedfaa69a6c350f5864e3",
+      "bytes_sha256": "90608dc7bdea2cdacd51338b8f3b752da802b5cb32a8d29bf834d7f239ccdb33",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -7199,7 +7501,7 @@
       "name": "ref-lease-wrong-tag",
       "record": "project-context",
       "file": "bytes/ref-lease-wrong-tag.json",
-      "bytes_sha256": "06195d89195ba4e7e591d1371fca38bf1ab0987a6f7151a53506fa407b7cbec7",
+      "bytes_sha256": "be66db48b7ef2d493cc0afb1104a42886f71ac10e46080647ccfe1866cfc5092",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -7262,7 +7564,7 @@
       "name": "ref-url",
       "record": "registration",
       "file": "bytes/ref-url.json",
-      "bytes_sha256": "706ba86d0fd0b201cb6b9fbd625cc77801450954944ea1effeab54a9443ff67f",
+      "bytes_sha256": "1847eb50f6a77f85b58a4dd7f25fdc4d9afc83f43ea98a2c4e581f69af04b504",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -7339,7 +7641,7 @@
       "name": "composition-memory-on",
       "record": "composition",
       "file": "bytes/composition-memory-on.json",
-      "bytes_sha256": "56d5517dcbd36f7fec5eaffd839d6e819c846d0f1ecdbc1fc188ae56ab8cc856",
+      "bytes_sha256": "82925254db75781f556dcec037c6633c40c07be6d8cd62fdaddfefba6ae2f485",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -7717,7 +8019,7 @@
       "name": "composition-too-many-commands",
       "record": "composition",
       "file": "bytes/composition-too-many-commands.json",
-      "bytes_sha256": "f66c90265668d4721e8d243b3c0f842a8831af8eb321429b205dcbaa3c82a467",
+      "bytes_sha256": "ede56efc28564a084a73d4964456d8e07989c79f762043a2c328bce4bc4c9894",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -7738,7 +8040,7 @@
       "name": "fragment-digest-mismatch",
       "record": "fragment-members",
       "file": "bytes/fragment-digest-mismatch.json",
-      "bytes_sha256": "49b6a94c8b75d9864525db6f782d00d653430dde2075570c0f9c0b26b579e149",
+      "bytes_sha256": "1495a29fc4ebc892b1ed77f042622ce278240628bc4b3d114a7aa2e87ba8699a",
       "expected": {
         "code": "project_context_invalid",
         "gate": "fragment-context"
@@ -7753,7 +8055,7 @@
       "name": "fragment-ref-mismatch",
       "record": "fragment-members",
       "file": "bytes/fragment-ref-mismatch.json",
-      "bytes_sha256": "f54785381ac54c34a3ae58e7cb814391c2cdab5564ae7d8c822be1d34cb1faa4",
+      "bytes_sha256": "1b81a66fc01ccca61e8ac2ff8e7997985c0e047778e90e2815f10344c712ee40",
       "expected": {
         "code": "project_context_invalid",
         "gate": "fragment-context"
@@ -7768,7 +8070,7 @@
       "name": "fragment-forbidden-path-prepend",
       "record": "fragment-members",
       "file": "bytes/fragment-forbidden-path-prepend.json",
-      "bytes_sha256": "4b0c1c78ac6605ecd7b2865fa010ab7aba6b810b68d555a3b5739c3d1374facf",
+      "bytes_sha256": "88d3fcc17bf65cf3ad507cbcc515ece5f485b3e9f7315c12d7f34e377ff9bc56",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -7793,7 +8095,7 @@
       "name": "adapter-surfaces-unsorted",
       "record": "adapter",
       "file": "bytes/adapter-surfaces-unsorted.json",
-      "bytes_sha256": "ce9c0bbf7efd0bafb051a6c3cb1af22d3b53974d320a08091e614fb40df13aa9",
+      "bytes_sha256": "83c51f5284ac6a763821e2f64159570c2138838b9f3de67ebbc5168a1d47912b",
       "expected": {
         "code": "project_context_invalid",
         "gate": "surface-order"
@@ -7808,7 +8110,7 @@
       "name": "adapter-surfaces-duplicate",
       "record": "adapter",
       "file": "bytes/adapter-surfaces-duplicate.json",
-      "bytes_sha256": "f2a22903461367e0d7ae1c75052c0b27c2f914bbc5804fb6fe301f044ebacf8d",
+      "bytes_sha256": "eca327c45c559de1430de7cf5d689703a7844b46fa579222dac78ddc6e3f28e3",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -7829,7 +8131,7 @@
       "name": "adapter-version-range",
       "record": "adapter",
       "file": "bytes/adapter-version-range.json",
-      "bytes_sha256": "e37d6e4aeb5a81227912eb4c2e952e9c79c77304393bf47afc395d97ce302049",
+      "bytes_sha256": "812d6b2ddec2a6a9db6fd33c2d70939163e9e73348bc6a98a4995a636919558e",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -7850,7 +8152,7 @@
       "name": "root-parent",
       "record": "registration",
       "file": "bytes/root-parent.json",
-      "bytes_sha256": "b01de466cac251930cb798f604652d213cb026c12d68b86366a2dce3d208fbe8",
+      "bytes_sha256": "b4ee2a94d4ff8373e0a8b057aa9c8b6bbd236858176ee5606df5ab91ef248a03",
       "expected": {
         "code": "project_context_invalid",
         "gate": "root-path"
@@ -7865,16 +8167,16 @@
       "name": "root-max-bytes",
       "record": "registration",
       "file": "bytes/root-max-bytes.json",
-      "bytes_sha256": "d2fd23f9f35c5813f281645848798ee7a1b4c53bdc414f70158999f10749ff44",
+      "bytes_sha256": "67b320a5236a3d047f04be94bdd188b9780a45af8da8caa8b0c89305bb38a9e8",
       "expected": null,
       "claim": "registration: accepts this closed record",
-      "record_sha256": "d2fd23f9f35c5813f281645848798ee7a1b4c53bdc414f70158999f10749ff44"
+      "record_sha256": "67b320a5236a3d047f04be94bdd188b9780a45af8da8caa8b0c89305bb38a9e8"
     },
     {
       "name": "root-utf8-too-long",
       "record": "registration",
       "file": "bytes/root-utf8-too-long.json",
-      "bytes_sha256": "a0b0d38142b0fa65774dbd43f2580e4b39b95408611c9ecb63b07d3bfd971f1f",
+      "bytes_sha256": "d527baa2b519c1eb9f0cc1037cff278eba073d808b70ff5e0935a7c1dfba6940",
       "expected": {
         "code": "project_context_invalid",
         "gate": "string-bytes"
@@ -7890,7 +8192,7 @@
       "name": "string-utf8-too-long",
       "record": "adapter",
       "file": "bytes/string-utf8-too-long.json",
-      "bytes_sha256": "b3c3211a4b56eef92ddf318fb55fb482a5f8024e4e669f332a29811a0d988875",
+      "bytes_sha256": "41f255b0b9061a46a2d8e3fe50720bc7a8c89cd3aae062f046efba52034a2aed",
       "expected": {
         "code": "project_context_invalid",
         "gate": "string-bytes"
@@ -7906,10 +8208,10 @@
       "name": "string-max-bytes",
       "record": "adapter",
       "file": "bytes/string-max-bytes.json",
-      "bytes_sha256": "d378281839d6939013b41470be2f617f580abcc328d5343ed3ead10f343330e4",
+      "bytes_sha256": "4569b2014389f5ea35745a999343c1098bbf4f6e81f1201160a0c0e9aa8fcbe3",
       "expected": null,
       "claim": "adapter: accepts this closed record",
-      "record_sha256": "d378281839d6939013b41470be2f617f580abcc328d5343ed3ead10f343330e4"
+      "record_sha256": "4569b2014389f5ea35745a999343c1098bbf4f6e81f1201160a0c0e9aa8fcbe3"
     },
     {
       "name": "repository-unsafe-remote",
@@ -8135,7 +8437,7 @@
       "name": "provider-version-final-newline",
       "record": "adapter",
       "file": "bytes/provider-version-final-newline.json",
-      "bytes_sha256": "c0a843809703b0b5ff56668a326cf45592959b52c1ae47254df959ba70250ad6",
+      "bytes_sha256": "339e7f37c1c4a86a0e3bc75616479b17b96ffadc76a8704b226aaa9d90ce9eaa",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8156,7 +8458,7 @@
       "name": "id-final-newline",
       "record": "registration",
       "file": "bytes/id-final-newline.json",
-      "bytes_sha256": "87c46462b2b77581bb87c81935d56b96d95e75629976506deeb8eca5d58cef7d",
+      "bytes_sha256": "fc52dea51c47b6fc66c5bcead6b045fe9da2c8c2d2403ebba707c6368e33efc3",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8177,7 +8479,7 @@
       "name": "hex-final-newline",
       "record": "registration",
       "file": "bytes/hex-final-newline.json",
-      "bytes_sha256": "f943d416f3307694140ce75a93d312104faeb4f17bf3527903b2838c2d910adc",
+      "bytes_sha256": "e5d26916e66faa3d200ac215de44b65ae092683f44c001478f2fafe8c461c4c8",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8198,7 +8500,7 @@
       "name": "ref-final-newline",
       "record": "registration",
       "file": "bytes/ref-final-newline.json",
-      "bytes_sha256": "4b72a3189980f1702d1954e75194bc6737ecba8492175f82bb3b4b700b4f2ebc",
+      "bytes_sha256": "3457334e154fde4c77e324ced0d545d196444ba5fb99ae03212ee6a0bc22a7ae",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8245,7 +8547,7 @@
       "name": "project-context-forbidden-mode",
       "record": "project-context",
       "file": "bytes/project-context-forbidden-mode.json",
-      "bytes_sha256": "e2c2f417c9d622905b01069d64585f99d7b2fe5deaf202bd639d23e2ac247ace",
+      "bytes_sha256": "13957611aa71152b7e958a016fdfaf198b2f50514fd9a248162f72198a1d6e14",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8253,10 +8555,85 @@
       "claim": "project-context: refuses project-context-forbidden-mode",
       "positive": "project-context-valid",
       "mutant": {
+        "schema": "common",
+        "path": [
+          "$defs",
+          "source_mode",
+          "enum"
+        ],
+        "value": [
+          "native-project",
+          "strict",
+          "automatic"
+        ]
+      }
+    },
+    {
+      "name": "registration-forbidden-mode",
+      "record": "registration",
+      "file": "bytes/registration-forbidden-mode.json",
+      "bytes_sha256": "d3351edb0cb9552cfc3d3183cd325e5023938575554331e7276b6114ad650bb2",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "registration: refuses registration-forbidden-mode",
+      "positive": "registration-valid",
+      "mutant": {
+        "schema": "common",
+        "path": [
+          "$defs",
+          "source_mode",
+          "enum"
+        ],
+        "value": [
+          "native-project",
+          "strict",
+          "automatic"
+        ]
+      }
+    },
+    {
+      "name": "composition-forbidden-mode",
+      "record": "composition",
+      "file": "bytes/composition-forbidden-mode.json",
+      "bytes_sha256": "1555f57d7ef46d1ec83e4c2607200e17c80188982fc0434309428cd756f1e948",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "composition: refuses composition-forbidden-mode",
+      "positive": "composition-valid",
+      "mutant": {
+        "schema": "common",
+        "path": [
+          "$defs",
+          "source_mode",
+          "enum"
+        ],
+        "value": [
+          "native-project",
+          "strict",
+          "automatic"
+        ]
+      }
+    },
+    {
+      "name": "project-context-forbidden-admission",
+      "record": "project-context",
+      "file": "bytes/project-context-forbidden-admission.json",
+      "bytes_sha256": "1622e3ab99d926fdb5319a15e69a6bb88e7856066cd685b5d6dad8123ae0e2d1",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "project-context: refuses project-context-forbidden-admission",
+      "positive": "project-context-valid",
+      "mutant": {
         "schema": "project-context",
         "path": [
           "properties",
-          "mode",
+          "admission",
           "enum"
         ],
         "value": [
@@ -8267,10 +8644,35 @@
       }
     },
     {
+      "name": "adapter-forbidden-modes",
+      "record": "adapter",
+      "file": "bytes/adapter-forbidden-modes.json",
+      "bytes_sha256": "f10ec571bf4d41c8776822c6215b71cb1796abb6b43303b1b224fc807072e0e5",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "adapter: refuses adapter-forbidden-modes",
+      "positive": "adapter-valid",
+      "mutant": {
+        "schema": "common",
+        "path": [
+          "$defs",
+          "source_mode",
+          "enum"
+        ],
+        "value": [
+          "native-project",
+          "strict",
+          "automatic"
+        ]
+      }
+    },
+    {
       "name": "composition-forbidden-reason",
       "record": "composition",
       "file": "bytes/composition-forbidden-reason.json",
-      "bytes_sha256": "4b03df6891fd0499c10998a3a77de4a8d42e9f1d74094c59e224ea30dc50a389",
+      "bytes_sha256": "39b52c8b44a164ee11b32199d8e9248004dad48d41d4eeda29abfa005cd2f254",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8298,7 +8700,7 @@
       "name": "adapter-forbidden-platform",
       "record": "adapter",
       "file": "bytes/adapter-forbidden-platform.json",
-      "bytes_sha256": "3d8cdfab03c592f066f8295adbd627076f84da06f72f20a7ea7cfa443f0137ff",
+      "bytes_sha256": "fa6220d70f53060852ded53b13f52f60a18ed34e7e18483c15e0b7728d7cd88d",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8323,7 +8725,7 @@
       "name": "adapter-forbidden-surfaces",
       "record": "adapter",
       "file": "bytes/adapter-forbidden-surfaces.json",
-      "bytes_sha256": "88e9a88b181479aa8711ee5bd6843be560e15ae571b69917c873869c15bd9913",
+      "bytes_sha256": "60f87a734a4addcee8e6b0a0962d537bde2fbf7f7981a584f6347025dc3091ee",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8379,7 +8781,7 @@
       "name": "json-duplicate-member",
       "record": "registration",
       "file": "bytes/json-duplicate-member.json",
-      "bytes_sha256": "c44121968a628533cd2fe30acb14534ada5f9810b60befeedc999d2d4b82085f",
+      "bytes_sha256": "98725506417dcc7a61c1bb005ce0dfea3794817749e89467904e376a66af28dc",
       "expected": {
         "code": "project_context_invalid",
         "gate": "duplicate-member"
@@ -8394,7 +8796,7 @@
       "name": "json-invalid-utf8",
       "record": "registration",
       "file": "bytes/json-invalid-utf8.json",
-      "bytes_sha256": "5d301708e0c8b31d04fd3036f3a637749790633c823ac7a12fa0879eedc74340",
+      "bytes_sha256": "2ec6dcd6c142f6a7eef5683cbfdfaa4b082189913ee47bf267620cbc5f47d425",
       "expected": {
         "code": "project_context_invalid",
         "gate": "encoding"
@@ -8409,7 +8811,7 @@
       "name": "json-trailing-input",
       "record": "registration",
       "file": "bytes/json-trailing-input.json",
-      "bytes_sha256": "958e999035123c095b190fb99f966f250354c1514eff2de08724a30f0303f2d3",
+      "bytes_sha256": "2153b9158a15e0d422a1c06c339c1ea2b2255b24ec9c9918b51df9573f931278",
       "expected": {
         "code": "project_context_invalid",
         "gate": "encoding"
@@ -8424,7 +8826,7 @@
       "name": "json-record-too-big",
       "record": "registration",
       "file": "bytes/json-record-too-big.json",
-      "bytes_sha256": "587d9fdc2adbba8a6d920d2ea9d3a75fde4fd141e29ab9ea735628816de36766",
+      "bytes_sha256": "288213686183ee2222061922e18702c36c43036c2d73b4109a6b62513b37b679",
       "expected": {
         "code": "project_context_invalid",
         "gate": "record-size"
@@ -8502,7 +8904,7 @@
       "name": "json-unpaired-surrogate",
       "record": "registration",
       "file": "bytes/json-unpaired-surrogate.json",
-      "bytes_sha256": "88b0d27c8225f70813f090f2e4bebb87b86da55906f64d848ee036afb622a6bd",
+      "bytes_sha256": "66f93b192400c5cc4e21d4cdcf1136396040b0e708dca5a1e3812cff747d5d71",
       "expected": {
         "code": "project_context_invalid",
         "gate": "encoding"
@@ -8667,7 +9069,7 @@
       "name": "registration-profile-name-final-lf",
       "record": "registration",
       "file": "bytes/registration-profile-name-final-lf.json",
-      "bytes_sha256": "2b4a94e5949359fe65f8512999fdd45f376400c135b04fd2e315fd5e1834f5e7",
+      "bytes_sha256": "485bcd1078171c63914156ae3e7ad63e26d31e29c092dacef776871863e988b4",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8690,7 +9092,7 @@
       "name": "composition-profile-name-final-lf",
       "record": "composition",
       "file": "bytes/composition-profile-name-final-lf.json",
-      "bytes_sha256": "685d61f06345ec617cad26a78374ac8898f0043f3c5376a9d6745478260c62a3",
+      "bytes_sha256": "062a65184480a0ef35f1e9f2a9e83fa5e4f05058f971100b28580b06156fe993",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8713,7 +9115,7 @@
       "name": "composition-command_owners-0-name-final-lf",
       "record": "composition",
       "file": "bytes/composition-command_owners-0-name-final-lf.json",
-      "bytes_sha256": "735c0bc21d0d6efded72239044ac1a2b37201fbd81baccfb5b7f0c67dd001966",
+      "bytes_sha256": "30d51b07f48a3f885de179aa41789801a1894c7e35356a807f129869802004a8",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8865,7 +9267,7 @@
       "name": "adapter-wildcard-0",
       "record": "adapter",
       "file": "bytes/adapter-wildcard-0.json",
-      "bytes_sha256": "1a079b2e1be5501dba229b0f442fd262f8860fd586d8eea7d49c49c681615570",
+      "bytes_sha256": "d1572eeadd663582c22820a3d1b0c9c792fad55a57caba95b702aeb3662afd64",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8886,7 +9288,7 @@
       "name": "adapter-wildcard-1",
       "record": "adapter",
       "file": "bytes/adapter-wildcard-1.json",
-      "bytes_sha256": "c08c2be127c04888cb502ced8588ec15e2187f60b8d2f22bbece3b5f41297c4f",
+      "bytes_sha256": "6e06c141a875f36c469f605c307dcc5355202305f963f26ff6ef6e1cec5501ab",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8907,7 +9309,7 @@
       "name": "adapter-wildcard-2",
       "record": "adapter",
       "file": "bytes/adapter-wildcard-2.json",
-      "bytes_sha256": "e2f95fd27122705db64aad2c9fd32adf58709bae0ecd5af762165dbe40596736",
+      "bytes_sha256": "3fdbd3380f28ccef4530ae82e00f48004081ac7448c5da20e20762f1484c4c7f",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8928,7 +9330,7 @@
       "name": "adapter-wildcard-3",
       "record": "adapter",
       "file": "bytes/adapter-wildcard-3.json",
-      "bytes_sha256": "ae5dd7cb545bcb4f81bc0cfc0d7ca5b8365c215d9111eae21c612264db1f786c",
+      "bytes_sha256": "9a019b91c0721f53a395d23279c6e77df3001c623896f91d3c010a61c636c048",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8949,7 +9351,7 @@
       "name": "adapter-wildcard-4",
       "record": "adapter",
       "file": "bytes/adapter-wildcard-4.json",
-      "bytes_sha256": "8e920e4022c9a3f60bcb8c22e86c9f0fa6af9f102b9b5376ccec97b0299ce541",
+      "bytes_sha256": "883ac76d22b99735d1198857ee31bcb428b8da708362f7a78155611543742138",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8970,7 +9372,7 @@
       "name": "adapter-wildcard-5",
       "record": "adapter",
       "file": "bytes/adapter-wildcard-5.json",
-      "bytes_sha256": "0c2e7ba76ebee164126029bc2e08f6bcf5aa86f2f4d09d52172330de21c9d4bb",
+      "bytes_sha256": "b0bea5898738cef52d8ed26b95adcade84b54ae1fa195f0f97f912221e2ad583",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -8991,7 +9393,7 @@
       "name": "adapter-wildcard-6",
       "record": "adapter",
       "file": "bytes/adapter-wildcard-6.json",
-      "bytes_sha256": "f3b717b40b4e313fb85fdf2e5a1ad6695be44abe2b98085891a41d22f58e0255",
+      "bytes_sha256": "876a54e914b4e65cf803939d1e5b62f1d923a331966009eafeffa8237673319b",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -9012,7 +9414,7 @@
       "name": "adapter-wildcard-7",
       "record": "adapter",
       "file": "bytes/adapter-wildcard-7.json",
-      "bytes_sha256": "04f3356b418418997c49085071e823ab6ebb25a269a36c4491954327088bba0f",
+      "bytes_sha256": "5eabe1063f515e65a66f8f5befdf225b87c6a756ea98ed974fee8a327fad50a8",
       "expected": {
         "code": "project_context_invalid",
         "gate": "schema"
@@ -9033,10 +9435,10 @@
       "name": "adapter-concrete-prerelease",
       "record": "adapter",
       "file": "bytes/adapter-concrete-prerelease.json",
-      "bytes_sha256": "d1b23c6b7d897028af8abbc4336c40283d343925f261bc3cc9a5a62240ec5499",
+      "bytes_sha256": "6ce271a62c5ec8a005ece5999415f423d78d39a15fb31c1734ad41655d632835",
       "expected": null,
       "claim": "adapter: accepts this closed record",
-      "record_sha256": "d1b23c6b7d897028af8abbc4336c40283d343925f261bc3cc9a5a62240ec5499"
+      "record_sha256": "6ce271a62c5ec8a005ece5999415f423d78d39a15fb31c1734ad41655d632835"
     },
     {
       "name": "mcp-url-unicode",
@@ -9314,6 +9716,96 @@
           "pattern"
         ],
         "value": "(?!\\\\)[\\u0000-\\u0008\\u000e-\\u001b\\u007f-\\u0084\\u0086-\\u009f\\u00ad\\u0600-\\u0605\\u061c\\u06dd\\u070f\\u0890-\\u0891\\u08e2\\u180e\\u200b-\\u200f\\u202a-\\u202e\\u2060-\\u2064\\u2066-\\u206f\\ufeff\\ufff9-\\ufffb𑂽𑃍𓐰-𓐿𛲠-𛲣𝅳-𝅺󠀁󠀠-󠁿${}\\\\]"
+      }
+    },
+    {
+      "name": "registration-native-project",
+      "record": "registration",
+      "file": "bytes/registration-native-project.json",
+      "bytes_sha256": "d8e7d9fb2f5373133a247af08cbc2bcb6d3bb0ba5e02bef9443c1ac8fa9c1bb6",
+      "expected": null,
+      "claim": "registration: accepts this closed record",
+      "record_sha256": "d8e7d9fb2f5373133a247af08cbc2bcb6d3bb0ba5e02bef9443c1ac8fa9c1bb6"
+    },
+    {
+      "name": "composition-native-project",
+      "record": "composition",
+      "file": "bytes/composition-native-project.json",
+      "bytes_sha256": "927c06c01cbf92284fa3c42c9f25daaf10c85308533002ceaa35fa087a3ebfa5",
+      "expected": null,
+      "claim": "composition: accepts this closed record",
+      "record_sha256": "927c06c01cbf92284fa3c42c9f25daaf10c85308533002ceaa35fa087a3ebfa5"
+    },
+    {
+      "name": "project-context-native-project",
+      "record": "project-context",
+      "file": "bytes/project-context-native-project.json",
+      "bytes_sha256": "946ad8d637b5a106b1bf96395a655cbf3fc49e7a018f3b11660639dbbdba97cd",
+      "expected": null,
+      "claim": "project-context: accepts this closed record",
+      "record_sha256": "946ad8d637b5a106b1bf96395a655cbf3fc49e7a018f3b11660639dbbdba97cd"
+    },
+    {
+      "name": "project-context-native-off",
+      "record": "project-context",
+      "file": "bytes/project-context-native-off.json",
+      "bytes_sha256": "62e7cf94be278dc5123511b95021dc75c8711f17bba2bfb05386f87b9afbd3d3",
+      "expected": null,
+      "claim": "project-context: accepts this closed record",
+      "record_sha256": "62e7cf94be278dc5123511b95021dc75c8711f17bba2bfb05386f87b9afbd3d3"
+    },
+    {
+      "name": "adapter-native-project",
+      "record": "adapter",
+      "file": "bytes/adapter-native-project.json",
+      "bytes_sha256": "f38486003beb9f1f68434d3fa96dcf87d15417297987e36c4674b37a555bcb4f",
+      "expected": null,
+      "claim": "adapter: accepts this closed record",
+      "record_sha256": "f38486003beb9f1f68434d3fa96dcf87d15417297987e36c4674b37a555bcb4f"
+    },
+    {
+      "name": "adapter-both-modes",
+      "record": "adapter",
+      "file": "bytes/adapter-both-modes.json",
+      "bytes_sha256": "7930eedb0ba65ac91569812586b44ad82c14fe11c9fa587829779c367f11d6fd",
+      "expected": null,
+      "claim": "adapter: accepts this closed record",
+      "record_sha256": "7930eedb0ba65ac91569812586b44ad82c14fe11c9fa587829779c367f11d6fd"
+    },
+    {
+      "name": "adapter-modes-unsorted",
+      "record": "adapter",
+      "file": "bytes/adapter-modes-unsorted.json",
+      "bytes_sha256": "8b8b7240bd9c9b0bc9f7aa55cdedffabcb87f909793872b98d77b6fa7281b6d7",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "mode-order"
+      },
+      "claim": "adapter: refuses adapter-modes-unsorted",
+      "positive": "adapter-valid",
+      "mutant": {
+        "source": "mode-order"
+      }
+    },
+    {
+      "name": "adapter-modes-duplicate",
+      "record": "adapter",
+      "file": "bytes/adapter-modes-duplicate.json",
+      "bytes_sha256": "20e6ff387ee0767784892d01ed63044acdcf1383160fc6eda6acb3b8196a563c",
+      "expected": {
+        "code": "project_context_invalid",
+        "gate": "schema"
+      },
+      "claim": "adapter: refuses adapter-modes-duplicate",
+      "positive": "adapter-valid",
+      "mutant": {
+        "schema": "adapter",
+        "path": [
+          "properties",
+          "modes",
+          "uniqueItems"
+        ],
+        "value": false
       }
     }
   ]

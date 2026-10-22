@@ -1,1 +1,1 @@
-{"context_ref":"composition:sample","context_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","mode":"admitted","project_root":"/example/project","version":1}
+{"admission":"admitted","context_ref":"composition:sample","context_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","mode":"strict","project_root":"/example/project","version":1}

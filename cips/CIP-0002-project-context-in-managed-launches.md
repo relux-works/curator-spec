@@ -130,16 +130,35 @@ The operator accepted this CIP and resolved its remaining two questions:
    default; the first slice accepts only `memory: "off"`. Opt-in delivery
    grammar and native qualification remain later engineering work.
 
-Acceptance publishes no normative grammar and qualifies no adapter. The
-existing publication, source-exclusion, lease and runtime gates remain in force.
+3. **Werkstatt source mode, amendment:** The operator may explicitly enable
+   `native-project` per registered checkout × profile × environment. The
+   harness then reads repository-native instructions, config, skills and hooks
+   under its own rules. Curator delivers only approved whole skills and MCP
+   from the project; the managed-home instruction document is the profile root
+   only, with no project root or system-context concatenation. Manager-programmed
+   default-deny permissions and certified memory-off remain mandatory. Status
+   and launch output MUST say **project sources not isolated**. This is an
+   explicit acceptance of native discovery, not isolation or admission of those
+   native sources by Curator. `strict` retains certified native-source exclusion
+   and additive approved project context below the profile root. It refuses
+   until the exact runtime qualifies; strict qualification is follow-up work.
+   Unknown modes refuse and strict MUST NOT silently fall back to native-project.
+   Mode selection is distinct from `admission: off | admitted`; new registrations
+   default to strict mode and off admission. The R-TRANSFER unaccepted-candidate
+   review boundary remains strict and is not relaxed by this amendment.
+
+Acceptance qualifies no adapter. Publication, mode-specific certification,
+lease and runtime gates remain in force.
 
 ## Summary
 
 Compose individually approved project context, rules, knowledge, MCP servers,
 skills and commands over selected profile Y in a persistent manager-owned
 Werkstatt per checkout × profile × environment. Repository control files are
-candidate inputs, never authority; native tools consume approved protected
-copies while certified adapters exclude unapproved discovery. Permissions
+candidate inputs, never manager authority. Strict uses approved protected
+copies and certified exclusion; explicit native-project leaves native discovery
+in force and adds only approved whole skills/MCP, with profile-only managed
+instructions and the notice "project sources not isolated". Permissions
 come only from manager policy and grants, with default deny; project-shipped
 permissions never apply. Native memory defaults off. The typed context,
 lease and D-PATH transform bind one launch to that composition. Claude,
@@ -214,7 +233,8 @@ are not implemented CLI/config promises:
 
 | Control | Semantics and default |
 |---|---|
-| `projects.<checkout-id>.context.mode` | Closed enum `off \| admitted`. New registrations default `off`: a certified launch admits profile context only and suppresses project-native discovery. `admitted` adds the selected project generation. |
+| `projects.<checkout-id>.context.mode` | Closed enum `strict \| native-project`, default `strict`. Only an explicit protected operator update enables `native-project` per Werkstatt; neither repository content nor an unsupported strict launch selects it. |
+| `context.admission` | `off \| admitted`, default `off`, independently of source mode. `off` delivers no project items; it suppresses native discovery only in strict mode. `admitted` delivers the selected approved generation within the mode's surface limits. |
 | `context.environments.<env-id>` | Per-environment enablement. Enabling an environment does not enable all items. Unknown adapter or unsupported required item refuses. |
 | `context.categories.<kind>` | Category ceiling for `context`, `rules`, `knowledge`, `mcp`, `skills`, `commands`, `native-settings`; default disabled until the operator selects it. Permission requests go to the separate manager grant flow, never an imported permission category. |
 | `context.items.<id>` | `enabled \| disabled`, pinned digest and optionality. Newly discovered items remain unapproved. Exact item/closure approval is required, even inside an enabled category. |
@@ -236,6 +256,14 @@ Existing launches remain in an explicitly reported **legacy compatibility state*
 8. Before publication/launch, revalidate protected boundaries, approval status, materialized bytes and the CWD binding under the same transaction/lease discipline. Failure yields no fragment/child. A pure preview acquires no durable launch lease and starts nothing; a separate manager preparation operation binds a leased launch context.
 
 #### Layer precedence, by surface
+
+The table's approved project root/system concatenation and native-source
+exclusion apply to `strict`. In `native-project`, the managed instruction
+document is the profile root only; the harness separately loads repository
+instructions, config, skills and hooks under native rules. Only approved whole
+skills and MCP use Curator's project admission/delivery lane. Permissions and
+memory-off remain enforced in both modes. Native discovery has no isolation
+guarantee and can add sources beyond the approved Curator inventory.
 
 | Surface | Proposed composition rule |
 |---|---|
@@ -306,8 +334,8 @@ root/system override item is outside the design, not deferred. Leaf 1 must
 publish these definitions and positive/negative
 vectors together before a producer emits them. It covers one registered
 checkout, one selected profile, one environment, one approved generation and
-one launch. Context, whole skills and inline MCP items are included. Source
-exclusion, manager permissions, memory-off and leases are mandatory. The
+one launch. Context, whole skills and inline MCP items are included. Manager permissions, memory-off and leases are mandatory in both source modes;
+certified source exclusion is additionally mandatory in `strict`. The
 optional command arm covers one protected skill command, not arbitrary scripts.
 
 **Common encoding and bounds.** JSON objects reject duplicate/unknown members,
@@ -331,13 +359,13 @@ retained filesystem identity, not a lexical prefix alone.
 
 | Object | Closed members and meaning |
 |---|---|
-| Registration | `kind: "project-registration/1"`, `checkout_id: ID`, `project_root: absolute path`, `root_identity: HEX`, `profile: {name, lock_sha256}`, `environment: ENV`, `home_ref: REF`, `worktree_ref: REF`. ENV is `claude_code`, `codex_cli` or `muse` in this slice. Profile name uses the existing profile grammar; lock digest is HEX. `root_identity` hashes the closed binding defined below, retained privately; re-registration/replacement cannot retain old authority merely by reusing a path. Home and sparse worktree are protected manager allocations outside the source tree. |
+| Registration | `kind: "project-registration/1"`, `checkout_id: ID`, `project_root: absolute path`, `root_identity: HEX`, `profile: {name, lock_sha256}`, `environment: ENV`, `mode: "strict" \| "native-project"`, `home_ref: REF`, `worktree_ref: REF`. ENV is `claude_code`, `codex_cli` or `muse` in this slice. Profile name uses the existing profile grammar; lock digest is HEX. `root_identity` hashes the closed binding defined below, retained privately; re-registration/replacement cannot retain old authority merely by reusing a path. Home and sparse worktree are protected manager allocations outside the source tree. |
 | Item | `kind: "project-item/1"`, `id: ID`, `type: "context" \| "skill" \| "mcp"`, `environment: ENV`, `required: boolean`, `payload: PAYLOAD`. A context payload is exactly `{snapshot_ref, snapshot_sha256, lock_ref, lock_sha256}`; a skill payload remains exactly `{snapshot_ref, snapshot_sha256}`. Context lock references have tag `lock`, and their digest is HEX. MCP payload is exactly `{name, server, server_sha256}` as described below. No raw native-settings, permission, hook, plugin or shell arm exists. |
 | Approval | `kind: "project-approval/1"`, `checkout_id`, `item_id`, `item_sha256`, `environment`, `approver_ref`, `ceiling_sha256`, optional `grant_ref`. IDs, HEX and tagged refs follow the common types. An agent approver requires a live manager-issued grant covering this exact act and ceiling; a human approval cannot exceed hard denies either. The protected revocation ledger is checked at preparation/start and dispatch; the repository cannot mint approval. |
 | Generation | `kind: "project-generation/1"`, `registration_ref`, `registration_sha256`, `items: [{item_id, item_sha256, approval_ref}]`. References have the matching tags. Item IDs are unique; this ordered list is the admitted rendering order. Every item must match checkout, profile policy and environment, and have current approval. No implicit filesystem discovery contributes extra members. |
-| Composition | `kind: "project-composition/1"`, `registration_ref`, `registration_sha256`, `generation_sha256`, `profile: {name, lock_sha256}`, `environment`, `adapter_ref`, `adapter_sha256`, `policy_ref`, `policy_sha256`, `memory: "off"`, `home_ref`, `worktree_ref`, `materialization_sha256`, `command_owners: [{name, item_id, artifact_sha256}]`, `omitted: [{item_id, reason}]`. Generation bytes are retained under their digest in protected state. Owner names use the existing command grammar, are unique, and bind full audited artifacts, never checkout executables. `item_id` names the selected effective skill from the approved generation or selected profile lock; at most one exported command is enabled in this slice. Omission reason is `disabled` or `unsupported` and requires approved optionality/effective preview; required items cannot be omitted. The policy reference names protected manager-programmed harness policy with default deny and only effective granted permissions, never a repository permission payload. |
+| Composition | `kind: "project-composition/1"`, `registration_ref`, `registration_sha256`, `generation_sha256`, `profile: {name, lock_sha256}`, `environment`, `mode: "strict" \| "native-project"`, `adapter_ref`, `adapter_sha256`, `policy_ref`, `policy_sha256`, `memory: "off"`, `home_ref`, `worktree_ref`, `materialization_sha256`, `command_owners: [{name, item_id, artifact_sha256}]`, `omitted: [{item_id, reason}]`. Generation bytes are retained under their digest in protected state. Owner names use the existing command grammar, are unique, and bind full audited artifacts, never checkout executables. `item_id` names the selected effective skill from the approved generation or selected profile lock; at most one exported command is enabled in this slice. Omission reason is `disabled` or `unsupported` and requires approved optionality/effective preview; required items cannot be omitted. The policy reference names protected manager-programmed harness policy with default deny and only effective granted permissions, never a repository permission payload. |
 | Lease binding | `kind: "project-lease/1"`, `lease_id`, `context_ref`, `context_sha256`, `checkout_id`, `environment`, `home_ref`, `owner_ref`, `session_ref`, `generation`. Generation is a positive integer at most 2^53-1. Owner is a principal reference; session is reserved before composition. The immutable tuple binds a specific composition and session generation. State and liveness are stored separately, not rewritten into this digest. |
-| Fragment members | Required `project_context: {version: 1, mode: "off" \| "admitted", context_ref, context_sha256, project_root, lease_ref}`; optional `command_environment: {version: 1, operation: "checked-d-path/1", tool_ref, dispatcher_ref, context_ref, context_sha256}`. Context refs name the same protected composition. Project root must equal its registration. `off` has no project items but still requires certified source exclusion. No arbitrary environment map, append list or executable command text is accepted. Command members require a command-certified adapter and cannot coexist with `path_prepend`. |
+| Fragment members | Required `project_context: {version: 1, mode: "strict" \| "native-project", admission: "off" \| "admitted", context_ref, context_sha256, project_root, lease_ref}`; optional `command_environment: {version: 1, operation: "checked-d-path/1", tool_ref, dispatcher_ref, context_ref, context_sha256}`. Context refs name the same protected composition. Project root must equal its registration. `admission: "off"` has no project items; strict still requires certified exclusion, while native-project retains native discovery. No arbitrary environment map, append list or executable command text is accepted. Command members require a command-certified adapter and cannot coexist with `path_prepend`. |
 
 The root binding is exactly `{repository, filesystem}`. `repository` is the
 closed workspace-trust repository object (`root`, `primary_remote`,
@@ -504,16 +532,22 @@ or shell initialization cannot replace the result. Profile-only/null-root
 transforms and general remote/tracked transport are deferred, not guessed.
 
 **Certified adapter delivery.** A protected capability record is exactly
-`{kind: "project-adapter/1", environment, provider_version, platform, surfaces}`.
+`{kind: "project-adapter/1", environment, provider_version, platform, modes, surfaces}`.
 Platform is `macos` or `linux` for the first slice; provider version is an
 exact bounded release string, not a range. Surfaces are a set drawn from
 `context`, `skills`, `mcp`, `commands`, `permissions`, `memory-off`,
 `native-source-exclusion`. Capability advertisement is optional per environment
-and bound to real qualification on that release/platform. Every first-slice
-launch requires `permissions`, `memory-off` and `native-source-exclusion`,
-plus every required selected surface. No environment borrows another's result.
+and bound to real qualification on that release/platform. `modes` is a unique
+UTF-8-sorted set from `native-project` and `strict`. Every launch requires its
+mode to be advertised, certified `permissions` and `memory-off`, and every
+required selected surface. Strict additionally requires certified
+`native-source-exclusion`. Native-project admits no project context item or
+project root/system concatenation; its managed instruction file is the profile
+root only. No environment borrows another's result. Registration, composition
+and fragment mode MUST agree; a mode change requires an explicit operator
+update and new bound identities, subject to the existing busy-home/lease gate.
 
-For Claude, Codex and Muse independently, exclusion qualification covers
+For strict Claude, Codex and Muse independently, exclusion qualification covers
 ancestor/current/nested instructions, config and permission files, native and
 compatibility skill roots, MCP, hooks/plugins, auto-memory and late discovery,
 including reload, resume and child entry. Re-admit only protected selected
@@ -529,7 +563,7 @@ boundary does not claim containment of hostile same-user executable code.
 | `project_item_unapproved` | Missing, revoked, wrong-project/item/environment approval or insufficient approver grant/ceiling. No native write, MCP connection or provider start. |
 | `project_context_drift` | Changed/missing snapshot entry, policy, adapter contract, protected composition or digest. No repair or baseline update during launch. |
 | `project_context_unreadable` | Failed read of required authority, inventory, PATH or liveness evidence. Never treat this as absence/optional omission. |
-| `project_context_unsupported` | Missing certified environment/surface, non-enforcing permission or memory adapter, or unsupported required route/consumer. No omission of required items or downgrade to legacy/native. |
+| `project_context_unsupported` | Missing certified environment/mode/surface, non-enforcing permission or memory adapter, a context item requested in native-project, or unsupported required route/consumer. No omission of required items or silent strict-to-native-project/legacy fallback. |
 | `project_view_busy` | Repair, profile switch, sync or update while a home has a live/unknown lease. Wait or refuse before writes; remediation identifies the owning session and advises waiting/ending it. |
 | `project_lease_mismatch` | Wrong owner/session/generation, stale lease, release replay or invalid transition. No new session or lease takeover. |
 | `project_path_refused` | Missing/excluded/unsafe PATH, invalid protected roots, command shadowing or stale/ambiguous owner. No PATH reconstruction or wrong executable. |
@@ -644,7 +678,7 @@ Existing installations and profile locks remain valid. All published fragment ve
 
 Introduce a new closed manager configuration revision for registrations, item policy and legacy/enrolled state. Introduce separate schemas for project declarations, protected admissions, composition records, leases and the separately published project context/command members. Keep immutable content identity separate from lease identity: repeated launches can share a composition digest while each launch has its own lease, and the canonical fragment/plan hash includes whichever launch binding it transports.
 
-Enroll projects by explicit preview/approval; import nothing automatically. Existing profile homes can continue to serve legacy launches. Project homes are provisioned lazily on an accepted strict launch preparation, with first-login and state-retention implications shown. Required unsupported surfaces fail with an actionable diagnostic; an optional item can be omitted only when that omission is in the approved record and effective preview. No silent conversion of a context-only adapter into full project support.
+Enroll projects by explicit preview/approval; import nothing automatically. Existing profile homes can continue to serve legacy launches. Project homes are provisioned lazily on an accepted mode-qualified launch preparation, with first-login and state-retention implications shown. Required unsupported surfaces fail with an actionable diagnostic; an optional item can be omitted only when that omission is in the approved record and effective preview. No silent conversion of a context-only adapter into full project support.
 
 ## Specification changes
 
@@ -652,7 +686,7 @@ Accepted design requirements for separate normative publication:
 
 1. **Admission:** A manager MUST NOT treat repository-native configuration, instruction discovery, executable discovery or an on-repository approval record as launch authority. It MUST materialize only selected approved snapshot items, prove their effective policy and refuse unknown required semantics.
 2. **Identity:** The manager MUST bind each composition to a registered checkout, selected profile lock, approved project generation and adapter contract. It MUST NOT mutate the selected profile or substitute machine-current as fallback.
-3. **Native isolation:** Strict `off` and `admitted` modes MUST exclude unadmitted sources at startup, reload, nested file discovery, resume and child-agent entry points. A tool version whose boundary is unproven MUST refuse that strict capability.
+3. **Native isolation:** Strict mode, with either `off` or `admitted` admission, MUST exclude unadmitted sources at startup, reload, nested file discovery, resume and child-agent entry points. A tool version whose boundary is unproven MUST refuse that strict capability.
 4. **Concurrency:** Leased generated surfaces MUST remain unchanged. Updating a busy stable home MUST wait or refuse; collection MUST retain live or indeterminate leases and all referenced artifacts.
 5. **Commands:** A project-capable command environment MUST name one protected dispatcher and fixed append semantics. Launcher/provider discovery MUST exclude skill-published command locations and the dispatcher from `curator-*` provider selection. The selected owner map MUST govern every managed forwarder in the child PATH.
 6. **Tracking (deferred after the first slice):** The tracked launch plan MUST represent destination-side PATH append, bind the composition/lease, and hash the resolved effective plan. A consumer lacking this capability MUST refuse before creating a session or child.
@@ -693,8 +727,9 @@ Use the repositories' existing Go tests and conformance-vector machinery. Drive 
 | Family | Required positive and negative evidence | Narrowing mutant |
 |---|---|---|
 | Admission | Approved digest launches; changed bytes/dependencies, self-minted approval, optional-vs-required omission, malformed/unreadable manifest refuse correctly. | Bind only root file instead of transitive closure; trust same hash from another checkout. |
-| Native discovery | Approved context/skill loads; unapproved ancestor/nested instructions, dynamic rules, settings, MCP, hooks, plugin resources and late-created files do not activate. Observe loader/tool behavior, not an LLM claim that it ignored a file. | Suppress only startup files; suppress config but leave rules/skills. |
-| Composition | Profile root/system context remains present; project-general then environment-specific context follows it in the managed-home file, with deeper scope after shallower. Root/system override is never admitted, including later slices. Same pin deduplicates; whole-skill replacement works; incompatible required provider, command collision and MCP same-ID conflict refuse. | Drop the profile context, admit a root/system override, reorder project context before the profile, or compare command names only in project, omitting profile or transitive providers. |
+| Native-project | Explicit native-project with certified permissions/memory-off and approved whole skills/MCP prepares with profile-root-only instructions and the notice "project sources not isolated". Missing certification, unknown/unadvertised mode, context items, mode-binding mismatch and implicit strict fallback refuse. Native instructions/config/skills/hooks may load under harness rules; no isolation is claimed. | Drop one required certification, concatenate project instructions, omit the notice or silently choose native-project after strict refusal. |
+| Native discovery (strict) | Approved context/skill loads; unapproved ancestor/nested instructions, dynamic rules, settings, MCP, hooks, plugin resources and late-created files do not activate. Observe loader/tool behavior, not an LLM claim that it ignored a file. | Suppress only startup files; suppress config but leave rules/skills. |
+| Composition (strict) | Profile root/system context remains present; project-general then environment-specific context follows it in the managed-home file, with deeper scope after shallower. Root/system override is never admitted, including later slices. Same pin deduplicates; whole-skill replacement works; incompatible required provider, command collision and MCP same-ID conflict refuse. | Drop the profile context, admit a root/system override, reorder project context before the profile, or compare command names only in project, omitting profile or transitive providers. |
 | PATH/dispatch | D-PATH tool-prefix/base/dispatcher order, one dispatcher, duplicates and profile-only/null root; project P then selected Y; old singleton shims, symlinked dispatcher, missing PATH, hostile earlier entry, empty/relative segment and runtime re-prepend negatives. | Reject only direct `.agents/bin`, admitting a canonical alias or nested writable root. |
 | Permissions/secrets | Manager-programmed grants within ceiling work; raw project grants and denies never apply. Project bypass, secret-name widening, native PATH assignment, forbidden hooks and dialect ambiguity refuse. Native memory stays disabled without explicit opt-in. | Enforce global lock only on CLI flags, leaving imported native settings. |
 | Leases/TOCTOU | Two projects on Y, two identical view sessions, busy update, revocation, detach, descendant, resume, crash and unknown liveness. No GC of referenced artifacts. | Key lease only by PID; release at launcher exit; collect on TTL alone. |
