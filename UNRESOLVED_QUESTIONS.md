@@ -1,5 +1,16 @@
 # Unresolved questions
 
+## Agent stations
+
+[CIP-0024](cips/CIP-0024-agent-stations.md) is Draft. Its six operator decisions
+dated 2026-10-22 are settled: one account and own keys per station, split service
+ownership, raising-orchestrator trust, retained fresh-context spawn, and the
+11-Werkstatt Curator pilot. Remaining operator questions are the pilot's initial
+heavy-run host budget and the authoritative task-completion/retention horizon
+for task-lifetime stations. Service adapters against the pinned
+router/FRONT-DOOR baseline are publication gates, not additional undecided
+ownership choices.
+
 ## Muse managed-context residuals
 
 The revision-1 admission in [environments §§7.1, 7.9, and 10.2](protocol/environments.md)
