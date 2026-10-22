@@ -12160,6 +12160,16 @@ def validate_workspace_trust() -> None:
     print(f"workspace-trust schema cases: {cases}/{cases}; transition vectors: {vectors}/{vectors}; runtime cases: unrun")
 
 
+def validate_mcp_native_writer() -> None:
+    import mcp_native_writer
+
+    try:
+        total, negatives = mcp_native_writer.check_corpus(ROOT)
+    except (ValueError, OSError, SchemaError) as exc:
+        raise ValidationFailure(f"Profile MCP native writer: {exc}") from exc
+    print(f"Profile MCP writer model cases: {total}/{total}; negatives: {negatives}/{negatives}; runtime writer qualification: unrun")
+
+
 def validate_skillfile_mcp() -> None:
     import skillfile_mcp
 
@@ -12181,6 +12191,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_local_setup_token,
         validate_workspace_trust,
         validate_skillfile_mcp,
+        validate_mcp_native_writer,
         validate_draft_source_schemas,
         validate_draft_sources_manifest,
         validate_source_marker_ownership_vectors,

@@ -180,6 +180,13 @@ runtime capability.
 
 ## Tools
 
+- Profile MCP native writer model: the [adaptation sheet](protocol/mcp-native-writer.md)
+  fixes scope, paths, private ownership/actions and qualification limits;
+  `python3 tools/validate.py` dispatches `tools/mcp_native_writer.py` over
+  `conformance/mcp-native-writer-v1/`. Focused checks run with
+  `python3 -B -m unittest discover -s tools -p 'test_mcp_native_writer.py'`.
+  Results go to stdout, task logs to `.temp/`; no native writer is executed.
+
 - Skillfile MCP stage-A gate: `python3 tools/validate.py` dispatches
   `tools/skillfile_mcp.py`; focused controls run with
   `python3 -B -m unittest discover -s tools -p 'test_skillfile_mcp.py'`.

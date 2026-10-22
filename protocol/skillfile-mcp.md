@@ -204,7 +204,11 @@ ledger protections. Drift defaults to `skipped: drift`; explicit restore,
 release, removal or replacement needs the protected action record above.
 Qualification must freeze actual native paths and entry encodings for each
 writer; this specification does not invent a Muse path or authorize a server
-process. Requirement checks remain read-only even when a writer is supported.
+process. The separate [profile native writer adaptation](mcp-native-writer.md)
+freezes the profile-scoped writer boundary and private ownership/action
+namespace. It does not authorize project declarations in shared profile homes
+or widen this project-only Skillfile grammar. Requirement checks remain
+read-only even when a writer is supported.
 
 ## 7. Normalization and distinct identities
 

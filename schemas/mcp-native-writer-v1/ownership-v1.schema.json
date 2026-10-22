@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/mcp-native-writer-v1/ownership-v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "capability",
+    "scope",
+    "profile_id",
+    "environment",
+    "path",
+    "records"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "capability": {
+      "const": "profile-mcp-native-writer-v1"
+    },
+    "scope": {
+      "const": "profile"
+    },
+    "profile_id": {
+      "$ref": "https://relux-works.github.io/curator-spec/schemas/v1/common.schema.json#/$defs/identifier"
+    },
+    "environment": {
+      "enum": [
+        "claude_code",
+        "codex_cli"
+      ]
+    },
+    "path": {
+      "enum": [
+        ".agent-context/mcp/claude_code.json",
+        "curator-mcp.config.toml"
+      ]
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "owner",
+          "server_sha256",
+          "content_sha256",
+          "preimage_sha256",
+          "installed_sha256"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$"
+          },
+          "owner": {
+            "const": "curator"
+          },
+          "server_sha256": {
+            "$ref": "https://relux-works.github.io/curator-spec/schemas/v1/common.schema.json#/$defs/sha256"
+          },
+          "content_sha256": {
+            "$ref": "https://relux-works.github.io/curator-spec/schemas/v1/common.schema.json#/$defs/sha256"
+          },
+          "preimage_sha256": {
+            "anyOf": [
+              {
+                "$ref": "https://relux-works.github.io/curator-spec/schemas/v1/common.schema.json#/$defs/sha256"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "installed_sha256": {
+            "$ref": "https://relux-works.github.io/curator-spec/schemas/v1/common.schema.json#/$defs/sha256"
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "environment": {
+            "const": "claude_code"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "path": {
+            "const": ".agent-context/mcp/claude_code.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "environment": {
+            "const": "codex_cli"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "path": {
+            "const": "curator-mcp.config.toml"
+          }
+        }
+      }
+    }
+  ]
+}
