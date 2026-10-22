@@ -10,7 +10,7 @@ from jsonschema import Draft202012Validator
 import project_context_leaf1 as leaf
 
 CORPUS = leaf.ROOT / 'conformance' / leaf.NAMESPACE
-MANIFEST = json.loads((CORPUS / 'manifest.json').read_text())
+MANIFEST = json.loads((CORPUS / 'manifest.json').read_text(encoding='utf-8'))
 CATALOG = leaf.schemas()
 
 
@@ -181,20 +181,20 @@ class ProjectContextLeaf1Tests(unittest.TestCase):
         resources = []
         for namespace in ('v1', 'rc7-carriers-v1', 'profile-codex-settings-v1'):
             for path in (leaf.ROOT / 'schemas' / namespace).glob('*.schema.json'):
-                schema = json.loads(path.read_text())
+                schema = json.loads(path.read_text(encoding='utf-8'))
                 resources.append((schema['$id'], Resource.from_contents(schema)))
         registry = Registry().with_resources(resources)
         project = json.loads((CORPUS / 'bytes/project-context-valid.json').read_bytes())
         for version in (4, 5):
             name = f'launch-env-fragment-v{version}'
             namespace = 'v1' if version == 4 else 'rc7-carriers-v1'
-            schema = json.loads((leaf.ROOT / 'schemas' / namespace / (name + '.schema.json')).read_text())
+            schema = json.loads((leaf.ROOT / 'schemas' / namespace / (name + '.schema.json')).read_text(encoding='utf-8'))
             validator = Draft202012Validator(schema, registry=registry)
             if version == 4:
                 paths = sorted((leaf.ROOT / 'conformance/environments-muse-v4/schema-cases').glob('valid*.json'))
             else:
                 paths = [leaf.ROOT / 'conformance/rc7-carriers-v1/canonical/launch-env-fragment-v5.ccj']
-            valid = [json.loads(p.read_text()) for p in paths]
+            valid = [json.loads(p.read_text(encoding='utf-8')) for p in paths]
             valid = [v for v in valid if isinstance(v, dict) and validator.is_valid(v)]
             self.assertTrue(valid, name + ': existing positive control')
             value = copy.deepcopy(valid[0])

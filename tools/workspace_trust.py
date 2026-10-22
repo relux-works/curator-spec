@@ -264,11 +264,11 @@ def run_vector(vector, schema):
 
 
 def check_corpus(root=ROOT):
-    schema = json.loads((root / 'schemas' / NAMESPACE / 'workspace-trust-record-v1.schema.json').read_text())
+    schema = json.loads((root / 'schemas' / NAMESPACE / 'workspace-trust-record-v1.schema.json').read_text(encoding='utf-8'))
     Draft202012Validator.check_schema(schema)
     corpus = root / 'conformance' / NAMESPACE
-    cases = json.loads((corpus / 'schema-cases.json').read_text())
-    vectors = json.loads((corpus / 'vectors.json').read_text())
+    cases = json.loads((corpus / 'schema-cases.json').read_text(encoding='utf-8'))
+    vectors = json.loads((corpus / 'vectors.json').read_text(encoding='utf-8'))
     if len({c['name'] for c in cases}) != len(cases) or len({v['name'] for v in vectors}) != len(vectors):
         raise ContractError('duplicate corpus name')
     for case in cases:

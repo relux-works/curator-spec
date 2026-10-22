@@ -116,7 +116,7 @@ def schemas(root=ROOT):
     resources, records = [], {}
     for namespace in ('v1', 'workspace-trust-v1', NAMESPACE):
         for path in sorted((root / 'schemas' / namespace).glob('*.schema.json')):
-            schema = json.loads(path.read_text())
+            schema = json.loads(path.read_text(encoding='utf-8'))
             if namespace != NAMESPACE:
                 schema = exact_patterns(schema)
             Draft202012Validator.check_schema(schema)
@@ -234,7 +234,7 @@ def verdict(record, raw, catalog=None):
 
 def check_corpus(root=ROOT):
     corpus = root / 'conformance' / NAMESPACE
-    manifest = json.loads((corpus / 'manifest.json').read_text())
+    manifest = json.loads((corpus / 'manifest.json').read_text(encoding='utf-8'))
     catalog = schemas(root)
     cases = manifest['cases']
     names = {case['name'] for case in cases}
