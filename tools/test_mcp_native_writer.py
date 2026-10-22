@@ -232,14 +232,12 @@ class NativeWriterTests(unittest.TestCase):
                 result = m.evaluate(self.cases[witness]['input'])
                 self.assertEqual(sum(e['write_ownership'] for e in result['effects']), 1)
 
-    # Claim: each provenance, binding and marker-shape gate prevents adoption
-    # of that rejected neighbor; relaxing only it changes the exact full verdict.
+    # Claim: provenance, profile binding and marker-owner gates prevent neighbor
+    # adoption; relaxing only the selected gate changes its exact full verdict.
     def test_neighbor_adoption_narrowing_controls(self):
         for variant, old, new in [
             ('unprotected', "observation.get('protected') is not True", 'False'),
             ('other-profile', 'document.get(k) != v', "document.get(k) != v and k != 'profile_id'"),
-            ('other-environment', 'document.get(k) != v', "document.get(k) != v and k != 'environment'"),
-            ('other-path', 'document.get(k) != v', "document.get(k) != v and k != 'path'"),
         ]:
             source = inspect.getsource(m.trusted_ownership)
             self.assertEqual(source.count(old), 1)
@@ -267,6 +265,32 @@ class NativeWriterTests(unittest.TestCase):
                 witness = 'neighbor-missing-owner-'+suffix
                 with self.assertRaisesRegex(ValueError, 'MCP writer verdict mismatch: '+witness+'$'):
                     m.check_case(self.cases[witness])
+
+    # Claim: cross-environment/path envelopes fail the actual ownership schema
+    # beside valid ledgers. Removing only its cross-field constraints admits
+    # both malformed shapes; independent binding checks still prevent adoption.
+    def test_neighbor_path_environment_schema_control(self):
+        original = m.schema_valid
+        def relaxed(name, value):
+            if name != 'ownership-v1':
+                return original(name, value)
+            schema = json.loads((m.ROOT/'schemas'/m.NAMESPACE/'ownership-v1.schema.json').read_text())
+            schema.pop('allOf')
+            return Draft202012Validator(exact_patterns(schema), registry=m.stage.registry()).is_valid(value)
+        for suffix in ['claude', 'codex']:
+            env = 'claude_code' if suffix == 'claude' else 'codex_cli'
+            positive = self.cases['neighbor-valid-'+suffix]
+            m.check_case(positive)
+            for variant in ['other-environment', 'other-path']:
+                witness = self.cases['neighbor-'+variant+'-'+suffix]
+                document = witness['input']['observations'][env]['docs']['ownership']
+                self.assertFalse(m.ownership_valid(document))
+                with patch.object(m, 'schema_valid', side_effect=relaxed):
+                    self.assertTrue(m.ownership_valid(positive['input']['observations'][env]['docs']['ownership']))
+                    self.assertTrue(m.ownership_valid(document))
+                    with self.assertRaises(AssertionError):
+                        self.assertFalse(m.ownership_valid(document))
+                    m.check_case(witness)
 
     # Claim: disabling only ledger composition reproduces every multi-NAME
     # review violation; existing single-NAME publications still pass.

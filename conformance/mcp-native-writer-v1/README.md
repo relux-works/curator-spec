@@ -66,9 +66,12 @@ Rejected neighboring ledgers contribute no records. Conflicting validated
 preimages refuse the entire set with no effects. No refusal-free synthetic
 plan establishes real protected-store provenance or transactional publication.
 
-New bounded controls relax each neighbor provenance/binding/owner gate,
+New bounded controls relax neighbor provenance/profile-binding/owner gates,
 disable only ledger composition, and remove only DEL escaping. Each catches
 the named review verdict mismatch beside its valid sibling; the DEL control
-also reproduces the independent parser's intended rejection. A preimage control
+also reproduces the independent parser's intended rejection. Separate schema
+controls remove only environment/path cross-field constraints, detect the
+malformed envelopes, and verify the independent binding guard still prevents
+adoption. A preimage control
 bypasses only snapshot agreement and demonstrates the forbidden successful
 plan. These controls run against the actual model functions.
