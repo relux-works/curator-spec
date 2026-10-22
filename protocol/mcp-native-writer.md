@@ -75,6 +75,8 @@ including unqualified required surfaces. Unknown ids are invalid declarations.
 Native writes never start servers, probe endpoints, install runtimes or
 attempt authentication. Per-tool setup hints are printed, never executed.
 
+Codex TOML basic strings MUST escape all forbidden control characters,
+including U+007F (for example `\u007F`); JSON quoting alone is insufficient.
 For newly created owned entries, use environments §5.8 encodings and escaping;
 no extra native ownership keys, `env`, credentials or values are inserted.
 For a shared document, preserve every foreign record's original bytes,
@@ -110,7 +112,12 @@ private-store/ledger permissions, ownership and no-follow rules. Hashes alone
 do not establish provenance. A markerless existing record is foreign; a
 missing or malformed marker must never be reconstructed from native bytes.
 A well-formed marker that cannot be read refuses rather than downgrading to
-absence. Empty/absent declarations never enroll foreign configuration.
+absence. On first install with an absent native entry, a readable but
+unprotected, malformed or differently bound ledger contributes **no** owned
+records: start from an empty owned set. Never copy its neighboring markers
+into a new authoritative ledger. A valid protected ledger instead preserves
+all untouched neighboring records. Empty/absent declarations never enroll
+foreign configuration.
 
 Protected actions live at `actions/<A>.json`, where A is lowercase SHA-256
 hex of the complete CCJ-1 `action-v1` object. They bind the profile,
@@ -168,6 +175,13 @@ This sheet does not publish a portable profile-plan carrier.
 
 Use the existing managed-home journal engine with all native edits,
 per-record ownership, applicable skills and profile lock as **one transaction**.
+All NAME operations for the same `[PROFILE_ID, ENVIRONMENT, PATH]` key MUST
+compose against one coherent protected preimage into one final ownership
+document (or its deletion when no records remain). Combine additions,
+restores, replacements, removals and releases before publication; never emit
+competing complete ledgers per NAME. Preserve untouched valid neighbors,
+validate the final document, and refuse inconsistent preimages as
+`environment_surface_unreadable` without planned effects.
 Direct payload writes under a lock are insufficient. Capture no-follow parent
 and leaf identities, permission/owner boundaries and full preimage digests;
 revalidate them and all source/policy/action inputs at publication. Refuse

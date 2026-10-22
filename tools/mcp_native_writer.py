@@ -27,6 +27,12 @@ REQUIRED = frozenset({
     'drift-skip-codex', 'restore-claude', 'restore-codex', 'scope-project',
     'muse-required', 'codex-a-collision', 'codex-b-late-collision',
     'mixed-refusal-total', 'schema1-no-effect', 'schema2-no-effect',
+    'codex-del-roundtrip',
+    *('neighbor-'+variant+'-'+suffix
+      for variant in ['unprotected', 'other-profile', 'other-environment', 'other-path', 'missing-owner']
+      for suffix in ['claude', 'codex']),
+    *(stem+'-'+suffix for stem in ['joint-add-2', 'joint-add-3', 'joint-remove', 'joint-release']
+      for suffix in ['claude', 'codex']),
 })
 
 
@@ -50,14 +56,19 @@ def ownership_valid(document):
     return names == sorted(set(names))
 
 
-def owns(observation, profile, environment, path, name):
+def trusted_ownership(observation, profile, environment, path):
     document = observation.get('ownership')
     if (observation.get('protected') is not True or not isinstance(document, dict)
             or not ownership_valid(document)
             or any(document.get(k) != v for k, v in
                    [('profile_id', profile), ('environment', environment), ('path', path)])):
         return None
-    return next((r for r in document['records'] if r['name'] == name), None)
+    return document
+
+
+def owns(observation, profile, environment, path, name):
+    document = trusted_ownership(observation, profile, environment, path)
+    return next((r for r in document['records'] if r['name'] == name), None) if document else None
 
 
 def foreign_conflict(entry, owned):
@@ -76,7 +87,8 @@ def native_entry(environment, name, server):
     if environment == 'claude_code':
         return stage.canonical({'type': 'stdio', 'command': server['command'],
                                 'args': server['args']}).decode('utf-8')
-    quote = lambda value: json.dumps(value, ensure_ascii=False)
+    # JSON escaping covers U+0000..U+001F; TOML additionally forbids literal DEL.
+    quote = lambda value: json.dumps(value, ensure_ascii=False).replace('\x7f', r'\u007F')
     return (f'[mcp_servers.{name}]\ncommand = {quote(server["command"])}\n'
             f'args = {quote(server["args"])}\n')
 
@@ -166,13 +178,53 @@ def pair(facts, server, environment):
                       content_sha256=content_hash,
                       preimage_sha256=byte_digest(current) if current is not None else None,
                       installed_sha256=byte_digest(desired))
-        records = [r for r in (observation.get('ownership') or {}).get('records', []) if r['name'] != name]
+        document = trusted_ownership(observation, facts['profile_id'], environment, path)
+        records = [r for r in (document or {}).get('records', []) if r['name'] != name]
         records.append(record); records.sort(key=lambda r: r['name'])
         effect.update(entry=desired, write_native=current != desired, write_ownership=True,
                       ownership=dict(schema_version=1, capability=CAPABILITY, scope='profile',
                                      profile_id=facts['profile_id'], environment=environment,
                                      path=path, records=records))
     return row, effect, None
+
+
+def compose_ownership(facts, rows, effects):
+    """One validated preimage and at most one ledger publication per home key."""
+    groups = {}
+    for row, effect in zip(rows, effects):
+        if row['path'] is not None:
+            key = (facts['profile_id'], row['environment'], row['path'])
+            groups.setdefault(key, []).append(effect)
+    for (profile, environment, path), group in groups.items():
+        documents = [trusted_ownership(
+            facts.get('observations', {}).get(environment, {}).get(e['name'], {}),
+            profile, environment, path) for e in group]
+        if any(document != documents[0] for document in documents[1:]):
+            return UNREADABLE  # one physical ledger cannot have conflicting preimages
+        writes = [e for e in group if e['write_ownership']]
+        if not writes:
+            continue
+        document = copy.deepcopy(documents[0])
+        if document is None:
+            document = dict(schema_version=1, capability=CAPABILITY, scope='profile',
+                            profile_id=profile, environment=environment, path=path, records=[])
+        records = {r['name']: r for r in document['records']}
+        for effect in writes:
+            name = effect['name']
+            records.pop(name, None)
+            # Only the selected NAME is a patch; sibling records come from the
+            # single validated preimage, never another pair's complete output.
+            candidate = effect['ownership']
+            record = next((r for r in candidate['records'] if r['name'] == name), None) if candidate else None
+            if record is not None:
+                records[name] = record
+        document['records'] = [records[name] for name in sorted(records)]
+        if not ownership_valid(document):
+            return UNREADABLE
+        for effect in group:
+            effect['ownership'] = copy.deepcopy(document) if records else None
+            effect['write_ownership'] = effect is writes[-1]
+    return None
 
 
 def evaluate(facts):
@@ -191,7 +243,7 @@ def evaluate(facts):
             rows.append(row); effects.append(effect)
             if code:
                 codes.append(code)
-    code = codes[0] if codes else None
+    code = codes[0] if codes else compose_ownership(facts, rows, effects)
     if code:
         # No planned mutation or false successful row survives a set-level refusal.
         for row in rows:

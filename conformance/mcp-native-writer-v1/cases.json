@@ -7962,5 +7962,2902 @@
       "effects": [],
       "mutated": false
     }
+  },
+  {
+    "id": "neighbor-unprotected-claude",
+    "claim": "First install never promotes a unprotected neighboring ledger into protected ownership.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "claude_code"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "claude_code": {
+          "docs": {
+            "entry": null,
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "claude_code",
+              "path": ".agent-context/mcp/claude_code.json",
+              "records": [
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+                }
+              ]
+            },
+            "protected": false,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "path": ".agent-context/mcp/claude_code.json",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "claude_code",
+            "path": ".agent-context/mcp/claude_code.json",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "neighbor-other-profile-claude",
+    "claim": "First install never promotes a other-profile neighboring ledger into protected ownership.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "claude_code"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "claude_code": {
+          "docs": {
+            "entry": null,
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "another",
+              "environment": "claude_code",
+              "path": ".agent-context/mcp/claude_code.json",
+              "records": [
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "path": ".agent-context/mcp/claude_code.json",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "claude_code",
+            "path": ".agent-context/mcp/claude_code.json",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "neighbor-other-environment-claude",
+    "claim": "First install never promotes a other-environment neighboring ledger into protected ownership.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "claude_code"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "claude_code": {
+          "docs": {
+            "entry": null,
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "codex_cli",
+              "path": ".agent-context/mcp/claude_code.json",
+              "records": [
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "path": ".agent-context/mcp/claude_code.json",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "claude_code",
+            "path": ".agent-context/mcp/claude_code.json",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "neighbor-other-path-claude",
+    "claim": "First install never promotes a other-path neighboring ledger into protected ownership.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "claude_code"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "claude_code": {
+          "docs": {
+            "entry": null,
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "claude_code",
+              "path": "curator-mcp.config.toml",
+              "records": [
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "path": ".agent-context/mcp/claude_code.json",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "claude_code",
+            "path": ".agent-context/mcp/claude_code.json",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "neighbor-missing-owner-claude",
+    "claim": "First install never promotes a missing-owner neighboring ledger into protected ownership.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "claude_code"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "claude_code": {
+          "docs": {
+            "entry": null,
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "claude_code",
+              "path": ".agent-context/mcp/claude_code.json",
+              "records": [
+                {
+                  "name": "other",
+                  "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "path": ".agent-context/mcp/claude_code.json",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "claude_code",
+            "path": ".agent-context/mcp/claude_code.json",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "neighbor-valid-claude",
+    "claim": "First install preserves a valid protected neighboring marker.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "claude_code"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "claude_code": {
+          "docs": {
+            "entry": null,
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "claude_code",
+              "path": ".agent-context/mcp/claude_code.json",
+              "records": [
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "path": ".agent-context/mcp/claude_code.json",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "claude_code",
+            "path": ".agent-context/mcp/claude_code.json",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              },
+              {
+                "name": "other",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "joint-add-2-claude",
+    "claim": "Several first installs publish exactly one complete ledger containing every new NAME.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "claude_code"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        {
+          "name": "other",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "claude_code"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "claude_code": {
+          "docs": {
+            "entry": null,
+            "ownership": null,
+            "protected": false,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          },
+          "other": {
+            "entry": null,
+            "ownership": null,
+            "protected": false,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "path": ".agent-context/mcp/claude_code.json",
+          "outcome": "added",
+          "code": null
+        },
+        {
+          "name": "other",
+          "environment": "claude_code",
+          "path": ".agent-context/mcp/claude_code.json",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "claude_code",
+            "path": ".agent-context/mcp/claude_code.json",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              },
+              {
+                "name": "other",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": false
+        },
+        {
+          "name": "other",
+          "environment": "claude_code",
+          "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "claude_code",
+            "path": ".agent-context/mcp/claude_code.json",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              },
+              {
+                "name": "other",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "joint-add-3-claude",
+    "claim": "Several first installs publish exactly one complete ledger containing every new NAME.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "claude_code"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        {
+          "name": "other",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "claude_code"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        {
+          "name": "third",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "claude_code"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "claude_code": {
+          "docs": {
+            "entry": null,
+            "ownership": null,
+            "protected": false,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          },
+          "other": {
+            "entry": null,
+            "ownership": null,
+            "protected": false,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          },
+          "third": {
+            "entry": null,
+            "ownership": null,
+            "protected": false,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "path": ".agent-context/mcp/claude_code.json",
+          "outcome": "added",
+          "code": null
+        },
+        {
+          "name": "other",
+          "environment": "claude_code",
+          "path": ".agent-context/mcp/claude_code.json",
+          "outcome": "added",
+          "code": null
+        },
+        {
+          "name": "third",
+          "environment": "claude_code",
+          "path": ".agent-context/mcp/claude_code.json",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "claude_code",
+            "path": ".agent-context/mcp/claude_code.json",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              },
+              {
+                "name": "other",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              },
+              {
+                "name": "third",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": false
+        },
+        {
+          "name": "other",
+          "environment": "claude_code",
+          "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "claude_code",
+            "path": ".agent-context/mcp/claude_code.json",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              },
+              {
+                "name": "other",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              },
+              {
+                "name": "third",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": false
+        },
+        {
+          "name": "third",
+          "environment": "claude_code",
+          "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "claude_code",
+            "path": ".agent-context/mcp/claude_code.json",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              },
+              {
+                "name": "other",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              },
+              {
+                "name": "third",
+                "owner": "curator",
+                "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "joint-remove-claude",
+    "claim": "Joint remove publishes one empty-ledger deletion and never resurrects another removed marker.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "claude_code"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        {
+          "name": "other",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "claude_code"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "claude_code": {
+          "docs": {
+            "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "claude_code",
+              "path": ".agent-context/mcp/claude_code.json",
+              "records": [
+                {
+                  "name": "docs",
+                  "owner": "curator",
+                  "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+                },
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          },
+          "other": {
+            "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "claude_code",
+              "path": ".agent-context/mcp/claude_code.json",
+              "records": [
+                {
+                  "name": "docs",
+                  "owner": "curator",
+                  "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+                },
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      },
+      "operation": "remove",
+      "actions": {
+        "claude_code": {
+          "docs": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "claude_code",
+            "path": ".agent-context/mcp/claude_code.json",
+            "kind": "package-ownership-action",
+            "name": "docs",
+            "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+            "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "operation": "remove",
+            "approver": "operator",
+            "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "state": "active"
+          },
+          "other": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "claude_code",
+            "path": ".agent-context/mcp/claude_code.json",
+            "kind": "package-ownership-action",
+            "name": "other",
+            "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+            "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "operation": "remove",
+            "approver": "operator",
+            "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "state": "active"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "path": ".agent-context/mcp/claude_code.json",
+          "outcome": "removed",
+          "code": null
+        },
+        {
+          "name": "other",
+          "environment": "claude_code",
+          "path": ".agent-context/mcp/claude_code.json",
+          "outcome": "removed",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "entry": null,
+          "ownership": null,
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": false
+        },
+        {
+          "name": "other",
+          "environment": "claude_code",
+          "entry": null,
+          "ownership": null,
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "joint-release-claude",
+    "claim": "Joint release publishes one empty-ledger deletion and never resurrects another removed marker.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "claude_code"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        {
+          "name": "other",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "claude_code"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "claude_code": {
+          "docs": {
+            "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "claude_code",
+              "path": ".agent-context/mcp/claude_code.json",
+              "records": [
+                {
+                  "name": "docs",
+                  "owner": "curator",
+                  "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+                },
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          },
+          "other": {
+            "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "claude_code",
+              "path": ".agent-context/mcp/claude_code.json",
+              "records": [
+                {
+                  "name": "docs",
+                  "owner": "curator",
+                  "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+                },
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:f76e113362b442d2362cb7a8d2f5e2922813d3bd17346313889a03dfddf3896e"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      },
+      "operation": "release",
+      "actions": {
+        "claude_code": {
+          "docs": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "claude_code",
+            "path": ".agent-context/mcp/claude_code.json",
+            "kind": "package-ownership-action",
+            "name": "docs",
+            "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+            "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "operation": "release",
+            "approver": "operator",
+            "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "state": "active"
+          },
+          "other": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "claude_code",
+            "path": ".agent-context/mcp/claude_code.json",
+            "kind": "package-ownership-action",
+            "name": "other",
+            "server_sha256": "sha256:0364279cb80ee2e9c47a3b42584b2c02d634d7f43fe264b7356e3ec631263037",
+            "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "operation": "release",
+            "approver": "operator",
+            "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "state": "active"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "path": ".agent-context/mcp/claude_code.json",
+          "outcome": "released",
+          "code": null
+        },
+        {
+          "name": "other",
+          "environment": "claude_code",
+          "path": ".agent-context/mcp/claude_code.json",
+          "outcome": "released",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "claude_code",
+          "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+          "ownership": null,
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": false,
+          "write_ownership": false
+        },
+        {
+          "name": "other",
+          "environment": "claude_code",
+          "entry": "{\"args\":[],\"command\":\"tools\",\"type\":\"stdio\"}",
+          "ownership": null,
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": false,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "neighbor-unprotected-codex",
+    "claim": "First install never promotes a unprotected neighboring ledger into protected ownership.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "codex_cli": {
+          "docs": {
+            "entry": null,
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "codex_cli",
+              "path": "curator-mcp.config.toml",
+              "records": [
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+                }
+              ]
+            },
+            "protected": false,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "entry": "[mcp_servers.docs]\ncommand = \"tools\"\nargs = []\n",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "neighbor-other-profile-codex",
+    "claim": "First install never promotes a other-profile neighboring ledger into protected ownership.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "codex_cli": {
+          "docs": {
+            "entry": null,
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "another",
+              "environment": "codex_cli",
+              "path": "curator-mcp.config.toml",
+              "records": [
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "entry": "[mcp_servers.docs]\ncommand = \"tools\"\nargs = []\n",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "neighbor-other-environment-codex",
+    "claim": "First install never promotes a other-environment neighboring ledger into protected ownership.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "codex_cli": {
+          "docs": {
+            "entry": null,
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "claude_code",
+              "path": "curator-mcp.config.toml",
+              "records": [
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "entry": "[mcp_servers.docs]\ncommand = \"tools\"\nargs = []\n",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "neighbor-other-path-codex",
+    "claim": "First install never promotes a other-path neighboring ledger into protected ownership.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "codex_cli": {
+          "docs": {
+            "entry": null,
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "codex_cli",
+              "path": ".agent-context/mcp/claude_code.json",
+              "records": [
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "entry": "[mcp_servers.docs]\ncommand = \"tools\"\nargs = []\n",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "neighbor-missing-owner-codex",
+    "claim": "First install never promotes a missing-owner neighboring ledger into protected ownership.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "codex_cli": {
+          "docs": {
+            "entry": null,
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "codex_cli",
+              "path": "curator-mcp.config.toml",
+              "records": [
+                {
+                  "name": "other",
+                  "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "entry": "[mcp_servers.docs]\ncommand = \"tools\"\nargs = []\n",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "neighbor-valid-codex",
+    "claim": "First install preserves a valid protected neighboring marker.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "codex_cli": {
+          "docs": {
+            "entry": null,
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "codex_cli",
+              "path": "curator-mcp.config.toml",
+              "records": [
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "entry": "[mcp_servers.docs]\ncommand = \"tools\"\nargs = []\n",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+              },
+              {
+                "name": "other",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "joint-add-2-codex",
+    "claim": "Several first installs publish exactly one complete ledger containing every new NAME.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        {
+          "name": "other",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "codex_cli": {
+          "docs": {
+            "entry": null,
+            "ownership": null,
+            "protected": false,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          },
+          "other": {
+            "entry": null,
+            "ownership": null,
+            "protected": false,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "added",
+          "code": null
+        },
+        {
+          "name": "other",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "entry": "[mcp_servers.docs]\ncommand = \"tools\"\nargs = []\n",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+              },
+              {
+                "name": "other",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:2d84f694a1fe35576e7cfe2c043fb84a057daa8d82c42ff46b2500f07156489a"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": false
+        },
+        {
+          "name": "other",
+          "environment": "codex_cli",
+          "entry": "[mcp_servers.other]\ncommand = \"tools\"\nargs = []\n",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+              },
+              {
+                "name": "other",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:2d84f694a1fe35576e7cfe2c043fb84a057daa8d82c42ff46b2500f07156489a"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "joint-add-3-codex",
+    "claim": "Several first installs publish exactly one complete ledger containing every new NAME.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        {
+          "name": "other",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        {
+          "name": "third",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "codex_cli": {
+          "docs": {
+            "entry": null,
+            "ownership": null,
+            "protected": false,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          },
+          "other": {
+            "entry": null,
+            "ownership": null,
+            "protected": false,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          },
+          "third": {
+            "entry": null,
+            "ownership": null,
+            "protected": false,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "added",
+          "code": null
+        },
+        {
+          "name": "other",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "added",
+          "code": null
+        },
+        {
+          "name": "third",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "entry": "[mcp_servers.docs]\ncommand = \"tools\"\nargs = []\n",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+              },
+              {
+                "name": "other",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:2d84f694a1fe35576e7cfe2c043fb84a057daa8d82c42ff46b2500f07156489a"
+              },
+              {
+                "name": "third",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:8a69da59bf3cf4f08f08eeb7f5bd4cf8e1a26c1ecc85fe25ad90d02edd205aea"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": false
+        },
+        {
+          "name": "other",
+          "environment": "codex_cli",
+          "entry": "[mcp_servers.other]\ncommand = \"tools\"\nargs = []\n",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+              },
+              {
+                "name": "other",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:2d84f694a1fe35576e7cfe2c043fb84a057daa8d82c42ff46b2500f07156489a"
+              },
+              {
+                "name": "third",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:8a69da59bf3cf4f08f08eeb7f5bd4cf8e1a26c1ecc85fe25ad90d02edd205aea"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": false
+        },
+        {
+          "name": "third",
+          "environment": "codex_cli",
+          "entry": "[mcp_servers.third]\ncommand = \"tools\"\nargs = []\n",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+              },
+              {
+                "name": "other",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:2d84f694a1fe35576e7cfe2c043fb84a057daa8d82c42ff46b2500f07156489a"
+              },
+              {
+                "name": "third",
+                "owner": "curator",
+                "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:8a69da59bf3cf4f08f08eeb7f5bd4cf8e1a26c1ecc85fe25ad90d02edd205aea"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "joint-remove-codex",
+    "claim": "Joint remove publishes one empty-ledger deletion and never resurrects another removed marker.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        {
+          "name": "other",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "codex_cli": {
+          "docs": {
+            "entry": "[mcp_servers.docs]\ncommand = \"tools\"\nargs = []\n",
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "codex_cli",
+              "path": "curator-mcp.config.toml",
+              "records": [
+                {
+                  "name": "docs",
+                  "owner": "curator",
+                  "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+                },
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:2d84f694a1fe35576e7cfe2c043fb84a057daa8d82c42ff46b2500f07156489a"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          },
+          "other": {
+            "entry": "[mcp_servers.other]\ncommand = \"tools\"\nargs = []\n",
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "codex_cli",
+              "path": "curator-mcp.config.toml",
+              "records": [
+                {
+                  "name": "docs",
+                  "owner": "curator",
+                  "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+                },
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:2d84f694a1fe35576e7cfe2c043fb84a057daa8d82c42ff46b2500f07156489a"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      },
+      "operation": "remove",
+      "actions": {
+        "codex_cli": {
+          "docs": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "kind": "package-ownership-action",
+            "name": "docs",
+            "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+            "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "operation": "remove",
+            "approver": "operator",
+            "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "state": "active"
+          },
+          "other": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "kind": "package-ownership-action",
+            "name": "other",
+            "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+            "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "operation": "remove",
+            "approver": "operator",
+            "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "state": "active"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "removed",
+          "code": null
+        },
+        {
+          "name": "other",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "removed",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "entry": null,
+          "ownership": null,
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": false
+        },
+        {
+          "name": "other",
+          "environment": "codex_cli",
+          "entry": null,
+          "ownership": null,
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "joint-release-codex",
+    "claim": "Joint release publishes one empty-ledger deletion and never resurrects another removed marker.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        },
+        {
+          "name": "other",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "codex_cli": {
+          "docs": {
+            "entry": "[mcp_servers.docs]\ncommand = \"tools\"\nargs = []\n",
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "codex_cli",
+              "path": "curator-mcp.config.toml",
+              "records": [
+                {
+                  "name": "docs",
+                  "owner": "curator",
+                  "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+                },
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:2d84f694a1fe35576e7cfe2c043fb84a057daa8d82c42ff46b2500f07156489a"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          },
+          "other": {
+            "entry": "[mcp_servers.other]\ncommand = \"tools\"\nargs = []\n",
+            "ownership": {
+              "schema_version": 1,
+              "capability": "profile-mcp-native-writer-v1",
+              "scope": "profile",
+              "profile_id": "sample",
+              "environment": "codex_cli",
+              "path": "curator-mcp.config.toml",
+              "records": [
+                {
+                  "name": "docs",
+                  "owner": "curator",
+                  "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:fc8bde97aaa4936b8d7a65e003e246665bcc96f38bfdc8e6ee65ccf11adc954a"
+                },
+                {
+                  "name": "other",
+                  "owner": "curator",
+                  "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+                  "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "preimage_sha256": null,
+                  "installed_sha256": "sha256:2d84f694a1fe35576e7cfe2c043fb84a057daa8d82c42ff46b2500f07156489a"
+                }
+              ]
+            },
+            "protected": true,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      },
+      "operation": "release",
+      "actions": {
+        "codex_cli": {
+          "docs": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "kind": "package-ownership-action",
+            "name": "docs",
+            "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+            "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "operation": "release",
+            "approver": "operator",
+            "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "state": "active"
+          },
+          "other": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "kind": "package-ownership-action",
+            "name": "other",
+            "server_sha256": "sha256:622f7054acecf1eb0dd887414c6fc156950b37ff09705217e744e0080b366dc3",
+            "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "operation": "release",
+            "approver": "operator",
+            "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "state": "active"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "released",
+          "code": null
+        },
+        {
+          "name": "other",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "released",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "entry": "[mcp_servers.docs]\ncommand = \"tools\"\nargs = []\n",
+          "ownership": null,
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": false,
+          "write_ownership": false
+        },
+        {
+          "name": "other",
+          "environment": "codex_cli",
+          "entry": "[mcp_servers.other]\ncommand = \"tools\"\nargs = []\n",
+          "ownership": null,
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": false,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
+  },
+  {
+    "id": "codex-del-roundtrip",
+    "claim": "An admitted DEL argument is escaped in TOML and round-trips through an independent parser.",
+    "input": {
+      "scope": "profile",
+      "profile_id": "sample",
+      "platform": "darwin-arm64",
+      "pins": {
+        "claude_code": {
+          "version": "2.1.305",
+          "sha256": "ea3ea3c08d2a9634a4651e687fcf900d410c489bce2b00f22bd7352b91ba704f"
+        },
+        "codex_cli": {
+          "version": "0.162.1",
+          "sha256": "74c6a6d263f40d65f99c27a815275f5b4ed0bcc2baecc396b4cf3255498bdfc0"
+        }
+      },
+      "servers": [
+        {
+          "name": "docs",
+          "server": {
+            "transport": "stdio",
+            "command": "tools",
+            "args": [
+              "ab"
+            ],
+            "environments": [
+              "codex_cli"
+            ]
+          },
+          "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "policy_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "policy_allows": true,
+      "action_protected": true,
+      "observations": {
+        "codex_cli": {
+          "docs": {
+            "entry": null,
+            "ownership": null,
+            "protected": false,
+            "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n"
+          }
+        }
+      }
+    },
+    "expected": {
+      "code": null,
+      "rows": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "path": "curator-mcp.config.toml",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "effects": [
+        {
+          "name": "docs",
+          "environment": "codex_cli",
+          "entry": "[mcp_servers.docs]\ncommand = \"tools\"\nargs = [\"a\\u007Fb\"]\n",
+          "ownership": {
+            "schema_version": 1,
+            "capability": "profile-mcp-native-writer-v1",
+            "scope": "profile",
+            "profile_id": "sample",
+            "environment": "codex_cli",
+            "path": "curator-mcp.config.toml",
+            "records": [
+              {
+                "name": "docs",
+                "owner": "curator",
+                "server_sha256": "sha256:b77488eda372a9f329d6355746a693221af4c4759368804b3e9dba1ad1bad0b1",
+                "content_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                "preimage_sha256": null,
+                "installed_sha256": "sha256:59c67bd7ce4007602dee65c5f4ea94b46daaa5377eaa3917b892e03d24c705d9"
+              }
+            ]
+          },
+          "foreign_bytes": "  # untouched synthetic foreign record\n  [foreign] # spacing\n  key = \"verbatim\"\n",
+          "write_native": true,
+          "write_ownership": true
+        }
+      ],
+      "mutated": false
+    }
   }
 ]

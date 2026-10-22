@@ -47,3 +47,28 @@ A further control removes marker publication from an otherwise valid native
 install effect and requires the exact added-state witness to fail. These
 Python controls are not the future production writer's native mutant batch. Consumer delivery must supply those controls at real entrypoints and
 prove coherent recovery independently for each advertised adapter.
+
+The review regressions add ten rejected-neighbor witnesses (unprotected,
+wrong profile/environment/path and missing owner, for both writable adapters),
+eight joint add/remove/release witnesses and the Codex DEL encoding witness.
+Valid protected-neighbor cases sit beside rejected neighbors. Every review
+witness is mandatory in the corpus inventory. Focused tests additionally check
+unchanged-plus-added records, joint restores/replacements, partial cleanup,
+conflicting ledger preimages and independent JSON/TOML parser round-trips for
+all ASCII controls, quotes, backslashes and representative Unicode arguments.
+
+Effects retain one entry per NAME/environment pair. When a home ledger changes,
+all its effects carry the same final `ownership` value, while only the last
+pair that changes ownership has `write_ownership: true`; this is one publication
+for the ledger key, separate from each pair's native edit. An empty final ledger
+is represented by `ownership: null`. Read-only sets do not publish a ledger.
+Rejected neighboring ledgers contribute no records. Conflicting validated
+preimages refuse the entire set with no effects. No refusal-free synthetic
+plan establishes real protected-store provenance or transactional publication.
+
+New bounded controls relax each neighbor provenance/binding/owner gate,
+disable only ledger composition, and remove only DEL escaping. Each catches
+the named review verdict mismatch beside its valid sibling; the DEL control
+also reproduces the independent parser's intended rejection. A preimage control
+bypasses only snapshot agreement and demonstrates the forbidden successful
+plan. These controls run against the actual model functions.

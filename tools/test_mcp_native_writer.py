@@ -155,11 +155,12 @@ class NativeWriterTests(unittest.TestCase):
     def test_missing_required_witness(self):
         with tempfile.TemporaryDirectory(prefix='writer-corpus-') as directory:
             root = Path(directory); corpus = root/'conformance'/m.NAMESPACE; corpus.mkdir(parents=True)
-            cases = [c for c in self.cases.values() if c['id'] != 'markerless-claude']
-            (corpus/'cases.json').write_text(json.dumps(cases))
-            (corpus/'coverage.json').write_text(json.dumps({'cases': [c['id'] for c in cases]}))
-            with self.assertRaisesRegex(ValueError, '^MCP writer case inventory mismatch$'):
-                m.check_corpus(root)
+            for witness in sorted(m.REQUIRED):
+                cases = [c for c in self.cases.values() if c['id'] != witness]
+                (corpus/'cases.json').write_text(json.dumps(cases))
+                (corpus/'coverage.json').write_text(json.dumps({'cases': [c['id'] for c in cases]}))
+                with self.subTest(witness=witness), self.assertRaisesRegex(ValueError, '^MCP writer case inventory mismatch$'):
+                    m.check_corpus(root)
 
     # Claim: closed carriers reject unknown members, final-LF binds, wrong paths,
     # project action replay and unsorted/duplicate records beside valid controls.
@@ -210,6 +211,218 @@ class NativeWriterTests(unittest.TestCase):
                     result = m.evaluate(f)
                     self.assertIsNone(result['code'])
                     self.assertEqual(result['effects'][0]['ownership']['records'], [other])
+
+    # Claim: all 19 independent review witnesses now match their full declared
+    # plans, beside valid protected-neighbor and single-NAME controls.
+    def test_review_regressions(self):
+        witnesses = []
+        for suffix in ['claude', 'codex']:
+            witnesses += ['neighbor-'+variant+'-'+suffix for variant in
+                          ['unprotected', 'other-profile', 'other-environment', 'other-path', 'missing-owner']]
+            witnesses += ['joint-add-'+str(n)+'-'+suffix for n in [2, 3]]
+            witnesses += ['joint-'+op+'-'+suffix for op in ['remove', 'release']]
+            m.check_case(self.cases['neighbor-valid-'+suffix])
+            m.check_case(self.cases[suffix+'-added'])
+        witnesses.append('codex-del-roundtrip')
+        self.assertEqual(len(witnesses), 19)
+        self.assertTrue(set(witnesses) <= m.REQUIRED)
+        for witness in witnesses:
+            with self.subTest(witness=witness):
+                m.check_case(self.cases[witness])
+                result = m.evaluate(self.cases[witness]['input'])
+                self.assertEqual(sum(e['write_ownership'] for e in result['effects']), 1)
+
+    # Claim: each provenance, binding and marker-shape gate prevents adoption
+    # of that rejected neighbor; relaxing only it changes the exact full verdict.
+    def test_neighbor_adoption_narrowing_controls(self):
+        for variant, old, new in [
+            ('unprotected', "observation.get('protected') is not True", 'False'),
+            ('other-profile', 'document.get(k) != v', "document.get(k) != v and k != 'profile_id'"),
+            ('other-environment', 'document.get(k) != v', "document.get(k) != v and k != 'environment'"),
+            ('other-path', 'document.get(k) != v', "document.get(k) != v and k != 'path'"),
+        ]:
+            source = inspect.getsource(m.trusted_ownership)
+            self.assertEqual(source.count(old), 1)
+            namespace = dict(vars(m))
+            exec(compile(source.replace(old, new), '<neighbor-adoption-control>', 'exec'), namespace)
+            with patch.object(m, 'trusted_ownership', namespace['trusted_ownership']):
+                for suffix in ['claude', 'codex']:
+                    m.check_case(self.cases['neighbor-valid-'+suffix])
+                    witness = 'neighbor-'+variant+'-'+suffix
+                    result = m.evaluate(self.cases[witness]['input'])
+                    self.assertIsNone(result['code'])
+                    self.assertEqual([r['name'] for r in result['effects'][0]['ownership']['records']], ['docs', 'other'])
+                    with self.assertRaisesRegex(ValueError, 'MCP writer verdict mismatch: '+witness+'$'):
+                        m.check_case(self.cases[witness])
+        original = m.schema_valid
+        def missing_owner(name, value):
+            if name != 'ownership-v1':
+                return original(name, value)
+            schema = json.loads((m.ROOT/'schemas'/m.NAMESPACE/'ownership-v1.schema.json').read_text())
+            schema['properties']['records']['items']['required'].remove('owner')
+            return Draft202012Validator(exact_patterns(schema), registry=m.stage.registry()).is_valid(value)
+        with patch.object(m, 'schema_valid', side_effect=missing_owner):
+            for suffix in ['claude', 'codex']:
+                m.check_case(self.cases['neighbor-valid-'+suffix])
+                witness = 'neighbor-missing-owner-'+suffix
+                with self.assertRaisesRegex(ValueError, 'MCP writer verdict mismatch: '+witness+'$'):
+                    m.check_case(self.cases[witness])
+
+    # Claim: disabling only ledger composition reproduces every multi-NAME
+    # review violation; existing single-NAME publications still pass.
+    def test_joint_ledger_narrowing_control(self):
+        with patch.object(m, 'compose_ownership', return_value=None) as plant:
+            for suffix in ['claude', 'codex']:
+                m.check_case(self.cases['neighbor-valid-'+suffix])
+                for stem in ['joint-add-2', 'joint-add-3', 'joint-remove', 'joint-release']:
+                    witness = stem+'-'+suffix
+                    with self.assertRaisesRegex(ValueError, 'MCP writer verdict mismatch: '+witness+'$'):
+                        m.check_case(self.cases[witness])
+            self.assertGreater(plant.call_count, 0)
+
+    # Claim: adds compose with unchanged siblings and preserve an
+    # untouched neighbor; partial remove/release keeps only the remaining marker.
+    def test_mixed_ledger_operations(self):
+        for env, suffix in [('claude_code', 'claude'), ('codex_cli', 'codex')]:
+            f = copy.deepcopy(self.cases[suffix+'-unchanged']['input'])
+            observed = f['observations'][env]['docs']
+            neighbor = copy.deepcopy(observed['ownership']['records'][0]); neighbor['name'] = 'neighbor'
+            observed['ownership']['records'].append(neighbor)
+            f['servers'].append(dict(copy.deepcopy(f['servers'][0]), name='other'))
+            f['observations'][env]['other'] = dict(copy.deepcopy(observed), entry=None)
+            result = m.evaluate(f)
+            self.assertIsNone(result['code'])
+            self.assertEqual([r['outcome'] for r in result['rows']], ['unchanged', 'added'])
+            written = [e for e in result['effects'] if e['write_ownership']]
+            self.assertEqual(len(written), 1)
+            self.assertEqual([r['name'] for r in written[0]['ownership']['records']], ['docs', 'neighbor', 'other'])
+            self.assertEqual(written[0]['ownership']['records'][1], neighbor)
+            for operation in ['remove', 'release']:
+                f = copy.deepcopy(self.cases['joint-'+operation+'-'+suffix]['input'])
+                f['servers'] = f['servers'][:1]
+                result = m.evaluate(f)
+                self.assertIsNone(result['code'])
+                self.assertEqual([r['name'] for r in result['effects'][0]['ownership']['records']], ['other'])
+
+    # Claim: two authorized restores/replacements compose their new digests and
+    # observed preimages into one ledger, preserving the untouched third marker.
+    def test_joint_updates(self):
+        for env, suffix in [('claude_code', 'claude'), ('codex_cli', 'codex')]:
+            for operation in ['restore', 'replace']:
+                f = copy.deepcopy(self.cases[operation+'-'+suffix]['input'])
+                ledger = f['observations'][env]['docs']['ownership']
+                neighbor = dict(ledger['records'][0], name='neighbor')
+                other = dict(ledger['records'][0], name='other')
+                ledger['records'] += [neighbor, other]
+                f['servers'].append(dict(copy.deepcopy(f['servers'][0]), name='other'))
+                f['observations'][env]['other'] = copy.deepcopy(f['observations'][env]['docs'])
+                if operation == 'restore':
+                    f['observations'][env]['other']['entry'] = 'other external edit'
+                else:
+                    # A clean original Codex NAME has different selected bytes.
+                    server = self.cases[suffix+'-added']['input']['servers'][0]['server']
+                    original = m.native_entry(env, 'other', server)
+                    f['observations'][env]['other']['entry'] = original
+                    other['installed_sha256'] = m.byte_digest(original)
+                    f['observations'][env]['other']['ownership'] = copy.deepcopy(ledger)
+                f['actions'][env]['other'] = dict(f['actions'][env]['docs'], name='other')
+                result = m.evaluate(f)
+                self.assertIsNone(result['code'])
+                self.assertEqual([r['outcome'] for r in result['rows']],
+                                 ['restored' if operation == 'restore' else 'updated']*2)
+                written = [e for e in result['effects'] if e['write_ownership']]
+                self.assertEqual(len(written), 1)
+                records = {r['name']: r for r in written[0]['ownership']['records']}
+                self.assertEqual(set(records), {'docs', 'neighbor', 'other'})
+                self.assertEqual(records['neighbor'], neighbor)
+                for effect in result['effects']:
+                    record = records[effect['name']]
+                    self.assertEqual(record['installed_sha256'], m.byte_digest(effect['entry']))
+                    self.assertEqual(record['preimage_sha256'], m.byte_digest(f['observations'][env][effect['name']]['entry']))
+                    self.assertEqual(record['server_sha256'], f['actions'][env][effect['name']]['server_sha256'])
+
+    # Claim: conflicting protected preimages of one physical ledger refuse the
+    # whole set without planned writes; identical snapshots remain installable.
+    def test_inconsistent_ledger_preimages(self):
+        for env, suffix in [('claude_code', 'claude'), ('codex_cli', 'codex')]:
+            f = copy.deepcopy(self.cases['joint-add-2-'+suffix]['input'])
+            m.check_case(self.cases['joint-add-2-'+suffix])
+            f['observations'][env]['other'].update(
+                protected=True, ownership=copy.deepcopy(self.cases['neighbor-valid-'+suffix]['input']['observations'][env]['docs']['ownership']))
+            before = copy.deepcopy(f)
+            result = m.evaluate(f)
+            self.assertEqual(result['code'], m.UNREADABLE)
+            self.assertEqual(result['effects'], [])
+            self.assertTrue(all(r['outcome'] == 'refused' and r['code'] == m.UNREADABLE for r in result['rows']))
+            self.assertEqual(f, before)
+            source = inspect.getsource(m.compose_ownership)
+            old = 'any(document != documents[0] for document in documents[1:])'
+            self.assertEqual(source.count(old), 1)
+            namespace = dict(vars(m))
+            exec(compile(source.replace(old, 'False'), '<conflicting-ledger-control>', 'exec'), namespace)
+            with patch.object(m, 'compose_ownership', namespace['compose_ownership']):
+                m.check_case(self.cases['joint-add-2-'+suffix])
+                self.assertIsNone(m.evaluate(f)['code'])
+
+    # Claim: the final shape guard refuses a malformed composed record with no
+    # effects. A bounded faulty-producer plant reaches that exact guard; removing
+    # only it lets the invalid ledger escape beside an unaffected valid install.
+    def test_final_ledger_validation_control(self):
+        original = m.pair
+        def malformed(*args):
+            row, effect, code = original(*args)
+            if effect['write_ownership']:
+                effect['ownership']['records'][0]['owner'] = 'foreign'
+            return row, effect, code
+        m.check_case(self.cases['claude-added'])
+        with patch.object(m, 'pair', side_effect=malformed):
+            result = m.evaluate(self.cases['claude-added']['input'])
+            self.assertEqual(result['code'], m.UNREADABLE)
+            self.assertEqual(result['effects'], [])
+            self.assertEqual(result['rows'][0]['outcome'], 'refused')
+        source = inspect.getsource(m.compose_ownership)
+        old = 'not ownership_valid(document)'
+        self.assertEqual(source.count(old), 1)
+        namespace = dict(vars(m))
+        exec(compile(source.replace(old, 'False'), '<final-ledger-shape-control>', 'exec'), namespace)
+        with patch.object(m, 'compose_ownership', namespace['compose_ownership']):
+            m.check_case(self.cases['claude-added'])
+            with patch.object(m, 'pair', side_effect=malformed):
+                result = m.evaluate(self.cases['claude-added']['input'])
+                self.assertIsNone(result['code'])
+                self.assertFalse(m.ownership_valid(result['effects'][0]['ownership']))
+
+    # Claim: every admitted ASCII control argument, quotes, slashes and Unicode
+    # round-trip through independent native parsers; removing only DEL escaping
+    # reproduces TOMLDecodeError while its ordinary sibling still parses.
+    def test_native_control_roundtrip(self):
+        import tomllib
+        values = [chr(n) for n in range(32)] + ['\x7f', 'plain', 'é 😀', 'a\\b', 'a"b', '\x80', '\uffff']
+        def parse(env, text):
+            return (tomllib.loads(text)['mcp_servers']['docs'] if env == 'codex_cli' else json.loads(text))['args']
+        for env, suffix in [('claude_code', 'claude'), ('codex_cli', 'codex')]:
+            for value in values:
+                with self.subTest(environment=env, value=repr(value)):
+                    f = copy.deepcopy(self.cases[suffix+'-added']['input'])
+                    server = f['servers'][0]['server']; server['args'] = ['a'+value+'b']
+                    self.assertTrue(m.stage.server_valid(server))
+                    self.assertTrue(m.stage.package_byte_bounds(server))
+                    self.assertTrue(m.stage.audit_clear(server))
+                    result = m.evaluate(f)
+                    self.assertIsNone(result['code'])
+                    self.assertEqual(parse(env, result['effects'][0]['entry']), server['args'])
+        source = inspect.getsource(m.native_entry)
+        old = ".replace('\\x7f', r'\\u007F')"
+        self.assertEqual(source.count(old), 1)
+        namespace = dict(vars(m))
+        exec(compile(source.replace(old, ''), '<DEL-encoding-control>', 'exec'), namespace)
+        with patch.object(m, 'native_entry', namespace['native_entry']):
+            m.check_case(self.cases['codex-added'])
+            result = m.evaluate(self.cases['codex-del-roundtrip']['input'])
+            with self.assertRaisesRegex(tomllib.TOMLDecodeError, 'Illegal character'):
+                parse('codex_cli', result['effects'][0]['entry'])
+            with self.assertRaisesRegex(ValueError, 'MCP writer verdict mismatch: codex-del-roundtrip$'):
+                m.check_case(self.cases['codex-del-roundtrip'])
 
     # Claim: these model entrypoints do not invoke process/network APIs for a valid
     # install/restore; a bounded direct call confirms the execution tripwire fires.

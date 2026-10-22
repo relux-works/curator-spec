@@ -93,6 +93,27 @@
     "codex-a-disjoint",
     "codex-b-clean",
     "codex-base-unreadable",
-    "mixed-refusal-total"
+    "mixed-refusal-total",
+    "neighbor-unprotected-claude",
+    "neighbor-other-profile-claude",
+    "neighbor-other-environment-claude",
+    "neighbor-other-path-claude",
+    "neighbor-missing-owner-claude",
+    "neighbor-valid-claude",
+    "joint-add-2-claude",
+    "joint-add-3-claude",
+    "joint-remove-claude",
+    "joint-release-claude",
+    "neighbor-unprotected-codex",
+    "neighbor-other-profile-codex",
+    "neighbor-other-environment-codex",
+    "neighbor-other-path-codex",
+    "neighbor-missing-owner-codex",
+    "neighbor-valid-codex",
+    "joint-add-2-codex",
+    "joint-add-3-codex",
+    "joint-remove-codex",
+    "joint-release-codex",
+    "codex-del-roundtrip"
   ]
 }
