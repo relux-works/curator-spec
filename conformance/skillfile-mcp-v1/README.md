@@ -51,3 +51,13 @@ preserving released schema bytes. Eleven schema-boundary witnesses pair valid
 siblings with actual field-specific guard-removal plants and an unrelated
 unknown-field refusal. Existing lexical negative-zero cases now exercise the
 same shared integer hook used by the leaf-1 decoder.
+
+Re-review R6–R8 adds seven fully rehashed carrier final-LF witnesses, four
+intermediate-component dot/space lock/plan witnesses, and four oversized signed
+integer witnesses across text and UTF-8 bytes, each beside a valid sibling.
+Planning cases with `raw_bytes: true` encode their stored `raw` string as UTF-8
+before evaluation. Two adjacent package-directory refusals exercise admission
+through the same shared portable-path primitive. Integer controls verify both
+pre-conversion token bounds and the exact typed-refusal mapping; they never
+disable the interpreter's integer digit guard. These are specification grammar
+checks, without filesystem or manager qualification.

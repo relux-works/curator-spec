@@ -361,5 +361,140 @@ class StageATests(unittest.TestCase):
                 check()
 
 
+    # R6: all seven reviewer carriers reject terminal LF after independently
+    # rehashing enclosing identities. Removing only the relevant private schema
+    # guard admits the named witness; valid siblings and unknown-field closure hold.
+    def test_r3_rehashed_carrier_lf_controls(self):
+        from referencing import Resource
+        controls = [
+            ('version-lf', 'v1/agent-context-v1', 'packageVersion'),
+            ('prerelease-lf', 'v1/agent-context-v1', 'packageVersion'),
+            ('lock-commit-lf', 'v1/common', 'commit'),
+            ('lock-content_sha256-lf', 'v1/common', 'sha256'),
+            ('mcp-lock-v1-manifest_sha256-lf', 'v1/common', 'sha256'),
+            ('mcp-plan-v1-manifest_sha256-lf', 'v1/common', 'sha256'),
+            ('mcp-approval-v1-server_sha256-lf', 'v1/common', 'sha256'),
+        ]
+        catalog = m.registry()
+        for label, schema, definition in controls:
+            with self.subTest(witness=label):
+                sibling = self.cases['r3-'+label+'-valid']
+                witness = self.cases['r3-'+label+'-invalid']
+                m.check_case(sibling); m.check_case(witness)
+                uri = 'https://relux-works.github.io/curator-spec/schemas/'+schema+'.schema.json'
+                document = copy.deepcopy(catalog.contents(uri))
+                node = document['$defs'][definition]
+                guard = r'(?![\s\S])'
+                self.assertTrue(node['pattern'].endswith(guard))
+                node['pattern'] = node['pattern'][:-len(guard)]
+                narrowed = catalog.with_resource(uri, Resource.from_contents(document))
+                with patch.object(m, 'registry', return_value=narrowed):
+                    m.check_case(sibling)
+                    unknown = copy.deepcopy(sibling['instance']); unknown['unknown_field'] = True
+                    self.assertFalse(m.carrier_valid(sibling['schema'], unknown))
+                    with self.assertRaisesRegex(ValueError, '^MCP carrier mismatch: '+witness['id']+'$'):
+                        m.check_case(witness)
+
+    # R7: both intermediate dot/space variants refuse in rehashed locks and
+    # plans, and in package admission. Narrowing only the shared component-end
+    # rule admits each violation; traversal rejection and valid paths remain.
+    def test_r3_portable_component_controls(self):
+        import ccj1_grammar as grammar
+        source = inspect.getsource(grammar.portable_path)
+        anchor = "component.endswith(('.', ' '))"
+        self.assertEqual(source.count(anchor), 1)
+        namespace = dict(vars(grammar))
+        exec(source.replace(anchor, 'False'), namespace)
+        for kind in ('mcp-lock-v1', 'mcp-plan-v1', 'package'):
+            for ending in ('dot', 'space'):
+                label = 'r3-'+kind+'-component-'+ending
+                sibling = self.cases[label+'-valid']; witness = self.cases[label+'-invalid']
+                with self.subTest(witness=label):
+                    m.check_case(sibling); m.check_case(witness)
+                    with patch.object(m, 'portable_path', side_effect=namespace['portable_path']) as plant:
+                        m.check_case(sibling)
+                        self.assertFalse(m.package_valid({'git':'https://example.invalid/repo.git', 'tag':'v1.2.3', 'directory':'pkg/../root'}))
+                        with self.assertRaisesRegex(ValueError, '^MCP (?:carrier|verdict) mismatch: '+witness['id']+'$'):
+                            m.check_case(witness)
+                        self.assertGreater(plant.call_count, 0)
+
+    # R8: each signed text/bytes token receives mcp_declaration_invalid without
+    # attempting oversized int conversion; safe signed extrema remain accepted.
+    # Actual gate plants separately demonstrate pre-conversion detection and the
+    # typed mapping (an untyped ValueError is precisely the regression under test).
+    def test_r3_oversized_integer_controls(self):
+        import ccj1_grammar as grammar
+        source = inspect.getsource(grammar.integer)
+        self.assertEqual(source.count('len(digits) > 16'), 1)
+        for sign in ('positive', 'negative'):
+            for encoding in ('text', 'bytes'):
+                label = 'r3-integer-'+sign+'-'+encoding
+                sibling = self.cases[label+'-valid']; witness = self.cases[label+'-invalid']
+                overlong = []
+                def conversion(token):
+                    if len(token.lstrip('-')) > 16:
+                        overlong.append(len(token.lstrip('-')))
+                        # The instrument never converts the hostile token or changes
+                        # the interpreter's digit limit; this is a known gate plant.
+                        raise ValueError('oversized conversion attempted')
+                    return int(token)
+                def check_before_conversion():
+                    m.check_case(sibling); m.check_case(witness)
+                    self.assertEqual(overlong, [], 'oversized conversion attempted')
+                with self.subTest(witness=label):
+                    with patch.object(grammar, 'int', side_effect=conversion, create=True):
+                        check_before_conversion()
+                    namespace = dict(vars(grammar)); namespace['int'] = conversion
+                    exec(source.replace('len(digits) > 16', 'False'), namespace)
+                    with patch.object(m, 'strict_integer', side_effect=namespace['integer']):
+                        with self.assertRaisesRegex(AssertionError, 'oversized conversion attempted'):
+                            check_before_conversion()
+                    self.assertEqual(overlong, [5000])
+                    # Removing only the ValueError mapping leaks the helper's known
+                    # lexical refusal, so the expected typed-verdict claim must fail.
+                    narrowed = self.narrowed('strict_load',
+                        'except (ValueError, UnicodeError, TypeError):',
+                        'except (UnicodeError, TypeError):')
+                    def typed_claim(case):
+                        try:
+                            m.check_case(case)
+                        except m.Refusal:
+                            raise
+                        except ValueError as error:
+                            self.assertEqual(str(error), 'CCJ-1 integer length')
+                            self.fail('untyped ValueError instead of declaration refusal')
+                    with patch.object(m, 'strict_load', side_effect=narrowed):
+                        m.check_case(sibling)
+                        with self.assertRaisesRegex(AssertionError, 'untyped ValueError instead of declaration refusal'):
+                            typed_claim(witness)
+                # Verify the fixture actually uses the requested byte/text boundary.
+                original = m.evaluate
+                observed = []
+                def capture(raw, *args):
+                    observed.append(type(raw)); return original(raw, *args)
+                with patch.object(m, 'evaluate', side_effect=capture):
+                    m.check_case(witness)
+                self.assertEqual(observed, [bytes if encoding == 'bytes' else str])
+
+    # The real publication dispatcher validates every added regression; a wrong
+    # expected verdict for each defect class fails with its exact case diagnostic.
+    # Inputs are replaced in memory only, leaving the checked-out corpus untouched.
+    def test_r3_publication_regressions_and_controls(self):
+        validate.validate_skillfile_mcp()
+        corpus = m.ROOT/'conformance/skillfile-mcp-v1/cases.json'
+        original = Path.read_bytes
+        for name in ('r3-version-lf-invalid', 'r3-mcp-lock-v1-component-dot-invalid',
+                     'r3-integer-positive-text-invalid'):
+            planted = copy.deepcopy(list(self.cases.values()))
+            witness = next(case for case in planted if case['id'] == name)
+            if witness['kind'] == 'carrier': witness['valid'] = True
+            else: witness['expected']['code'] = None
+            def read_bytes(path):
+                return json.dumps(planted).encode() if path == corpus else original(path)
+            with self.subTest(witness=name), patch.object(Path, 'read_bytes', read_bytes):
+                with self.assertRaisesRegex(validate.ValidationFailure, 'MCP (?:carrier|verdict) mismatch: '+name+'$'):
+                    validate.validate_skillfile_mcp()
+
+
 if __name__ == '__main__':
     unittest.main()

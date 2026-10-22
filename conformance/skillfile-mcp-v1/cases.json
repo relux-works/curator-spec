@@ -8753,5 +8753,1459 @@
     },
     "valid": false,
     "claim": "Closed plan rows reject neighboring unallocated diagnostic."
+  },
+  {
+    "id": "r3-version-lf-valid",
+    "kind": "carrier",
+    "schema": "mcp-lock-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "skills_lock": {
+        "schema_version": 1,
+        "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "members": [],
+        "lock_sha256": "sha256:b25bb06f43eb5a1c02b887c2434e52c432c174b82642aa24c129ec6e725ed65b"
+      },
+      "entries": [
+        {
+          "name": "catalog",
+          "declaration": {
+            "package": {
+              "git": "https://code.example.invalid/tools/catalog.git",
+              "range": "^1.2.3"
+            },
+            "install": {}
+          },
+          "declaration_sha256": "sha256:f492ebc512b19f39c22270543398df2a9107cb2fd24abf3b4addd20e6a98367f",
+          "resolved": {
+            "source": "code.example.invalid/tools/catalog",
+            "directory": null,
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "version": "1.2.4",
+            "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ],
+              "env_names": []
+            },
+            "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d"
+          }
+        }
+      ],
+      "lock_sha256": "sha256:5bb6e2841eb2937b86530b7cb06ad5c91fdc90cabcab57cf587858218a3455bb"
+    },
+    "valid": true,
+    "claim": "Resolved package version must consume the complete string, including prereleases. Valid sibling."
+  },
+  {
+    "id": "r3-version-lf-invalid",
+    "kind": "carrier",
+    "schema": "mcp-lock-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "skills_lock": {
+        "schema_version": 1,
+        "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "members": [],
+        "lock_sha256": "sha256:b25bb06f43eb5a1c02b887c2434e52c432c174b82642aa24c129ec6e725ed65b"
+      },
+      "entries": [
+        {
+          "name": "catalog",
+          "declaration": {
+            "package": {
+              "git": "https://code.example.invalid/tools/catalog.git",
+              "range": "^1.2.3"
+            },
+            "install": {}
+          },
+          "declaration_sha256": "sha256:f492ebc512b19f39c22270543398df2a9107cb2fd24abf3b4addd20e6a98367f",
+          "resolved": {
+            "source": "code.example.invalid/tools/catalog",
+            "directory": null,
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "version": "1.2.4\n",
+            "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ],
+              "env_names": []
+            },
+            "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d"
+          }
+        }
+      ],
+      "lock_sha256": "sha256:09d12a8b371018b6836e1004e91c622b5ba82cabc8e96cf95e4a5bb4ae0e49ff"
+    },
+    "valid": false,
+    "claim": "Resolved package version must consume the complete string, including prereleases. Rehashed violation."
+  },
+  {
+    "id": "r3-prerelease-lf-valid",
+    "kind": "carrier",
+    "schema": "mcp-lock-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "skills_lock": {
+        "schema_version": 1,
+        "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "members": [],
+        "lock_sha256": "sha256:b25bb06f43eb5a1c02b887c2434e52c432c174b82642aa24c129ec6e725ed65b"
+      },
+      "entries": [
+        {
+          "name": "catalog",
+          "declaration": {
+            "package": {
+              "git": "https://code.example.invalid/tools/catalog.git",
+              "range": ">=1.3.0-beta <2.0.0"
+            },
+            "install": {}
+          },
+          "declaration_sha256": "sha256:9cc111ba9cff46c15260816ec01941bcdc84ebba177f6a25dc47d84bfaded325",
+          "resolved": {
+            "source": "code.example.invalid/tools/catalog",
+            "directory": null,
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "version": "1.3.0-beta.1",
+            "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ],
+              "env_names": []
+            },
+            "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d"
+          }
+        }
+      ],
+      "lock_sha256": "sha256:d79d797fd2914993e5c17dac6b81ada69ab4574ba223971b6c543d875a590615"
+    },
+    "valid": true,
+    "claim": "Resolved package version must consume the complete string, including prereleases. Valid sibling."
+  },
+  {
+    "id": "r3-prerelease-lf-invalid",
+    "kind": "carrier",
+    "schema": "mcp-lock-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "skills_lock": {
+        "schema_version": 1,
+        "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "members": [],
+        "lock_sha256": "sha256:b25bb06f43eb5a1c02b887c2434e52c432c174b82642aa24c129ec6e725ed65b"
+      },
+      "entries": [
+        {
+          "name": "catalog",
+          "declaration": {
+            "package": {
+              "git": "https://code.example.invalid/tools/catalog.git",
+              "range": ">=1.3.0-beta <2.0.0"
+            },
+            "install": {}
+          },
+          "declaration_sha256": "sha256:9cc111ba9cff46c15260816ec01941bcdc84ebba177f6a25dc47d84bfaded325",
+          "resolved": {
+            "source": "code.example.invalid/tools/catalog",
+            "directory": null,
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "version": "1.3.0-beta.1\n",
+            "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ],
+              "env_names": []
+            },
+            "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d"
+          }
+        }
+      ],
+      "lock_sha256": "sha256:6a63ad618361c161ae4d8c13bfeb71f02cb849c6270486c7555db9daa6e55e6d"
+    },
+    "valid": false,
+    "claim": "Resolved package version must consume the complete string, including prereleases. Rehashed violation."
+  },
+  {
+    "id": "r3-lock-commit-lf-valid",
+    "kind": "carrier",
+    "schema": "mcp-lock-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "skills_lock": {
+        "schema_version": 1,
+        "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "members": [],
+        "lock_sha256": "sha256:b25bb06f43eb5a1c02b887c2434e52c432c174b82642aa24c129ec6e725ed65b"
+      },
+      "entries": [
+        {
+          "name": "catalog",
+          "declaration": {
+            "package": {
+              "git": "https://code.example.invalid/tools/catalog.git",
+              "tag": "v1.2.3"
+            },
+            "install": {}
+          },
+          "declaration_sha256": "sha256:fecf56843f0cbebce0d6b9e5cfe0d5ac177ea246f29067b6a4621970aae3e5db",
+          "resolved": {
+            "source": "code.example.invalid/tools/catalog",
+            "directory": null,
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "version": "1.2.3",
+            "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ],
+              "env_names": []
+            },
+            "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d"
+          }
+        }
+      ],
+      "lock_sha256": "sha256:9b739c04fce4770a09c9ee8866d185d4f33962913fa0f8498be6a3599c67862a"
+    },
+    "valid": true,
+    "claim": "Resolved commit retains its complete-string lexical grammar. Valid sibling."
+  },
+  {
+    "id": "r3-lock-commit-lf-invalid",
+    "kind": "carrier",
+    "schema": "mcp-lock-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "skills_lock": {
+        "schema_version": 1,
+        "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "members": [],
+        "lock_sha256": "sha256:b25bb06f43eb5a1c02b887c2434e52c432c174b82642aa24c129ec6e725ed65b"
+      },
+      "entries": [
+        {
+          "name": "catalog",
+          "declaration": {
+            "package": {
+              "git": "https://code.example.invalid/tools/catalog.git",
+              "tag": "v1.2.3"
+            },
+            "install": {}
+          },
+          "declaration_sha256": "sha256:fecf56843f0cbebce0d6b9e5cfe0d5ac177ea246f29067b6a4621970aae3e5db",
+          "resolved": {
+            "source": "code.example.invalid/tools/catalog",
+            "directory": null,
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+            "version": "1.2.3",
+            "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ],
+              "env_names": []
+            },
+            "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d"
+          }
+        }
+      ],
+      "lock_sha256": "sha256:b1b63097b245edf761d6da9914d1e03891a31026349da01aeddc553f2724ff16"
+    },
+    "valid": false,
+    "claim": "Resolved commit retains its complete-string lexical grammar. Rehashed violation."
+  },
+  {
+    "id": "r3-lock-content_sha256-lf-valid",
+    "kind": "carrier",
+    "schema": "mcp-lock-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "skills_lock": {
+        "schema_version": 1,
+        "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "members": [],
+        "lock_sha256": "sha256:b25bb06f43eb5a1c02b887c2434e52c432c174b82642aa24c129ec6e725ed65b"
+      },
+      "entries": [
+        {
+          "name": "catalog",
+          "declaration": {
+            "package": {
+              "git": "https://code.example.invalid/tools/catalog.git",
+              "tag": "v1.2.3"
+            },
+            "install": {}
+          },
+          "declaration_sha256": "sha256:fecf56843f0cbebce0d6b9e5cfe0d5ac177ea246f29067b6a4621970aae3e5db",
+          "resolved": {
+            "source": "code.example.invalid/tools/catalog",
+            "directory": null,
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "version": "1.2.3",
+            "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ],
+              "env_names": []
+            },
+            "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d"
+          }
+        }
+      ],
+      "lock_sha256": "sha256:9b739c04fce4770a09c9ee8866d185d4f33962913fa0f8498be6a3599c67862a"
+    },
+    "valid": true,
+    "claim": "Resolved content_sha256 retains its complete-string lexical grammar. Valid sibling."
+  },
+  {
+    "id": "r3-lock-content_sha256-lf-invalid",
+    "kind": "carrier",
+    "schema": "mcp-lock-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "skills_lock": {
+        "schema_version": 1,
+        "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "members": [],
+        "lock_sha256": "sha256:b25bb06f43eb5a1c02b887c2434e52c432c174b82642aa24c129ec6e725ed65b"
+      },
+      "entries": [
+        {
+          "name": "catalog",
+          "declaration": {
+            "package": {
+              "git": "https://code.example.invalid/tools/catalog.git",
+              "tag": "v1.2.3"
+            },
+            "install": {}
+          },
+          "declaration_sha256": "sha256:fecf56843f0cbebce0d6b9e5cfe0d5ac177ea246f29067b6a4621970aae3e5db",
+          "resolved": {
+            "source": "code.example.invalid/tools/catalog",
+            "directory": null,
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "version": "1.2.3",
+            "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222\n",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ],
+              "env_names": []
+            },
+            "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d"
+          }
+        }
+      ],
+      "lock_sha256": "sha256:72ee1797336ebb78f572cd5dc1572cf46ce6a3032c4eb55be9dcd10f9c8433bb"
+    },
+    "valid": false,
+    "claim": "Resolved content_sha256 retains its complete-string lexical grammar. Rehashed violation."
+  },
+  {
+    "id": "r3-mcp-lock-v1-manifest_sha256-lf-valid",
+    "kind": "carrier",
+    "schema": "mcp-lock-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "skills_lock": {
+        "schema_version": 1,
+        "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "members": [],
+        "lock_sha256": "sha256:b25bb06f43eb5a1c02b887c2434e52c432c174b82642aa24c129ec6e725ed65b"
+      },
+      "entries": [
+        {
+          "name": "catalog",
+          "declaration": {
+            "package": {
+              "git": "https://code.example.invalid/tools/catalog.git",
+              "tag": "v1.2.3"
+            },
+            "install": {}
+          },
+          "declaration_sha256": "sha256:fecf56843f0cbebce0d6b9e5cfe0d5ac177ea246f29067b6a4621970aae3e5db",
+          "resolved": {
+            "source": "code.example.invalid/tools/catalog",
+            "directory": null,
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "version": "1.2.3",
+            "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ],
+              "env_names": []
+            },
+            "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d"
+          }
+        }
+      ],
+      "lock_sha256": "sha256:9b739c04fce4770a09c9ee8866d185d4f33962913fa0f8498be6a3599c67862a"
+    },
+    "valid": true,
+    "claim": "Carrier manifest_sha256 cannot gain a terminal LF even when enclosing identities are recomputed. Valid sibling."
+  },
+  {
+    "id": "r3-mcp-lock-v1-manifest_sha256-lf-invalid",
+    "kind": "carrier",
+    "schema": "mcp-lock-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111\n",
+      "skills_lock": {
+        "schema_version": 1,
+        "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111\n",
+        "members": [],
+        "lock_sha256": "sha256:0b57f69b5d3611e2c76e45266b0af520af17d2a27f6d6ef0ba9e6b4fccf64085"
+      },
+      "entries": [
+        {
+          "name": "catalog",
+          "declaration": {
+            "package": {
+              "git": "https://code.example.invalid/tools/catalog.git",
+              "tag": "v1.2.3"
+            },
+            "install": {}
+          },
+          "declaration_sha256": "sha256:fecf56843f0cbebce0d6b9e5cfe0d5ac177ea246f29067b6a4621970aae3e5db",
+          "resolved": {
+            "source": "code.example.invalid/tools/catalog",
+            "directory": null,
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "version": "1.2.3",
+            "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ],
+              "env_names": []
+            },
+            "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d"
+          }
+        }
+      ],
+      "lock_sha256": "sha256:bb66e310ad4031010615b1489b272f7efb32667d1cd82e5ad3f2233be673b9e4"
+    },
+    "valid": false,
+    "claim": "Carrier manifest_sha256 cannot gain a terminal LF even when enclosing identities are recomputed. Rehashed violation."
+  },
+  {
+    "id": "r3-mcp-plan-v1-manifest_sha256-lf-valid",
+    "kind": "carrier",
+    "schema": "mcp-plan-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "lock_sha256": "sha256:9b739c04fce4770a09c9ee8866d185d4f33962913fa0f8498be6a3599c67862a",
+      "dry_run": false,
+      "rows": [
+        {
+          "name": "catalog",
+          "environment": "claude_code",
+          "path": ".mcp.json",
+          "outcome": "added",
+          "code": null
+        },
+        {
+          "name": "catalog",
+          "environment": "codex_cli",
+          "path": ".codex/config.toml",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "install_options": [],
+      "plan_sha256": "sha256:309dfcb88f88a6b1dae8f88de60f0755f9cedff93ccc5363512151b346c0cbc6"
+    },
+    "valid": true,
+    "claim": "Carrier manifest_sha256 cannot gain a terminal LF even when enclosing identities are recomputed. Valid sibling."
+  },
+  {
+    "id": "r3-mcp-plan-v1-manifest_sha256-lf-invalid",
+    "kind": "carrier",
+    "schema": "mcp-plan-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111\n",
+      "lock_sha256": "sha256:9b739c04fce4770a09c9ee8866d185d4f33962913fa0f8498be6a3599c67862a",
+      "dry_run": false,
+      "rows": [
+        {
+          "name": "catalog",
+          "environment": "claude_code",
+          "path": ".mcp.json",
+          "outcome": "added",
+          "code": null
+        },
+        {
+          "name": "catalog",
+          "environment": "codex_cli",
+          "path": ".codex/config.toml",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "install_options": [],
+      "plan_sha256": "sha256:ecb1bd827ae26f8faff08bb3d8c7af0067b2477c1e5082e22f5184a884a5f8f5"
+    },
+    "valid": false,
+    "claim": "Carrier manifest_sha256 cannot gain a terminal LF even when enclosing identities are recomputed. Rehashed violation."
+  },
+  {
+    "id": "r3-mcp-approval-v1-server_sha256-lf-valid",
+    "kind": "carrier",
+    "schema": "mcp-approval-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "kind": "package-ownership-action",
+      "project_id": "project-1",
+      "name": "catalog",
+      "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d",
+      "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "operation": "restore",
+      "approver": "operator-1",
+      "policy_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "state": "active"
+    },
+    "valid": true,
+    "claim": "Carrier server_sha256 cannot gain a terminal LF even when enclosing identities are recomputed. Valid sibling."
+  },
+  {
+    "id": "r3-mcp-approval-v1-server_sha256-lf-invalid",
+    "kind": "carrier",
+    "schema": "mcp-approval-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "kind": "package-ownership-action",
+      "project_id": "project-1",
+      "name": "catalog",
+      "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d\n",
+      "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "operation": "restore",
+      "approver": "operator-1",
+      "policy_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "state": "active"
+    },
+    "valid": false,
+    "claim": "Carrier server_sha256 cannot gain a terminal LF even when enclosing identities are recomputed. Rehashed violation."
+  },
+  {
+    "id": "r3-mcp-lock-v1-component-dot-valid",
+    "kind": "carrier",
+    "schema": "mcp-lock-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "skills_lock": {
+        "schema_version": 1,
+        "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "members": [],
+        "lock_sha256": "sha256:b25bb06f43eb5a1c02b887c2434e52c432c174b82642aa24c129ec6e725ed65b"
+      },
+      "entries": [
+        {
+          "name": "catalog",
+          "declaration": {
+            "package": {
+              "git": "https://code.example.invalid/tools/catalog.git",
+              "tag": "v1.2.3",
+              "directory": "pkg/root"
+            },
+            "install": {}
+          },
+          "declaration_sha256": "sha256:d115bb152802f499e85826bedaac15ef3cfc810eab61bb2de7a54148bd44ee20",
+          "resolved": {
+            "source": "code.example.invalid/tools/catalog",
+            "directory": "pkg/root",
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "version": "1.2.3",
+            "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ],
+              "env_names": []
+            },
+            "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d"
+          }
+        }
+      ],
+      "lock_sha256": "sha256:8b9d07880c1a9941635badd46d36197b43bd1751d5b60007a475e377132eeda4"
+    },
+    "valid": true,
+    "claim": "Portable filename rules apply to intermediate path components, not just the final component. Valid sibling."
+  },
+  {
+    "id": "r3-mcp-lock-v1-component-dot-invalid",
+    "kind": "carrier",
+    "schema": "mcp-lock-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "skills_lock": {
+        "schema_version": 1,
+        "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "members": [],
+        "lock_sha256": "sha256:b25bb06f43eb5a1c02b887c2434e52c432c174b82642aa24c129ec6e725ed65b"
+      },
+      "entries": [
+        {
+          "name": "catalog",
+          "declaration": {
+            "package": {
+              "git": "https://code.example.invalid/tools/catalog.git",
+              "tag": "v1.2.3",
+              "directory": "pkg./root"
+            },
+            "install": {}
+          },
+          "declaration_sha256": "sha256:d348671574e92681a4d19f53e7516ac0307cf5bb5206ab5c709ae3e41642840f",
+          "resolved": {
+            "source": "code.example.invalid/tools/catalog",
+            "directory": "pkg./root",
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "version": "1.2.3",
+            "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ],
+              "env_names": []
+            },
+            "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d"
+          }
+        }
+      ],
+      "lock_sha256": "sha256:98ae285fd44ecec390be5ed64cf67277fd646c3e9eff7a8199e5f9865d281429"
+    },
+    "valid": false,
+    "claim": "Portable filename rules apply to intermediate path components, not just the final component. Rehashed violation."
+  },
+  {
+    "id": "r3-mcp-plan-v1-component-dot-valid",
+    "kind": "carrier",
+    "schema": "mcp-plan-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "lock_sha256": "sha256:9b739c04fce4770a09c9ee8866d185d4f33962913fa0f8498be6a3599c67862a",
+      "dry_run": false,
+      "rows": [
+        {
+          "name": "catalog",
+          "environment": "claude_code",
+          "path": "pkg/root",
+          "outcome": "added",
+          "code": null
+        },
+        {
+          "name": "catalog",
+          "environment": "codex_cli",
+          "path": ".codex/config.toml",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "install_options": [],
+      "plan_sha256": "sha256:67c3c92d82a87858b3e9d8a91e0a164a5d65723d0728266fc076633a115d2b6b"
+    },
+    "valid": true,
+    "claim": "Portable filename rules apply to intermediate path components, not just the final component. Valid sibling."
+  },
+  {
+    "id": "r3-mcp-plan-v1-component-dot-invalid",
+    "kind": "carrier",
+    "schema": "mcp-plan-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "lock_sha256": "sha256:9b739c04fce4770a09c9ee8866d185d4f33962913fa0f8498be6a3599c67862a",
+      "dry_run": false,
+      "rows": [
+        {
+          "name": "catalog",
+          "environment": "claude_code",
+          "path": "pkg./root",
+          "outcome": "added",
+          "code": null
+        },
+        {
+          "name": "catalog",
+          "environment": "codex_cli",
+          "path": ".codex/config.toml",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "install_options": [],
+      "plan_sha256": "sha256:f67d46bb6a81249db4e6aefec71d2dd704120f0ca7f8a56cf221628a0a172b8d"
+    },
+    "valid": false,
+    "claim": "Portable filename rules apply to intermediate path components, not just the final component. Rehashed violation."
+  },
+  {
+    "id": "r3-mcp-lock-v1-component-space-valid",
+    "kind": "carrier",
+    "schema": "mcp-lock-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "skills_lock": {
+        "schema_version": 1,
+        "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "members": [],
+        "lock_sha256": "sha256:b25bb06f43eb5a1c02b887c2434e52c432c174b82642aa24c129ec6e725ed65b"
+      },
+      "entries": [
+        {
+          "name": "catalog",
+          "declaration": {
+            "package": {
+              "git": "https://code.example.invalid/tools/catalog.git",
+              "tag": "v1.2.3",
+              "directory": "pkg/root"
+            },
+            "install": {}
+          },
+          "declaration_sha256": "sha256:d115bb152802f499e85826bedaac15ef3cfc810eab61bb2de7a54148bd44ee20",
+          "resolved": {
+            "source": "code.example.invalid/tools/catalog",
+            "directory": "pkg/root",
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "version": "1.2.3",
+            "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ],
+              "env_names": []
+            },
+            "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d"
+          }
+        }
+      ],
+      "lock_sha256": "sha256:8b9d07880c1a9941635badd46d36197b43bd1751d5b60007a475e377132eeda4"
+    },
+    "valid": true,
+    "claim": "Portable filename rules apply to intermediate path components, not just the final component. Valid sibling."
+  },
+  {
+    "id": "r3-mcp-lock-v1-component-space-invalid",
+    "kind": "carrier",
+    "schema": "mcp-lock-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "skills_lock": {
+        "schema_version": 1,
+        "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "members": [],
+        "lock_sha256": "sha256:b25bb06f43eb5a1c02b887c2434e52c432c174b82642aa24c129ec6e725ed65b"
+      },
+      "entries": [
+        {
+          "name": "catalog",
+          "declaration": {
+            "package": {
+              "git": "https://code.example.invalid/tools/catalog.git",
+              "tag": "v1.2.3",
+              "directory": "pkg /root"
+            },
+            "install": {}
+          },
+          "declaration_sha256": "sha256:c9effb9a8da1b42d0fb2156b9ebfe384b2773666226f6997b5dcbb0e99d14ec1",
+          "resolved": {
+            "source": "code.example.invalid/tools/catalog",
+            "directory": "pkg /root",
+            "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "version": "1.2.3",
+            "content_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ],
+              "env_names": []
+            },
+            "server_sha256": "sha256:3fc5d442354d3de4b881b1725c8d7804443500905e31144314d4d8b6fd4e441d"
+          }
+        }
+      ],
+      "lock_sha256": "sha256:86ace903c12c5f40fd7359b59fb795944affd302fbce0caeffe99aa16c8ac407"
+    },
+    "valid": false,
+    "claim": "Portable filename rules apply to intermediate path components, not just the final component. Rehashed violation."
+  },
+  {
+    "id": "r3-mcp-plan-v1-component-space-valid",
+    "kind": "carrier",
+    "schema": "mcp-plan-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "lock_sha256": "sha256:9b739c04fce4770a09c9ee8866d185d4f33962913fa0f8498be6a3599c67862a",
+      "dry_run": false,
+      "rows": [
+        {
+          "name": "catalog",
+          "environment": "claude_code",
+          "path": "pkg/root",
+          "outcome": "added",
+          "code": null
+        },
+        {
+          "name": "catalog",
+          "environment": "codex_cli",
+          "path": ".codex/config.toml",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "install_options": [],
+      "plan_sha256": "sha256:67c3c92d82a87858b3e9d8a91e0a164a5d65723d0728266fc076633a115d2b6b"
+    },
+    "valid": true,
+    "claim": "Portable filename rules apply to intermediate path components, not just the final component. Valid sibling."
+  },
+  {
+    "id": "r3-mcp-plan-v1-component-space-invalid",
+    "kind": "carrier",
+    "schema": "mcp-plan-v1",
+    "instance": {
+      "schema_version": 1,
+      "capability": "skillfile-mcp-stage-a-v1",
+      "project_id": "project-1",
+      "manifest_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "lock_sha256": "sha256:9b739c04fce4770a09c9ee8866d185d4f33962913fa0f8498be6a3599c67862a",
+      "dry_run": false,
+      "rows": [
+        {
+          "name": "catalog",
+          "environment": "claude_code",
+          "path": "pkg /root",
+          "outcome": "added",
+          "code": null
+        },
+        {
+          "name": "catalog",
+          "environment": "codex_cli",
+          "path": ".codex/config.toml",
+          "outcome": "added",
+          "code": null
+        }
+      ],
+      "install_options": [],
+      "plan_sha256": "sha256:f2acee9617c3fbc37c5c16429f521558d6304830081a366667f8f308cd1eef4d"
+    },
+    "valid": false,
+    "claim": "Portable filename rules apply to intermediate path components, not just the final component. Rehashed violation."
+  },
+  {
+    "id": "r3-integer-positive-text-valid",
+    "kind": "planning",
+    "raw": "{\"schema_version\": 3, \"skills\": [], \"mcp_servers\": {\"catalog\": {\"package\": {\"git\": \"https://code.example.invalid/tools/catalog.git\", \"tag\": \"v1.2.3\"}, \"install\": {\"nested\": [{\"number\": 9007199254740991}]}}}}",
+    "raw_bytes": false,
+    "facts": {
+      "mcp_allowlist": [
+        "code.example.invalid/tools"
+      ],
+      "packages": {
+        "catalog": {
+          "manifest": {
+            "schema_version": 1,
+            "name": "catalog",
+            "version": "1.2.3",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ]
+            }
+          }
+        }
+      },
+      "writable": [
+        "claude_code",
+        "codex_cli",
+        "muse"
+      ],
+      "paths": {
+        "claude_code": ".mcp.json",
+        "codex_cli": ".codex/config.toml",
+        "muse": ".example/muse-mcp.json"
+      }
+    },
+    "expected": {
+      "code": null,
+      "mutated": false
+    },
+    "claim": "Nested ignored integer tokens are bounded before conversion and invalid input receives the typed refusal; safe signed extrema remain valid."
+  },
+  {
+    "id": "r3-integer-positive-text-invalid",
+    "kind": "planning",
+    "raw": "{\"schema_version\": 3, \"skills\": [], \"mcp_servers\": {\"catalog\": {\"package\": {\"git\": \"https://code.example.invalid/tools/catalog.git\", \"tag\": \"v1.2.3\"}, \"install\": {\"nested\": [{\"number\": 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999}]}}}}",
+    "raw_bytes": false,
+    "facts": {
+      "mcp_allowlist": [
+        "code.example.invalid/tools"
+      ],
+      "packages": {
+        "catalog": {
+          "manifest": {
+            "schema_version": 1,
+            "name": "catalog",
+            "version": "1.2.3",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ]
+            }
+          }
+        }
+      },
+      "writable": [
+        "claude_code",
+        "codex_cli",
+        "muse"
+      ],
+      "paths": {
+        "claude_code": ".mcp.json",
+        "codex_cli": ".codex/config.toml",
+        "muse": ".example/muse-mcp.json"
+      }
+    },
+    "expected": {
+      "code": "mcp_declaration_invalid",
+      "mutated": false
+    },
+    "claim": "Nested ignored integer tokens are bounded before conversion and invalid input receives the typed refusal; safe signed extrema remain valid."
+  },
+  {
+    "id": "r3-integer-positive-bytes-valid",
+    "kind": "planning",
+    "raw": "{\"schema_version\": 3, \"skills\": [], \"mcp_servers\": {\"catalog\": {\"package\": {\"git\": \"https://code.example.invalid/tools/catalog.git\", \"tag\": \"v1.2.3\"}, \"install\": {\"nested\": [{\"number\": 9007199254740991}]}}}}",
+    "raw_bytes": true,
+    "facts": {
+      "mcp_allowlist": [
+        "code.example.invalid/tools"
+      ],
+      "packages": {
+        "catalog": {
+          "manifest": {
+            "schema_version": 1,
+            "name": "catalog",
+            "version": "1.2.3",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ]
+            }
+          }
+        }
+      },
+      "writable": [
+        "claude_code",
+        "codex_cli",
+        "muse"
+      ],
+      "paths": {
+        "claude_code": ".mcp.json",
+        "codex_cli": ".codex/config.toml",
+        "muse": ".example/muse-mcp.json"
+      }
+    },
+    "expected": {
+      "code": null,
+      "mutated": false
+    },
+    "claim": "Nested ignored integer tokens are bounded before conversion and invalid input receives the typed refusal; safe signed extrema remain valid."
+  },
+  {
+    "id": "r3-integer-positive-bytes-invalid",
+    "kind": "planning",
+    "raw": "{\"schema_version\": 3, \"skills\": [], \"mcp_servers\": {\"catalog\": {\"package\": {\"git\": \"https://code.example.invalid/tools/catalog.git\", \"tag\": \"v1.2.3\"}, \"install\": {\"nested\": [{\"number\": 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999}]}}}}",
+    "raw_bytes": true,
+    "facts": {
+      "mcp_allowlist": [
+        "code.example.invalid/tools"
+      ],
+      "packages": {
+        "catalog": {
+          "manifest": {
+            "schema_version": 1,
+            "name": "catalog",
+            "version": "1.2.3",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ]
+            }
+          }
+        }
+      },
+      "writable": [
+        "claude_code",
+        "codex_cli",
+        "muse"
+      ],
+      "paths": {
+        "claude_code": ".mcp.json",
+        "codex_cli": ".codex/config.toml",
+        "muse": ".example/muse-mcp.json"
+      }
+    },
+    "expected": {
+      "code": "mcp_declaration_invalid",
+      "mutated": false
+    },
+    "claim": "Nested ignored integer tokens are bounded before conversion and invalid input receives the typed refusal; safe signed extrema remain valid."
+  },
+  {
+    "id": "r3-integer-negative-text-valid",
+    "kind": "planning",
+    "raw": "{\"schema_version\": 3, \"skills\": [], \"mcp_servers\": {\"catalog\": {\"package\": {\"git\": \"https://code.example.invalid/tools/catalog.git\", \"tag\": \"v1.2.3\"}, \"install\": {\"nested\": [{\"number\": -9007199254740991}]}}}}",
+    "raw_bytes": false,
+    "facts": {
+      "mcp_allowlist": [
+        "code.example.invalid/tools"
+      ],
+      "packages": {
+        "catalog": {
+          "manifest": {
+            "schema_version": 1,
+            "name": "catalog",
+            "version": "1.2.3",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ]
+            }
+          }
+        }
+      },
+      "writable": [
+        "claude_code",
+        "codex_cli",
+        "muse"
+      ],
+      "paths": {
+        "claude_code": ".mcp.json",
+        "codex_cli": ".codex/config.toml",
+        "muse": ".example/muse-mcp.json"
+      }
+    },
+    "expected": {
+      "code": null,
+      "mutated": false
+    },
+    "claim": "Nested ignored integer tokens are bounded before conversion and invalid input receives the typed refusal; safe signed extrema remain valid."
+  },
+  {
+    "id": "r3-integer-negative-text-invalid",
+    "kind": "planning",
+    "raw": "{\"schema_version\": 3, \"skills\": [], \"mcp_servers\": {\"catalog\": {\"package\": {\"git\": \"https://code.example.invalid/tools/catalog.git\", \"tag\": \"v1.2.3\"}, \"install\": {\"nested\": [{\"number\": -99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999}]}}}}",
+    "raw_bytes": false,
+    "facts": {
+      "mcp_allowlist": [
+        "code.example.invalid/tools"
+      ],
+      "packages": {
+        "catalog": {
+          "manifest": {
+            "schema_version": 1,
+            "name": "catalog",
+            "version": "1.2.3",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ]
+            }
+          }
+        }
+      },
+      "writable": [
+        "claude_code",
+        "codex_cli",
+        "muse"
+      ],
+      "paths": {
+        "claude_code": ".mcp.json",
+        "codex_cli": ".codex/config.toml",
+        "muse": ".example/muse-mcp.json"
+      }
+    },
+    "expected": {
+      "code": "mcp_declaration_invalid",
+      "mutated": false
+    },
+    "claim": "Nested ignored integer tokens are bounded before conversion and invalid input receives the typed refusal; safe signed extrema remain valid."
+  },
+  {
+    "id": "r3-integer-negative-bytes-valid",
+    "kind": "planning",
+    "raw": "{\"schema_version\": 3, \"skills\": [], \"mcp_servers\": {\"catalog\": {\"package\": {\"git\": \"https://code.example.invalid/tools/catalog.git\", \"tag\": \"v1.2.3\"}, \"install\": {\"nested\": [{\"number\": -9007199254740991}]}}}}",
+    "raw_bytes": true,
+    "facts": {
+      "mcp_allowlist": [
+        "code.example.invalid/tools"
+      ],
+      "packages": {
+        "catalog": {
+          "manifest": {
+            "schema_version": 1,
+            "name": "catalog",
+            "version": "1.2.3",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ]
+            }
+          }
+        }
+      },
+      "writable": [
+        "claude_code",
+        "codex_cli",
+        "muse"
+      ],
+      "paths": {
+        "claude_code": ".mcp.json",
+        "codex_cli": ".codex/config.toml",
+        "muse": ".example/muse-mcp.json"
+      }
+    },
+    "expected": {
+      "code": null,
+      "mutated": false
+    },
+    "claim": "Nested ignored integer tokens are bounded before conversion and invalid input receives the typed refusal; safe signed extrema remain valid."
+  },
+  {
+    "id": "r3-integer-negative-bytes-invalid",
+    "kind": "planning",
+    "raw": "{\"schema_version\": 3, \"skills\": [], \"mcp_servers\": {\"catalog\": {\"package\": {\"git\": \"https://code.example.invalid/tools/catalog.git\", \"tag\": \"v1.2.3\"}, \"install\": {\"nested\": [{\"number\": -99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999}]}}}}",
+    "raw_bytes": true,
+    "facts": {
+      "mcp_allowlist": [
+        "code.example.invalid/tools"
+      ],
+      "packages": {
+        "catalog": {
+          "manifest": {
+            "schema_version": 1,
+            "name": "catalog",
+            "version": "1.2.3",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ]
+            }
+          }
+        }
+      },
+      "writable": [
+        "claude_code",
+        "codex_cli",
+        "muse"
+      ],
+      "paths": {
+        "claude_code": ".mcp.json",
+        "codex_cli": ".codex/config.toml",
+        "muse": ".example/muse-mcp.json"
+      }
+    },
+    "expected": {
+      "code": "mcp_declaration_invalid",
+      "mutated": false
+    },
+    "claim": "Nested ignored integer tokens are bounded before conversion and invalid input receives the typed refusal; safe signed extrema remain valid."
+  },
+  {
+    "id": "r3-package-component-dot-valid",
+    "kind": "planning",
+    "raw": "{\"schema_version\": 3, \"skills\": [], \"mcp_servers\": {\"catalog\": {\"package\": {\"git\": \"https://code.example.invalid/tools/catalog.git\", \"tag\": \"v1.2.3\", \"directory\": \"pkg/root\"}}}}",
+    "facts": {
+      "mcp_allowlist": [
+        "code.example.invalid/tools"
+      ],
+      "packages": {
+        "catalog": {
+          "manifest": {
+            "schema_version": 1,
+            "name": "catalog",
+            "version": "1.2.3",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ]
+            }
+          }
+        }
+      },
+      "writable": [
+        "claude_code",
+        "codex_cli",
+        "muse"
+      ],
+      "paths": {
+        "claude_code": ".mcp.json",
+        "codex_cli": ".codex/config.toml",
+        "muse": ".example/muse-mcp.json"
+      }
+    },
+    "expected": {
+      "code": null,
+      "mutated": false
+    },
+    "claim": "Package directory admission enforces the same per-component portable path contract as lock replay."
+  },
+  {
+    "id": "r3-package-component-dot-invalid",
+    "kind": "planning",
+    "raw": "{\"schema_version\": 3, \"skills\": [], \"mcp_servers\": {\"catalog\": {\"package\": {\"git\": \"https://code.example.invalid/tools/catalog.git\", \"tag\": \"v1.2.3\", \"directory\": \"pkg./root\"}}}}",
+    "facts": {
+      "mcp_allowlist": [
+        "code.example.invalid/tools"
+      ],
+      "packages": {
+        "catalog": {
+          "manifest": {
+            "schema_version": 1,
+            "name": "catalog",
+            "version": "1.2.3",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ]
+            }
+          }
+        }
+      },
+      "writable": [
+        "claude_code",
+        "codex_cli",
+        "muse"
+      ],
+      "paths": {
+        "claude_code": ".mcp.json",
+        "codex_cli": ".codex/config.toml",
+        "muse": ".example/muse-mcp.json"
+      }
+    },
+    "expected": {
+      "code": "mcp_declaration_invalid",
+      "mutated": false
+    },
+    "claim": "Package directory admission enforces the same per-component portable path contract as lock replay."
+  },
+  {
+    "id": "r3-package-component-space-valid",
+    "kind": "planning",
+    "raw": "{\"schema_version\": 3, \"skills\": [], \"mcp_servers\": {\"catalog\": {\"package\": {\"git\": \"https://code.example.invalid/tools/catalog.git\", \"tag\": \"v1.2.3\", \"directory\": \"pkg/root\"}}}}",
+    "facts": {
+      "mcp_allowlist": [
+        "code.example.invalid/tools"
+      ],
+      "packages": {
+        "catalog": {
+          "manifest": {
+            "schema_version": 1,
+            "name": "catalog",
+            "version": "1.2.3",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ]
+            }
+          }
+        }
+      },
+      "writable": [
+        "claude_code",
+        "codex_cli",
+        "muse"
+      ],
+      "paths": {
+        "claude_code": ".mcp.json",
+        "codex_cli": ".codex/config.toml",
+        "muse": ".example/muse-mcp.json"
+      }
+    },
+    "expected": {
+      "code": null,
+      "mutated": false
+    },
+    "claim": "Package directory admission enforces the same per-component portable path contract as lock replay."
+  },
+  {
+    "id": "r3-package-component-space-invalid",
+    "kind": "planning",
+    "raw": "{\"schema_version\": 3, \"skills\": [], \"mcp_servers\": {\"catalog\": {\"package\": {\"git\": \"https://code.example.invalid/tools/catalog.git\", \"tag\": \"v1.2.3\", \"directory\": \"pkg /root\"}}}}",
+    "facts": {
+      "mcp_allowlist": [
+        "code.example.invalid/tools"
+      ],
+      "packages": {
+        "catalog": {
+          "manifest": {
+            "schema_version": 1,
+            "name": "catalog",
+            "version": "1.2.3",
+            "server": {
+              "transport": "http",
+              "url": "https://docs.example.invalid/mcp",
+              "environments": [
+                "claude_code",
+                "codex_cli"
+              ]
+            }
+          }
+        }
+      },
+      "writable": [
+        "claude_code",
+        "codex_cli",
+        "muse"
+      ],
+      "paths": {
+        "claude_code": ".mcp.json",
+        "codex_cli": ".codex/config.toml",
+        "muse": ".example/muse-mcp.json"
+      }
+    },
+    "expected": {
+      "code": "mcp_declaration_invalid",
+      "mutated": false
+    },
+    "claim": "Package directory admission enforces the same per-component portable path contract as lock replay."
   }
 ]
