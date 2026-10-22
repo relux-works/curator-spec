@@ -181,6 +181,22 @@ class NativeWriterTests(unittest.TestCase):
         changed['records'].append(other)
         self.assertFalse(m.ownership_valid(changed))
 
+    # Claim: new private carriers enforce CCJ scalar types in addition to JSON
+    # Schema: integral floats and unpaired surrogates refuse beside valid actions.
+    # Removing the actual shared scalar guard reproduces both named violations.
+    def test_carrier_scalar_gate(self):
+        valid = self.cases['restore-claude']['input']['actions']['claude_code']['docs']
+        self.assertTrue(m.schema_valid('action-v1', valid))
+        variants = [dict(valid, schema_version=1.0), dict(valid, approver='\ud800')]
+        for value in variants:
+            self.assertFalse(m.schema_valid('action-v1', value))
+        with patch.object(m.stage, 'scalar_tree', return_value=None):
+            self.assertTrue(m.schema_valid('action-v1', valid))
+            for value in variants:
+                self.assertTrue(m.schema_valid('action-v1', value))
+                with self.assertRaises(AssertionError):
+                    self.assertFalse(m.schema_valid('action-v1', value))
+
     # Claim: release/remove preserve neighboring ownership records in the same
     # protected ledger; marker removal is per NAME, not ownership of the whole file.
     def test_cleanup_preserves_neighbor_marker(self):

@@ -35,6 +35,10 @@ def byte_digest(text):
 
 
 def schema_valid(name, value):
+    try:
+        stage.scalar_tree(value)
+    except stage.Refusal:
+        return False
     schema = exact_patterns(json.loads((ROOT/'schemas'/NAMESPACE/(name+'.schema.json')).read_text()))
     return Draft202012Validator(schema, registry=stage.registry()).is_valid(value)
 
