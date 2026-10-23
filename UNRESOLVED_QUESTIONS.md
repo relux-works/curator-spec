@@ -205,3 +205,13 @@ at-least-once doorbells, Curator-owned capture with distinct session/capture
 leases, retained native-policy/credential gates and explicit legacy retention.
 Normative schema publication and actual runtime qualification remain gates.
 No production capability is activated by acceptance.
+
+## Profile-declared Codex project trust
+
+[Seed revision C](protocol/codex-seed-c.md) deliberately admits no declared
+project-trust exception. Whether a profile should ever declare trust remains
+a separate product decision requiring a reviewed typed vocabulary extension,
+including authority, path existence, symlink handling, precedence and lifecycle
+ownership. The current empty-only `codex_settings` grammar remains in force.
+Legacy seed entries have no reliable copied-versus-user-authored provenance;
+this question does not authorize repair, migration or trust deletion.

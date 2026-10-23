@@ -1,0 +1,455 @@
+{
+  "corpus": "codex-seed-c-v1",
+  "cases": [
+    {
+      "name": "c-strips-foreign",
+      "operation": "provision",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/foreign-host/synthetic-project\"]\ntrust_level = \"trusted\"\n",
+      "record": null,
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n",
+        "record": {
+          "revision": "C",
+          "native_mcp_servers": []
+        },
+        "writes": [
+          "config.toml",
+          ".agent-environment.json"
+        ],
+        "diagnostic": null,
+        "names": []
+      }
+    },
+    {
+      "name": "c-strips-missing",
+      "operation": "provision",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/missing/synthetic-project\"]\ntrust_level = \"trusted\"\n",
+      "record": null,
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n",
+        "record": {
+          "revision": "C",
+          "native_mcp_servers": []
+        },
+        "writes": [
+          "config.toml",
+          ".agent-environment.json"
+        ],
+        "diagnostic": null,
+        "names": []
+      }
+    },
+    {
+      "name": "c-strips-existing",
+      "operation": "provision",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n",
+      "record": null,
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n",
+        "record": {
+          "revision": "C",
+          "native_mcp_servers": []
+        },
+        "writes": [
+          "config.toml",
+          ".agent-environment.json"
+        ],
+        "diagnostic": null,
+        "names": []
+      }
+    },
+    {
+      "name": "c-strips-symlink",
+      "operation": "provision",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-link\"]\ntrust_level = \"trusted\"\n",
+      "record": null,
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n",
+        "record": {
+          "revision": "C",
+          "native_mcp_servers": []
+        },
+        "writes": [
+          "config.toml",
+          ".agent-environment.json"
+        ],
+        "diagnostic": null,
+        "names": []
+      }
+    },
+    {
+      "name": "c-strips-untrusted",
+      "operation": "provision",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"untrusted\"\n",
+      "record": null,
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n",
+        "record": {
+          "revision": "C",
+          "native_mcp_servers": []
+        },
+        "writes": [
+          "config.toml",
+          ".agent-environment.json"
+        ],
+        "diagnostic": null,
+        "names": []
+      }
+    },
+    {
+      "name": "c-preserves-unrelated",
+      "operation": "provision",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n",
+      "record": null,
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n",
+        "record": {
+          "revision": "C",
+          "native_mcp_servers": []
+        },
+        "writes": [
+          "config.toml",
+          ".agent-environment.json"
+        ],
+        "diagnostic": null,
+        "names": []
+      }
+    },
+    {
+      "name": "c-empty",
+      "operation": "provision",
+      "revision": "C",
+      "config": "",
+      "record": null,
+      "expected": {
+        "seed_config": "",
+        "record": {
+          "revision": "C",
+          "native_mcp_servers": []
+        },
+        "writes": [
+          "config.toml",
+          ".agent-environment.json"
+        ],
+        "diagnostic": null,
+        "names": []
+      }
+    },
+    {
+      "name": "c-empty-projects",
+      "operation": "provision",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects]\n",
+      "record": null,
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n",
+        "record": {
+          "revision": "C",
+          "native_mcp_servers": []
+        },
+        "writes": [
+          "config.toml",
+          ".agent-environment.json"
+        ],
+        "diagnostic": null,
+        "names": []
+      }
+    },
+    {
+      "name": "c-strips-trust-and-mcp",
+      "operation": "provision",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+      "record": null,
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n",
+        "record": {
+          "revision": "C",
+          "native_mcp_servers": [
+            "example"
+          ]
+        },
+        "writes": [
+          "config.toml",
+          ".agent-environment.json"
+        ],
+        "diagnostic": "mcp_native_servers_not_inherited",
+        "names": [
+          "example"
+        ]
+      }
+    },
+    {
+      "name": "b-retains-trust",
+      "operation": "provision",
+      "revision": "B",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+      "record": null,
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n",
+        "record": {
+          "revision": "B",
+          "native_mcp_servers": [
+            "example"
+          ]
+        },
+        "writes": [
+          "config.toml",
+          ".agent-environment.json"
+        ],
+        "diagnostic": "mcp_native_servers_not_inherited",
+        "names": [
+          "example"
+        ]
+      }
+    },
+    {
+      "name": "a-retains-trust-and-mcp",
+      "operation": "provision",
+      "revision": "A",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+      "record": null,
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+        "record": {
+          "revision": "A",
+          "native_mcp_servers": [
+            "example"
+          ]
+        },
+        "writes": [
+          "config.toml",
+          ".agent-environment.json"
+        ],
+        "diagnostic": "mcp_native_servers_ungoverned",
+        "names": [
+          "example"
+        ]
+      }
+    },
+    {
+      "name": "c-invalid-toml",
+      "operation": "provision",
+      "revision": "C",
+      "config": "[broken",
+      "record": null,
+      "expected": {
+        "seed_config": null,
+        "record": null,
+        "writes": [],
+        "diagnostic": "environment_seed_unreadable",
+        "names": []
+      }
+    },
+    {
+      "name": "c-repair-preserves-pre-rule",
+      "operation": "repair",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+      "record": null,
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+        "record": null,
+        "writes": [],
+        "diagnostic": "mcp_seed_unstripped",
+        "names": []
+      }
+    },
+    {
+      "name": "c-status-preserves-pre-rule",
+      "operation": "status",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+      "record": null,
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+        "record": null,
+        "writes": [],
+        "diagnostic": "mcp_seed_unstripped",
+        "names": []
+      }
+    },
+    {
+      "name": "c-repair-preserves-a",
+      "operation": "repair",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+      "record": {
+        "revision": "A",
+        "native_mcp_servers": [
+          "example"
+        ]
+      },
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+        "record": {
+          "revision": "A",
+          "native_mcp_servers": [
+            "example"
+          ]
+        },
+        "writes": [],
+        "diagnostic": "mcp_seed_unstripped",
+        "names": [
+          "example"
+        ]
+      }
+    },
+    {
+      "name": "c-status-preserves-a",
+      "operation": "status",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+      "record": {
+        "revision": "A",
+        "native_mcp_servers": [
+          "example"
+        ]
+      },
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+        "record": {
+          "revision": "A",
+          "native_mcp_servers": [
+            "example"
+          ]
+        },
+        "writes": [],
+        "diagnostic": "mcp_seed_unstripped",
+        "names": [
+          "example"
+        ]
+      }
+    },
+    {
+      "name": "c-repair-preserves-b",
+      "operation": "repair",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+      "record": {
+        "revision": "B",
+        "native_mcp_servers": [
+          "example"
+        ]
+      },
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+        "record": {
+          "revision": "B",
+          "native_mcp_servers": [
+            "example"
+          ]
+        },
+        "writes": [],
+        "diagnostic": "mcp_native_servers_not_inherited",
+        "names": [
+          "example"
+        ]
+      }
+    },
+    {
+      "name": "c-status-preserves-b",
+      "operation": "status",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+      "record": {
+        "revision": "B",
+        "native_mcp_servers": [
+          "example"
+        ]
+      },
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+        "record": {
+          "revision": "B",
+          "native_mcp_servers": [
+            "example"
+          ]
+        },
+        "writes": [],
+        "diagnostic": "mcp_native_servers_not_inherited",
+        "names": [
+          "example"
+        ]
+      }
+    },
+    {
+      "name": "c-repair-preserves-c",
+      "operation": "repair",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+      "record": {
+        "revision": "C",
+        "native_mcp_servers": [
+          "example"
+        ]
+      },
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+        "record": {
+          "revision": "C",
+          "native_mcp_servers": [
+            "example"
+          ]
+        },
+        "writes": [],
+        "diagnostic": "mcp_native_servers_not_inherited",
+        "names": [
+          "example"
+        ]
+      }
+    },
+    {
+      "name": "c-status-preserves-c",
+      "operation": "status",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+      "record": {
+        "revision": "C",
+        "native_mcp_servers": [
+          "example"
+        ]
+      },
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n[mcp_servers.example]\ncommand = \"synthetic-server\"\n[mcp_servers.example.env]\nEXAMPLE = \"synthetic-value\"\n",
+        "record": {
+          "revision": "C",
+          "native_mcp_servers": [
+            "example"
+          ]
+        },
+        "writes": [],
+        "diagnostic": "mcp_native_servers_not_inherited",
+        "names": [
+          "example"
+        ]
+      }
+    },
+    {
+      "name": "c-status-empty-a",
+      "operation": "status",
+      "revision": "C",
+      "config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n",
+      "record": {
+        "revision": "A",
+        "native_mcp_servers": []
+      },
+      "expected": {
+        "seed_config": "model = \"example-model\"\n[tui]\nnotifications = true\n[projects.\"/work/synthetic-existing\"]\ntrust_level = \"trusted\"\n",
+        "record": {
+          "revision": "A",
+          "native_mcp_servers": []
+        },
+        "writes": [],
+        "diagnostic": null,
+        "names": []
+      }
+    }
+  ]
+}

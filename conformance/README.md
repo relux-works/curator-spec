@@ -49,6 +49,12 @@ safe backup/restore according to `profiles/registry-service.md`.
 
 ## 3. Shared suite
 
+The unreleased [Codex seed-C corpus](codex-seed-c-v1/README.md) separately
+specifies trust exclusion for new provisioning and preservation of existing
+homes. Its full marker-7 schema extends marker 6; frozen A/B vectors and
+earlier schemas remain unchanged. Passing publication checks is not runtime
+qualification.
+
 `conformance/v1/manifest.json` lists every normative vector and SHA-256 digest.
 `vectors/content-hashes-v2.json` is the core §8 framing vector: it includes the
 v1 colliding-tree construction and v2 separation, the empty tree, an exact

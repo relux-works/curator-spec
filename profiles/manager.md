@@ -1554,7 +1554,7 @@ in this order:
 | `provider-trust-roots` | the shipped section 11 revision, `revision-A` or `revision-B` (environments §11) | `shipped` |
 | `source-signers` | the effective machine `require_source_signers`, `true` or `false` | `profile`, `explicit`, or `lock` |
 | `update-confirmation` | the shipped section 9.2 revision, `A-warning` or `B-flip` (environments §9.2) | `shipped` |
-| `codex-seed` | the shipped section 7.4 revision, `A` or `B` (environments §7.4) | `shipped` |
+| `codex-seed` | the shipped section 7.4 revision, `A`, `B` or unreleased [`C`](../protocol/codex-seed-c.md) (environments §7.4) | `shipped` |
 | `store-boundary` | `enforced` (environments §4) | `shipped` |
 | `write-discipline` | `enforced` (environments §8.3.1) | `shipped` |
 | `mcp-package-allowlist` | the `mcp_package_allowlist` entry count | `profile`, `explicit`, or `lock` |

@@ -193,6 +193,13 @@ with the current core and source-suite manifest digests, without selecting the
 next release version. Release preparation creates a new versioned record.
 Validation requires local release tags (fetch tags in shallow checkouts).
 
+- Codex provisioning [seed revision C](protocol/codex-seed-c.md):
+  `python3 tools/codex_seed_c.py` and
+  `python3 -B -m unittest discover -s tools -p 'test_codex_seed_c.py' -v`
+  check the separate [corpus](conformance/codex-seed-c-v1/README.md) and
+  complete marker 7. The production validator also runs this publication
+  gate. These checks qualify no manager runtime; logs go in `.temp/`.
+
 - Python 3 with `python3 -m pip install -r requirements-dev.txt`: run
   `python3 tools/validate.py` and
   `python3 -B -m unittest discover -s tools -p "test_*.py"` for the existing

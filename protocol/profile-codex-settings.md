@@ -16,6 +16,8 @@ exact structural additions. No package key is admitted in this revision;
 only an absent member or `{}` is valid. New keys require a reviewed typed
 vocabulary extension. Credential-store, credential-source and account keys,
 including `cli_auth_credentials_store`, MUST NEVER be admitted here.
+[Codex seed revision C](codex-seed-c.md) adds no package key or declared
+project-trust grammar; existing or declared paths grant no seeding exception.
 The only credential-store selector is the user-owned machine knob
 `credential_store.<profile>.<env-id>` (default `native`) in
 [login readiness section 2](login-readiness.md#2-user-owned-credential-store-policy).
@@ -160,8 +162,11 @@ permissions and private policy documents remain host-controlled.
 Hosts MAY write their own private session policy `config.toml`, but MUST NOT
 persist profile settings into it or rewrite native, managed-seed or snapshot
 configuration to apply settings. Resolve, repair and global skill sync MUST
-NOT backfill this member into a seed. Both seed revisions retain their exact
-existing behavior, including revision-A residual warnings. Exclusive hosted
+NOT backfill this member into a seed. Legacy seed revisions A and B retain
+their exact behavior, including revision-A residual warnings. The separate
+[revision C amendment](codex-seed-c.md) excludes project trust only on new
+provisioning; it MUST NOT rewrite or relabel any existing home's seed or
+record. No project-trust migration or package-authorized trust is admitted. Exclusive hosted
 MCP policy MUST use an exclusive base document: `-c mcp_servers={}` is not a
 proof that inherited tables are cleared. Unsafe composition MUST refuse.
 
