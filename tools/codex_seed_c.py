@@ -14,6 +14,7 @@ MARKER = 'agent-environment-marker-v7.schema.json'
 NAMES = {
     'c-strips-foreign', 'c-strips-missing', 'c-strips-existing', 'c-strips-symlink',
     'c-preserves-unrelated', 'c-empty', 'c-empty-projects', 'c-strips-trust-and-mcp',
+    'c-preserves-nested-tables-and-arrays',
     'c-strips-untrusted',
     'b-retains-trust', 'a-retains-trust-and-mcp', 'c-invalid-toml',
     'c-status-empty-a',

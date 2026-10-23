@@ -450,6 +450,30 @@
         "diagnostic": null,
         "names": []
       }
+    },
+    {
+      "name": "c-preserves-nested-tables-and-arrays",
+      "operation": "provision",
+      "revision": "C",
+      "config": "model = \"synthetic-model\"\nfallback_models = [\"synthetic-secondary\", \"synthetic-third\"]\nwindow_sizes = [80, 120]\napproval_flags = [true, false]\n[tui]\nnotifications = [\"agent-turn-complete\", \"approval-requested\"]\n[tui.theme]\npalette = { accent = \"blue\", contrast = 1.5 }\n[profiles.example]\nmodel = \"nested-model\"\nproviders = [{ name = \"first\", enabled = true }, { name = \"second\", enabled = false }]\n[profiles.example.projects]\nlabels = [\"unrelated\", \"preserved\"]\n[[profiles.example.routes]]\nname = \"first\"\nargs = [\"--synthetic\", \"value\"]\n[[profiles.example.routes]]\nname = \"second\"\nargs = []\n# Native formatting and this comment need not survive filtering.\n[projects.\"/work/synthetic-array-project\"]\ntrust_level = \"trusted\"\n[mcp_servers.synthetic]\ncommand = \"synthetic-server\"\n",
+      "record": null,
+      "expected": {
+        "seed_config": "model = \"synthetic-model\"\nfallback_models = [\"synthetic-secondary\", \"synthetic-third\"]\nwindow_sizes = [80, 120]\napproval_flags = [true, false]\n[tui]\nnotifications = [\"agent-turn-complete\", \"approval-requested\"]\n[tui.theme]\npalette = { accent = \"blue\", contrast = 1.5 }\n[profiles.example]\nmodel = \"nested-model\"\nproviders = [{ name = \"first\", enabled = true }, { name = \"second\", enabled = false }]\n[profiles.example.projects]\nlabels = [\"unrelated\", \"preserved\"]\n[[profiles.example.routes]]\nname = \"first\"\nargs = [\"--synthetic\", \"value\"]\n[[profiles.example.routes]]\nname = \"second\"\nargs = []\n",
+        "record": {
+          "revision": "C",
+          "native_mcp_servers": [
+            "synthetic"
+          ]
+        },
+        "writes": [
+          "config.toml",
+          ".agent-environment.json"
+        ],
+        "diagnostic": "mcp_native_servers_not_inherited",
+        "names": [
+          "synthetic"
+        ]
+      }
     }
   ]
 }
