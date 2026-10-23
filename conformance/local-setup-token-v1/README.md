@@ -68,3 +68,20 @@ and manifest fields, not byte-level archive sanitation. The old containing
 status is already structurally able to express node; the new v2 relation does
 not establish qualification of old status readers. Arbitrary encoded secret
 values in allowed strings remain a sanitation/qualification obligation.
+
+## Proposed hosted-station witnesses
+
+[`hosted-qualification-cases.json`](hosted-qualification-cases.json) accompanies
+[proposed section 10](../../protocol/local-setup-token-source.md#10-proposed-hosted-station-qualification-amendment).
+It pairs account/lock, destination-layout, false-isolation, generation/cutover
+and post-revoke recovery counterexamples with valid controls. These are
+neutral contract/test-plan fixtures, not a new wire schema or runtime results.
+Review their expected behavior against section 10; parsing the JSON alone does
+not execute any witness. Existing `cases.json` and the publication checker
+continue to reject unsupported hosted routes and incorrect local bindings.
+
+The commands above qualify the existing metadata corpus only. Synthetic
+executor tests, real-harness leakage controls, owner-run OAuth enrollment and
+the qualified station pilot are distinct later gates. No real continuity row,
+credential, account, HOME or lifecycle operation is populated or executed by
+these fixtures.

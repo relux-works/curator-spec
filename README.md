@@ -113,6 +113,12 @@ and [publication corpus](conformance/local-setup-token-v1/README.md). Native
 login stays default. Vendor execution and route qualification remain unverified;
 launcher companion publication gates producer emission.
 
+The [proposed hosted-station qualification amendment](protocol/local-setup-token-source.md#10-proposed-hosted-station-qualification-amendment)
+adds account/profile continuity, final-owner and lifecycle qualification
+requirements with [neutral paired contract witnesses](conformance/local-setup-token-v1/hosted-qualification-cases.json).
+It activates no hosted route, API or live station; metadata, synthetic executor,
+real-harness containment, OAuth and pilot evidence remain separate gates.
+
 ## Proposals
 
 [Managed-home snapshots](protocol/managed-home-snapshots.md) specify the
