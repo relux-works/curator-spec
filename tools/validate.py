@@ -12160,6 +12160,16 @@ def validate_workspace_trust() -> None:
     print(f"workspace-trust schema cases: {cases}/{cases}; transition vectors: {vectors}/{vectors}; runtime cases: unrun")
 
 
+def validate_codex_seed_c() -> None:
+    import codex_seed_c
+
+    try:
+        count = codex_seed_c.check_corpus(ROOT)
+    except (ValueError, OSError, SchemaError) as exc:
+        raise ValidationFailure(f"Codex seed C: {exc}") from exc
+    print(f"Codex seed C: {count} specification cases; runtime qualification: unverified")
+
+
 def main(*, release_history_only: bool = False) -> int:
     checks = [
         validate_released_record_immutability,
@@ -12170,6 +12180,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_rc7_carriers,
         validate_local_setup_token,
         validate_workspace_trust,
+        validate_codex_seed_c,
         validate_draft_source_schemas,
         validate_draft_sources_manifest,
         validate_source_marker_ownership_vectors,
