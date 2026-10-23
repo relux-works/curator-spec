@@ -164,6 +164,15 @@ refused under existing hosted §§4/6; enabling it requires an explicit later
 amendment, not a callback or hidden wrapper. Unqualified vendor child-leak or
 settings-reload behavior keeps capability unavailable.
 
+The [proposed hosted-station amendment](protocol/local-setup-token-source.md#10-proposed-hosted-station-qualification-amendment)
+does not lift those refusals. Before implementation, the owning lanes must name
+T1/T2 source-store/policy, T3a public API and launcher/manager consumption writers
+and published pins; acceptance of qualification prose cannot silently assign
+them to injection work. Re-pin evolving station account/key/path/lifecycle
+contracts and jointly publish the hosted carrier/final-owner bindings. Real
+destination enrollment, harness containment and pilot activation retain separate
+owner routes; neutral contract fixtures establish none of them.
+
 ## Project Skillfile MCP declarations (CIP-0022)
 
 [CIP-0022 owner decisions, 2026-10-22](cips/CIP-0022-mcp-server-declarations-in-project-skillfile.md#owner-decisions-2026-10-22)

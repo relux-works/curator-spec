@@ -1,0 +1,105 @@
+{
+  "status": "proposed",
+  "purpose": "Paired contract witnesses for local-setup-token-source section 10; not a wire format or executed runtime results.",
+  "runtime_qualification": "unverified",
+  "baseline": "Every positive control assumes separately adopted and behaviorally qualified account/path, source/API, hosted carrier, final-owner and lifecycle contracts. Without them every hosted node start remains unavailable under revision 1.",
+  "evidence_claims": [
+    "specification-fixture-consistency",
+    "synthetic-final-executor-behavior",
+    "real-harness-containment-with-known-leaking-control",
+    "owner-run-actual-oauth-authentication",
+    "separately-admitted-live-station-pilot"
+  ],
+  "cases": [
+    {
+      "id": "HQ-01-account-binding",
+      "requirement": "10.2",
+      "positive_control": "The station UID and host match its independently enrolled protected source and binding, with the admitted profile lock.",
+      "negative_neighbor": "Keep the same profile lock, host and requested source projection, but execute under a different UID.",
+      "expected_when_implemented": "The positive control may reach the qualified final boundary; the wrong UID refuses credential_binding_mismatch before material delivery or child start.",
+      "preservation": "Neither account's source, HOME, login or profile is copied, adopted or repaired.",
+      "limit": "Lock equality proves neither account authority nor runtime no-read behavior. Existing metadata wrong-UID checks cover only their local binding projection."
+    },
+    {
+      "id": "HQ-02-profile-drift",
+      "requirement": "10.2",
+      "positive_control": "The selected role profile's source, pinned revision, dependency closure and lock match the separately admitted destination configuration.",
+      "negative_neighbor": "One dependency or lock changes without a reviewed pin/closure change while the station label remains the same.",
+      "expected_when_implemented": "The positive control retains the admitted closure; drift refuses before start without silent repair or repinning. The owning carrier must publish the exact diagnostic before implementation.",
+      "preservation": "The original closure, lock, HOME and source selection remain unchanged.",
+      "limit": "This witness allocates no new refusal code and does not require account-dependent rendered paths to be byte-identical."
+    },
+    {
+      "id": "HQ-03-destination-layout",
+      "requirement": "10.2",
+      "positive_control": "The destination has an owner-published supported cache, managed HOME and root layout with its required access and private Git administration boundaries.",
+      "negative_neighbor": "Keep valid source metadata but require an unsupported writable shared cache, inaccessible root, operator Git back-link or old operator HOME.",
+      "expected_when_implemented": "The positive control reaches the qualified preparation boundary; each unsupported layout refuses before start under its owning contract without a fallback layout.",
+      "preservation": "No access broadening, account creation, root copying or modification of either existing HOME/cache is used to make the negative pass.",
+      "limit": "A metadata or schema pass does not prove destination filesystem isolation or access."
+    },
+    {
+      "id": "HQ-04-copied-root-false-isolation",
+      "requirement": "10.2",
+      "positive_control": "A separately provisioned station account has independently admitted source authority and explained account-dependent context/rendered-path differences.",
+      "negative_neighbor": "Copy the same root and lock under an operator UID or reuse the operator HOME, then present matching root hashes as isolation evidence.",
+      "expected_when_implemented": "The positive control can supply account-bound qualification evidence; the copied-root control cannot qualify an isolated station or authorize a hosted start.",
+      "preservation": "Existing accounts, roots, homes and trust bindings are preserved; no real continuity rows enter the public corpus.",
+      "limit": "An unexplained different hash is also insufficient. Isolation requires the owning account/path contracts and observed behavior."
+    },
+    {
+      "id": "HQ-05-source-drift-at-final-owner",
+      "requirement": "10.3",
+      "positive_control": "The per-session final owner under the station UID independently resolves the exact requested source projection and validates protected binding, policy and invocation.",
+      "negative_neighbor": "Replace or re-enroll the source after preparation while replaying its old reference or generation in the hosted request.",
+      "expected_when_implemented": "The valid control starts one approved process through AuthorizeAndStart; drift refuses credential_source_stale with no native or per-home fallback.",
+      "preservation": "No material enters the carrier, daemon, restart recipe, receipt or generic environment map; no forbidden partial preparation writes remain.",
+      "limit": "A matching requested projection is not authority. The shared daemon never retrieves, retains or distributes material."
+    },
+    {
+      "id": "HQ-06-exact-final-injection",
+      "requirement": "10.3",
+      "positive_control": "A qualified final owner adds the selected token only to one approved Claude child's private environment; other admitted process inputs remain exact.",
+      "negative_neighbor": "Supply a competing auth name with an empty or equal value, alter an endpoint/executable, or route delivery through a daemon callback, token getter or wrapper.",
+      "expected_when_implemented": "The valid control observes one final injection. Competing inputs refuse credential_source_conflict; binding mismatches refuse credential_binding_mismatch; unqualified routes refuse credential_injection_unavailable, according to revision 1 admission order.",
+      "preservation": "Refusal starts no child and leaves source and HOME unchanged; permitted lifecycle refusal telemetry carries no material or material digest.",
+      "limit": "Synthetic exec observes only its instrumented boundary, not actual Claude OAuth or harness containment."
+    },
+    {
+      "id": "HQ-07-lost-start-and-concurrent-generation",
+      "requirement": "10.4",
+      "positive_control": "The lifecycle owner proves the old generation quiescent and released, then authorizes one target operation under the current generation.",
+      "negative_neighbor": "Lose the start acknowledgement, retain uncertain execution, or race two target-generation start requests; infer absence from a missing PID, quiet inbox or expired TTL.",
+      "expected_when_implemented": "The positive control starts one target. Unknown execution retains claims and reconciles the same operation/manager/generation; concurrent requests cannot start a duplicate or steal the lease.",
+      "preservation": "Old sessions, homes, locks, generation records and recovery claims remain intact until their authoritative transition.",
+      "limit": "Node material-release locking alone does not prove lifecycle one-start ordering; both boundaries require evidence."
+    },
+    {
+      "id": "HQ-08-post-revoke-recovery",
+      "requirement": "10.4",
+      "positive_control": "A separately authorized fresh source and current lifecycle generation enter the qualified boundary after recovery; expiry is checked when known.",
+      "negative_neighbor": "Complete local revoke before material release, restore an old filesystem snapshot, and replay the old source authorization or released execution generation.",
+      "expected_when_implemented": "The positive control can start with fresh authority. Completed revoke refuses credential_source_revoked; replaced generation/reference refuses credential_source_stale in the applicable source state. Rollback cannot revive revoked authority or a released execution generation.",
+      "preservation": "Recovery preserves revoked/missing/unreadable/stale distinctions, recovery records and unknown claims; it does not recreate old credentials or delete a HOME.",
+      "limit": "Local revoke does not recall a token already delivered, revoke it at the vendor, or prove process death. Unknown expiry remains unknown."
+    },
+    {
+      "id": "HQ-09-real-harness-containment",
+      "requirement": "10.5",
+      "positive_control": "A separately authorized pinned real harness confines disposable sentinel delivery across child probes, MCP interpolation/settings reload, hooks, tools, plugin helpers, telemetry and debug/transcript sinks.",
+      "negative_neighbor": "Enable a known-leaking disposable control at an observed sink; compare it with the same unmodified harness/configuration control.",
+      "expected_when_implemented": "The known leak fails its detector for the intended sink, and the clean control passes all required sinks before claiming containment for that exact tuple.",
+      "preservation": "No real operator credential or destructive live-session operation is used; persisted evidence is sanitized and carries no material or material digest.",
+      "limit": "Mock exec, guessed scrub flags, clean initial environment and a detector that never sees its planted leak cannot qualify the real harness."
+    },
+    {
+      "id": "HQ-10-mode-and-evidence-boundaries",
+      "requirement": "10.5",
+      "positive_control": "Evidence separately identifies the exact reviewed source/API/carrier, account/path, lifecycle, platform, real harness, configuration and mode tuple with owner-run actual OAuth authentication.",
+      "negative_neighbor": "Promote a JSON/schema pass, synthetic executor, present readiness row or headless result into actual OAuth, PTY/attach/resume or live pilot qualification.",
+      "expected_when_implemented": "Only the explicitly qualified tuple may advertise credential-injection/1; every unsupported hosted or Terminal mode remains credential_injection_unavailable before start.",
+      "preservation": "Failed or unknown prerequisites preserve the existing route refusals and live sessions; no native fallback or provider launch occurs to fill an evidence gap.",
+      "limit": "The owning Curator pilot precedes separately admitted later-host activation. This document itself executes none of these gates."
+    }
+  ]
+}
