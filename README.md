@@ -324,6 +324,11 @@ runs paired cases and publication controls; `make validate` includes them.
 checks the validator, generator and source-control loader with an emulated
 cp1252 text default. The tooling reads UTF-8 explicitly on every platform;
 these tests emit no repository artifacts.
+`python3 -B -m unittest discover -s tools -p 'test_project_context_generator_paths.py' -v`
+checks POSIX and Windows relative-path spelling in both generator modes, with
+unchanged-corpus controls and obsolete-file refusals. These tests use disposable
+copies and leave repository bytes unchanged. Hosted Windows CI separately checks
+the native platform.
 `python3 tools/check_project_context_leaf1_controls.py` runs narrowing controls
 against actual schemas/decoder gates. Its `--mutant NAME` mode intentionally
 exits 1 after the named assertion fails. Use
