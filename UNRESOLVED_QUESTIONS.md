@@ -2,14 +2,20 @@
 
 ## Agent stations
 
-[CIP-0024](cips/CIP-0024-agent-stations.md) is Draft. Its six operator decisions
-dated 2026-10-22 are settled: one account and own keys per station, split service
-ownership, raising-orchestrator trust, retained fresh-context spawn, and the
-11-Werkstatt Curator pilot. Remaining operator questions are the pilot's initial
-heavy-run host budget and the authoritative task-completion/retention horizon
+[CIP-0024](cips/CIP-0024-agent-stations.md) is Draft. Its operator decisions of
+2026-10-22/23 are settled: one account and distinct signer per station, interim
+ssh-agent custody with inaccessible keys and UID-restricted sockets, target
+Keymaker custody, platform-owned controls checked before start, approved-release
+updates, service-enforced orchestrator/owner trust and owner-chat binding,
+Swarm/Colony/Swarm cell/Station hierarchy, per-station a2a daemon, retained
+fresh-context spawn and the 11-Werkstatt native-project pilot; strict follows
+per runtime. Service ownership is split explicitly. Remaining operator questions
+are the pilot's initial heavy-run host budget and the authoritative
+task-completion/retention horizon
 for task-lifetime stations. Service adapters against the pinned
-router/FRONT-DOOR baseline are publication gates, not additional undecided
-ownership choices.
+router/FRONT-DOOR baseline, protected profile releases, colony manifest mapping,
+Keymaker/broker and native-project qualification are publication gates, not
+additional undecided ownership choices.
 
 ## Muse managed-context residuals
 
