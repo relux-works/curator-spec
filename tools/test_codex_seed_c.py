@@ -70,6 +70,33 @@ class CodexSeedCTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, pattern):
                     seed.check_corpus(ROOT)
 
+    # The committed filtered positive preserves every unrelated decoded value.
+    # Altering a top-level or deeply nested array element must fail that exact
+    # production preservation assertion, rather than an import or setup check.
+    # This data check does not establish real serializer determinism.
+    def test_nested_array_preservation_controls(self):
+        name = 'c-preserves-nested-tables-and-arrays'
+        case = next(c for c in self.cases['cases'] if c['name'] == name)
+        seed.check_case(case)
+        validate.validate_codex_seed_c()
+        original = seed.outcome
+        for path in (('fallback_models', 1),
+                     ('profiles', 'example', 'routes', 0, 'args', 1)):
+            def narrowed(case, path=path):
+                result = original(case)
+                if case['name'] == name:
+                    value = result['config']
+                    for member in path[:-1]:
+                        value = value[member]
+                    value[path[-1]] = 'mutated-array-element'
+                return result
+            with self.subTest(path=path), patch.object(seed, 'outcome', narrowed):
+                with self.assertRaisesRegex(
+                    validate.ValidationFailure,
+                    name + ': seed configuration differs',
+                ):
+                    validate.validate_codex_seed_c()
+
     # Full marker 7 admits C and retained A/B records; old carriers still
     # reject C. Closed records, versions and unrelated v6 fields stay enforced.
     def test_marker_schema_and_narrowing(self):
@@ -90,11 +117,13 @@ class CodexSeedCTests(unittest.TestCase):
     # Removing a witness cannot silently weaken the gate, and production
     # validation must dispatch it rather than leaving it as an optional test.
     def test_inventory_and_dispatch(self):
-        cases = copy.deepcopy(self.cases)
-        cases['cases'].pop()
-        with patch.object(seed, 'load_corpus', return_value=cases):
-            with self.assertRaisesRegex(ValueError, 'case inventory'):
-                seed.check_corpus(ROOT)
+        for name in ('c-strips-foreign',
+                     'c-preserves-nested-tables-and-arrays'):
+            cases = copy.deepcopy(self.cases)
+            cases['cases'] = [c for c in cases['cases'] if c['name'] != name]
+            with self.subTest(removed=name), patch.object(seed, 'load_corpus', return_value=cases):
+                with self.assertRaisesRegex(ValueError, 'case inventory'):
+                    seed.check_corpus(ROOT)
         self.assertIn('validate_codex_seed_c', inspect.getsource(validate.main))
 
     # The production entrypoint detects a known retained-trust output plant;

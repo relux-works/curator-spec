@@ -25,6 +25,12 @@ byte-for-byte unchanged. Output MUST parse as TOML. Invalid TOML fails with
 MUST NOT fall back to a whole copy or silently skip the seed. Existing seed
 absence, regular-file, read-failure and transaction rules remain in force.
 
+Filtered revision-C serialization MUST be deterministic: repeated provisioning
+from identical native input under the same adopted manager implementation MUST
+produce identical seed bytes. This does not prescribe one canonical TOML
+encoding across different implementations or versions, and does not relax the
+decoded-value preservation requirement or existing-home byte guarantees.
+
 Revision C retains B's `mcp_native_servers_not_inherited` warning and sorted
 native-MCP-name snapshot, emitted exactly when that snapshot is nonempty.
 Trust removal adds no diagnostic containing project paths, names, values or
@@ -98,4 +104,8 @@ These are specification-data checks, not manager execution. Adopting managers
 MUST independently test provisioning, source preservation, invalid-TOML
 zero writes, existing-home byte/marker preservation and status read-only
 behavior, with nearby positive controls and bounded narrowing mutants.
+They MUST test repeated real serialization of the same filtered native input
+for byte-identical output, and decoded preservation of unrelated nested tables
+and arrays. The specification-data checker is not a TOML serializer and cannot
+establish those manager execution properties.
 They MUST use invented paths and disposable homes, never real trust files.

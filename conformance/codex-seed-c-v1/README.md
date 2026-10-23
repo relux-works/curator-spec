@@ -4,8 +4,14 @@ This separate unreleased corpus implements the [normative amendment](../../proto
 `cases.json` uses synthetic TOML input and expected output. The path labels
 foreign, missing, existing and symlink describe required implementation cases;
 this data checker does not create or inspect those paths. All four are
-excluded unconditionally, paired with preserved model/TUI settings. Other
-controls cover empty config/projects, MCP exclusion and warnings, legacy A/B
+excluded unconditionally, paired with preserved model/TUI settings.
+The 22-case inventory includes a filtered positive preserving unrelated nested
+tables, scalar arrays, inline-table arrays and arrays of tables, including a
+nested member named `projects`. Its paired unit controls mutate array elements
+and require the production checker to reject the exact preservation violation.
+Repeated real filtered serialization must produce identical bytes under the
+same adopting implementation; these data witnesses do not execute a serializer.
+Other controls cover empty config/projects, MCP exclusion and warnings, legacy A/B
 provisioning, invalid TOML and no-write repair/status for pre-rule and A/B/C
 records. Expected existing-home config bytes must match the input exactly.
 The `diagnostic` field is the primary warning/error, not an exhaustive status
