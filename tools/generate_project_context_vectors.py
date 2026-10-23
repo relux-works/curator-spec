@@ -430,7 +430,7 @@ def main():
 
     manifest = dict(version=1, scope='closed member grammar only; no carrier or runtime qualification', cases=cases)
     generated['manifest.json'] = (json.dumps(manifest, ensure_ascii=False, indent=2) + '\n').encode('utf-8')
-    existing = {str(path.relative_to(CORPUS)) for path in CORPUS.rglob('*.json')}
+    existing = {path.relative_to(CORPUS).as_posix() for path in CORPUS.rglob('*.json')}
     if existing - set(generated):
         raise ValueError('obsolete corpus files: ' + ', '.join(sorted(existing - set(generated))))
     for filename, raw in generated.items():
