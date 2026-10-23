@@ -71,12 +71,12 @@ values in allowed strings remain a sanitation/qualification obligation.
 
 ## Proposed hosted-station witnesses
 
-[`hosted-qualification-cases.json`](hosted-qualification-cases.json) accompanies
-[proposed section 10](../../protocol/local-setup-token-source.md#10-proposed-hosted-station-qualification-amendment).
+[`hosted-qualification-cases.json`](hosted-qualification-cases.json) accompanies the
+[standalone hosted qualification proposal](../../protocol/local-setup-token-hosted-qualification-proposal.md).
 It pairs account/lock, destination-layout, false-isolation, generation/cutover
 and post-revoke recovery counterexamples with valid controls. These are
 neutral contract/test-plan fixtures, not a new wire schema or runtime results.
-Review their expected behavior against section 10; parsing the JSON alone does
+Review their expected behavior against that proposal; parsing the JSON alone does
 not execute any witness. Existing `cases.json` and the publication checker
 continue to reject unsupported hosted routes and incorrect local bindings.
 

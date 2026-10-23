@@ -1,6 +1,6 @@
 {
   "status": "proposed",
-  "purpose": "Paired contract witnesses for local-setup-token-source section 10; not a wire format or executed runtime results.",
+  "purpose": "Paired contract witnesses for protocol/local-setup-token-hosted-qualification-proposal.md; not a wire format or executed runtime results.",
   "runtime_qualification": "unverified",
   "baseline": "Every positive control assumes separately adopted and behaviorally qualified account/path, source/API, hosted carrier, final-owner and lifecycle contracts. Without them every hosted node start remains unavailable under revision 1.",
   "evidence_claims": [
@@ -13,7 +13,7 @@
   "cases": [
     {
       "id": "HQ-01-account-binding",
-      "requirement": "10.2",
+      "requirement": "2",
       "positive_control": "The station UID and host match its independently enrolled protected source and binding, with the admitted profile lock.",
       "negative_neighbor": "Keep the same profile lock, host and requested source projection, but execute under a different UID.",
       "expected_when_implemented": "The positive control may reach the qualified final boundary; the wrong UID refuses credential_binding_mismatch before material delivery or child start.",
@@ -22,7 +22,7 @@
     },
     {
       "id": "HQ-02-profile-drift",
-      "requirement": "10.2",
+      "requirement": "2",
       "positive_control": "The selected role profile's source, pinned revision, dependency closure and lock match the separately admitted destination configuration.",
       "negative_neighbor": "One dependency or lock changes without a reviewed pin/closure change while the station label remains the same.",
       "expected_when_implemented": "The positive control retains the admitted closure; drift refuses before start without silent repair or repinning. The owning carrier must publish the exact diagnostic before implementation.",
@@ -31,7 +31,7 @@
     },
     {
       "id": "HQ-03-destination-layout",
-      "requirement": "10.2",
+      "requirement": "2",
       "positive_control": "The destination has an owner-published supported cache, managed HOME and root layout with its required access and private Git administration boundaries.",
       "negative_neighbor": "Keep valid source metadata but require an unsupported writable shared cache, inaccessible root, operator Git back-link or old operator HOME.",
       "expected_when_implemented": "The positive control reaches the qualified preparation boundary; each unsupported layout refuses before start under its owning contract without a fallback layout.",
@@ -40,7 +40,7 @@
     },
     {
       "id": "HQ-04-copied-root-false-isolation",
-      "requirement": "10.2",
+      "requirement": "2",
       "positive_control": "A separately provisioned station account has independently admitted source authority and explained account-dependent context/rendered-path differences.",
       "negative_neighbor": "Copy the same root and lock under an operator UID or reuse the operator HOME, then present matching root hashes as isolation evidence.",
       "expected_when_implemented": "The positive control can supply account-bound qualification evidence; the copied-root control cannot qualify an isolated station or authorize a hosted start.",
@@ -49,7 +49,7 @@
     },
     {
       "id": "HQ-05-source-drift-at-final-owner",
-      "requirement": "10.3",
+      "requirement": "3",
       "positive_control": "The per-session final owner under the station UID independently resolves the exact requested source projection and validates protected binding, policy and invocation.",
       "negative_neighbor": "Replace or re-enroll the source after preparation while replaying its old reference or generation in the hosted request.",
       "expected_when_implemented": "The valid control starts one approved process through AuthorizeAndStart; drift refuses credential_source_stale with no native or per-home fallback.",
@@ -58,7 +58,7 @@
     },
     {
       "id": "HQ-06-exact-final-injection",
-      "requirement": "10.3",
+      "requirement": "3",
       "positive_control": "A qualified final owner adds the selected token only to one approved Claude child's private environment; other admitted process inputs remain exact.",
       "negative_neighbor": "Supply a competing auth name with an empty or equal value, alter an endpoint/executable, or route delivery through a daemon callback, token getter or wrapper.",
       "expected_when_implemented": "The valid control observes one final injection. Competing inputs refuse credential_source_conflict; binding mismatches refuse credential_binding_mismatch; unqualified routes refuse credential_injection_unavailable, according to revision 1 admission order.",
@@ -67,7 +67,7 @@
     },
     {
       "id": "HQ-07-lost-start-and-concurrent-generation",
-      "requirement": "10.4",
+      "requirement": "4",
       "positive_control": "The lifecycle owner proves the old generation quiescent and released, then authorizes one target operation under the current generation.",
       "negative_neighbor": "Lose the start acknowledgement, retain uncertain execution, or race two target-generation start requests; infer absence from a missing PID, quiet inbox or expired TTL.",
       "expected_when_implemented": "The positive control starts one target. Unknown execution retains claims and reconciles the same operation/manager/generation; concurrent requests cannot start a duplicate or steal the lease.",
@@ -76,7 +76,7 @@
     },
     {
       "id": "HQ-08-post-revoke-recovery",
-      "requirement": "10.4",
+      "requirement": "4",
       "positive_control": "A separately authorized fresh source and current lifecycle generation enter the qualified boundary after recovery; expiry is checked when known.",
       "negative_neighbor": "Complete local revoke before material release, restore an old filesystem snapshot, and replay the old source authorization or released execution generation.",
       "expected_when_implemented": "The positive control can start with fresh authority. Completed revoke refuses credential_source_revoked; replaced generation/reference refuses credential_source_stale in the applicable source state. Rollback cannot revive revoked authority or a released execution generation.",
@@ -85,7 +85,7 @@
     },
     {
       "id": "HQ-09-real-harness-containment",
-      "requirement": "10.5",
+      "requirement": "5",
       "positive_control": "A separately authorized pinned real harness confines disposable sentinel delivery across child probes, MCP interpolation/settings reload, hooks, tools, plugin helpers, telemetry and debug/transcript sinks.",
       "negative_neighbor": "Enable a known-leaking disposable control at an observed sink; compare it with the same unmodified harness/configuration control.",
       "expected_when_implemented": "The known leak fails its detector for the intended sink, and the clean control passes all required sinks before claiming containment for that exact tuple.",
@@ -94,7 +94,7 @@
     },
     {
       "id": "HQ-10-mode-and-evidence-boundaries",
-      "requirement": "10.5",
+      "requirement": "5",
       "positive_control": "Evidence separately identifies the exact reviewed source/API/carrier, account/path, lifecycle, platform, real harness, configuration and mode tuple with owner-run actual OAuth authentication.",
       "negative_neighbor": "Promote a JSON/schema pass, synthetic executor, present readiness row or headless result into actual OAuth, PTY/attach/resume or live pilot qualification.",
       "expected_when_implemented": "Only the explicitly qualified tuple may advertise credential-injection/1; every unsupported hosted or Terminal mode remains credential_injection_unavailable before start.",
