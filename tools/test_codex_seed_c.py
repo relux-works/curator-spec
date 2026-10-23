@@ -5,6 +5,10 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from jsonschema import Draft202012Validator, SchemaError
+from referencing import Registry, Resource
+from referencing.exceptions import Unresolvable
+
 import codex_seed_c as seed
 import validate
 
@@ -97,6 +101,26 @@ class CodexSeedCTests(unittest.TestCase):
                 ):
                     validate.validate_codex_seed_c()
 
+    # The complete inherited node-source positive resolves through the public
+    # registry; malformed source refs reject beside the valid synthetic source.
+    # No private aliases, protected state or per-home substitution are involved.
+    def test_full_node_source_carrier(self):
+        resources = []
+        for path in sorted((ROOT / 'schemas').rglob('*.schema.json')):
+            value = seed.load(path)
+            resources.append((value['$id'], Resource.from_contents(value)))
+        registry = Registry().with_resources(resources)
+        marker = seed.load(ROOT / 'conformance/local-setup-token-v1/controls.json')[
+            'agent-environment-marker-v6']
+        predecessor = seed.load(ROOT / 'schemas/local-setup-token-v1/agent-environment-marker-v6.schema.json')
+        self.assertTrue(Draft202012Validator(predecessor, registry=registry).is_valid(marker))
+        marker['version'] = 7
+        marker['codex_seed_record'] = dict(revision='C', native_mcp_servers=[])
+        validator = Draft202012Validator(seed.load_schema(ROOT), registry=registry)
+        self.assertTrue(validator.is_valid(marker))
+        marker['credential_source']['source']['source_ref'] = 'local:invalid'
+        self.assertFalse(validator.is_valid(marker))
+
     # Full marker 7 admits C and retained A/B records; old carriers still
     # reject C. Closed records, versions and unrelated v6 fields stay enforced.
     def test_marker_schema_and_narrowing(self):
@@ -106,13 +130,61 @@ class CodexSeedCTests(unittest.TestCase):
             lambda s: s['properties']['codex_seed_record']['properties']['revision'].update(enum=['A', 'B', 'C', 'D']),
             lambda s: s['properties']['codex_seed_record'].update(additionalProperties=True),
             lambda s: s['properties']['version'].update(const=6),
-            lambda s: s['properties']['codex_settings'].update(type='object', additionalProperties=True, **{'$ref': None}),
         ):
             bad = copy.deepcopy(schema)
             mutate(bad)
             with patch.object(seed, 'load_schema', return_value=bad):
                 with self.assertRaisesRegex(ValueError, 'marker successor'):
                     seed.check_markers(ROOT)
+
+    # The production dispatcher must traverse the complete inherited node
+    # branch: restoring the old relative reference raises Unresolvable.
+    def test_production_old_node_reference_is_unresolvable(self):
+        validate.validate_codex_seed_c()
+        schema = seed.load_schema(ROOT)
+        schema['properties']['credential_source']['oneOf'][1]['properties']['source'][
+            '$ref'] = 'node-source-v1.schema.json'
+        with patch.object(seed, 'load_schema', return_value=schema):
+            with self.assertRaisesRegex(Unresolvable, 'node-source-v1.schema.json'):
+                validate.validate_codex_seed_c()
+
+    # The invalid source_ref and node-seed controls are executable, not just
+    # declared data: accepting either exact violation must fail the checker.
+    def test_production_node_source_rejection_narrowing(self):
+        validate.validate_codex_seed_c()
+        original = Draft202012Validator.is_valid
+        for violation in ('source_ref', 'seeds'):
+            def admit_invalid(validator, instance, *args, **kwargs):
+                if isinstance(instance, dict):
+                    source = instance.get('credential_source', {}).get('source', {})
+                    if (violation == 'source_ref' and source.get('source_ref') == 'local:invalid'
+                            or violation == 'seeds' and source and instance.get('seeds')):
+                        return True
+                return original(validator, instance, *args, **kwargs)
+
+            with self.subTest(violation=violation), patch.object(
+                Draft202012Validator, 'is_valid', admit_invalid,
+            ):
+                with self.assertRaisesRegex(
+                    validate.ValidationFailure,
+                    'marker successor admits invalid node-source control',
+                ):
+                    validate.validate_codex_seed_c()
+
+    # The relocation exception cannot admit other predecessor changes, and
+    # malformed schema references still fail the schema's own meta-validation.
+    def test_marker_predecessor_pin_and_malformed_schema(self):
+        schema = seed.load_schema(ROOT)
+        schema['properties']['credential_source']['oneOf'][1]['properties'][
+            'source_generation']['maximum'] -= 1
+        with patch.object(seed, 'load_schema', return_value=schema):
+            with self.assertRaisesRegex(ValueError, 'marker successor changes more'):
+                seed.check_markers(ROOT)
+        schema = seed.load_schema(ROOT)
+        schema['properties']['codex_settings']['$ref'] = None
+        with patch.object(seed, 'load_schema', return_value=schema):
+            with self.assertRaises(SchemaError):
+                seed.check_markers(ROOT)
 
     # Removing a witness cannot silently weaken the gate, and production
     # validation must dispatch it rather than leaving it as an optional test.

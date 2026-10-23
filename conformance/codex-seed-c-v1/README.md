@@ -20,7 +20,12 @@ A/B posture corpus. `writes` names managed-home paths only, never native paths.
 
 The checker validates complete marker 7 positives, full old-carrier B/C controls,
 unknown revisions/fields, unrelated settings restrictions and predecessor
-schema identity. Unit tests deliberately narrow project exclusion, unrelated
+schema identity, allowing exactly the relocated node-source reference. The
+full inherited node-source positives and separate per-home positives resolve
+through the published registry. Invalid node source references and forbidden
+node seeds reject. Restoring the old relative reference raises `Unresolvable`
+through the production checker; a narrowing plant admitting an invalid
+`source_ref` must fail. Unit tests deliberately narrow project exclusion, unrelated
 setting preservation, legacy writes/record identity, MCP diagnostics, schema
 closure and corpus inventory. A failure to import tooling is not a successful
 negative control. Coverage concerns specification publication only; no

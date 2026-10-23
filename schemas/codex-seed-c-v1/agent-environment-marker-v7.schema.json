@@ -320,7 +320,7 @@
           "type": "object",
           "properties": {
             "source": {
-              "$ref": "node-source-v1.schema.json"
+              "$ref": "../local-setup-token-v1/node-source-v1.schema.json"
             },
             "source_generation": {
               "type": "integer",

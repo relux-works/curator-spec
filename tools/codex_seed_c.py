@@ -94,9 +94,9 @@ def check_markers(root):
     expected['title'] = 'agent-environment-marker-v7'
     expected['properties']['version']['const'] = 7
     expected['properties']['codex_seed_record']['properties']['revision']['enum'] = ['A', 'B', 'C']
+    # Relocation changes this relative spelling, not the inherited target.
+    expected['properties']['credential_source']['oneOf'][1]['properties']['source']['$ref'] = '../local-setup-token-v1/node-source-v1.schema.json'
     schema = load_schema(root)
-    if schema != expected:
-        raise ValueError('marker successor changes more than version and seed revision')
     resources = []
     for path in sorted((root / 'schemas').rglob('*.schema.json')):
         value = load(path)
@@ -105,7 +105,26 @@ def check_markers(root):
     Draft202012Validator.check_schema(schema)
     validator = Draft202012Validator(schema, registry=registry)
     base = load(root / 'conformance/local-setup-token-v1/controls.json')['agent-environment-marker-v6']
-    base.update(version=7, credential_source={'mode': 'per-home'}, seeds=['config.toml'])
+    # Exercise the inherited full node carrier before selecting the separate
+    # per-home branch for legacy-carrier controls. A broken moved reference
+    # must surface as Unresolvable, never hide behind a branch substitution.
+    base['version'] = 7
+    for revision in ('A', 'B', 'C'):
+        node = dict(base, codex_seed_record=dict(revision=revision, native_mcp_servers=[]))
+        if not validator.is_valid(node):
+            raise ValueError('marker successor rejects valid node-source control')
+    for mutate in (
+        lambda m: m['credential_source']['source'].update(source_ref='local:invalid'),
+        lambda m: m.update(seeds=['config.toml']),
+    ):
+        bad = copy.deepcopy(node)
+        mutate(bad)
+        if validator.is_valid(bad):
+            raise ValueError('marker successor admits invalid node-source control')
+    # Pin every other inherited field after exercising actual carrier validity.
+    if schema != expected:
+        raise ValueError('marker successor changes more than version, seed revision and relocated node reference')
+    base.update(credential_source={'mode': 'per-home'}, seeds=['config.toml'])
     for revision in ('A', 'B', 'C'):
         marker = dict(base, codex_seed_record=dict(revision=revision, native_mcp_servers=[]))
         if not validator.is_valid(marker):
