@@ -116,3 +116,5 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0022](CIP-0022-mcp-server-declarations-in-project-skillfile.md) | MCP server declarations in the project Skillfile | Accepted |
 | [CIP-0023](CIP-0023-exact-plan-hosted-launches.md) | Exact-plan hosted launches with detached sessions and doorbells | Accepted |
 | [CIP-0024](CIP-0024-agent-stations.md) | Agent stations | Draft |
+| [CIP-0025](CIP-0025-execution-isolation-contract.md) | Execution Isolation Contract | Review |
+| CIP-0026 | Foreign-code execution | **In preparation** |
