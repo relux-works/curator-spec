@@ -411,10 +411,13 @@ they MUST NOT allocate another execution to make uncertainty disappear.
 Under [CIP-0025 §10, EIC-10-05](CIP-0025-execution-isolation-contract.md#10-qualification-updates-and-revocation),
 security-revocation detection MUST immediately fence new starts
 and credential release for the affected tuple. Existing untrusted-class credential
-refusal remains unconditional. The pool is an external class: its approved B-revoke
-MUST be measured from detection and MUST NOT be reset by delayed publication or
-recovery. CIP-0025's 300-second ceiling applies to Linux/macOS stations; it does
-not assign a numerical bound to this separately qualified pool class.
+refusal remains unconditional. The pool MUST use `B-revoke <= 300 seconds` from
+security-revocation detection, including confirmation and the required quiet
+period; a profile MAY require a shorter bound. A longer bound or later trigger
+MUST refuse admission unless the explicit owner exception below authorizes that
+exact departure. Ordinary qualification or publication of a bound is insufficient.
+Retries, observer restarts, delayed publication and recovery MUST NOT reset the
+original admitted deadline, including when an owner exception applies.
 Affected executions MUST actually stop or, only where separately qualified,
 be confirmed narrowed to a non-revoked class within
 the original published revocation bound. Unconfirmed narrowing MUST lead to stop
@@ -422,9 +425,59 @@ within that same bound. Fencing or unknown state MUST NOT count as completion.
 Status/list/observe/reconcile/authorized stop retain their intact-state prerequisites;
 broken shared state MUST NOT create a launch, release or recovery bypass.
 
+#### Timing baselines and explicit owner exceptions
+
+Every pool bound or window with a corresponding CIP-0025 station baseline MUST
+be equal or stricter: response/cleanup deadlines no later, quiet periods no
+shorter, and validity/freshness windows no longer. Compare the exact qualified
+scope and its published parameters, not merely a platform label. Where CIP-0025
+sets no universal numerical value, admission MUST bind the applicable qualified
+baseline and pool value; a missing required comparison MUST refuse admission,
+not imply an unlimited window. Pool-only bounds still require qualification.
+
+A looser value or later trigger MUST require an explicit, independently
+authenticated owner decision naming the baseline, the exact exception (value,
+units and trigger), reason/residual risk, declaration/profile/tuple and execution
+scope, and its own validity interval. The decision MUST be stored in protected
+policy records actually read by admission. Ordinary bound approval, qualification,
+a requester acknowledgement or a blanket waiver MUST NOT substitute for it.
+For a looser value or later trigger, admission MUST reject a missing, unverified,
+not-yet-valid, expired or out-of-scope decision with `guarantee_unavailable`,
+without allocation or payload start. Start, resume and restart MUST recheck that
+decision and its bindings using current authority time; a receipt lifetime MUST
+NOT extend the decision. The scheduler answer and boundary receipt MUST expose
+the baseline, actual bound/window and
+trigger, exception identity, scope and validity, and accepted weaker status.
+They MUST NOT claim equality with the baseline. Changed bindings require new
+admission, qualification and any necessary new decision; no decision may
+retroactively extend an admitted deadline or reset its clock.
+
+Such decisions change only explicitly waivable timing parameters. They MUST NOT
+waive immediate detection fences, currentness/expiry or revocation checks,
+non-waivable pool minimums, actual confirmation/absence/custody prerequisites,
+original-effect recovery, accounting or the same-deadline fallback on failed
+narrowing. They grant no station exception or station-conformance claim.
+
+The following comparison applies at admission and qualification:
+
+| Pool timing surface | CIP-0025 baseline | Pool result and exception limit |
+|---|---|---|
+| Security revocation and revocation narrowing | EIC-10-05: detection + at most 300 seconds, including quiet-period confirmation; failed narrowing stops by the same deadline | `B-revoke <= 300 seconds` from detection by default; a longer bound/later trigger needs the explicit owner decision above. Immediate fences and the original admitted deadline always hold. |
+| Cancellation, limit-triggered and other bounded stop | EIC-4-04/06, TO-06/08: published original bound, full-scope absence before reuse; no universal non-revocation number | `B-stop` no longer and trigger no later than the applicable qualified baseline; looser timing needs an explicit owner decision, never an extended work ceiling. |
+| Non-revocation narrowing and stop fallback | EIC-4-04: confirmed narrowing or complete stop within the same published bound | No longer/later response without an explicit owner decision; failed narrowing cannot acquire a second stop interval. |
+| Stop quiet period | EIC-4-06: whole-account zero throughout the published quiet period | Pool period no shorter than the applicable qualified baseline without an explicit owner decision; no leader-only absence or confirmation after the stop/revocation deadline. |
+| Receipt validity and publication | EIC-5 receipt bindings and EIC-5-02/04/06: bounded validity, current epochs, complete publication before code | Pool window no longer without an explicit owner decision; no numerical TTL is imposed by CIP-0025. Expired/stale/partial evidence still refuses; an exception cannot defer publication past code. |
+| Qualification freshness and update windows | EIC-10-01/03/04/05: exact production tuple, change invalidation and immediate revocation fences | Any qualified evidence-age window no longer without an explicit owner decision; CIP-0025 gives no universal age. No grace for drift/revocation or reuse of expired evidence. |
+| Operator/owner decision validity and authority time | EIC-2-05/06, EIC-5-08: current act at start/resume/restart; restore cannot revive obsolete authority | Any baseline policy window no longer without a separate explicit owner decision; neither receipt validity nor the act itself can extend its interval. Missing/currentness checks are non-waivable. |
+| Recovery, retry and restore | EIC-5-07/08, EIC-10-06, TO-20/29: original effects/fences, usable authorized recovery and original applicable bounds | Clock resets remain forbidden; a later completion bound requires a prior explicit owner exception; event-only reconciliation has no invented wall-clock limit and cannot claim completion/reuse while unknown. |
+| Resource/soft-response and recovery-reserve intervals | EIC-9-01/02/03, TO-19/20: published response, continuous hard caps and usable reserve under load | Applicable response bounds no longer without an explicit owner decision; no universal number. Continuous hard caps, charged debt and non-waivable pool hard limits remain in force. |
+| Destroy/cache cleanup, intake and retention | EIC-9-04/05/06, TO-22/23/24: class cleanup policy, whole validation/publication and custody before deletion/reuse; cleanup bound if published | `B-destroy`, `B-intake`, retention window and `B-delete` cannot loosen an applicable qualified baseline without an explicit owner decision. No universal numerical values; pool custody/order and deletion duties remain. |
+| Elapsed job lifetime | EIC-9-03: standing stations have no imposed lifetime deadline | Separate finite pool job ceiling, not a station lifetime restriction; no station numerical comparator. No retry/response allowance extends the admitted pool ceiling. |
+
 Before activation, the lifecycle owner MUST publish and durably bind each trigger
 and bound to the admitted execution: accepted cancellation or limit-triggered stop
-plus `B-stop`; detection of security revocation plus `B-revoke`; confirmed absence and complete
+plus `B-stop`; detection of security revocation plus `B-revoke` (or its explicit
+owner-authorized trigger exception); confirmed absence and complete
 custody/authorized discard plus `B-destroy`; complete bounded upload accepted for
 intake plus `B-intake`; published retention expiry plus `B-delete`, with custody
 or explicit disposition prerequisites preserved. Runtime/resource ceilings still
@@ -476,7 +529,7 @@ access a signer for the receipt. The following are binding groups, not a wire sc
 | Placement | Host enrollment identity, boot and placement generation, complete qualification tuple and evidence reference |
 | Applied boundary | Backend/composed layers and versions, image digest, selected profile digest and actual applied policy digest |
 | Capabilities | Requested IDs, actual statuses, enforced restrictions/compensations, evidence references and unsupported entries |
-| Enforcement | Actual resource/time bounds, network/DNS policy and independent containment references, identity/device mapping and input-root policy |
+| Enforcement | Actual resource/time bounds and triggers; applicable timing baselines and any explicit owner exception identity, scope and validity with accepted weaker status; network/DNS policy and independent containment references, identity/device mapping and input-root policy |
 | Freshness and provenance | Protected operation ordering, authority-time evidence and receipt version/integrity identity bound to this attempt |
 
 The scheduler's receipt consumer MUST obtain it through the protected host-control
@@ -715,7 +768,7 @@ their deadlines pass in that state. Missing required bounds keep activation clos
 | CO-05; lifecycle; FX-22/26 | Before E=physical-start claim/replacement: separate original start evidence resolves effect identity | CW-05-start-unknown: receipt alone counted as physical start | CM-05: skip unknown-path original-effect resolution | Correct original start observation before claim; interrupted record reconciles without second start |
 | CO-06; cancellation; FX-19/22 | Accepted cancellation + B-stop: resolve in-flight start, whole-account stop and quiet-period confirmation | CW-06-cancel-stuck: fenced cancelled job remains live past bound | CM-06: drop stuck-path cancellation deadline | Actual complete stop by original bound; transient unknown resolves in time |
 | CO-07; runtime/resources; FX-18/19 | Runtime/resource-limit trigger + B-stop, without extending execution ceiling: actual bounded termination/absence | CW-07-expiry-unknown: expired job remains live while fenced | CM-07: omit unknown-path elapsed/stop enforcement | Enforced ceiling and confirmed stop in time, including delayed observation within bound |
-| CO-08; revocation; FX-14/23 | At revocation detection: immediate start/release fence; detection + B-revoke: actual stop or confirmed qualified non-revoked narrowing; publication/recovery cannot reset the clock | CW-08-revoked-unknown: original revoked execution survives deadline | CM-08: drop deadline enforcement only on stuck/unknown path | Actual stop by bound or separately qualified narrowing confirmed by bound; transient unknown resolves in time |
+| CO-08; revocation; FX-14/23 | At detection: immediate start/release fence; default detection + B-revoke with B-revoke <= 300 seconds: actual stop or confirmed qualified non-revoked narrowing, including quiet period; longer/later requires the explicit owner exception at admission; no clock reset | CW-08-revoked-unknown: original revoked execution survives admitted deadline; RevocationExceptionRequired rejects a longer/later profile without the decision | CM-08: drop stuck-path deadline enforcement; separately OwnerExceptionOnlyRemoved skips only the explicit-exception gate | Actual stop/narrowing by original deadline, including transient unknown; RevocationBaselineAllowed and RevocationExceptionAllowed admit the baseline and valid explicitly excepted profiles |
 | CO-09; stop; FX-19/22 | Every bounded stop trigger + B-stop: whole-account zero throughout quiet period, including detached/OS-spawned work | CW-09-child-unknown: leader exits but descendant survives deadline | CM-09: omit unknown-path full-scope completion | All processes absent and quiet confirmation by bound; escaped child actually stops first |
 | CO-10; network; FX-10/11/12 | Before E=next network effect after policy/proxy/authority failure: actual route closure or valid enforced policy | CW-10-proxy-pending: packet escapes while closure is pending | CM-10: skip pending-path fail-closed enforcement | Allowed transfer completes; failure closes route before E and restored policy admits valid traffic |
 | CO-11; destroy/reuse; FX-03/05/22 | Confirmed absence plus custody/discard prerequisites + B-destroy; before E=reuse: actual residue removal and verified reset | CW-11-destroy-stuck: residue persists but destroy reports success | CM-11: drop stuck-path cleanup/reset completion | Actual disk/memory/snapshot/device cleanup completes by bound before fresh work, including transient reset delay |
@@ -975,12 +1028,39 @@ qualification has to implement and exercise the actual independent observations.
   whole-account stop or confirmed qualified non-revoked narrowing by the original
   B-revoke. A live revoked execution past that deadline fails qualification even
   if fenced/unknown. CW-19/22 forbid reopening before complete independent evidence.
+- Negative, RevocationExceptionRequired: an ordinarily approved `B-revoke = 600
+  seconds` without an explicit owner decision MUST refuse at admission with
+  `guarantee_unavailable`, no allocation/start and no admitted receipt; promising
+  completion at detection + 500 seconds cannot rescue admission. Independently
+  test a later trigger with no decision. Keep qualification and all other gates
+  valid so they cannot mask this refusal. InvalidDecision variants use missing
+  scope, wrong tuple, unverified, expired and not-yet-valid decisions; none may
+  authorize admission, start, resume or restart.
 - Positive: independently reviewed current evidence enables only its exact scope;
-  active revocation actually stops by B-revoke or completes qualified non-revoked
-  narrowing by B-revoke, including transient unknown. Authorized intact-state
-  recovery remains usable without opening a broken-state bypass.
+  RevocationBaselineAllowed admits both `B-revoke = 300 seconds` and a shorter
+  bound, then actually confirms whole-account stop including quiet period, or
+  qualified non-revoked narrowing, by the original detection + bound (including
+  exactly at 300 seconds). RevocationExceptionAllowed
+  admits `B-revoke = 600 seconds` only with a valid explicit exactly scoped owner
+  decision in the admission policy record, visible with its validity/baseline/
+  actual timing and weaker status in the receipt and scheduler answer; actual
+  disposition at detection + 500 seconds satisfies that admitted exception. Pair
+  the later-trigger negative with its own exactly authorized trigger control.
+  Failed narrowing still stops within that same original deadline; retries and
+  recovery never reset it. Authorized intact-state recovery remains usable.
+- Class cases, TimingBaselineExceptionRequired/Allowed: for every comparable
+  surface in the timing table, a looser window/bound or later trigger without the
+  decision refuses before dependent effects; equal/stricter values and a valid
+  explicit timing-only exception admit within the same scope. Decision expiry or
+  binding change refuses at start/resume/restart. Currentness, immediate fences
+  and non-waivable prerequisites remain mandatory even with a valid decision.
 - Narrowing control: CM-08/19/22 drop only stuck-path completion/activation gates;
   normal success and all fences remain; the named witnesses fail.
+  OwnerExceptionOnlyRemoved retains ordinary qualification/bound approval and all
+  timing/disposition checks, but omits only the explicit owner-exception gate;
+  RevocationExceptionRequired's 600-second variant MUST fail. Separately removing
+  each other timing surface's exception gate MUST fail its named
+  TimingBaselineExceptionRequired variant; valid controls remain admitted.
 
 #### FX-24 — Operator access and retention
 
@@ -1054,9 +1134,15 @@ Recommendations are proposed answers, not assumed permission.
    backup extension. Publish deletion evidence and operator access before launch.
 6. **Q-FX-06 — Qualification authority and revocation.** Who accepts evidence and
    what happens to active jobs on drift/compromise? Recommended: independent
-   qualification approval and immediate external start/release fences; publish
-   B-revoke and require actual stop/qualified non-revoked narrowing within it,
-   retaining custody/fences on failure; no self-cleared revocation or automatic reuse.
+   qualification approval and immediate external start/release fences; require
+   `B-revoke <= 300 seconds` from detection, with confirmed whole-account stop
+   including quiet period, or qualified non-revoked narrowing, by that original
+   deadline. A longer bound or later trigger requires the explicit owner decision,
+   scope and current validity recorded for admission and disclosed in the receipt
+   and scheduler
+   answer under Timing baselines above; ordinary bound approval is insufficient.
+   Retain custody/fences on failure; no clock reset, self-cleared revocation or
+   automatic reuse.
 7. **Q-FX-07 — Guarantee mapping acceptance.** Who accepts this pool mapping and
    local definitions against station parity `71dd888` before activation? Recommended:
    EIC/station and pool owners review the exact shared/local mapping; retain all
