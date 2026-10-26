@@ -352,5 +352,227 @@
       "diagnostic": "environment_home_stale",
       "writes": []
     }
+  },
+  {
+    "name": "malformed-operator_home-terminal-lf",
+    "record": {
+      "record": "provisioning-origin/1",
+      "adapter": "codex_cli",
+      "operator_home": "/fixture/operator\n",
+      "selector": {
+        "name": "CODEX_HOME",
+        "state": "present-value",
+        "value": "/fixture/native-A"
+      },
+      "native_root": "/fixture/native-A",
+      "capture": {
+        "method": "provisioning",
+        "authority": "native-selection",
+        "time": "2026-10-26T00:00:00Z"
+      },
+      "binding": {
+        "profile": "sample",
+        "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "managed_target": "/fixture/manager/environments/sample/codex_cli"
+      }
+    },
+    "binding": {
+      "profile": "sample",
+      "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "managed_target": "/fixture/manager/environments/sample/codex_cli"
+    },
+    "adapter": "codex_cli",
+    "current_selector": "/fixture/native-B",
+    "credential_link": "/fixture/native-A/auth.json",
+    "repair": false,
+    "expected": {
+      "diagnostic": "environment_provisioning_origin_invalid",
+      "writes": []
+    }
+  },
+  {
+    "name": "malformed-native_root-terminal-lf",
+    "record": {
+      "record": "provisioning-origin/1",
+      "adapter": "codex_cli",
+      "operator_home": "/fixture/operator",
+      "selector": {
+        "name": "CODEX_HOME",
+        "state": "present-value",
+        "value": "/fixture/native-A"
+      },
+      "native_root": "/fixture/native-A\n",
+      "capture": {
+        "method": "provisioning",
+        "authority": "native-selection",
+        "time": "2026-10-26T00:00:00Z"
+      },
+      "binding": {
+        "profile": "sample",
+        "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "managed_target": "/fixture/manager/environments/sample/codex_cli"
+      }
+    },
+    "binding": {
+      "profile": "sample",
+      "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "managed_target": "/fixture/manager/environments/sample/codex_cli"
+    },
+    "adapter": "codex_cli",
+    "current_selector": "/fixture/native-B",
+    "credential_link": "/fixture/native-A/auth.json",
+    "repair": false,
+    "expected": {
+      "diagnostic": "environment_provisioning_origin_invalid",
+      "writes": []
+    }
+  },
+  {
+    "name": "malformed-binding.managed_target-terminal-lf",
+    "record": {
+      "record": "provisioning-origin/1",
+      "adapter": "codex_cli",
+      "operator_home": "/fixture/operator",
+      "selector": {
+        "name": "CODEX_HOME",
+        "state": "present-value",
+        "value": "/fixture/native-A"
+      },
+      "native_root": "/fixture/native-A",
+      "capture": {
+        "method": "provisioning",
+        "authority": "native-selection",
+        "time": "2026-10-26T00:00:00Z"
+      },
+      "binding": {
+        "profile": "sample",
+        "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "managed_target": "/fixture/manager/environments/sample/codex_cli\n"
+      }
+    },
+    "binding": {
+      "profile": "sample",
+      "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "managed_target": "/fixture/manager/environments/sample/codex_cli"
+    },
+    "adapter": "codex_cli",
+    "current_selector": "/fixture/native-B",
+    "credential_link": "/fixture/native-A/auth.json",
+    "repair": false,
+    "expected": {
+      "diagnostic": "environment_provisioning_origin_invalid",
+      "writes": []
+    }
+  },
+  {
+    "name": "malformed-binding.profile-terminal-lf",
+    "record": {
+      "record": "provisioning-origin/1",
+      "adapter": "codex_cli",
+      "operator_home": "/fixture/operator",
+      "selector": {
+        "name": "CODEX_HOME",
+        "state": "present-value",
+        "value": "/fixture/native-A"
+      },
+      "native_root": "/fixture/native-A",
+      "capture": {
+        "method": "provisioning",
+        "authority": "native-selection",
+        "time": "2026-10-26T00:00:00Z"
+      },
+      "binding": {
+        "profile": "sample\n",
+        "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "managed_target": "/fixture/manager/environments/sample/codex_cli"
+      }
+    },
+    "binding": {
+      "profile": "sample",
+      "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "managed_target": "/fixture/manager/environments/sample/codex_cli"
+    },
+    "adapter": "codex_cli",
+    "current_selector": "/fixture/native-B",
+    "credential_link": "/fixture/native-A/auth.json",
+    "repair": false,
+    "expected": {
+      "diagnostic": "environment_provisioning_origin_invalid",
+      "writes": []
+    }
+  },
+  {
+    "name": "malformed-binding.lock_sha256-terminal-lf",
+    "record": {
+      "record": "provisioning-origin/1",
+      "adapter": "codex_cli",
+      "operator_home": "/fixture/operator",
+      "selector": {
+        "name": "CODEX_HOME",
+        "state": "present-value",
+        "value": "/fixture/native-A"
+      },
+      "native_root": "/fixture/native-A",
+      "capture": {
+        "method": "provisioning",
+        "authority": "native-selection",
+        "time": "2026-10-26T00:00:00Z"
+      },
+      "binding": {
+        "profile": "sample",
+        "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+        "managed_target": "/fixture/manager/environments/sample/codex_cli"
+      }
+    },
+    "binding": {
+      "profile": "sample",
+      "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "managed_target": "/fixture/manager/environments/sample/codex_cli"
+    },
+    "adapter": "codex_cli",
+    "current_selector": "/fixture/native-B",
+    "credential_link": "/fixture/native-A/auth.json",
+    "repair": false,
+    "expected": {
+      "diagnostic": "environment_provisioning_origin_invalid",
+      "writes": []
+    }
+  },
+  {
+    "name": "malformed-selector.value-terminal-lf",
+    "record": {
+      "record": "provisioning-origin/1",
+      "adapter": "codex_cli",
+      "operator_home": "/fixture/operator",
+      "selector": {
+        "name": "CODEX_HOME",
+        "state": "present-value",
+        "value": "/fixture/native-A\n"
+      },
+      "native_root": "/fixture/native-A",
+      "capture": {
+        "method": "provisioning",
+        "authority": "native-selection",
+        "time": "2026-10-26T00:00:00Z"
+      },
+      "binding": {
+        "profile": "sample",
+        "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "managed_target": "/fixture/manager/environments/sample/codex_cli"
+      }
+    },
+    "binding": {
+      "profile": "sample",
+      "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "managed_target": "/fixture/manager/environments/sample/codex_cli"
+    },
+    "adapter": "codex_cli",
+    "current_selector": "/fixture/native-B",
+    "credential_link": "/fixture/native-A/auth.json",
+    "repair": false,
+    "expected": {
+      "diagnostic": "environment_provisioning_origin_invalid",
+      "writes": []
+    }
   }
 ]

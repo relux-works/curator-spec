@@ -15,8 +15,15 @@ SELECTORS = {'claude_code': 'CLAUDE_CONFIG_DIR', 'codex_cli': 'CODEX_HOME',
              'muse': 'XDG_CONFIG_HOME'}
 
 
+def control_free(value):
+    """Exclude the same C0/DEL controls as the complete-record schema."""
+    return all(ord(char) >= 0x20 and ord(char) != 0x7f for char in value)
+
+
 def clean_absolute(value):
     """Check spelling only; existing-ancestor identity belongs to the manager."""
+    if not control_free(value):
+        return False
     if value.startswith('/'):
         return not value.startswith('//') and posixpath.normpath(value) == value
     return ntpath.isabs(value) and ntpath.normpath(value) == value
@@ -24,6 +31,11 @@ def clean_absolute(value):
 
 def record_valid(record, schema):
     if not Draft202012Validator(schema, format_checker=FormatChecker()).is_valid(record):
+        return False
+    fields = (record['operator_home'], record['native_root'],
+              record['binding']['managed_target'], record['binding']['profile'],
+              record['binding']['lock_sha256'], record['selector'].get('value', ''))
+    if not all(control_free(value) for value in fields):
         return False
     profile = record['binding']['profile']
     base = profile.split('.', 1)[0].upper()

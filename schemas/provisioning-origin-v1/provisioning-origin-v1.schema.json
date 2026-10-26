@@ -29,7 +29,7 @@
     "operator_home": {
       "type": "string",
       "minLength": 1,
-      "pattern": "^(?:/|[A-Za-z]:[\\\\/]|\\\\\\\\)[^\\x00-\\x1f\\x7f]*$"
+      "pattern": "^(?:/|[A-Za-z]:[\\\\/]|\\\\\\\\)[^\\x00-\\x1f\\x7f]*$(?![\\s\\S])"
     },
     "selector": {
       "type": "object",
@@ -110,7 +110,7 @@
               "value": {
                 "type": "string",
                 "minLength": 1,
-                "pattern": "^[^\\x00-\\x1f\\x7f]+$"
+                "pattern": "^[^\\x00-\\x1f\\x7f]+$(?![\\s\\S])"
               }
             }
           }
@@ -120,7 +120,7 @@
     "native_root": {
       "type": "string",
       "minLength": 1,
-      "pattern": "^(?:/|[A-Za-z]:[\\\\/]|\\\\\\\\)[^\\x00-\\x1f\\x7f]*$"
+      "pattern": "^(?:/|[A-Za-z]:[\\\\/]|\\\\\\\\)[^\\x00-\\x1f\\x7f]*$(?![\\s\\S])"
     },
     "capture": {
       "type": "object",
@@ -146,7 +146,7 @@
         "time": {
           "type": "string",
           "format": "date-time",
-          "pattern": "Z$"
+          "pattern": "Z$(?![\\s\\S])"
         }
       }
     },
@@ -163,16 +163,16 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 128,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$(?![\\s\\S])"
         },
         "lock_sha256": {
           "type": "string",
-          "pattern": "^sha256:[0-9a-f]{64}$"
+          "pattern": "^sha256:[0-9a-f]{64}$(?![\\s\\S])"
         },
         "managed_target": {
           "type": "string",
           "minLength": 1,
-          "pattern": "^(?:/|[A-Za-z]:[\\\\/]|\\\\\\\\)[^\\x00-\\x1f\\x7f]*$"
+          "pattern": "^(?:/|[A-Za-z]:[\\\\/]|\\\\\\\\)[^\\x00-\\x1f\\x7f]*$(?![\\s\\S])"
         }
       }
     }

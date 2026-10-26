@@ -4,6 +4,9 @@
 `authority-cases.json` pins expected Codex file-credential authority for custom
 A under current selector B, retarget conflict, absent-link repair, missing
 records and exact binding mismatches. Paths and values are invented fixtures.
+Terminal LF/CR and embedded-LF negatives cover all six free-form origin/binding
+members, and malformed records require the invalid-origin diagnostic and no
+writes at authority admission. Valid originals remain positive controls.
 
 Run `python3 tools/provisioning_origin.py`, `python3 tools/validate.py` and
 `python3 -B -m unittest discover -s tools -p 'test_provisioning_origin.py' -v`.

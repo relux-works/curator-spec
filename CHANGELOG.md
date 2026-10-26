@@ -12,6 +12,8 @@ Versioning for the complete specification set.
   require record-authoritative credentials, atomic lifecycle and explicit
   legacy adoption. Add a standalone closed schema and authority corpus with
   publication controls. Frozen marker 7 and release pins remain unchanged.
+  Reject terminal LF at schema and semantic boundaries; add control-character
+  record negatives and invalid/no-write authority cases for all affected members.
   Specification checks do not qualify manager implementation or live adoption.
 
 - Adopt the normative prose half of CIP-0002 leaf 1 through Decision 0028:

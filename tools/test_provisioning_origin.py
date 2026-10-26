@@ -1,11 +1,13 @@
 """Closed carrier, independent authority verdicts and publication controls."""
 from __future__ import annotations
 
+import copy
 import json
 import unittest
 from unittest.mock import patch
 
 import provisioning_origin as origin
+from jsonschema import Draft202012Validator
 from test_validate import validate
 
 
@@ -13,7 +15,7 @@ class ProvisioningOriginTests(unittest.TestCase):
     # The publication entry checks every declared positive and negative case;
     # this establishes specification consistency, never runtime atomicity.
     def test_publication_entry(self):
-        self.assertEqual(origin.check_corpus(), (48, 10))
+        self.assertEqual(origin.check_corpus(), (66, 16))
         validate.validate_provisioning_origin()
 
     # A deliberately wrong A/B authority verdict fails through the actual
@@ -39,6 +41,37 @@ class ProvisioningOriginTests(unittest.TestCase):
         with patch.object(origin, 'record_valid', return_value=True):
             with self.assertRaisesRegex(validate.ValidationFailure, 'missing-record'):
                 validate.validate_provisioning_origin()
+
+    # Schema admission independently rejects every control-character case;
+    # the same complete valid record remains an admitted positive control.
+    def test_schema_control_boundaries(self):
+        schema = json.loads((origin.ROOT / 'schemas' / origin.NAMESPACE / 'provisioning-origin-v1.schema.json').read_text())
+        cases = json.loads((origin.ROOT / 'conformance' / origin.NAMESPACE / 'schema-cases.json').read_text())
+        validator = Draft202012Validator(schema)
+        self.assertTrue(validator.is_valid(cases[0]['record']))
+        controls = [case for case in cases if case['name'].startswith('control-')]
+        self.assertEqual(len(controls), 18)
+        for case in controls:
+            with self.subTest(case=case['name']):
+                self.assertFalse(validator.is_valid(case['record']))
+
+    # With schema checking deliberately permissive, the semantic boundary
+    # still rejects controls in all six fields, beside an unchanged valid record.
+    # This checks the independent semantic barrier, not general schema coverage.
+    def test_semantic_control_boundary(self):
+        cases = json.loads((origin.ROOT / 'conformance' / origin.NAMESPACE / 'authority-cases.json').read_text())
+        base = cases[0]['record']
+        self.assertTrue(origin.record_valid(base, {}))
+        for path in [('operator_home',), ('native_root',), ('binding', 'managed_target'),
+                     ('binding', 'profile'), ('binding', 'lock_sha256'), ('selector', 'value')]:
+            for suffix in ['\n', '\r', '\n/trailing']:
+                with self.subTest(path=path, suffix=repr(suffix)):
+                    record = copy.deepcopy(base)
+                    container = record
+                    for key in path[:-1]:
+                        container = container[key]
+                    container[path[-1]] += suffix
+                    self.assertFalse(origin.record_valid(record, {}))
 
 
 if __name__ == '__main__':
