@@ -13,6 +13,8 @@ from test_project_context_leaf1 import CATALOG, CORPUS, MANIFEST, assert_case
 # Each source plant admits a bounded forbidden subclass while retaining the
 # general gate. No fixture, expected verdict or runtime result is rewritten.
 REPLACEMENTS = {
+    'mode-order': ("if value['modes'] != sorted(value['modes'], key=lambda s: s.encode('utf-8')):",
+                   "if len(value['modes']) != 2 and value['modes'] != sorted(value['modes'], key=lambda s: s.encode('utf-8')):"),
     'identity-sig': ("def identity(value):\n    return", "def identity(value):\n    if isinstance(value, dict):\n        value = {k: v for k, v in value.items() if k != 'sig'}\n    return"),
     'negative-zero': ('parse_int=integer', 'parse_int=int'),
     'path-component': ("component.endswith(('.', ' '))", "component in ('.', '..')"),

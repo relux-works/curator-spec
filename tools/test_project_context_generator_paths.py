@@ -42,7 +42,7 @@ class ProjectContextGeneratorPathTests(unittest.TestCase):
                         shutil.copytree(generator.CORPUS, corpus)
                         before = self.snapshot(corpus)
                         output = self.run_generator(corpus, flavour, check)
-                        self.assertIn('406 leaf-1 grammar cases:', output)
+                        self.assertIn('427 leaf-1 grammar cases:', output)
                         self.assertEqual(self.snapshot(corpus), before)
 
     # A genuine extra nested JSON file is refused under either native spelling,

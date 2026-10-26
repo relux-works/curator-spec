@@ -181,6 +181,12 @@
       "type": "string",
       "maxLength": 96,
       "pattern": "^lock:[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])"
+    },
+    "source_mode": {
+      "enum": [
+        "native-project",
+        "strict"
+      ]
     }
   }
 }

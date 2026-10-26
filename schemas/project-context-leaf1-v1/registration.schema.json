@@ -12,7 +12,8 @@
     "profile",
     "environment",
     "home_ref",
-    "worktree_ref"
+    "worktree_ref",
+    "mode"
   ],
   "properties": {
     "kind": {
@@ -38,6 +39,9 @@
     },
     "worktree_ref": {
       "$ref": "common.schema.json#/$defs/worktree_ref"
+    },
+    "mode": {
+      "$ref": "common.schema.json#/$defs/source_mode"
     }
   }
 }

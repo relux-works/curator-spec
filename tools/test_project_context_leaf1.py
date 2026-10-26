@@ -33,7 +33,7 @@ class ProjectContextLeaf1Tests(unittest.TestCase):
     # Every published positive and typed negative is reached by make validate;
     # missing siblings, changed bytes and incomplete record coverage also fail.
     def test_publication_entry(self):
-        self.assertEqual(leaf.check_corpus(), (55, 351))
+        self.assertEqual(leaf.check_corpus(), (61, 366))
         import validate
         validate.validate_project_context_leaf1()
 
@@ -54,7 +54,7 @@ class ProjectContextLeaf1Tests(unittest.TestCase):
         with patch.object(leaf.Path, 'read_text', planted):
             with self.assertRaisesRegex(validate.ValidationFailure, 'lease-zero: expected None'):
                 validate.validate_project_context_leaf1()
-        self.assertEqual(leaf.check_corpus(), (55, 351))
+        self.assertEqual(leaf.check_corpus(), (61, 366))
 
     # The publication oracle reaches the lexical negative-zero gate. Its
     # ordinary-zero sibling stays valid when only the shared integer hook is
@@ -138,7 +138,7 @@ class ProjectContextLeaf1Tests(unittest.TestCase):
         with patch('sys.argv', ['check_project_context_leaf1_controls.py']):
             with contextlib.redirect_stdout(output):
                 self.assertEqual(controls.main(), 0)
-        self.assertIn('353 narrowing controls killed', output.getvalue())
+        self.assertIn('368 narrowing controls killed', output.getvalue())
 
     # Record identity includes all members, including sig; JSON spelling/order
     # and optional-member presence do not silently drop bytes from CCJ-1 input.

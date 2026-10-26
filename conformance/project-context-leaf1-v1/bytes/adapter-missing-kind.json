@@ -1,1 +1,1 @@
-{"environment":"codex_cli","platform":"linux","provider_version":"0.162.1","surfaces":["commands","context","mcp","memory-off","native-source-exclusion","permissions","skills"]}
+{"environment":"codex_cli","modes":["strict"],"platform":"linux","provider_version":"0.162.1","surfaces":["commands","context","mcp","memory-off","native-source-exclusion","permissions","skills"]}

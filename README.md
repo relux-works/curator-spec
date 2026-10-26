@@ -371,3 +371,11 @@ intentionally exit 1 for disposable forbidden-field/unknown-branch plants.
 `schemas/local-setup-token-v1/` and `conformance/local-setup-token-v1/`;
 transient logs go under `.temp/`. These commands never access credential stores
 or execute a vendor harness.
+
+Native-project source-mode policy and instruction-byte vectors run with
+`python3 -B -m unittest discover -s tools -p 'test_project_context_modes.py' -v`.
+The publication oracle checks `conformance/project-context-leaf1-v1/mode-cases.json`
+through `python3 tools/validate.py`; regeneration uses
+`python3 tools/generate_project_context_vectors.py --check`. Outputs go to
+stdout; task-local logs belong in `.temp/`. These static checks qualify no
+native runtime or permission boundary.

@@ -89,11 +89,16 @@ corrected through the section 7.9 erratum path.
 ## 1. Environment profiles and sources
 
 For the separate [project-context capability](project-context.md#1-capability-and-authority),
-a manager MUST distinguish legacy launches from strict `off` and `admitted`.
+a manager MUST distinguish legacy launches, strict mode and explicitly
+operator-enabled native-project mode, with separate off/admitted item admission.
 It MUST bind a registered checkout, selected profile lock and individually
 approved generation through the closed [leaf-1 records](project-context.md#2-closed-records-and-identities).
 Repository files, registration paths and native trust MUST NOT confer approval
-or mutate the selected profile. New registrations MUST default to strict `off`.
+or mutate the selected profile. New registrations MUST default to strict mode and off admission. Native-project
+MUST retain manager permissions and memory-off, deliver only approved whole
+skills/MCP from the project, use profile-root-only managed instructions and
+report "project sources not isolated" in status and launch. Strict qualification
+failure MUST NOT select native-project implicitly.
 
 An **environment profile** is a named, versioned set of global agent context
 installed from a declared source. A profile is exactly: a **root context
@@ -1406,9 +1411,10 @@ unification.
 ## 7. Environment adapter registry
 
 A [project-capable adapter](project-context.md#5-werkstatt-materialization-and-native-exclusion)
-MUST be qualified for its exact environment, release, platform and required
-surfaces. Existing adapter registration, native trust or a home layout MUST NOT
-stand in for native-source exclusion, manager-programmed permissions or memory-off.
+MUST be qualified for its exact environment, release, platform, mode and required
+surfaces. Both modes require manager-programmed permissions and memory-off;
+strict additionally requires native-source exclusion. Existing adapter
+registration, native trust or a home layout MUST NOT stand in for certification.
 An unsupported required surface MUST refuse, never fall back to native discovery.
 
 The manager §5 agent-adapter table generalizes to a closed **environment
@@ -4205,12 +4211,12 @@ registry allocates no exit numbers and changes no existing closed error object.
 
 | Condition and preserved effect | Diagnostic |
 |---|---|
-| Malformed/duplicate/unknown fields, invalid refs/enums/bounds, inconsistent context/lease/roots or forbidden PATH arm; no fragment, child or partial publication | `project_context_invalid` |
+| Malformed/duplicate/unknown fields, unknown or inconsistent mode/admission, invalid refs/enums/bounds, inconsistent context/lease/roots or forbidden PATH arm; no fragment, child or partial publication | `project_context_invalid` |
 | Missing/replaced/moved checkout or CWD/worktree outside the registered binding; no substitution of another project/profile | `project_registration_mismatch` |
 | Missing, revoked, wrong-project/item/environment approval or insufficient approver grant/ceiling; no native write, MCP connection or provider start | `project_item_unapproved` |
 | Changed/missing snapshot entry, policy, adapter contract, protected composition or digest; no repair or baseline update during launch | `project_context_drift` |
 | Failed read of required authority, inventory, PATH or liveness evidence; never absence or optional omission | `project_context_unreadable` |
-| Missing certified environment/surface, non-enforcing permission/memory adapter or unsupported required route/consumer; no required-item omission or legacy/native downgrade | `project_context_unsupported` |
+| Missing certified environment/mode/surface, non-enforcing permission/memory adapter, native-project context item or unsupported required route/consumer; no required-item omission or silent strict-to-native-project/legacy fallback | `project_context_unsupported` |
 | Repair, profile switch, skill/CLI sync or update while a home has a live/unknown lease; wait or refuse before writes, identify the owning session and advise waiting/ending it | `project_view_busy` |
 | Wrong owner/session/generation, stale lease, release replay or invalid transition; no new session or lease takeover | `project_lease_mismatch` |
 | Missing/excluded/unsafe PATH, invalid protected roots, command shadowing or stale/ambiguous owner; no PATH reconstruction or wrong executable | `project_path_refused` |
@@ -4364,7 +4370,8 @@ conformance profiles:
 
 Project control/status and collection MUST follow the
 [leaf-1 lease and state contract](project-context.md#6-leases-busy-updates-resume-and-collection).
-Status MUST report admitted generation, candidate drift, lease owner/session
+Status MUST report the selected mode and, for native-project, "project sources
+not isolated", plus admitted generation, candidate drift, lease owner/session
 and unknown evidence read-only, never approve, fetch or rebaseline. Busy updates
 MUST wait or refuse before writes and recheck leases at publication. Collection
 MUST retain live/unknown leases, homes, compositions and referenced artifacts;

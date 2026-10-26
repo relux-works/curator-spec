@@ -1,0 +1,913 @@
+{
+  "version": 1,
+  "scope": "static mode policy and instruction-byte projection; no manager/native qualification",
+  "cases": [
+    {
+      "name": "mode-native-admitted",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "native-project",
+        "composition_mode": "native-project",
+        "admission": "admitted",
+        "advertised_modes": [
+          "native-project"
+        ],
+        "surfaces": [
+          "mcp",
+          "memory-off",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": null,
+        "managed_root": "profile root\n",
+        "notice": "project sources not isolated"
+      },
+      "claim": "Native-project delivers approved skills/MCP without exclusion, retains exact profile root only, and reports no isolation.",
+      "positive": "mode-native-off",
+      "mutant": "native-root"
+    },
+    {
+      "name": "mode-native-off",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "native-project",
+        "composition_mode": "native-project",
+        "admission": "off",
+        "advertised_modes": [
+          "native-project"
+        ],
+        "surfaces": [
+          "mcp",
+          "memory-off",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": null,
+        "managed_root": "profile root\n",
+        "notice": "project sources not isolated"
+      },
+      "claim": "Off admission delivers no managed project items but native discovery still requires the exact notice.",
+      "positive": "mode-native-admitted",
+      "mutant": "native-notice"
+    },
+    {
+      "name": "mode-strict-admitted",
+      "facts": {
+        "mode": "strict",
+        "registration_mode": "strict",
+        "composition_mode": "strict",
+        "admission": "admitted",
+        "advertised_modes": [
+          "strict"
+        ],
+        "surfaces": [
+          "context",
+          "mcp",
+          "memory-off",
+          "native-source-exclusion",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "context",
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": null,
+        "managed_root": "profile root\n\nproject general\n\nproject environment\n",
+        "notice": null
+      },
+      "claim": "Strict with all certified surfaces appends approved project roots in order with one additional LF.",
+      "positive": "mode-strict-off",
+      "mutant": "strict-root"
+    },
+    {
+      "name": "mode-strict-off",
+      "facts": {
+        "mode": "strict",
+        "registration_mode": "strict",
+        "composition_mode": "strict",
+        "admission": "off",
+        "advertised_modes": [
+          "strict"
+        ],
+        "surfaces": [
+          "context",
+          "mcp",
+          "memory-off",
+          "native-source-exclusion",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": null,
+        "managed_root": "profile root\n",
+        "notice": null
+      },
+      "claim": "Strict off keeps profile-only managed instructions and still requires exclusion.",
+      "positive": "mode-native-off",
+      "mutant": "strict-off-root"
+    },
+    {
+      "name": "mode-native-with-exclusion",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "native-project",
+        "composition_mode": "native-project",
+        "admission": "admitted",
+        "advertised_modes": [
+          "native-project",
+          "strict"
+        ],
+        "surfaces": [
+          "context",
+          "mcp",
+          "memory-off",
+          "native-source-exclusion",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": null,
+        "managed_root": "profile root\n",
+        "notice": "project sources not isolated"
+      },
+      "claim": "Advertising exclusion as well never silently switches a selected native-project mode to strict."
+    },
+    {
+      "name": "mode-strict-both-advertised",
+      "facts": {
+        "mode": "strict",
+        "registration_mode": "strict",
+        "composition_mode": "strict",
+        "admission": "admitted",
+        "advertised_modes": [
+          "native-project",
+          "strict"
+        ],
+        "surfaces": [
+          "context",
+          "mcp",
+          "memory-off",
+          "native-source-exclusion",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "context",
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": null,
+        "managed_root": "profile root\n\nproject general\n\nproject environment\n",
+        "notice": null
+      },
+      "claim": "Advertising both modes preserves explicit strict selection and additive order."
+    },
+    {
+      "name": "mode-unknown",
+      "facts": {
+        "mode": "automatic",
+        "registration_mode": "automatic",
+        "composition_mode": "automatic",
+        "admission": "admitted",
+        "advertised_modes": [
+          "automatic"
+        ],
+        "surfaces": [
+          "mcp",
+          "memory-off",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_invalid",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Unknown mode refuses instead of selecting a known source policy.",
+      "positive": "mode-native-admitted",
+      "mutant": "unknown-mode"
+    },
+    {
+      "name": "mode-admission-unknown",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "native-project",
+        "composition_mode": "native-project",
+        "admission": "automatic",
+        "advertised_modes": [
+          "native-project"
+        ],
+        "surfaces": [
+          "mcp",
+          "memory-off",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_invalid",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Unknown admission is invalid even with a known source mode.",
+      "positive": "mode-native-admitted",
+      "mutant": "unknown-admission"
+    },
+    {
+      "name": "mode-registration-mismatch",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "strict",
+        "composition_mode": "native-project",
+        "admission": "admitted",
+        "advertised_modes": [
+          "native-project"
+        ],
+        "surfaces": [
+          "mcp",
+          "memory-off",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_invalid",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Fragment mode cannot differ from the protected registration choice.",
+      "positive": "mode-native-admitted",
+      "mutant": "registration-binding"
+    },
+    {
+      "name": "mode-composition-mismatch",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "native-project",
+        "composition_mode": "strict",
+        "admission": "admitted",
+        "advertised_modes": [
+          "native-project"
+        ],
+        "surfaces": [
+          "mcp",
+          "memory-off",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_invalid",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Fragment mode cannot differ from the protected composition identity.",
+      "positive": "mode-native-admitted",
+      "mutant": "composition-binding"
+    },
+    {
+      "name": "mode-unadvertised-native",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "native-project",
+        "composition_mode": "native-project",
+        "admission": "admitted",
+        "advertised_modes": [
+          "strict"
+        ],
+        "surfaces": [
+          "mcp",
+          "memory-off",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_unsupported",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Native-project requires its own exact advertised qualification; strict evidence is not a fallback.",
+      "positive": "mode-native-admitted",
+      "mutant": "mode-advertisement-native"
+    },
+    {
+      "name": "mode-strict-no-fallback",
+      "facts": {
+        "mode": "strict",
+        "registration_mode": "strict",
+        "composition_mode": "strict",
+        "admission": "admitted",
+        "advertised_modes": [
+          "native-project"
+        ],
+        "surfaces": [
+          "context",
+          "mcp",
+          "memory-off",
+          "native-source-exclusion",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "context",
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_unsupported",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "An unadvertised strict request refuses even when native-project is advertised.",
+      "positive": "mode-strict-admitted",
+      "mutant": "mode-advertisement-strict"
+    },
+    {
+      "name": "mode-native-missing-permissions",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "native-project",
+        "composition_mode": "native-project",
+        "admission": "admitted",
+        "advertised_modes": [
+          "native-project"
+        ],
+        "surfaces": [
+          "mcp",
+          "memory-off",
+          "skills"
+        ],
+        "item_types": [
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_unsupported",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Missing certified permissions refuses native mode with no output or alternate mode.",
+      "positive": "mode-native-admitted",
+      "mutant": "required-permissions"
+    },
+    {
+      "name": "mode-native-missing-memory-off",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "native-project",
+        "composition_mode": "native-project",
+        "admission": "admitted",
+        "advertised_modes": [
+          "native-project"
+        ],
+        "surfaces": [
+          "mcp",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_unsupported",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Missing certified memory-off refuses native mode with no output or alternate mode.",
+      "positive": "mode-native-admitted",
+      "mutant": "required-memory-off"
+    },
+    {
+      "name": "mode-strict-missing-permissions",
+      "facts": {
+        "mode": "strict",
+        "registration_mode": "strict",
+        "composition_mode": "strict",
+        "admission": "admitted",
+        "advertised_modes": [
+          "strict"
+        ],
+        "surfaces": [
+          "context",
+          "mcp",
+          "memory-off",
+          "native-source-exclusion",
+          "skills"
+        ],
+        "item_types": [
+          "context",
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_unsupported",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Missing certified permissions refuses strict mode with no output or alternate mode.",
+      "positive": "mode-strict-admitted",
+      "mutant": "required-permissions"
+    },
+    {
+      "name": "mode-strict-missing-memory-off",
+      "facts": {
+        "mode": "strict",
+        "registration_mode": "strict",
+        "composition_mode": "strict",
+        "admission": "admitted",
+        "advertised_modes": [
+          "strict"
+        ],
+        "surfaces": [
+          "context",
+          "mcp",
+          "native-source-exclusion",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "context",
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_unsupported",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Missing certified memory-off refuses strict mode with no output or alternate mode.",
+      "positive": "mode-strict-admitted",
+      "mutant": "required-memory-off"
+    },
+    {
+      "name": "mode-strict-missing-native-source-exclusion",
+      "facts": {
+        "mode": "strict",
+        "registration_mode": "strict",
+        "composition_mode": "strict",
+        "admission": "admitted",
+        "advertised_modes": [
+          "strict"
+        ],
+        "surfaces": [
+          "context",
+          "mcp",
+          "memory-off",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "context",
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_unsupported",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Missing certified native-source-exclusion refuses strict mode with no output or alternate mode.",
+      "positive": "mode-strict-admitted",
+      "mutant": "required-native-source-exclusion"
+    },
+    {
+      "name": "mode-strict-exclusion-no-fallback",
+      "facts": {
+        "mode": "strict",
+        "registration_mode": "strict",
+        "composition_mode": "strict",
+        "admission": "admitted",
+        "advertised_modes": [
+          "native-project",
+          "strict"
+        ],
+        "surfaces": [
+          "context",
+          "mcp",
+          "memory-off",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "context",
+          "skill",
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_unsupported",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Missing strict exclusion refuses even when native-project is explicitly available; no mode fallback.",
+      "positive": "mode-strict-both-advertised",
+      "mutant": "required-native-source-exclusion"
+    },
+    {
+      "name": "mode-native-off-missing-permissions",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "native-project",
+        "composition_mode": "native-project",
+        "admission": "off",
+        "advertised_modes": [
+          "native-project"
+        ],
+        "surfaces": [
+          "mcp",
+          "memory-off",
+          "skills"
+        ],
+        "item_types": [],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_unsupported",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Native-project off still requires permissions certification and cannot bypass it.",
+      "positive": "mode-native-off",
+      "mutant": "off-required-permissions"
+    },
+    {
+      "name": "mode-native-off-missing-memory-off",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "native-project",
+        "composition_mode": "native-project",
+        "admission": "off",
+        "advertised_modes": [
+          "native-project"
+        ],
+        "surfaces": [
+          "mcp",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_unsupported",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Native-project off still requires memory-off certification and cannot bypass it.",
+      "positive": "mode-native-off",
+      "mutant": "off-required-memory-off"
+    },
+    {
+      "name": "mode-strict-off-missing-exclusion",
+      "facts": {
+        "mode": "strict",
+        "registration_mode": "strict",
+        "composition_mode": "strict",
+        "admission": "off",
+        "advertised_modes": [
+          "strict"
+        ],
+        "surfaces": [
+          "context",
+          "mcp",
+          "memory-off",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_unsupported",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Strict off still refuses without certified source exclusion.",
+      "positive": "mode-strict-off",
+      "mutant": "off-required-exclusion"
+    },
+    {
+      "name": "mode-native-context",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "native-project",
+        "composition_mode": "native-project",
+        "admission": "admitted",
+        "advertised_modes": [
+          "native-project"
+        ],
+        "surfaces": [
+          "context",
+          "mcp",
+          "memory-off",
+          "native-source-exclusion",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "context"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_unsupported",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "A context item is refused in native-project rather than silently omitted or concatenated.",
+      "positive": "mode-native-admitted",
+      "mutant": "native-context"
+    },
+    {
+      "name": "mode-off-items",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "native-project",
+        "composition_mode": "native-project",
+        "admission": "off",
+        "advertised_modes": [
+          "native-project"
+        ],
+        "surfaces": [
+          "mcp",
+          "memory-off",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "skill"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_invalid",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Off admission refuses a selected project item instead of delivering it.",
+      "positive": "mode-native-off",
+      "mutant": "off-items"
+    },
+    {
+      "name": "mode-unknown-item",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "native-project",
+        "composition_mode": "native-project",
+        "admission": "admitted",
+        "advertised_modes": [
+          "native-project"
+        ],
+        "surfaces": [
+          "mcp",
+          "memory-off",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "rules"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_invalid",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "No new project item arm is inferred from native discovery.",
+      "positive": "mode-native-admitted",
+      "mutant": "unknown-item"
+    },
+    {
+      "name": "mode-missing-skill",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "native-project",
+        "composition_mode": "native-project",
+        "admission": "admitted",
+        "advertised_modes": [
+          "native-project"
+        ],
+        "surfaces": [
+          "mcp",
+          "memory-off",
+          "permissions"
+        ],
+        "item_types": [
+          "skill"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_unsupported",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Selected approved skill still requires its own certified delivery surface.",
+      "positive": "mode-native-admitted",
+      "mutant": "selected-skill"
+    },
+    {
+      "name": "mode-missing-mcp",
+      "facts": {
+        "mode": "native-project",
+        "registration_mode": "native-project",
+        "composition_mode": "native-project",
+        "admission": "admitted",
+        "advertised_modes": [
+          "native-project"
+        ],
+        "surfaces": [
+          "memory-off",
+          "permissions",
+          "skills"
+        ],
+        "item_types": [
+          "mcp"
+        ],
+        "profile_root": "profile root\n",
+        "project_roots": [
+          "project general\n",
+          "project environment\n"
+        ]
+      },
+      "expected": {
+        "code": "project_context_unsupported",
+        "managed_root": null,
+        "notice": null
+      },
+      "claim": "Selected approved mcp still requires its own certified delivery surface.",
+      "positive": "mode-native-admitted",
+      "mutant": "selected-mcp"
+    }
+  ]
+}

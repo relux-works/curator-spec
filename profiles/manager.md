@@ -2421,7 +2421,10 @@ The separate optional [project-context leaf-1 amendment](../protocol/project-con
 adds protected registration, item admission, composition and Werkstatt leases
 under [Decision 0028](../decisions/0028-project-context-and-werkstatt-leases.md).
 A manager adopting it MUST implement its complete closed records, default-deny
-permissions, memory-off and certified exclusion gates per advertised environment;
+permissions, memory-off and mode-specific certification gates per advertised
+environment. Strict requires certified exclusion; explicitly enabled
+native-project delivers only approved whole skills/MCP with profile-root-only
+instructions and MUST report "project sources not isolated" in status and launch;
 it MUST NOT infer these from revision-1 environment support or add project knobs
 to existing closed manager configuration. Normative member publication alone
 MUST NOT advertise runtime capability or authorize outer-carrier emission.
