@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/provisioning-origin-v1/provisioning-origin-v1.schema.json",
+  "title": "Private managed-home provisioning origin, revision 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record",
+    "adapter",
+    "operator_home",
+    "selector",
+    "native_root",
+    "capture",
+    "binding"
+  ],
+  "properties": {
+    "record": {
+      "const": "provisioning-origin/1"
+    },
+    "adapter": {
+      "enum": [
+        "claude_code",
+        "codex_cli",
+        "opencode",
+        "pi",
+        "muse"
+      ]
+    },
+    "operator_home": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?:/|[A-Za-z]:[\\\\/]|\\\\\\\\)[^\\x00-\\x1f\\x7f]*$"
+    },
+    "selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "state"
+      ],
+      "properties": {
+        "name": {
+          "enum": [
+            "CLAUDE_CONFIG_DIR",
+            "CODEX_HOME",
+            "XDG_CONFIG_HOME",
+            "PI_CODING_AGENT_DIR"
+          ]
+        },
+        "state": {
+          "enum": [
+            "absent",
+            "present-empty",
+            "present-value"
+          ]
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "absent"
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "value"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "present-empty"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "value"
+            ],
+            "properties": {
+              "value": {
+                "const": ""
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "present-value"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "value"
+            ],
+            "properties": {
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[^\\x00-\\x1f\\x7f]+$"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "native_root": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?:/|[A-Za-z]:[\\\\/]|\\\\\\\\)[^\\x00-\\x1f\\x7f]*$"
+    },
+    "capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "authority",
+        "time"
+      ],
+      "properties": {
+        "method": {
+          "enum": [
+            "provisioning",
+            "adoption"
+          ]
+        },
+        "authority": {
+          "enum": [
+            "native-selection",
+            "explicit-operator-input"
+          ]
+        },
+        "time": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "lock_sha256",
+        "managed_target"
+      ],
+      "properties": {
+        "profile": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "lock_sha256": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "managed_target": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?:/|[A-Za-z]:[\\\\/]|\\\\\\\\)[^\\x00-\\x1f\\x7f]*$"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "capture": {
+            "properties": {
+              "method": {
+                "const": "provisioning"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "capture": {
+            "properties": {
+              "authority": {
+                "const": "native-selection"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "capture": {
+            "properties": {
+              "method": {
+                "const": "adoption"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "capture": {
+            "properties": {
+              "authority": {
+                "const": "explicit-operator-input"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

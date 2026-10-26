@@ -185,7 +185,17 @@ remain gates. This publication enables no launch or runtime capability.
 | Tool admission | [tool-admission.puml](cips/diagrams/tool-admission.puml) | [Operator decision, option B, recommendation/security; shared D-PATH](cips/CIP-0007-manager-provisioned-cli-tools.md#recommendation) |
 | Audit transport | [audit-transport.puml](cips/diagrams/audit-transport.puml) | [Recommendation §§1–7](cips/CIP-0005-audit-backends-and-cli-secret-transport.md#recommendation) |
 
+[Provisioning-origin revision 1](protocol/provisioning-origin.md) records private
+native credential authority beside the home marker, preserving frozen marker
+schemas. Its separate schema and corpus require implementation qualification.
+
 ## Tools
+
+- Provisioning-origin publication: `python3 tools/provisioning_origin.py` and
+  `python3 -B -m unittest discover -s tools -p 'test_provisioning_origin.py' -v`
+  validate closed records and authority cases under
+  `conformance/provisioning-origin-v1/`. The production validator dispatches
+  this gate. Store logs in `.temp/`; no manager lifecycle is executed here.
 
 Published `release/<version>.json` records are byte-frozen against release
 tags. Regeneration updates [candidate metadata](conformance/candidate.json)

@@ -7,6 +7,13 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Adopt separate private provisioning-origin/1 through Decision 0029: capture
+  selector state/value, operator anchor, native root and exact home/lock binding;
+  require record-authoritative credentials, atomic lifecycle and explicit
+  legacy adoption. Add a standalone closed schema and authority corpus with
+  publication controls. Frozen marker 7 and release pins remain unchanged.
+  Specification checks do not qualify manager implementation or live adoption.
+
 - Adopt the normative prose half of CIP-0002 leaf 1 through Decision 0028:
   protected project admission, closed records, additive managed-home context,
   source-exclusion gates, stable Werkstatt/session leases, checked command

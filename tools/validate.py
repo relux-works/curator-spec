@@ -12170,6 +12170,16 @@ def validate_workspace_trust() -> None:
     print(f"workspace-trust schema cases: {cases}/{cases}; transition vectors: {vectors}/{vectors}; runtime cases: unrun")
 
 
+def validate_provisioning_origin() -> None:
+    import provisioning_origin
+
+    try:
+        cases, vectors = provisioning_origin.check_corpus(ROOT)
+    except (ValueError, OSError, SchemaError) as exc:
+        raise ValidationFailure(f"provisioning origin: {exc}") from exc
+    print(f"provisioning-origin schema cases: {cases}; authority cases: {vectors}; runtime: unverified")
+
+
 def validate_codex_seed_c() -> None:
     import codex_seed_c
 
@@ -12190,6 +12200,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_rc7_carriers,
         validate_local_setup_token,
         validate_workspace_trust,
+        validate_provisioning_origin,
         validate_project_context_leaf1,
         validate_codex_seed_c,
         validate_draft_source_schemas,
