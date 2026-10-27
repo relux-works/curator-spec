@@ -115,28 +115,98 @@ hosted session may refresh and continue the same thread, under the route rules
 below. Same-thread upgrade/restart is part of this decision, not a separate
 design decision. Frozen hosted resume remains the default.
 
-Propose one required, closed JSON member in a **negotiated successor resolve
-fragment**, named `lock_refresh`, with exactly these fields:
+Propose a **negotiated successor resolve result envelope**, not new members
+in the fragment. Its closed top level is `result` below (the JSON object itself,
+not an additional wire wrapper):
 
-| Field | Closed meaning |
+| Field path | Closed meaning |
+| --- | --- |
+| `result.fragment` | The complete launch fragment under its negotiated revision, with no `lock_refresh` or other per-operation metadata |
+| `result.operation_result` | Immutable closed object with exactly `version`, `operation_id`, `fragment_sha256` and `lock_refresh` |
+| `result.operation_result_sha256` | `sha256:` plus SHA-256 of CCJ-1 bytes of `result.operation_result` |
+| `result.readmission_receipt` | `null` for ordinary resolve; protected reference/digest to §2.2's immutable receipt for readmission |
+
+`result.operation_result.version` is the proposed discriminator
+`lock-refresh-operation-v1`; `operation_id` identifies one authenticated,
+input-bound operation. `result.operation_result.fragment_sha256` is `sha256:`
+plus SHA-256 of CCJ-1 bytes of **all** of `result.fragment`, with no exclusions.
+The only refresh-result location is `result.operation_result.lock_refresh`,
+a required closed object with exactly these fields:
+
+| Field path below `result.operation_result.lock_refresh` | Closed meaning |
 | --- | --- |
 | `status` | `refreshed`, `unchanged`, `frozen`, `deferred-lease`, `deferred-offline`, or `read-only` |
-| `previous_lock_sha256` | Complete pre-resolve lock digest, `sha256:<64 lowercase hex>` |
-| `lock_sha256` | Complete admitted post-resolve lock digest in the same spelling |
+| `previous_lock_sha256` | Complete pre-operation lock digest, `sha256:<64 lowercase hex>` |
+| `lock_sha256` | Complete admitted post-operation lock digest in the same spelling |
 
 `refreshed` requires unequal hashes; every other status requires equality.
-The post-resolve hash must equal `fragment.profile.lock_sha256`. This member
-reports the outcome of **this resolve**, never an earlier pending transaction.
-Refusal produces no fragment; typed refusal details and human delta go to
-stderr. Diagnostics never contaminate JSON stdout. A later schema allocation
-must define closed validation, capability negotiation and failure transport;
-old fragment revisions remain closed and cannot carry this member.
+Keep `result.fragment.profile.lock_sha256` in its existing bare-lowercase-hex
+grammar. Cross-field equality is exactly:
 
-curator-run only conveys intent/pins and consumes the result. It surfaces a
-refresh on stderr and binds the member into native per-launch provenance or
-the jointly negotiated hosted request. It does not resolve versions, choose
-policy or mutate a lock. Missing successor support cannot silently drop the
-resume/pin inputs or label the old behavior as refresh-capable.
+```text
+result.operation_result.lock_refresh.lock_sha256
+    == "sha256:" + result.fragment.profile.lock_sha256
+```
+
+Do not prefix the profile field, strip arbitrary prefixes, change hex case or
+compare unequal encodings literally. Each field must first pass its own grammar.
+For a new resolve, this object reports that operation's current-profile-lock
+transition. Authenticated **operation-result retrieval** returns the original
+object unchanged, including its original status/preimage; it is explicitly not
+a fresh resolve report. Never place retrieved provenance inside the fragment.
+Refusal produces no usable fragment; typed refusal details and human delta go
+to stderr. Diagnostics never contaminate JSON stdout. A later schema allocation
+must close the envelope, operation and receipt transports, negotiate capability
+and define failure/retrieval transport. Existing fragment and hosted request
+revisions stay closed; consumers cannot send this envelope as an old fragment.
+
+### Stable identity and operation provenance
+
+Preserve the existing complete-fragment identity rule: let
+`F = result.fragment` and `D(F) = "sha256:" + SHA256(CCJ-1(F))`. No member of F
+is ignored and no new stable projection is allocated. The existing admitted
+identity I still includes D(F) and all independently required lock, plan, home,
+generation and authority bindings. Operation IDs, status and refresh preimages
+are provenance outside F, not new stable-identity inputs. Changing only those
+operation facts does not change I; changing a real admission binding still
+refuses under its owning contract. A matching digest alone never grants consent
+or substitutes for current authority, lease or start checks.
+
+The manager independently resolves the same admitted inputs with no refresh and
+an expected final lock, verifies its entire F and D(F), and independently
+validates plan/home/generation/authority. It must match the launcher's stable
+identity, **not** the hash of the envelope or the manager's own operation result.
+Its own frozen/unchanged result can have different provenance. Separately it
+retrieves the launcher's operation result through authenticated Curator-manager
+transport/protected state, verifies its digest and D(F) binding, normalized lock,
+operation input binding and (for readmission) receipt/reservation. A caller's
+self-consistent result/hash pair is insufficient authentication. Wrong scope,
+unknown operation, altered bytes or missing evidence refuses; nothing starts.
+
+Frozen resume compares the independently current stable I with the stored I,
+including complete F, and rechecks current authority. It does not compare an old
+refresh status with the new frozen status. Retry/recovery uses the original
+operation ID and authenticated retained result, never a newly resolved status
+masquerading as the old operation. Retain the exact result and digest as journal/
+audit roots while pending and for terminal replay; an incomplete journal yields
+pending/refusal until guarded reconciliation, not a fabricated result. Operation
+lookup is bound to the original principal, input preimages, session/generation
+and reservation where applicable; reuse with different inputs refuses.
+Retrieval authenticates the requester under current policy and grants no start
+authority. An ordinary independent resolve is a distinct operation even if its
+stable identity matches.
+
+Future owned amendments are required together: Curator owns envelope emission,
+authenticated retention/retrieval and journal binding; curator-run owns parsing,
+complete-F digest verification, stderr/native launch provenance and the hosted
+request/result negotiation; swarma-session-host owns independent verification,
+stable frozen comparison and its exact-operation CAS/result ledger. Their
+successor carriers must carry/authenticate the operation-result digest/reference
+without widening old closed requests or weakening stale-identity refusal.
+curator-run conveys intent/pins; it does not resolve versions, choose policy or
+mutate a lock. Missing successor support refuses the requested capability.
+These hosted admission amendments do not gate the native keeper safe-stop and
+same-thread restart route in §2.1, which has no hosted admission record.
 
 ### 2.1 Native stopped-thread upgrade and restart
 
@@ -154,8 +224,8 @@ resume. Explicit frozen policy/no-refresh still keeps the old lock.
 The thread identifier, history, goals and continuation data remain in the same
 managed home; refreshing managed context/commands must not replace the home,
 clear native state or create a fresh thread/keeper identity. Record old/new
-locks through `lock_refresh` and the new per-launch provenance. Recheck the
-normal operator, signer, confirmation and launch gates. Native launches acquire
+locks through `result.operation_result.lock_refresh` in per-launch provenance.
+Recheck the normal operator, signer, confirmation and launch gates. Native launches acquire
 no hosted home lease; manager mutation serialization and the checks against any
 overlapping hosted lease still apply. A running native consumer of the affected
 home, or unconfirmed termination at this restart checkpoint, refuses before
@@ -203,32 +273,44 @@ The resolve contract is:
    holders and immutable acquisition bindings are not silently reinterpreted.
 3. Run the same compatible resolution, verification, system-delta confirmation,
    journal and render algorithm. Journal the old/current lock preimages, the
-   new lock/generation and an immutable readmission receipt. Retain old lock,
-   managed history and prior continuation record. The receipt binds both complete
+   new lock/generation, the exact retained result of §2 and an immutable
+   readmission receipt. Retain old lock, managed history and prior continuation
+   record. The receipt binds both complete
    old stored-session identity and new admitted identity (profile, lock, plan,
    protected generation), the current-lock preimage, exact session/generation,
-   operation/manager/operator and held reservation reference. Record the actual
-   actor and approver; neither a package nor a keeper relay can approve it.
-4. Return the new fragment plus a protected receipt reference/digest in a
-   negotiated closed readmission result. `lock_refresh` continues to report the
-   current-profile-lock transition; the receipt separately records the stored
-   session identity transition, even if the profile was already at the target
-   lock and `lock_refresh.status` is `unchanged`. The session host must CAS its
-   still-down exact generation/old identity to the new identity and append the
-   receipt before provider resume, preserving the same native thread/history.
-   curator-run owns the orchestration; **swarma-session-host owns the stored
-   identity and resume/1 change**, not tb-sessiond. Curator does not edit the
-   session host's ledger directly or claim a cross-process atomic rename.
-5. A lost reply/retry uses the operation's retained receipt and journal; it does
-   not refresh again or append a second identity transition. If manager CAS or
-   acknowledgement fails after Curator publication, keep the session down, keep
-   the reservation and pending receipt, and refuse start until reconciliation.
-   Never report old identity with a usable new start. A race to running or
-   generation drift cannot be fixed by overwriting the manager record. On
-   successful CAS, consume the reservation into a fresh prepared start lease
-   bound to the new identity, then recheck and bind before provider start.
-   Retain the old reservation/binding as terminal audit, never retarget its
-   immutable lock binding or accept terminal replay as start authority.
+   operation/manager/operator, held reservation reference and
+   `result.operation_result_sha256`. That digest binds the exact operation
+   provenance to the complete new fragment; it is not itself identity I1.
+   Record the actual actor and approver; neither a package nor a keeper relay can approve it.
+4. Return §2's envelope with the new `result.fragment` and protected receipt
+   reference/digest at `result.readmission_receipt`. The current-profile-lock
+   transition is `result.operation_result.lock_refresh`; the receipt separately
+   records the stored session I0→I1 transition, even when the profile was already
+   at the target lock and that status is `unchanged`. The host independently
+   verifies the stable identity and authenticated operation evidence as in §2.
+   It must CAS its still-down exact generation/old I0 to I1 and atomically append
+   the operation ID, result digest and receipt in its own ledger before provider
+   resume, preserving the same thread/history. curator-run owns orchestration;
+   **swarma-session-host owns the stored identity and resume/1 change**, not
+   tb-sessiond. Curator does not edit the host's ledger or claim a cross-process
+   atomic rename.
+5. A lost reply/retry retrieves that exact retained envelope by the original
+   operation ID. It neither refreshes again nor recomputes the original result
+   using a new `unchanged`/`frozen` status. Before CAS, the host rechecks still-down
+   exact generation, reservation and current stable inputs. If its ledger already
+   records this operation with exactly I0/I1/result digest/receipt, return the
+   recorded acknowledgement without a second transition; conflicting evidence
+   refuses. If no record exists, perform the single guarded CAS from step 4.
+   Retrieval and terminal acknowledgement do not transfer a lease or start a
+   provider again. If CAS/ack fails after Curator publication, retain down state,
+   reservation and pending receipt, with no start until reconciliation. Never
+   report old identity with a usable new start. Running/generation/authority or
+   real current-identity drift cannot be fixed by overwriting the ledger, even
+   if the historical operation result remains retrievable. On successful CAS,
+   consume the reservation once into a fresh prepared start lease bound to I1,
+   then recheck and bind before start. Retain the old reservation/binding as
+   terminal audit; never retarget its immutable lock binding or accept terminal
+   replay as start authority.
 
 A deferred refresh is not successful hosted readmission: report the lease or
 offline condition, keep the old identity and session down, and do not issue a
@@ -347,9 +429,9 @@ refuses without falling back to ordinary frozen resume or a new thread.
    pass current signer, audit and policy admission as well.
 
 7. **Bind and launch.** Only after successful render does resolve return a
-   fragment. Generate a fresh plan, command root/receipt, PATH state and
-   effective posture for the final lock and generation. Recheck bindings at
-   actual start; never patch hashes on an already admitted old plan. Hosted
+   fragment in §2's envelope. Generate a fresh plan, command root/receipt, PATH
+   state and effective posture for the final lock and generation. Recheck
+   bindings at actual start; never patch hashes on an already admitted old plan. Hosted
    consumers acquire their prepared session lease against this final lock;
    explicit readmission instead transfers its held reservation under §2.2,
    after the down-session identity CAS and before provider resume.
@@ -380,12 +462,13 @@ integrity, and #197's missing qualification/downgrade refusals survive refresh.
 
 Existing codes keep their owning contract's details/exits. Deferral describes
 the **refresh attempt**, not permission to bypass a launch refusal. A successful
-old-lock fragment may carry `deferred-*`; if pinned read/repair/start admission
+old-lock result may report `deferred-*` at
+`result.operation_result.lock_refresh.status`; if pinned read/repair/start admission
 fails, return that refusal without a fragment.
 
 | Condition | Proposed outcome/code |
 | --- | --- |
-| Matching pin, frozen policy, ordinary hosted resume/no-refresh/preserve-lock | `lock_refresh.status=frozen`, identical hashes; no release lookup |
+| Matching pin, frozen policy, ordinary hosted resume/no-refresh/preserve-lock | `result.operation_result.lock_refresh.status=frozen`, identical hashes; no release lookup |
 | Successful adoption / no eligible change | `refreshed` / `unchanged` |
 | Held home lease | Reuse `environment_home_leased/blocking_holders`; `deferred-lease` only when old-lock read is admissible |
 | Manager lock busy; unreadable lease; pending mutation | Reuse `environment_lock_unavailable`, `environment_lease_unreadable`, `environment_lease_recovery_required`; refuse, not an invented holder |
@@ -420,7 +503,7 @@ against retained pre-restart bytes, not inferred from a reused thread label.
 
 | ID | Input/control | Required verdict and effects |
 | --- | --- | --- |
-| V01 | Add valid 1.3.0 | Admit L1 at 1.3.0; `refreshed`, L0 retained for rollback |
+| V01 | Add valid 1.3.0; launcher refreshes L0→L1, manager independently resolves frozen at L1 | Admit L1 at 1.3.0 and the same complete-F identity on both sides despite different operation results; `refreshed`, L0 retained |
 | V02 | Add 2.0.0 and 2.0.0-rc.1 alongside 1.3.0 | Admit 1.3.0 only; neither next-major candidate enters L1 |
 | V03 | Only a next major is new | Admit L0; `unchanged`, no lock rotation |
 | V04 | Highest in-range 1.3.0 unsigned; signed 1.2.1 also available | Refuse `context_source_unsigned`, not downgrade to 1.2.1; signed 1.3.0 is positive control |
@@ -428,7 +511,7 @@ against retained pre-restart bytes, not inferred from a reused thread label.
 | V06 | Change system module bytes or MCP URL; no confirm flag | Refuse `profile_update_confirmation_required`; same delta with per-run flag admits; saved config consent alone still refuses |
 | V07 | Skill revision S is fixed; newer skill tag exists | Context may advance to L1, but skill source/commit/directory remain S; a candidate requiring a different exact skill pin refuses conflict |
 | V08 | Prepared/active/unknown lease held elsewhere | No refresh writes; diagnostic names holders. If old home current, read L0 as `deferred-lease`; if repair needed, refuse `environment_home_leased`. Idle control admits V01 |
-| V09 | Hosted frozen resume/continue with `--no-refresh --expect-lock L0` | Keep L0 and same session identity when still current, even when 1.3.0 exists; no lookup/migration. If current profile is already L1, refuse stale identity before writes/start |
+| V09 | Hosted frozen resume/continue with `--no-refresh --expect-lock L0` | Keep L0 and same session identity when still current, including an initial `unchanged` result followed by `frozen`, even when 1.3.0 exists; no lookup/migration. If current profile is already L1, refuse stale identity before writes/start |
 | V10 | Registry outage / offline source | Keep L0; `deferred-offline`, explicit diagnostic. Unreadable/invalid L0 refuses; restored registry control admits V01 |
 | V11 | Werkstatt up/recycle with `--expect-lock L0` | Freeze L0, no mid-task/new-launch refresh; mismatch against current L1 refuses before journal recovery or writes |
 | V12 | Plain `env resolve` without repair; explicit frozen policy | Read-only / frozen; no network or lock writes despite available 1.3.0 |
@@ -440,14 +523,28 @@ against retained pre-restart bytes, not inferred from a reused thread label.
 | V18 | Frozen/ordinary hosted resume resolve encounters legacy lock needing hash migration | Preserve identical identity or refuse before any migration write; ordinary repair's migration is not a refresh exemption |
 | V19 | New dependency has unbounded range / exact existing tag moves | Refuse ambiguous-major / existing strict-tag failure respectively; single-major new dependency / unchanged exact tag are controls |
 | V20 | Remove system module or MCP declaration | Require per-run confirmation just as V06; this tests the proposed trigger tightening explicitly |
-| V21 | `lock_refresh` unknown field/status, unequal frozen hashes, or fragment hash mismatch | Reject successor JSON; valid refreshed and frozen objects are controls; no progress text on stdout |
+| V21 | `result.operation_result.lock_refresh` unknown field/status, unequal frozen hashes, normalized lock mismatch, altered operation bytes or full-fragment digest mismatch | Reject successor result. Valid refreshed/frozen controls use bare H in `result.fragment.profile.lock_sha256` and `sha256:H` in the result lock field; H versus a different H2 refuses. Verify authenticated result digest as well; no progress text on stdout |
 | V22 | Source fetch/registry times out, but newer bytes are cached | Keep L0 and report deferral, never silently adopt cached L1; no older lock or bootstrap fabrication if L0 absent |
 | V23 | Native keeper stopped at a confirmed safe checkpoint; deliberate relaunch with provider resume of thread T | Resolve adopts L1 then resumes T in the same managed home. Existing history/continuation bytes and goals survive; emitted context/commands and provenance bind L1; no new thread/identity |
-| V24 | Hosted frozen resume stores identity I0, current profile has I1 | Refuse `session_curator_identity_stale`, even with no-refresh; stored I0/history unchanged and zero starts. Matching-I0 current-profile control resumes frozen |
+| V24 | Hosted frozen resume stores identity I0, current profile has I1 | Refuse `session_curator_identity_stale`, even with no-refresh; stored I0/history unchanged and zero starts. Matching-I0 control resumes frozen despite differing operation provenance |
 | V25 | Operator `resume SES --readmit-profile`, exact generation down, authentic reservation, stored I0 | Adopt compatible L1 under held reservation, retain L0 and I0/continuation, record I0→I1 with receipt and CAS, transfer lease and resume the same thread; history survives. Include profile-already-L1 control: unchanged lock still records I0→I1 |
 | V26 | Same native restart/readmission attempt while session running, draining or unknown, or generation changed | Refuse before refresh writes and provider resume; preserve lock/home/identity/history. Confirmed stopped/down controls V23/V25 admit |
 | V27 | Readmission with pinned Werkstatt, forged/down-only assertion, unrelated lease, or conflicting no-refresh/expect-lock | Refuse intended pin/authority/lease/usage gate before writes; no implicit pin edit, lease break or policy override |
-| V28 | Curator publishes readmission; manager CAS fails or reply is lost | Hold reservation and pending receipt, session stays down and no start; retry reconciles same operation once, records one transition and preserves history. Running-generation race never overwrites identity |
+| V28 | Curator publishes readmission; manager CAS fails or reply is lost | Hold reservation and pending receipt, session stays down and no start; authenticated retrieval replays exact original envelope/digest, reconciling one I0→I1 transition and preserving history; distinct independent resolve is not replay. Changed inputs or running-generation race refuses without overwriting identity |
+
+### Paired identity witnesses (V01/V09/V21/V24/V28)
+
+These mathematical contract examples hold all other admission gates satisfied;
+they are not executable successor qualification. Let F1 be the complete fragment
+for L1, and I1 its full admitted identity. R is `result.operation_result`, whose
+lock transition is always at `result.operation_result.lock_refresh`.
+
+| Pair | Valid control | Violation control and required effect |
+| --- | --- | --- |
+| W1: independent launch | Launcher R has refreshed(L0,L1); manager R has frozen(L1,L1) or unchanged(L1,L1). Both bind D(F1), so independent verification admits I1 | Hashing either entire envelope as I, or accepting a manager F2 with different stable inputs, refuses; no start |
+| W2: frozen resume | Initial unchanged(L1,L1), later frozen(L1,L1); identical F1 and other admitted inputs compare equal and resume | Actual lock/plan/home/generation drift fails stable comparison; authority drift fails independent current admission, even if F1 is unchanged. Preserve stored I1, history and current preimages; no repair/overwrite/start to hide drift |
+| W3: lost reply | Operation O publishes R and receipt I0→I1; retrieval returns byte-identical R/digest. CAS absent applies once; exact recorded CAS returns its original ack, with one transition | Substituting retry's new unchanged result, altered receipt/result, reused O with changed inputs or stale generation refuses; keep pending reservation/journal and no start, preserving lock/home/ledger preimages (published L1 remains journaled, not silently rolled back) |
+| W4: normalized lock | H is 64 lowercase `1` characters: `result.fragment.profile.lock_sha256 = H`, `result.operation_result.lock_refresh.lock_sha256 = "sha256:" + H` satisfies §2's equation | H2 is 64 lowercase `2` characters: result lock `"sha256:" + H2` with profile H refuses; prefixing the bare profile field or adding unknown members also refuses, preserving preimages and no start |
 
 Future validation must drive real resolve/launcher entries in isolated homes,
 not a wrapper that calls explicit update. Each gate must demonstrate an intended
@@ -465,10 +562,13 @@ session identity. Trusting all SemVer-compatible releases without signer,
 attestation and system gates mistakes version compatibility for authorization.
 
 Adoption changes absent-policy behavior and adds network work/latency to eligible
-launches. It needs negotiated successor fragments, machine-config schema,
-status/provenance fields and exact diagnostics, plus amendments to environments
-§§1.3, 9.2, 10.1 and 12 and curator-run's FRONT-DOOR/resolve contract. Existing
-lock schema bytes and explicit pins need not change. Publication, implementation,
+launches. It needs the negotiated successor result envelope and authenticated
+operation/receipt transports of §2, machine-config schema and exact diagnostics,
+plus amendments to environments §§1.3, 9.2, 10.1 and 12, curator-run's
+FRONT-DOOR/resolve contract and swarma-session-host's identity/replay contract.
+The complete-fragment digest rule remains intact; operation provenance never
+enters F. No existing carrier is silently widened. Existing lock schema bytes
+and explicit pins need not change. Publication, implementation,
 release and runtime qualification are separate gates; this prose adds no such
 artifacts and makes no conformance claim.
 
