@@ -1,0 +1,2 @@
+# Commit-only source signing; no release-tag authority.
+source-commit namespaces="git" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOZGXWazfNwZqHl7TqTq9MZ35JM3SQ3SIIky4LUTPO+r

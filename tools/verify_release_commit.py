@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""Verify that a release target has trusted commit provenance."""
+"""Verify contained source provenance; this does not authorize a release tag."""
 
 from __future__ import annotations
 
 import argparse
+import base64
+import binascii
 import json
 import os
 import re
 import subprocess
 import sys
 import urllib.error
-import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -18,8 +19,10 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 FULL_COMMIT = re.compile(r"^[0-9a-f]{40}$")
-REPOSITORY = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
-BRANCH = re.compile(r"^[A-Za-z0-9._/-]+$")
+REPOSITORY = "relux-works/curator-spec"
+DEFAULT_BRANCH = "main"
+API_URL = "https://api.github.com"
+SOURCE_ENTRY = re.compile(r'source-commit namespaces="git" ssh-ed25519 ([A-Za-z0-9+/]+={0,2})')
 
 
 class VerificationFailure(RuntimeError):
@@ -33,6 +36,15 @@ def git(*arguments: str, check: bool = True) -> subprocess.CompletedProcess[str]
         check=False,
         capture_output=True,
         text=True,
+        env={
+            **{key: value for key, value in os.environ.items()
+               if not key.startswith(("GIT_", "XDG_"))
+               and key not in {"SSH_AUTH_SOCK", "SSH_ASKPASS"}},
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_CONFIG_SYSTEM": os.devnull,
+            "GIT_CONFIG_GLOBAL": os.devnull,
+            "GIT_NO_REPLACE_OBJECTS": "1",
+        },
     )
     if check and result.returncode != 0:
         detail = result.stderr.strip() or result.stdout.strip()
@@ -41,24 +53,61 @@ def git(*arguments: str, check: bool = True) -> subprocess.CompletedProcess[str]
 
 
 def resolve_commit(value: str) -> str:
-    commit = git("rev-parse", f"{value}^{{commit}}").stdout.strip()
+    commit = git("rev-parse", "--verify", "--end-of-options", f"{value}^{{commit}}").stdout.strip()
     if FULL_COMMIT.fullmatch(commit) is None:
         raise VerificationFailure("release target did not resolve to a full commit")
     return commit
 
 
-def maintainer_signature_valid(commit: str) -> bool:
-    return git("verify-commit", commit, check=False).returncode == 0
+def require_repository_context() -> None:
+    # These are policy roots, not caller-selected verification overrides.
+    for name, expected in (("GITHUB_REPOSITORY", REPOSITORY),
+                           ("GITHUB_DEFAULT_BRANCH", DEFAULT_BRANCH),
+                           ("GITHUB_API_URL", API_URL)):
+        if name in os.environ and os.environ[name] != expected:
+            raise VerificationFailure(f"{name} does not match repository policy")
 
 
-def require_default_branch_ancestor(commit: str, default_branch: str) -> None:
-    if BRANCH.fullmatch(default_branch) is None or default_branch.startswith(("/", "-")) or ".." in default_branch:
-        raise VerificationFailure("default branch name is not portable")
-    remote_ref = f"refs/remotes/origin/{default_branch}"
+def commit_signature_kind(commit: str) -> str:
+    headers = git("cat-file", "commit", commit).stdout.split("\n\n", 1)[0]
+    signatures = re.findall(r"^gpgsig (.+)$", headers, re.MULTILINE)
+    if signatures == ["-----BEGIN SSH SIGNATURE-----"]:
+        return "ssh"
+    if signatures == ["-----BEGIN PGP SIGNATURE-----"]:
+        return "github"
+    raise VerificationFailure("source target lacks supported signed material")
+
+
+def trusted_signature_valid(commit: str) -> bool:
+    # Both inputs are fixed repository policy. Only the release input is used
+    # by verify-tag; adding a source signer does not add tag authority.
+    paths = [ROOT / "maintainers.allowed_signers", ROOT / "source.allowed_signers"]
+    try:
+        for path in paths:
+            if path.is_symlink() or not path.is_file() or not path.read_bytes().strip():
+                raise VerificationFailure(f"invalid trust input: {path.name}")
+        entries = [line for line in paths[1].read_text(encoding="utf-8").splitlines()
+                   if line and not line.startswith("#")]
+        match = SOURCE_ENTRY.fullmatch(entries[0]) if len(entries) == 1 else None
+        if match is None:
+            raise VerificationFailure("source trust must contain one commit-only SSH entry")
+        blob = base64.b64decode(match.group(1), validate=True)
+        prefix = b"\x00\x00\x00\x0bssh-ed25519\x00\x00\x00\x20"
+        if len(blob) != len(prefix) + 32 or not blob.startswith(prefix):
+            raise VerificationFailure("source trust has an invalid Ed25519 key")
+    except (OSError, UnicodeError, binascii.Error) as exc:
+        raise VerificationFailure("could not read source trust inputs") from exc
+    return any(git("-c", "gpg.format=ssh", "-c", "gpg.ssh.program=ssh-keygen",
+                   "-c", f"gpg.ssh.allowedSignersFile={path}",
+                   "verify-commit", commit, check=False).returncode == 0 for path in paths)
+
+
+def require_default_branch_ancestor(commit: str) -> None:
+    remote_ref = f"refs/remotes/origin/{DEFAULT_BRANCH}"
     git("show-ref", "--verify", remote_ref)
     result = git("merge-base", "--is-ancestor", commit, remote_ref, check=False)
     if result.returncode != 0:
-        raise VerificationFailure(f"release target is not contained in origin/{default_branch}")
+        raise VerificationFailure(f"release target is not contained in origin/{DEFAULT_BRANCH}")
 
 
 def validate_github_payload(payload: Any, expected_commit: str) -> None:
@@ -75,23 +124,23 @@ def validate_github_payload(payload: Any, expected_commit: str) -> None:
         raise VerificationFailure("GitHub commit verification is missing")
     if verification.get("verified") is not True or verification.get("reason") != "valid":
         raise VerificationFailure("GitHub did not validate the release target signature")
-    if not verification.get("signature") or not verification.get("payload"):
+    if any(not isinstance(verification.get(key), str) or not verification[key].strip()
+           for key in ("signature", "payload")):
         raise VerificationFailure("GitHub commit verification lacks signed material")
 
 
-def fetch_github_payload(repository: str, commit: str, token: str, api_url: str) -> Any:
-    if REPOSITORY.fullmatch(repository) is None:
-        raise VerificationFailure("GITHUB_REPOSITORY is invalid")
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, request: Any, fp: Any, code: int, message: str,
+                         headers: Any, new_url: str) -> None:
+        # Never send the bearer token to a redirect-selected authority.
+        return None
+
+
+def fetch_github_payload(commit: str, token: str) -> Any:
     if not token:
         raise VerificationFailure("GITHUB_TOKEN is required for GitHub commit verification")
-    owner, name = repository.split("/", 1)
-    path = "/repos/{}/{}/commits/{}".format(
-        urllib.parse.quote(owner, safe=""),
-        urllib.parse.quote(name, safe=""),
-        commit,
-    )
     request = urllib.request.Request(
-        api_url.rstrip("/") + path,
+        f"{API_URL}/repos/{REPOSITORY}/commits/{commit}",
         headers={
             "Accept": "application/vnd.github+json",
             "Authorization": f"Bearer {token}",
@@ -100,36 +149,31 @@ def fetch_github_payload(repository: str, commit: str, token: str, api_url: str)
         },
     )
     try:
-        with urllib.request.urlopen(request, timeout=30) as response:
+        with urllib.request.build_opener(NoRedirect()).open(request, timeout=30) as response:
             return json.load(response)
-    except (OSError, urllib.error.URLError, json.JSONDecodeError) as exc:
+    except (OSError, urllib.error.URLError, ValueError) as exc:
         raise VerificationFailure(f"could not read GitHub commit verification: {exc}") from exc
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--commit", default="HEAD")
-    parser.add_argument("--repository", default=os.environ.get("GITHUB_REPOSITORY", ""))
-    parser.add_argument("--default-branch", default=os.environ.get("GITHUB_DEFAULT_BRANCH", "main"))
-    parser.add_argument("--api-url", default=os.environ.get("GITHUB_API_URL", "https://api.github.com"))
     arguments = parser.parse_args()
     try:
+        require_repository_context()
         commit = resolve_commit(arguments.commit)
-        if maintainer_signature_valid(commit):
-            print(f"release target {commit} has a trusted maintainer signature")
+        require_default_branch_ancestor(commit)
+        if commit_signature_kind(commit) == "ssh":
+            if not trusted_signature_valid(commit):
+                raise VerificationFailure("source target has no authorized SSH signature")
+            print(f"source target {commit} has an authorized signature on origin/{DEFAULT_BRANCH}")
             return 0
-        require_default_branch_ancestor(commit, arguments.default_branch)
-        payload = fetch_github_payload(
-            arguments.repository,
-            commit,
-            os.environ.get("GITHUB_TOKEN", ""),
-            arguments.api_url,
-        )
+        payload = fetch_github_payload(commit, os.environ.get("GITHUB_TOKEN", ""))
         validate_github_payload(payload, commit)
     except VerificationFailure as exc:
         print(f"release commit verification failed: {exc}", file=sys.stderr)
         return 1
-    print(f"release target {commit} is a GitHub-verified commit on origin/{arguments.default_branch}")
+    print(f"release target {commit} is a GitHub-verified commit on origin/{DEFAULT_BRANCH}")
     return 0
 
 

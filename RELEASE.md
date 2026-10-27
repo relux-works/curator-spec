@@ -5,17 +5,31 @@ approve changes; CI enforces the mechanically verifiable items.
 
 ## Release target provenance
 
-- [ ] Repository merge settings enable squash merging and disable both rebase
-  merging and merge commits. A maintainer runs
-  `tools/verify_release_merge_policy.py` before integrating a release pull
-  request so policy drift blocks integration without requiring a broad
-  maintainer token in Actions.
-- [ ] Release pull requests are squash-merged through GitHub after required
-  review and checks. Do not use rebase-and-merge for a release target: GitHub
-  recreates each rebased commit without commit signature verification.
-- [ ] The resulting squash commit reports a valid GitHub signature and passes
-  the main-branch Release target provenance job, which runs
-  `tools/verify_release_commit.py`, before an annotated signed tag is created.
+This amended checklist admits the source route in
+[Decision 0033](decisions/0033-source-commit-and-release-tag-trust.md); the
+previous squash-only checklist did not describe it.
+
+- [ ] Reviewed, authorized SSH-signed source heads are integrated without
+  rewriting by exact-head fast-forward after required checks and independent
+  review. Preserve the reviewed signed objects. Do not use GitHub rebase-and-merge.
+- [ ] When using the alternative GitHub-created squash route, repository
+  settings enable squash merging and disable rebase merging and merge commits.
+  Run `python3 tools/verify_release_merge_policy.py` before integration to
+  observe these settings; it changes nothing and requires a suitable
+  `GITHUB_TOKEN`. This settings check is not a requirement to squash an
+  already authorized signed source head.
+- [ ] Fetch `main` into `refs/remotes/origin/main` and run
+  `python3 tools/verify_release_commit.py --commit <full-commit>`.
+  Every route requires containment in that ref. The two fixed source trust
+  inputs are `maintainers.allowed_signers` and `source.allowed_signers`;
+  the GitHub fallback requires exact-target, valid GitHub-created signed material.
+- [ ] The exact main commit passes the hosted **Release target provenance**
+  check and all other required checks. Historical failed runs remain failures;
+  only a new exact-head run qualifies a corrected policy.
+- [ ] An annotated release tag is separately signed by the existing release
+  trust root, `maintainers.allowed_signers`. `source.allowed_signers` MUST NOT
+  be used for tag verification. Verify the tag, compare its peeled commit with
+  the exact candidate, and run all remaining release gates before packaging.
 
 ## Candidate
 
@@ -70,10 +84,9 @@ approve changes; CI enforces the mechanically verifiable items.
   committer of the reviewed changes.
 - [ ] Neither report has an open critical or high finding.
 - [ ] Only `reviews/` changed after each report's `reviewed_commit`.
-- [ ] The release commit and annotated `v1.0.0` tag verify against
-  `maintainers.allowed_signers`. Trusted principals are `oparin@me.com`
-  (maintainer) and `bot@relux.works` (automation signer authorized by the
-  operator on 2026-09-26).
+- [ ] The release commit passes the source provenance and default-branch
+  containment check above. The annotated `v1.0.0` tag separately verifies
+  against `maintainers.allowed_signers` and endorses that exact commit.
 - [ ] Release archives, SHA-256 checksums, and build-provenance attestations are
   present and immutable.
 

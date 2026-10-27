@@ -40,15 +40,35 @@ specification or replace the change and release requirements above and below.
 5. Publish a GitHub release containing the normative schemas and conformance
    archive with SHA-256 checksums.
 
-Release CI verifies the tag against `maintainers.allowed_signers` before
-packaging. The allowlist trusts `oparin@me.com` (maintainer) and
-`bot@relux.works` (automation signer authorized by the operator on
-2026-09-26). Its exact target must be contained in the protected default branch
-and must either carry a signature from the same allowlist or be a
-GitHub-verified merge commit created by that protected-branch workflow. The
-maintainer-signed tag explicitly authorizes the exact target in both cases.
-Changes to the trust file are governance changes and require the same review as
-release-policy changes.
+### Source commits and release endorsement
+
+This policy amendment separates source integration from release-tag custody
+([Decision 0033](decisions/0033-source-commit-and-release-tag-trust.md)).
+Reviewed source commits MAY land by a non-rewriting, exact-head fast-forward
+once required review and checks pass. They need not be recreated by GitHub
+squash merging. Source integration alone grants no release authority.
+
+`tools/verify_release_commit.py` requires containment in fetched `origin/main`
+for every accepted target in `relux-works/curator-spec`. It accepts an SSH
+signature verified against either fixed repository input:
+`maintainers.allowed_signers` or the commit-only `source.allowed_signers`.
+The latter contains one explicitly authorized source key under neutral role
+metadata. Ambient Git trust and caller-selected trust/API/ref roots cannot
+substitute for these inputs. Alternatively, a locally PGP-signed target may
+qualify through exact-target GitHub API verification: GitHub must be the
+committer and report valid signed material. This is the existing GitHub-created
+squash route, not trust in arbitrary GitHub-verified authors. Unknown refs,
+keys, unsigned targets, mismatched responses and API uncertainty refuse.
+
+Release CI separately verifies the annotated tag against only the unchanged
+`maintainers.allowed_signers`, compares its exact target with the candidate,
+and applies the same source provenance and containment check before the
+remaining release gates. The release tag endorses that exact target; the
+source-only key cannot supply that endorsement. The historical main check name
+**Release target provenance** is retained, but a passing source check is not a
+release approval. Changes to either trust input or this separation are
+trust-policy governance changes requiring a decision record and independent
+review. No existing key is removed or declared revoked by this amendment.
 
 Release tags are immutable. A defective release is superseded by a new version
 and remains available for audit.

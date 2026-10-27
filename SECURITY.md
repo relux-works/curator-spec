@@ -566,6 +566,28 @@ update as the prominent gate notice `registry_unreachable_during_install`.
 The `hardened` posture removes the residual with strict registry policy
 at the cost of availability.
 
+## Repository source and release trust
+
+The source-commit policy is separate from package, platform-key and release-tag
+trust. [Decision 0033](decisions/0033-source-commit-and-release-tag-trust.md)
+authorizes one commit-only key in `source.allowed_signers`. The source verifier
+also accepts existing release signers, but tag verification continues to use
+only the byte-unchanged `maintainers.allowed_signers`. OpenSSH's `git` namespace
+alone does not distinguish commits from tags; fixed consumer bindings enforce
+this separation. Copying a source key into the tag trust input would be a new
+release-authority change and is not authorized by this amendment.
+
+Every accepted source target must be contained in fetched `origin/main`.
+GitHub fallback verification is limited to exact-target, GitHub-created valid
+signed commits through the fixed GitHub API. Unknown verification/ref/network
+outcomes refuse. Passing provenance does not replace independent review,
+protected-branch controls, native qualification, or release endorsement.
+The verifier trusts the reviewed checkout's policy files and tooling; it is not
+a defense against an attacker who can replace that checkout or its executable
+Git/SSH toolchain. It reads no ambient user Git trust. Neither this change nor
+a source signature alters release-key custody, platform keys, or infra-exit
+boundaries.
+
 ## Release review
 
 Stable protocol releases require:

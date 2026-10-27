@@ -214,6 +214,23 @@ schemas. Its separate schema and corpus require implementation qualification.
 
 ## Tools
 
+- Source provenance: fetch `main` into `refs/remotes/origin/main`, then run
+  `python3 tools/verify_release_commit.py --commit <full-commit>`. It reads fixed
+  `source.allowed_signers` and `maintainers.allowed_signers` for SSH commit
+  verification and requires default-branch containment. The GitHub-created
+  fallback uses `GITHUB_TOKEN` at the fixed repository/API, with no trust-root
+  override. `python3 tools/verify_release_merge_policy.py` observes the optional
+  squash-route settings with a suitable token. Both tools report to stdout or
+  stderr and exit nonzero on refusal; keep local logs under `.temp/`.
+  Focused controls: `PYTHONPATH=tools python3 -B -m unittest -v
+  test_verify_release_commit test_verify_release_merge_policy test_allowed_signers`.
+  Tests create and remove isolated synthetic Git/SSH fixtures; they do not use
+  signing agents. Release CI verifies tags only against the original release
+  trust file and packages both distinctly scoped trust files. See
+  [Governance](GOVERNANCE.md#source-commits-and-release-endorsement),
+  [the release checklist](RELEASE.md#release-target-provenance), and
+  [Decision 0033](decisions/0033-source-commit-and-release-tag-trust.md).
+
 - Home-lease specification: `python3 tools/home_leases.py` checks closed schemas,
   strict decoder pairs and HL/W semantic-pair coverage; `python3 -B -m unittest
   discover -s tools -p 'test_home_leases.py'` runs checker controls. Inputs live

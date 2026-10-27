@@ -6,15 +6,14 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import re
 import sys
 import urllib.error
-import urllib.parse
 import urllib.request
 from typing import Any
 
-
-REPOSITORY = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+from verify_release_commit import (
+    API_URL, REPOSITORY, NoRedirect, VerificationFailure, require_repository_context,
+)
 
 
 class PolicyFailure(RuntimeError):
@@ -32,18 +31,11 @@ def validate_repository_payload(payload: Any, expected_repository: str) -> None:
         raise PolicyFailure("merge commits must remain disabled by repository policy")
 
 
-def fetch_repository_payload(repository: str, token: str, api_url: str) -> Any:
-    if REPOSITORY.fullmatch(repository) is None:
-        raise PolicyFailure("GITHUB_REPOSITORY is invalid")
+def fetch_repository_payload(token: str) -> Any:
     if not token:
         raise PolicyFailure("GITHUB_TOKEN is required for repository policy verification")
-    owner, name = repository.split("/", 1)
-    path = "/repos/{}/{}".format(
-        urllib.parse.quote(owner, safe=""),
-        urllib.parse.quote(name, safe=""),
-    )
     request = urllib.request.Request(
-        api_url.rstrip("/") + path,
+        f"{API_URL}/repos/{REPOSITORY}",
         headers={
             "Accept": "application/vnd.github+json",
             "Authorization": f"Bearer {token}",
@@ -52,28 +44,23 @@ def fetch_repository_payload(repository: str, token: str, api_url: str) -> Any:
         },
     )
     try:
-        with urllib.request.urlopen(request, timeout=30) as response:
+        with urllib.request.build_opener(NoRedirect()).open(request, timeout=30) as response:
             return json.load(response)
-    except (OSError, urllib.error.URLError, json.JSONDecodeError) as exc:
+    except (OSError, urllib.error.URLError, ValueError) as exc:
         raise PolicyFailure(f"could not read GitHub repository settings: {exc}") from exc
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--repository", default=os.environ.get("GITHUB_REPOSITORY", ""))
-    parser.add_argument("--api-url", default=os.environ.get("GITHUB_API_URL", "https://api.github.com"))
-    arguments = parser.parse_args()
+    parser.parse_args()
     try:
-        payload = fetch_repository_payload(
-            arguments.repository,
-            os.environ.get("GITHUB_TOKEN", ""),
-            arguments.api_url,
-        )
-        validate_repository_payload(payload, arguments.repository)
-    except PolicyFailure as exc:
+        require_repository_context()
+        payload = fetch_repository_payload(os.environ.get("GITHUB_TOKEN", ""))
+        validate_repository_payload(payload, REPOSITORY)
+    except (PolicyFailure, VerificationFailure) as exc:
         print(f"release merge policy verification failed: {exc}", file=sys.stderr)
         return 1
-    print(f"repository {arguments.repository} permits only GitHub-verified squash release targets")
+    print(f"repository {REPOSITORY} preserves the GitHub-verified squash fallback")
     return 0
 
 
