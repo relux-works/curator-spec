@@ -35,6 +35,23 @@ def pin(value):
     return tuple(value[k] for k in PIN)
 
 
+def context_identity_agrees(member, package):
+    if package is None or package.get('version') != member['version']:
+        return False
+    if 'state_sha256' in member:
+        return (package.get('state_sha256') == member['state_sha256']
+                and not any(k in package for k in PIN))
+    return ('state_sha256' not in package
+            and package.get('source') == member['source']
+            and package.get('commit') == member['commit']
+            and package.get('directory', '.') == member.get('directory', '.'))
+
+
+def reserved_command(command, case_insensitive):
+    name = command.casefold() if case_insensitive else command
+    return name.startswith('curator-')
+
+
 def prepare(baseline, case):
     """Apply explicit corpus edits to an isolated JSON copy, never source files."""
     data = deepcopy(baseline)
@@ -83,6 +100,8 @@ def plan_error(data, validators):
         return 'profile_skill_plan_invalid'
 
     packages = {(p['kind'], p['name']): p for p in data['packages']}
+    if len(packages) != len(data['packages']):
+        return 'profile_skill_plan_invalid'
     expected_edges, visited, visiting = [], set(), set()
 
     def visit(kind, name):
@@ -111,6 +130,11 @@ def plan_error(data, validators):
     try:
         for member in lock['members']:
             if member['kind'] == 'context':
+                package = packages.get(('context', member['name']))
+                # Facts come from the admitted snapshot, not from the graph's
+                # consumer name or a rehashed but substituted lock identity.
+                if not context_identity_agrees(member, package):
+                    raise ValueError('context identity disagreement')
                 visit('context', member['name'])
     except ValueError:
         return 'profile_skill_plan_invalid'
@@ -204,6 +228,17 @@ def outcome(data, validators):
     error = plan_error(data, validators)
     if error:
         return refuse(error)
+    # These statuses model independently supplied acceptance/qualification
+    # records. They are not caller flags that grant runtime authority.
+    requested = data.get('requested_outcome', 'slice-a-model')
+    required = {'protected-command-adoption': ['profile-command-admission'],
+                'managed-session-adoption': ['managed-session-skill-cli'],
+                'owner-two-requirement-delivery': ['profile-command-admission', 'managed-session-skill-cli']}
+    if requested != 'slice-a-model':
+        if (requested not in required or any(
+                data.get('companions', {}).get(name) != 'qualified'
+                for name in required[requested])):
+            return refuse('profile_skill_companion_required')
     active = activation(data)
     if data['operation'] == 'status':
         result['activation'] = active
@@ -224,7 +259,7 @@ def outcome(data, validators):
     for provider, surfaces in active.items():
         for command in surfaces['commands']:
             name = command.casefold() if data['case_insensitive'] else command
-            if command.startswith('curator-'):
+            if reserved_command(command, data['case_insensitive']):
                 return refuse('environment_reserved_command_name')
             if name in names and names[name] != provider:
                 return refuse('profile_skill_command_conflict')

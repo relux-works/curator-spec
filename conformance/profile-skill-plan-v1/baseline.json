@@ -201,5 +201,10 @@
   "case_insensitive": false,
   "routing": "exclusive",
   "phase": "absent",
-  "fault": null
+  "fault": null,
+  "requested_outcome": "slice-a-model",
+  "companions": {
+    "profile-command-admission": "unallocated",
+    "managed-session-skill-cli": "unallocated"
+  }
 }

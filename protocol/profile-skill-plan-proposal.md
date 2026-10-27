@@ -12,7 +12,9 @@ without changing [core §4.4](core.md#44-dependencies) dependency declarations.
 It follows the lock allocation, reconciliation boundary and transaction
 decisions in the accepted [profile skill runtime design](https://github.com/relux-works/curator/blob/05102ddb4f4911f25c49fee5ba55221a5dd16a3e/docs/design/profile-skill-runtime.md#owner-decisions).
 It does not amend the existing global-operation or adapter exception rules.
-There is no new dependency family, build hook, or launcher PATH carrier here.
+There is no new dependency family or build hook. The command-admission and
+managed-launch companions in section 5 are explicit prerequisites; this
+carrier alone does not satisfy either owner command outcome.
 
 ## 1. Complete carrier
 
@@ -48,7 +50,13 @@ pin agreement against the pinned packages and recorded overlapping direct
 declarations: one identity per skill name; no duplicate node, edge or direct
 constraint; no missing, extra, unreachable or cyclic skill; and no missing,
 invented or changed requirement. Context-origin edges come from lock context
-members; skill-origin edges come from pinned skill manifests. Machine edges
+members; before consuming their requirements, the planner compares each
+admitted context snapshot's canonical source, full commit and normalized
+directory (`.` when omitted) with that member. A state-backed context instead
+matches its core-v2 `state_sha256`, carries no source/commit/directory identity,
+and uses its immutable admitted snapshot. The manifest version also matches
+the member. Rehashing a substituted lock does not establish this agreement.
+Skill-origin edges come from pinned skill manifests. Machine edges
 are exactly the overlapping constraints, enter as `full`, and do not pull
 unrelated machine roots into the closure. Skill lock members and plan nodes
 agree on name/source/commit/directory; `required_by` is the sorted unique
@@ -151,6 +159,11 @@ unmanaged destination (`environment_surface_unmanaged_conflict`), or a reserved
 `curator-*` name (`environment_reserved_command_name`). The comparison follows
 the target platform's path/case-alias rules. An inactive command does not
 collide. All preflight refusals preserve every live preimage and publish nothing.
+This bounded check is not the complete protected-command policy. Acceptance
+of the owner's broader command-safety requirement depends on the accepted
+`profile-command-admission` companion below; command-publication adoption
+also depends on its runtime qualification. Neither a successful abstract
+Slice A vector nor carrier acceptance removes that gate.
 
 ## 4. Preparation, publication and isolated routing
 
@@ -197,9 +210,35 @@ current profile and admitted consumers; consumer admission is serialized with
 mutation. Machine switching drains old consumers. An ordinary home path,
 process scan or empty lease is insufficient. Inactive preparation changes no
 current routing; scoped use changes no machine shims. Slice B multi-profile
-commands, launcher transport, readiness and enrollment remain separate gates.
+commands and launcher transport require the `managed-session-skill-cli`
+companion below. Readiness and enrollment remain separate gates. Acceptance
+of the owner's managed-session CLI requirement depends on the accepted
+companion, and native/hosted adoption depends on its runtime qualification;
+the fixed domain PATH witness alone proves neither delivery outcome.
 
 ## 5. Conformance and adoption
+
+### Required companion allocations
+
+Both companions remain **unallocated and unqualified** in this PR. The
+specification owner/integration writer owns the shared amendment to
+[environments §9.4](environments.md#94-profile-scoped-skills-and-migration);
+the designated delivery owners below own its implementation and qualification.
+These are required gates, not work represented as delivered by this proposal.
+
+| Companion | Allocation owner and required amendment | Acceptance and adoption evidence |
+| --- | --- | --- |
+| `profile-command-admission` | curator-spec specification owner and L1 integration writer, with Curator's command-publication owner; amend §9.4 and PSR04 together | A versioned protected-name inventory with pinned aqua and mise registry inputs, POSIX/coreutils commands, shell builtins and platform tools. Specify completeness, provenance, inventory upgrades, target lookup/case/extension/alias rules and fail-closed handling of unknown platform evidence. Independently check every active export against the admitted base PATH, including actual executable resolution and unreadable/missing admission evidence, before publication. Protect names even if absent from that PATH; a dynamic PATH check alone is insufficient. Paired conformance covers `git`, `ls`, `sh`, `cd`, registry/platform names, target aliases, dynamic-only collisions, unreadable inventories/PATH and nearby ordinary names, with exact diagnostics and preserved preimages. Accepted normative allocation precedes implementation; real platform witnesses precede publication adoption. |
+| `managed-session-skill-cli` | Jointly curator-spec, Curator, curator-run and the hosted session manager; amend §9.4's managed-home limitation and [§10.2](environments.md#102-the-launch-environment-fragment), with the Slice B fragment/runtime binding | Allocate and negotiate the successor fragment and hosted-plan carrier; bind immutable selected-profile command root, profile/lock/plan/generation, effective PATH provenance, leases and GC. Both native curator-run and the hosted manager deliver the selected set to the final agent child. Require final-child PATH and reached-command/artifact evidence for native and hosted launches, including two profiles with different command versions. Refuse wrong/missing/stale bindings and omitted/inert transport; never fall back to another profile's machine-current singleton shims or recompute from ambient PATH. Joint acceptance precedes implementation, native and hosted qualification precede corresponding adoption. One-shot launch remains gated separately on the D-PATH owner decision. |
+
+The owner's combined protected-command and managed-session outcome stays open
+until both companions are accepted and their applicable real-runtime witnesses
+are qualified. An accepted Slice A carrier is only one dependency. A proposed
+completion/adoption request lacking either required companion reports
+`profile_skill_companion_required` without effects or publication. Qualification
+records are supplied by the responsible acceptance/qualification authorities;
+they are not user-supplied bypass flags. The corpus models these records as
+abstract states to check the gate, and cannot establish their truth.
 
 The [schema and semantic corpus](../conformance/profile-skill-plan-v1/README.md)
 maps every numbered obligation to paired positive and negative vectors.

@@ -21,7 +21,7 @@ class ProfileSkillPlanTests(unittest.TestCase):
     # Every published structural/semantic verdict matches the proposal oracle.
     # Abstract state labels do not establish filesystem effects or runtime safety.
     def test_published_vectors(self):
-        self.assertEqual(plan.check_corpus(), (42, 112))
+        self.assertEqual(plan.check_corpus(), (42, 144))
 
     # Every uppercase MUST belongs to a unique catalog clause with admitted and
     # rejected controls. Shared positive controls prove only their named inputs.
@@ -125,6 +125,21 @@ class ProfileSkillPlanTests(unittest.TestCase):
         # deliberately exercises the standalone published plan schema instead.
         with patch.object(plan, 'catalog', return_value=validators):
             with self.assertRaisesRegex(ValueError, 'shape-context-narrowing'):
+                plan.check_corpus()
+
+    # A case-sensitive reservation mutant reproduces review R3 and fails on
+    # the uppercase reserved alias, with ordinary/case-sensitive controls nearby.
+    def test_reserved_alias_control(self):
+        with patch.object(plan, 'reserved_command',
+                          side_effect=lambda command, insensitive: command.startswith('curator-')):
+            with self.assertRaisesRegex(ValueError, 'reserved-alias-CURATOR-poison'):
+                plan.check_corpus()
+
+    # Ignoring context snapshot identity reproduces review R4: a rehashed lock
+    # with substituted source fails its exact expected refusal, not a crash.
+    def test_context_identity_control(self):
+        with patch.object(plan, 'context_identity_agrees', return_value=True):
+            with self.assertRaisesRegex(ValueError, 'context-member-mismatch-source'):
                 plan.check_corpus()
 
 

@@ -16,6 +16,17 @@ external binding; the two baseline digests are literal expected identities.
 The optional `retained_members` fixture input models protected old-lock
 preimages. Unrelated old members can remain in the new lock without entering
 the selected plan; invented or rewritten retained members are rejected.
+Context package facts come from the admitted immutable snapshot. Network
+source/commit/directory and manifest version agree with the lock; state-backed
+contexts instead match the core-v2 state hash and exclude network identity.
+Recomputing lock hashes after a substituted context identity does not admit it.
+
+`requested_outcome: slice-a-model` exercises the bounded Slice A model only.
+The actual `profile-command-admission` and `managed-session-skill-cli` companions remain unallocated.
+Adoption/completion vectors model authoritative companion records as
+`unallocated`, `accepted`, or `qualified`; accepted-only and missing records
+refuse, while a hypothetical fully qualified record is the positive control.
+These inputs do not qualify either companion and are not caller bypass flags.
 
 `cases.json` applies explicit edits to disposable copies of that fixture.
 Each edit has a `path` of JSON member names/array indexes and either `value`
@@ -46,7 +57,7 @@ controls follow; the JSON `obligations` arrays are the full mapping.
 | Obligation | Admitted control | Negative / forbidden outcome control |
 | --- | --- | --- |
 | PSP01 carrier / compatibility | `context-lock-v5-valid`, `legacy-1-valid`, `legacy-2-valid`, `legacy-4-valid` | Missing/unknown members, `legacy-*-reject-skill_plan`, `reader-not-opted-in` |
-| PSP02 complete pinned graph | `runtime-narrow-transitive`, `overlap-alias-ref` | `missing-node`, `missing-transitive-edge`, `cycle`, `unreachable-extra-node`, `member-directory`, duplicate/order/required-by/content/provenance cases |
+| PSP02 complete pinned graph | `runtime-narrow-transitive`, `overlap-alias-ref`, `context-{explicit-root,directory,state}-matches` | `context-member-mismatch-*`, `context-package-mismatch-*`, `context-state-mismatch`, mixed state/network identity, duplicate package, missing/cyclic/unreachable graph and member/provenance cases |
 | PSP03 modes, refs, selections | `mode-full`, `mode-context`, `mode-runtime`, `default-mode-full` | `selected-missing`, `selected-git`, empty/duplicate/unsorted narrowing and invalid ref/mode shapes |
 | PSP04 edge union and exact surfaces | `overlap-full-union`, `context-plus-narrow-runtime`, `runtime-selection-union` | `selected-git`, `inactive-command-does-not-collide`; the narrowing control plant detects widening |
 | PSP05 plan and lock binding | Literal `baseline.json` digests and digest-sensitivity test | `bad-plan-digest`, `bad-runtime-binding`, `tampered-selection-digest`, `prepare-receipt`, forbidden runtime fields |
@@ -54,9 +65,9 @@ controls follow; the JSON `obligations` arrays are the full mapping.
 | PSR01 selected ownership | `runtime-narrow-transitive`, `retained-lock-member`, `stale-owned-only`, `stale-shared-retained` | `unproven-extra-member`, `rewritten-retained-member`, `stale-ownership-unknown`; global-reconciliation plant detects unrelated effects |
 | PSR02 drift reporting | `unrelated-in-sync`, `runtime-narrow-transitive` | `unrelated-unknown`, `unrelated-drift-absent` preserve unknown/absent distinctions |
 | PSR03 exact overlap constraints | `overlap-full-union`, `overlap-alias-ref` | `overlap-conflict-source`, `overlap-conflict-commit`, `overlap-conflict-directory` |
-| PSR04 command preflight | `case-sensitive-neighbor`, `inactive-command-does-not-collide` | `selected-command-conflict`, `retained-command-conflict`, `case-alias-conflict`, `unmanaged-destination`, `reserved-name` |
+| PSR04 command preflight and companion gate | `case-sensitive-neighbor`, `inactive-command-does-not-collide`, `reserved-case-sensitive-*`, hypothetical `protected-command-adoption-qualified-model` | Selected/retained/case-alias conflicts, unmanaged destination, `reserved-name`, `reserved-alias-*`, unallocated/accepted-only protected-command and combined adoption requests |
 | PSR05 preparation / transaction | `runtime-narrow-transitive`, all `recover-*` phase controls, `handled-adapter-conflict`, `partial-adapter` | `prepare-*`, `recover-corrupt`, `status-pending-recovery`; compilation and publication order is explicit in expected effects |
-| PSR06 exclusive live routing | `exclusive-*`, `inactive-routing-unchanged`, `scoped-use-routing-unchanged` | `routing-{missing,mismatched,unknown,other-profile}-{first-activate,install,update,use,sync,repair,recover}` |
+| PSR06 exclusive live routing and companion gate | `exclusive-*`, `inactive-routing-unchanged`, `scoped-use-routing-unchanged`, hypothetical `managed-session-adoption-qualified-model` | `routing-{missing,mismatched,unknown,other-profile}-{first-activate,install,update,use,sync,repair,recover}`, unallocated/accepted-only managed-session and combined adoption requests |
 
 ## Tools
 
@@ -70,7 +81,8 @@ make validate
 
 The standalone entry validates the complete schema and semantic corpus.
 The tests add bounded plants that drop digest verification, widen command
-selection, admit context narrowing, and introduce a global-install effect.
+selection, admit context narrowing, introduce a global-install effect, ignore
+context pin agreement, and check reserved prefixes with the wrong case rules.
 Each plant fails at its intended published case through the same corpus entry;
 unrelated setup failures do not satisfy the control.
 Existing `make validate` / hosted unittest discovery executes these checks;
