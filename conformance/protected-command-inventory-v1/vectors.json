@@ -352,6 +352,51 @@
         "case": "deterministic-and-real-change",
         "expect": "ok"
       }
+    },
+    {
+      "id": "PCI-25",
+      "claim": "required-static-baseline-absent",
+      "negative": {
+        "case": "baseline-absent",
+        "reasons": [
+          "static_overlap",
+          "reserved_namespace"
+        ]
+      },
+      "positive": {
+        "case": "baseline-positive-absent",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-26",
+      "claim": "required-static-baseline-case",
+      "negative": {
+        "case": "baseline-case",
+        "reasons": [
+          "static_overlap",
+          "reserved_namespace"
+        ]
+      },
+      "positive": {
+        "case": "baseline-positive-case",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-27",
+      "claim": "required-static-baseline-suffix",
+      "negative": {
+        "case": "baseline-suffix",
+        "reasons": [
+          "static_overlap",
+          "reserved_namespace"
+        ]
+      },
+      "positive": {
+        "case": "baseline-positive-suffix",
+        "expect": "ok"
+      }
     }
   ]
 }

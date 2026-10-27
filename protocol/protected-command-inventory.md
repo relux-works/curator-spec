@@ -87,14 +87,20 @@ The [data README](../data/protected-commands/v1/README.md) gives exact commands.
 - **Curated seeds (included identifier facts):** system, shell/grammar, VCS,
   package-manager, platform and manager files have pinned sorted LF bytes.
   These are independently maintained identifiers, not copied foreign prose,
-  implementation code or a claim of complete system coverage.
+  implementation code or a claim of complete system coverage. The reviewed
+  `posix`, `coreutils`, `bash` and `zsh` identifier baselines reserve respectively
+  **171**, **109**, **61** and **152** names (including Zsh module builtins).
+  These are portable reservations even when the destination PATH contains none
+  of them. Bash/Zsh identifiers retain shell-class, unwaivable provenance.
 - **POSIX, GNU coreutils, Bash, Apple source projects (reference-only):** retain
   pins, license disposition and extraction method, not their uncleared bulk
   derived lists. No standards HTML/table layout, GPL/GFDL code/prose, Apple mixed
   collection or host-observed system export is vendored. The coreutils recipe
   maps source target `ginstall` to `install`, excludes `libstdbuf.so`; Bash counts
   only `$BUILTIN` blocks with `$FUNCTION`, not help-only records. Synthetic
-  recipe witnesses test these distinctions without importing an upstream list.
+  recipe witnesses test these distinctions. The offline coverage auditor also
+  compares the curated baselines with exact pinned reference membership; it
+  does not generate release entries or copy reference content into the artifact.
 - **Zsh (reference-only in this release):** permissive core notice is recorded,
   but no bulk export pending per-file/module review. The recipe considers literal
   `BUILTIN` declarations, including modules, not completion function names.
@@ -110,7 +116,10 @@ Generation MUST yield identical bytes/digest despite source/seed enumeration
 order or locale. Strict parsers reject duplicate/ambiguous keys, unsafe coercion,
 YAML object tags, cyclic/over-limit data expansion and unresolved names. Maintainer
 CI regenerates from authenticated pinned input bundles and compares complete
-bytes, digest, counts and independent representative-name witnesses. New fixture
+bytes, digest, counts and independent full system/shell baseline membership.
+Digest-pinned private standards pages and source archives are audit inputs,
+not artifact provenance. Omission control plants MUST fail even if a candidate
+artifact has a self-consistent digest and source counts. New fixture
 coverage is required for changed upstream naming semantics, not just a new hash.
 
 ## 3. Matching and overlap policy
@@ -195,24 +204,34 @@ PATH scan as a lifetime sandbox or protection from explicit absolute-path use.
 
 ## 5. Latency and qualification
 
-At most **20 ms added per launch for up to 64 exported names/aliases** is the
-qualification budget. Count all launch-time inventory/index initialization if
+The **20 ms added per launch** qualification budget applies precisely to the
+**canonical-spelling path**: up to **64 explicit exported names/aliases**, up to
+**12 local admitted directories**, and **one literal executable candidate per
+export per directory** (at most **768 probes**). Generated wrapper filenames
+are explicit exports and count toward the 64-name bound; static suffix folding
+does not add filesystem candidates on this path. Both cold and every warm
+sample must satisfy the same 20 ms bound. Count all inventory/index initialization if
 it is not already immutable process state, identity checks, witness revalidation
 and candidate probes. No process/network work may be hidden outside the timer.
 Fixture creation and prior source generation are outside the measured check.
-The bounded reference admits at most 64 directories and 6 fixed suffixes;
-consumers qualify their actual D/S/platform/filesystem envelope against 20 ms.
-Unqualified slow/network-filesystem envelopes cannot be advertised as satisfying
-the budget; they require qualified admission/checked-dispatch design, not an
-unsound absent-name cache or silent omission of checks.
+The reference resolver's separate safety limits (64 directories and 6 fixed
+suffixes) are not this latency-qualified envelope. Multi-spelling lookup,
+including Windows suffix resolution, and larger or network-filesystem envelopes
+need **separate qualification**; a canonical-spelling result cannot qualify them.
+The six-spelling stress retains the unchanged 20 ms target for comparison.
+Recorded prior runs exceed it; it remains **unqualified** even when an isolated
+later sample passes, and cannot support a passing launch claim. Consumers
+must qualify their actual platform/filesystem/load and all required checks.
+Slow envelopes require qualified admission/checked-dispatch design, not an
+unsound absent-name cache, a raised budget or silent omission of checks.
 
 The [benchmark witness](../conformance/protected-command-inventory-v1/README.md)
 measures cold initialization plus bounded filesystem misses and warm checks at
-64 exports and 12 local directories, using native executable lookup (one literal
-spelling on Unix; approved suffixes on Windows). A separate six-spelling portable
+64 exports and 12 local directories using one literal spelling on Unix. It
+does not qualify Windows executable suffix lookup. A separate six-spelling portable
 stress run is retained, including budget failures. It records the platform, input
 identity, timings and bound, and checks the 20 ms target. It is
 not a Windows/Linux runtime qualification or a whole-launcher benchmark. L1 and
 Curator must supply real publication/launch, ownership/race and platform latency
-proof before claiming the capability. The 24 paired vectors include preimages,
+proof before claiming the capability. The 27 paired vectors include preimages,
 late drift, invalid authority and independent coverage/determinism controls.

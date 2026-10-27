@@ -1,4 +1,4 @@
-"""24 paired specification witnesses; no Curator runtime or real credential access."""
+"""27 paired specification witnesses; no Curator runtime or real credential access."""
 from __future__ import annotations
 
 import copy
@@ -106,6 +106,28 @@ class InventoryTests(unittest.TestCase):
         return actual, expected
 
     def execute(self, case):
+        if case.startswith('baseline-'):
+            # Independent reviewer regressions: no ambient PATH, no executable
+            # in the admitted directory, no supplemental shell-name witness.
+            names = {
+                'baseline-absent': ('base64', 'sha256sum', 'file', 'comm', 'shopt', 'bindkey'),
+                'baseline-case': ('BaSe64', 'SHA256SUM', 'FiLe', 'CoMm', 'ShOpT', 'BiNdKeY'),
+                'baseline-suffix': ('base64.EXE.CmD', 'sha256sum.cmd', 'file.exe', 'comm.ps1', 'shopt.BAT', 'bindkey.COM'),
+                'baseline-positive-absent': ('acme-base64', 'acme-sha256sum', 'acme-file', 'acme-comm', 'acme-shopt', 'acme-bindkey'),
+                'baseline-positive-case': ('AcMe-BaSe64', 'ACME-SHA256SUM', 'AcMe-FiLe', 'AcMe-CoMm', 'AcMe-ShOpT', 'AcMe-BiNdKeY'),
+                'baseline-positive-suffix': ('acme-base64.EXE.CmD', 'acme-sha256sum.cmd', 'acme-file.exe', 'acme-comm.ps1', 'acme-shopt.BAT', 'acme-bindkey.COM'),
+            }[case]
+            self.assertEqual(list(self.bin.iterdir()), [])
+            results = []
+            with patch.dict(os.environ):
+                os.environ.pop('PATH', None)
+                for i, name in enumerate(names):
+                    result = self.check([name])
+                    expected = 'ok' if case.startswith('baseline-positive-') else (
+                        'static_overlap' if i < 4 else 'reserved_namespace')
+                    self.assertEqual(result, expected, (case, name))
+                    results.append(result)
+            return results
         if case in ('git-script', 'ssh-alias'):
             return [self.check(['git' if case == 'git-script' else 'ssh'])]
         if case in ('unique-export', 'unique-alias', 'declared-alias', 'renamed-jq', 'explicit-admission'):
@@ -236,9 +258,9 @@ class InventoryTests(unittest.TestCase):
         self.fail('unimplemented vector: ' + case)
 
     # Every research failure class has a working current-policy positive control; neither path writes fixtures.
-    def test_24_paired_vectors(self):
+    def test_27_paired_vectors(self):
         pairs = p.decode(VECTORS.read_bytes())['pairs']
-        self.assertEqual([v['id'] for v in pairs], [f'PCI-{i:02}' for i in range(1, 25)])
+        self.assertEqual([v['id'] for v in pairs], [f'PCI-{i:02}' for i in range(1, 28)])
         for vector in pairs:
             for side in ('negative', 'positive'):
                 with self.subTest(vector=vector['id'], side=side):
@@ -248,6 +270,14 @@ class InventoryTests(unittest.TestCase):
                     self.assertTrue(outcomes)
                     expected = vector[side].get('reasons', ['ok'])
                     self.assertTrue(all(outcome in expected for outcome in outcomes), (outcomes, expected))
+
+    # Counts are independent research requirements, not read from sources.lock.
+    # Exact membership is separately audited against pinned upstream references.
+    def test_required_system_shell_baselines(self):
+        for source, count in [('posix', 171), ('coreutils', 109), ('bash', 61), ('zsh', 152)]:
+            names = {entry['name'] for entry in self.inventory['entries']
+                     if any(pin['source'] == 'seed-' + source for pin in entry['provenance'])}
+            self.assertEqual(len(names), count, source)
 
     # The released artifact satisfies closed schemas, semantic ordering, full-byte identity and cleared provenance.
     def test_release_shape_and_identity(self):

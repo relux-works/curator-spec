@@ -6,7 +6,9 @@ including the absence of a final newline. `artifact.json` supplies the whole-fil
 SHA-256; it is not embedded in the payload it hashes. The portable lock takes only
 its `command_inventory` object, under L1's successor lock contract.
 
-The initial version is `2026-10-27.1`: **4,192 keys**, **480,176 bytes**. The
+The current version is `2026-10-27.2`: **4,365 keys**, **511,447 bytes**. It
+supersedes `.1` (4,192 keys) to complete the system/shell identifier baselines.
+The
 research's mixed-license 4,412-key specimen is deliberately not published.
 Inventory versions compare by date and then numeric revision counter, never
 lexicographically (`.10` follows `.9`). Every published byte change needs a new
@@ -31,6 +33,27 @@ Every pin, input/seed digest, disposition, method and coverage count is in
 [sources.lock.json](sources.lock.json). Reference-only pins cannot appear in entry
 provenance. A source's MIT notice licenses its included registry material, not
 the named programs. No additional source has been cleared by implication.
+
+The independently maintained identifier-fact seeds `posix.txt`, `coreutils.txt`,
+`bash.txt` and `zsh.txt` contain the reviewed **171/109/61/152** reservations;
+Zsh includes all 74 core names and source-declared module names. Their Curator
+seed provenance is separate from the unchanged reference-only dispositions
+above. No source code, manuals, HTML, table layout or mixed-license research
+artifact is included. An admitted empty directory or absent caller PATH cannot
+remove these static reservations. Bash/Zsh names are shell-class, unwaivable.
+
+The maintainer coverage audit reads private reference inputs separately from
+generation: the three POSIX pages under `posix/idx/utilities.html` and
+`posix/utilities/V3_chap0{1,2}.html`, plus `coreutils.tar.gz`, `bash.tar.gz` and
+`zsh.tar.gz` at the existing reference revisions. Page hashes are in
+`reference_content_pins`; each source archive hash is its reference pin's
+`inputs_sha256`. Parse the POSIX index and 15 special-builtin anchors; coreutils'
+four literal program variables (map `ginstall`, omit `libstdbuf.so`); Bash
+`$BUILTIN` blocks with `$FUNCTION`; and literal Zsh `BUILTIN` declarations in
+`Src/**/*.c`. Compare exact membership and curated provenance, not counts alone.
+These data-only comparisons never run upstream programs or generate entries.
+Keep the references private with their existing licenses; generation needs
+only the included MIT source bundles and reviewed Curator seeds.
 
 ## Offline reproduction
 
@@ -83,8 +106,8 @@ require explicit policy review; consumers still enforce locked/current union.
 | --- | --- | --- |
 | `ruby tools/protected_inventory_prepare.rb INPUT.yaml` | Bounded data-only YAML, duplicate/tag/coercion controls; exact parser versions | Prepared JSON on stdout; private inputs under `.temp/`. |
 | `python3 tools/protected_inventory_generator.py --inputs DIR [--check]` | Offline pinned extraction, coverage and CCJ-1 generation/comparison | `inventory.json` + `artifact.json`, or comparison only. |
-| `python3 tools/check_protected_inventory_sources.py --inputs DIR` | Real YAML negative controls, prepared-source comparison, two full offline regenerations, coverage control plant | PASS/refusal on stdout; capture under `.temp/`. |
-| `python3 -m unittest discover -s tools -p test_protected_inventory.py -v` | 24 pairs, schemas, identity/bounds, immediate preimages and normalization control plant | Test report; capture under `.temp/`. |
+| `python3 tools/check_protected_inventory_sources.py --inputs DIR --references REF_DIR` | Real YAML controls, two regenerations, exact pinned 171/109/61/152 baseline comparison and four omission plants | PASS/refusal on stdout; capture under `.temp/`. |
+| `python3 -m unittest discover -s tools -p test_protected_inventory.py -v` | 27 pairs, independent baseline counts, schemas, identity/bounds, immediate preimages and normalization control plant | Test report; capture under `.temp/`. |
 | `go run ./tools/protected_inventory_bench/main.go` | Cold + warm native lookup, identity validation and collision/preimage controls | JSON benchmark on stdout; [witnesses](../../../conformance/protected-command-inventory-v1/README.md). |
 
 Run all checks with `env -u GIT_DIR -u GIT_WORK_TREE -u SSH_AUTH_SOCK -u GOFLAGS`

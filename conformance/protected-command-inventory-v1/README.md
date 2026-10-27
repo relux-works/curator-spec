@@ -1,7 +1,8 @@
 # Protected command inventory v1 conformance
 
-[vectors.json](vectors.json) has exactly 24 negative/positive pairs, retaining the
-research's order. [The executable driver](../../tools/test_protected_inventory.py)
+[vectors.json](vectors.json) has exactly 27 negative/positive pairs, retaining the
+research's first 24 and appending three independent baseline regressions.
+[The executable driver](../../tools/test_protected_inventory.py)
 uses the committed release artifact and isolated synthetic directories. It checks
 the precise refusal and the complete synthetic preimage immediately after every
 checker invocation, including both checks around drift. Its checker is a
@@ -34,6 +35,9 @@ shell adapter, destination-admission authority or lock-carrier implementation.
 | PCI-22 | Wrong GNU installed-name/library, Bash help-only, Zsh module classifications fail independent expected facts | Correct synthetic recipe facts |
 | PCI-23 | Undeclared RC/function/alias surface refuses | Declared alias needs no shell execution |
 | PCI-24 | Wrong entry enumeration is rejected even with recomputed digest | Canonical key order; real seed/version change changes digest |
+| PCI-25 | Absent caller PATH plus an empty admitted directory still reserves `base64`, `sha256sum`, `file`, `comm`, `shopt`, `bindkey` | Six independent prefixed unique exports under the same admission |
+| PCI-26 | Mixed-case spellings of those six required names still refuse | Mixed-case unique exports |
+| PCI-27 | Executable/wrapper suffixes on those six required names still refuse | Unique exports with the same suffixes |
 
 PCI-07–09 intentionally replace research grant-positive controls: this version
 has **no operator approval protocol**. The named follow-up is
@@ -48,7 +52,11 @@ pinned Ruby adapter on positive data-only anchors and negative syntax, multiple
 documents, duplicate keys, object tags, cycles, unsafe coercion and templates.
 They compare raw pinned YAML preparation and two complete offline regenerations
 under changed locale, then plant an incorrect independent source count and
-require `coverage_witness`. The unit driver also plants disabled ASCII folding:
+require `coverage_witness`. Full baseline membership/provenance is compared
+independently against digest-pinned private reference pages/source archives,
+requiring POSIX171/coreutils109/Bash61/Zsh152. Four missing-name plants must
+raise the intended `baseline_coverage:<source>` refusal; the complete artifact
+is their positive control. The unit driver also plants disabled ASCII folding:
 the mutant admits `Git`, and the real policy rejects it. Coverage is grounded in
 explicit expected names rather than agreement between two generators.
 
@@ -64,13 +72,25 @@ normalization remains platform-independent.
 
 | Local fixture, Go 1.25.5, 64 exports / 12 directories | Cold | Warm p95 | Warm max | ≤20 ms |
 | --- | ---: | ---: | ---: | --- |
-| Native Unix, 768 candidate misses | 10.02 ms | 1.72 ms | 2.33 ms | Pass in this recorded run |
-| Portable stress, 4,608 candidate misses | 46.53 ms | 58.72 ms | 72.97 ms | **Fail; unqualified** |
+| `.2` canonical native Unix, 768 candidate misses | 8.86 ms | 1.02 ms | 1.48 ms | Pass in this recorded run |
+| `.2` portable stress, 4,608 candidate misses | 17.20 ms | 6.45 ms | 6.61 ms | Sample passes target; envelope **unqualified** |
+| [Retained `.1` portable stress](benchmark-portable-stress-2026-10-27.1-darwin-arm64.json), 4,608 misses | 46.53 ms | 58.72 ms | 72.97 ms | **Fail; unqualified** |
 
-The stress run was recorded while maintainer source-validation work was active;
-all observed delays remain included. Neither the budget nor the workload is
-silently relaxed. Consumers must qualify their real admitted D/S/platform/load
-envelope, including cold work when done per launch. These are reference-check
+The new `.2` runs were taken once each, after source controls completed; all
+31 warm samples remain included. No resolver optimization is claimed. The
+retained `.1` stress ran while source validation was active. The independent
+[review stress](https://github.com/relux-works/curator-spec/pull/196#pullrequestreview-5662227047)
+also exceeded the target (30.84 ms cold, 226.91 ms warm maximum). A quieter
+isolated pass does not erase those failures or qualify multi-spelling launch.
+
+The **20 ms qualification budget is precisely the canonical-spelling envelope**:
+up to 64 explicit exports, up to 12 local directories, one literal candidate per
+export/directory, including cold initialization/identity/witness work. Both cold
+and every warm sample must pass. Generated wrappers count as explicit exports.
+The six-spelling stress is a separate qualification with the same 20 ms
+comparison target; Windows suffix lookup and larger/network envelopes also need
+separate consumer proof. No budget was raised. Consumers must qualify their real
+admitted D/S/platform/load envelope, including cold work per launch. These are reference-check
 measurements, not end-to-end launcher, forwarder, arbitrary writable PATH,
 network-filesystem, Windows or Linux qualification. The failed stress envelope
 cannot be advertised as budget-compliant.
@@ -79,7 +99,7 @@ Run from the repository root (see [data/tool instructions](../../data/protected-
 
 ```sh
 env -u GIT_DIR -u GIT_WORK_TREE -u SSH_AUTH_SOCK -u GOFLAGS python3 -m unittest discover -s tools -p test_protected_inventory.py -v
-env -u GIT_DIR -u GIT_WORK_TREE -u SSH_AUTH_SOCK -u GOFLAGS python3 tools/check_protected_inventory_sources.py --inputs .temp/protected-inventory/inputs
+env -u GIT_DIR -u GIT_WORK_TREE -u SSH_AUTH_SOCK -u GOFLAGS python3 tools/check_protected_inventory_sources.py --inputs .temp/protected-inventory/inputs --references .temp/protected-inventory/references
 env -u GIT_DIR -u GIT_WORK_TREE -u SSH_AUTH_SOCK -u GOFLAGS go run ./tools/protected_inventory_bench/main.go > .temp/inventory-native-benchmark.json
 env -u GIT_DIR -u GIT_WORK_TREE -u SSH_AUTH_SOCK -u GOFLAGS go run ./tools/protected_inventory_bench/main.go --suffix-mode portable-stress > .temp/inventory-stress-benchmark.json
 ```

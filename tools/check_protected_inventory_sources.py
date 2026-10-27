@@ -10,11 +10,14 @@ import tempfile
 
 import protected_inventory as p
 import protected_inventory_generator as g
+import protected_inventory_baselines as baselines
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--inputs', type=Path, required=True)
+    parser.add_argument('--references', type=Path, required=True,
+                        help='private pinned POSIX pages and coreutils/bash/zsh source archives')
     args = parser.parse_args()
     env = dict(os.environ)
     for name in ('GIT_DIR', 'GIT_WORK_TREE', 'SSH_AUTH_SOCK', 'GOFLAGS'):
@@ -61,6 +64,21 @@ def main():
     if first != second or first != (g.DATA / 'inventory.json').read_bytes():
         raise AssertionError('regeneration_mismatch')
     manifest = p.decode((g.DATA / 'sources.lock.json').read_bytes())
+    references = baselines.reference_names(args.references, manifest)
+    inventory = p.decode(first)
+    baselines.assert_coverage(inventory, references)
+    # An independently pinned baseline detects a missing name even with new
+    # artifact bytes/digest and self-consistent generator counts. Positive above.
+    for source, name in (('posix', 'file'), ('coreutils', 'base64'),
+                         ('bash', 'shopt'), ('zsh', 'bindkey')):
+        bad_inventory = copy.deepcopy(inventory)
+        bad_inventory['entries'] = [entry for entry in bad_inventory['entries'] if entry['name'] != name]
+        try:
+            baselines.assert_coverage(bad_inventory, references)
+        except p.Refusal as exc:
+            if str(exc) != 'baseline_coverage:' + source: raise
+        else:
+            raise AssertionError('baseline omission plant was not detected: ' + source)
     bad = copy.deepcopy(manifest); bad['coverage']['counts']['aqua'] -= 1
     try:
         g.generate(args.inputs, bad)
@@ -68,7 +86,8 @@ def main():
         if str(exc) != 'coverage_witness': raise
     else:
         raise AssertionError('independent coverage plant was not detected')
-    print('PASS: 8 YAML adapter controls; pinned YAML preparation; 2 full offline regenerations; coverage plant; ' + p.sha256(first))
+    print('PASS: 8 YAML adapter controls; pinned YAML preparation; 2 full offline regenerations; coverage plant; '
+          'POSIX171/coreutils109/Bash61/Zsh152 exact baseline membership; 4 omission plants; ' + p.sha256(first))
 
 
 class subprocess_env_locale:
