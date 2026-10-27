@@ -1,4 +1,4 @@
-# Decision 0030: Policy-derived workspace trust events
+# Decision 0031: Policy-derived workspace trust events
 
 ## Context
 

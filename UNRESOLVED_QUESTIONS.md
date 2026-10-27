@@ -20,7 +20,7 @@ explicit, revision-checked and audited. This spec PR starts no implementation.
 
 Q1 authority and the distinct `policy-grant` event are settled in
 [CIP-0020 §2.1](cips/CIP-0020-workspace-trust-ledger.md#21-policy-derived-grants-q1-first-slice)
-and [Decision 0030](decisions/0030-policy-derived-workspace-trust.md).
+and [Decision 0031](decisions/0031-policy-derived-workspace-trust.md).
 Environments integration, protected command/approval storage, per-release
 hook discovery/approval/reload/revocation qualification and command-free
 canonical SSH destination evaluation remain delivery gates. The same-UID
