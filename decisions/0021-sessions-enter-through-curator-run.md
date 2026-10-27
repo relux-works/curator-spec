@@ -8,6 +8,11 @@ The naming-rule cross-reference distinguishes owner-published identifier categor
 
 Status: adopted 2026-10-01 by the operator
 
+Amendment v3 below is a **proposed documentary target** for trusted same-user
+non-chat work. It explicitly scopes the original no-headless-human statements;
+it is not adoption of a shipped entry or evidence of qualification. Amendments
+v1/v2 and their activation/compatibility gates retain their own scope.
+
 Proposed 2026-09-24; adopted 2026-10-01. Amendment v1 below records the
 operator's D-EXECUTOR decision confirmed 2026-10-11. The amendment permits
 a narrow agent-account execution mode, subject to its activation gate;
@@ -144,6 +149,11 @@ The original adoption leaves tracked non-interactive children with
 Swarma one-shot path through the dispatcher and an agent-account
 `curator-run` executor; it supplies no human headless composition command.
 
+The separate [amendment v3 target](#amendment-v3--same-user-trusted-development-member-non-chat-target)
+is the explicit proposed exception for trusted same-user development, review
+and assessment, not an interpretation of v1 or the original interactive API.
+Until its gates are met, the no-headless-human boundary remains operative.
+
 ### 7. Preconditions before a machine turns hosting on by default
 
 A machine, or an operator for themselves, turns the integration on only
@@ -176,6 +186,11 @@ when:
   fallback (a failed hand-off never turns into `--untracked`), Decision
   0018, and the rule that there is no headless human `curator run`.
   Amendment v1 is the sole agent-account exception to that scope.
+
+The no-headless-human clauses in Context, Decision 6 and this original change
+list are explicitly subject to the distinct proposed amendment v3 below. This
+cross-reference adds no native-argument shortcut and does not change the
+agent-account exception or local-hosted amendment v2.
 
 ## Amendment v1 — agent-account one-shot execution (2026-10-11)
 
@@ -416,3 +431,105 @@ same-user validation/use races remain explicit residuals. Secret-safe
 persistence and cleanup must preserve native/managed homes. Neither launcher
 nor receiver rewrites runtime-owned Codex config, even in a private snapshot;
 cold-resume policy enforcement is an activation gate with a stop rule.
+
+## Amendment v3 — same-user trusted development-member non-chat target
+
+Documentary amendment revision: **v3**, corresponding to launcher documentary
+**same-user-nonchat-contract/1**. Status: **target proposal; not implemented,
+qualified or activated**. This is neither a Curator release/wire version nor
+source acceptance. Paired exact-head source review and each owner's publication
+remain prerequisites, followed by separate implementation/qualification grants.
+
+### Explicit exception and retained boundaries
+
+The original interactive/no-headless-human scope gains a distinct gated target
+for trusted development, independent source review and separate recipient
+assessment under the already admitted **current user**. This is an explicit
+scope amendment, not authority inferred from non-TTY input, native arguments,
+permission defaults, existing `task-board` children or local-hosted v2. No
+current command, flag, parser, fragment or manager schema is extended here.
+The eventual adapter belongs to the canonical Curator/launcher route, not a
+third wrapper or ad hoc execution entry.
+
+The owning [launcher contract/1](https://github.com/relux-works/curator-agent-launcher/blob/968d8576f3de8d3001970d09409fc98c99d60ab1/docs/same-user-nonchat-contract.md)
+contains the single admission/execution/result target and qualification PLAN.
+This amendment fixes Curator's boundary to that document revision; it does not
+create a second wire/result contract. A matched source change must preserve
+both owners' exact reviewed heads and their separate landing custody.
+
+Amendments v1/v2 remain intact. Launcher SPEC §10 continues as the separately
+protected dispatcher/worker-account/broker target, unimplemented/unqualified
+under its own intake/FD/privilege/network/provider/lifecycle/activation gates.
+Same-user work is not its implementation, fallback or qualification. The v2
+snapshot/hosted decision does not already admit this fresh non-chat invocation.
+
+### Curator compatibility, effective configuration and preservation
+
+The launcher consumes only a Curator/runtime-owner-supported exact tuple:
+tool/source identities, profile source closure and config/lock digests, actual
+runtime/model/effort, home/auth provenance and any required manager compatibility.
+Explicit compatible manager absence is different from an unavailable required
+manager; no fallback is admitted. Core retains fragment/manager/native-origin
+and managed-home compatibility ownership. The launcher owns execution/result;
+the runtime owner owns native context, discovery and provider semantics.
+
+Each bounded assignment consumes frozen declared instructions/artifacts in a
+**NEW native context**, never a parent/producer/resumed conversation, transcript,
+auto-loaded prior memory or seeded continuity. A stable accountable member is
+controller-side metadata, not persistent native conversation state or child
+chat identity. Independent source review and frozen-input recipient assessment
+are separate assignments/consumers/results; one is not evidence of the other.
+The source author/reviewer threads do not qualify this target property.
+
+The initial target subset permits only declared static instructions/settings,
+inert artifacts and explicitly admitted tools. It excludes executable startup
+hooks, messaging/board integration, arbitrary MCP, ambient skills/plugins and
+presence instructions. Effective configuration/discovery must be enumerated,
+excluded or pinned across user/system/workspace/nested/home surfaces and inherited
+handles, not just scrubbed environment. Unknown/contaminated or unsupported
+config refuses; excluded profile content is not silently stripped. Candidate
+control files stay inert outside discovery; discovery-capable entry requires
+a qualified strict-context adapter. Digest/profile identity alone does not
+prove exclusion or authority.
+
+The child has no a2a identity/chat registration, parent messaging credentials,
+hooks/binding or board presence. The existing controller submits and receives
+through its admitted route; no parent identity is lent to the child. Same-user
+separation is cooperative and supplies no hostile-same-UID, cross-account,
+broker/service-credential or untrusted-workplace isolation/authority.
+
+Native/managed homes, source/user config, credentials, hooks, existing consumers,
+identities and processes remain preserved. Only declared task-owned scratch is
+materialized. Existing authentication/policy/home refusals remain effective;
+no credential copying, login repair, policy relaxation or runtime-config rewrite
+is authorized to make a tuple pass. If the runtime cannot provide fresh-context,
+effective-config or cleanup evidence without forbidden effects, that tuple
+remains refused with a recorded owner-resolvable gap.
+
+### Intake, result and activation custody
+
+Launcher contract/1 owns frozen exact-byte intake, proposed bounded transport,
+actual invocation/native outcomes, result validation, replay/conflict behavior
+and cleanup evidence. No published CLI/wire member, numeric refusal exit or
+provider capability is inferred from its documentary record concepts/limits.
+Admission, actual start/failed start, native exit/signal, cancellation,
+missing/partial/unknown result and cleanup remain distinct; exit zero, argv,
+fragment or build evidence is neither task acceptance nor clean-stop proof.
+Failure preserves unrelated state and existing records, starts no weaker child
+and never treats timeout/process disappearance as confirmed absence.
+
+Qualification is a **PLAN only**: pair valid controls with stale/incompatible
+tuples, wrong/missing input, inherited history/effective discovery/presence,
+duplicate/conflicting invocation/result, abnormal native outcome and interrupted
+cleanup. Each row asserts exact state/effect preservation and bounded cleanup.
+Isolated fixture sensitivity is not real native qualification; actual supported
+tuples require separately commissioned native witnesses. No such run is admitted
+or claimed by this amendment.
+
+Source acceptance/publication, bounded implementation admission, fixture/native
+qualification, host adoption and independent task acceptance are separate gates.
+Concrete entry/handle/schema/refusal formats and supported config/runtime tuples
+still require owner publication before implementation/activation. Core retains
+Curator-spec default-branch landing; launcher retains its own source landing.
+No installation, authentication change, host grant, runtime operation or worker
+wake/lifecycle implementation follows from this source proposal.
