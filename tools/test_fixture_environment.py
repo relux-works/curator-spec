@@ -164,6 +164,9 @@ class FixtureEnvironmentTests(unittest.TestCase):
             return subprocess.check_output(["git", *args], cwd=decoy, env=env)
 
         git("init", "-q")
+        # Freeze the decoy before its identity snapshot: commit-triggered
+        # background maintenance can otherwise create/remove objects and locks.
+        git("config", "maintenance.auto", "false")
         git("config", "fixture.sentinel", "preserved")
         git("-c", "user.name=Decoy", "-c", "user.email=decoy@example.invalid",
             "commit", "-qm", "decoy", "--allow-empty")
