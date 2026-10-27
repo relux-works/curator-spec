@@ -457,7 +457,7 @@ This amendment fixes Curator's boundary to that document revision; it does not
 create a second wire/result contract. A matched source change must preserve
 both owners' exact reviewed heads and their separate landing custody.
 
-The follow-up [executor protocol source revision 2](https://github.com/relux-works/curator-agent-launcher/blob/c64e754d656a217e4de8db165212c51ae12b37f1/docs/same-user-executor-wire.md)
+The follow-up [executor protocol source revision 2](https://github.com/relux-works/curator-agent-launcher/blob/2adf5e448cc10232920efdef7586c5885e88dc8e/docs/same-user-executor-wire.md)
 and its closed schema/inert manual cases concretize contract/1. The proposed
 canonical entry is the same binary's `curator-run member`, with explicit
 controller-owned descriptors, exact-byte frozen input, closed intake/result/error/
