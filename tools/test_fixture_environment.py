@@ -82,7 +82,8 @@ class FixtureEnvironmentTests(unittest.TestCase):
                                      "inherited trace modified external sentinel")
 
     # The command runner uses the same boundary for non-unittest source-history
-    # tools, cleans its homes, and preserves both success and failure statuses.
+    # tools, cleans its homes, and preserves stdin/output and success/failure
+    # statuses, including the Windows job startup trampoline's nested command.
     def test_command_boundary_cleans_homes_and_preserves_exit_status(self):
         runner = Path(__file__).with_name("fixture_environment.py")
         script = (
@@ -90,6 +91,7 @@ class FixtureEnvironmentTests(unittest.TestCase):
             "assert 'GIT_DIR' not in os.environ; "
             "assert 'SSH_AUTH_SOCK' not in os.environ; "
             "assert pathlib.Path(os.environ['HOME']).is_dir(); "
+            "assert sys.stdin.read() == 'fixture stdin'; "
             "print(os.environ['HOME']); sys.exit(int(sys.argv[1]))"
         )
         for status in (0, 7):
@@ -97,9 +99,12 @@ class FixtureEnvironmentTests(unittest.TestCase):
                 child = subprocess.run(
                     [sys.executable, str(runner), sys.executable, "-c", script, str(status)],
                     env=dict(os.environ, GIT_DIR="hostile", SSH_AUTH_SOCK="hostile"),
-                    capture_output=True, text=True)
+                    input="fixture stdin", capture_output=True, text=True, timeout=15)
                 self.assertEqual(child.returncode, status, child.stderr)
-                self.assertFalse(Path(child.stdout.strip()).exists())
+                self.assertTrue(child.stdout.strip(), "command produced no HOME output")
+                home = Path(child.stdout.strip())
+                self.assertTrue(home.is_absolute(), child.stdout)
+                self.assertFalse(home.exists())
 
     # All inherited selectors/config channels disappear; fixture native-home
     # writes stay private. Cleanup also restores unset versus empty values.

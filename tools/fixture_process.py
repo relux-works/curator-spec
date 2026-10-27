@@ -195,7 +195,10 @@ if __name__ == "__main__":
                 raise TimeoutError("command job startup gate timed out")
         finally:
             api.CloseHandle(handle)
-        os.execvp(sys.argv[3], sys.argv[3:])
+        # Windows exec spawns a replacement and exits this tracked process.
+        # Keep the job's tracked trampoline alive until the command finishes,
+        # so closing the job cannot kill a still-running replacement early.
+        raise SystemExit(subprocess.call(sys.argv[3:]))
     except Exception as error:
         print("fixture boundary:", type(error).__name__ + ":", error, file=sys.stderr)
         raise SystemExit(2)
