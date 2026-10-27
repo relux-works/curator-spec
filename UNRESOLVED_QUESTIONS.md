@@ -16,6 +16,19 @@ launcher/fake-manager/real-Curator fixture remain publication/integration gates.
 Without the observer, release retains the lease; the operator break path remains
 explicit, revision-checked and audited. This spec PR starts no implementation.
 
+## Policy-derived workspace trust activation
+
+Q1 authority and the distinct `policy-grant` event are settled in
+[CIP-0020 §2.1](cips/CIP-0020-workspace-trust-ledger.md#21-policy-derived-grants-q1-first-slice)
+and [Decision 0030](decisions/0030-policy-derived-workspace-trust.md).
+Environments integration, protected command/approval storage, per-release
+hook discovery/approval/reload/revocation qualification and command-free
+canonical SSH destination evaluation remain delivery gates. The same-UID
+tamper limitation remains until CIP-0024 protection. Unattended lanes' default
+without the vendor sandbox requires its separate runtime-policy mapping;
+project trust grants no bypass authority. None of these gates permits a
+package self-grant, hidden prompt or unqualified launch fallback.
+
 ## Agent stations
 
 [CIP-0024](cips/CIP-0024-agent-stations.md) is Draft. Its operator decisions of

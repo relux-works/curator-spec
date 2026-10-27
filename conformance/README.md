@@ -49,6 +49,11 @@ safe backup/restore according to `profiles/registry-service.md`.
 
 ## 3. Shared suite
 
+The separate [CIP-0020 policy-grant corpus](workspace-trust-policy-grant-v1/README.md)
+publishes paired private consent witnesses without changing A1 or released
+suite identities. Its publication gate claims no production authorization or
+vendor qualification.
+
 The unreleased [Codex seed-C corpus](codex-seed-c-v1/README.md) separately
 specifies trust exclusion for new provisioning and preservation of existing
 homes. Its full marker-7 schema extends marker 6; frozen A/B vectors and

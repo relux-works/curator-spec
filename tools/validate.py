@@ -12170,6 +12170,16 @@ def validate_workspace_trust() -> None:
     print(f"workspace-trust schema cases: {cases}/{cases}; transition vectors: {vectors}/{vectors}; runtime cases: unrun")
 
 
+def validate_workspace_policy_grants() -> None:
+    import workspace_policy_grant
+
+    try:
+        cases, pairs = workspace_policy_grant.check_corpus(ROOT)
+    except (ValueError, OSError, SchemaError) as exc:
+        raise ValidationFailure(f"workspace policy-grant: {exc}") from exc
+    print(f"policy-grant: {cases} schema cases, {pairs} positive/negative pairs; runtime unverified")
+
+
 def validate_provisioning_origin() -> None:
     import provisioning_origin
 
@@ -12220,6 +12230,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_rc7_carriers,
         validate_local_setup_token,
         validate_workspace_trust,
+        validate_workspace_policy_grants,
         validate_provisioning_origin,
         validate_project_context_leaf1,
         validate_home_leases,

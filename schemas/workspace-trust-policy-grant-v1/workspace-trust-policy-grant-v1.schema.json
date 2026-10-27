@@ -1,0 +1,366 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/workspace-trust-policy-grant-v1/workspace-trust-policy-grant-v1.schema.json",
+  "title": "Private policy-derived workspace trust event, version 1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record",
+    "event",
+    "grant_id",
+    "policy",
+    "subject",
+    "identity",
+    "surfaces",
+    "issuer",
+    "time",
+    "review_by",
+    "reason",
+    "state",
+    "state_history"
+  ],
+  "properties": {
+    "record": {
+      "const": "workspace-trust-policy-grant-v1"
+    },
+    "event": {
+      "const": "policy-grant"
+    },
+    "grant_id": {
+      "$ref": "#/$defs/id"
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entry_id",
+        "sha256"
+      ],
+      "properties": {
+        "entry_id": {
+          "$ref": "#/$defs/id"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkout_id",
+        "registration_sha256",
+        "path",
+        "repository",
+        "canonical_destination"
+      ],
+      "properties": {
+        "checkout_id": {
+          "$ref": "#/$defs/id"
+        },
+        "registration_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "path": {
+          "$ref": "#/$defs/path"
+        },
+        "repository": {
+          "$ref": "#/$defs/repository"
+        },
+        "canonical_destination": {
+          "$ref": "#/$defs/destination"
+        }
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "root_identity",
+        "environment",
+        "lane_id"
+      ],
+      "properties": {
+        "root_identity": {
+          "$ref": "#/$defs/sha256"
+        },
+        "environment": {
+          "enum": [
+            "claude_code",
+            "codex_cli",
+            "muse"
+          ]
+        },
+        "lane_id": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "surfaces": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project_trust",
+        "hooks"
+      ],
+      "properties": {
+        "project_trust": {
+          "type": "boolean"
+        },
+        "hooks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/hook"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "issuer": {
+      "$ref": "#/$defs/issuer"
+    },
+    "time": {
+      "$ref": "#/$defs/time"
+    },
+    "review_by": {
+      "$ref": "#/$defs/time"
+    },
+    "reason": {
+      "$ref": "#/$defs/text"
+    },
+    "state": {
+      "$ref": "#/$defs/state"
+    },
+    "state_history": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/state"
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "\\S"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "path": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 4096,
+      "pattern": "^/"
+    },
+    "issuer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "principal_ref",
+        "approval_ref",
+        "actor"
+      ],
+      "properties": {
+        "role": {
+          "const": "operator"
+        },
+        "principal_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "approval_ref": {
+          "$ref": "#/$defs/sha256"
+        },
+        "actor": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "principal_ref"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "operator",
+                "keeper"
+              ]
+            },
+            "principal_ref": {
+              "$ref": "#/$defs/id"
+            }
+          }
+        }
+      }
+    },
+    "hook": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hook_id",
+        "sha256"
+      ],
+      "properties": {
+        "hook_id": {
+          "$ref": "#/$defs/id"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "time",
+        "reason",
+        "by"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "active",
+            "revoked",
+            "lapsed"
+          ]
+        },
+        "time": {
+          "$ref": "#/$defs/time"
+        },
+        "reason": {
+          "$ref": "#/$defs/text"
+        },
+        "by": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/issuer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "root",
+        "primary_remote",
+        "root_commit"
+      ],
+      "properties": {
+        "root": {
+          "$ref": "#/$defs/path"
+        },
+        "primary_remote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^[^\\s\\x00-\\x1f]+$"
+        },
+        "root_commit": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        }
+      }
+    },
+    "destination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transport",
+        "host",
+        "port",
+        "repository_path"
+      ],
+      "properties": {
+        "transport": {
+          "enum": [
+            "https",
+            "ssh"
+          ]
+        },
+        "host": {
+          "type": "string",
+          "maxLength": 253,
+          "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$"
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "repository_path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^[^\\s\\x00-\\x1f]+$"
+        },
+        "user": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+$"
+        },
+        "host_key_fingerprints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^SHA256:[A-Za-z0-9+/]{43}$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "transport": {
+                "const": "ssh"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "user",
+              "host_key_fingerprints"
+            ]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "user"
+                  ]
+                },
+                {
+                  "required": [
+                    "host_key_fingerprints"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

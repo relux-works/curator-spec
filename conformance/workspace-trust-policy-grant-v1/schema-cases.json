@@ -1,0 +1,486 @@
+[
+  {
+    "name": "valid-neighbor",
+    "path": [
+      "reason"
+    ],
+    "op": "set",
+    "value": "Approved build lane",
+    "expected": null
+  },
+  {
+    "name": "missing-record",
+    "path": [
+      "record"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-event",
+    "path": [
+      "event"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-grant_id",
+    "path": [
+      "grant_id"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-policy",
+    "path": [
+      "policy"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-subject",
+    "path": [
+      "subject"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-identity",
+    "path": [
+      "identity"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-surfaces",
+    "path": [
+      "surfaces"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-issuer",
+    "path": [
+      "issuer"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-time",
+    "path": [
+      "time"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-review_by",
+    "path": [
+      "review_by"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-reason",
+    "path": [
+      "reason"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-state",
+    "path": [
+      "state"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-state_history",
+    "path": [
+      "state_history"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-policy-entry_id",
+    "path": [
+      "policy",
+      "entry_id"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-policy-sha256",
+    "path": [
+      "policy",
+      "sha256"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-subject-checkout_id",
+    "path": [
+      "subject",
+      "checkout_id"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-subject-registration_sha256",
+    "path": [
+      "subject",
+      "registration_sha256"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-subject-path",
+    "path": [
+      "subject",
+      "path"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-subject-repository",
+    "path": [
+      "subject",
+      "repository"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-subject-canonical_destination",
+    "path": [
+      "subject",
+      "canonical_destination"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-identity-root_identity",
+    "path": [
+      "identity",
+      "root_identity"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-identity-environment",
+    "path": [
+      "identity",
+      "environment"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-identity-lane_id",
+    "path": [
+      "identity",
+      "lane_id"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-issuer-role",
+    "path": [
+      "issuer",
+      "role"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-issuer-principal_ref",
+    "path": [
+      "issuer",
+      "principal_ref"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-issuer-approval_ref",
+    "path": [
+      "issuer",
+      "approval_ref"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-issuer-actor",
+    "path": [
+      "issuer",
+      "actor"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-surfaces-project_trust",
+    "path": [
+      "surfaces",
+      "project_trust"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-surfaces-hooks",
+    "path": [
+      "surfaces",
+      "hooks"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-state-status",
+    "path": [
+      "state",
+      "status"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-state-time",
+    "path": [
+      "state",
+      "time"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-state-reason",
+    "path": [
+      "state",
+      "reason"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "missing-state-by",
+    "path": [
+      "state",
+      "by"
+    ],
+    "op": "remove",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "explicit-impersonation",
+    "path": [
+      "event"
+    ],
+    "op": "set",
+    "value": "explicit-grant",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "package-role",
+    "path": [
+      "issuer",
+      "role"
+    ],
+    "op": "set",
+    "value": "package",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "wildcard-lane",
+    "path": [
+      "identity",
+      "lane_id"
+    ],
+    "op": "set",
+    "value": "*",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "wildcard-env",
+    "path": [
+      "identity",
+      "environment"
+    ],
+    "op": "set",
+    "value": "*",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "digest-newline",
+    "path": [
+      "policy",
+      "sha256"
+    ],
+    "op": "set",
+    "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "unknown-field",
+    "path": [
+      "package_grant"
+    ],
+    "op": "set",
+    "value": true,
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "path-alias",
+    "path": [
+      "subject",
+      "path"
+    ],
+    "op": "set",
+    "value": "/work/project/.",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "path-descendant",
+    "path": [
+      "subject",
+      "path"
+    ],
+    "op": "set",
+    "value": "/work/project/subdir",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "destination-dot",
+    "path": [
+      "subject",
+      "canonical_destination",
+      "repository_path"
+    ],
+    "op": "set",
+    "value": "/team/../project.git",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "destination-alias",
+    "path": [
+      "subject",
+      "canonical_destination",
+      "host"
+    ],
+    "op": "set",
+    "value": "code-alias",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "duplicate-hook-id",
+    "path": [
+      "surfaces",
+      "hooks"
+    ],
+    "op": "set",
+    "value": [
+      {
+        "hook_id": "pre-start",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      {
+        "hook_id": "pre-start",
+        "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    ],
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "revoked-without-issuer",
+    "path": [
+      "state"
+    ],
+    "op": "set",
+    "value": {
+      "status": "revoked",
+      "time": "2026-10-27T09:00:00Z",
+      "reason": "Withdraw",
+      "by": null
+    },
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "resurrected-history",
+    "path": [
+      "state_history"
+    ],
+    "op": "set",
+    "value": [
+      {
+        "status": "active",
+        "time": "2026-10-27T09:00:00Z",
+        "reason": "Policy consent",
+        "by": {
+          "role": "operator",
+          "principal_ref": "principal:operator",
+          "approval_ref": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "actor": {
+            "kind": "keeper",
+            "principal_ref": "principal:keeper"
+          }
+        }
+      },
+      {
+        "status": "revoked",
+        "time": "2026-10-27T09:00:00Z",
+        "reason": "Withdraw",
+        "by": {
+          "role": "operator",
+          "principal_ref": "principal:operator",
+          "approval_ref": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "actor": {
+            "kind": "keeper",
+            "principal_ref": "principal:keeper"
+          }
+        }
+      }
+    ],
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "expiry-before-grant",
+    "path": [
+      "review_by"
+    ],
+    "op": "set",
+    "value": "2026-10-26T00:00:00Z",
+    "expected": "workspace_trust_ledger_unreadable"
+  },
+  {
+    "name": "ambiguous-host",
+    "path": [
+      "subject",
+      "canonical_destination",
+      "host"
+    ],
+    "op": "set",
+    "value": "Code.Example",
+    "expected": "workspace_trust_ledger_unreadable"
+  }
+]

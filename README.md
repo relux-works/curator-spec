@@ -146,6 +146,11 @@ repository binding consent and revocation. The
 [record schema](schemas/workspace-trust-v1/README.md) and
 [executable corpus](conformance/workspace-trust-v1/README.md) qualify specification
 consistency only. A2 projection/adapters and A3 tooling derivatives remain deferred.
+The [policy-grant amendment](cips/CIP-0020-workspace-trust-ledger.md#21-policy-derived-grants-q1-first-slice)
+publishes a separate [private event](schemas/workspace-trust-policy-grant-v1/README.md)
+and [paired corpus](conformance/workspace-trust-policy-grant-v1/README.md) for
+operator-approved unattended trust; environments integration and runtime
+qualification remain separate gates.
 
 Protocol and implementation designs are recorded as
 [Curator Improvement Proposals](cips/README.md). Start with the
@@ -287,6 +292,12 @@ Validation requires local release tags (fetch tags in shallow checkouts).
   Inputs live in `schemas/workspace-trust-v1/` and `conformance/workspace-trust-v1/`;
   logs go in `.temp/`. `make validate` includes the publication entry and tests.
   No filesystem, Git, crash-recovery or vendor runtime is qualified.
+- Workspace policy grants: `python3 tools/workspace_policy_grant.py` checks
+  `schemas/workspace-trust-policy-grant-v1/` and the paired corpus under
+  `conformance/workspace-trust-policy-grant-v1/`. Run `python3 -B -m unittest
+  discover -s tools -p 'test_workspace_policy_grant.py' -v` for publication,
+  negative control and cleanup witnesses. `make validate` includes both;
+  local logs go in `.temp/`. These checks qualify no vendor runtime.
 - Go: `go test ./tools/...` tests specification tooling;
   `go run ./tools/generate-vectors -root .` regenerates the released corpus
   under `conformance/v1/`, its release metadata, and the independent

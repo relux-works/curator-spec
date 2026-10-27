@@ -1,0 +1,164 @@
+{
+  "record": {
+    "record": "workspace-trust-policy-grant-v1",
+    "event": "policy-grant",
+    "grant_id": "grant:build",
+    "policy": {
+      "entry_id": "project-lanes",
+      "sha256": "8f63f7b433817df35242e58486c3a9eaf27105d9b407342a92f520ea5d530b0b"
+    },
+    "subject": {
+      "checkout_id": "checkout:project",
+      "registration_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "path": "/work/project",
+      "repository": {
+        "root": "/work/project",
+        "primary_remote": "ssh://git@code.example/team/project.git",
+        "root_commit": "1111111111111111111111111111111111111111"
+      },
+      "canonical_destination": {
+        "transport": "ssh",
+        "host": "code.example",
+        "port": 22,
+        "repository_path": "/team/project.git",
+        "user": "git",
+        "host_key_fingerprints": [
+          "SHA256:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        ]
+      }
+    },
+    "identity": {
+      "root_identity": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "environment": "codex_cli",
+      "lane_id": "lane:build"
+    },
+    "surfaces": {
+      "project_trust": true,
+      "hooks": [
+        {
+          "hook_id": "pre-start",
+          "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ]
+    },
+    "issuer": {
+      "role": "operator",
+      "principal_ref": "principal:operator",
+      "approval_ref": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "actor": {
+        "kind": "keeper",
+        "principal_ref": "principal:keeper"
+      }
+    },
+    "time": "2026-10-27T09:00:00Z",
+    "review_by": "2026-11-27T08:00:00Z",
+    "reason": "Apply approved build policy",
+    "state": {
+      "status": "active",
+      "time": "2026-10-27T09:00:00Z",
+      "reason": "Policy consent",
+      "by": {
+        "role": "operator",
+        "principal_ref": "principal:operator",
+        "approval_ref": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "actor": {
+          "kind": "keeper",
+          "principal_ref": "principal:keeper"
+        }
+      }
+    },
+    "state_history": []
+  },
+  "facts": {
+    "approval_source": "keeper-command",
+    "authenticated_approval": true,
+    "approved_issuer": {
+      "role": "operator",
+      "principal_ref": "principal:operator",
+      "approval_ref": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "actor": {
+        "kind": "keeper",
+        "principal_ref": "principal:keeper"
+      }
+    },
+    "policy": {
+      "entry_id": "project-lanes",
+      "root_commit": "1111111111111111111111111111111111111111",
+      "canonical_destination": {
+        "transport": "ssh",
+        "host": "code.example",
+        "port": 22,
+        "repository_path": "/team/project.git",
+        "user": "git",
+        "host_key_fingerprints": [
+          "SHA256:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        ]
+      },
+      "remote_spellings": [
+        "ssh://git@code.example/team/project.git"
+      ],
+      "environments": [
+        "codex_cli"
+      ],
+      "lanes": [
+        "lane:build"
+      ],
+      "project_trust": true,
+      "hooks": [
+        {
+          "hook_id": "pre-start",
+          "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "issuer": {
+        "role": "operator",
+        "principal_ref": "principal:operator",
+        "approval_ref": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "actor": {
+          "kind": "keeper",
+          "principal_ref": "principal:keeper"
+        }
+      },
+      "time": "2026-10-27T08:00:00Z",
+      "reason": "Approve build lane",
+      "review_by": "2026-11-27T08:00:00Z"
+    },
+    "registration": {
+      "checkout_id": "checkout:project",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "path": "/work/project",
+      "root_identity": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "repository": {
+      "root": "/work/project",
+      "primary_remote": "ssh://git@code.example/team/project.git",
+      "root_commit": "1111111111111111111111111111111111111111"
+    },
+    "nofollow_identity_matches": true,
+    "remote_spelling": "ssh://git@code.example/team/project.git",
+    "destination_verified": true,
+    "ssh_pins_match": true,
+    "command_free_routing": true,
+    "environment": "codex_cli",
+    "lane_id": "lane:build",
+    "now": "2026-10-27T10:00:00Z",
+    "revoked_ids": [],
+    "adapter_qualified": true,
+    "hook_state_readable": true,
+    "effective_hooks": [
+      {
+        "hook_id": "pre-start",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    ],
+    "native_hook_approvals": [
+      {
+        "hook_id": "pre-start",
+        "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    ],
+    "policy_readable": true,
+    "ledger_readable": true,
+    "journal_readable": true
+  }
+}

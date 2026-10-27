@@ -1,0 +1,1242 @@
+[
+  {
+    "name": "package-trust",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "approval_source"
+          ],
+          "value": "package"
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_policy_authority",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "package-hooks",
+    "positive": {
+      "changes": [
+        {
+          "path": [
+            "record",
+            "surfaces",
+            "project_trust"
+          ],
+          "value": false
+        }
+      ],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": false,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "approval_source"
+          ],
+          "value": "package"
+        },
+        {
+          "path": [
+            "record",
+            "surfaces",
+            "project_trust"
+          ],
+          "value": false
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_policy_authority",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "unapproved-keeper",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "authenticated_approval"
+          ],
+          "value": false
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_policy_authority",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "forged-issuer",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "approved_issuer"
+          ],
+          "value": {
+            "role": "operator",
+            "principal_ref": "principal:operator",
+            "approval_ref": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "actor": {
+              "kind": "keeper",
+              "principal_ref": "principal:keeper"
+            }
+          }
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_policy_authority",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "stale-digest",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "record",
+            "policy",
+            "sha256"
+          ],
+          "value": "0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_policy_digest",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "edited-entry",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "policy",
+            "reason"
+          ],
+          "value": "Narrow approved use"
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_policy_digest",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "revoked",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "record",
+            "state_history"
+          ],
+          "value": [
+            {
+              "status": "active",
+              "time": "2026-10-27T09:00:00Z",
+              "reason": "Policy consent",
+              "by": {
+                "role": "operator",
+                "principal_ref": "principal:operator",
+                "approval_ref": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "actor": {
+                  "kind": "keeper",
+                  "principal_ref": "principal:keeper"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "path": [
+            "record",
+            "state"
+          ],
+          "value": {
+            "status": "revoked",
+            "time": "2026-10-27T09:30:00Z",
+            "reason": "Operator withdrew consent",
+            "by": {
+              "role": "operator",
+              "principal_ref": "principal:operator",
+              "approval_ref": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "actor": {
+                "kind": "keeper",
+                "principal_ref": "principal:keeper"
+              }
+            }
+          }
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_grant_revoked",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "durably-revoked",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "revoked_ids"
+          ],
+          "value": [
+            "grant:build"
+          ]
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_grant_revoked",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "hook-digest",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "effective_hooks"
+          ],
+          "value": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_hook_digest",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "native-hook-digest",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "native_hook_approvals"
+          ],
+          "value": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+            }
+          ]
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_hook_digest",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "unknown-project",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "registration"
+          ],
+          "value": null
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_untrusted",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "missing-policy",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "policy"
+          ],
+          "value": null
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_untrusted",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "destination-spelling",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "remote_spelling"
+          ],
+          "value": "git@code-alias:team/project.git"
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_destination_mismatch",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "direct-host-redirect",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "destination_verified"
+          ],
+          "value": false
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_destination_mismatch",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "ssh-pin-mismatch",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "ssh_pins_match"
+          ],
+          "value": false
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_destination_mismatch",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "routing-command",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "command_free_routing"
+          ],
+          "value": false
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_destination_mismatch",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "expiry-boundary",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "now"
+          ],
+          "value": "2026-11-27T08:00:00Z"
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_untrusted",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "registration-replaced",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "registration",
+            "root_identity"
+          ],
+          "value": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_repository_changed",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "remote-changed",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "repository",
+            "primary_remote"
+          ],
+          "value": "ssh://git@code.example/team/other.git"
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_repository_changed",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "no-follow-identity",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "nofollow_identity_matches"
+          ],
+          "value": false
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_repository_changed",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "lane-scope",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "lane_id"
+          ],
+          "value": "lane:other"
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_untrusted",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "environment-scope",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "environment"
+          ],
+          "value": "claude_code"
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_untrusted",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "adapter-unqualified",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "adapter_qualified"
+          ],
+          "value": false
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_adapter_unqualified",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "unreadable-hook-state",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "hook_state_readable"
+          ],
+          "value": false
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_hook_digest",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "unreadable-policy",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "policy_readable"
+          ],
+          "value": false
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_ledger_unreadable",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "unreadable-ledger",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "ledger_readable"
+          ],
+          "value": false
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_ledger_unreadable",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "unreadable-journal",
+    "positive": {
+      "changes": [],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": [
+            {
+              "hook_id": "pre-start",
+              "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          ]
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "journal_readable"
+          ],
+          "value": false
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_ledger_unreadable",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  },
+  {
+    "name": "empty-hook-list",
+    "positive": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "policy"
+          ],
+          "value": {
+            "entry_id": "project-lanes",
+            "root_commit": "1111111111111111111111111111111111111111",
+            "canonical_destination": {
+              "transport": "ssh",
+              "host": "code.example",
+              "port": 22,
+              "repository_path": "/team/project.git",
+              "user": "git",
+              "host_key_fingerprints": [
+                "SHA256:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              ]
+            },
+            "remote_spellings": [
+              "ssh://git@code.example/team/project.git"
+            ],
+            "environments": [
+              "codex_cli"
+            ],
+            "lanes": [
+              "lane:build"
+            ],
+            "project_trust": true,
+            "hooks": [],
+            "issuer": {
+              "role": "operator",
+              "principal_ref": "principal:operator",
+              "approval_ref": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "actor": {
+                "kind": "keeper",
+                "principal_ref": "principal:keeper"
+              }
+            },
+            "time": "2026-10-27T08:00:00Z",
+            "reason": "Approve build lane",
+            "review_by": "2026-11-27T08:00:00Z"
+          }
+        },
+        {
+          "path": [
+            "record",
+            "policy",
+            "sha256"
+          ],
+          "value": "9e379c266eb2fafec8ce2d9308d7a3ad741aebf3e0a81053e030addd986885b1"
+        },
+        {
+          "path": [
+            "record",
+            "surfaces",
+            "hooks"
+          ],
+          "value": []
+        },
+        {
+          "path": [
+            "facts",
+            "effective_hooks"
+          ],
+          "value": []
+        },
+        {
+          "path": [
+            "facts",
+            "native_hook_approvals"
+          ],
+          "value": []
+        }
+      ],
+      "expected": {
+        "diagnostic": null,
+        "admitted": true,
+        "event": "policy-grant",
+        "surfaces": {
+          "project_trust": true,
+          "hooks": []
+        }
+      }
+    },
+    "negative": {
+      "changes": [
+        {
+          "path": [
+            "facts",
+            "policy"
+          ],
+          "value": {
+            "entry_id": "project-lanes",
+            "root_commit": "1111111111111111111111111111111111111111",
+            "canonical_destination": {
+              "transport": "ssh",
+              "host": "code.example",
+              "port": 22,
+              "repository_path": "/team/project.git",
+              "user": "git",
+              "host_key_fingerprints": [
+                "SHA256:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+              ]
+            },
+            "remote_spellings": [
+              "ssh://git@code.example/team/project.git"
+            ],
+            "environments": [
+              "codex_cli"
+            ],
+            "lanes": [
+              "lane:build"
+            ],
+            "project_trust": true,
+            "hooks": [],
+            "issuer": {
+              "role": "operator",
+              "principal_ref": "principal:operator",
+              "approval_ref": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "actor": {
+                "kind": "keeper",
+                "principal_ref": "principal:keeper"
+              }
+            },
+            "time": "2026-10-27T08:00:00Z",
+            "reason": "Approve build lane",
+            "review_by": "2026-11-27T08:00:00Z"
+          }
+        },
+        {
+          "path": [
+            "record",
+            "policy",
+            "sha256"
+          ],
+          "value": "9e379c266eb2fafec8ce2d9308d7a3ad741aebf3e0a81053e030addd986885b1"
+        },
+        {
+          "path": [
+            "record",
+            "surfaces",
+            "hooks"
+          ],
+          "value": []
+        },
+        {
+          "path": [
+            "facts",
+            "effective_hooks"
+          ],
+          "value": []
+        }
+      ],
+      "expected": {
+        "diagnostic": "workspace_trust_hook_digest",
+        "admitted": false,
+        "event": null,
+        "surfaces": null
+      }
+    }
+  }
+]
