@@ -232,11 +232,11 @@ func TestLeaseAbruptExit(t *testing.T) {
             ("time.sleep(30)", "setup setup timed out", True),
             ("raise SystemExit(0)", "setup EOF", True),
             ("print('{',flush=True)", "setup unexpected EOF", True),
-            ("print(json.dumps({'event':'started','pid':os.getpid()}),flush=True)", "premature provider EOF", False),
+            ("print(json.dumps({'event':'started','pid':os.getpid()}),flush=True)", "premature provider EOF", True),
             ("print(json.dumps({'event':'started','pid':os.getpid()}),flush=True);"
-             "print(json.dumps({'event':'completed','status':0}),flush=True);raise SystemExit(7)", "provider status mismatch", False),
+             "print(json.dumps({'event':'completed','status':0}),flush=True);raise SystemExit(7)", "provider status mismatch", True),
             ("print(json.dumps({'event':'started','pid':os.getpid()}),flush=True);"
-             "print(json.dumps({'event':'completed','status':0}),flush=True);time.sleep(30)", "provider completion timeout", False)]
+             "print(json.dumps({'event':'completed','status':0}),flush=True);time.sleep(30)", "provider completion timeout", True)]
 
         try:
             for plant, diagnostic, retained in plants:

@@ -38,8 +38,22 @@ class FixtureStartupTests(unittest.TestCase):
             with self.subTest(fault=fault):
                 self.check_startup(fault, diagnostic)
 
-    # A provider that dies before registration cannot certify descendant
-    # termination. The owner must retain their live root and report uncertainty.
+    # Genuine phase bytes delayed past provider EOF must not authorize killing
+    # a record-shaped foreign PID. The real supervisor still owns cleanup.
+    def test_provider_eof_before_identity_preserves_foreign_tree(self):
+        self.check_startup("foreign-eof", "premature provider EOF")
+
+    # Completion rejection and the independent setup clock have the same lack
+    # of PID authority while actual selected-body identity remains undelivered.
+    def test_preidentity_error_and_timeout_preserve_foreign_tree(self):
+        for fault, diagnostic in (("foreign-error", "invalid completion record"),
+                                  ("foreign-timeout", "child setup timeout")):
+            with self.subTest(fault=fault):
+                self.check_startup(fault, diagnostic)
+
+    # Provider death cannot certify cleanup: retain the root with uncertainty.
+    # Unix ordinary peers survive until release; Windows kill-on-close jobs
+    # terminate them. This does not claim local Windows runtime qualification.
     def test_unconfirmed_early_exit_retains_live_root(self):
         self.check_startup("provider-exit", "setup EOF", retain=True)
 
@@ -72,6 +86,28 @@ s.close()
         (shim / "sitecustomize.py").write_text(r'''
 import builtins,json,os,pathlib,sys,threading,time
 if pathlib.Path(sys.argv[0]).name=='fixture_environment.py' and '--go-test' in sys.argv:
+    if os.environ['STARTUP_FAULT'] in ('foreign-eof','foreign-error','foreign-timeout'):
+        # Reuse the actual child identity, nonce and live connection. Only its
+        # delivery is held, as in the independent authority-order witness.
+        import socket
+        destination=sys.argv[6]
+        proxy=socket.socket();proxy.bind(('127.0.0.1',0));proxy.listen();proxy.settimeout(7)
+        sys.argv[6]='127.0.0.1:'+str(proxy.getsockname()[1])
+        host,port=destination.rsplit(':',1)
+        upstream=socket.create_connection((host,int(port)),timeout=5)
+        def hold_phase():
+            downstream,_=proxy.accept()
+            with downstream,upstream,proxy:
+                downstream.settimeout(7)
+                packet=b''
+                while not packet.endswith(b'\n') and len(packet)<1024:
+                    data=downstream.recv(1024)
+                    if not data: raise RuntimeError('premature phase EOF in plant')
+                    packet+=data
+                pathlib.Path(os.environ['STARTUP_CASE'],'phase-held.json').write_bytes(packet)
+                time.sleep(15 if os.environ['STARTUP_FAULT']=='foreign-timeout' else 6)
+                upstream.sendall(packet)
+        threading.Thread(target=hold_phase,daemon=True).start()
     original=builtins.print
     def delivery(*args,**kwargs):
         try: record=json.loads(args[0])
@@ -93,6 +129,10 @@ if pathlib.Path(sys.argv[0]).name=='fixture_environment.py' and '--go-test' in s
             elif fault=='missing': original('{}',flush=True)
             elif fault=='zero-pid': original(json.dumps(dict(record,pid=0)),flush=True)
             elif fault=='foreign-pid': original(json.dumps(dict(record,pid=int(os.environ['STARTUP_FOREIGN_PID']))),flush=True)
+            elif fault in ('foreign-eof','foreign-error','foreign-timeout'):
+                original(json.dumps(dict(record,pid=int(os.environ['STARTUP_FOREIGN_PID']))),flush=True)
+                if fault=='foreign-eof': os.close(1)
+                elif fault=='foreign-error': original(json.dumps(dict(event='invalid-completed')),flush=True)
             elif fault=='provider-exit': os._exit(9)
             # deadline leaves started undelivered while actual supervision runs.
         threading.Thread(target=send,daemon=True).start()
@@ -117,7 +157,7 @@ if pathlib.Path(sys.argv[0]).name=='fixture_environment.py' and '--go-test' in s
                        LEASE_PYTHON=sys.executable, LEASE_TREE_SCRIPT=str(script),
                        PYTHONPATH=str(shim), STARTUP_CASE=str(case), STARTUP_FAULT=fault,
                        STARTUP_PORT=str(server.getsockname()[1]), STARTUP_OUTSIDE=str(sentinel))
-            if fault == "foreign-pid":
+            if fault.startswith("foreign-"):
                 foreign = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(30)"],
                                            env=env, start_new_session=os.name != "nt")
                 env["STARTUP_FOREIGN_PID"] = str(foreign.pid)
@@ -143,10 +183,15 @@ if pathlib.Path(sys.argv[0]).name=='fixture_environment.py' and '--go-test' in s
                     self.assertEqual(records["grandchild"]["parent"], records["child"]["pid"])
                     self.assertEqual(records["plant"]["actual"],
                                      dict(event="started", pid=records["body"]["pid"]))
+                    if fault in ("foreign-eof", "foreign-error", "foreign-timeout"):
+                        held = json.loads((case / "phase-held.json").read_text())
+                        self.assertEqual(held["pid"], records["body"]["pid"])
+                        self.assertEqual(len(held["token"]), 64)
+                        self.assertNotEqual(held["pid"], foreign.pid)
                     root = Path(records["provider"]["root"])
                     self.assertEqual(root.parent, temporary.resolve())
                     self.assertTrue(root.name.startswith("curator-go-fixture-"))
-                    status = parent.wait(timeout=18 if fault == "deadline" else 9)
+                    status = parent.wait(timeout=18 if fault in ("deadline", "foreign-timeout") else 9)
                     output = (case / "outer.log").read_text()
                     self.assertEqual(status, 2, output)
                     self.assertIn(diagnostic, output)
@@ -168,12 +213,14 @@ if pathlib.Path(sys.argv[0]).name=='fixture_environment.py' and '--go-test' in s
                                     root_removed=not root.exists(), surviving_peers=alive,
                                     home_at_return=Path(records["body"]["home"]).exists())
                     if foreign:
+                        observed.update(foreign_pid=foreign.pid, foreign_status=foreign.poll())
                         self.assertIsNone(foreign.poll(), "unverified PID killed outside fixture tree")
                         observed.update(foreign_pid=foreign.pid, foreign_alive=True)
                     if retain:
                         self.assertTrue(root.exists(), "unknown live tree lost its root")
                         self.assertIn("descendant cleanup unconfirmed; root retained", output)
-                        self.assertEqual(alive, [True, True])
+                        self.assertEqual(alive, [os.name != "nt"] * 2,
+                                         "ordinary peers must follow session/job ownership")
                     else:
                         self.assertEqual(alive, [False, False],
                                          "ordinary descendants survived early refusal/root deletion")

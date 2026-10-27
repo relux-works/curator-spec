@@ -6,10 +6,42 @@ import subprocess
 import sys
 import time
 import unittest
+import shutil
 
 import test_fixture_lifetime as lifetime
 from fixture_environment import isolated_environment
 from test_fixture_environment import tree_snapshot
+
+
+def recorded_process_exited(pid):
+    """Read only this control's exact recorded PID, without signaling it."""
+    if os.name == "nt":
+        import ctypes
+        from ctypes import wintypes
+        api = ctypes.WinDLL("kernel32", use_last_error=True)
+        api.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+        api.OpenProcess.restype = wintypes.HANDLE
+        api.WaitForSingleObject.argtypes = [wintypes.HANDLE, wintypes.DWORD]
+        api.WaitForSingleObject.restype = wintypes.DWORD
+        api.CloseHandle.argtypes = [wintypes.HANDLE]
+        handle = api.OpenProcess(0x00100000, False, pid)  # SYNCHRONIZE only
+        if not handle:
+            error = ctypes.get_last_error()
+            if error == 87:  # ERROR_INVALID_PARAMETER: PID no longer exists
+                return True
+            raise ctypes.WinError(error)
+        try:
+            result = api.WaitForSingleObject(handle, 0)
+            if result not in (0, 258):  # WAIT_OBJECT_0 / WAIT_TIMEOUT
+                raise ctypes.WinError(ctypes.get_last_error())
+            return result == 0
+        finally:
+            api.CloseHandle(handle)
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return True
+    return False
 
 
 class FixtureTransportTests(unittest.TestCase):
@@ -92,7 +124,9 @@ class FixtureTransportTests(unittest.TestCase):
                 self.assertEqual(tree_snapshot(self.case), before)
 
     # Unmodified helper/consumer copies must reject each actual transport gap;
-    # a marker and real child PASS distinguish the two lifecycle phases.
+    # a marker and real child PASS distinguish the two lifecycle phases. Before
+    # verified identity, a blocked supervisor forces explicit root retention;
+    # only this control's independently observed process exits permit teardown.
     def test_stalled_before_grant_is_bounded(self):
         self.check_stall("started", 18, "child setup timeout")
 
@@ -143,6 +177,7 @@ if pathlib.Path(sys.argv[0]).name == 'fixture_environment.py' and '--go-test' in
                                            "-test.timeout=2s"], cwd=self.fixture, env=env,
                                           stdout=output, stderr=output)
                 ready = None
+                retained = False
                 started = time.monotonic()
                 try:
                     deadline = started + 10
@@ -163,6 +198,15 @@ if pathlib.Path(sys.argv[0]).name == 'fixture_environment.py' and '--go-test' in
                     log = (self.case / "outer.log").read_text()
                     self.assertEqual(status, 2, log)
                     self.assertIn(diagnostic, log)
+                    if event == "started":
+                        self.assertIn("descendant cleanup unconfirmed; root retained", log)
+                        self.assertIn("child grant", log)
+                        retained = True
+                        owned = Path(ready["root"])
+                        self.assertEqual(owned.parent, temporary.resolve())
+                        self.assertTrue(owned.name.startswith("curator-go-fixture-"))
+                        self.assertFalse(owned.is_symlink())
+                        self.assertTrue(owned.is_dir(), "unverified startup lost its root")
                 finally:
                     hung = parent.poll() is None
                     if hung:
@@ -173,6 +217,16 @@ if pathlib.Path(sys.argv[0]).name == 'fixture_environment.py' and '--go-test' in
                             parent.kill()
                     parent.wait(timeout=8)
                     if ready:
+                        if retained:
+                            # The plant recorded real Popen identity, independent
+                            # of the protocol claim. Query only those two PIDs;
+                            # never delete a retained root beneath a live owner.
+                            deadline = time.monotonic() + 5
+                            while not all(recorded_process_exited(ready[k]) for k in ("provider", "child")):
+                                self.assertLess(time.monotonic(), deadline,
+                                                "retained root still has a live recorded owner")
+                                time.sleep(.02)
+                            shutil.rmtree(ready["root"])
                         self.assertFalse(Path(ready["root"]).exists(), "owned root leaked")
                     self.assertEqual(tree_snapshot(outside), before)
                     print(json.dumps(dict(control=event, outer_pid=parent.pid,
@@ -180,5 +234,6 @@ if pathlib.Path(sys.argv[0]).name == 'fixture_environment.py' and '--go-test' in
                                           child_pid=ready["child"] if ready else None,
                                           seconds=round(time.monotonic()-started, 3),
                                           observed_hang=hung, status=parent.returncode,
+                                          retained_at_return=retained,
                                           dispatched=self.dispatch.exists(),
                                           outside_unchanged=True)), flush=True)

@@ -500,14 +500,22 @@ timeouts, are unchanged. `test_fixture_transport.py` plants both transport
 stalls at authentic records without changing helper/consumer source bytes,
 and runs real bodies longer than setup's deadline. Homes
 remain owned by the live supervisor; abrupt loss of either Go/Python owner has
-fallback cleanup after registered startup. Before registration, refusal revokes
+fallback cleanup after independently nonce/PID-verified child readiness. A
+record-shaped startup PID alone never enables group termination. Before identity
+verification, every refusal (including provider EOF/error and phase timeout) revokes
 the private lease and gives Python up to 5s to stop its ordinary tree and remove
 the root. Provider exit alone is insufficient: if owned cleanup remains
 unconfirmed, the owner exits 2 and retains the root with an explicit diagnostic.
+This includes a supervisor stalled before delivering the child's grant: setup
+still times out at 10s, followed by the bounded 5s lease-revocation opportunity.
 A refused startup/phase identity supplies no PID kill authority.
 `test_fixture_startup.py` exercises authentic-grant ordinary child/grandchild
 readiness before delivery-only invalid/EOF/malformed/missing/deadline faults,
-a foreign PID, and unconfirmed early provider death. Deliberately detached
+a foreign PID with delayed genuine phase bytes before provider EOF/error or setup
+timeout, and unconfirmed early provider death. Retention remains mandatory when
+cleanup is unconfirmed: Unix ordinary peers survive provider death until bounded
+control release, while Windows kill-on-close jobs terminate the peers. Windows
+runtime qualification is separate from this source-level expectation. Deliberately detached
 processes or simultaneous loss of all
 owners are outside this fixture lifecycle contract. Temporary homes are removed
 after each module; save optional run logs under `.temp/`.

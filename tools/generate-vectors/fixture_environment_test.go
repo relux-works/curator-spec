@@ -120,12 +120,15 @@ func runIsolatedTests(m *testing.M) (status int) {
 	done := make(chan struct{})
 	var waitErr error
 	startWait := func() { once.Do(func() { go func() { waitErr = cmd.Wait(); close(done) }() }) }
-	startupAccepted := false
+	// A shaped provider record is only a PID claim. Authority is monotonic
+	// and starts solely at independently nonce/PID-verified child readiness;
+	// every earlier exit uses lease revocation and uncertainty retention.
+	identityVerified := false
 	confirmCleanup := func() {
-		// Accepted startup has the recorded group/job fallback below. Before
-		// acceptance, only the trusted supervisor can terminate its unknown
+		// Verified identity has the recorded group/job fallback below. Before
+		// verification, only the trusted supervisor can terminate its unknown
 		// tree: it removes this exclusive root after stopping descendants.
-		if _, err := os.Lstat(owned); startupAccepted || os.IsNotExist(err) {
+		if _, err := os.Lstat(owned); identityVerified || os.IsNotExist(err) {
 			cleanupAllowed = true
 		} else {
 			status = boundaryError("descendant cleanup unconfirmed; root retained", err)
@@ -136,8 +139,8 @@ func runIsolatedTests(m *testing.M) (status int) {
 		input.Close()
 		output.Close()
 		startWait()
-		if !startupAccepted {
-			// A refused/absent record supplies no PID authority. Revoking the
+		if !identityVerified {
+			// An unverified record supplies no PID authority. Revoking the
 			// existing lease lets Python stop an already dispatched ordinary
 			// tree; killing Python first would discard its Unix ownership.
 			select {
@@ -171,11 +174,10 @@ func runIsolatedTests(m *testing.M) (status int) {
 	}
 	completedCleanly := false
 	defer func() {
-		if !completedCleanly && startupAccepted {
+		if !completedCleanly && identityVerified {
 			stopFixtureGroup(started.PID)
 		}
 	}()
-	startupAccepted = true
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	phases := observeFixtureChild(ctx, listener, token, started.PID)
@@ -197,14 +199,10 @@ func runIsolatedTests(m *testing.M) (status int) {
 		select {
 		case phase := <-phases:
 			if phase.err != nil {
-				// A rejected identity must not turn its claimed PID into kill
-				// authority. Revoke Python's lease and await owned cleanup.
-				if !ready {
-					startupAccepted = false
-				}
 				return boundaryError("child phase", phase.err)
 			}
 			if phase.ready {
+				identityVerified = true
 				ready = true
 				setup.Stop()
 				setupDeadline = nil
