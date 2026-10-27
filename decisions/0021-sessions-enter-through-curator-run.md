@@ -457,6 +457,16 @@ This amendment fixes Curator's boundary to that document revision; it does not
 create a second wire/result contract. A matched source change must preserve
 both owners' exact reviewed heads and their separate landing custody.
 
+The follow-up [executor protocol source revision 1](https://github.com/relux-works/curator-agent-launcher/blob/d18931c9bbc1d2898fdf989dc05415dd347aa49e/docs/same-user-executor-wire.md)
+and its closed schema/inert manual cases concretize contract/1. The proposed
+canonical entry is the same binary's `curator-run member`, with explicit
+controller-owned descriptors, exact-byte frozen input, closed intake/result/error/
+replay records and durable admission/start/result/cancellation/reconciliation
+barriers. This is a new source allocation, not a released CLI/parser/native flag
+or an operational alias for interactive execution. There is one launcher-owned
+wire, not a parallel Curator schema. Its proposed transport exits never stand in
+for observed native outcome, task acceptance or complete cleanup.
+
 Amendments v1/v2 remain intact. Launcher SPEC §10 continues as the separately
 protected dispatcher/worker-account/broker target, unimplemented/unqualified
 under its own intake/FD/privilege/network/provider/lifecycle/activation gates.
@@ -472,6 +482,33 @@ Explicit compatible manager absence is different from an unavailable required
 manager; no fallback is admitted. Core retains fragment/manager/native-origin
 and managed-home compatibility ownership. The launcher owns execution/result;
 the runtime owner owns native context, discovery and provider semantics.
+
+Core's existing non-repair profile resolution verifies recorded managed state;
+release detection can still probe a runtime. No live resolve/probe is admitted
+by this source unit, and profile/fragment identity cannot attest full effective
+discovery or fresh history. [Decision0019](0019-fragment-consumers-and-one-construction-site.md)
+retains agents-management as the single argv/channel constructor, without process
+launch or profile-resolution ownership. The launcher cannot shell around the
+interactive forced-repair route or introduce a competing composer.
+
+[Decision0029](0029-provisioning-origin.md) and the adopted
+[provisioning-origin/1](../protocol/provisioning-origin.md) retain exclusive local
+origin authority and recoverable whole-home lifecycle. The private sidecar,
+paths and credentials never enter member intake objects, fragments, portable
+snapshots or public evidence. Opaque verification digests neither transfer that
+authority nor manufacture a source-owned verification API. Missing/invalid origin,
+ambient HOME/selector/link reconstruction or incomplete origin implementation
+refuses; no member-specific fallback/adoption/repair is created. Its separate
+source implementation, lifecycle/contribution custody and native qualification
+remain dependencies, not results of this documentary amendment.
+
+Actual inspected Curator producer at `933d2785e2544edd5b9b1bc345dbf41674e8c4aa`
+emits ordinary v2 and managed Muse v4 fragments; publication of later carrier
+shapes alone does not enable emission/support. Source closure comes from verified
+lock/store, never extra fragment fields. No shipped member compatibility receipt
+or positive required-manager/compatible-absence tuple is supplied. The proposed
+launcher catalog begins empty and matches exact owner-published tuple bytes;
+caller metadata or a digest alone cannot populate it or prove actual compatibility.
 
 Each bounded assignment consumes frozen declared instructions/artifacts in a
 **NEW native context**, never a parent/producer/resumed conversation, transcript,
@@ -528,8 +565,17 @@ or claimed by this amendment.
 
 Source acceptance/publication, bounded implementation admission, fixture/native
 qualification, host adoption and independent task acceptance are separate gates.
-Concrete entry/handle/schema/refusal formats and supported config/runtime tuples
-still require owner publication before implementation/activation. Core retains
+The concrete entry/handle/schema/refusal source candidate above requires paired
+exact-head acceptance and each source owner's publication. It establishes no
+supported native tuple: runtime strict discovery/fresh creation, exact model/
+effort, local home/auth/origin, non-repair preparation/probe policy, compatible
+composition and recoverable complete-scope semantics still need owning inputs.
+Process-group wait, root exit or PID disappearance never prove escaped-descendant
+absence or crash survival. Unknown start/native/result/cleanup remains uncertain,
+blocks replacement/consumption and preserves original evidence. Stage2 source
+implementation requires accepted published Stage1 plus its separately recorded
+scoped assignment; native qualification/adoption requires a further concrete
+tuple, finite effect budgets and custodian admission. Core retains
 Curator-spec default-branch landing; launcher retains its own source landing.
 No installation, authentication change, host grant, runtime operation or worker
 wake/lifecycle implementation follows from this source proposal.
