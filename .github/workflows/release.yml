@@ -46,13 +46,13 @@ jobs:
           test "$(git rev-parse --verify --end-of-options "${GITHUB_REF_NAME}^{commit}")" = "$(git rev-parse --verify --end-of-options "${GITHUB_SHA}^{commit}")"
           git fetch --no-tags origin "$GITHUB_DEFAULT_BRANCH:refs/remotes/origin/$GITHUB_DEFAULT_BRANCH"
           python tools/verify_release_commit.py --commit "$GITHUB_SHA"
-          python tools/validate.py
+          python tools/fixture_environment.py python tools/validate.py
           python -B -m unittest discover -s tools -p 'test_*.py'
-          go test ./tools/...
-          go run ./tools/generate-vectors -root .
-          git diff --exit-code -- conformance/v1 conformance/candidate.json conformance/skillfile-sources-v1/manifest.json conformance/draft-sources-v2/manifest.json release/1.0.0-rc.14.json
+          python tools/fixture_environment.py go test ./tools/...
+          python tools/fixture_environment.py go run ./tools/generate-vectors -root .
+          python tools/fixture_environment.py git diff --exit-code -- conformance/v1 conformance/candidate.json conformance/skillfile-sources-v1/manifest.json conformance/draft-sources-v2/manifest.json release/1.0.0-rc.14.json
           version="${GITHUB_REF_NAME#v}"
-          python tools/release_gate.py --version "$version" --commit "$GITHUB_SHA"
+          python tools/fixture_environment.py python tools/release_gate.py --version "$version" --commit "$GITHUB_SHA"
 
       - name: Package normative release
         run: |

@@ -41,22 +41,22 @@ jobs:
         run: python -m pip install -r requirements-dev.txt
 
       - name: Validate schemas, cases, manifest, and local links
-        run: python tools/validate.py
+        run: python tools/fixture_environment.py python tools/validate.py
 
       - name: Check Skillfile-source independence from rc.10
-        run: python tools/verify_skillfile_sources_independence.py
+        run: python tools/fixture_environment.py python tools/verify_skillfile_sources_independence.py
 
       - name: Test stable release gate
         run: python -B -m unittest discover -s tools -p 'test_*.py'
 
       - name: Verify generator and cryptographic vectors
-        run: go test ./tools/...
+        run: python tools/fixture_environment.py go test ./tools/...
 
       - name: Regenerate authoritative vectors
-        run: go run ./tools/generate-vectors -root .
+        run: python tools/fixture_environment.py go run ./tools/generate-vectors -root .
 
       - name: Prove deterministic regeneration
-        run: git diff --exit-code -- conformance/v1 conformance/candidate.json conformance/skillfile-sources-v1/manifest.json conformance/draft-sources-v2/manifest.json release/1.0.0-rc.14.json
+        run: python tools/fixture_environment.py git diff --exit-code -- conformance/v1 conformance/candidate.json conformance/skillfile-sources-v1/manifest.json conformance/draft-sources-v2/manifest.json release/1.0.0-rc.14.json
 
   formatting:
     name: Formatting

@@ -93,5 +93,5 @@ previous squash-only checklist did not describe it.
 Run the local release gate before signing a tag:
 
 ```text
-python tools/release_gate.py --version 1.0.0 --commit HEAD
+python tools/fixture_environment.py python tools/release_gate.py --version 1.0.0 --commit HEAD
 ```

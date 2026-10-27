@@ -253,7 +253,7 @@ schemas. Its separate schema and corpus require implementation qualification.
   `conformance/provisioning-origin-v1/`. The production validator dispatches
   this gate. Store logs in `.temp/`; no manager lifecycle is executed here.
 
-- Skillfile MCP stage-A gate: `python3 tools/validate.py` dispatches
+- Skillfile MCP stage-A gate: `python3 tools/fixture_environment.py python3 tools/validate.py` dispatches
   `tools/skillfile_mcp.py`; focused controls run with
   `python3 -B -m unittest discover -s tools -p 'test_skillfile_mcp.py'`.
   Inputs and expected verdicts live in `conformance/skillfile-mcp-v1/`; checks
@@ -273,7 +273,7 @@ Validation requires local release tags (fetch tags in shallow checkouts).
   gate. These checks qualify no manager runtime; logs go in `.temp/`.
 
 - Python 3 with `python3 -m pip install -r requirements-dev.txt`: run
-  `python3 tools/validate.py` and
+  `python3 tools/fixture_environment.py python3 tools/validate.py` and
   `python3 -B -m unittest discover -s tools -p "test_*.py"` for the existing
   schema/vector/link checks, including the later
   [managed Muse v4 cases](conformance/environments-muse-v4/README.md). Run
@@ -287,7 +287,7 @@ Validation requires local release tags (fetch tags in shallow checkouts).
   `python3 -B -m unittest discover -s tools -p "test_local_hosted_launches.py"`;
   they read `conformance/local-hosted-launches/cases.json` and do not launch providers.
 
-- Login-readiness structural gate: `python3 tools/validate.py` calls
+- Login-readiness structural gate: `python3 tools/fixture_environment.py python3 tools/validate.py` calls
   `tools/login_readiness.py`; `python3 -B -m unittest discover -s tools -p
   "test_login_readiness.py"` checks refusal controls. Inputs live in
   `schemas/login-readiness-v1/` and `conformance/login-readiness-v1/`; local
@@ -299,7 +299,7 @@ Validation requires local release tags (fetch tags in shallow checkouts).
   live in `conformance/profile-codex-settings-v1/`; logs belong in `.temp/`.
 - Draft source marker: `python3 -B -m unittest discover -s tools -p 'test_source_marker.py' -v`
   validates manifestless v6 positives/negatives and narrowing controls through
-  the published JSON Schema. `python3 tools/validate.py` also recomputes all
+  the published JSON Schema. `python3 tools/fixture_environment.py python3 tools/validate.py` also recomputes all
   ownership-vector refusal, preservation and re-derivation obligations from
   their inputs; marker tests include narrowing controls through that entry point.
   Fixtures live in `conformance/draft-sources-v2/`;
@@ -328,8 +328,20 @@ Validation requires local release tags (fetch tags in shallow checkouts).
   discover -s tools -p 'test_workspace_policy_grant.py' -v` for publication,
   negative control and cleanup witnesses. `make validate` includes both;
   local logs go in `.temp/`. These checks qualify no vendor runtime.
-- Go: `go test ./tools/...` tests specification tooling;
-  `go run ./tools/generate-vectors -root .` regenerates the released corpus
+- Fixture boundary: `python3 tools/fixture_environment.py COMMAND [ARG ...]`
+  clears the 20 repository/storage/discovery/template selectors and all
+  `GIT_CONFIG*` channels, pins physical absolute temporary homes/config, and
+  restores the caller on cleanup. Git fixture modules enter this boundary
+  themselves, so unittest discovery intentionally runs without an outer wrapper.
+  Direct Go generator tests obtain the same managed environment over a private
+  pipe from Python; the pipe lifetime retains their temporary homes. Python 3
+  is therefore required for direct Go tests too (`python` on Windows).
+  Maintained Make/CI source-history and regeneration commands use command mode.
+  Operational release signature verification retains its configured trust context
+  and is deliberately outside fixture isolation. This is test environment
+  isolation, not a sandbox for arbitrary child processes. Local logs go in `.temp/`.
+- Go: `python3 tools/fixture_environment.py go test ./tools/...` tests specification tooling;
+  `python3 tools/fixture_environment.py go run ./tools/generate-vectors -root .` regenerates the released corpus
   under `conformance/v1/`, its release metadata, and the independent
   `conformance/skillfile-sources-v1/manifest.json` pin. It does not fold the
   accepted source-extension vectors into the core corpus.
@@ -443,7 +455,7 @@ or execute a vendor harness.
 Native-project source-mode policy and instruction-byte vectors run with
 `python3 -B -m unittest discover -s tools -p 'test_project_context_modes.py' -v`.
 The publication oracle checks `conformance/project-context-leaf1-v1/mode-cases.json`
-through `python3 tools/validate.py`; regeneration uses
+through `python3 tools/fixture_environment.py python3 tools/validate.py`; regeneration uses
 `python3 tools/generate_project_context_vectors.py --check`. Outputs go to
 stdout; task-local logs belong in `.temp/`. These static checks qualify no
 native runtime or permission boundary.
@@ -459,12 +471,14 @@ emit no files and do not rewrite released schema documents.
 
 Python test modules that create or drive Git repositories install the shared
 `tools/fixture_environment.py` boundary in `setUpModule`. It discards inherited
-Git repository, index, config and ceiling selectors and `SSH_AUTH_SOCK`, and
+Git repository, storage, discovery, template and config selectors and
+`SSH_AUTH_SOCK`, and
 pins HOME and XDG_CONFIG_HOME to disposable directories (also USERPROFILE on
 Windows). Explicit test overrides remain available inside the boundary.
 Run `python3 -B -m unittest discover -s tools -p 'test_*.py'`;
 `test_fixture_environment.py` launches a real release fixture against a hostile
-decoy and checks refs, config and object counts. Temporary homes are removed
+decoy for each of the 20 selectors and checks its entire path inventory,
+file hashes and lstat identity. Temporary homes are removed
 after each module; save optional run logs under `.temp/`.
 `python3 tools/fixture_environment.py COMMAND [ARG ...]` applies the same
 boundary to source-history tools. `make validate` uses it for the validator

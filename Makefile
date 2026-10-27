@@ -6,13 +6,13 @@ validate:
 	python3 tools/fixture_environment.py go test ./tools/...
 
 regenerate:
-	go run ./tools/generate-vectors -root .
+	python3 tools/fixture_environment.py go run ./tools/generate-vectors -root .
 
 regenerate-check:
-	python3 tools/validate.py --release-history-only
-	go run ./tools/generate-vectors -root .
-	git diff --exit-code -- conformance/v1 conformance/candidate.json conformance/skillfile-sources-v1/manifest.json conformance/draft-sources-v2/manifest.json release/1.0.0-rc.14.json
+	python3 tools/fixture_environment.py python3 tools/validate.py --release-history-only
+	python3 tools/fixture_environment.py go run ./tools/generate-vectors -root .
+	python3 tools/fixture_environment.py git diff --exit-code -- conformance/v1 conformance/candidate.json conformance/skillfile-sources-v1/manifest.json conformance/draft-sources-v2/manifest.json release/1.0.0-rc.14.json
 
 release-check: validate regenerate-check
 	test -n "$(VERSION)"
-	python3 tools/release_gate.py --version "$(VERSION)" --commit HEAD
+	python3 tools/fixture_environment.py python3 tools/release_gate.py --version "$(VERSION)" --commit HEAD
