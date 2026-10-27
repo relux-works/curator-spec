@@ -5,6 +5,7 @@ import os
 import hashlib
 import json
 import stat
+import secrets
 from pathlib import Path
 import subprocess
 import sys
@@ -12,10 +13,74 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from fixture_environment import REPOSITORY_SELECTORS, isolated_environment
+from fixture_environment import isolated_environment
+
+
+# Independent regression inputs; the implementation uses a prefix, not this list.
+REPOSITORY_SELECTORS = frozenset({
+    "GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_COMMON_DIR",
+    "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_NAMESPACE",
+    "GIT_TEMPLATE_DIR", "GIT_CEILING_DIRECTORIES", "GIT_DISCOVERY_ACROSS_FILESYSTEM",
+    "GIT_IMPLICIT_WORK_TREE", "GIT_GRAFT_FILE", "GIT_SHALLOW_FILE",
+    "GIT_NO_REPLACE_OBJECTS", "GIT_REPLACE_REF_BASE", "GIT_PREFIX",
+    "GIT_QUARANTINE_PATH", "GIT_REFERENCE_BACKEND", "GIT_DEFAULT_HASH",
+    "GIT_DEFAULT_REF_FORMAT",
+})
 
 
 class FixtureEnvironmentTests(unittest.TestCase):
+    # Prefix scrubbing must cover unknown future keys and all F4/F5 channels;
+    # only owned config defaults survive, while deliberate local tracing works.
+    def test_git_prefix_scrub_and_fixture_local_trace(self):
+        keys = ["GIT_FOO_BAR", "GIT_FOO_BAR_" + secrets.token_hex(8).upper(),
+                "GIT_TRACE", "GIT_TRACE_SETUP", "GIT_TRACE2_EVENT",
+                "GIT_ATTR_SOURCE", "GIT_INDEX_VERSION", "GIT_SSH", "GIT_SSH_COMMAND",
+                "GIT_SSH_VARIANT", "GIT_ASKPASS", "SSH_AUTH_SOCK", "SSH_ASKPASS"]
+        with patch.dict(os.environ, dict.fromkeys(keys, "poison")):
+            before = dict(os.environ)
+            with isolated_environment():
+                for key in keys:
+                    with self.subTest(key=key):
+                        self.assertNotIn(key, os.environ)
+                self.assertEqual({k for k in os.environ if k.startswith("GIT_")},
+                                 {"GIT_CONFIG_GLOBAL", "GIT_CONFIG_NOSYSTEM"})
+                home = Path(os.environ["HOME"])
+                trace = home / "local.trace"
+                os.environ["GIT_TRACE"] = str(trace)
+                child = subprocess.run(["git", "init", "-q", str(home / "repo")],
+                                       capture_output=True, text=True, timeout=10)
+                self.assertEqual(child.returncode, 0, child.stderr)
+                self.assertIn("built-in: git init", trace.read_text())
+                os.environ["GIT_NEW_KEY_INSIDE"] = "owned"
+            self.assertEqual(dict(os.environ), before)
+
+    # Each inherited trace destination stays byte/identity identical while the
+    # actual command wrapper creates a successful scratch repository commit.
+    def test_inherited_trace_files_are_untouched(self):
+        runner = Path(__file__).with_name("fixture_environment.py")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            trace = root / "external.trace"
+            trace.write_text("external sentinel")
+            before = tree_snapshot(root)
+            script = ("import os,pathlib,subprocess; "
+                      "p=pathlib.Path(os.environ['HOME'])/'repo'; p.mkdir(); "
+                      "subprocess.run(['git','init','-q',str(p)],check=True); "
+                      "subprocess.run(['git','-C',str(p),'-c','user.name=Fixture',"
+                      "'-c','user.email=fixture@example.invalid','commit','-qm','fixture',"
+                      "'--allow-empty'],check=True)")
+            for key in [None, "GIT_TRACE", "GIT_TRACE_SETUP", "GIT_TRACE2_EVENT"]:
+                with self.subTest(key=key or "clean"):
+                    env = dict(os.environ)
+                    if key:
+                        env[key] = str(trace.resolve())
+                    child = subprocess.run([sys.executable, str(runner), sys.executable,
+                                            "-c", script], env=env, capture_output=True,
+                                           text=True, timeout=15)
+                    self.assertEqual(child.returncode, 0, child.stderr)
+                    self.assertEqual(tree_snapshot(root), before,
+                                     "inherited trace modified external sentinel")
+
     # The command runner uses the same boundary for non-unittest source-history
     # tools, cleans its homes, and preserves both success and failure statuses.
     def test_command_boundary_cleans_homes_and_preserves_exit_status(self):
@@ -35,33 +100,6 @@ class FixtureEnvironmentTests(unittest.TestCase):
                     capture_output=True, text=True)
                 self.assertEqual(child.returncode, status, child.stderr)
                 self.assertFalse(Path(child.stdout.strip()).exists())
-
-    # The Go bridge must retain homes until EOF and remove them afterwards.
-    # Its managed delta carries no inherited config payload or selector value.
-    def test_environment_pipe_lifetime_and_selector_delta(self):
-        runner = Path(__file__).with_name("fixture_environment.py")
-        env = dict(os.environ, GIT_COMMON_DIR="hostile", GIT_CONFIG_VALUE_99="private")
-        child = subprocess.Popen([sys.executable, str(runner), "--environment-json"],
-                                 stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE, env=env, text=True)
-        try:
-            delta = json.loads(child.stdout.readline())
-            self.assertIn("GIT_COMMON_DIR", delta["unset"])
-            self.assertIn("GIT_CONFIG_VALUE_99", delta["unset"])
-            self.assertNotIn("GIT_COMMON_DIR", delta["set"])
-            self.assertNotIn("GIT_CONFIG_VALUE_99", delta["set"])
-            home = Path(delta["set"]["HOME"])
-            self.assertTrue(home.is_dir())
-            self.assertIsNone(child.poll())
-            child.stdin.close()
-            self.assertEqual(child.wait(timeout=15), 0, child.stderr.read())
-            self.assertFalse(home.exists())
-        finally:
-            if child.poll() is None:
-                child.stdin.close()
-                child.wait(timeout=15)
-            child.stdout.close()
-            child.stderr.close()
 
     # All inherited selectors/config channels disappear; fixture native-home
     # writes stay private. Cleanup also restores unset versus empty values.
@@ -125,6 +163,8 @@ class FixtureEnvironmentTests(unittest.TestCase):
         git("-c", "user.name=Decoy", "-c", "user.email=decoy@example.invalid",
             "commit", "-qm", "decoy", "--allow-empty")
 
+        trace = decoy / "external.trace"
+        trace.write_text("external sentinel")
         before = tree_snapshot(decoy)
         # Every selector is independently injected. Each case must both admit
         # the real release fixture and preserve the full decoy byte/identity
@@ -152,7 +192,11 @@ class FixtureEnvironmentTests(unittest.TestCase):
             "GIT_QUARANTINE_PATH", "GIT_REFERENCE_BACKEND", "GIT_DEFAULT_HASH",
             "GIT_DEFAULT_REF_FORMAT",
         }
-        self.assertEqual(REPOSITORY_SELECTORS, expected)
+        expected.update({"GIT_TRACE", "GIT_TRACE_SETUP", "GIT_TRACE2_EVENT",
+                         "GIT_ATTR_SOURCE", "GIT_INDEX_VERSION", "GIT_FOO_BAR"})
+        values.update({k: str(trace.resolve()) for k in
+                       ("GIT_TRACE", "GIT_TRACE_SETUP", "GIT_TRACE2_EVENT")})
+        values.update(GIT_ATTR_SOURCE="HEAD", GIT_INDEX_VERSION="4", GIT_FOO_BAR="poison")
         for selector in [None, *sorted(expected)]:
             with self.subTest(selector=selector or "clean"):
                 hostile = dict(env)

@@ -15,23 +15,10 @@ from pathlib import Path
 import tempfile
 
 
-# Keep aligned with curator internal/testgitenv (20-key repository, storage,
-# discovery and template inventory). Bootstrap and command mode reuse this list.
-REPOSITORY_SELECTORS = frozenset({
-    "GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_COMMON_DIR",
-    "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_NAMESPACE",
-    "GIT_TEMPLATE_DIR", "GIT_CEILING_DIRECTORIES", "GIT_DISCOVERY_ACROSS_FILESYSTEM",
-    "GIT_IMPLICIT_WORK_TREE", "GIT_GRAFT_FILE", "GIT_SHALLOW_FILE",
-    "GIT_NO_REPLACE_OBJECTS", "GIT_REPLACE_REF_BASE", "GIT_PREFIX",
-    "GIT_QUARANTINE_PATH", "GIT_REFERENCE_BACKEND", "GIT_DEFAULT_HASH",
-    "GIT_DEFAULT_REF_FORMAT",
-})
-
-
 def _managed(key: str) -> bool:
     key = key.upper()
-    return key.startswith("GIT_CONFIG") or key in REPOSITORY_SELECTORS or key in {
-        "SSH_AUTH_SOCK", "HOME", "XDG_CONFIG_HOME", "TMPDIR", "TMP", "TEMP",
+    return key.startswith("GIT_") or key in {
+        "SSH_AUTH_SOCK", "SSH_ASKPASS", "HOME", "XDG_CONFIG_HOME", "TMPDIR", "TMP", "TEMP",
         "CODEX_HOME", "CLAUDE_CONFIG_DIR", "PI_CODING_AGENT_DIR",
         "XDG_DATA_HOME", "XDG_STATE_HOME", "XDG_CACHE_HOME",
     } or (os.name == "nt" and key == "USERPROFILE")
@@ -52,7 +39,7 @@ def _temporary_root() -> Path:
 
 @contextmanager
 def isolated_environment():
-    """Scrub inherited selectors, pin disposable homes, then restore the caller."""
+    """Scrub inherited GIT_*/SSH keys, pin homes, then restore the caller."""
     previous = {key: value for key, value in os.environ.items() if _managed(key)}
     temporary_root = _temporary_root()
     with tempfile.TemporaryDirectory(prefix="curator-test-environment-",
@@ -68,8 +55,11 @@ def isolated_environment():
             for key in list(os.environ):
                 if _managed(key):
                     del os.environ[key]
+            # Git allowlist: use only the fixture-owned empty global config.
+            os.environ["GIT_CONFIG_GLOBAL"] = str(config)
+            # Never read system Git configuration or its configured helpers.
+            os.environ["GIT_CONFIG_NOSYSTEM"] = "1"
             os.environ.update(HOME=str(home), XDG_CONFIG_HOME=str(xdg),
-                              GIT_CONFIG_GLOBAL=str(config), GIT_CONFIG_NOSYSTEM="1",
                               TMPDIR=str(temporary_root), TMP=str(temporary_root),
                               TEMP=str(temporary_root))
             if os.name == "nt":
@@ -82,23 +72,78 @@ def isolated_environment():
             os.environ.update(previous)
 
 
-if __name__ == "__main__":
+def _go_tests(root: Path, command: list[str]) -> int:
+    from fixture_process import OwnedProcess, termination_event, wait_owned, watch_lease
     import subprocess
 
+    # The outer Go process created this exclusive empty root and also owns
+    # fallback cleanup if the provider dies. Never accept an ambient root.
+    if (not root.is_absolute() or root.resolve(strict=True) != root
+            or not root.name.startswith("curator-go-fixture-") or any(root.iterdir())):
+        raise ValueError("Go fixture root must be an empty owned physical directory")
+    try:
+        os.environ["TMPDIR"] = str(root)
+        with isolated_environment(), termination_event() as lost:
+            watch_lease(sys.stdin.buffer, lost)
+            process = OwnedProcess(command, stdin=subprocess.PIPE,
+                                   stdout=sys.stderr, stderr=sys.stderr)
+            try:
+                print(json.dumps({"event": "started", "pid": process.child.pid}), flush=True)
+                grant = {"version": 1, "root": str(Path(os.environ["HOME"]).parent),
+                         "set": {k: v for k, v in os.environ.items() if _managed(k)}}
+                process.child.stdin.write((json.dumps(grant) + "\n").encode())
+                process.child.stdin.flush()
+                status = wait_owned(process, lost)
+            finally:
+                process.stop()
+                process.child.stdin.close()
+        # Completion is emitted only after descendants and private homes are
+        # gone. EOF or a provider exit code alone can never mean success.
+        root.rmdir()
+        print(json.dumps({"event": "completed", "status": status}), flush=True)
+        return status
+    finally:
+        # TemporaryDirectory handles its own tree; this root is exclusively
+        # shared with the outer Go cleanup, so an already removed root is OK.
+        try:
+            root.rmdir()
+        except FileNotFoundError:
+            pass
+
+
+def _command(command: list[str]) -> int:
+    from fixture_process import OwnedProcess, WindowsStartGate, termination_event, wait_owned
+    with isolated_environment(), termination_event() as lost:
+        gate = WindowsStartGate() if os.name == "nt" else None
+        try:
+            if gate:
+                command = [sys.executable, str(Path(__file__).with_name("fixture_process.py")),
+                           "--wait", gate.name, *command]
+            process = OwnedProcess(command)
+            try:
+                if gate:
+                    gate.release()
+                return wait_owned(process, lost)
+            finally:
+                process.stop()
+        finally:
+            if gate:
+                gate.close()
+
+
+def main() -> int:
     if len(sys.argv) == 1:
         raise SystemExit("usage: fixture_environment.py COMMAND [ARG ...]")
-    if sys.argv[1:] == ["--environment-json"]:
-        # Direct Go TestMain consumes only this managed delta over a private
-        # pipe. Keep the owning context alive until its stdin closes, including
-        # when the test binary exits abruptly. No credentials are serialized.
-        previous_keys = [key for key in os.environ if _managed(key)]
-        with isolated_environment():
-            print(json.dumps({"unset": previous_keys,
-                              "set": {k: v for k, v in os.environ.items()
-                                      if _managed(k)}}), flush=True)
-            sys.stdin.buffer.read()
-        raise SystemExit(0)
-    # Source-history tools also need a discoverable checkout, not ambient Git
-    # selectors. The fixture tests still enter their own module boundaries.
-    with isolated_environment():
-        raise SystemExit(subprocess.run(sys.argv[1:], check=False).returncode)
+    if sys.argv[1] == "--go-test":
+        if len(sys.argv) < 5:
+            raise SystemExit("Go fixture supervision requires a root and child command")
+        return _go_tests(Path(sys.argv[2]), sys.argv[3:])
+    return _command(sys.argv[1:])
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except Exception as error:
+        print("fixture boundary:", type(error).__name__ + ":", error, file=sys.stderr, flush=True)
+        raise SystemExit(2)

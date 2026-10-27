@@ -329,13 +329,17 @@ Validation requires local release tags (fetch tags in shallow checkouts).
   negative control and cleanup witnesses. `make validate` includes both;
   local logs go in `.temp/`. These checks qualify no vendor runtime.
 - Fixture boundary: `python3 tools/fixture_environment.py COMMAND [ARG ...]`
-  clears the 20 repository/storage/discovery/template selectors and all
-  `GIT_CONFIG*` channels, pins physical absolute temporary homes/config, and
+  clears every inherited `GIT_*` key, `SSH_AUTH_SOCK` and `SSH_ASKPASS`,
+  pins physical absolute temporary homes/config, and
   restores the caller on cleanup. Git fixture modules enter this boundary
   themselves, so unittest discovery intentionally runs without an outer wrapper.
-  Direct Go generator tests obtain the same managed environment over a private
-  pipe from Python; the pipe lifetime retains their temporary homes. Python 3
-  is therefore required for direct Go tests too (`python` on Windows).
+  Direct Go generator tests use a Python supervisor and private lease/status
+  pipes. An owned test child validates a complete live physical environment
+  before any selected test runs. Premature EOF or missing completion fails
+  closed; parent/provider loss terminates the owned child tree before cleanup.
+  Python 3 is required for direct Go tests too (`python` on Windows).
+  `tools/fixture_process.py` supplies owned Unix process groups and Windows
+  kill-on-close jobs; the Windows command startup gate preserves ordinary stdin.
   Maintained Make/CI source-history and regeneration commands use command mode.
   Operational release signature verification retains its configured trust context
   and is deliberately outside fixture isolation. This is test environment
@@ -470,15 +474,25 @@ emit no files and do not rewrite released schema documents.
 ### Git fixture isolation
 
 Python test modules that create or drive Git repositories install the shared
-`tools/fixture_environment.py` boundary in `setUpModule`. It discards inherited
-Git repository, storage, discovery, template and config selectors and
-`SSH_AUTH_SOCK`, and
+`tools/fixture_environment.py` boundary in `setUpModule`. It discards
+**every inherited `GIT_*` variable**, plus `SSH_AUTH_SOCK` and `SSH_ASKPASS`, and
 pins HOME and XDG_CONFIG_HOME to disposable directories (also USERPROFILE on
-Windows). Explicit test overrides remain available inside the boundary.
+Windows). The short Git allowlist contains only `GIT_CONFIG_GLOBAL` (the
+fixture-owned empty global config) and `GIT_CONFIG_NOSYSTEM=1` (no host system
+config or helpers). Explicit test overrides, including `GIT_TRACE`, remain
+available inside the boundary.
 Run `python3 -B -m unittest discover -s tools -p 'test_*.py'`;
 `test_fixture_environment.py` launches a real release fixture against a hostile
-decoy for each of the 20 selectors and checks its entire path inventory,
-file hashes and lstat identity. Temporary homes are removed
+decoy for each independent selector/trace input and checks its entire path
+inventory, file hashes and lstat identity. Unknown randomized Git keys,
+tracing destinations, attribute/index selectors and local tracing have
+separate controls. `test_fixture_lifetime.py` compiles the actual Go TestMain
+and drives bounded EOF, stale/incomplete grant, status, spawn, parent/provider
+death and ordinary-descendant controls without skips. Setup and teardown have
+bounded transport waits; existing test-body deadlines are unchanged. Homes
+remain owned by the live supervisor; abrupt loss of either Go/Python owner has
+fallback cleanup. Deliberately detached processes or simultaneous loss of all
+owners are outside this fixture lifecycle contract. Temporary homes are removed
 after each module; save optional run logs under `.temp/`.
 `python3 tools/fixture_environment.py COMMAND [ARG ...]` applies the same
 boundary to source-history tools. `make validate` uses it for the validator
