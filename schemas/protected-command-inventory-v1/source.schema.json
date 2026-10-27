@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/protected-command-inventory-v1/source.schema.json",
+  "title": "Protected command inventory v1: source",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "repository",
+    "revision",
+    "status",
+    "class",
+    "extraction",
+    "license",
+    "notice",
+    "inputs_sha256"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,63}$(?![\\s\\S])"
+    },
+    "repository": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[^\\x00-\\x1f\\x7f]+$(?![\\s\\S])"
+    },
+    "revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[^\\x00-\\x1f\\x7f]+$(?![\\s\\S])"
+    },
+    "status": {
+      "enum": [
+        "included-mit",
+        "curated-identifiers",
+        "reference-only"
+      ]
+    },
+    "class": {
+      "enum": [
+        "catalogue",
+        "system",
+        "shell",
+        "vcs",
+        "package-manager",
+        "platform",
+        "manager"
+      ]
+    },
+    "extraction": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^[^\\x00-\\x1f\\x7f]+$(?![\\s\\S])"
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[^\\x00-\\x1f\\x7f]+$(?![\\s\\S])"
+    },
+    "notice": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^licenses/[A-Za-z0-9-]+\\.txt$(?![\\s\\S])"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "inputs_sha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "included-mit"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "notice": {
+            "type": "string"
+          },
+          "inputs_sha256": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$(?![\\s\\S])"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "curated-identifiers"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "notice": {
+            "type": "null"
+          },
+          "inputs_sha256": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$(?![\\s\\S])"
+          }
+        }
+      }
+    }
+  ]
+}

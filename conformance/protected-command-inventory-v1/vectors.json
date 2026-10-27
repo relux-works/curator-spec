@@ -1,0 +1,357 @@
+{
+  "schema_version": 1,
+  "policy": "No static approvals exist in v1. Research grant-positive rows 7-9 use renamed exports instead; base and manager/shell overlaps remain unwaivable.",
+  "pairs": [
+    {
+      "id": "PCI-01",
+      "claim": "export-not-package",
+      "negative": {
+        "case": "git-script",
+        "reasons": [
+          "static_overlap"
+        ]
+      },
+      "positive": {
+        "case": "unique-export",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-02",
+      "claim": "binary-alias",
+      "negative": {
+        "case": "ssh-alias",
+        "reasons": [
+          "static_overlap"
+        ]
+      },
+      "positive": {
+        "case": "unique-alias",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-03",
+      "claim": "manager-namespace",
+      "negative": {
+        "case": "manager-variants",
+        "reasons": [
+          "reserved_namespace"
+        ]
+      },
+      "positive": {
+        "case": "unique-export",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-04",
+      "claim": "fold-and-suffix",
+      "negative": {
+        "case": "git-variants",
+        "reasons": [
+          "static_overlap"
+        ]
+      },
+      "positive": {
+        "case": "distinct-dot-name",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-05",
+      "claim": "shell-namespace",
+      "negative": {
+        "case": "shell-words",
+        "reasons": [
+          "reserved_namespace"
+        ]
+      },
+      "positive": {
+        "case": "context-only",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-06",
+      "claim": "selected-retained",
+      "negative": {
+        "case": "duplicate-exports",
+        "reasons": [
+          "ambiguous_export"
+        ]
+      },
+      "positive": {
+        "case": "distinct-exports",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-07",
+      "claim": "static-no-approval",
+      "negative": {
+        "case": "forged-static-grants",
+        "reasons": [
+          "static_overlap"
+        ]
+      },
+      "positive": {
+        "case": "renamed-jq",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-08",
+      "claim": "stale-approval",
+      "negative": {
+        "case": "changed-approval-tuples",
+        "reasons": [
+          "static_overlap"
+        ]
+      },
+      "positive": {
+        "case": "renamed-jq",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-09",
+      "claim": "actual-path-unwaivable",
+      "negative": {
+        "case": "jq-on-base",
+        "reasons": [
+          "base_path_collision"
+        ]
+      },
+      "positive": {
+        "case": "renamed-jq",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-10",
+      "claim": "uncatalogued-base",
+      "negative": {
+        "case": "custom-on-base",
+        "reasons": [
+          "base_path_collision"
+        ]
+      },
+      "positive": {
+        "case": "custom-outside-base",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-11",
+      "claim": "launch-drift",
+      "negative": {
+        "case": "late-base-arrival",
+        "reasons": [
+          "base_path_collision"
+        ]
+      },
+      "positive": {
+        "case": "unrelated-base-arrival",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-12",
+      "claim": "destination-not-caller",
+      "negative": {
+        "case": "destination-collision",
+        "reasons": [
+          "base_path_collision"
+        ]
+      },
+      "positive": {
+        "case": "caller-collision-only",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-13",
+      "claim": "admission-required",
+      "negative": {
+        "case": "invalid-admissions",
+        "reasons": [
+          "admission_unavailable",
+          "admission_changed",
+          "admission_unreadable"
+        ]
+      },
+      "positive": {
+        "case": "explicit-admission",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-14",
+      "claim": "mixed-bin",
+      "negative": {
+        "case": "mixed-forwarder-real",
+        "reasons": [
+          "base_path_collision"
+        ]
+      },
+      "positive": {
+        "case": "exact-forwarder",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-15",
+      "claim": "forwarder-proof",
+      "negative": {
+        "case": "fake-stale-foreign",
+        "reasons": [
+          "base_path_collision",
+          "forwarder_owner_changed",
+          "forwarder_content_changed"
+        ]
+      },
+      "positive": {
+        "case": "exact-forwarder",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-16",
+      "claim": "link-resolution",
+      "negative": {
+        "case": "colliding-or-unsafe-link",
+        "reasons": [
+          "base_path_collision",
+          "admission_unsafe_link",
+          "admission_unreadable"
+        ]
+      },
+      "positive": {
+        "case": "nonexecutable-or-unrelated-link",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-17",
+      "claim": "revalidation",
+      "negative": {
+        "case": "swapped-dir-or-owner",
+        "reasons": [
+          "admission_changed",
+          "forwarder_owner_changed"
+        ]
+      },
+      "positive": {
+        "case": "stable-two-checks",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-18",
+      "claim": "artifact-identity",
+      "negative": {
+        "case": "invalid-artifacts",
+        "reasons": [
+          "inventory_identity",
+          "inventory_digest",
+          "duplicate_json_key",
+          "entry_order",
+          "invalid_json",
+          "inventory_shape"
+        ]
+      },
+      "positive": {
+        "case": "known-artifact",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-19",
+      "claim": "baseline-union",
+      "negative": {
+        "case": "newly-reserved",
+        "reasons": [
+          "static_overlap"
+        ]
+      },
+      "positive": {
+        "case": "old-and-new-clean",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-20",
+      "claim": "source-coverage",
+      "negative": {
+        "case": "omitted-source-facts",
+        "reasons": [
+          "coverage_witness"
+        ]
+      },
+      "positive": {
+        "case": "complete-source-facts",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-21",
+      "claim": "strict-source-parser",
+      "negative": {
+        "case": "bad-source-names",
+        "reasons": [
+          "unresolved_name",
+          "invalid_source_aqua_name",
+          "invalid_toml",
+          "invalid_source_bins"
+        ]
+      },
+      "positive": {
+        "case": "literal-source",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-22",
+      "claim": "reference-recipes",
+      "negative": {
+        "case": "wrong-recipe-facts",
+        "reasons": [
+          "coverage_witness"
+        ]
+      },
+      "positive": {
+        "case": "correct-recipe-facts",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-23",
+      "claim": "hidden-shell-surface",
+      "negative": {
+        "case": "undeclared-hook",
+        "reasons": [
+          "undeclared_command_surface"
+        ]
+      },
+      "positive": {
+        "case": "declared-alias",
+        "expect": "ok"
+      }
+    },
+    {
+      "id": "PCI-24",
+      "claim": "determinism",
+      "negative": {
+        "case": "reordered-artifact",
+        "reasons": [
+          "entry_order"
+        ]
+      },
+      "positive": {
+        "case": "deterministic-and-real-change",
+        "expect": "ok"
+      }
+    }
+  ]
+}
