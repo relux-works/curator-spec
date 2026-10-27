@@ -1,0 +1,1917 @@
+{
+  "kind": "home-lease-semantic-v1",
+  "normative": "protocol/home-leases.md",
+  "cases": [
+    {
+      "requirement": "HL01",
+      "negative": {
+        "setup": "Existing project namespace and fresh home namespace; isolated canonical manager root",
+        "steps": [
+          "Attempt allocation through a launcher-owned store or second journal"
+        ],
+        "expected": "wrong_authority_or_second_store",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Existing project namespace and fresh home namespace; isolated canonical manager root",
+        "steps": [
+          "Acquire through Curator shared lifecycle; project binding bytes unchanged"
+        ],
+        "expected": "one_shared_engine_typed_namespaces"
+      }
+    },
+    {
+      "requirement": "HL02",
+      "negative": {
+        "setup": "Two processes; held canonical manager lock and a borrowed-operation writer",
+        "steps": [
+          "Release the lock after preflight, allow acquire to commit, then try the write"
+        ],
+        "expected": "write_requires_still_held_witness",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Two processes; held canonical manager lock and a borrowed-operation writer",
+        "steps": [
+          "Retain the real lock through publication; second operation serializes"
+        ],
+        "expected": "one_serial_order_no_reentrant_lock"
+      }
+    },
+    {
+      "requirement": "HL03",
+      "negative": {
+        "setup": "Admit digest A/home H; publish digest B before acquire",
+        "steps": [
+          "Acquire A after B is current"
+        ],
+        "expected": "environment_lease_lock_mismatch/profile_lock_changed",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Admit digest A/home H; publish digest B before acquire",
+        "steps": [
+          "Freshly admit B then acquire B at H"
+        ],
+        "expected": "acquired_exact_digest_and_identity"
+      }
+    },
+    {
+      "requirement": "HL04",
+      "negative": {
+        "setup": "Existing home namespace with ledger missing, then corrupt project namespace on overlapping target",
+        "steps": [
+          "List or release a valid absent ID against unreadable evidence"
+        ],
+        "expected": "environment_lease_unreadable/ledger_missing",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Existing home namespace with ledger missing, then corrupt project namespace on overlapping target",
+        "steps": [
+          "Truly absent both namespaces; read list"
+        ],
+        "expected": "empty_without_creating_state"
+      }
+    },
+    {
+      "requirement": "HL05",
+      "negative": {
+        "setup": "Valid prepared and bound holders; strict UTF-8 byte parser",
+        "steps": [
+          "Use unknown field, duplicate key, case discriminator, unsafe integer, control or path-bearing ID"
+        ],
+        "expected": "usage/invalid_holder",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Valid prepared and bound holders; strict UTF-8 byte parser",
+        "steps": [
+          "Decode exact prepared and bound holders with nullable prepared fields"
+        ],
+        "expected": "valid_closed_holder"
+      }
+    },
+    {
+      "requirement": "HL06",
+      "negative": {
+        "setup": "Persist request R then crash after durable acquire before reply/op.json progress",
+        "steps": [
+          "Retry R with a changed digest or holder"
+        ],
+        "expected": "environment_lease_holder_mismatch/request_conflict",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Persist request R then crash after durable acquire before reply/op.json progress",
+        "steps": [
+          "Retry identical R; list orphan; retry after terminal"
+        ],
+        "expected": "same_id_no_duplicate_no_revive"
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "Prepared lease revision 1 with exact manager incarnation M",
+        "steps": [
+          "Bind stale conflicting tuple, wrong incarnation or after terminal"
+        ],
+        "expected": "bind_refused_no_identity_change",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared lease revision 1 with exact manager incarnation M",
+        "steps": [
+          "Bind exact tuple at revision 1 then retry identical committed payload/revision"
+        ],
+        "expected": "bound_once_same_outcome_no_write_retry"
+      }
+    },
+    {
+      "requirement": "HL08",
+      "negative": {
+        "setup": "Prepared reservation or bound session with living fixture descendant; kill launcher only",
+        "steps": [
+          "Probe age timeout, missing/re-registered manager, draining and PID reuse; attempt repair"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared reservation or bound session with living fixture descendant; kill launcher only",
+        "steps": [
+          "Observe exact terminal session and descendants; reconcile release then repair"
+        ],
+        "expected": "released_then_repair_allowed"
+      }
+    },
+    {
+      "requirement": "HL09",
+      "negative": {
+        "setup": "Bound exact manager/session/generation/process; inject holder-supplied down assertion",
+        "steps": [
+          "Release with no independent observer or mismatched generation"
+        ],
+        "expected": "environment_lease_release_unconfirmed/session_state_unknown",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Bound exact manager/session/generation/process; inject holder-supplied down assertion",
+        "steps": [
+          "Authoritative observer proves exact down and descendant/ownership reconciliation, or proven no-start"
+        ],
+        "expected": "released_with_evidence"
+      }
+    },
+    {
+      "requirement": "HL10",
+      "negative": {
+        "setup": "Well-formed absent ID with other active holder",
+        "steps": [
+          "Release absent ID; do not fabricate success as a changed record"
+        ],
+        "expected": "unknown_lease_unchanged_no_event",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Well-formed absent ID with other active holder",
+        "steps": [
+          "Release proven terminal holder then retry; already broken retry too"
+        ],
+        "expected": "released_once_terminal_retry_unchanged"
+      }
+    },
+    {
+      "requirement": "HL11",
+      "negative": {
+        "setup": "Acquire holders A and B at same home/digest within one lane",
+        "steps": [
+          "Release A; attempt rewrite and acquire different generation C"
+        ],
+        "expected": "B_still_blocks_and_C_lock_mismatch",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Acquire holders A and B at same home/digest within one lane",
+        "steps": [
+          "Reconcile B too; intended rewrite"
+        ],
+        "expected": "all_released_rewrite_allowed"
+      }
+    },
+    {
+      "requirement": "HL12",
+      "negative": {
+        "setup": "Profile lease revision 2 and separate project lease",
+        "steps": [
+          "Break without operator or reason/revision, with stale revision, or project ID"
+        ],
+        "expected": "usage_or_revision_or_authority_refusal_no_audit",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Profile lease revision 2 and separate project lease",
+        "steps": [
+          "Operator breaks exact profile revision with fencing/abandonment reason"
+        ],
+        "expected": "exact_one_broken_with_intent"
+      }
+    },
+    {
+      "requirement": "HL13",
+      "negative": {
+        "setup": "Lease and break transaction; inject crash before prepare, between audit/ledger and before reply",
+        "steps": [
+          "Fail audit publication; try to observe acknowledged unblock"
+        ],
+        "expected": "no_success_without_audit_and_tombstone",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Lease and break transaction; inject crash before prepare, between audit/ledger and before reply",
+        "steps": [
+          "Fault-free break then recover/retry identical operation"
+        ],
+        "expected": "one_durable_event_matching_tombstone"
+      }
+    },
+    {
+      "requirement": "HL14",
+      "negative": {
+        "setup": "Two affected homes; lease second; save all locks/bytes/link/mode/backup preimages",
+        "steps": [
+          "Run batch rewrite; inspect first target too"
+        ],
+        "expected": "environment_home_leased_no_affected_changes",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Two affected homes; lease second; save all locks/bytes/link/mode/backup preimages",
+        "steps": [
+          "Use same batch after release, and separate disjoint-home lease"
+        ],
+        "expected": "intended_changes_disjoint_lease_allowed"
+      }
+    },
+    {
+      "requirement": "HL15",
+      "negative": {
+        "setup": "Pending overlapping forward/rollback migration or transaction intent; blocking lease",
+        "steps": [
+          "Invoke repair/install/GC recovery; inject forward commit-check refusal"
+        ],
+        "expected": "no_forward_or_rollback_replay_preserve_pending",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Pending overlapping forward/rollback migration or transaction intent; blocking lease",
+        "steps": [
+          "No lease: recover same intent; only then fresh acquisition"
+        ],
+        "expected": "recovery_then_acquire_allowed"
+      }
+    },
+    {
+      "requirement": "HL16",
+      "negative": {
+        "setup": "Unknown/prepared lease retains runtime/build/projection absent from ordinary scope marks",
+        "steps": [
+          "Collect retained roots, including a pending-acquire reference"
+        ],
+        "expected": "referenced_roots_retained",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Unknown/prepared lease retains runtime/build/projection absent from ordinary scope marks",
+        "steps": [
+          "Collect unreferenced neighboring artifact in same GC pass"
+        ],
+        "expected": "neighbor_actually_collected"
+      }
+    },
+    {
+      "requirement": "HL17",
+      "negative": {
+        "setup": "Leased current home; pending unrelated intent; snapshot state and absent mutation-lock path",
+        "steps": [
+          "List/status/no-repair resolve with stale home or relevant unreadable pending intent"
+        ],
+        "expected": "read_only_typed_refusal_no_fragment",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Leased current home; pending unrelated intent; snapshot state and absent mutation-lock path",
+        "steps": [
+          "Read current home and complete list; absent store returns empty"
+        ],
+        "expected": "read_only_success_no_new_lock_or_default"
+      }
+    },
+    {
+      "requirement": "HL18",
+      "negative": {
+        "setup": "Each CLI verb; stdout capture; invalid holder bytes include synthetic secret sentinel",
+        "steps": [
+          "Unknown code/reason, wrong format or success/exit mismatch, echo input sentinel"
+        ],
+        "expected": "closed_result_or_usage_no_progress_no_echo",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Each CLI verb; stdout capture; invalid holder bytes include synthetic secret sentinel",
+        "steps": [
+          "Valid operation-specific result one JSON plus prefixed stderr if needed"
+        ],
+        "expected": "closed_result_matches_exit"
+      }
+    },
+    {
+      "requirement": "HL19",
+      "negative": {
+        "setup": "One prepared, one active and one unknown holder across two affected homes",
+        "steps": [
+          "Rewrite; omit unknown or prepared from diagnostic/count"
+        ],
+        "expected": "all_three_named_count_three_refusal_no_write",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "One prepared, one active and one unknown holder across two affected homes",
+        "steps": [
+          "Release all, then same rewrite succeeds; list deterministic before/after"
+        ],
+        "expected": "correct_order_and_no_fabricated_holders"
+      }
+    },
+    {
+      "requirement": "HL20",
+      "negative": {
+        "setup": "Earlier credential/boundary failure and existing project busy control",
+        "steps": [
+          "Resolve repair refusal tries to emit shell/env fragment or rename project code"
+        ],
+        "expected": "empty_stdout_preserve_earlier_code_and_project_view_busy",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Earlier credential/boundary failure and existing project busy control",
+        "steps": [
+          "Successful resolve emits valid fragment; profile error typed"
+        ],
+        "expected": "existing_output_contract_preserved"
+      }
+    },
+    {
+      "requirement": "HL21",
+      "negative": {
+        "setup": "Hosted launch/resume and werkstatt up; fault before/after acquire reply",
+        "steps": [
+          "Manager call before lease or retry with silently changed lock digest"
+        ],
+        "expected": "no_manager_start_without_matching_acquire",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Hosted launch/resume and werkstatt up; fault before/after acquire reply",
+        "steps": [
+          "Journal lease_requested precedes acquire; identical lost-reply retry"
+        ],
+        "expected": "one_reservation_then_manager_call"
+      }
+    },
+    {
+      "requirement": "HL22",
+      "negative": {
+        "setup": "Manager started; crash before bind; recover launcher journal",
+        "steps": [
+          "Treat prepared as unprotected or bind invented tuple"
+        ],
+        "expected": "prepared_still_blocks_and_bad_tuple_refused",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Manager started; crash before bind; recover launcher journal",
+        "steps": [
+          "Reconcile exact manager tuple and bind acquired revision"
+        ],
+        "expected": "active_exact_tuple_once"
+      }
+    },
+    {
+      "requirement": "HL23",
+      "negative": {
+        "setup": "Down/stop/recycle/status/failed-before-start evidence and abandon-operation",
+        "steps": [
+          "Release on draining/unknown/re-registration; abandon auto-break; hosted bypass flag"
+        ],
+        "expected": "retained_no_bypass_launcher_refusal_with_curator_reason",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Down/stop/recycle/status/failed-before-start evidence and abandon-operation",
+        "steps": [
+          "Authoritative no-start/down reconciliation; native launch has no lease"
+        ],
+        "expected": "release_proven_only_native_unleased"
+      }
+    },
+    {
+      "requirement": "HL24",
+      "negative": {
+        "setup": "Lane/Werkstatt A owns profile/home; launch B or ad-hoc against it",
+        "steps": [
+          "Admit cross-lane/cross-Werkstatt sharing or one Werkstatt second profile"
+        ],
+        "expected": "consumer_admission_refused_no_manager_start",
+        "preserve": [
+          "home_bytes_links_modes",
+          "profile_locks_and_pointers",
+          "other_holders",
+          "unrelated_audit_records"
+        ],
+        "forbidden": [
+          "unacknowledged_partial_effect",
+          "secret_or_argv_output"
+        ]
+      },
+      "positive": {
+        "setup": "Lane/Werkstatt A owns profile/home; launch B or ad-hoc against it",
+        "steps": [
+          "Multiple sessions within one admitted lane/Werkstatt and separate home for B"
+        ],
+        "expected": "independent_same_generation_holders"
+      }
+    },
+    {
+      "requirement": "W01",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "env resolve --repair, --preserve-lock and takeover; first provisioning"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "env resolve --repair, --preserve-lock and takeover; first provisioning"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W02",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "store reconstruction with two profile consumers"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "store reconstruction with two profile consumers"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W03",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "hash/identity migration via resolve/use/migrate"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "hash/identity migration via resolve/use/migrate"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W04",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "profile update/--all and unchanged-lock native-skill repair"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "profile update/--all and unchanged-lock native-skill repair"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W05",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "profile use/scoped/--clear and direct current/scoped setter"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "profile use/scoped/--clear and direct current/scoped setter"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W06",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "profile install/reinstall/--use/import/first activation"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "profile install/reinstall/--use/import/first activation"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W07",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "profile sync all managed/native phases"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "profile sync all managed/native phases"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W08",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "global add/install standalone and borrowed legacy continuation"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "global add/install standalone and borrowed legacy continuation"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W09",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "shared skill projection/copy fallback/skill sync"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "shared skill projection/copy fallback/skill sync"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W10",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "ordinary managed/native MCP render"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "ordinary managed/native MCP render"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W11",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "profile mcp install/repair multi-env"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "profile mcp install/repair multi-env"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W12",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "seed/credential link/marker projection; synthetic contents only"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "seed/credential link/marker projection; synthetic contents only"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W13",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "env migrate --apply and migration-journal recovery"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "env migrate --apply and migration-journal recovery"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W14",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "env unmanage with/without --restore-backups"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "env unmanage with/without --restore-backups"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W15",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "profile remove with/without --purge non-current profile"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "profile remove with/without --purge non-current profile"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W16",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "project allocation/publication/update adapter"
+        ],
+        "expected": "project_view_busy",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "project allocation/publication/update adapter"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W17",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "envprofile/install/GC/global transaction forward and rollback recovery"
+        ],
+        "expected": "environment_home_leased/blocking_holders",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "envprofile/install/GC/global transaction forward and rollback recovery"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "W18",
+      "negative": {
+        "setup": "Blocking lease on second affected target or its shared dependency; snapshot all target preimages",
+        "steps": [
+          "legacy/global install and historical collector"
+        ],
+        "expected": "referenced_roots_retained",
+        "preserve": [
+          "all_affected_home_bytes_links_modes",
+          "current_previous_locks",
+          "seeds_backups_markers_ownership",
+          "pending_intent",
+          "other_holders"
+        ],
+        "forbidden": [
+          "first_target_changed_before_second_target_refusal",
+          "forward_or_rollback_bypass"
+        ]
+      },
+      "positive": {
+        "setup": "Same target fixture after all relevant holders reconcile terminal; disjoint leased home remains",
+        "steps": [
+          "legacy/global install and historical collector"
+        ],
+        "expected": "intended_write_or_collection_occurs_disjoint_lease_unaffected"
+      }
+    },
+    {
+      "requirement": "HL02",
+      "negative": {
+        "setup": "Repair owns manager lock first; barrier before final write",
+        "steps": [
+          "Acquire times out under the existing bounded lock policy"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lock_unavailable",
+          "reason": "mutation_lock_busy",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Repair owns manager lock first; barrier before final write",
+        "steps": [
+          "Repair completes, fresh acquire takes resulting digest"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "acquired"
+        }
+      }
+    },
+    {
+      "requirement": "HL03",
+      "negative": {
+        "setup": "Home H reached by an env selector alias and symlink-aware identity",
+        "steps": [
+          "Acquire admitted digest A after lock B publication"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_lock_mismatch",
+          "reason": "profile_lock_changed",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Home H reached by an env selector alias and symlink-aware identity",
+        "steps": [
+          "Alias selector normalizes to canonical env; exact H/B admission succeeds"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "acquired"
+        }
+      }
+    },
+    {
+      "requirement": "HL03",
+      "negative": {
+        "setup": "Case-sensitive filesystem has Home and home as distinct directories",
+        "steps": [
+          "Acquire caller-selected case alias instead of manager-resolved home"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_home_stale",
+          "reason": "home_not_current",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Case-sensitive filesystem has Home and home as distinct directories",
+        "steps": [
+          "Canonical manager home identity succeeds; case-insensitive platform alias is same identity only per manager identity rules"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "acquired"
+        }
+      }
+    },
+    {
+      "requirement": "HL04",
+      "negative": {
+        "setup": "Namespace exists with unreadable file, symlinked state or unknown/duplicate stored holder member",
+        "steps": [
+          "Release well-formed absent id against uncertain namespace"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_unreadable",
+          "reason": "invalid_record",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Namespace exists with unreadable file, symlinked state or unknown/duplicate stored holder member",
+        "steps": [
+          "Complete valid state read then release absent id"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "unknown_lease"
+        }
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "Prepared lease revision 1 bound by manager M incarnation T",
+        "steps": [
+          "Bind M registration T2"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_holder_mismatch",
+          "reason": "manager_incarnation_changed",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared lease revision 1 bound by manager M incarnation T",
+        "steps": [
+          "Bind exact M/T/session/generation/process"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound"
+        }
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "Lease revision advanced by another valid transition",
+        "steps": [
+          "Bind different payload using old revision"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_revision_conflict",
+          "reason": "revision_changed",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Lease revision advanced by another valid transition",
+        "steps": [
+          "Exact committed bind retry with original payload/revision is unchanged"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound"
+        }
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "Syntactically valid absent lease ID",
+        "steps": [
+          "Bind absent ID"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_unknown",
+          "reason": "unknown_lease",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Syntactically valid absent lease ID",
+        "steps": [
+          "Bind existing prepared ID"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "bound"
+        }
+      }
+    },
+    {
+      "requirement": "HL09",
+      "negative": {
+        "setup": "Launcher forwards synthetic terminal record; authoritative observer is unreachable",
+        "steps": [
+          "Release"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_release_unconfirmed",
+          "reason": "session_state_unknown",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Launcher forwards synthetic terminal record; authoritative observer is unreachable",
+        "steps": [
+          "Observer reaches exact bound record and proves all descendants stopped"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "released"
+        }
+      }
+    },
+    {
+      "requirement": "HL09",
+      "negative": {
+        "setup": "Session down but one descendant remains or ownership unresolved",
+        "steps": [
+          "Release"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_release_unconfirmed",
+          "reason": "termination_unconfirmed",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Session down but one descendant remains or ownership unresolved",
+        "steps": [
+          "Descendants terminal and ownership reconciled"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "released"
+        }
+      }
+    },
+    {
+      "requirement": "HL10",
+      "negative": {
+        "setup": "Well-formed absent ID; valid full store read with unrelated holder",
+        "steps": [
+          "Release absent ID"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "unknown_lease",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Well-formed absent ID; valid full store read with unrelated holder",
+        "steps": [
+          "Reconcile known holder terminal then release again unchanged"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "already_released"
+        }
+      }
+    },
+    {
+      "requirement": "HL12",
+      "negative": {
+        "setup": "Blocking profile lease exact revision; descendants fenced",
+        "steps": [
+          "Break without --operator"
+        ],
+        "expected": {
+          "exit": 2,
+          "code": "usage",
+          "reason": "operator_confirmation_required",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Blocking profile lease exact revision; descendants fenced",
+        "steps": [
+          "Same break with per-invocation --operator and reason/revision"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "broken"
+        }
+      }
+    },
+    {
+      "requirement": "HL12",
+      "negative": {
+        "setup": "Blocking profile lease exact revision; explicit operator",
+        "steps": [
+          "Break with missing or empty reason"
+        ],
+        "expected": {
+          "exit": 2,
+          "code": "usage",
+          "reason": "reason_required",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Blocking profile lease exact revision; explicit operator",
+        "steps": [
+          "Same break with bounded acknowledgement reason"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "broken"
+        }
+      }
+    },
+    {
+      "requirement": "HL12",
+      "negative": {
+        "setup": "Blocking profile lease with explicit operator and reason",
+        "steps": [
+          "Break without revision"
+        ],
+        "expected": {
+          "exit": 2,
+          "code": "usage",
+          "reason": "revision_required",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Blocking profile lease with explicit operator and reason",
+        "steps": [
+          "Same break with exact current revision"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "broken"
+        }
+      }
+    },
+    {
+      "requirement": "HL12",
+      "negative": {
+        "setup": "Blocking profile lease current revision 2",
+        "steps": [
+          "Break --if-revision 1"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_revision_conflict",
+          "reason": "revision_changed",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Blocking profile lease current revision 2",
+        "steps": [
+          "Break exact revision 2"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "broken"
+        }
+      }
+    },
+    {
+      "requirement": "HL12",
+      "negative": {
+        "setup": "Project lease with otherwise complete operator break flags",
+        "steps": [
+          "Attempt profile-home break on project id"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_authority_refused",
+          "reason": "unsupported_lease_kind",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Project lease with otherwise complete operator break flags",
+        "steps": [
+          "Existing project authoritative Reconcile proves termination; profile-home break stays separate"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "project_contract_preserved"
+        }
+      }
+    },
+    {
+      "requirement": "HL12",
+      "negative": {
+        "setup": "Well-formed absent ID and complete break flags",
+        "steps": [
+          "Break absent ID"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_unknown",
+          "reason": "unknown_lease",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Well-formed absent ID and complete break flags",
+        "steps": [
+          "Break existing profile-home ID"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "broken"
+        }
+      }
+    },
+    {
+      "requirement": "HL13",
+      "negative": {
+        "setup": "Injected failure publishing immutable audit event",
+        "steps": [
+          "Break"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_write_failed",
+          "reason": "publication_failed",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "protection_or_recoverable_pending",
+          "all_other_holders",
+          "no_acknowledged_unblock_without_audit"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Injected failure publishing immutable audit event",
+        "steps": [
+          "Same valid break without injected fault; tombstone and audit agree"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "broken"
+        }
+      }
+    },
+    {
+      "requirement": "HL15",
+      "negative": {
+        "setup": "Overlapping unresolved forward/rollback journal intent",
+        "steps": [
+          "Acquire"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_lease_recovery_required",
+          "reason": "pending_mutation",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Overlapping unresolved forward/rollback journal intent",
+        "steps": [
+          "Unleased authorized recovery completes, fresh acquire validates home"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "acquired"
+        }
+      }
+    },
+    {
+      "requirement": "HL19",
+      "negative": {
+        "setup": "Prepared A, active B and unknown C; lease rewrite targets all",
+        "steps": [
+          "Rewrite and omit one holder from report"
+        ],
+        "expected": {
+          "exit": 1,
+          "code": "environment_home_leased",
+          "reason": "blocking_holders",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Prepared A, active B and unknown C; lease rewrite targets all",
+        "steps": [
+          "Read list names A/B/C ordered; after all release intended rewrite succeeds"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "listed"
+        }
+      }
+    },
+    {
+      "requirement": "HL18",
+      "negative": {
+        "setup": "Recognized lease command with --format shell",
+        "steps": [
+          "Invoke list"
+        ],
+        "expected": {
+          "exit": 2,
+          "code": "usage",
+          "reason": "invalid_format",
+          "stdout_fragment": false,
+          "changed": false
+        },
+        "preserve": [
+          "home_bytes_links_modes",
+          "all_profile_locks",
+          "all_other_holders",
+          "audit_preimage_on_refusal"
+        ],
+        "forbidden": [
+          "unrelated_or_partial_home_write",
+          "implicit_lease_break",
+          "provider_start_on_refusal"
+        ]
+      },
+      "positive": {
+        "setup": "Recognized lease command with --format shell",
+        "steps": [
+          "list --format json returns one closed result object"
+        ],
+        "expected": {
+          "exit": 0,
+          "code": null,
+          "reason": "listed"
+        }
+      }
+    }
+  ]
+}

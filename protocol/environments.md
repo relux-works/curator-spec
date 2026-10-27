@@ -5010,3 +5010,11 @@ than regenerate the frozen rc.14 corpus. Selection cases bind to manifest
 schema 2 and lock schema 4; a separate structural case proves schema 1 still
 refuses skill `directory`. Implementation consumption remains
 unverified until the manager drives the declared lifecycle entry points.
+
+## Managed-home lease amendment (2026-10-27)
+
+The [home-lease v1 contract](home-leases.md) guards every affected home,
+profile lock and shared dependency before Curator writes, including recovery
+and rollback. `environment_home_leased` names every prepared, active and unknown
+holder. Read-only resolve/status stay read-only; failed resolve emits no fragment.
+This unreleased amendment adds no fields to existing released environment carriers.

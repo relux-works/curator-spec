@@ -91,8 +91,10 @@ questions and real adapter qualification remain gated; acceptance enables no
 production receiver and changes no released schema.
 The [delegated-launch revision accepted on 2026-10-21](cips/CIP-0016-local-hosted-launches.md#revision-delegated-local-launches-2026-10-21)
 records a transitional live-home route with per-runtime activation and
-retirement. Home leases and exclusive profile homes remain proposed; filing
-the amendment claims no implementation or qualification.
+retirement. Owner decision 2026-10-27 confirmed home leases with option
+**refuse**, one profile per Werkstatt and one managed home per unattended lane;
+the [home-lease contract](protocol/home-leases.md) claims no implementation
+or runtime qualification.
 
 ## Accepted login-readiness amendment
 
@@ -200,6 +202,14 @@ native credential authority beside the home marker, preserving frozen marker
 schemas. Its separate schema and corpus require implementation qualification.
 
 ## Tools
+
+- Home-lease specification: `python3 tools/home_leases.py` checks closed schemas,
+  strict decoder pairs and HL/W semantic-pair coverage; `python3 -B -m unittest
+  discover -s tools -p 'test_home_leases.py'` runs checker controls. Inputs live
+  in [home-lease conformance](conformance/home-leases-v1/README.md); logs go in
+  `.temp/`. These commands execute no lease runtime or provider. The
+  [contract](protocol/home-leases.md) records CIP-0016's 2026-10-27 confirmed
+  refuse and per-Werkstatt/lane conditions before implementation.
 
 - Provisioning-origin publication: `python3 tools/provisioning_origin.py` and
   `python3 -B -m unittest discover -s tools -p 'test_provisioning_origin.py' -v`

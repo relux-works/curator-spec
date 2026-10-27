@@ -12200,6 +12200,16 @@ def validate_skillfile_mcp() -> None:
     print(f"Skillfile MCP stage-A cases: {total}/{total}; negatives: {negatives}/{negatives}; native writer qualification: unrun")
 
 
+def validate_home_leases() -> None:
+    import home_leases
+
+    try:
+        schemas, semantic = home_leases.check_corpus(ROOT)
+    except (ValueError, OSError, SchemaError) as exc:
+        raise ValidationFailure(f"Home leases: {exc}") from exc
+    print(f"home leases: {schemas} schema/decoder pairs; {semantic} semantic pairs; runtime unverified")
+
+
 def main(*, release_history_only: bool = False) -> int:
     checks = [
         validate_released_record_immutability,
@@ -12212,6 +12222,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_workspace_trust,
         validate_provisioning_origin,
         validate_project_context_leaf1,
+        validate_home_leases,
         validate_codex_seed_c,
         validate_skillfile_mcp,
         validate_draft_source_schemas,

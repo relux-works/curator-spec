@@ -625,8 +625,10 @@ this CIP does not add private fields to `launch-delegated/1` requests/records.
 A shared-profile-home-only consumer is unsupported for a Werkstatt launch.
 The route retains live-home/profile-pin/fragment-digest provenance, not
 CIP-0014 snapshot isolation. This CIP's selected busy-Werkstatt lease rule
-protects cooperating updates; it does not relabel CIP-0016's proposed general
-home-lease/exclusive-profile conditions as accepted or protect arbitrary
+protects cooperating updates. CIP-0016's general home-lease/exclusive-profile
+conditions were separately confirmed by owner decision 2026-10-27 in the
+[home-lease contract](../protocol/home-leases.md); its typed profile-home
+records do not replace this CIP's project authority or protect arbitrary
 same-user mutations.
 
 On the **exact-plan route**, the caller materializes the approved content

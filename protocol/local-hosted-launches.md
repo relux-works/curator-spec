@@ -12,7 +12,9 @@ The owner accepted a transitional delegated route on 2026-10-21 in
 [CIP-0016's dated revision](../cips/CIP-0016-local-hosted-launches.md#revision-delegated-local-launches-2026-10-21).
 That revision separately records its caller-side composition, live-home and
 provenance limits, registry selection, per-runtime activation and retirement.
-Its home-lease and exclusive-profile conditions remain proposed, not accepted.
+Its home-lease **refuse** and exclusive-profile conditions were confirmed by
+owner decision 2026-10-27; the [Curator contract](home-leases.md) and consumer
+requirements are specification gates, not runtime qualification.
 Delegated request and record schemas belong to curator-run; this pointer
 publishes no wire schema and does not qualify either route.
 

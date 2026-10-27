@@ -349,3 +349,9 @@ qualification or executed Muse 1.4.8 exclusion/refresh probes.
 The [whole-carrier corpus](rc7-carriers-v1/README.md) validates the allocated successors, canonical bytes
 and old/new reader compatibility. The earlier member/row fixtures remain
 frozen inputs; runtime qualification remains separate.
+
+## Home-lease refusal amendment
+
+[Home-lease v1](home-leases-v1/README.md) publishes paired closed-holder/CLI
+schema cases and semantic writer/recovery/lifecycle cases for CIP-0016's
+2026-10-27 confirmed conditions. These checks are specification evidence only.

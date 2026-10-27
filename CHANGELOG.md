@@ -7,6 +7,13 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Confirm CIP-0016 home lease option **refuse**, one profile per Werkstatt and
+  one managed home per unattended lane (owner decision 2026-10-27). Publish
+  home-lease v1 storage/lifecycle, complete writer/recovery guard, closed CLI
+  and holder schemas, and paired shape/semantic vectors. Unknown liveness
+  retains protection; release needs authoritative observation, break requires
+  explicit operator CAS and permanent audit. This is specification-only work.
+
 - Adopt separate private provisioning-origin/1 through Decision 0029: capture
   selector state/value, operator anchor, native root and exact home/lock binding;
   require record-authoritative credentials, atomic lifecycle and explicit

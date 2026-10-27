@@ -365,3 +365,13 @@ JSON is required for nonempty Codex typed delivery; env/shell projection
 refuses `codex_settings_unsupported` with no partial output. Direct login
 consumes structured policy, never shell output. These are published contracts,
 not a claim that a runtime consumer is qualified or shipped.
+
+## Home leases (specification-first amendment)
+
+The new `curator env lease acquire|bind|release|list|break` family, exact flags,
+closed JSON results and exit 0/1/2 mapping are specified in
+[home leases §4](../protocol/home-leases.md#4-cli-diagnostics-and-exit-codes).
+`acquire` requires `--lock-sha256` and `--request-id`; `bind` requires
+`--if-revision`; `release` reconciles authority; `list` is read-only;
+`break` requires per-invocation `--operator --reason --if-revision`.
+This publishes the contract before implementation and advertises no capability.

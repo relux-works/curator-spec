@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/home-leases-v1/event.schema.json",
+  "title": "Home leases v1: event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "event_id",
+    "operation",
+    "lease_id",
+    "previous",
+    "new_revision",
+    "reason",
+    "recorded_at"
+  ],
+  "properties": {
+    "kind": {
+      "const": "home-lease-event/1"
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$(?![\\s\\S])"
+    },
+    "operation": {
+      "enum": [
+        "release",
+        "break"
+      ]
+    },
+    "lease_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$(?![\\s\\S])"
+    },
+    "previous": {
+      "$ref": "record.schema.json"
+    },
+    "new_revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^[^\\x00-\\x1f\\x7f]+$(?![\\s\\S])"
+    },
+    "recorded_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d(?:\\.\\d{1,9})?Z$(?![\\s\\S])"
+    }
+  }
+}

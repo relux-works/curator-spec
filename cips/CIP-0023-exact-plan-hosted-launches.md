@@ -95,6 +95,10 @@ on `cip16-delegated-launches` records live-home/caller-composition limits and
 per-runtime retirement once exact support includes detach. It was in review
 at this baseline; its proposed home-lease and exclusive-profile conditions
 are not accepted conditions and are not prerequisites invented here.
+Those historical baseline statements remain pinned; owner decision 2026-10-27
+subsequently confirmed the general conditions in the separate
+[home-lease contract](../protocol/home-leases.md), without qualifying exact-plan
+execution or changing its project-lease authority.
 
 Task-supplied launcher FRONT-DOOR appendix A and §5.8 state that
 `launch-exact/2` cannot return a session record or carry a doorbell;

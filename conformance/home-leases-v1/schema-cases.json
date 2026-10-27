@@ -1,0 +1,707 @@
+{
+  "kind": "home-lease-schema-pairs-v1",
+  "pairs": [
+    {
+      "name": "holder-prepared-missing-kind",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}"
+    },
+    {
+      "name": "holder-prepared-missing-launcher",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"prepared\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}"
+    },
+    {
+      "name": "holder-prepared-missing-manager_id",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}"
+    },
+    {
+      "name": "holder-prepared-missing-manager_registered_at",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}"
+    },
+    {
+      "name": "holder-prepared-missing-request_id",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}"
+    },
+    {
+      "name": "holder-prepared-missing-werkstatt",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"session\":null,\"generation\":null,\"process\":null}"
+    },
+    {
+      "name": "holder-prepared-missing-session",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"generation\":null,\"process\":null}"
+    },
+    {
+      "name": "holder-prepared-missing-generation",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"process\":null}"
+    },
+    {
+      "name": "holder-prepared-missing-process",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null}"
+    },
+    {
+      "name": "holder-prepared-unknown",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null,\"unknown\":true}"
+    },
+    {
+      "name": "holder-bound-missing-kind",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+    },
+    {
+      "name": "holder-bound-missing-launcher",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"bound\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+    },
+    {
+      "name": "holder-bound-missing-manager_id",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+    },
+    {
+      "name": "holder-bound-missing-manager_registered_at",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+    },
+    {
+      "name": "holder-bound-missing-request_id",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+    },
+    {
+      "name": "holder-bound-missing-werkstatt",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+    },
+    {
+      "name": "holder-bound-missing-session",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+    },
+    {
+      "name": "holder-bound-missing-generation",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+    },
+    {
+      "name": "holder-bound-missing-process",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1}"
+    },
+    {
+      "name": "holder-bound-unknown",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"},\"unknown\":true}"
+    },
+    {
+      "name": "record-home-lease/1-missing-kind",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}"
+    },
+    {
+      "name": "record-home-lease/1-missing-lease_id",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}"
+    },
+    {
+      "name": "record-home-lease/1-missing-manager_root_id",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}"
+    },
+    {
+      "name": "record-home-lease/1-missing-home_id",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}"
+    },
+    {
+      "name": "record-home-lease/1-missing-environment",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}"
+    },
+    {
+      "name": "record-home-lease/1-missing-profile",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}"
+    },
+    {
+      "name": "record-home-lease/1-missing-lock_sha256",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}"
+    },
+    {
+      "name": "record-home-lease/1-missing-revision",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}"
+    },
+    {
+      "name": "record-home-lease/1-missing-phase",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}"
+    },
+    {
+      "name": "record-home-lease/1-missing-acquired_at",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}"
+    },
+    {
+      "name": "record-home-lease/1-missing-holder",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}"
+    },
+    {
+      "name": "record-home-lease/1-missing-observation",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}}"
+    },
+    {
+      "name": "record-home-lease/1-unknown",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null},\"unknown\":true}"
+    },
+    {
+      "name": "event-home-lease-event/1-missing-kind",
+      "schema": "event",
+      "positive": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\"}",
+      "negative": "{\"event_id\":\"event-1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\"}"
+    },
+    {
+      "name": "event-home-lease-event/1-missing-event_id",
+      "schema": "event",
+      "positive": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\"}",
+      "negative": "{\"kind\":\"home-lease-event/1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\"}"
+    },
+    {
+      "name": "event-home-lease-event/1-missing-operation",
+      "schema": "event",
+      "positive": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\"}",
+      "negative": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\"}"
+    },
+    {
+      "name": "event-home-lease-event/1-missing-lease_id",
+      "schema": "event",
+      "positive": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\"}",
+      "negative": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"operation\":\"break\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\"}"
+    },
+    {
+      "name": "event-home-lease-event/1-missing-previous",
+      "schema": "event",
+      "positive": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\"}",
+      "negative": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\"}"
+    },
+    {
+      "name": "event-home-lease-event/1-missing-new_revision",
+      "schema": "event",
+      "positive": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\"}",
+      "negative": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\"}"
+    },
+    {
+      "name": "event-home-lease-event/1-missing-reason",
+      "schema": "event",
+      "positive": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\"}",
+      "negative": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"recorded_at\":\"2026-10-27T00:00:00Z\"}"
+    },
+    {
+      "name": "event-home-lease-event/1-missing-recorded_at",
+      "schema": "event",
+      "positive": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\"}",
+      "negative": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\"}"
+    },
+    {
+      "name": "event-home-lease-event/1-unknown",
+      "schema": "event",
+      "positive": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\"}",
+      "negative": "{\"kind\":\"home-lease-event/1\",\"event_id\":\"event-1\",\"operation\":\"break\",\"lease_id\":\"lease-1\",\"previous\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}},\"new_revision\":2,\"reason\":\"Descendants fenced; explicitly abandon protection.\",\"recorded_at\":\"2026-10-27T00:00:00Z\",\"unknown\":true}"
+    },
+    {
+      "name": "result-result-missing-schema_version",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "result-result-missing-operation",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "result-result-missing-ok",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"acquire\",\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "result-result-missing-exit",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "result-result-missing-code",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "result-result-missing-reason",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "result-result-missing-result",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"details\":null}"
+    },
+    {
+      "name": "result-result-missing-details",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}}}"
+    },
+    {
+      "name": "result-result-unknown",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null,\"unknown\":true}"
+    },
+    {
+      "name": "holder-case",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"Prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}"
+    },
+    {
+      "name": "launcher-case",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"Curator-Run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}"
+    },
+    {
+      "name": "prepared-session",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":null,\"process\":null}"
+    },
+    {
+      "name": "bound-null-session",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+    },
+    {
+      "name": "bound-zero-generation",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":0,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+    },
+    {
+      "name": "bound-unsafe-generation",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":9007199254740992,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+    },
+    {
+      "name": "bound-fraction-generation",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1.5,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}"
+    },
+    {
+      "name": "unknown-process-field",
+      "schema": "holder",
+      "positive": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}}",
+      "negative": "{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\",\"argv\":\"synthetic\"}}"
+    },
+    {
+      "name": "control-character",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request\\n\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}"
+    },
+    {
+      "name": "path-id",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"/tmp/manager\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}"
+    },
+    {
+      "name": "oversize-id",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}"
+    },
+    {
+      "name": "unknown-holder-kind",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"future\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}"
+    },
+    {
+      "name": "registration-invalid-time",
+      "schema": "holder",
+      "positive": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}",
+      "negative": "{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"yesterday\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null}"
+    },
+    {
+      "name": "env-case",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"Claude_Code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}"
+    },
+    {
+      "name": "digest-case",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}"
+    },
+    {
+      "name": "unknown-phase",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"future\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}"
+    },
+    {
+      "name": "active-prepared",
+      "schema": "record",
+      "positive": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}",
+      "negative": "{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"active\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}"
+    },
+    {
+      "name": "unknown-code",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":\"future\",\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "success-wrong-exit",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":1,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "wrong-reason",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"released\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "wrong-result",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"acquire\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"acquired\",\"result\":{\"leases\":[]},\"details\":null}"
+    },
+    {
+      "name": "duplicate-member",
+      "schema": "holder",
+      "positive": "{\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": null, \"process\": null}",
+      "negative": "{\"kind\":\"prepared\",\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": null, \"process\": null}"
+    },
+    {
+      "name": "invalid-utf8",
+      "schema": "holder",
+      "positive": "{\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": null, \"process\": null}",
+      "negative_hex": "ff"
+    },
+    {
+      "name": "environment_home_leased-blocking_holders",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_home_leased\",\"reason\":\"blocking_holders\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}],\"count\":1}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_home_leased\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}],\"count\":1}}"
+    },
+    {
+      "name": "environment_lease_lock_mismatch-profile_lock_changed",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_lock_mismatch\",\"reason\":\"profile_lock_changed\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_lock_mismatch\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_lock_unavailable-mutation_lock_busy",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lock_unavailable\",\"reason\":\"mutation_lock_busy\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lock_unavailable\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_lease_unreadable-state_unreadable",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_unreadable\",\"reason\":\"state_unreadable\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_unreadable\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_lease_unreadable-invalid_record",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_unreadable\",\"reason\":\"invalid_record\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_unreadable\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_lease_unreadable-ledger_missing",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_unreadable\",\"reason\":\"ledger_missing\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_unreadable\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_lease_recovery_required-pending_mutation",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_recovery_required\",\"reason\":\"pending_mutation\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_recovery_required\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_lease_release_unconfirmed-session_state_unknown",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_release_unconfirmed\",\"reason\":\"session_state_unknown\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_release_unconfirmed\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_lease_release_unconfirmed-termination_unconfirmed",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_release_unconfirmed\",\"reason\":\"termination_unconfirmed\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_release_unconfirmed\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_lease_holder_mismatch-manager_incarnation_changed",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_holder_mismatch\",\"reason\":\"manager_incarnation_changed\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_holder_mismatch\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_lease_holder_mismatch-session_generation_changed",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_holder_mismatch\",\"reason\":\"session_generation_changed\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_holder_mismatch\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_lease_holder_mismatch-request_conflict",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_holder_mismatch\",\"reason\":\"request_conflict\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_holder_mismatch\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_lease_revision_conflict-revision_changed",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_revision_conflict\",\"reason\":\"revision_changed\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_revision_conflict\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_lease_unknown-unknown_lease",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_unknown\",\"reason\":\"unknown_lease\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_unknown\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_lease_authority_refused-unsupported_lease_kind",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_authority_refused\",\"reason\":\"unsupported_lease_kind\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_authority_refused\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_lease_authority_refused-authority_unavailable",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_authority_refused\",\"reason\":\"authority_unavailable\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_authority_refused\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_lease_write_failed-publication_failed",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_write_failed\",\"reason\":\"publication_failed\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_lease_write_failed\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_home_stale-home_not_current",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_home_stale\",\"reason\":\"home_not_current\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_home_stale\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "profile_unknown-profile_absent",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"profile_unknown\",\"reason\":\"profile_absent\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"profile_unknown\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "environment_unknown-environment_absent",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_unknown\",\"reason\":\"environment_absent\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":1,\"code\":\"environment_unknown\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "usage-operator_confirmation_required",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":2,\"code\":\"usage\",\"reason\":\"operator_confirmation_required\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":2,\"code\":\"usage\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "usage-reason_required",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":2,\"code\":\"usage\",\"reason\":\"reason_required\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":2,\"code\":\"usage\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "usage-revision_required",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":2,\"code\":\"usage\",\"reason\":\"revision_required\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":2,\"code\":\"usage\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "usage-invalid_holder",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":2,\"code\":\"usage\",\"reason\":\"invalid_holder\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":2,\"code\":\"usage\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "usage-invalid_selector",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":2,\"code\":\"usage\",\"reason\":\"invalid_selector\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":2,\"code\":\"usage\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "usage-invalid_format",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":2,\"code\":\"usage\",\"reason\":\"invalid_format\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":2,\"code\":\"usage\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "usage-invalid_flags",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":2,\"code\":\"usage\",\"reason\":\"invalid_flags\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":false,\"exit\":2,\"code\":\"usage\",\"reason\":\"future_reason\",\"result\":null,\"details\":{\"lease_id\":null,\"revision\":null,\"holders\":[],\"count\":0}}"
+    },
+    {
+      "name": "success-list-listed",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"list\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"listed\",\"result\":{\"leases\":[{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}]},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"list\",\"ok\":true,\"exit\":2,\"code\":null,\"reason\":\"listed\",\"result\":{\"leases\":[{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"prepared\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}]},\"details\":null}"
+    },
+    {
+      "name": "success-release-unknown_lease",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"unknown_lease\",\"result\":{\"changed\":false,\"lease\":null},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":true,\"exit\":2,\"code\":null,\"reason\":\"unknown_lease\",\"result\":{\"changed\":false,\"lease\":null},\"details\":null}"
+    },
+    {
+      "name": "success-release-already_released",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"already_released\",\"result\":{\"changed\":false,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"released\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":true,\"exit\":2,\"code\":null,\"reason\":\"already_released\",\"result\":{\"changed\":false,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"released\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "success-release-already_broken",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"already_broken\",\"result\":{\"changed\":false,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"broken\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":true,\"exit\":2,\"code\":null,\"reason\":\"already_broken\",\"result\":{\"changed\":false,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"broken\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "success-release-released",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"released\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"released\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"release\",\"ok\":true,\"exit\":2,\"code\":null,\"reason\":\"released\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"released\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "success-bind-bound",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"bound\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"active\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"bind\",\"ok\":true,\"exit\":2,\"code\":null,\"reason\":\"bound\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"active\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"bound\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":\"session-1\",\"generation\":1,\"process\":{\"pid\":42,\"started_at\":\"2026-10-27T00:00:00Z\"}},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "success-break-broken",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"break\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"broken\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"broken\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"break\",\"ok\":true,\"exit\":2,\"code\":null,\"reason\":\"broken\",\"result\":{\"changed\":true,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"broken\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "success-break-already_broken",
+      "schema": "result",
+      "positive": "{\"schema_version\":1,\"operation\":\"break\",\"ok\":true,\"exit\":0,\"code\":null,\"reason\":\"already_broken\",\"result\":{\"changed\":false,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"broken\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}",
+      "negative": "{\"schema_version\":1,\"operation\":\"break\",\"ok\":true,\"exit\":2,\"code\":null,\"reason\":\"already_broken\",\"result\":{\"changed\":false,\"lease\":{\"kind\":\"home-lease/1\",\"lease_id\":\"lease-1\",\"manager_root_id\":\"root-1\",\"home_id\":\"home-1\",\"environment\":\"claude_code\",\"profile\":\"profile-1\",\"lock_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"revision\":1,\"phase\":\"broken\",\"acquired_at\":\"2026-10-27T00:00:00Z\",\"holder\":{\"kind\":\"prepared\",\"launcher\":\"curator-run\",\"manager_id\":\"manager-1\",\"manager_registered_at\":\"2026-10-27T00:00:00Z\",\"request_id\":\"request-1\",\"werkstatt\":\"werkstatt-1\",\"session\":null,\"generation\":null,\"process\":null},\"observation\":{\"state\":\"not_observed\",\"observed_at\":null}}},\"details\":null}"
+    },
+    {
+      "name": "blocking-prepared",
+      "schema": "record",
+      "positive": "{\"kind\": \"home-lease/1\", \"lease_id\": \"lease-prepared\", \"manager_root_id\": \"root-1\", \"home_id\": \"home-1\", \"environment\": \"claude_code\", \"profile\": \"profile-1\", \"lock_sha256\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"revision\": 1, \"phase\": \"prepared\", \"acquired_at\": \"2026-10-27T00:00:00Z\", \"holder\": {\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": null, \"process\": null}, \"observation\": {\"state\": \"not_observed\", \"observed_at\": null}}",
+      "negative": "{\"kind\": \"home-lease/1\", \"lease_id\": \"lease-prepared\", \"manager_root_id\": \"root-1\", \"home_id\": \"home-1\", \"environment\": \"claude_code\", \"profile\": \"profile-1\", \"lock_sha256\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"revision\": 1, \"phase\": \"prepared\", \"acquired_at\": \"2026-10-27T00:00:00Z\", \"holder\": {\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": null, \"process\": null, \"unexpected\": true}, \"observation\": {\"state\": \"not_observed\", \"observed_at\": null}}"
+    },
+    {
+      "name": "blocking-active",
+      "schema": "record",
+      "positive": "{\"kind\": \"home-lease/1\", \"lease_id\": \"lease-active\", \"manager_root_id\": \"root-1\", \"home_id\": \"home-1\", \"environment\": \"claude_code\", \"profile\": \"profile-1\", \"lock_sha256\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"revision\": 1, \"phase\": \"active\", \"acquired_at\": \"2026-10-27T00:00:00Z\", \"holder\": {\"kind\": \"bound\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": \"session-1\", \"generation\": 1, \"process\": {\"pid\": 42, \"started_at\": \"2026-10-27T00:00:00Z\"}}, \"observation\": {\"state\": \"not_observed\", \"observed_at\": null}}",
+      "negative": "{\"kind\": \"home-lease/1\", \"lease_id\": \"lease-active\", \"manager_root_id\": \"root-1\", \"home_id\": \"home-1\", \"environment\": \"claude_code\", \"profile\": \"profile-1\", \"lock_sha256\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"revision\": 1, \"phase\": \"active\", \"acquired_at\": \"2026-10-27T00:00:00Z\", \"holder\": {\"kind\": \"bound\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": \"session-1\", \"generation\": 1, \"process\": {\"pid\": 42, \"started_at\": \"2026-10-27T00:00:00Z\"}, \"unexpected\": true}, \"observation\": {\"state\": \"not_observed\", \"observed_at\": null}}"
+    },
+    {
+      "name": "blocking-unknown",
+      "schema": "record",
+      "positive": "{\"kind\": \"home-lease/1\", \"lease_id\": \"lease-unknown\", \"manager_root_id\": \"root-1\", \"home_id\": \"home-1\", \"environment\": \"claude_code\", \"profile\": \"profile-1\", \"lock_sha256\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"revision\": 1, \"phase\": \"unknown\", \"acquired_at\": \"2026-10-27T00:00:00Z\", \"holder\": {\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": null, \"process\": null}, \"observation\": {\"state\": \"unknown\", \"observed_at\": null}}",
+      "negative": "{\"kind\": \"home-lease/1\", \"lease_id\": \"lease-unknown\", \"manager_root_id\": \"root-1\", \"home_id\": \"home-1\", \"environment\": \"claude_code\", \"profile\": \"profile-1\", \"lock_sha256\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"revision\": 1, \"phase\": \"unknown\", \"acquired_at\": \"2026-10-27T00:00:00Z\", \"holder\": {\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": null, \"process\": null, \"unexpected\": true}, \"observation\": {\"state\": \"unknown\", \"observed_at\": null}}"
+    },
+    {
+      "name": "lone-surrogate",
+      "schema": "holder",
+      "positive": "{\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": null, \"process\": null}",
+      "negative": "{\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"\\ud800\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": null, \"process\": null}"
+    },
+    {
+      "name": "non-json-number",
+      "schema": "holder",
+      "positive": "{\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": null, \"process\": null}",
+      "negative": "{\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": NaN, \"process\": null}"
+    },
+    {
+      "name": "non-integer-spelling",
+      "schema": "holder",
+      "positive": "{\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": null, \"process\": null}",
+      "negative": "{\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": 1.0, \"process\": null}"
+    },
+    {
+      "name": "empty-blocking-holders",
+      "schema": "result",
+      "positive": "{\"schema_version\": 1, \"operation\": \"release\", \"ok\": false, \"exit\": 1, \"code\": \"environment_home_leased\", \"reason\": \"blocking_holders\", \"result\": null, \"details\": {\"lease_id\": null, \"revision\": null, \"holders\": [{\"kind\": \"home-lease/1\", \"lease_id\": \"lease-1\", \"manager_root_id\": \"root-1\", \"home_id\": \"home-1\", \"environment\": \"claude_code\", \"profile\": \"profile-1\", \"lock_sha256\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"revision\": 1, \"phase\": \"prepared\", \"acquired_at\": \"2026-10-27T00:00:00Z\", \"holder\": {\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": null, \"process\": null}, \"observation\": {\"state\": \"not_observed\", \"observed_at\": null}}], \"count\": 1}}",
+      "negative": "{\"schema_version\": 1, \"operation\": \"release\", \"ok\": false, \"exit\": 1, \"code\": \"environment_home_leased\", \"reason\": \"blocking_holders\", \"result\": null, \"details\": {\"lease_id\": null, \"revision\": null, \"holders\": [], \"count\": 0}}"
+    },
+    {
+      "name": "terminal-in-blocking-holders",
+      "schema": "result",
+      "positive": "{\"schema_version\": 1, \"operation\": \"release\", \"ok\": false, \"exit\": 1, \"code\": \"environment_home_leased\", \"reason\": \"blocking_holders\", \"result\": null, \"details\": {\"lease_id\": null, \"revision\": null, \"holders\": [{\"kind\": \"home-lease/1\", \"lease_id\": \"lease-1\", \"manager_root_id\": \"root-1\", \"home_id\": \"home-1\", \"environment\": \"claude_code\", \"profile\": \"profile-1\", \"lock_sha256\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"revision\": 1, \"phase\": \"prepared\", \"acquired_at\": \"2026-10-27T00:00:00Z\", \"holder\": {\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": null, \"process\": null}, \"observation\": {\"state\": \"not_observed\", \"observed_at\": null}}], \"count\": 1}}",
+      "negative": "{\"schema_version\": 1, \"operation\": \"release\", \"ok\": false, \"exit\": 1, \"code\": \"environment_home_leased\", \"reason\": \"blocking_holders\", \"result\": null, \"details\": {\"lease_id\": null, \"revision\": null, \"holders\": [{\"kind\": \"home-lease/1\", \"lease_id\": \"lease-1\", \"manager_root_id\": \"root-1\", \"home_id\": \"home-1\", \"environment\": \"claude_code\", \"profile\": \"profile-1\", \"lock_sha256\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"revision\": 1, \"phase\": \"released\", \"acquired_at\": \"2026-10-27T00:00:00Z\", \"holder\": {\"kind\": \"prepared\", \"launcher\": \"curator-run\", \"manager_id\": \"manager-1\", \"manager_registered_at\": \"2026-10-27T00:00:00Z\", \"request_id\": \"request-1\", \"werkstatt\": \"werkstatt-1\", \"session\": null, \"generation\": null, \"process\": null}, \"observation\": {\"state\": \"not_observed\", \"observed_at\": null}}], \"count\": 1}}"
+    }
+  ]
+}

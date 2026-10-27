@@ -39,8 +39,10 @@ subject to the detached-launch transition below.
 ### Stated limits
 
 There is no session snapshot. A running session uses the live managed home,
-so repair, profile switching and skill sync can change it underneath the
-session. The isolation required by
+so it has no immutable session snapshot. The confirmed 2026-10-27 home-lease
+condition below requires rewrites to refuse; until that contract is implemented
+and qualified, repair, profile switching and skill sync can change it underneath
+the session. The snapshot isolation required by
 [CIP-0014](CIP-0014-managed-home-snapshots.md) does not hold. A profile pin and
 fragment digest do not attest immutable session content.
 
@@ -76,18 +78,25 @@ backend-selection question retained in
 An absent backend selection means no registered manager. task-board's
 installer registers task-board.
 
-### Proposed conditions (pending operator confirmation)
+### Confirmed conditions (owner decision 2026-10-27)
 
-The following conditions are proposed and are **not yet accepted**. They do
-not remove the live-home limits stated above.
+Both conditions are **confirmed**, with the home-lease option **refuse**.
+The [Curator home-lease contract](../protocol/home-leases.md) specifies the
+new typed store, CLI, closed holders, full writer/recovery guard and
+[paired conformance vectors](../conformance/home-leases-v1/README.md).
+Acceptance is a specification gate, not implementation or activation evidence.
 
-(a) **Home lease.** While a hosted session runs in a profile's managed home,
-repair, profile switch and skill sync targeting that home refuse with a
-typed error and remediation, or wait. They never change the home underneath
-the session.
+(a) **Home lease — refuse.** While a hosted session uses a managed home,
+every Curator rewrite targeting that home or its protected dependencies refuses
+`environment_home_leased`, including repair with/without preserve-lock,
+profile use/update re-render, skill sync and projection, recovery and rollback.
+No timer expiry or automatic break is allowed. Prepared and unknown holders block.
 
-(b) **One profile per Werkstatt.** A Werkstatt's sessions use a profile home
-that no other Werkstatt or ad-hoc launch shares.
+(b) **One profile per Werkstatt; one managed home per unattended lane.**
+A Werkstatt's sessions use one profile home that no other Werkstatt or ad-hoc
+launch shares. Multiple holders within that admitted lane retain independently.
+Consumer admission enforces this allocation policy; lease schema acceptance
+alone does not qualify the launcher enforcement.
 
 ## Summary
 

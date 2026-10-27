@@ -376,8 +376,10 @@ refuse with the outer carrier's published version diagnostic before project look
 Before either supported local route, the launcher MUST acquire the Werkstatt
 lease and use the shared construction site with the approved composition.
 The [accepted delegated transition](local-hosted-launches.md) retains live-home
-provenance; this project-specific lease does not adopt its proposed general
-home-lease/exclusive-profile conditions. Delegated delivery MUST bind the tuple
+provenance. Its general home-lease/exclusive-profile conditions were separately
+confirmed by owner decision 2026-10-27 in the [home-lease contract](home-leases.md);
+that typed profile-home record does not replace this project-specific binding.
+Delegated delivery MUST bind the tuple
 through its own required-understanding
 contract, verify the fragment digest, preserve resolved values and use the
 leased Werkstatt home without claiming snapshot provenance. An incapable

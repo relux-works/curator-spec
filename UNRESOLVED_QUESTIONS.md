@@ -1,5 +1,21 @@
 # Unresolved questions
 
+## Home-lease consumer publication gates
+
+Owner decision 2026-10-27 settled **refuse**, one profile per Werkstatt and one
+managed home per unattended lane in [CIP-0016](cips/CIP-0016-local-hosted-launches.md).
+The [home-lease contract](protocol/home-leases.md) requires authoritative manager
+and no-start observation; a launcher-forwarded terminal assertion alone is not
+accepted evidence. No additional operator choice is pending for that rule.
+
+Before runtime qualification, curator-run must publish its closed manager
+registry/status and no-start observation read contract (including process
+incarnation and descendant/ownership completion), and its lane/Werkstatt
+allocation admission contract. These consumer interfaces and their joint
+launcher/fake-manager/real-Curator fixture remain publication/integration gates.
+Without the observer, release retains the lease; the operator break path remains
+explicit, revision-checked and audited. This spec PR starts no implementation.
+
 ## Agent stations
 
 [CIP-0024](cips/CIP-0024-agent-stations.md) is Draft. Its operator decisions of
