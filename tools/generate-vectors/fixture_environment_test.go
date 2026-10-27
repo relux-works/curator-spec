@@ -320,17 +320,23 @@ func observeFixtureChild(ctx context.Context, listener net.Listener, token strin
 		}
 		events <- fixturePhase{ready: true}
 		// No body deadline here: m.Run owns the real selected test timeout,
-		// including zero. Only newline framing may precede process-owned EOF.
+		// including zero. EOF/reset after verified identity is lifetime progress,
+		// never an exit status: completion still requires the provider's actual
+		// validated record and matching exit. Reject bytes even with terminal errors.
 		reader := io.MultiReader(decoder.Buffered(), conn)
 		for {
 			var b [1]byte
 			n, err := reader.Read(b[:])
-			if err == io.EOF {
-				events <- fixturePhase{}
+			if n > 0 && b[0] != '\n' && b[0] != '\r' {
+				events <- fixturePhase{err: fmt.Errorf("invalid child phase close: %v", err)}
 				return
 			}
-			if err != nil || (n > 0 && b[0] != '\n' && b[0] != '\r') {
-				events <- fixturePhase{err: fmt.Errorf("invalid child phase close: %v", err)}
+			if err != nil {
+				if err == io.EOF || fixtureConnectionReset(err) {
+					events <- fixturePhase{}
+				} else {
+					events <- fixturePhase{err: fmt.Errorf("invalid child phase close: %v", err)}
+				}
 				return
 			}
 		}

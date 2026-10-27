@@ -519,6 +519,14 @@ runtime qualification is separate from this source-level expectation. Deliberate
 processes or simultaneous loss of all
 owners are outside this fixture lifecycle contract. Temporary homes are removed
 after each module; save optional run logs under `.temp/`.
+After verified child identity, EOF or the platform's precise connection-reset
+error starts the cleanup clock; neither supplies success or an exit status.
+The provider must still deliver a valid completion record matching its actual
+exit. Other read/parse errors and extra phase bytes remain failures.
+`test_fixture_phase.py` and `fixture_phase_test.go` exercise scripted reader
+classification, authentic abrupt-body reset delivery and invalid/missing/stalled
+completion, alongside normal EOF and real status controls. Local injected faults
+do not qualify native Windows socket/job behavior; Windows CI remains required.
 `python3 tools/fixture_environment.py COMMAND [ARG ...]` applies the same
 boundary to source-history tools. `make validate` uses it for the validator
 and Go tools suite; unittest modules still establish their own boundaries.

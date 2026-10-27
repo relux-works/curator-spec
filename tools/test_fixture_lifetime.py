@@ -144,6 +144,10 @@ func TestLeaseAbruptExit(t *testing.T) {
                             try:
                                 if not connection.recv(1024):
                                     return
+                            except ConnectionResetError:
+                                # Abrupt direct-child exit can reset on Windows.
+                                # This discard-only probe owns no status/identity.
+                                return
                             except socket.timeout:
                                 pass
                     return
