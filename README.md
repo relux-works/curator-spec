@@ -466,3 +466,6 @@ Run `python3 -B -m unittest discover -s tools -p 'test_*.py'`;
 `test_fixture_environment.py` launches a real release fixture against a hostile
 decoy and checks refs, config and object counts. Temporary homes are removed
 after each module; save optional run logs under `.temp/`.
+`python3 tools/fixture_environment.py COMMAND [ARG ...]` applies the same
+boundary to source-history tools. `make validate` uses it for the validator
+and Go tools suite; unittest modules still establish their own boundaries.

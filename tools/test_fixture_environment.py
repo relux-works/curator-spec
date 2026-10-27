@@ -13,6 +13,26 @@ from fixture_environment import isolated_environment
 
 
 class FixtureEnvironmentTests(unittest.TestCase):
+    # The command runner uses the same boundary for non-unittest source-history
+    # tools, cleans its homes, and preserves both success and failure statuses.
+    def test_command_boundary_cleans_homes_and_preserves_exit_status(self):
+        runner = Path(__file__).with_name("fixture_environment.py")
+        script = (
+            "import os, pathlib, sys; "
+            "assert 'GIT_DIR' not in os.environ; "
+            "assert 'SSH_AUTH_SOCK' not in os.environ; "
+            "assert pathlib.Path(os.environ['HOME']).is_dir(); "
+            "print(os.environ['HOME']); sys.exit(int(sys.argv[1]))"
+        )
+        for status in (0, 7):
+            with self.subTest(status=status):
+                child = subprocess.run(
+                    [sys.executable, str(runner), sys.executable, "-c", script, str(status)],
+                    env=dict(os.environ, GIT_DIR="hostile", SSH_AUTH_SOCK="hostile"),
+                    capture_output=True, text=True)
+                self.assertEqual(child.returncode, status, child.stderr)
+                self.assertFalse(Path(child.stdout.strip()).exists())
+
     # All inherited selectors/config channels disappear; fixture native-home
     # writes stay private. Cleanup also restores unset versus empty values.
     def test_environment_and_home_are_isolated_and_restored_on_error(self):

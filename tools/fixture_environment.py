@@ -47,3 +47,15 @@ def isolated_environment():
                 if _managed(key):
                     del os.environ[key]
             os.environ.update(previous)
+
+
+if __name__ == "__main__":
+    import subprocess
+    import sys
+
+    if len(sys.argv) == 1:
+        raise SystemExit("usage: fixture_environment.py COMMAND [ARG ...]")
+    # Source-history tools also need a discoverable checkout, not ambient Git
+    # selectors. The fixture tests still enter their own module boundaries.
+    with isolated_environment():
+        raise SystemExit(subprocess.run(sys.argv[1:], check=False).returncode)

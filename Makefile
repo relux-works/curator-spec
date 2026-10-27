@@ -1,9 +1,9 @@
 .PHONY: validate regenerate regenerate-check release-check
 
 validate:
-	python3 tools/validate.py
+	python3 tools/fixture_environment.py python3 tools/validate.py
 	python3 -B -m unittest discover -s tools -p 'test_*.py'
-	go test ./tools/...
+	python3 tools/fixture_environment.py go test ./tools/...
 
 regenerate:
 	go run ./tools/generate-vectors -root .
