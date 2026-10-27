@@ -64,6 +64,8 @@ The inspected public specification baselines are:
   §§2–3: protected protocol selection, concrete action/target authority,
   attenuation, current time and revocation are consumer obligations. Transport
   delivery and valid signatures alone do not authorize a pool action.
+  The repository was renamed to `relux-works/swarma-envelope` on 2026-10-26;
+  this historical commit-pinned URL retains its original spelling.
 
 Shared EIC objects are defined in [CIP-0025](CIP-0025-execution-isolation-contract.md);
 cross-module coordination remains an operator question there. Shared guarantee

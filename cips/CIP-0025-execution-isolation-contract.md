@@ -53,6 +53,8 @@ its provisional EIC objects are replaced by references only after joint review.
 public main `98c9cfd26cfc57a7ee82176cd599e92af03e69bb`. They supply signed-record
 bytes and verification, not deployment, online state, effect serialization or a
 new EIC receipt schema. No tests from those repositories are executed here.
+The repository was renamed to `relux-works/swarma-envelope` on 2026-10-26;
+the historical commit-pinned URLs below retain their original spelling.
 
 ## Design
 
