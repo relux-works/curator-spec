@@ -7,6 +7,11 @@ import sys
 import time
 import unittest
 import shutil
+import stat
+import tempfile
+from contextlib import nullcontext
+from types import SimpleNamespace
+from unittest.mock import patch
 
 import test_fixture_lifetime as lifetime
 from fixture_environment import isolated_environment
@@ -42,6 +47,40 @@ def recorded_process_exited(pid):
     except ProcessLookupError:
         return True
     return False
+
+
+def physical_directory_identity(path):
+    info = path.lstat()
+    if (not stat.S_ISDIR(info.st_mode)
+            or not info.st_ino
+            or getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT):
+        raise AssertionError("expected an owned physical directory")
+    return [info.st_dev, info.st_ino]
+
+
+def remove_retained_stall_root(ready, temporary):
+    # Only this witness's independently recorded owners authorize teardown.
+    # No permission repair while either exact process can still use the root.
+    if not all(recorded_process_exited(ready[k]) for k in ("provider", "child")):
+        raise AssertionError("retained root still has a live recorded owner")
+    root = Path(ready["root"])
+    if (not root.is_absolute() or root.parent != temporary.resolve(strict=True)
+            or root.resolve(strict=True) != root
+            or not root.name.startswith("curator-go-fixture-")):
+        raise AssertionError("retained root left its owned namespace")
+    if (physical_directory_identity(temporary) != ready["parent_identity"]
+            or physical_directory_identity(root) != ready["root_identity"]):
+        raise AssertionError("retained root identity changed")
+    readonly = root / "owned-readonly"
+    if physical_directory_identity(readonly) != ready["readonly_identity"]:
+        raise AssertionError("owned readonly identity changed")
+    if any(readonly.iterdir()):
+        raise AssertionError("owned readonly directory is not empty")
+    # Windows chmod(0500) sets READONLY, which prevents this entry's rmdir.
+    # After owner exit, lstat/identity checks exclude links/reparse points.
+    # Repair exactly this empty directory, never regular hardlinks or a tree.
+    readonly.chmod(stat.S_IRWXU)
+    shutil.rmtree(root)
 
 
 class FixtureTransportTests(unittest.TestCase):
@@ -139,6 +178,7 @@ class FixtureTransportTests(unittest.TestCase):
         sentinel = outside / "sentinel"
         sentinel.write_text("outside must remain identical")
         before = tree_snapshot(outside)
+        outside_links = sentinel.stat().st_nlink
         shim = self.case / "shim"
         shim.mkdir()
         (shim / "sitecustomize.py").write_text(r'''
@@ -160,7 +200,14 @@ if pathlib.Path(sys.argv[0]).name == 'fixture_environment.py' and '--go-test' in
                 (root/'owned-readonly').mkdir();(root/'owned-readonly').chmod(0o500)
         if record.get('event')==os.environ['TRANSPORT_STALL']:
             if record['event']=='started': original_print(*args,**kwargs)
-            pathlib.Path(os.environ['TRANSPORT_READY']).write_text(json.dumps(dict(provider=os.getpid(),child=started['pid'],root=sys.argv[2],record=record)))
+            def identity(path):
+                info=path.lstat();return [info.st_dev,info.st_ino]
+            ready=dict(provider=os.getpid(),child=started['pid'],root=sys.argv[2],record=record)
+            if record['event']=='started':
+                ready.update(parent_identity=identity(root.parent),root_identity=identity(root),readonly_identity=identity(root/'owned-readonly'))
+            marker=pathlib.Path(os.environ['TRANSPORT_READY'])
+            pending=marker.with_name(marker.name+'.pending')
+            pending.write_text(json.dumps(ready));pending.replace(marker)
             time.sleep(40)
         return original_print(*args,**kwargs)
     builtins.print=timing_print
@@ -226,9 +273,10 @@ if pathlib.Path(sys.argv[0]).name == 'fixture_environment.py' and '--go-test' in
                                 self.assertLess(time.monotonic(), deadline,
                                                 "retained root still has a live recorded owner")
                                 time.sleep(.02)
-                            shutil.rmtree(ready["root"])
+                            remove_retained_stall_root(ready, temporary)
                         self.assertFalse(Path(ready["root"]).exists(), "owned root leaked")
                     self.assertEqual(tree_snapshot(outside), before)
+                    self.assertEqual(sentinel.stat().st_nlink, outside_links)
                     print(json.dumps(dict(control=event, outer_pid=parent.pid,
                                           provider_pid=ready["provider"] if ready else None,
                                           child_pid=ready["child"] if ready else None,
@@ -237,3 +285,129 @@ if pathlib.Path(sys.argv[0]).name == 'fixture_environment.py' and '--go-test' in
                                           retained_at_return=retained,
                                           dispatched=self.dispatch.exists(),
                                           outside_unchanged=True)), flush=True)
+
+
+class RetainedStallCleanupTests(unittest.TestCase):
+    def setUp(self):
+        environment = isolated_environment()
+        environment.__enter__()
+        self.addCleanup(environment.__exit__, None, None, None)
+        scratch = tempfile.TemporaryDirectory(prefix="retained-stall-cleanup-")
+        self.addCleanup(scratch.cleanup)
+        self.case = Path(scratch.name).resolve()
+        self.temporary = self.case / "tmp"
+        self.temporary.mkdir()
+        self.outside = self.case / "outside"
+        self.outside.mkdir()
+        self.sentinel = self.outside / "sentinel"
+        self.sentinel.write_text("outside must remain identical")
+        self.before = tree_snapshot(self.outside)
+        self.links = self.sentinel.stat().st_nlink
+        self.owners = []
+        for _ in range(2):
+            owner = subprocess.Popen([sys.executable, "-c", "pass"], cwd=self.case)
+            self.assertEqual(owner.wait(timeout=5), 0)
+            self.owners.append(owner.pid)
+
+    def fixture(self):
+        root = Path(tempfile.mkdtemp(prefix="curator-go-fixture-", dir=self.temporary))
+        readonly = root / "owned-readonly"
+        readonly.mkdir()
+        readonly.chmod(0o500)
+        os.link(self.sentinel, root / "outside-hardlink")
+        if os.name != "nt":
+            (root / "outside-symlink").symlink_to(self.outside, target_is_directory=True)
+        ready = dict(root=str(root), provider=self.owners[0], child=self.owners[1],
+                     parent_identity=physical_directory_identity(self.temporary),
+                     root_identity=physical_directory_identity(root),
+                     readonly_identity=physical_directory_identity(readonly))
+        return root, readonly, ready
+
+    # Actual exited control PIDs plus exact creation identities permit repair
+    # of one owned empty directory; outside contents, metadata and links stay.
+    def test_owned_readonly_cleanup_preserves_outside(self):
+        root, _, ready = self.fixture()
+        remove_retained_stall_root(ready, self.temporary)
+        self.assertFalse(root.exists())
+        self.assertEqual(tree_snapshot(self.outside), self.before)
+        self.assertEqual(self.sentinel.stat().st_nlink, self.links)
+
+    # Refuse before permission/deletion effects if either actual owner is live,
+    # the parent/root namespace differs, or recorded creation identity changed.
+    def test_cleanup_refuses_live_owner_or_foreign_boundary(self):
+        root, readonly, ready = self.fixture()
+        live = subprocess.Popen([sys.executable, "-c", "import time;time.sleep(20)"], cwd=self.case)
+        try:
+            for field in ("provider", "child"):
+                with self.subTest(live=field), self.assertRaisesRegex(AssertionError, "live recorded owner"):
+                    remove_retained_stall_root(dict(ready, **{field: live.pid}), self.temporary)
+        finally:
+            live.terminate()
+            live.wait(timeout=5)
+        variants = [(dict(ready, root=str(self.outside)), "owned namespace"),
+                    (dict(ready, root_identity=[-1, -1]), "root identity changed"),
+                    (dict(ready, parent_identity=[-1, -1]), "root identity changed")]
+        for variant, diagnostic in variants:
+            with self.subTest(diagnostic=diagnostic), self.assertRaisesRegex(AssertionError, diagnostic):
+                remove_retained_stall_root(variant, self.temporary)
+        self.assertTrue(root.is_dir())
+        self.assertFalse(readonly.stat().st_mode & stat.S_IWUSR)
+        self.assertEqual(tree_snapshot(self.outside), self.before)
+
+    # Unknown entry types/identity/contents and unrelated permission/IO errors
+    # retain failure; no recursive chmod or permission-error suppression.
+    def test_cleanup_refuses_unowned_entries_and_io_errors(self):
+        for fault in ("hardlink", "identity", "nonempty", "reparse", "chmod", "remove"):
+            with self.subTest(fault=fault):
+                root, readonly, ready = self.fixture()
+                if fault == "hardlink":
+                    readonly.chmod(0o700)
+                    readonly.rmdir()
+                    os.link(self.sentinel, readonly)
+                elif fault == "identity":
+                    ready["readonly_identity"] = [-1, -1]
+                elif fault == "nonempty":
+                    readonly.chmod(0o700)
+                    (readonly / "unexpected").touch()
+                info = readonly.lstat()
+                original_lstat = Path.lstat
+                def lstat(path, *args, **kwargs):
+                    if path == readonly:
+                        return SimpleNamespace(st_mode=info.st_mode, st_dev=info.st_dev,
+                                               st_ino=info.st_ino,
+                                               st_file_attributes=stat.FILE_ATTRIBUTE_REPARSE_POINT)
+                    return original_lstat(path, *args, **kwargs)
+                context = nullcontext()
+                expected, diagnostic = AssertionError, "physical directory"
+                if fault == "identity":
+                    diagnostic = "readonly identity changed"
+                elif fault == "nonempty":
+                    diagnostic = "not empty"
+                elif fault == "reparse":
+                    context = patch.object(Path, "lstat", lstat)
+                elif fault == "chmod":
+                    expected, diagnostic = PermissionError, "unrelated chmod denied"
+                    context = patch.object(Path, "chmod", side_effect=expected(diagnostic))
+                elif fault == "remove":
+                    expected, diagnostic = OSError, "unrelated remove IO"
+                    context = patch.object(shutil, "rmtree", side_effect=expected(diagnostic))
+                with context, self.assertRaisesRegex(expected, diagnostic):
+                    remove_retained_stall_root(ready, self.temporary)
+                self.assertTrue(root.is_dir())
+                self.assertEqual(tree_snapshot(self.outside), self.before)
+                # Exact synthetic fixture teardown after the failed assertion;
+                # the tested helper is never credited with this cleanup.
+                if fault == "hardlink":
+                    readonly.unlink()
+                else:
+                    readonly.chmod(0o700)
+                shutil.rmtree(root)
+                self.assertEqual(self.sentinel.stat().st_nlink, self.links)
+        if os.name != "nt":
+            root, readonly, ready = self.fixture()
+            readonly.chmod(0o700)
+            readonly.rmdir()
+            readonly.symlink_to(self.outside, target_is_directory=True)
+            with self.assertRaisesRegex(AssertionError, "physical directory"):
+                remove_retained_stall_root(ready, self.temporary)
+            self.assertEqual(tree_snapshot(self.outside), self.before)
