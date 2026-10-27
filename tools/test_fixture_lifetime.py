@@ -64,8 +64,9 @@ func TestLeaseWait(t *testing.T) {
  os.WriteFile(os.Getenv("LEASE_DISPATCH"),[]byte(os.Getenv("HOME")),0600)
  time.Sleep(20*time.Second)
 }
-// The selected test can deliberately terminate without running defers.
+// An abrupt exit also bypasses Go's cleanup of sibling t.TempDir trees.
 func TestLeaseAbruptExit(t *testing.T) {
+ t.TempDir()
  data,_:=json.Marshal(map[string]string{"home":os.Getenv("HOME")})
  os.WriteFile(os.Getenv("LEASE_DISPATCH"),data,0600)
  os.Exit(7)
@@ -96,7 +97,8 @@ func TestLeaseAbruptExit(t *testing.T) {
             return result
 
     # Focused success/failure and abrupt exit preserve the child's status;
-    # homes are live at dispatch and gone before the supervisor returns.
+    # homes are live at dispatch and gone before the supervisor returns. The
+    # abrupt case also leaves a Go temp-dir whose cleanup must not mask exit 7.
     def test_status_and_cleanup(self):
         for name, env, status in [("TestLeaseWitness", {}, 0),
                                   ("TestLeaseWitness", {"LEASE_STATUS": "fail"}, 1),

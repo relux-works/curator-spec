@@ -74,6 +74,7 @@ def isolated_environment():
 
 def _go_tests(root: Path, command: list[str]) -> int:
     from fixture_process import OwnedProcess, termination_event, wait_owned, watch_lease
+    import shutil
     import subprocess
 
     # The outer Go process created this exclusive empty root and also owns
@@ -99,14 +100,16 @@ def _go_tests(root: Path, command: list[str]) -> int:
                 process.child.stdin.close()
         # Completion is emitted only after descendants and private homes are
         # gone. EOF or a provider exit code alone can never mean success.
-        root.rmdir()
+        # An abrupt Go exit bypasses t.TempDir cleanup. The validated exclusive
+        # outer root owns these sibling temp trees as well as the private HOME.
+        shutil.rmtree(root)
         print(json.dumps({"event": "completed", "status": status}), flush=True)
         return status
     finally:
         # TemporaryDirectory handles its own tree; this root is exclusively
         # shared with the outer Go cleanup, so an already removed root is OK.
         try:
-            root.rmdir()
+            shutil.rmtree(root)
         except FileNotFoundError:
             pass
 
