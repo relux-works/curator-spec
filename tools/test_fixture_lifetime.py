@@ -61,6 +61,14 @@ s.close()`)
  }
  time.Sleep(20*time.Second)
 }
+// Startup transport can fail after a real body has ordinary descendants.
+func TestLeaseStartup(t *testing.T) {
+ data,_:=json.Marshal(map[string]any{"pid":os.Getpid(),"home":os.Getenv("HOME")})
+ if err:=os.WriteFile(os.Getenv("LEASE_DISPATCH"),data,0600);err!=nil{t.Fatal(err)}
+ c:=exec.Command(os.Getenv("LEASE_PYTHON"),os.Getenv("LEASE_TREE_SCRIPT"),"child")
+ if err:=c.Start();err!=nil{t.Fatal(err)}
+ time.Sleep(25*time.Second)
+}
 // A revoked child stdin lease must fail while an actual selected body waits.
 func TestLeaseWait(t *testing.T) {
  os.WriteFile(os.Getenv("LEASE_DISPATCH"),[]byte(os.Getenv("HOME")),0600)
@@ -90,7 +98,7 @@ func TestLeaseAbruptExit(t *testing.T) {
         self.case = Path(tempfile.mkdtemp(dir=self.root, prefix="case-"))
         self.dispatch = self.case / "dispatch"
 
-    def run_binary(self, args, *, env=None, data=None, cwd=None):
+    def run_binary(self, args, *, env=None, data=None, cwd=None, retained_root=False):
         temporary = self.case / "tmp"
         temporary.mkdir(exist_ok=True)
         with patch.dict(os.environ, TMPDIR=str(temporary)), isolated_environment():
@@ -101,7 +109,17 @@ func TestLeaseAbruptExit(t *testing.T) {
                 result = subprocess.run([str(self.binary), *args], cwd=cwd or self.fixture,
                                         env=child_env, input=data, capture_output=True,
                                         text=True, timeout=20)
-            self.assertEqual(list(temporary.glob("curator-go-fixture-*")), [], "outer root leaked")
+            roots = list(temporary.glob("curator-go-fixture-*"))
+            if retained_root:
+                # These fake unregistered providers never spawn a child. The
+                # owner cannot infer that from their exit: retain, diagnose,
+                # then let this control remove only its verified empty root.
+                self.assertEqual(len(roots), 1, "uncertain startup root was deleted")
+                self.assertIn("descendant cleanup unconfirmed; root retained", result.stderr)
+                self.assertEqual(list(roots[0].iterdir()), [])
+                roots[0].rmdir()
+            else:
+                self.assertEqual(roots, [], "outer root leaked")
             return result
 
     @contextmanager
@@ -205,25 +223,27 @@ func TestLeaseAbruptExit(t *testing.T) {
         self.assertFalse(Path(grant["root"]).exists())
 
     # A provider that exits without completion, lies about status, or hangs at
-    # teardown cannot turn a focused run green. The temporary outer root cleans.
+    # teardown cannot turn a focused run green. Registered failures clean their
+    # roots; unregistered exits retain an empty root with an explicit diagnostic.
     def test_provider_eof_and_exit_status_fail_closed(self):
         source = self.fixture / "tools" / "fixture_environment.py"
         real = source.read_text()
         plants = [
-            ("time.sleep(30)", "setup setup timed out"),
-            ("raise SystemExit(0)", "setup EOF"),
-            ("print('{',flush=True)", "setup unexpected EOF"),
-            ("print(json.dumps({'event':'started','pid':os.getpid()}),flush=True)", "premature provider EOF"),
+            ("time.sleep(30)", "setup setup timed out", True),
+            ("raise SystemExit(0)", "setup EOF", True),
+            ("print('{',flush=True)", "setup unexpected EOF", True),
+            ("print(json.dumps({'event':'started','pid':os.getpid()}),flush=True)", "premature provider EOF", False),
             ("print(json.dumps({'event':'started','pid':os.getpid()}),flush=True);"
-             "print(json.dumps({'event':'completed','status':0}),flush=True);raise SystemExit(7)", "provider status mismatch"),
+             "print(json.dumps({'event':'completed','status':0}),flush=True);raise SystemExit(7)", "provider status mismatch", False),
             ("print(json.dumps({'event':'started','pid':os.getpid()}),flush=True);"
-             "print(json.dumps({'event':'completed','status':0}),flush=True);time.sleep(30)", "provider completion timeout")]
+             "print(json.dumps({'event':'completed','status':0}),flush=True);time.sleep(30)", "provider completion timeout", False)]
 
         try:
-            for plant, diagnostic in plants:
+            for plant, diagnostic, retained in plants:
                 with self.subTest(plant=plant):
                     source.write_text("import os,json,time\n" + plant + "\n")
-                    child = self.run_binary(["-test.run=^TestLeaseWitness$"])
+                    child = self.run_binary(["-test.run=^TestLeaseWitness$"],
+                                            retained_root=retained)
                     self.assertEqual(child.returncode, 2, child.stdout + child.stderr)
                     self.assertFalse(self.dispatch.exists())
                     self.assertIn(diagnostic, child.stderr)

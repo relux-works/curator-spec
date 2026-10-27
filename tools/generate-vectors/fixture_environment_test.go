@@ -120,19 +120,41 @@ func runIsolatedTests(m *testing.M) (status int) {
 	done := make(chan struct{})
 	var waitErr error
 	startWait := func() { once.Do(func() { go func() { waitErr = cmd.Wait(); close(done) }() }) }
+	startupAccepted := false
+	confirmCleanup := func() {
+		// Accepted startup has the recorded group/job fallback below. Before
+		// acceptance, only the trusted supervisor can terminate its unknown
+		// tree: it removes this exclusive root after stopping descendants.
+		if _, err := os.Lstat(owned); startupAccepted || os.IsNotExist(err) {
+			cleanupAllowed = true
+		} else {
+			status = boundaryError("descendant cleanup unconfirmed; root retained", err)
+		}
+	}
 	// Wait begins only after protocol reads, so os/exec cannot close stdout early.
 	defer func() {
 		input.Close()
 		output.Close()
-		// Refusals may find Python blocked in transport rather than its event
-		// loop. Kill this recorded provider; Windows closes its owned job too.
-		_ = cmd.Process.Kill()
 		startWait()
+		if !startupAccepted {
+			// A refused/absent record supplies no PID authority. Revoking the
+			// existing lease lets Python stop an already dispatched ordinary
+			// tree; killing Python first would discard its Unix ownership.
+			select {
+			case <-done:
+				confirmCleanup()
+				return
+			case <-time.After(5 * time.Second):
+			}
+		}
+		// Registered fallback preserves the independent phase deadlines.
+		// Unregistered forced termination never authorizes deleting live roots.
+		_ = cmd.Process.Kill()
 		select {
 		case <-done:
-			cleanupAllowed = true
+			confirmCleanup()
 		case <-time.After(5 * time.Second):
-			status = boundaryError("provider termination timeout; root retained", nil)
+			status = boundaryError("provider termination timeout; root cleanup withheld", nil)
 		}
 	}()
 	decoder := json.NewDecoder(output)
@@ -149,10 +171,11 @@ func runIsolatedTests(m *testing.M) (status int) {
 	}
 	completedCleanly := false
 	defer func() {
-		if !completedCleanly {
+		if !completedCleanly && startupAccepted {
 			stopFixtureGroup(started.PID)
 		}
 	}()
+	startupAccepted = true
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	phases := observeFixtureChild(ctx, listener, token, started.PID)
@@ -174,6 +197,11 @@ func runIsolatedTests(m *testing.M) (status int) {
 		select {
 		case phase := <-phases:
 			if phase.err != nil {
+				// A rejected identity must not turn its claimed PID into kill
+				// authority. Revoke Python's lease and await owned cleanup.
+				if !ready {
+					startupAccepted = false
+				}
 				return boundaryError("child phase", phase.err)
 			}
 			if phase.ready {
