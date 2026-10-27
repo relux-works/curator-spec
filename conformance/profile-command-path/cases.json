@@ -1,0 +1,562 @@
+{
+  "kind": "profile-command-path-evidence-not-wire",
+  "slice": "A",
+  "launch_forms": [
+    "interactive",
+    "managed-one-shot",
+    "new-child-on-resume-or-restart"
+  ],
+  "base": {
+    "admitted": {
+      "binding": {
+        "profile": "alpha",
+        "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "plan_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "generation": "alpha-a1"
+      },
+      "root": "/fixture/domain/global/bin",
+      "root_state": "verified",
+      "routing": "exclusive",
+      "current_profile": "alpha",
+      "protected_tools": [
+        "/fixture/tools"
+      ],
+      "base_path": [
+        "/usr/bin",
+        "/bin",
+        "/fixture/dispatcher"
+      ],
+      "command": {
+        "path": "/fixture/cache/alpha-a1/sample",
+        "sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      }
+    },
+    "candidate": {
+      "transport": "supported",
+      "path_prepend": "/fixture/domain/global/bin",
+      "receipt": {
+        "root": "/fixture/domain/global/bin",
+        "binding": {
+          "profile": "alpha",
+          "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "plan_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "generation": "alpha-a1"
+        }
+      },
+      "path": [
+        "/fixture/tools",
+        "/fixture/domain/global/bin",
+        "/usr/bin",
+        "/bin",
+        "/fixture/dispatcher"
+      ],
+      "command": {
+        "path": "/fixture/cache/alpha-a1/sample",
+        "sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "binding": {
+        "profile": "alpha",
+        "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "plan_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "generation": "alpha-a1"
+      }
+    }
+  },
+  "cases": [
+    {
+      "name": "verified-root",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {},
+      "expected": {
+        "admissible": true,
+        "violations": [],
+        "child": {
+          "path": [
+            "/fixture/tools",
+            "/fixture/domain/global/bin",
+            "/usr/bin",
+            "/bin",
+            "/fixture/dispatcher"
+          ],
+          "path_value": "/fixture/tools:/fixture/domain/global/bin:/usr/bin:/bin:/fixture/dispatcher",
+          "command": {
+            "path": "/fixture/cache/alpha-a1/sample",
+            "sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          "binding": {
+            "profile": "alpha",
+            "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "plan_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "generation": "alpha-a1"
+          }
+        },
+        "provider_starts": 1,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "empty-command-set",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "admitted": {
+          "command": null
+        },
+        "candidate": {
+          "command": null
+        }
+      },
+      "expected": {
+        "admissible": true,
+        "violations": [],
+        "child": {
+          "path": [
+            "/fixture/tools",
+            "/fixture/domain/global/bin",
+            "/usr/bin",
+            "/bin",
+            "/fixture/dispatcher"
+          ],
+          "path_value": "/fixture/tools:/fixture/domain/global/bin:/usr/bin:/bin:/fixture/dispatcher",
+          "command": null,
+          "binding": {
+            "profile": "alpha",
+            "lock_sha256": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "plan_sha256": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "generation": "alpha-a1"
+          }
+        },
+        "provider_starts": 1,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "missing-root",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "admitted": {
+          "root_state": "missing"
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "root-integrity"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "tampered-root",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "admitted": {
+          "root_state": "tampered"
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "root-integrity"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "unreadable-root",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "admitted": {
+          "root_state": "unreadable"
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "root-integrity"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "stale-lock",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "candidate": {
+          "receipt": {
+            "binding": {
+              "lock_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+            }
+          }
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "receipt-lock-binding"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "wrong-plan",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "candidate": {
+          "receipt": {
+            "binding": {
+              "plan_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+            }
+          }
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "receipt-plan-binding"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "wrong-generation",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "candidate": {
+          "receipt": {
+            "binding": {
+              "generation": "alpha-old"
+            }
+          }
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "receipt-generation-binding"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "foreign-inherited-root",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "candidate": {
+          "path": [
+            "/fixture/tools",
+            "/fixture/domain/global/bin",
+            "/usr/bin",
+            "/bin",
+            "/fixture/dispatcher",
+            "/fixture/foreign/global/bin"
+          ]
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "effective-path"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "hosted-drops-root",
+      "routes": [
+        "hosted"
+      ],
+      "changes": {
+        "candidate": {
+          "path": [
+            "/fixture/tools",
+            "/usr/bin",
+            "/bin",
+            "/fixture/dispatcher"
+          ]
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "effective-path"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "inert-path-prepend",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "candidate": {
+          "path": [
+            "/fixture/tools",
+            "/usr/bin",
+            "/bin",
+            "/fixture/dispatcher"
+          ]
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "effective-path"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "root-before-protected-tools",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "candidate": {
+          "path": [
+            "/fixture/domain/global/bin",
+            "/fixture/tools",
+            "/usr/bin",
+            "/bin",
+            "/fixture/dispatcher"
+          ]
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "effective-path"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "ambient-path-recomputed",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "candidate": {
+          "path": [
+            "/fixture/tools",
+            "/fixture/domain/global/bin",
+            "/usr/bin",
+            "/bin",
+            "/fixture/dispatcher",
+            "/fixture/ambient/bin"
+          ]
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "effective-path"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "wrong-reached-path",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "candidate": {
+          "command": {
+            "path": "/fixture/foreign/sample"
+          }
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "reached-command"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "wrong-reached-digest",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "candidate": {
+          "command": {
+            "sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+          }
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "reached-command"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "missing-lock-binding",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "candidate": {
+          "binding": {
+            "lock_sha256": null
+          }
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "process-lock-binding"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "unsupported-transport",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "candidate": {
+          "transport": "unsupported"
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "required-understanding"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "other-current-profile",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "admitted": {
+          "current_profile": "beta"
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "isolated-current-profile"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    },
+    {
+      "name": "routing-unproven",
+      "routes": [
+        "native",
+        "hosted"
+      ],
+      "changes": {
+        "admitted": {
+          "routing": "unknown"
+        }
+      },
+      "expected": {
+        "admissible": false,
+        "violations": [
+          "exclusive-routing"
+        ],
+        "child": null,
+        "provider_starts": 0,
+        "fallbacks": 0,
+        "live_preimage": "unchanged"
+      }
+    }
+  ]
+}

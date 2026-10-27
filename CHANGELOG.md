@@ -14,6 +14,15 @@ Versioning for the complete specification set.
   retains protection; release needs authoritative observation, break requires
   explicit operator CAS and permanent audit. This is specification-only work.
 
+- Specify the managed-session profile command PATH companion in environments
+  §§9.4/10.2: Curator publishes the verified root and fragment, curator-run
+  verifies/applies `path_prepend`, and the hosted manager preserves the binding
+  to the final child. Require protected tools, profile root, admitted base PATH
+  order, lock-bound reached-artifact evidence, paired refusal vectors and
+  independent native/hosted qualification. Slice A stays isolated and
+  machine-current; Slice B carriers and generation routing remain gated.
+  No runtime implementation or qualification is claimed.
+
 - Adopt separate private provisioning-origin/1 through Decision 0029: capture
   selector state/value, operator anchor, native root and exact home/lock binding;
   require record-authoritative credentials, atomic lifecycle and explicit

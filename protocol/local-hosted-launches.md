@@ -148,6 +148,22 @@ argv substitution; retry requires fresh preparation and a new plan.
 
 ## 4. Exact process and runtime writers
 
+For every managed hosted launch with a profile,
+[environments §9.4](environments.md#94-profile-scoped-skills-and-migration)
+and [§10.2](environments.md#102-the-launch-environment-fragment) additionally
+require the verified profile command root in the final agent child's PATH:
+protected tools, verified profile root, admitted base PATH, with existing
+protected dispatcher rules retained. Curator publishes the root and verified
+fragment; curator-run verifies and applies `path_prepend`; the hosted manager
+carries the effective PATH and profile/lock/plan/generation binding through to
+execution. Exact-plan delivery seals them with the complete process;
+delegated delivery requires its own supported binding contract. Neither an
+inert field nor a daemon-environment merge conforms. Unsupported transport,
+lost roots and stale/substituted bindings refuse before child execution with
+no route fallback. The [companion vectors](../conformance/profile-command-path/README.md)
+require final-child and reached-artifact evidence on both routes. This
+amendment publishes no successor hosted wire shape or runtime qualification.
+
 The daemon MUST execute the planned absolute binary, ordered argv, full env,
 cwd, stdin and selected home. It MUST NOT concatenate a shell command,
 re-resolve PATH, merge daemon env, resolve/repair a profile, choose defaults,

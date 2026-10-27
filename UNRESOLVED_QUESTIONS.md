@@ -29,6 +29,20 @@ without the vendor sandbox requires its separate runtime-policy mapping;
 project trust grants no bypass authority. None of these gates permits a
 package self-grant, hidden prompt or unqualified launch fallback.
 
+## Managed-session profile command PATH publication gates
+
+The [environments §§9.4/10.2 companion](protocol/environments.md#94-profile-scoped-skills-and-migration)
+settles final-child delivery and protected-tools/profile-root/base-PATH order.
+Joint Curator, curator-run and hosted-manager publication still needs the
+complete successor carrier/capability negotiation and start-boundary diagnostic
+mapping; reserved historical `path_prepend` syntax is insufficient. Slice B
+additionally needs its exact generation-root grammar and lease/GC protocol.
+The existing project `command_environment` exclusion remains until a combined
+carrier is accepted. These are publication gates, not authority to silently
+omit delivery. The [paired vectors](conformance/profile-command-path/README.md)
+are specification data; native/hosted runtime qualification and the separate
+protected-command inventory companion remain required for adoption.
+
 ## Agent stations
 
 [CIP-0024](cips/CIP-0024-agent-stations.md) is Draft. Its operator decisions of

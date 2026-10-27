@@ -3151,18 +3151,71 @@ machine. A lock it cannot read is not "not found" (section 8.4.1, lock
 row): the profile is reported as `environment_store_untrusted` and left
 unmaterialized.
 
-**Commands.** Skill commands reach a shell through the manager's forwarding
-shims in one user-bin directory (manager §12.1; core §12.1). That directory
-is a machine singleton: in revision 1 it carries the rendered command set of
-the **machine-current profile**, and `profile use` (section 9.2) re-points
-the shims on every machine-scope switch. Revision 1 declares profile skill
-**commands unavailable inside managed-home launches**: a `curator run`
-session inherits the machine shims, so a launch of a profile other than the
-machine-current one sees the current profile's commands or none — a stated
-limitation, not a discovered one. The fragment reserves `path_prepend`
-(section 10.2) for the revision that gives each profile a command root below
-the environments root; it is never emitted in revision 1. Independently of
-that revision, managed skill bin directories and any directory a skill
+**Commands.** Ordinary shell delivery retains the manager's machine-current
+forwarding shims (manager §12.1; core §12.1). Managed-session delivery instead
+MUST satisfy the following companion contract on **every launch with a
+profile**, native and hosted, including resume/restart paths that create a
+new agent child. This amends revision 1's managed-home command limitation;
+it does not assert that existing launchers implement the amendment.
+
+**Verified profile command root.** Curator MUST publish an absolute,
+manager-owned command root and verified fragment bound to the selected
+profile and the section 1.3 digest of its complete lock. The active command
+set comes from that lock's admitted skill plan. Executable paths and digests
+remain in protected runtime receipts bound to the lock and plan, outside the
+portable lock. Matching the lock means verifying this chain, including the
+source pins, selected exports, shim targets and reached artifact bytes;
+a command name, directory spelling or digest without authority is insufficient.
+
+In **Slice A**, the root is the isolated routing domain's machine-current
+command root. The selected profile MUST equal that domain's current profile,
+and the supervisor-issued exclusive routing admission MUST cover the root,
+runtime generation and all admitted consumers. The consumer admission and
+routing mutation serialization MUST preserve that binding for the session's
+lifetime. A different profile, unknown consumer or unproven isolation refuses
+launch; inherited singleton shims never satisfy another profile's requirement.
+This changes the required launch delivery, not Slice A's publication boundary.
+In **Slice B later**, the root is the selected lock-bound immutable generation
+root. Its exact root grammar, successor carriers and lease/GC protocol require
+joint publication before use. Active sessions, retained snapshots, rollback
+slots and pending transactions MUST keep their referenced generation and
+receipts live. An update MUST NOT silently retarget a running session.
+
+Before launch, missing, unreadable, tampered or stale roots, mismatched
+profile/lock/plan/generation bindings and unsupported delivery MUST refuse;
+there is no ambient-PATH or other-profile fallback. Verification covers owner,
+mode, confinement, filesystem identity and executable/receipt integrity under
+section 4, with the binding revalidated at the process-start boundary. A
+profile with no active exports still supplies a verified empty root; it does
+not authorize lookup of inactive commands through a foreign profile root.
+
+**PATH delivery and owners.** The effective child PATH MUST contain protected
+tools first, then exactly one verified profile root, then the admitted base
+PATH. This adopts the accepted design's D-PATH placement recommendation for
+managed sessions, including managed one-shot launches. The verified root is
+prepended to the base PATH, never ahead of protected tools. Existing protected
+dispatcher placement, project-dispatch authentication, heavy-command controls
+and command-admission rules remain required. Base admission MUST reject
+foreign profile roots, unsafe or unreadable components, aliases that change
+the verified order, and ambiguous command owners; an inherited PATH is not
+authority. A later ambient PATH change MUST NOT trigger recomposition.
+
+| Owner | Conformance obligation |
+| --- | --- |
+| Curator | Publish the verified root, its protected runtime/lock binding and the verified fragment carrying `path_prepend`; refuse invalid roots/bindings before successful fragment publication. Demonstrate valid and missing/tampered/stale-root cases without changing unrelated state. |
+| curator-run | Independently verify the fragment, selected profile pin, root and runtime binding; apply `path_prepend` after protected tools and before the admitted base PATH to the actual child environment. Record the effective PATH, fragment digest, lock/plan and generation binding. Demonstrate final-child PATH and reached-command path/digest, including rejection of inherited foreign roots and inert transport. Parsing the field alone is insufficient. |
+| Hosted session manager | Carry that same verified PATH and binding through the supported hosted contract to the final agent child. Verify admission/start bindings and preserve the sealed process environment; never drop the root, merge daemon PATH or resolve against machine-current shims. Demonstrate the same final-child and command witnesses through the real hosted route; an incapable receiver refuses without fallback. |
+
+The [companion vectors](../conformance/profile-command-path/README.md) require
+the child's actual PATH, the reached command's path and digest, and binding
+to the complete lock digest on both routes. Printed fragments and abstract
+specification checks alone qualify none of these runtime obligations.
+Completion/adoption still refuses `profile_skill_companion_required` until
+the required companion allocations are accepted and the corresponding real
+runtime witnesses are qualified. The separate protected-command inventory
+companion remains required; this amendment does not allocate that inventory.
+
+Managed skill bin directories and any directory a skill
 publishes onto `PATH` MUST NOT carry an executable whose name begins with
 `curator-`, and materialization MUST refuse such an entry with
 `environment_reserved_command_name` — the umbrella discovery of section 11
@@ -3928,9 +3981,44 @@ unknown kinds, and unknown semantics or argument values.
   `{ "kind": "flag", "flag": "-p", "argument": "name", "name": "curator-mcp" }`.
 - `path_prepend` is a **reserved** OPTIONAL member: when present, exactly
   one absolute path below the manager-owned environments root that a
-  launcher prepends to the child's `PATH`. Revision 1 never emits it
-  (section 9.4); a reader MUST accept its absence and MUST reject any value
-  outside the environments root.
+  launcher prepends to the child's `PATH`. Historical revision 1 never emits
+  it; a historical reader MUST accept its absence and MUST reject any value
+  outside the environments root. These historical schema/reader meanings do
+  not establish support for the managed-session companion below.
+
+**Managed-session command delivery companion.** Section 9.4 requires Curator
+to deliver its verified profile command root through `path_prepend`, and
+curator-run to verify and apply it to the final child PATH on both native and
+hosted launches. The value is one absolute root under the admitted manager
+boundary, with no `..` segment, bound to that fragment's profile lock digest
+and protected runtime receipt. Slice A's root can be the isolated domain's
+canonical command root outside the environments subtree; a historical reader
+that cannot verify this boundary MUST refuse, never relax its old check.
+No profile-authored PATH literal or shell initialization substitutes for it.
+
+This is a required-understanding semantic amendment, not a new full-fragment
+revision allocation. Before emission the joint Curator/launcher/hosted
+publication MUST negotiate a complete carrier that transports the verified
+root, profile/lock/plan/generation binding and effective-PATH provenance.
+Published fragment schemas and historical closed carriers remain unchanged;
+the presence of reserved `path_prepend` in an old schema is not capability
+negotiation. An absent or unsupported carrier/consumer refuses the managed
+launch rather than ignoring the field or silently omitting command delivery.
+The project-context rule forbidding coexistence of `command_environment`
+with `path_prepend` remains in force: until a jointly specified combined
+carrier supports both operations, a request needing both MUST refuse.
+
+The launcher MUST construct the complete effective PATH once, after
+verification and base admission, in the section 9.4 order. Native execution
+MUST pass that value to the actual child; hosted execution MUST carry the
+same value and bindings in its required-understanding launch contract.
+Exact-plan hosting MUST cover them with the complete process digest;
+delegated hosting MUST preserve and verify them through its own negotiated
+contract, without claiming snapshot provenance. The final process-start
+boundary MUST reject substituted or dropped PATH/binding data, without native
+fallback, a new session or repair. Existing credential and permission policy
+remain unchanged. Slice B's full carrier, root grammar and lease/GC allocation
+remain separate publication gates; this amendment claims no runtime support.
 
 **`launch-env-fragment-v3`.** Revision v3 retains the v2 permissions
 contract and adds `muse` with exactly the four section 7.1 XDG variables.
