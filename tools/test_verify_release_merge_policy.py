@@ -101,7 +101,12 @@ class SecretFreePolicyTransportTests(SecretFreeTransportMixin, unittest.TestCase
         with patch.dict(os.environ, {"GITHUB_TOKEN": token}, clear=True), \
              patch("sys.argv", ["verify_release_merge_policy.py"]), \
              contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
-            status = verify_release_merge_policy.main()
+            try:
+                status = verify_release_merge_policy.main()
+            except Exception as error:
+                import traceback
+                output.write("".join(traceback.format_exception(error)))
+                status = None
         return status, output.getvalue()
 
 

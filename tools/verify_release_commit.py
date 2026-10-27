@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import http.client
 import base64
 import binascii
 import json
@@ -151,7 +152,7 @@ def fetch_github_payload(commit: str, token: str) -> Any:
     try:
         with urllib.request.build_opener(NoRedirect()).open(request, timeout=30) as response:
             return json.load(response)
-    except (OSError, urllib.error.URLError, ValueError):
+    except (OSError, urllib.error.URLError, http.client.HTTPException, ValueError):
         # HTTP errors may contain Authorization values. Discard the raw error
         # and raise outside its handler so even chained tracebacks stay safe.
         pass

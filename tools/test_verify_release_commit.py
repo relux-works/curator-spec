@@ -403,12 +403,13 @@ class SecretFreeTransportMixin:
         self.assertEqual(len(rejected), 2, "both calls must reach actual HTTP header rejection")
 
     def test_transport_errors_discard_sensitive_exception_details(self):
+        import http.client
         import os
         import urllib.error
         from unittest.mock import patch
         import uuid
         secret = "synthetic-" + uuid.uuid4().hex
-        for error_type in (OSError, urllib.error.URLError, ValueError):
+        for error_type in (OSError, urllib.error.URLError, ValueError, http.client.BadStatusLine):
             with self.subTest(error_type=error_type.__name__), patch.dict(os.environ, {}, clear=True), \
                  patch.object(verify_release_commit.urllib.request, "build_opener", side_effect=error_type(secret)):
                 with self.subTest(channel="helper"):
@@ -477,7 +478,12 @@ class SecretFreeCommitTransportTests(SecretFreeTransportMixin, unittest.TestCase
              patch.object(verify_release_commit, "require_default_branch_ancestor"), \
              patch.object(verify_release_commit, "commit_signature_kind", return_value="github"), \
              contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
-            status = verify_release_commit.main()
+            try:
+                status = verify_release_commit.main()
+            except Exception as error:
+                import traceback
+                output.write("".join(traceback.format_exception(error)))
+                status = None
         return status, output.getvalue()
 
 
