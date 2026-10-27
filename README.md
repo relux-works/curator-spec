@@ -334,7 +334,9 @@ Validation requires local release tags (fetch tags in shallow checkouts).
   restores the caller on cleanup. Git fixture modules enter this boundary
   themselves, so unittest discovery intentionally runs without an outer wrapper.
   Direct Go generator tests use a Python supervisor and private lease/status
-  pipes. An owned test child validates a complete live physical environment
+  pipes. A private loopback channel reports actual child readiness and body
+  completion independently of provider records. An owned test child validates
+  a complete live physical environment
   before any selected test runs. Premature EOF or missing completion fails
   closed; parent/provider loss terminates the owned child tree before cleanup.
   Python 3 is required for direct Go tests too (`python` on Windows).
@@ -489,7 +491,14 @@ tracing destinations, attribute/index selectors and local tracing have
 separate controls. `test_fixture_lifetime.py` compiles the actual Go TestMain
 and drives bounded EOF, stale/incomplete grant, status, spawn, parent/provider
 death and ordinary-descendant controls without skips. Setup and teardown have
-bounded transport waits; existing test-body deadlines are unchanged. Homes
+independent bounded transport waits: 10s before child readiness and 5s after
+actual body completion, even if the provider stalls before its final record.
+The child reports readiness only after live-grant validation, then holds its
+nonce/PID-authenticated loopback connection across `m.Run`; its close observes
+body return or process exit. Existing test-body deadlines, including disabled
+timeouts, are unchanged. `test_fixture_transport.py` plants both transport
+stalls at authentic records without changing helper/consumer source bytes,
+and runs real bodies longer than setup's deadline. Homes
 remain owned by the live supervisor; abrupt loss of either Go/Python owner has
 fallback cleanup. Deliberately detached processes or simultaneous loss of all
 owners are outside this fixture lifecycle contract. Temporary homes are removed

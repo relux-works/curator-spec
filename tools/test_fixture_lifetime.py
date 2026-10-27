@@ -12,6 +12,8 @@ import sys
 import tempfile
 import time
 import unittest
+import threading
+from contextlib import contextmanager
 from unittest.mock import patch
 
 from fixture_environment import isolated_environment
@@ -64,6 +66,11 @@ func TestLeaseWait(t *testing.T) {
  os.WriteFile(os.Getenv("LEASE_DISPATCH"),[]byte(os.Getenv("HOME")),0600)
  time.Sleep(20*time.Second)
 }
+// Real selected bodies may legitimately exceed the owner's setup deadline.
+func TestLeaseLong(t *testing.T) {
+ os.WriteFile(os.Getenv("LEASE_DISPATCH"),[]byte(os.Getenv("HOME")),0600)
+ time.Sleep(12*time.Second)
+}
 // An abrupt exit also bypasses Go's cleanup of sibling t.TempDir trees.
 func TestLeaseAbruptExit(t *testing.T) {
  t.TempDir()
@@ -90,11 +97,46 @@ func TestLeaseAbruptExit(t *testing.T) {
             child_env = dict(os.environ, LEASE_DISPATCH=str(self.dispatch))
             if env:
                 child_env.update(env)
-            result = subprocess.run([str(self.binary), *args], cwd=cwd or self.fixture,
-                                    env=child_env, input=data, capture_output=True,
-                                    text=True, timeout=20)
+            with self.child_phase_args(args) as args:
+                result = subprocess.run([str(self.binary), *args], cwd=cwd or self.fixture,
+                                        env=child_env, input=data, capture_output=True,
+                                        text=True, timeout=20)
             self.assertEqual(list(temporary.glob("curator-go-fixture-*")), [], "outer root leaked")
             return result
+
+    @contextmanager
+    def child_phase_args(self, args):
+        if not args or args[0] != "--curator-fixture-child":
+            yield args
+            return
+        # Direct private-child probes exercise the same mandatory phase role.
+        # Grant failures never connect; a valid child keeps this socket live.
+        with socket.socket() as listener:
+            listener.bind(("127.0.0.1", 0)); listener.listen(); listener.settimeout(.1)
+            stopped = threading.Event()
+            def drain():
+                while not stopped.is_set():
+                    try:
+                        connection, _ = listener.accept()
+                    except socket.timeout:
+                        continue
+                    with connection:
+                        connection.settimeout(.1)
+                        while not stopped.is_set():
+                            try:
+                                if not connection.recv(1024):
+                                    return
+                            except socket.timeout:
+                                pass
+                    return
+            reader = threading.Thread(target=drain)
+            reader.start()
+            try:
+                yield [*args[:2], "127.0.0.1:" + str(listener.getsockname()[1]),
+                       "direct-child-control", *args[2:]]
+            finally:
+                stopped.set(); reader.join(timeout=2)
+                self.assertFalse(reader.is_alive(), "phase probe reader leaked")
 
     # Focused success/failure and abrupt exit preserve the child's status;
     # homes are live at dispatch and gone before the supervisor returns. The
@@ -139,26 +181,27 @@ func TestLeaseAbruptExit(t *testing.T) {
             grant = {"version": 1, "root": str(Path(env["HOME"]).parent),
                      "set": {k: env[k] for k in ("HOME", "XDG_CONFIG_HOME", "GIT_CONFIG_GLOBAL",
                               "GIT_CONFIG_NOSYSTEM", "TMPDIR", "TMP", "TEMP")}}
-            child = subprocess.Popen([str(self.binary), "--curator-fixture-child", str(owned),
-                                      "-test.run=^TestLeaseWait$"], cwd=self.fixture, env=env,
-                                     stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE, text=True)
-            try:
-                child.stdin.write(json.dumps(grant) + "\n"); child.stdin.flush()
-                deadline = time.monotonic() + 10
-                while not self.dispatch.exists() and time.monotonic() < deadline:
-                    time.sleep(.02)
-                self.assertTrue(self.dispatch.exists(), "valid child never dispatched")
-                child.stdin.close(); child.stdin = None
-                output, error = child.communicate(timeout=10)
-                self.assertEqual(child.returncode, 2, output + error)
-                self.assertIn("child lease lost EOF", error)
-            finally:
-                if child.poll() is None:
-                    child.kill(); child.wait(timeout=5)
-                if child.stdin:
-                    child.stdin.close()
-                child.stdout.close(); child.stderr.close()
+            with self.child_phase_args(["--curator-fixture-child", str(owned),
+                                        "-test.run=^TestLeaseWait$"]) as args:
+                child = subprocess.Popen([str(self.binary), *args], cwd=self.fixture, env=env,
+                                         stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE, text=True)
+                try:
+                    child.stdin.write(json.dumps(grant) + "\n"); child.stdin.flush()
+                    deadline = time.monotonic() + 10
+                    while not self.dispatch.exists() and time.monotonic() < deadline:
+                        time.sleep(.02)
+                    self.assertTrue(self.dispatch.exists(), "valid child never dispatched")
+                    child.stdin.close(); child.stdin = None
+                    output, error = child.communicate(timeout=10)
+                    self.assertEqual(child.returncode, 2, output + error)
+                    self.assertIn("child lease lost EOF", error)
+                finally:
+                    if child.poll() is None:
+                        child.kill(); child.wait(timeout=5)
+                    if child.stdin:
+                        child.stdin.close()
+                    child.stdout.close(); child.stderr.close()
         self.assertFalse(Path(grant["root"]).exists())
 
     # A provider that exits without completion, lies about status, or hangs at

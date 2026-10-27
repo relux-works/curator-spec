@@ -2,10 +2,13 @@ package main
 
 import (
 	"bufio"
+	"context"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/fs"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -24,12 +27,13 @@ func TestMain(m *testing.M) { os.Exit(runIsolatedTests(m)) }
 
 func runIsolatedTests(m *testing.M) (status int) {
 	if len(os.Args) > 1 && os.Args[1] == fixtureChild {
-		if len(os.Args) < 3 {
+		if len(os.Args) < 5 {
 			return boundaryError("missing child root", nil)
 		}
 		root := os.Args[2]
-		os.Args = append(os.Args[:1], os.Args[3:]...)
-		return runFixtureChild(m, root)
+		address, token := os.Args[3], os.Args[4]
+		os.Args = append(os.Args[:1], os.Args[5:]...)
+		return runFixtureChild(m, root, address, token)
 	}
 	python := "python3"
 	if runtime.GOOS == "windows" {
@@ -68,16 +72,30 @@ func runIsolatedTests(m *testing.M) (status int) {
 	if err != nil {
 		return boundaryError("create root", err)
 	}
+	cleanupAllowed := true
 	defer func() {
+		if !cleanupAllowed {
+			return // Never remove a root while its recorded owner may still run.
+		}
 		if err := removeFixtureRoot(owned); err != nil {
 			status = boundaryError("root cleanup", err)
 		}
 	}()
+	listener, err := net.Listen("tcp4", "127.0.0.1:0")
+	if err != nil {
+		return boundaryError("phase listener", err)
+	}
+	defer listener.Close()
+	var nonce [32]byte
+	if _, err = rand.Read(nonce[:]); err != nil {
+		return boundaryError("phase nonce", err)
+	}
+	token := fmt.Sprintf("%x", nonce)
 	executable, err := os.Executable()
 	if err != nil {
 		return boundaryError("executable", err)
 	}
-	args := []string{filepath.Join(root, "tools", "fixture_environment.py"), "--go-test", owned, executable, fixtureChild, owned}
+	args := []string{filepath.Join(root, "tools", "fixture_environment.py"), "--go-test", owned, executable, fixtureChild, owned, listener.Addr().String(), token}
 	args = append(args, os.Args[1:]...)
 	cmd := exec.Command(python, args...)
 	// stdout is a private framed status channel. Test output still reaches the
@@ -97,6 +115,7 @@ func runIsolatedTests(m *testing.M) (status int) {
 		output.Close()
 		return boundaryError("start", err)
 	}
+	cleanupAllowed = false
 	var once sync.Once
 	done := make(chan struct{})
 	var waitErr error
@@ -105,12 +124,15 @@ func runIsolatedTests(m *testing.M) (status int) {
 	defer func() {
 		input.Close()
 		output.Close()
+		// Refusals may find Python blocked in transport rather than its event
+		// loop. Kill this recorded provider; Windows closes its owned job too.
+		_ = cmd.Process.Kill()
 		startWait()
 		select {
 		case <-done:
+			cleanupAllowed = true
 		case <-time.After(5 * time.Second):
-			cmd.Process.Kill()
-			<-done
+			status = boundaryError("provider termination timeout; root retained", nil)
 		}
 	}()
 	decoder := json.NewDecoder(output)
@@ -131,15 +153,84 @@ func runIsolatedTests(m *testing.M) (status int) {
 			stopFixtureGroup(started.PID)
 		}
 	}()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	phases := observeFixtureChild(ctx, listener, token, started.PID)
+	provider := make(chan providerResult, 1)
+	go func() { provider <- readFixtureCompletion(decoder, cmd, startWait, done, &waitErr) }()
+	setup := time.NewTimer(10 * time.Second)
+	defer setup.Stop()
+	setupDeadline := setup.C
+	var cleanup *time.Timer
+	var cleanupDeadline <-chan time.Time
+	defer func() {
+		if cleanup != nil {
+			cleanup.Stop()
+		}
+	}()
+	ready, exited := false, false
+	var result *providerResult
+	for {
+		select {
+		case phase := <-phases:
+			if phase.err != nil {
+				return boundaryError("child phase", phase.err)
+			}
+			if phase.ready {
+				ready = true
+				setup.Stop()
+				setupDeadline = nil
+			} else {
+				exited = true
+				if cleanup == nil {
+					cleanup = time.NewTimer(5 * time.Second)
+					cleanupDeadline = cleanup.C
+				}
+			}
+		case received := <-provider:
+			if received.message != "" {
+				return boundaryError(received.message, received.err)
+			}
+			result = &received
+			// A child rejected before readiness legitimately returns 2. Normal
+			// success/failure/abrupt exit must also have an actual child phase.
+			if result.status == 2 && !ready {
+				return 2
+			}
+			if cleanup == nil {
+				cleanup = time.NewTimer(5 * time.Second)
+				cleanupDeadline = cleanup.C
+			}
+		case <-setupDeadline:
+			return boundaryError("child setup timeout", nil)
+		case <-cleanupDeadline:
+			return boundaryError("child cleanup timeout", nil)
+		}
+		if ready && exited && result != nil {
+			completedCleanly = true
+			return result.status
+		}
+	}
+}
+
+type providerResult struct {
+	status  int
+	message string
+	err     error
+}
+
+// This decoder may wait for a record, but never owns the outer lifecycle clock.
+// Refusal closes its pipe and kills its recorded provider before root cleanup.
+func readFixtureCompletion(decoder *json.Decoder, cmd *exec.Cmd, startWait func(), done <-chan struct{}, waitErr *error) providerResult {
 	var completed struct {
 		Event  string `json:"event"`
 		Status *int   `json:"status"`
 	}
-	if err = decoder.Decode(&completed); err != nil {
-		return boundaryError("premature provider EOF", err)
+	if err := decoder.Decode(&completed); err != nil {
+		return providerResult{message: "premature provider EOF", err: err}
 	}
 	if completed.Event != "completed" || completed.Status == nil || *completed.Status < 0 {
-		return boundaryError("invalid completion record", nil)
+		return providerResult{message: "invalid completion record"}
 	}
 	// A terminal record must be the last record, and the provider's actual exit
 	// must agree with it. Bound teardown so a broken provider cannot hang Wait.
@@ -153,27 +244,72 @@ func runIsolatedTests(m *testing.M) (status int) {
 		eof <- err
 	}()
 	select {
-	case err = <-eof:
+	case err := <-eof:
 		if err != io.EOF {
-			return boundaryError("provider completion", err)
+			return providerResult{message: "provider completion", err: err}
 		}
 	case <-time.After(5 * time.Second):
-		return boundaryError("provider completion timeout", nil)
+		return providerResult{message: "provider completion timeout"}
 	}
-	input.Close()
 	startWait()
 	select {
 	case <-done:
 	case <-time.After(5 * time.Second):
-		cmd.Process.Kill()
-		<-done
-		return boundaryError("provider wait timeout", waitErr)
+		return providerResult{message: "provider wait timeout"}
 	}
 	if cmd.ProcessState.ExitCode() != *completed.Status {
-		return boundaryError("provider status mismatch", waitErr)
+		return providerResult{message: "provider status mismatch", err: *waitErr}
 	}
-	completedCleanly = true
-	return *completed.Status
+	return providerResult{status: *completed.Status}
+}
+
+type fixturePhase struct {
+	ready bool
+	err   error
+}
+
+// The nonce and recorded PID bind readiness to this owned invocation. The child
+// connects after grant validation and closes after m.Run or on abrupt exit.
+// Python record delivery cannot postpone these independent phase observations.
+func observeFixtureChild(ctx context.Context, listener net.Listener, token string, pid int) <-chan fixturePhase {
+	events := make(chan fixturePhase, 2)
+	go func() {
+		conn, err := listener.Accept()
+		if err != nil {
+			events <- fixturePhase{err: err}
+			return
+		}
+		defer conn.Close()
+		stop := context.AfterFunc(ctx, func() { conn.Close() })
+		defer stop()
+		decoder := json.NewDecoder(io.LimitReader(conn, 1024))
+		decoder.DisallowUnknownFields()
+		var identity struct {
+			PID   int    `json:"pid"`
+			Token string `json:"token"`
+		}
+		if err = decoder.Decode(&identity); err != nil || identity.PID != pid || identity.Token != token {
+			events <- fixturePhase{err: fmt.Errorf("invalid child readiness: %v", err)}
+			return
+		}
+		events <- fixturePhase{ready: true}
+		// No body deadline here: m.Run owns the real selected test timeout,
+		// including zero. Only newline framing may precede process-owned EOF.
+		reader := io.MultiReader(decoder.Buffered(), conn)
+		for {
+			var b [1]byte
+			n, err := reader.Read(b[:])
+			if err == io.EOF {
+				events <- fixturePhase{}
+				return
+			}
+			if err != nil || (n > 0 && b[0] != '\n' && b[0] != '\r') {
+				events <- fixturePhase{err: fmt.Errorf("invalid child phase close: %v", err)}
+				return
+			}
+		}
+	}()
+	return events
 }
 
 func decodeSetup(decoder *json.Decoder, value any) error {
@@ -194,7 +330,7 @@ func boundaryError(message string, err error) int {
 
 // Every selected test, including history-only runs, must receive a complete,
 // live, physical environment. EOF revokes the lease even after setup succeeded.
-func runFixtureChild(m *testing.M, owned string) int {
+func runFixtureChild(m *testing.M, owned, address, token string) int {
 	reader := bufio.NewReader(os.Stdin)
 	decoder := json.NewDecoder(reader)
 	decoder.DisallowUnknownFields()
@@ -264,6 +400,17 @@ func runFixtureChild(m *testing.M, owned string) int {
 			}
 		}
 	}()
+	phase, err := net.DialTimeout("tcp4", address, 5*time.Second)
+	if err != nil {
+		return boundaryError("child phase connect", err)
+	}
+	defer phase.Close()
+	if err = json.NewEncoder(phase).Encode(struct {
+		PID   int    `json:"pid"`
+		Token string `json:"token"`
+	}{os.Getpid(), token}); err != nil {
+		return boundaryError("child readiness", err)
+	}
 	return m.Run()
 }
 
