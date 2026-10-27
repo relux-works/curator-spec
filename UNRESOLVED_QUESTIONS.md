@@ -273,3 +273,12 @@ including authority, path existence, symlink handling, precedence and lifecycle
 ownership. The current empty-only `codex_settings` grammar remains in force.
 Legacy seed entries have no reliable copied-versus-user-authored provenance;
 this question does not authorize repair, migration or trust deletion.
+
+## Draft launch lock refresh
+
+[Decision 0033](decisions/0033-launch-lock-refresh-compatible.md#owner-questions)
+awaits owner confirmation of the relayed requirement, activated default and
+transition, operator policy authority, automatic signer/attestation gates,
+same-major bounds, system/MCP removal confirmation and offline/lease deferral.
+Same-thread keeper upgrade/restart needs an explicit identity/adoption decision;
+the draft preserves frozen resume and does not claim that case is delivered.
