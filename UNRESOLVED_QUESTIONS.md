@@ -1,5 +1,16 @@
 # Unresolved questions
 
+## Opt-in separate managed-home login (Q6)
+
+[Draft Decision 0032](decisions/0032-managed-home-separate-login.md) records the
+settled shared-owner default and explicit operator-owned exception. Owner
+questions: who may perform remote attended bootstrap, and whether to keep
+same-account Codex shared-owner/separate-home combinations unavailable under
+CIP-0010 C2 or commission a separate compatible design. Recommended: retain C2.
+Lane/home machine-selector grammar, bootstrap exclusion, successor posture and
+receiver carriers, protected revocation reads and exact provider qualification
+remain publication/activation gates. This draft implements none of them.
+
 ## Home-lease consumer publication gates
 
 Owner decision 2026-10-27 settled **refuse**, one profile per Werkstatt and one

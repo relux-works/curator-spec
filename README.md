@@ -158,6 +158,12 @@ Protocol and implementation designs are recorded as
 [CIP-0001](cips/CIP-0001-curator-improvement-proposals.md); adoption follows
 [GOVERNANCE.md](GOVERNANCE.md).
 
+[Draft Decision 0032: Opt-in separate login for a managed home](decisions/0032-managed-home-separate-login.md)
+proposes Q6's machine-owned lane/home exception to shared-owner credentials,
+using existing `per-home` authentication. It covers attended bootstrap,
+revocation, lease refusal, diagnostics and a future effective-posture successor.
+It changes no schema, source default or runtime admission.
+
 [CIP-0022: MCP server declarations in the project Skillfile](cips/CIP-0022-mcp-server-declarations-in-project-skillfile.md)
 proposes project schema 3, package-first resolution and digest-approved inline
 contributions. It was accepted by the operator on 2026-10-22; normative grammar
