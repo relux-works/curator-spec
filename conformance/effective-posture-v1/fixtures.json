@@ -1,0 +1,2086 @@
+{
+  "kind": "effective-posture-fixtures/1",
+  "notice": "Synthetic qualification and authority inputs only; no provider certified; no launcher/runtime proof.",
+  "fixtures": {
+    "default-yolo": {
+      "posture": {
+        "record": "effective-posture/1",
+        "permission": {
+          "mode": "yolo",
+          "source": "default"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "native_suffix": {
+          "argv": [],
+          "sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "none",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "sha256": "sha256:23d5a4be6dea8d2b2af78083488e1a950a6f3b557badedc3b7715642792f2c57",
+          "state": "qualified"
+        },
+        "binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "provenance": {
+          "launch_id": "11111111111111111111111111111111",
+          "launcher_state": {
+            "record": "launcher-path-state/1",
+            "sha256": "sha256:6c033a15fadd79f91337f14640b3429395f29728a5ee3155f2f931df042e88c8"
+          },
+          "route": "native",
+          "home_lease": null
+        }
+      },
+      "context": {
+        "current_binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "resolved_permission": {
+          "mode": "yolo",
+          "source": "default"
+        },
+        "resolved_project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "none",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "state": "qualified",
+          "provider": {
+            "environment": "codex_cli",
+            "version": "0.0.0-fixture",
+            "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "platform": "linux-amd64"
+          },
+          "project_modes": [
+            "none",
+            "native-project",
+            "strict"
+          ],
+          "no_tools": true,
+          "inspector_id": "fixture-inspector/1",
+          "suffix_grammar_id": "fixture-policy-free-grammar/1",
+          "policy_free_suffixes": [
+            [],
+            [
+              "--model",
+              "fixture-model"
+            ]
+          ]
+        },
+        "lane": {
+          "operator": "fixture-operator",
+          "permissions": "yolo",
+          "approved": true,
+          "approved_at": "2026-10-27T00:00:00Z"
+        },
+        "launcher_state": {
+          "record": "launcher-path-state/1",
+          "launch_id": "11111111111111111111111111111111",
+          "path": [
+            "/usr/bin",
+            "/bin"
+          ],
+          "path_value": "/usr/bin:/bin",
+          "fragment_sha256": "sha256:8be935ca3d65c3e2ce3ee239fef89e3e2120135d708ec1b6b9a09a1d1a188055",
+          "binding": {
+            "profile": "fixture-profile",
+            "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "generation": "fixture-generation-1"
+          },
+          "availability": "none",
+          "reason": null,
+          "root": null,
+          "receipt_sha256": null,
+          "admission": [],
+          "profile_root_exclusions": []
+        },
+        "home_lease": null
+      }
+    },
+    "native": {
+      "posture": {
+        "record": "effective-posture/1",
+        "permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "native_suffix": {
+          "argv": [],
+          "sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "none",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "sha256": "sha256:23d5a4be6dea8d2b2af78083488e1a950a6f3b557badedc3b7715642792f2c57",
+          "state": "qualified"
+        },
+        "binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "provenance": {
+          "launch_id": "11111111111111111111111111111111",
+          "launcher_state": {
+            "record": "launcher-path-state/1",
+            "sha256": "sha256:6c033a15fadd79f91337f14640b3429395f29728a5ee3155f2f931df042e88c8"
+          },
+          "route": "native",
+          "home_lease": null
+        }
+      },
+      "context": {
+        "current_binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "resolved_permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "resolved_project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "none",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "state": "qualified",
+          "provider": {
+            "environment": "codex_cli",
+            "version": "0.0.0-fixture",
+            "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "platform": "linux-amd64"
+          },
+          "project_modes": [
+            "none",
+            "native-project",
+            "strict"
+          ],
+          "no_tools": true,
+          "inspector_id": "fixture-inspector/1",
+          "suffix_grammar_id": "fixture-policy-free-grammar/1",
+          "policy_free_suffixes": [
+            [],
+            [
+              "--model",
+              "fixture-model"
+            ]
+          ]
+        },
+        "lane": {
+          "operator": "fixture-operator",
+          "permissions": "native",
+          "approved": true,
+          "approved_at": "2026-10-27T00:00:00Z"
+        },
+        "launcher_state": {
+          "record": "launcher-path-state/1",
+          "launch_id": "11111111111111111111111111111111",
+          "path": [
+            "/usr/bin",
+            "/bin"
+          ],
+          "path_value": "/usr/bin:/bin",
+          "fragment_sha256": "sha256:8be935ca3d65c3e2ce3ee239fef89e3e2120135d708ec1b6b9a09a1d1a188055",
+          "binding": {
+            "profile": "fixture-profile",
+            "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "generation": "fixture-generation-1"
+          },
+          "availability": "none",
+          "reason": null,
+          "root": null,
+          "receipt_sha256": null,
+          "admission": [],
+          "profile_root_exclusions": []
+        },
+        "home_lease": null
+      }
+    },
+    "native-project": {
+      "posture": {
+        "record": "effective-posture/1",
+        "permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "native_suffix": {
+          "argv": [],
+          "sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "project": {
+          "requested": {
+            "strict": false,
+            "native_project": true,
+            "no_tools": false
+          },
+          "mode": "native-project",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "sha256": "sha256:23d5a4be6dea8d2b2af78083488e1a950a6f3b557badedc3b7715642792f2c57",
+          "state": "qualified"
+        },
+        "binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "provenance": {
+          "launch_id": "11111111111111111111111111111111",
+          "launcher_state": {
+            "record": "launcher-path-state/1",
+            "sha256": "sha256:6c033a15fadd79f91337f14640b3429395f29728a5ee3155f2f931df042e88c8"
+          },
+          "route": "native",
+          "home_lease": null
+        }
+      },
+      "context": {
+        "current_binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "resolved_permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "resolved_project": {
+          "requested": {
+            "strict": false,
+            "native_project": true,
+            "no_tools": false
+          },
+          "mode": "native-project",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "state": "qualified",
+          "provider": {
+            "environment": "codex_cli",
+            "version": "0.0.0-fixture",
+            "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "platform": "linux-amd64"
+          },
+          "project_modes": [
+            "none",
+            "native-project",
+            "strict"
+          ],
+          "no_tools": true,
+          "inspector_id": "fixture-inspector/1",
+          "suffix_grammar_id": "fixture-policy-free-grammar/1",
+          "policy_free_suffixes": [
+            [],
+            [
+              "--model",
+              "fixture-model"
+            ]
+          ]
+        },
+        "lane": {
+          "operator": "fixture-operator",
+          "permissions": "native",
+          "approved": true,
+          "approved_at": "2026-10-27T00:00:00Z"
+        },
+        "launcher_state": {
+          "record": "launcher-path-state/1",
+          "launch_id": "11111111111111111111111111111111",
+          "path": [
+            "/usr/bin",
+            "/bin"
+          ],
+          "path_value": "/usr/bin:/bin",
+          "fragment_sha256": "sha256:8be935ca3d65c3e2ce3ee239fef89e3e2120135d708ec1b6b9a09a1d1a188055",
+          "binding": {
+            "profile": "fixture-profile",
+            "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "generation": "fixture-generation-1"
+          },
+          "availability": "none",
+          "reason": null,
+          "root": null,
+          "receipt_sha256": null,
+          "admission": [],
+          "profile_root_exclusions": []
+        },
+        "home_lease": null
+      }
+    },
+    "strict": {
+      "posture": {
+        "record": "effective-posture/1",
+        "permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "native_suffix": {
+          "argv": [],
+          "sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "project": {
+          "requested": {
+            "strict": true,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "strict",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "sha256": "sha256:23d5a4be6dea8d2b2af78083488e1a950a6f3b557badedc3b7715642792f2c57",
+          "state": "qualified"
+        },
+        "binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "provenance": {
+          "launch_id": "11111111111111111111111111111111",
+          "launcher_state": {
+            "record": "launcher-path-state/1",
+            "sha256": "sha256:6c033a15fadd79f91337f14640b3429395f29728a5ee3155f2f931df042e88c8"
+          },
+          "route": "native",
+          "home_lease": null
+        }
+      },
+      "context": {
+        "current_binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "resolved_permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "resolved_project": {
+          "requested": {
+            "strict": true,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "strict",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "state": "qualified",
+          "provider": {
+            "environment": "codex_cli",
+            "version": "0.0.0-fixture",
+            "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "platform": "linux-amd64"
+          },
+          "project_modes": [
+            "none",
+            "native-project",
+            "strict"
+          ],
+          "no_tools": true,
+          "inspector_id": "fixture-inspector/1",
+          "suffix_grammar_id": "fixture-policy-free-grammar/1",
+          "policy_free_suffixes": [
+            [],
+            [
+              "--model",
+              "fixture-model"
+            ]
+          ]
+        },
+        "lane": {
+          "operator": "fixture-operator",
+          "permissions": "native",
+          "approved": true,
+          "approved_at": "2026-10-27T00:00:00Z"
+        },
+        "launcher_state": {
+          "record": "launcher-path-state/1",
+          "launch_id": "11111111111111111111111111111111",
+          "path": [
+            "/usr/bin",
+            "/bin"
+          ],
+          "path_value": "/usr/bin:/bin",
+          "fragment_sha256": "sha256:8be935ca3d65c3e2ce3ee239fef89e3e2120135d708ec1b6b9a09a1d1a188055",
+          "binding": {
+            "profile": "fixture-profile",
+            "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "generation": "fixture-generation-1"
+          },
+          "availability": "none",
+          "reason": null,
+          "root": null,
+          "receipt_sha256": null,
+          "admission": [],
+          "profile_root_exclusions": []
+        },
+        "home_lease": null
+      }
+    },
+    "strict-both-no-tools": {
+      "posture": {
+        "record": "effective-posture/1",
+        "permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "native_suffix": {
+          "argv": [],
+          "sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "project": {
+          "requested": {
+            "strict": true,
+            "native_project": true,
+            "no_tools": true
+          },
+          "mode": "strict",
+          "no_tools": true
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "sha256": "sha256:23d5a4be6dea8d2b2af78083488e1a950a6f3b557badedc3b7715642792f2c57",
+          "state": "qualified"
+        },
+        "binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "provenance": {
+          "launch_id": "11111111111111111111111111111111",
+          "launcher_state": {
+            "record": "launcher-path-state/1",
+            "sha256": "sha256:6c033a15fadd79f91337f14640b3429395f29728a5ee3155f2f931df042e88c8"
+          },
+          "route": "native",
+          "home_lease": null
+        }
+      },
+      "context": {
+        "current_binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "resolved_permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "resolved_project": {
+          "requested": {
+            "strict": true,
+            "native_project": true,
+            "no_tools": true
+          },
+          "mode": "strict",
+          "no_tools": true
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "state": "qualified",
+          "provider": {
+            "environment": "codex_cli",
+            "version": "0.0.0-fixture",
+            "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "platform": "linux-amd64"
+          },
+          "project_modes": [
+            "none",
+            "native-project",
+            "strict"
+          ],
+          "no_tools": true,
+          "inspector_id": "fixture-inspector/1",
+          "suffix_grammar_id": "fixture-policy-free-grammar/1",
+          "policy_free_suffixes": [
+            [],
+            [
+              "--model",
+              "fixture-model"
+            ]
+          ]
+        },
+        "lane": {
+          "operator": "fixture-operator",
+          "permissions": "native",
+          "approved": true,
+          "approved_at": "2026-10-27T00:00:00Z"
+        },
+        "launcher_state": {
+          "record": "launcher-path-state/1",
+          "launch_id": "11111111111111111111111111111111",
+          "path": [
+            "/usr/bin",
+            "/bin"
+          ],
+          "path_value": "/usr/bin:/bin",
+          "fragment_sha256": "sha256:8be935ca3d65c3e2ce3ee239fef89e3e2120135d708ec1b6b9a09a1d1a188055",
+          "binding": {
+            "profile": "fixture-profile",
+            "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "generation": "fixture-generation-1"
+          },
+          "availability": "none",
+          "reason": null,
+          "root": null,
+          "receipt_sha256": null,
+          "admission": [],
+          "profile_root_exclusions": []
+        },
+        "home_lease": null
+      }
+    },
+    "no-tools": {
+      "posture": {
+        "record": "effective-posture/1",
+        "permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "native_suffix": {
+          "argv": [],
+          "sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": true
+          },
+          "mode": "none",
+          "no_tools": true
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "sha256": "sha256:23d5a4be6dea8d2b2af78083488e1a950a6f3b557badedc3b7715642792f2c57",
+          "state": "qualified"
+        },
+        "binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "provenance": {
+          "launch_id": "11111111111111111111111111111111",
+          "launcher_state": {
+            "record": "launcher-path-state/1",
+            "sha256": "sha256:6c033a15fadd79f91337f14640b3429395f29728a5ee3155f2f931df042e88c8"
+          },
+          "route": "native",
+          "home_lease": null
+        }
+      },
+      "context": {
+        "current_binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "resolved_permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "resolved_project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": true
+          },
+          "mode": "none",
+          "no_tools": true
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "state": "qualified",
+          "provider": {
+            "environment": "codex_cli",
+            "version": "0.0.0-fixture",
+            "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "platform": "linux-amd64"
+          },
+          "project_modes": [
+            "none",
+            "native-project",
+            "strict"
+          ],
+          "no_tools": true,
+          "inspector_id": "fixture-inspector/1",
+          "suffix_grammar_id": "fixture-policy-free-grammar/1",
+          "policy_free_suffixes": [
+            [],
+            [
+              "--model",
+              "fixture-model"
+            ]
+          ]
+        },
+        "lane": {
+          "operator": "fixture-operator",
+          "permissions": "native",
+          "approved": true,
+          "approved_at": "2026-10-27T00:00:00Z"
+        },
+        "launcher_state": {
+          "record": "launcher-path-state/1",
+          "launch_id": "11111111111111111111111111111111",
+          "path": [
+            "/usr/bin",
+            "/bin"
+          ],
+          "path_value": "/usr/bin:/bin",
+          "fragment_sha256": "sha256:8be935ca3d65c3e2ce3ee239fef89e3e2120135d708ec1b6b9a09a1d1a188055",
+          "binding": {
+            "profile": "fixture-profile",
+            "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "generation": "fixture-generation-1"
+          },
+          "availability": "none",
+          "reason": null,
+          "root": null,
+          "receipt_sha256": null,
+          "admission": [],
+          "profile_root_exclusions": []
+        },
+        "home_lease": null
+      }
+    },
+    "hosted": {
+      "posture": {
+        "record": "effective-posture/1",
+        "permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "native_suffix": {
+          "argv": [],
+          "sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "none",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "sha256": "sha256:23d5a4be6dea8d2b2af78083488e1a950a6f3b557badedc3b7715642792f2c57",
+          "state": "qualified"
+        },
+        "binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "provenance": {
+          "launch_id": "11111111111111111111111111111111",
+          "launcher_state": {
+            "record": "launcher-path-state/1",
+            "sha256": "sha256:6c033a15fadd79f91337f14640b3429395f29728a5ee3155f2f931df042e88c8"
+          },
+          "route": "hosted",
+          "home_lease": {
+            "record": "home-lease/1",
+            "lease_id": "fixture-lease",
+            "revision": 1,
+            "manager_root_id": "fixture-manager-root",
+            "home_id": "fixture-home",
+            "record_sha256": "sha256:5616a4dcf563634e176e12ef9168eebc918f2eebc6e8684d821813d5e7c02423",
+            "request_id": "fixture-request",
+            "manager_id": "fixture-manager",
+            "manager_registered_at": "2026-10-27T00:00:00Z"
+          }
+        }
+      },
+      "context": {
+        "current_binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "resolved_permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "resolved_project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "none",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "state": "qualified",
+          "provider": {
+            "environment": "codex_cli",
+            "version": "0.0.0-fixture",
+            "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "platform": "linux-amd64"
+          },
+          "project_modes": [
+            "none",
+            "native-project",
+            "strict"
+          ],
+          "no_tools": true,
+          "inspector_id": "fixture-inspector/1",
+          "suffix_grammar_id": "fixture-policy-free-grammar/1",
+          "policy_free_suffixes": [
+            [],
+            [
+              "--model",
+              "fixture-model"
+            ]
+          ]
+        },
+        "lane": {
+          "operator": "fixture-operator",
+          "permissions": "native",
+          "approved": true,
+          "approved_at": "2026-10-27T00:00:00Z"
+        },
+        "launcher_state": {
+          "record": "launcher-path-state/1",
+          "launch_id": "11111111111111111111111111111111",
+          "path": [
+            "/usr/bin",
+            "/bin"
+          ],
+          "path_value": "/usr/bin:/bin",
+          "fragment_sha256": "sha256:8be935ca3d65c3e2ce3ee239fef89e3e2120135d708ec1b6b9a09a1d1a188055",
+          "binding": {
+            "profile": "fixture-profile",
+            "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "generation": "fixture-generation-1"
+          },
+          "availability": "none",
+          "reason": null,
+          "root": null,
+          "receipt_sha256": null,
+          "admission": [],
+          "profile_root_exclusions": []
+        },
+        "home_lease": {
+          "kind": "home-lease/1",
+          "lease_id": "fixture-lease",
+          "manager_root_id": "fixture-manager-root",
+          "home_id": "fixture-home",
+          "environment": "codex_cli",
+          "profile": "fixture-profile",
+          "lock_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+          "revision": 1,
+          "phase": "prepared",
+          "acquired_at": "2026-10-27T00:00:00Z",
+          "holder": {
+            "kind": "prepared",
+            "launcher": "curator-run",
+            "manager_id": "fixture-manager",
+            "manager_registered_at": "2026-10-27T00:00:00Z",
+            "request_id": "fixture-request",
+            "werkstatt": "fixture-werkstatt",
+            "session": null,
+            "generation": null,
+            "process": null
+          },
+          "observation": {
+            "state": "not_observed",
+            "observed_at": null
+          }
+        }
+      }
+    },
+    "unqualified-native-project": {
+      "posture": {
+        "record": "effective-posture/1",
+        "permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "native_suffix": {
+          "argv": [],
+          "sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "project": {
+          "requested": {
+            "strict": false,
+            "native_project": true,
+            "no_tools": false
+          },
+          "mode": "native-project",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "sha256": "sha256:e99216599943b23592d193d5bfdf0f54495bcea9bc73035c898930d3cd8dac91",
+          "state": "unqualified"
+        },
+        "binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "provenance": {
+          "launch_id": "11111111111111111111111111111111",
+          "launcher_state": {
+            "record": "launcher-path-state/1",
+            "sha256": "sha256:6c033a15fadd79f91337f14640b3429395f29728a5ee3155f2f931df042e88c8"
+          },
+          "route": "native",
+          "home_lease": null
+        }
+      },
+      "context": {
+        "current_binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "resolved_permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "resolved_project": {
+          "requested": {
+            "strict": false,
+            "native_project": true,
+            "no_tools": false
+          },
+          "mode": "native-project",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "state": "unqualified",
+          "provider": {
+            "environment": "codex_cli",
+            "version": "0.0.0-fixture",
+            "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "platform": "linux-amd64"
+          },
+          "project_modes": [
+            "none",
+            "native-project",
+            "strict"
+          ],
+          "no_tools": true,
+          "inspector_id": "fixture-inspector/1",
+          "suffix_grammar_id": "fixture-policy-free-grammar/1",
+          "policy_free_suffixes": [
+            [],
+            [
+              "--model",
+              "fixture-model"
+            ]
+          ]
+        },
+        "lane": {
+          "operator": "fixture-operator",
+          "permissions": "native",
+          "approved": true,
+          "approved_at": "2026-10-27T00:00:00Z"
+        },
+        "launcher_state": {
+          "record": "launcher-path-state/1",
+          "launch_id": "11111111111111111111111111111111",
+          "path": [
+            "/usr/bin",
+            "/bin"
+          ],
+          "path_value": "/usr/bin:/bin",
+          "fragment_sha256": "sha256:8be935ca3d65c3e2ce3ee239fef89e3e2120135d708ec1b6b9a09a1d1a188055",
+          "binding": {
+            "profile": "fixture-profile",
+            "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "generation": "fixture-generation-1"
+          },
+          "availability": "none",
+          "reason": null,
+          "root": null,
+          "receipt_sha256": null,
+          "admission": [],
+          "profile_root_exclusions": []
+        },
+        "home_lease": null
+      }
+    },
+    "unsupported-strict": {
+      "posture": {
+        "record": "effective-posture/1",
+        "permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "native_suffix": {
+          "argv": [],
+          "sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "project": {
+          "requested": {
+            "strict": true,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "strict",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "sha256": "sha256:63ffb6757919753438419421366c2c3b818879797edb350dc43e62ba5f23ec2d",
+          "state": "qualified"
+        },
+        "binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "provenance": {
+          "launch_id": "11111111111111111111111111111111",
+          "launcher_state": {
+            "record": "launcher-path-state/1",
+            "sha256": "sha256:6c033a15fadd79f91337f14640b3429395f29728a5ee3155f2f931df042e88c8"
+          },
+          "route": "native",
+          "home_lease": null
+        }
+      },
+      "context": {
+        "current_binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "resolved_permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "resolved_project": {
+          "requested": {
+            "strict": true,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "strict",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "state": "qualified",
+          "provider": {
+            "environment": "codex_cli",
+            "version": "0.0.0-fixture",
+            "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "platform": "linux-amd64"
+          },
+          "project_modes": [
+            "none",
+            "native-project"
+          ],
+          "no_tools": true,
+          "inspector_id": "fixture-inspector/1",
+          "suffix_grammar_id": "fixture-policy-free-grammar/1",
+          "policy_free_suffixes": [
+            [],
+            [
+              "--model",
+              "fixture-model"
+            ]
+          ]
+        },
+        "lane": {
+          "operator": "fixture-operator",
+          "permissions": "native",
+          "approved": true,
+          "approved_at": "2026-10-27T00:00:00Z"
+        },
+        "launcher_state": {
+          "record": "launcher-path-state/1",
+          "launch_id": "11111111111111111111111111111111",
+          "path": [
+            "/usr/bin",
+            "/bin"
+          ],
+          "path_value": "/usr/bin:/bin",
+          "fragment_sha256": "sha256:8be935ca3d65c3e2ce3ee239fef89e3e2120135d708ec1b6b9a09a1d1a188055",
+          "binding": {
+            "profile": "fixture-profile",
+            "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "generation": "fixture-generation-1"
+          },
+          "availability": "none",
+          "reason": null,
+          "root": null,
+          "receipt_sha256": null,
+          "admission": [],
+          "profile_root_exclusions": []
+        },
+        "home_lease": null
+      }
+    },
+    "unsupported-no-tools": {
+      "posture": {
+        "record": "effective-posture/1",
+        "permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "native_suffix": {
+          "argv": [],
+          "sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": true
+          },
+          "mode": "none",
+          "no_tools": true
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "sha256": "sha256:677278b1a75f0cbc55223370c31db9bee42deac214b170c4352c18ec1095180a",
+          "state": "qualified"
+        },
+        "binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "provenance": {
+          "launch_id": "11111111111111111111111111111111",
+          "launcher_state": {
+            "record": "launcher-path-state/1",
+            "sha256": "sha256:6c033a15fadd79f91337f14640b3429395f29728a5ee3155f2f931df042e88c8"
+          },
+          "route": "native",
+          "home_lease": null
+        }
+      },
+      "context": {
+        "current_binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "resolved_permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "resolved_project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": true
+          },
+          "mode": "none",
+          "no_tools": true
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "state": "qualified",
+          "provider": {
+            "environment": "codex_cli",
+            "version": "0.0.0-fixture",
+            "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "platform": "linux-amd64"
+          },
+          "project_modes": [
+            "none",
+            "native-project",
+            "strict"
+          ],
+          "no_tools": false,
+          "inspector_id": "fixture-inspector/1",
+          "suffix_grammar_id": "fixture-policy-free-grammar/1",
+          "policy_free_suffixes": [
+            [],
+            [
+              "--model",
+              "fixture-model"
+            ]
+          ]
+        },
+        "lane": {
+          "operator": "fixture-operator",
+          "permissions": "native",
+          "approved": true,
+          "approved_at": "2026-10-27T00:00:00Z"
+        },
+        "launcher_state": {
+          "record": "launcher-path-state/1",
+          "launch_id": "11111111111111111111111111111111",
+          "path": [
+            "/usr/bin",
+            "/bin"
+          ],
+          "path_value": "/usr/bin:/bin",
+          "fragment_sha256": "sha256:8be935ca3d65c3e2ce3ee239fef89e3e2120135d708ec1b6b9a09a1d1a188055",
+          "binding": {
+            "profile": "fixture-profile",
+            "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "generation": "fixture-generation-1"
+          },
+          "availability": "none",
+          "reason": null,
+          "root": null,
+          "receipt_sha256": null,
+          "admission": [],
+          "profile_root_exclusions": []
+        },
+        "home_lease": null
+      }
+    },
+    "native-incomplete": {
+      "posture": {
+        "record": "effective-posture/1",
+        "permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "incomplete",
+          "uninspected_sources": [
+            "fixture-user-config"
+          ],
+          "relaxations": []
+        },
+        "native_suffix": {
+          "argv": [],
+          "sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "none",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "sha256": "sha256:23d5a4be6dea8d2b2af78083488e1a950a6f3b557badedc3b7715642792f2c57",
+          "state": "qualified"
+        },
+        "binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "provenance": {
+          "launch_id": "11111111111111111111111111111111",
+          "launcher_state": {
+            "record": "launcher-path-state/1",
+            "sha256": "sha256:6c033a15fadd79f91337f14640b3429395f29728a5ee3155f2f931df042e88c8"
+          },
+          "route": "native",
+          "home_lease": null
+        }
+      },
+      "context": {
+        "current_binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "resolved_permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "resolved_project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "none",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "incomplete",
+          "uninspected_sources": [
+            "fixture-user-config"
+          ],
+          "relaxations": []
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "state": "qualified",
+          "provider": {
+            "environment": "codex_cli",
+            "version": "0.0.0-fixture",
+            "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "platform": "linux-amd64"
+          },
+          "project_modes": [
+            "none",
+            "native-project",
+            "strict"
+          ],
+          "no_tools": true,
+          "inspector_id": "fixture-inspector/1",
+          "suffix_grammar_id": "fixture-policy-free-grammar/1",
+          "policy_free_suffixes": [
+            [],
+            [
+              "--model",
+              "fixture-model"
+            ]
+          ]
+        },
+        "lane": {
+          "operator": "fixture-operator",
+          "permissions": "native",
+          "approved": true,
+          "approved_at": "2026-10-27T00:00:00Z"
+        },
+        "launcher_state": {
+          "record": "launcher-path-state/1",
+          "launch_id": "11111111111111111111111111111111",
+          "path": [
+            "/usr/bin",
+            "/bin"
+          ],
+          "path_value": "/usr/bin:/bin",
+          "fragment_sha256": "sha256:8be935ca3d65c3e2ce3ee239fef89e3e2120135d708ec1b6b9a09a1d1a188055",
+          "binding": {
+            "profile": "fixture-profile",
+            "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "generation": "fixture-generation-1"
+          },
+          "availability": "none",
+          "reason": null,
+          "root": null,
+          "receipt_sha256": null,
+          "admission": [],
+          "profile_root_exclusions": []
+        },
+        "home_lease": null
+      }
+    },
+    "native-relaxed": {
+      "posture": {
+        "record": "effective-posture/1",
+        "permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": [
+            "fixture-sandbox-bypass"
+          ]
+        },
+        "native_suffix": {
+          "argv": [],
+          "sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "none",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "sha256": "sha256:23d5a4be6dea8d2b2af78083488e1a950a6f3b557badedc3b7715642792f2c57",
+          "state": "qualified"
+        },
+        "binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "provenance": {
+          "launch_id": "11111111111111111111111111111111",
+          "launcher_state": {
+            "record": "launcher-path-state/1",
+            "sha256": "sha256:6c033a15fadd79f91337f14640b3429395f29728a5ee3155f2f931df042e88c8"
+          },
+          "route": "native",
+          "home_lease": null
+        }
+      },
+      "context": {
+        "current_binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "resolved_permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "resolved_project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "none",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": [
+            "fixture-sandbox-bypass"
+          ]
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "state": "qualified",
+          "provider": {
+            "environment": "codex_cli",
+            "version": "0.0.0-fixture",
+            "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "platform": "linux-amd64"
+          },
+          "project_modes": [
+            "none",
+            "native-project",
+            "strict"
+          ],
+          "no_tools": true,
+          "inspector_id": "fixture-inspector/1",
+          "suffix_grammar_id": "fixture-policy-free-grammar/1",
+          "policy_free_suffixes": [
+            [],
+            [
+              "--model",
+              "fixture-model"
+            ]
+          ]
+        },
+        "lane": {
+          "operator": "fixture-operator",
+          "permissions": "native",
+          "approved": true,
+          "approved_at": "2026-10-27T00:00:00Z"
+        },
+        "launcher_state": {
+          "record": "launcher-path-state/1",
+          "launch_id": "11111111111111111111111111111111",
+          "path": [
+            "/usr/bin",
+            "/bin"
+          ],
+          "path_value": "/usr/bin:/bin",
+          "fragment_sha256": "sha256:8be935ca3d65c3e2ce3ee239fef89e3e2120135d708ec1b6b9a09a1d1a188055",
+          "binding": {
+            "profile": "fixture-profile",
+            "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "generation": "fixture-generation-1"
+          },
+          "availability": "none",
+          "reason": null,
+          "root": null,
+          "receipt_sha256": null,
+          "admission": [],
+          "profile_root_exclusions": []
+        },
+        "home_lease": null
+      }
+    },
+    "policy-suffix": {
+      "posture": {
+        "record": "effective-posture/1",
+        "permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "native_suffix": {
+          "argv": [
+            "-c",
+            "sandbox_mode=\"danger-full-access\""
+          ],
+          "sha256": "sha256:7fcc050e50de1eb1bae5dd5312f24b429b3d9b7cc230ea8035bfb8bc5ae29532"
+        },
+        "project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "none",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "sha256": "sha256:23d5a4be6dea8d2b2af78083488e1a950a6f3b557badedc3b7715642792f2c57",
+          "state": "qualified"
+        },
+        "binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "provenance": {
+          "launch_id": "11111111111111111111111111111111",
+          "launcher_state": {
+            "record": "launcher-path-state/1",
+            "sha256": "sha256:6c033a15fadd79f91337f14640b3429395f29728a5ee3155f2f931df042e88c8"
+          },
+          "route": "native",
+          "home_lease": null
+        }
+      },
+      "context": {
+        "current_binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "resolved_permission": {
+          "mode": "native",
+          "source": "lane-record"
+        },
+        "resolved_project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "none",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "complete",
+          "uninspected_sources": [],
+          "relaxations": []
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "state": "qualified",
+          "provider": {
+            "environment": "codex_cli",
+            "version": "0.0.0-fixture",
+            "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "platform": "linux-amd64"
+          },
+          "project_modes": [
+            "none",
+            "native-project",
+            "strict"
+          ],
+          "no_tools": true,
+          "inspector_id": "fixture-inspector/1",
+          "suffix_grammar_id": "fixture-policy-free-grammar/1",
+          "policy_free_suffixes": [
+            [],
+            [
+              "--model",
+              "fixture-model"
+            ]
+          ]
+        },
+        "lane": {
+          "operator": "fixture-operator",
+          "permissions": "native",
+          "approved": true,
+          "approved_at": "2026-10-27T00:00:00Z"
+        },
+        "launcher_state": {
+          "record": "launcher-path-state/1",
+          "launch_id": "11111111111111111111111111111111",
+          "path": [
+            "/usr/bin",
+            "/bin"
+          ],
+          "path_value": "/usr/bin:/bin",
+          "fragment_sha256": "sha256:8be935ca3d65c3e2ce3ee239fef89e3e2120135d708ec1b6b9a09a1d1a188055",
+          "binding": {
+            "profile": "fixture-profile",
+            "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "generation": "fixture-generation-1"
+          },
+          "availability": "none",
+          "reason": null,
+          "root": null,
+          "receipt_sha256": null,
+          "admission": [],
+          "profile_root_exclusions": []
+        },
+        "home_lease": null
+      }
+    },
+    "yolo-incomplete": {
+      "posture": {
+        "record": "effective-posture/1",
+        "permission": {
+          "mode": "yolo",
+          "source": "default"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "incomplete",
+          "uninspected_sources": [
+            "fixture-user-config"
+          ],
+          "relaxations": []
+        },
+        "native_suffix": {
+          "argv": [],
+          "sha256": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "none",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "sha256": "sha256:23d5a4be6dea8d2b2af78083488e1a950a6f3b557badedc3b7715642792f2c57",
+          "state": "qualified"
+        },
+        "binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "provenance": {
+          "launch_id": "11111111111111111111111111111111",
+          "launcher_state": {
+            "record": "launcher-path-state/1",
+            "sha256": "sha256:6c033a15fadd79f91337f14640b3429395f29728a5ee3155f2f931df042e88c8"
+          },
+          "route": "native",
+          "home_lease": null
+        }
+      },
+      "context": {
+        "current_binding": {
+          "profile": "fixture-profile",
+          "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "generation": "fixture-generation-1"
+        },
+        "resolved_permission": {
+          "mode": "yolo",
+          "source": "default"
+        },
+        "resolved_project": {
+          "requested": {
+            "strict": false,
+            "native_project": false,
+            "no_tools": false
+          },
+          "mode": "none",
+          "no_tools": false
+        },
+        "provider": {
+          "environment": "codex_cli",
+          "version": "0.0.0-fixture",
+          "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "platform": "linux-amd64"
+        },
+        "native_policy": {
+          "policy_id": "fixture-native-policy",
+          "policy_sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "source_set_sha256": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "inspection": "incomplete",
+          "uninspected_sources": [
+            "fixture-user-config"
+          ],
+          "relaxations": []
+        },
+        "qualification": {
+          "id": "fixture-qualification",
+          "state": "qualified",
+          "provider": {
+            "environment": "codex_cli",
+            "version": "0.0.0-fixture",
+            "binary_sha256": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+            "platform": "linux-amd64"
+          },
+          "project_modes": [
+            "none",
+            "native-project",
+            "strict"
+          ],
+          "no_tools": true,
+          "inspector_id": "fixture-inspector/1",
+          "suffix_grammar_id": "fixture-policy-free-grammar/1",
+          "policy_free_suffixes": [
+            [],
+            [
+              "--model",
+              "fixture-model"
+            ]
+          ]
+        },
+        "lane": {
+          "operator": "fixture-operator",
+          "permissions": "yolo",
+          "approved": true,
+          "approved_at": "2026-10-27T00:00:00Z"
+        },
+        "launcher_state": {
+          "record": "launcher-path-state/1",
+          "launch_id": "11111111111111111111111111111111",
+          "path": [
+            "/usr/bin",
+            "/bin"
+          ],
+          "path_value": "/usr/bin:/bin",
+          "fragment_sha256": "sha256:8be935ca3d65c3e2ce3ee239fef89e3e2120135d708ec1b6b9a09a1d1a188055",
+          "binding": {
+            "profile": "fixture-profile",
+            "lock_sha256": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+            "plan_sha256": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+            "generation": "fixture-generation-1"
+          },
+          "availability": "none",
+          "reason": null,
+          "root": null,
+          "receipt_sha256": null,
+          "admission": [],
+          "profile_root_exclusions": []
+        },
+        "home_lease": null
+      }
+    }
+  }
+}

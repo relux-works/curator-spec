@@ -1,0 +1,395 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/effective-posture-v1/record.schema.json",
+  "title": "Unattended effective posture v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record",
+    "permission",
+    "native_policy",
+    "native_suffix",
+    "project",
+    "provider",
+    "qualification",
+    "binding",
+    "provenance"
+  ],
+  "properties": {
+    "record": {
+      "const": "effective-posture/1"
+    },
+    "permission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "source"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "native",
+            "yolo"
+          ]
+        },
+        "source": {
+          "enum": [
+            "default",
+            "profile",
+            "machine",
+            "lane-record",
+            "flag"
+          ]
+        }
+      }
+    },
+    "native_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_id",
+        "policy_sha256",
+        "source_set_sha256",
+        "inspection",
+        "uninspected_sources",
+        "relaxations"
+      ],
+      "properties": {
+        "policy_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "policy_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "source_set_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "inspection": {
+          "enum": [
+            "complete",
+            "incomplete",
+            "unsupported"
+          ]
+        },
+        "uninspected_sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "relaxations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/identifier"
+          },
+          "maxItems": 64,
+          "uniqueItems": true
+        }
+      }
+    },
+    "native_suffix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "argv",
+        "sha256"
+      ],
+      "properties": {
+        "argv": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 4096,
+            "not": {
+              "pattern": "[\\x00-\\x1f\\x7f-\\x9f]"
+            }
+          },
+          "maxItems": 64
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requested",
+        "mode",
+        "no_tools"
+      ],
+      "properties": {
+        "requested": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "strict",
+            "native_project",
+            "no_tools"
+          ],
+          "properties": {
+            "strict": {
+              "type": "boolean"
+            },
+            "native_project": {
+              "type": "boolean"
+            },
+            "no_tools": {
+              "type": "boolean"
+            }
+          }
+        },
+        "mode": {
+          "enum": [
+            "none",
+            "native-project",
+            "strict"
+          ]
+        },
+        "no_tools": {
+          "type": "boolean"
+        }
+      }
+    },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "environment",
+        "version",
+        "binary_sha256",
+        "platform"
+      ],
+      "properties": {
+        "environment": {
+          "enum": [
+            "codex_cli",
+            "claude_code",
+            "muse"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "not": {
+            "pattern": "[\\x00-\\x1f\\x7f-\\x9f]"
+          }
+        },
+        "binary_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "platform": {
+          "enum": [
+            "linux-amd64",
+            "linux-arm64",
+            "darwin-amd64",
+            "darwin-arm64",
+            "windows-amd64",
+            "windows-arm64"
+          ]
+        }
+      }
+    },
+    "qualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sha256",
+        "state"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "state": {
+          "enum": [
+            "qualified",
+            "unqualified",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "lock_sha256",
+        "plan_sha256",
+        "generation"
+      ],
+      "properties": {
+        "profile": {
+          "$ref": "#/$defs/identifier"
+        },
+        "lock_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "plan_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "generation": {
+          "$ref": "#/$defs/identifier"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "launch_id",
+        "launcher_state",
+        "route",
+        "home_lease"
+      ],
+      "properties": {
+        "launch_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{32}$(?![\\s\\S])"
+        },
+        "launcher_state": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "record",
+            "sha256"
+          ],
+          "properties": {
+            "record": {
+              "const": "launcher-path-state/1"
+            },
+            "sha256": {
+              "$ref": "#/$defs/sha256"
+            }
+          }
+        },
+        "route": {
+          "enum": [
+            "native",
+            "hosted"
+          ]
+        },
+        "home_lease": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/home_lease"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "not": {
+        "pattern": "[\\x00-\\x1f\\x7f-\\x9f]"
+      },
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]*$(?![\\s\\S])"
+    },
+    "home_lease": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record",
+        "lease_id",
+        "revision",
+        "manager_root_id",
+        "home_id",
+        "record_sha256",
+        "request_id",
+        "manager_id",
+        "manager_registered_at"
+      ],
+      "properties": {
+        "record": {
+          "const": "home-lease/1"
+        },
+        "lease_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "manager_root_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "home_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "record_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "request_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "manager_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "manager_registered_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d(?:\\.\\d{1,9})?Z$(?![\\s\\S])"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "provenance": {
+            "properties": {
+              "route": {
+                "const": "native"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "provenance": {
+            "properties": {
+              "home_lease": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "provenance": {
+            "properties": {
+              "home_lease": {
+                "$ref": "#/$defs/home_lease"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

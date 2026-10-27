@@ -1,0 +1,604 @@
+{
+  "kind": "effective-posture-pairs/1",
+  "pairs": [
+    {
+      "id": "EP01-missing",
+      "requirement": "EPA01",
+      "admit": {
+        "fixture": "default-yolo",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "default-yolo",
+        "changes": [
+          {
+            "op": "remove",
+            "path": [
+              "posture"
+            ]
+          }
+        ],
+        "expected": "posture_missing"
+      }
+    },
+    {
+      "id": "EP02-unknown",
+      "requirement": "EPA01",
+      "admit": {
+        "fixture": "native",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "native",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "posture",
+              "permission",
+              "mode"
+            ],
+            "value": "automatic"
+          }
+        ],
+        "expected": "posture_invalid"
+      }
+    },
+    {
+      "id": "EP03-unqualified",
+      "requirement": "EPA03",
+      "admit": {
+        "fixture": "native-project",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "unqualified-native-project",
+        "changes": [],
+        "expected": "posture_unqualified"
+      }
+    },
+    {
+      "id": "EP04-suffix-policy",
+      "requirement": "EPA04",
+      "admit": {
+        "fixture": "native",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "policy-suffix",
+        "changes": [],
+        "expected": "posture_suffix_conflict"
+      }
+    },
+    {
+      "id": "EP05-strict-unsupported",
+      "requirement": "EPA02",
+      "admit": {
+        "fixture": "strict",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "unsupported-strict",
+        "changes": [],
+        "expected": "posture_strict_unsupported"
+      }
+    },
+    {
+      "id": "EP06-no-tools-unsupported",
+      "requirement": "EPA02",
+      "admit": {
+        "fixture": "no-tools",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "unsupported-no-tools",
+        "changes": [],
+        "expected": "posture_no_tools_unsupported"
+      }
+    },
+    {
+      "id": "EP07-stale-lock",
+      "requirement": "EPA05",
+      "admit": {
+        "fixture": "native",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "native",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "context",
+              "current_binding",
+              "lock_sha256"
+            ],
+            "value": "sha256:6666666666666666666666666666666666666666666666666666666666666666"
+          }
+        ],
+        "expected": "posture_binding_stale"
+      }
+    },
+    {
+      "id": "EP08-stale-plan",
+      "requirement": "EPA05",
+      "admit": {
+        "fixture": "native",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "native",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "context",
+              "current_binding",
+              "plan_sha256"
+            ],
+            "value": "sha256:7777777777777777777777777777777777777777777777777777777777777777"
+          }
+        ],
+        "expected": "posture_binding_stale"
+      }
+    },
+    {
+      "id": "EP09-strict-downgrade",
+      "requirement": "EPA02",
+      "admit": {
+        "fixture": "strict-both-no-tools",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "strict-both-no-tools",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "posture",
+              "project",
+              "mode"
+            ],
+            "value": "native-project"
+          }
+        ],
+        "expected": "posture_downgrade"
+      }
+    },
+    {
+      "id": "EP10-permission-downgrade",
+      "requirement": "EPA05",
+      "admit": {
+        "fixture": "native",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "native",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "posture",
+              "permission",
+              "mode"
+            ],
+            "value": "yolo"
+          }
+        ],
+        "expected": "posture_downgrade"
+      }
+    },
+    {
+      "id": "EP11-tool-downgrade",
+      "requirement": "EPA02",
+      "admit": {
+        "fixture": "strict-both-no-tools",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "strict-both-no-tools",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "posture",
+              "project",
+              "no_tools"
+            ],
+            "value": false
+          }
+        ],
+        "expected": "posture_downgrade"
+      }
+    },
+    {
+      "id": "EP12-incomplete-policy",
+      "requirement": "EPA04",
+      "admit": {
+        "fixture": "native",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "native-incomplete",
+        "changes": [],
+        "expected": "posture_policy_uninspected"
+      }
+    },
+    {
+      "id": "EP13-relaxed-policy",
+      "requirement": "EPA04",
+      "admit": {
+        "fixture": "native",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "native-relaxed",
+        "changes": [],
+        "expected": "posture_policy_relaxed"
+      }
+    },
+    {
+      "id": "EP14-lane-approval",
+      "requirement": "EPA-C1",
+      "admit": {
+        "fixture": "default-yolo",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "default-yolo",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "context",
+              "lane",
+              "approved"
+            ],
+            "value": false
+          }
+        ],
+        "expected": "posture_lane_unapproved"
+      }
+    },
+    {
+      "id": "EP15-state-substitution",
+      "requirement": "EPA06",
+      "admit": {
+        "fixture": "native",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "native",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "posture",
+              "provenance",
+              "launcher_state",
+              "sha256"
+            ],
+            "value": "sha256:8888888888888888888888888888888888888888888888888888888888888888"
+          }
+        ],
+        "expected": "posture_provenance_mismatch"
+      }
+    },
+    {
+      "id": "EP16-terminal-lease",
+      "requirement": "EPA06",
+      "admit": {
+        "fixture": "hosted",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "hosted",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "context",
+              "home_lease",
+              "phase"
+            ],
+            "value": "released"
+          }
+        ],
+        "expected": "posture_lease_unavailable"
+      }
+    },
+    {
+      "id": "EP17-hosted-missing-lease",
+      "requirement": "EPA06",
+      "admit": {
+        "fixture": "hosted",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "hosted",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "posture",
+              "provenance",
+              "home_lease"
+            ],
+            "value": null
+          }
+        ],
+        "expected": "posture_invalid"
+      }
+    },
+    {
+      "id": "EP18-qualification-provider",
+      "requirement": "EPA03",
+      "admit": {
+        "fixture": "native",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "native",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "context",
+              "qualification",
+              "provider",
+              "binary_sha256"
+            ],
+            "value": "sha256:9999999999999999999999999999999999999999999999999999999999999999"
+          }
+        ],
+        "expected": "posture_qualification_mismatch"
+      }
+    },
+    {
+      "id": "EP19-suffix-digest",
+      "requirement": "EPA05",
+      "admit": {
+        "fixture": "native",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "native",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "posture",
+              "native_suffix",
+              "sha256"
+            ],
+            "value": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ],
+        "expected": "posture_suffix_changed"
+      }
+    },
+    {
+      "id": "EP20-policy-digest",
+      "requirement": "EPA05",
+      "admit": {
+        "fixture": "native",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "native",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "context",
+              "native_policy",
+              "policy_sha256"
+            ],
+            "value": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ],
+        "expected": "posture_policy_changed"
+      }
+    },
+    {
+      "id": "EP21-source-spoof",
+      "requirement": "EPA05",
+      "admit": {
+        "fixture": "default-yolo",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "default-yolo",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "posture",
+              "permission",
+              "source"
+            ],
+            "value": "profile"
+          }
+        ],
+        "expected": "posture_downgrade"
+      }
+    },
+    {
+      "id": "EP22-unknown-qualification",
+      "requirement": "EPA03",
+      "admit": {
+        "fixture": "native",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "native",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "posture",
+              "qualification",
+              "state"
+            ],
+            "value": "unknown"
+          }
+        ],
+        "expected": "posture_unqualified"
+      }
+    },
+    {
+      "id": "EP23-default-not-native",
+      "requirement": "EPA05",
+      "admit": {
+        "fixture": "native",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "native",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "posture",
+              "permission",
+              "source"
+            ],
+            "value": "default"
+          },
+          {
+            "op": "replace",
+            "path": [
+              "context",
+              "resolved_permission",
+              "source"
+            ],
+            "value": "default"
+          }
+        ],
+        "expected": "posture_default_conflict"
+      }
+    },
+    {
+      "id": "EP24-isolation-bypass",
+      "requirement": "EPA03",
+      "admit": {
+        "fixture": "native-project",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "native-project",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "posture",
+              "permission",
+              "mode"
+            ],
+            "value": "yolo"
+          },
+          {
+            "op": "replace",
+            "path": [
+              "context",
+              "resolved_permission",
+              "mode"
+            ],
+            "value": "yolo"
+          },
+          {
+            "op": "replace",
+            "path": [
+              "context",
+              "lane",
+              "permissions"
+            ],
+            "value": "yolo"
+          }
+        ],
+        "expected": "posture_isolation_bypass"
+      }
+    },
+    {
+      "id": "EP25-yolo-incomplete-honesty",
+      "requirement": "EPA04",
+      "admit": {
+        "fixture": "yolo-incomplete",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "yolo-incomplete",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "posture",
+              "native_policy",
+              "inspection"
+            ],
+            "value": "complete"
+          },
+          {
+            "op": "replace",
+            "path": [
+              "context",
+              "native_policy",
+              "inspection"
+            ],
+            "value": "complete"
+          }
+        ],
+        "expected": "posture_policy_uninspected"
+      }
+    },
+    {
+      "id": "EP26-generation-moved",
+      "requirement": "EPA05",
+      "admit": {
+        "fixture": "native",
+        "changes": [],
+        "expected": "admit"
+      },
+      "refuse": {
+        "fixture": "native",
+        "changes": [
+          {
+            "op": "replace",
+            "path": [
+              "context",
+              "current_binding",
+              "generation"
+            ],
+            "value": "fixture-generation-2"
+          }
+        ],
+        "expected": "posture_binding_stale"
+      }
+    }
+  ]
+}
