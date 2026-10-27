@@ -14,6 +14,12 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from fixture_environment import isolated_environment
+
+
+def setUpModule():
+    unittest.enterModuleContext(isolated_environment())
+
 
 MODULE_PATH = Path(__file__).with_name("validate.py")
 SPEC = importlib.util.spec_from_file_location("curator_spec_validate", MODULE_PATH)

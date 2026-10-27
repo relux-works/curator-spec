@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+from fixture_environment import isolated_environment
 import sys
 import tempfile
 import unittest
@@ -13,6 +14,10 @@ CONDITIONAL_CLAUSE = (
     "(environments.md#94-profile-scoped-skills-and-migration) when the manager "
     "implements that capability."
 )
+
+
+def setUpModule():
+    unittest.enterModuleContext(isolated_environment())
 
 
 class SkillfileSourcesIndependenceGateTests(unittest.TestCase):

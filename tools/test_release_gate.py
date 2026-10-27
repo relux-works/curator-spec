@@ -12,10 +12,15 @@ from pathlib import Path
 from unittest.mock import patch
 
 import release_gate
+from fixture_environment import isolated_environment
 
 
 SOURCE_ROOT = Path(__file__).resolve().parents[1]
 VERSION = "1.0.0"
+
+
+def setUpModule():
+    unittest.enterModuleContext(isolated_environment())
 
 
 class StableReleaseGateTests(unittest.TestCase):

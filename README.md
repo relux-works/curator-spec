@@ -454,3 +454,15 @@ private-catalog true-end guards. Run the shared positive, negative
 and narrowing controls with
 `python3 -B -m unittest discover -s tools -p test_ccj1_grammar.py`. These tests
 emit no files and do not rewrite released schema documents.
+
+### Git fixture isolation
+
+Python test modules that create or drive Git repositories install the shared
+`tools/fixture_environment.py` boundary in `setUpModule`. It discards inherited
+Git repository, index, config and ceiling selectors and `SSH_AUTH_SOCK`, and
+pins HOME and XDG_CONFIG_HOME to disposable directories (also USERPROFILE on
+Windows). Explicit test overrides remain available inside the boundary.
+Run `python3 -B -m unittest discover -s tools -p 'test_*.py'`;
+`test_fixture_environment.py` launches a real release fixture against a hostile
+decoy and checks refs, config and object counts. Temporary homes are removed
+after each module; save optional run logs under `.temp/`.
