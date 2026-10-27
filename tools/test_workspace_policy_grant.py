@@ -138,6 +138,20 @@ class PolicyGrantTests(unittest.TestCase):
         self.assertEqual([s['status'] for s in revoked[0]['state_history']], ['active', 'lapsed'])
         self.assertEqual(revoked[0]['state']['status'], 'revoked')
 
+    # An empty hook list is usable only with qualified absence/approval lookup;
+    # emptiness cannot turn an unqualified adapter into unattended admission.
+    def test_hook_free_checkout_still_requires_qualification(self):
+        scenario = copy.deepcopy(BASE)
+        scenario['facts']['policy']['hooks'] = []
+        scenario['record']['surfaces']['hooks'] = []
+        scenario['facts']['effective_hooks'] = []
+        scenario['facts']['native_hook_approvals'] = []
+        scenario['record']['policy']['sha256'] = validate.ccj1_sha256(scenario['facts']['policy'])[7:]
+        self.assertTrue(grant.decision(scenario['record'], scenario['facts'], SCHEMA)['admitted'])
+        scenario['facts']['adapter_qualified'] = False
+        self.assertEqual(grant.decision(scenario['record'], scenario['facts'], SCHEMA)['diagnostic'],
+                         'workspace_trust_adapter_unqualified')
+
     # Policy edit and removal revoke all derived digests before conservative
     # cleanup. Conflicts/read failures preserve present keys; other active
     # support survives. Retry is idempotent and no revoked event is renewed.
