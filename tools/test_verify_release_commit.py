@@ -64,23 +64,10 @@ class SourceTrustTests(unittest.TestCase):
 
         cls.temporary = tempfile.TemporaryDirectory(prefix="source-provenance-")
         cls.root = Path(cls.temporary.name).resolve()
-        for name in ("home", "tmp", "cache", "gopath", "repo", "decoy"):
+        for name in ("home", "tmp", "cache", "gopath", "programdata", "repo", "decoy"):
             (cls.root / name).mkdir()
         cls.repo = cls.root / "repo"
-        cls.env = {
-            "PATH": os.defpath + os.pathsep + os.environ.get("PATH", ""),
-            "HOME": str(cls.root / "home"), "TMPDIR": str(cls.root / "tmp"),
-            "TMP": str(cls.root / "tmp"), "TEMP": str(cls.root / "tmp"),
-            "XDG_CONFIG_HOME": str(cls.root / "home" / "config"),
-            "XDG_CACHE_HOME": str(cls.root / "cache"),
-            "GOPATH": str(cls.root / "gopath"),
-            "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_SYSTEM": os.devnull,
-            "GIT_CONFIG_GLOBAL": os.devnull, "LC_ALL": "C",
-            "GIT_AUTHOR_NAME": "Fixture", "GIT_AUTHOR_EMAIL": "fixture@example.invalid",
-            "GIT_COMMITTER_NAME": "Fixture", "GIT_COMMITTER_EMAIL": "fixture@example.invalid",
-        }
-        if "SYSTEMROOT" in os.environ:
-            cls.env["SYSTEMROOT"] = os.environ["SYSTEMROOT"]
+        cls.env = cls.fixture_environment(cls.root)
         cls.pid_log = os.environ.get("PROVENANCE_TEST_PID_LOG")
         cls.patch = patch.object(verify_release_commit, "ROOT", cls.repo)
         cls.patch.start()
@@ -121,11 +108,49 @@ class SourceTrustTests(unittest.TestCase):
             cls.temporary.cleanup()
             raise
 
+    @staticmethod
+    def fixture_environment(root):
+        import os
+        env = {
+            "PATH": os.defpath + os.pathsep + os.environ.get("PATH", ""),
+            "HOME": str(root / "home"), "TMPDIR": str(root / "tmp"),
+            "TMP": str(root / "tmp"), "TEMP": str(root / "tmp"),
+            "XDG_CONFIG_HOME": str(root / "home" / "config"),
+            "XDG_CACHE_HOME": str(root / "cache"),
+            # Win32-OpenSSH initializes ProgramData before keygen main. Pin it
+            # to this fixture, never the caller's machine-wide SSH directory.
+            "ProgramData": str(root / "programdata"),
+            # Native OpenSSH otherwise invents the machine's default agent pipe.
+            # Signing may probe only this nonexistent fixture-owned socket.
+            "SSH_AUTH_SOCK": str(root / "no-agent.sock"),
+            "GOPATH": str(root / "gopath"),
+            "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_SYSTEM": os.devnull,
+            "GIT_CONFIG_GLOBAL": os.devnull, "LC_ALL": "C",
+            "GIT_AUTHOR_NAME": "Fixture", "GIT_AUTHOR_EMAIL": "fixture@example.invalid",
+            "GIT_COMMITTER_NAME": "Fixture", "GIT_COMMITTER_EMAIL": "fixture@example.invalid",
+        }
+        if "SYSTEMROOT" in os.environ:
+            env["SYSTEMROOT"] = os.environ["SYSTEMROOT"]
+        return env
+
     @classmethod
     def run_child(cls, *args: str, input: str | None = None, check: bool = True):
+        import shutil
         import subprocess
-        process = subprocess.Popen(args, cwd=cls.repo, env=cls.env, stdin=subprocess.PIPE,
-                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        from pathlib import Path
+
+        executable = shutil.which(args[0], path=cls.env["PATH"])
+        if executable is None:
+            raise AssertionError("fixture executable unavailable")
+        tool = Path(executable)
+        family = "windows-openssh" if tool.parent.name.lower() == "openssh" else "path-resolved"
+        identity = f"{family}/{tool.name}"
+        try:
+            process = subprocess.Popen((executable, *args[1:]), cwd=cls.repo, env=cls.env,
+                                       stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace")
+        except OSError as error:
+            raise AssertionError(f"fixture child could not start: {identity}: {type(error).__name__}") from None
         if cls.pid_log:
             with open(cls.pid_log, "a") as log:
                 log.write(f"{process.pid} {args[0]}\n")
@@ -137,7 +162,10 @@ class SourceTrustTests(unittest.TestCase):
             raise
         result = subprocess.CompletedProcess(args, process.returncode, stdout, stderr)
         if check and result.returncode:
-            raise AssertionError(f"fixture child failed: {args[0]}: {stderr}")
+            # Tool output can contain keys or other sensitive inputs. Report
+            # bounded metadata only, including silent Windows startup failures.
+            raise AssertionError(f"fixture child failed: {identity}: exit={result.returncode}; "
+                                 f"stdout_chars={len(stdout)}; stderr_chars={len(stderr)}")
         return result
 
     @classmethod
@@ -260,6 +288,91 @@ class SourceTrustTests(unittest.TestCase):
             target = self.run_child("git", "rev-parse", role + "-tag^{commit}").stdout.strip()
             self.assertEqual(target, self.commits["source"])
             self.assertNotEqual(target, self.commits["release"], "wrong target must not match endorsement")
+
+
+# These controls prove fixture-only environment isolation and safe failure
+# receipts. Real SourceTrustTests above still prove actual keygen/signatures;
+# local subprocess controls do not qualify native Windows startup.
+class SourceFixtureHarnessTests(unittest.TestCase):
+    def test_programdata_is_owned_and_host_environment_excluded(self):
+        import os
+        import tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+
+        poison = {name: "foreign-synthetic" for name in (
+            "GIT_DIR", "GIT_WORK_TREE", "GIT_FOO_BAR", "GIT_CONFIG_COUNT", "GIT_TRACE",
+            "XDG_FOO_BAR", "XDG_CONFIG_HOME", "SSH_AUTH_SOCK", "SSH_ASKPASS", "GOFLAGS",
+            "CODEX_HOME", "CLAUDE_CONFIG_DIR", "USERPROFILE", "APPDATA", "LOCALAPPDATA")}
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            with patch.dict(os.environ, {**poison, "ProgramData": "foreign-machine-ssh",
+                                        "PATH": os.defpath, "SYSTEMROOT": "synthetic-system"}, clear=True):
+                env = SourceTrustTests.fixture_environment(root)
+            self.assertEqual(env["ProgramData"], str(root / "programdata"))
+            self.assertTrue(Path(env["ProgramData"]).is_absolute())
+            self.assertNotIn("foreign", " ".join(env.values()))
+            for name in ("HOME", "TMP", "TEMP", "TMPDIR", "GOPATH", "XDG_CONFIG_HOME", "XDG_CACHE_HOME"):
+                self.assertTrue(Path(env[name]).is_relative_to(root), name)
+            for name in poison:
+                if name not in {"XDG_CONFIG_HOME", "GIT_CONFIG_COUNT", "SSH_AUTH_SOCK"}:
+                    self.assertNotIn(name, env)
+            self.assertEqual(env["SSH_AUTH_SOCK"], str(root / "no-agent.sock"))
+            self.assertFalse(Path(env["SSH_AUTH_SOCK"]).exists())
+            self.assertNotIn("GIT_CONFIG_COUNT", env)
+            self.assertEqual(env["SYSTEMROOT"], "synthetic-system")
+
+    def test_failure_receipt_has_exit_and_no_raw_child_output(self):
+        import os
+        import sys
+        import tempfile
+        import traceback
+        import uuid
+        from pathlib import Path
+        from types import SimpleNamespace
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            context = SimpleNamespace(repo=root, env=SourceTrustTests.fixture_environment(root),
+                                      pid_log=os.environ.get("PROVENANCE_TEST_PID_LOG"))
+            secret = "synthetic-" + uuid.uuid4().hex
+            message = diagnostics = ""
+            try:
+                SourceTrustTests.run_child.__func__(context, sys.executable, "-c",
+                    "import sys; s=sys.stdin.read(); sys.stdout.write(s); sys.stderr.write(s); sys.exit(7)",
+                    input=secret)
+            except AssertionError as error:
+                message = str(error)
+                diagnostics = "".join(traceback.format_exception(error))
+            self.assertNotIn(secret, message + diagnostics, "fixture output reflected in failure")
+            self.assertIn("exit=7", message)
+            self.assertIn("path-resolved/", message)
+            self.assertIn(f"stdout_chars={len(secret)}; stderr_chars={len(secret)}", message)
+            # A silent failure must still report status, rather than an empty
+            # diagnostic like the original Windows failed-step output.
+            with self.assertRaisesRegex(AssertionError, r"exit=9; stdout_chars=0; stderr_chars=0"):
+                SourceTrustTests.run_child.__func__(context, sys.executable, "-c", "raise SystemExit(9)")
+            valid = SourceTrustTests.run_child.__func__(context, sys.executable, "-c", "print('fixture-ready')")
+            self.assertEqual((valid.returncode, valid.stdout), (0, "fixture-ready\n"))
+
+    def test_missing_or_unlaunchable_tool_refuses_explicitly(self):
+        import tempfile
+        from pathlib import Path
+        from types import SimpleNamespace
+        from unittest.mock import patch
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            context = SimpleNamespace(repo=root, env={"PATH": str(root)}, pid_log=None)
+            with patch("subprocess.Popen") as launch:
+                with self.assertRaisesRegex(AssertionError, "^fixture executable unavailable$"):
+                    SourceTrustTests.run_child.__func__(context, "nonexistent-fixture-tool")
+                launch.assert_not_called()
+            with patch("shutil.which", return_value=str(root / "OpenSSH" / "ssh-keygen.exe")), \
+                 patch("subprocess.Popen", side_effect=PermissionError("synthetic-sensitive-output")):
+                with self.assertRaisesRegex(AssertionError,
+                        "^fixture child could not start: windows-openssh/ssh-keygen.exe: PermissionError$"):
+                    SourceTrustTests.run_child.__func__(context, "ssh-keygen")
 
 
 # API cases exercise delegated platform verification, not local PGP cryptography.
