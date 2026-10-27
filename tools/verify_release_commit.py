@@ -151,8 +151,11 @@ def fetch_github_payload(commit: str, token: str) -> Any:
     try:
         with urllib.request.build_opener(NoRedirect()).open(request, timeout=30) as response:
             return json.load(response)
-    except (OSError, urllib.error.URLError, ValueError) as exc:
-        raise VerificationFailure(f"could not read GitHub commit verification: {exc}") from exc
+    except (OSError, urllib.error.URLError, ValueError):
+        # HTTP errors may contain Authorization values. Discard the raw error
+        # and raise outside its handler so even chained tracebacks stay safe.
+        pass
+    raise VerificationFailure("could not read GitHub commit verification")
 
 
 def main() -> int:

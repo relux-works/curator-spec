@@ -3,6 +3,7 @@ from __future__ import annotations
 import unittest
 
 import verify_release_merge_policy
+from test_verify_release_commit import SecretFreeTransportMixin
 
 
 REPOSITORY = "relux-works/curator-spec"
@@ -79,6 +80,29 @@ class FixedPolicyAuthorityTests(unittest.TestCase):
             self.assertEqual(verify_release_merge_policy.main(), 1)
         self.assertIn("does not match repository policy", output.getvalue())
         fetch.assert_not_called()
+
+
+class SecretFreePolicyTransportTests(SecretFreeTransportMixin, unittest.TestCase):
+    failure_type = verify_release_merge_policy.PolicyFailure
+    failure_message = "could not read GitHub repository settings"
+    public_failure = "release merge policy verification failed: " + failure_message
+    valid_output = "preserves the GitHub-verified squash fallback"
+    valid_payload = staticmethod(repository_payload)
+
+    def fetch(self, token):
+        return verify_release_merge_policy.fetch_repository_payload(token)
+
+    def invoke_main(self, token):
+        import contextlib
+        import io
+        import os
+        from unittest.mock import patch
+        output = io.StringIO()
+        with patch.dict(os.environ, {"GITHUB_TOKEN": token}, clear=True), \
+             patch("sys.argv", ["verify_release_merge_policy.py"]), \
+             contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
+            status = verify_release_merge_policy.main()
+        return status, output.getvalue()
 
 
 if __name__ == "__main__":

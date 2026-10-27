@@ -43,7 +43,7 @@ specification or replace the change and release requirements above and below.
 ### Source commits and release endorsement
 
 This policy amendment separates source integration from release-tag custody
-([Decision 0033](decisions/0033-source-commit-and-release-tag-trust.md)).
+([Decision 0034](decisions/0034-source-commit-and-release-tag-trust.md)).
 Reviewed source commits MAY land by a non-rewriting, exact-head fast-forward
 once required review and checks pass. They need not be recreated by GitHub
 squash merging. Source integration alone grants no release authority.

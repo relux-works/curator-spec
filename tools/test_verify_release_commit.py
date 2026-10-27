@@ -64,7 +64,7 @@ class SourceTrustTests(unittest.TestCase):
 
         cls.temporary = tempfile.TemporaryDirectory(prefix="source-provenance-")
         cls.root = Path(cls.temporary.name).resolve()
-        for name in ("home", "tmp", "cache", "repo", "decoy"):
+        for name in ("home", "tmp", "cache", "gopath", "repo", "decoy"):
             (cls.root / name).mkdir()
         cls.repo = cls.root / "repo"
         cls.env = {
@@ -73,6 +73,7 @@ class SourceTrustTests(unittest.TestCase):
             "TMP": str(cls.root / "tmp"), "TEMP": str(cls.root / "tmp"),
             "XDG_CONFIG_HOME": str(cls.root / "home" / "config"),
             "XDG_CACHE_HOME": str(cls.root / "cache"),
+            "GOPATH": str(cls.root / "gopath"),
             "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_SYSTEM": os.devnull,
             "GIT_CONFIG_GLOBAL": os.devnull, "LC_ALL": "C",
             "GIT_AUTHOR_NAME": "Fixture", "GIT_AUTHOR_EMAIL": "fixture@example.invalid",
@@ -341,6 +342,143 @@ class SourcePolicyTests(unittest.TestCase):
         self.assertIsNone(verify_release_commit.NoRedirect().redirect_request(request, None, 302, "redirect", {}, "https://other.invalid"))
         with self.assertRaisesRegex(verify_release_commit.VerificationFailure, "GITHUB_TOKEN"):
             verify_release_commit.fetch_github_payload(COMMIT, "")
+
+
+# Both consumers must reject credential-bearing header/transport failures with
+# stable public diagnostics. HTTP is parsed in memory; no TLS/network is proved.
+class SecretFreeTransportMixin:
+    def fetch(self, token):
+        raise NotImplementedError
+
+    def invoke_main(self, token):
+        raise NotImplementedError
+
+    def assert_safe_refusal(self, call, fragments):
+        import traceback
+        exception_type = None
+        message = diagnostics = ""
+        chained = False
+        try:
+            call()
+        except Exception as error:
+            exception_type = type(error)
+            message = str(error)
+            diagnostics = repr(error) + "\n" + "".join(traceback.format_exception(error))
+            chained = error.__context__ is not None or error.__cause__ is not None
+        # Assert after leaving the handler so a failed detector never prints the
+        # underlying credential-bearing exception as its own context.
+        self.assertFalse(any(part in diagnostics for part in fragments),
+                         "credential reflected in helper diagnostics")
+        self.assertFalse(chained, "raw transport error remains chained")
+        self.assertIs(exception_type, self.failure_type)
+        self.assertEqual(message, self.failure_message)
+
+    def test_malformed_header_is_secret_free_before_connect(self):
+        import http.client
+        import os
+        from unittest.mock import patch
+        import uuid
+        first, second = "synthetic-" + uuid.uuid4().hex, "tail-" + uuid.uuid4().hex
+        token = first + "\n" + second
+        rejected = []
+        putheader = http.client.HTTPConnection.putheader
+        def observed_header(connection, header, *values):
+            try:
+                return putheader(connection, header, *values)
+            except ValueError:
+                rejected.append(True)
+                raise
+        with patch.dict(os.environ, {}, clear=True), \
+             patch.object(http.client.HTTPConnection, "putheader", new=observed_header), \
+             patch.object(http.client.HTTPSConnection, "connect", side_effect=AssertionError("connect forbidden")) as connect:
+            with self.subTest(channel="helper"):
+                self.assert_safe_refusal(lambda: self.fetch(token), (first, second))
+            status, output = self.invoke_main(token)
+            with self.subTest(channel="stderr"):
+                self.assertFalse(any(part in output for part in (first, second, "Bearer", "Authorization")),
+                                 "credential reflected in public stderr")
+                self.assertEqual(status, 1)
+                self.assertEqual(output, self.public_failure + "\n")
+            connect.assert_not_called()
+        self.assertEqual(len(rejected), 2, "both calls must reach actual HTTP header rejection")
+
+    def test_transport_errors_discard_sensitive_exception_details(self):
+        import os
+        import urllib.error
+        from unittest.mock import patch
+        import uuid
+        secret = "synthetic-" + uuid.uuid4().hex
+        for error_type in (OSError, urllib.error.URLError, ValueError):
+            with self.subTest(error_type=error_type.__name__), patch.dict(os.environ, {}, clear=True), \
+                 patch.object(verify_release_commit.urllib.request, "build_opener", side_effect=error_type(secret)):
+                with self.subTest(channel="helper"):
+                    self.assert_safe_refusal(lambda: self.fetch("fixture-token"), (secret,))
+                status, output = self.invoke_main("fixture-token")
+                with self.subTest(channel="stderr"):
+                    self.assertFalse(secret in output, "credential reflected in public stderr")
+                    self.assertEqual((status, output), (1, self.public_failure + "\n"))
+
+    def test_real_http_parser_positive_and_redirect_refusals(self):
+        import http.client
+        import io
+        import json
+        import os
+        from unittest.mock import patch
+        connections = []
+        response_bytes = b""
+        class MemorySocket:
+            def sendall(self, data):
+                pass
+            def makefile(self, *args, **kwargs):
+                return io.BytesIO(response_bytes)
+            def close(self):
+                pass
+        def connect(connection):
+            connections.append((connection.host, connection.port, connection.timeout))
+            connection.sock = MemorySocket()
+        with patch.dict(os.environ, {}, clear=True), \
+             patch.object(http.client.HTTPSConnection, "connect", new=connect):
+            payload = self.valid_payload()
+            data = json.dumps(payload).encode()
+            response_bytes = b"HTTP/1.1 200 OK\r\nContent-Length: " + str(len(data)).encode() + b"\r\nConnection: close\r\n\r\n" + data
+            self.assertEqual(self.fetch("fixture-token"), payload)
+            status, output = self.invoke_main("fixture-token")
+            self.assertEqual(status, 0, "nearby valid API response refused")
+            self.assertIn(self.valid_output, output)
+            self.assertEqual(connections, [("api.github.com", 443, 30)] * 2)
+            for code in (301, 302, 303, 307, 308):
+                with self.subTest(code=code):
+                    connections.clear()
+                    response_bytes = f"HTTP/1.1 {code} Redirect\r\nLocation: https://other.invalid/\r\nContent-Length: 0\r\nConnection: close\r\n\r\n".encode()
+                    self.assert_safe_refusal(lambda: self.fetch("fixture-token"), ())
+                    self.assertEqual(connections, [("api.github.com", 443, 30)],
+                                     "redirect contacted another authority")
+
+
+class SecretFreeCommitTransportTests(SecretFreeTransportMixin, unittest.TestCase):
+    failure_type = verify_release_commit.VerificationFailure
+    failure_message = "could not read GitHub commit verification"
+    public_failure = "release commit verification failed: " + failure_message
+    valid_output = "is a GitHub-verified commit on origin/main"
+    valid_payload = staticmethod(github_payload)
+
+    def fetch(self, token):
+        return verify_release_commit.fetch_github_payload(COMMIT, token)
+
+    def invoke_main(self, token):
+        import contextlib
+        import io
+        import os
+        from unittest.mock import patch
+        output = io.StringIO()
+        with patch.dict(os.environ, {"GITHUB_TOKEN": token}, clear=True), \
+             patch("sys.argv", ["verify_release_commit.py", "--commit", COMMIT]), \
+             patch.object(verify_release_commit, "resolve_commit", return_value=COMMIT), \
+             patch.object(verify_release_commit, "require_default_branch_ancestor"), \
+             patch.object(verify_release_commit, "commit_signature_kind", return_value="github"), \
+             contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
+            status = verify_release_commit.main()
+        return status, output.getvalue()
 
 
 if __name__ == "__main__":

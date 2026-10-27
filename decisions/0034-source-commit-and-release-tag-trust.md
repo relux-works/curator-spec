@@ -1,4 +1,4 @@
-# Decision 0033: Separate source commits from release-tag authority
+# Decision 0034: Separate source commits from release-tag authority
 
 ## Context
 

@@ -6,7 +6,7 @@ approve changes; CI enforces the mechanically verifiable items.
 ## Release target provenance
 
 This amended checklist admits the source route in
-[Decision 0033](decisions/0033-source-commit-and-release-tag-trust.md); the
+[Decision 0034](decisions/0034-source-commit-and-release-tag-trust.md); the
 previous squash-only checklist did not describe it.
 
 - [ ] Reviewed, authorized SSH-signed source heads are integrated without

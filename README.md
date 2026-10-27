@@ -229,7 +229,7 @@ schemas. Its separate schema and corpus require implementation qualification.
   trust file and packages both distinctly scoped trust files. See
   [Governance](GOVERNANCE.md#source-commits-and-release-endorsement),
   [the release checklist](RELEASE.md#release-target-provenance), and
-  [Decision 0033](decisions/0033-source-commit-and-release-tag-trust.md).
+  [Decision 0034](decisions/0034-source-commit-and-release-tag-trust.md).
 
 - Home-lease specification: `python3 tools/home_leases.py` checks closed schemas,
   strict decoder pairs and HL/W semantic-pair coverage; `python3 -B -m unittest

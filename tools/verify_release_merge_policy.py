@@ -46,8 +46,11 @@ def fetch_repository_payload(token: str) -> Any:
     try:
         with urllib.request.build_opener(NoRedirect()).open(request, timeout=30) as response:
             return json.load(response)
-    except (OSError, urllib.error.URLError, ValueError) as exc:
-        raise PolicyFailure(f"could not read GitHub repository settings: {exc}") from exc
+    except (OSError, urllib.error.URLError, ValueError):
+        # HTTP errors may contain Authorization values. Discard the raw error
+        # and raise outside its handler so even chained tracebacks stay safe.
+        pass
+    raise PolicyFailure("could not read GitHub repository settings")
 
 
 def main() -> int:

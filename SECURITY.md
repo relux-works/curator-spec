@@ -569,7 +569,7 @@ at the cost of availability.
 ## Repository source and release trust
 
 The source-commit policy is separate from package, platform-key and release-tag
-trust. [Decision 0033](decisions/0033-source-commit-and-release-tag-trust.md)
+trust. [Decision 0034](decisions/0034-source-commit-and-release-tag-trust.md)
 authorizes one commit-only key in `source.allowed_signers`. The source verifier
 also accepts existing release signers, but tag verification continues to use
 only the byte-unchanged `maintainers.allowed_signers`. OpenSSH's `git` namespace
