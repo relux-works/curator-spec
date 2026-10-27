@@ -7,16 +7,16 @@ import sys
 import time
 import unittest
 
-from test_fixture_lifetime import FixtureLifetimeTests
+import test_fixture_lifetime as lifetime
 from fixture_environment import isolated_environment
 from test_fixture_environment import tree_snapshot
 
 
 class FixtureTransportTests(unittest.TestCase):
-    setUpClass = classmethod(FixtureLifetimeTests.setUpClass.__func__)
-    setUp = FixtureLifetimeTests.setUp
-    run_binary = FixtureLifetimeTests.run_binary
-    child_phase_args = FixtureLifetimeTests.child_phase_args
+    setUpClass = classmethod(lifetime.FixtureLifetimeTests.setUpClass.__func__)
+    setUp = lifetime.FixtureLifetimeTests.setUp
+    run_binary = lifetime.FixtureLifetimeTests.run_binary
+    child_phase_args = lifetime.FixtureLifetimeTests.child_phase_args
 
     # Readiness stops only setup's clock. Real body deadlines, including a
     # disabled timeout, survive; a genuine 2s body timeout remains effective.
