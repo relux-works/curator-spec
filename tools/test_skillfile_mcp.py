@@ -15,7 +15,30 @@ import validate
 class StageATests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.cases = {c['id']: c for c in json.loads((m.ROOT/'conformance/skillfile-mcp-v1/cases.json').read_text())}
+        cls.cases = {c['id']: c for c in json.loads((m.ROOT/'conformance/skillfile-mcp-v1/cases.json').read_text(encoding="utf-8"))}
+
+    # Claim: the checked-in registry loads UTF-8 schemas even when omitted text encodings default to cp1252.
+    # The unencoded read is an instrument control: these schema bytes must fail under that default.
+    def test_registry_scan_with_cp1252_default(self):
+        original_read_text = Path.read_text
+        default_reads = []
+        schema_path = m.ROOT/'schemas/project-context-leaf1-v1/common.schema.json'
+
+        def cp1252_default(path, encoding=None, errors=None):
+            if encoding is None:
+                default_reads.append(path)
+                encoding = 'cp1252'
+            return original_read_text(path, encoding=encoding, errors=errors)
+
+        m.registry.cache_clear()
+        self.addCleanup(m.registry.cache_clear)
+        with patch.object(Path, 'read_text', cp1252_default):
+            with self.assertRaises(UnicodeDecodeError):
+                schema_path.read_text()
+            catalog = m.registry()
+            schema = json.loads(schema_path.read_text(encoding="utf-8"))
+            self.assertEqual(catalog.contents(schema['$id']), m.exact_patterns(schema))
+        self.assertEqual(default_reads, [schema_path])
 
     # Claim: the production spec corpus agrees with every independently stated verdict, not just any error.
     def test_corpus(self):
@@ -49,13 +72,13 @@ class StageATests(unittest.TestCase):
     # The only intended asymmetry is the new version and optional MCP field, tested independently.
     def test_schema2_inheritance(self):
         root = m.ROOT/'conformance/skillfile-sources-v1/schema-cases'
-        schema = json.loads((m.ROOT/'schemas/skillfile-sources-v1/skillfile-v2.schema.json').read_text())
+        schema = json.loads((m.ROOT/'schemas/skillfile-sources-v1/skillfile-v2.schema.json').read_text(encoding="utf-8"))
         reader = Draft202012Validator(schema, registry=m.registry())
         checked = 0
         for path in root.rglob('*.json'):
             if 'skillfile-v2' not in path.parts:
                 continue
-            value = json.loads(path.read_text())
+            value = json.loads(path.read_text(encoding="utf-8"))
             if not isinstance(value, dict) or value.get('schema_version') != 2:
                 continue
             expected = reader.is_valid(value)
@@ -67,7 +90,7 @@ class StageATests(unittest.TestCase):
     # Claim: released readers keep rejecting MCP additions; unknown versions are not silently dispatched to schema 2.
     def test_old_schemas_closed(self):
         for version, relative in [(1,'schemas/v1/skillfile-v1.schema.json'),(2,'schemas/skillfile-sources-v1/skillfile-v2.schema.json')]:
-            reader = Draft202012Validator(json.loads((m.ROOT/relative).read_text()), registry=m.registry())
+            reader = Draft202012Validator(json.loads((m.ROOT/relative).read_text(encoding="utf-8")), registry=m.registry())
             self.assertTrue(reader.is_valid({'schema_version':version,'skills':[]}))
             self.assertFalse(reader.is_valid({'schema_version':version,'skills':[],'mcp_servers':{}}))
             self.assertFalse(reader.is_valid({'schema_version':3,'skills':[]}))
@@ -128,7 +151,7 @@ class StageATests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix='mcp-corpus-') as directory:
             root=Path(directory);corpus=root/'conformance/skillfile-mcp-v1';corpus.mkdir(parents=True)
             original=m.ROOT/'conformance/skillfile-mcp-v1'
-            cases=json.loads((original/'cases.json').read_text())
+            cases=json.loads((original/'cases.json').read_text(encoding="utf-8"))
             (corpus/'cases.json').write_text(json.dumps(cases[1:]))
             (corpus/'coverage.json').write_bytes((original/'coverage.json').read_bytes())
             with self.assertRaisesRegex(ValueError,'MCP case inventory mismatch'):
@@ -276,7 +299,7 @@ class StageATests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'MCP verdict mismatch: '+witness+'$'):
                     m.check_case(self.cases[witness])
             # Mutate the actual schema enum, not a simulated schema verdict.
-            schema = json.loads((m.ROOT/'schemas/skillfile-mcp-v1/mcp-plan-v1.schema.json').read_text())
+            schema = json.loads((m.ROOT/'schemas/skillfile-mcp-v1/mcp-plan-v1.schema.json').read_text(encoding="utf-8"))
             for remove in [True, False]:
                 mutated = copy.deepcopy(schema)
                 enum = mutated['properties']['rows']['items']['properties']['code']['enum']

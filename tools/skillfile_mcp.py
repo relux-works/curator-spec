@@ -95,7 +95,7 @@ def digest(value):
 
 @lru_cache(maxsize=8)
 def registry(root=ROOT):
-    documents = [exact_patterns(json.loads(p.read_text())) for p in (root/'schemas').rglob('*.schema.json')]
+    documents = [exact_patterns(json.loads(p.read_text(encoding="utf-8"))) for p in (root/'schemas').rglob('*.schema.json')]
     for document in documents:
         Draft202012Validator.check_schema(document)
     return Registry().with_resources((d['$id'], Resource.from_contents(d)) for d in documents)
@@ -103,7 +103,7 @@ def registry(root=ROOT):
 
 def schema_valid(name, value, root=ROOT):
     path = root/'schemas'/NAMESPACE/(name+'.schema.json')
-    return Draft202012Validator(exact_patterns(json.loads(path.read_text())), registry=registry(root)).is_valid(value)
+    return Draft202012Validator(exact_patterns(json.loads(path.read_text(encoding="utf-8"))), registry=registry(root)).is_valid(value)
 
 
 
@@ -126,7 +126,7 @@ def runtime_pin(command, args):
 def audit_clear(value, root=ROOT):
     # Reuse the published detector vocabulary and placeholder treatment.
     import validate
-    patterns = json.loads((root/'conformance/v1/vectors/context-detectors.json').read_text())['pattern_classes']
+    patterns = json.loads((root/'conformance/v1/vectors/context-detectors.json').read_text(encoding="utf-8"))['pattern_classes']
     findings, _ = validate.detector_findings(patterns, 'synthetic-snapshot',
                                             {'agent-mcp.json': canonical(value).decode('utf-8')}, [])
     return not findings
@@ -303,7 +303,7 @@ def evaluate(raw, facts=None, root=ROOT):
                 raise Refusal('context_source_signer_rejected')
             package = resolved.get('manifest')
             # Real consumers must establish committed tree/name/version/path facts.
-            schema = exact_patterns(json.loads((root/'schemas/v1/agent-mcp-v1.schema.json').read_text()))
+            schema = exact_patterns(json.loads((root/'schemas/v1/agent-mcp-v1.schema.json').read_text(encoding="utf-8")))
             if (not Draft202012Validator(schema, registry=registry(root)).is_valid(package)
                     or package['name'] != name or not server_valid(package['server'], root)
                     or not package_byte_bounds(package['server'])):
