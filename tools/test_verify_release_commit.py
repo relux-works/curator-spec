@@ -164,8 +164,11 @@ class SourceTrustTests(unittest.TestCase):
         except subprocess.TimeoutExpired as error:
             timeout_counts = []
             for stream, value in (("stdout", error.output), ("stderr", error.stderr)):
-                unit = "bytes" if isinstance(value, bytes) else "chars"
-                timeout_counts.append(f"partial_{stream}_{unit}={len(value or '')}")
+                if value is None:
+                    timeout_counts.append(f"partial_{stream}=unavailable")
+                else:
+                    unit = "bytes" if isinstance(value, bytes) else "chars"
+                    timeout_counts.append(f"partial_{stream}_{unit}={len(value)}")
         except BaseException:
             # Preserve interruption/unexpected-error semantics after exact-child
             # cleanup; only expected launch/timeout errors are normalized.
@@ -469,9 +472,20 @@ class ExpectedFixtureErrorTests(unittest.TestCase):
         argv_marker = "synthetic-argv-" + uuid.uuid4().hex
         stream_marker = "synthetic-stream-" + uuid.uuid4().hex
         processes = []
+        partial_streams = {}
         popen = subprocess.Popen
         def tracked(*args, **kwargs):
             process = popen(*args, **kwargs)
+            communicate = process.communicate
+            def observed_communicate(input, *, timeout):
+                try:
+                    return communicate(input, timeout=timeout)
+                except subprocess.TimeoutExpired as error:
+                    for stream, value in (("stdout", error.output), ("stderr", error.stderr)):
+                        partial_streams[stream] = (None if value is None else
+                            ("bytes" if isinstance(value, bytes) else "chars", len(value)))
+                    raise
+            process.communicate = Mock(side_effect=observed_communicate)
             process.kill = Mock(wraps=process.kill)
             process.wait = Mock(wraps=process.wait)
             processes.append(process)
@@ -504,15 +518,27 @@ class ExpectedFixtureErrorTests(unittest.TestCase):
                 self.assertIsNotNone(process.returncode, "exact child was not reaped before owner return")
                 process.kill.assert_called_once_with()
                 process.wait.assert_called_once_with(timeout=5)
+                self.assertEqual(process.communicate.call_count, 1)
+                self.assertEqual(process.communicate.call_args.kwargs, {"timeout": 10})
                 self.observation = {"pid": process.pid, "elapsed_seconds": elapsed,
                     "body_ready": True, "reaped": True, "exit": process.returncode,
+                    "partial_streams": partial_streams,
                     **{key: snapshot[key] for key in ("unsafe", "chained", "raw_fields")}}
                 self.assert_safe_failure(snapshot)
                 message = snapshot["message"]
                 self.assertIn("fixture child timed out: path-resolved/", message)
                 self.assertIn(f"timeout=10; exit={process.returncode}; cleanup=reaped", message)
-                for stream in ("stdout", "stderr"):
-                    self.assertRegex(message, rf"partial_{stream}_(bytes|chars)={len(stream_marker)}(?:;|$)")
+                # Windows may provide no partial fields even after the child
+                # flushed. Match independently observed API availability, not
+                # a platform assumption or guessed emitted-byte count.
+                self.assertEqual(set(partial_streams), {"stdout", "stderr"})
+                for stream, partial in partial_streams.items():
+                    if partial is None:
+                        self.assertIn(f"partial_{stream}=unavailable", message)
+                    else:
+                        unit, count = partial
+                        self.assertEqual(count, len(stream_marker))
+                        self.assertIn(f"partial_{stream}_{unit}={count}", message)
             finally:
                 for process in processes:
                     if process.poll() is None:
@@ -535,11 +561,12 @@ class ExpectedFixtureErrorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary).resolve()
             context = SimpleNamespace(repo=root, env={"PATH": str(root)}, pid_log=None)
-            for stage in ("kill", "reap"):
-                with self.subTest(stage=stage):
+            for stage, partial in (("kill", None), ("reap", b""),
+                                   ("reap", marker.encode()), ("reap", marker)):
+                with self.subTest(stage=stage, data_kind=type(partial).__name__):
                     process = Mock(returncode=None)
                     process.communicate.side_effect = subprocess.TimeoutExpired([marker], 10,
-                        output=marker.encode(), stderr=marker.encode())
+                        output=partial, stderr=partial)
                     if stage == "kill":
                         process.kill.side_effect = PermissionError(marker)
                     else:
@@ -554,6 +581,12 @@ class ExpectedFixtureErrorTests(unittest.TestCase):
                                   snapshot["message"])
                     self.assertNotIn("exit=", snapshot["message"])
                     self.assertNotIn("cleanup=reaped", snapshot["message"])
+                    for stream in ("stdout", "stderr"):
+                        if partial is None:
+                            self.assertIn(f"partial_{stream}=unavailable", snapshot["message"])
+                        else:
+                            unit = "bytes" if isinstance(partial, bytes) else "chars"
+                            self.assertIn(f"partial_{stream}_{unit}={len(partial)}", snapshot["message"])
                     process.kill.assert_called_once_with()
                     if stage == "kill":
                         process.wait.assert_not_called()
