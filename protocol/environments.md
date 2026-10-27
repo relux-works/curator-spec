@@ -3170,10 +3170,11 @@ a command name, directory spelling or digest without authority is insufficient.
 In **Slice A**, the root is the isolated routing domain's machine-current
 command root. The selected profile MUST equal that domain's current profile,
 and the supervisor-issued exclusive routing admission MUST cover the root,
-runtime generation and all admitted consumers. The consumer admission and
-routing mutation serialization MUST preserve that binding for the session's
-lifetime. A different profile, unknown consumer or unproven isolation refuses
-launch; inherited singleton shims never satisfy another profile's requirement.
+runtime generation and all admitted consumers. Consumer admission MUST
+serialize root verification and process start against routing mutation under
+that domain's existing admission contract. A different profile, unknown
+consumer or unproven isolation refuses launch; inherited singleton shims never
+satisfy another profile's requirement.
 This changes the required launch delivery, not Slice A's publication boundary.
 In **Slice B later**, the root is the selected lock-bound immutable generation
 root. Its exact root grammar, successor carriers and lease/GC protocol require
