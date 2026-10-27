@@ -145,21 +145,50 @@ class SourceTrustTests(unittest.TestCase):
         tool = Path(executable)
         family = "windows-openssh" if tool.parent.name.lower() == "openssh" else "path-resolved"
         identity = f"{family}/{tool.name}"
+        launch_failure = None
         try:
             process = subprocess.Popen((executable, *args[1:]), cwd=cls.repo, env=cls.env,
                                        stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace")
         except OSError as error:
-            raise AssertionError(f"fixture child could not start: {identity}: {type(error).__name__}") from None
+            launch_failure = type(error).__name__
+        # Raise outside the handler: suppressing display alone retains context.
+        if launch_failure is not None:
+            raise AssertionError(f"fixture child could not start: {identity}: {launch_failure}")
         if cls.pid_log:
             with open(cls.pid_log, "a") as log:
                 log.write(f"{process.pid} {args[0]}\n")
+        timeout_counts = None
         try:
             stdout, stderr = process.communicate(input, timeout=10)
+        except subprocess.TimeoutExpired as error:
+            timeout_counts = []
+            for stream, value in (("stdout", error.output), ("stderr", error.stderr)):
+                unit = "bytes" if isinstance(value, bytes) else "chars"
+                timeout_counts.append(f"partial_{stream}_{unit}={len(value or '')}")
         except BaseException:
+            # Preserve interruption/unexpected-error semantics after exact-child
+            # cleanup; only expected launch/timeout errors are normalized.
             process.kill()
             process.wait(timeout=5)
             raise
+        if timeout_counts is not None:
+            # The timeout handler has ended before cleanup or replacement is
+            # raised, so neither error can retain the raw TimeoutExpired.
+            cleanup_failure = None
+            stage = "kill"
+            try:
+                process.kill()
+                stage = "reap"
+                status = process.wait(timeout=5)
+            except (OSError, subprocess.TimeoutExpired) as error:
+                cleanup_failure = f"{stage}:{type(error).__name__}"
+            counts = "; ".join(timeout_counts)
+            if cleanup_failure is not None:
+                raise AssertionError(f"fixture child timed out: {identity}: timeout=10; "
+                                     f"cleanup=unconfirmed({cleanup_failure}); {counts}")
+            raise AssertionError(f"fixture child timed out: {identity}: timeout=10; "
+                                 f"exit={status}; cleanup=reaped; {counts}")
         result = subprocess.CompletedProcess(args, process.returncode, stdout, stderr)
         if check and result.returncode:
             # Tool output can contain keys or other sensitive inputs. Report
@@ -373,6 +402,188 @@ class SourceFixtureHarnessTests(unittest.TestCase):
                 with self.assertRaisesRegex(AssertionError,
                         "^fixture child could not start: windows-openssh/ssh-keygen.exe: PermissionError$"):
                     SourceTrustTests.run_child.__func__(context, "ssh-keygen")
+
+
+# Expected launch/timeout failures expose only safe metadata and no retained
+# raw exception fields/context. The timeout reaches the real 10s bound; cleanup
+# faults and interruptions are controlled call-state tests, not native proof.
+class ExpectedFixtureErrorTests(unittest.TestCase):
+    @staticmethod
+    def capture_failure(call, fragments):
+        import traceback
+        snapshot = {"kind": None, "message": "", "unsafe": False,
+                    "chained": False, "raw_fields": False}
+        try:
+            call()
+        except Exception as error:
+            raw_fields = ("cmd", "output", "stdout", "stderr", "filename", "filename2")
+            rendered = (str(error) + repr(error) + repr(error.args) + repr(vars(error))
+                        + "".join(traceback.format_exception(error))
+                        + repr(error.__context__) + repr(error.__cause__)
+                        + "".join(repr(getattr(error, name, None)) for name in raw_fields))
+            snapshot = {"kind": type(error), "message": str(error),
+                        "unsafe": any(part in rendered for part in fragments),
+                        "chained": error.__cause__ is not None or error.__context__ is not None,
+                        "raw_fields": any(hasattr(error, name) for name in raw_fields)}
+        return snapshot
+
+    def assert_safe_failure(self, snapshot):
+        # Assert after the original handler. Failure output contains only safe
+        # classifications, never generated values or their raw exception repr.
+        self.assertFalse(snapshot["unsafe"], "expected fixture error retains sensitive data")
+        self.assertFalse(snapshot["chained"], "expected fixture error retains context/cause")
+        self.assertFalse(snapshot["raw_fields"], "expected fixture error retains raw subprocess fields")
+        self.assertIs(snapshot["kind"], AssertionError)
+
+    def test_launch_failure_has_no_sensitive_exception_state(self):
+        import tempfile
+        import uuid
+        from pathlib import Path
+        from types import SimpleNamespace
+        from unittest.mock import patch
+
+        marker = "synthetic-" + uuid.uuid4().hex
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            context = SimpleNamespace(repo=root, env={"PATH": str(root)}, pid_log=None)
+            with patch("shutil.which", return_value=str(root / "OpenSSH" / "ssh-keygen.exe")), \
+                 patch("subprocess.Popen", side_effect=PermissionError(13, marker, marker)):
+                snapshot = self.capture_failure(
+                    lambda: SourceTrustTests.run_child.__func__(context, "ssh-keygen"), (marker,))
+            self.observation = {key: snapshot[key] for key in ("unsafe", "chained", "raw_fields")}
+            self.assert_safe_failure(snapshot)
+            self.assertEqual(snapshot["message"],
+                "fixture child could not start: windows-openssh/ssh-keygen.exe: PermissionError")
+
+    def test_real_timeout_is_safe_and_exact_child_reaped(self):
+        import os
+        import subprocess
+        import sys
+        import tempfile
+        import time
+        import uuid
+        from pathlib import Path
+        from types import SimpleNamespace
+        from unittest.mock import Mock, patch
+
+        argv_marker = "synthetic-argv-" + uuid.uuid4().hex
+        stream_marker = "synthetic-stream-" + uuid.uuid4().hex
+        processes = []
+        popen = subprocess.Popen
+        def tracked(*args, **kwargs):
+            process = popen(*args, **kwargs)
+            process.kill = Mock(wraps=process.kill)
+            process.wait = Mock(wraps=process.wait)
+            processes.append(process)
+            return process
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            context = SimpleNamespace(repo=root, env=SourceTrustTests.fixture_environment(root),
+                                      pid_log=os.environ.get("PROVENANCE_TEST_PID_LOG"))
+            # Nearby real success and explicit check=False data are preserved.
+            valid = SourceTrustTests.run_child.__func__(context, sys.executable, "-c", "print('fixture-ready')")
+            self.assertEqual((valid.returncode, valid.stdout), (0, "fixture-ready\n"))
+            unchecked = SourceTrustTests.run_child.__func__(context, sys.executable, "-c",
+                "import sys; sys.stdout.write(sys.stdin.read()); sys.exit(7)", input=stream_marker, check=False)
+            self.assertTrue(unchecked.returncode == 7 and unchecked.stdout == stream_marker,
+                            "check=False must preserve explicit nonzero data")
+            ready = root / "ready"
+            try:
+                with patch.object(subprocess, "Popen", side_effect=tracked):
+                    started = time.monotonic()
+                    snapshot = self.capture_failure(lambda: SourceTrustTests.run_child.__func__(
+                        context, sys.executable, "-c",
+                        "import pathlib,sys,time; s=sys.stdin.read(); sys.stdout.write(s); sys.stdout.flush(); "
+                        "sys.stderr.write(s); sys.stderr.flush(); pathlib.Path(sys.argv[1]).write_text('ready'); time.sleep(60)",
+                        str(ready), argv_marker, input=stream_marker), (argv_marker, stream_marker))
+                    elapsed = time.monotonic() - started
+                self.assertEqual(len(processes), 1)
+                process = processes[0]
+                self.assertTrue(ready.is_file() and ready.read_text() == "ready", "real child did not reach body")
+                self.assertGreaterEqual(elapsed, 9.5, "control did not reach actual communicate deadline")
+                self.assertIsNotNone(process.returncode, "exact child was not reaped before owner return")
+                process.kill.assert_called_once_with()
+                process.wait.assert_called_once_with(timeout=5)
+                self.observation = {"pid": process.pid, "elapsed_seconds": elapsed,
+                    "body_ready": True, "reaped": True, "exit": process.returncode,
+                    **{key: snapshot[key] for key in ("unsafe", "chained", "raw_fields")}}
+                self.assert_safe_failure(snapshot)
+                message = snapshot["message"]
+                self.assertIn("fixture child timed out: path-resolved/", message)
+                self.assertIn(f"timeout=10; exit={process.returncode}; cleanup=reaped", message)
+                for stream in ("stdout", "stderr"):
+                    self.assertRegex(message, rf"partial_{stream}_(bytes|chars)={len(stream_marker)}(?:;|$)")
+            finally:
+                for process in processes:
+                    if process.poll() is None:
+                        process.kill()
+                        process.wait(timeout=5)
+                    for stream in (process.stdin, process.stdout, process.stderr):
+                        if stream is not None:
+                            stream.close()
+        self.assertFalse(root.exists(), "owned timeout fixture not removed")
+
+    def test_timeout_cleanup_failures_remain_unconfirmed(self):
+        import subprocess
+        import tempfile
+        import uuid
+        from pathlib import Path
+        from types import SimpleNamespace
+        from unittest.mock import Mock, patch
+
+        marker = "synthetic-" + uuid.uuid4().hex
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            context = SimpleNamespace(repo=root, env={"PATH": str(root)}, pid_log=None)
+            for stage in ("kill", "reap"):
+                with self.subTest(stage=stage):
+                    process = Mock(returncode=None)
+                    process.communicate.side_effect = subprocess.TimeoutExpired([marker], 10,
+                        output=marker.encode(), stderr=marker.encode())
+                    if stage == "kill":
+                        process.kill.side_effect = PermissionError(marker)
+                    else:
+                        process.wait.side_effect = subprocess.TimeoutExpired([marker], 5, output=marker.encode())
+                    with patch("shutil.which", return_value=str(root / "fixture-tool")), \
+                         patch("subprocess.Popen", return_value=process):
+                        snapshot = self.capture_failure(lambda: SourceTrustTests.run_child.__func__(
+                            context, "fixture-tool", check=False), (marker,))
+                    self.assert_safe_failure(snapshot)
+                    self.assertIn("cleanup=unconfirmed", snapshot["message"])
+                    self.assertIn(stage + ":" + ("PermissionError" if stage == "kill" else "TimeoutExpired"),
+                                  snapshot["message"])
+                    self.assertNotIn("exit=", snapshot["message"])
+                    self.assertNotIn("cleanup=reaped", snapshot["message"])
+                    process.kill.assert_called_once_with()
+                    if stage == "kill":
+                        process.wait.assert_not_called()
+                    else:
+                        process.wait.assert_called_once_with(timeout=5)
+
+    def test_interruption_preserves_original_signal_after_cleanup(self):
+        import tempfile
+        from pathlib import Path
+        from types import SimpleNamespace
+        from unittest.mock import Mock, patch
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            context = SimpleNamespace(repo=root, env={"PATH": str(root)}, pid_log=None)
+            for interruption in (KeyboardInterrupt(), SystemExit(7)):
+                with self.subTest(kind=type(interruption).__name__):
+                    process = Mock()
+                    process.communicate.side_effect = interruption
+                    observed = None
+                    with patch("shutil.which", return_value=str(root / "fixture-tool")), \
+                         patch("subprocess.Popen", return_value=process):
+                        try:
+                            SourceTrustTests.run_child.__func__(context, "fixture-tool")
+                        except BaseException as error:
+                            observed = error
+                    self.assertIs(observed, interruption)
+                    process.communicate.assert_called_once_with(None, timeout=10)
+                    process.kill.assert_called_once_with()
+                    process.wait.assert_called_once_with(timeout=5)
 
 
 # API cases exercise delegated platform verification, not local PGP cryptography.
