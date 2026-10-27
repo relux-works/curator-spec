@@ -1,0 +1,7623 @@
+[
+  {
+    "id": "runtime-narrow-transitive",
+    "obligations": [
+      "PSP01",
+      "PSP02",
+      "PSP03",
+      "PSP04",
+      "PSP05",
+      "PSP06",
+      "PSR01",
+      "PSR02",
+      "PSR04",
+      "PSR05",
+      "PSR06"
+    ],
+    "patch": [],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "mode-full",
+    "obligations": [
+      "PSP03",
+      "PSP04"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "mode"
+        ],
+        "value": "full"
+      },
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "commands"
+        ],
+        "delete": true
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "mode"
+        ],
+        "value": "full"
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "commands"
+        ],
+        "delete": true
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": true,
+          "commands": [
+            "doctor",
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "mode-context",
+    "obligations": [
+      "PSP03",
+      "PSP04"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "mode"
+        ],
+        "value": "context"
+      },
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "commands"
+        ],
+        "delete": true
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "mode"
+        ],
+        "value": "context"
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "commands"
+        ],
+        "delete": true
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": true,
+          "commands": []
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "mode-runtime",
+    "obligations": [
+      "PSP03",
+      "PSP04"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "mode"
+        ],
+        "value": "runtime"
+      },
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "commands"
+        ],
+        "delete": true
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "mode"
+        ],
+        "value": "runtime"
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "commands"
+        ],
+        "delete": true
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "doctor",
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "default-mode-full",
+    "obligations": [
+      "PSP03",
+      "PSP04"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          1,
+          "mode"
+        ],
+        "value": "full"
+      },
+      {
+        "path": [
+          "packages",
+          2,
+          "requirements",
+          0,
+          "mode"
+        ],
+        "delete": true
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": [
+            "helper"
+          ]
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "overlap-full-union",
+    "obligations": [
+      "PSP02",
+      "PSP04",
+      "PSR03"
+    ],
+    "patch": [
+      {
+        "path": [
+          "direct"
+        ],
+        "value": [
+          {
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "declaration": {
+              "git": "https://github.com/example/memory.git",
+              "revision": "1111111111111111111111111111111111111111"
+            },
+            "observed": "1111111111111111111111111111111111111111"
+          },
+          {
+            "name": "task-board",
+            "source": "github.com/example/task-board",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "declaration": {
+              "git": "https://github.com/example/task-board.git",
+              "revision": "1111111111111111111111111111111111111111"
+            },
+            "observed": "2222222222222222222222222222222222222222"
+          }
+        ]
+      },
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "direct_constraints"
+        ],
+        "value": [
+          {
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "declaration_sha256": "sha256:dce68638d794e9d86c3048a5329d3e637c8c52516967aebc27407d536770a1d5"
+          }
+        ]
+      },
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges"
+        ],
+        "value": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "machine",
+              "name": "memory"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "full"
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": true,
+          "commands": [
+            "doctor",
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "overlap-alias-ref",
+    "obligations": [
+      "PSP02",
+      "PSR03"
+    ],
+    "patch": [
+      {
+        "path": [
+          "direct"
+        ],
+        "value": [
+          {
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "ref": {
+              "kind": "tag",
+              "value": "v1.0.0"
+            },
+            "declaration": {
+              "git": "https://github.com/example/memory.git",
+              "tag": "v1.0.0"
+            },
+            "observed": "1111111111111111111111111111111111111111"
+          },
+          {
+            "name": "task-board",
+            "source": "github.com/example/task-board",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "declaration": {
+              "git": "https://github.com/example/task-board.git",
+              "revision": "1111111111111111111111111111111111111111"
+            },
+            "observed": "2222222222222222222222222222222222222222"
+          }
+        ]
+      },
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "direct_constraints"
+        ],
+        "value": [
+          {
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "ref": {
+              "kind": "tag",
+              "value": "v1.0.0"
+            },
+            "declaration_sha256": "sha256:0bbaadbba17ddf892b7bac67840af71a1adf9801f4108af83788f78348d94a22"
+          }
+        ]
+      },
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges"
+        ],
+        "value": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "machine",
+              "name": "memory"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "tag",
+              "value": "v1.0.0"
+            },
+            "mode": "full"
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ]
+      },
+      {
+        "path": [
+          "packages",
+          2,
+          "admitted_tags"
+        ],
+        "value": {
+          "v1.0.0": "1111111111111111111111111111111111111111"
+        }
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": true,
+          "commands": [
+            "doctor",
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "overlap-conflict-source",
+    "obligations": [
+      "PSR03"
+    ],
+    "patch": [
+      {
+        "path": [
+          "direct"
+        ],
+        "value": [
+          {
+            "name": "memory",
+            "source": "github.com/example/other",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "declaration": {
+              "git": "https://github.com/example/memory.git",
+              "revision": "1111111111111111111111111111111111111111"
+            },
+            "observed": "1111111111111111111111111111111111111111"
+          },
+          {
+            "name": "task-board",
+            "source": "github.com/example/task-board",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "declaration": {
+              "git": "https://github.com/example/task-board.git",
+              "revision": "1111111111111111111111111111111111111111"
+            },
+            "observed": "2222222222222222222222222222222222222222"
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_pin_conflict",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "overlap-conflict-commit",
+    "obligations": [
+      "PSR03"
+    ],
+    "patch": [
+      {
+        "path": [
+          "direct"
+        ],
+        "value": [
+          {
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "3333333333333333333333333333333333333333",
+            "directory": ".",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "declaration": {
+              "git": "https://github.com/example/memory.git",
+              "revision": "1111111111111111111111111111111111111111"
+            },
+            "observed": "1111111111111111111111111111111111111111"
+          },
+          {
+            "name": "task-board",
+            "source": "github.com/example/task-board",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "declaration": {
+              "git": "https://github.com/example/task-board.git",
+              "revision": "1111111111111111111111111111111111111111"
+            },
+            "observed": "2222222222222222222222222222222222222222"
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_pin_conflict",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "overlap-conflict-directory",
+    "obligations": [
+      "PSR03"
+    ],
+    "patch": [
+      {
+        "path": [
+          "direct"
+        ],
+        "value": [
+          {
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": "skills/memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "declaration": {
+              "git": "https://github.com/example/memory.git",
+              "revision": "1111111111111111111111111111111111111111"
+            },
+            "observed": "1111111111111111111111111111111111111111"
+          },
+          {
+            "name": "task-board",
+            "source": "github.com/example/task-board",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "declaration": {
+              "git": "https://github.com/example/task-board.git",
+              "revision": "1111111111111111111111111111111111111111"
+            },
+            "observed": "2222222222222222222222222222222222222222"
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_pin_conflict",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "changed-direct-provenance",
+    "obligations": [
+      "PSP02",
+      "PSP06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "direct"
+        ],
+        "value": [
+          {
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "declaration": {
+              "git": "https://github.com/example/memory.git",
+              "revision": "1111111111111111111111111111111111111111"
+            },
+            "observed": "1111111111111111111111111111111111111111"
+          },
+          {
+            "name": "task-board",
+            "source": "github.com/example/task-board",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "declaration": {
+              "git": "https://github.com/example/task-board.git",
+              "revision": "1111111111111111111111111111111111111111"
+            },
+            "observed": "2222222222222222222222222222222222222222"
+          }
+        ]
+      },
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "direct_constraints"
+        ],
+        "value": [
+          {
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "declaration_sha256": "sha256:dce68638d794e9d86c3048a5329d3e637c8c52516967aebc27407d536770a1d5"
+          }
+        ]
+      },
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges"
+        ],
+        "value": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "machine",
+              "name": "memory"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "full"
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ]
+      },
+      {
+        "path": [
+          "direct",
+          0,
+          "declaration"
+        ],
+        "value": {
+          "git": "https://github.com/example/memory.git",
+          "revision": "1111111111111111111111111111111111111111",
+          "note": "changed"
+        }
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "legacy-runtime-1",
+    "obligations": [
+      "PSP01",
+      "PSP06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock"
+        ],
+        "value": {
+          "schema_version": 1,
+          "hash_version": 2,
+          "root": "sample-profile",
+          "members": [
+            {
+              "kind": "context",
+              "name": "sample-profile",
+              "source": "github.com/example/profile",
+              "commit": "1111111111111111111111111111111111111111",
+              "version": "1.0.0",
+              "weight": 0,
+              "required_by": [],
+              "overlay": false
+            },
+            {
+              "kind": "skill",
+              "name": "helper",
+              "source": "github.com/example/helper",
+              "commit": "1111111111111111111111111111111111111111",
+              "directory": ".",
+              "weight": 0,
+              "required_by": [
+                "memory"
+              ],
+              "overlay": false
+            },
+            {
+              "kind": "skill",
+              "name": "memory",
+              "source": "github.com/example/memory",
+              "commit": "1111111111111111111111111111111111111111",
+              "directory": ".",
+              "weight": 0,
+              "required_by": [
+                "sample-profile"
+              ],
+              "overlay": false
+            }
+          ],
+          "codex_settings": {},
+          "codex_settings_contributions": [],
+          "precedence": {
+            "winner": "higher-weight",
+            "placement": "winner-last"
+          }
+        }
+      }
+    ],
+    "rebind": false,
+    "expected": {
+      "diagnostic": "profile_skill_plan_required",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "legacy-runtime-2",
+    "obligations": [
+      "PSP01",
+      "PSP06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock"
+        ],
+        "value": {
+          "schema_version": 2,
+          "hash_version": 2,
+          "root": "sample-profile",
+          "members": [
+            {
+              "kind": "context",
+              "name": "sample-profile",
+              "source": "github.com/example/profile",
+              "commit": "1111111111111111111111111111111111111111",
+              "version": "1.0.0",
+              "weight": 0,
+              "required_by": [],
+              "overlay": false
+            },
+            {
+              "kind": "skill",
+              "name": "helper",
+              "source": "github.com/example/helper",
+              "commit": "1111111111111111111111111111111111111111",
+              "directory": ".",
+              "weight": 0,
+              "required_by": [
+                "memory"
+              ],
+              "overlay": false
+            },
+            {
+              "kind": "skill",
+              "name": "memory",
+              "source": "github.com/example/memory",
+              "commit": "1111111111111111111111111111111111111111",
+              "directory": ".",
+              "weight": 0,
+              "required_by": [
+                "sample-profile"
+              ],
+              "overlay": false
+            }
+          ],
+          "codex_settings": {},
+          "codex_settings_contributions": [],
+          "precedence": {
+            "winner": "higher-weight",
+            "placement": "winner-last"
+          }
+        }
+      }
+    ],
+    "rebind": false,
+    "expected": {
+      "diagnostic": "profile_skill_plan_required",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "legacy-runtime-4",
+    "obligations": [
+      "PSP01",
+      "PSP06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock"
+        ],
+        "value": {
+          "schema_version": 4,
+          "hash_version": 2,
+          "root": "sample-profile",
+          "members": [
+            {
+              "kind": "context",
+              "name": "sample-profile",
+              "source": "github.com/example/profile",
+              "commit": "1111111111111111111111111111111111111111",
+              "version": "1.0.0",
+              "weight": 0,
+              "required_by": [],
+              "overlay": false
+            },
+            {
+              "kind": "skill",
+              "name": "helper",
+              "source": "github.com/example/helper",
+              "commit": "1111111111111111111111111111111111111111",
+              "directory": ".",
+              "weight": 0,
+              "required_by": [
+                "memory"
+              ],
+              "overlay": false
+            },
+            {
+              "kind": "skill",
+              "name": "memory",
+              "source": "github.com/example/memory",
+              "commit": "1111111111111111111111111111111111111111",
+              "directory": ".",
+              "weight": 0,
+              "required_by": [
+                "sample-profile"
+              ],
+              "overlay": false
+            }
+          ],
+          "codex_settings": {},
+          "codex_settings_contributions": [],
+          "precedence": {
+            "winner": "higher-weight",
+            "placement": "winner-last"
+          }
+        }
+      }
+    ],
+    "rebind": false,
+    "expected": {
+      "diagnostic": "profile_skill_plan_required",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "reader-not-opted-in",
+    "obligations": [
+      "PSP01"
+    ],
+    "patch": [
+      {
+        "path": [
+          "reader_version"
+        ],
+        "value": 4
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_required",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "missing-node",
+    "obligations": [
+      "PSP02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "nodes",
+          0
+        ],
+        "delete": true
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "duplicate-node",
+    "obligations": [
+      "PSP02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "nodes"
+        ],
+        "value": [
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "node-order",
+    "obligations": [
+      "PSP02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "nodes"
+        ],
+        "value": [
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "missing-transitive-edge",
+    "obligations": [
+      "PSP02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          1
+        ],
+        "delete": true
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "invented-edge",
+    "obligations": [
+      "PSP02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          1,
+          "mode"
+        ],
+        "value": "full"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "missing-member",
+    "obligations": [
+      "PSP02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "members",
+          1
+        ],
+        "delete": true
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "member-directory",
+    "obligations": [
+      "PSP02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "members",
+          1,
+          "directory"
+        ],
+        "value": "skills/helper"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "wrong-required-by",
+    "obligations": [
+      "PSP02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "members",
+          1,
+          "required_by"
+        ],
+        "value": [
+          "sample-profile"
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "content-mismatch",
+    "obligations": [
+      "PSP02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "nodes",
+          0,
+          "content_sha256"
+        ],
+        "value": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "duplicate-edge",
+    "obligations": [
+      "PSP02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges"
+        ],
+        "value": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "wrong-consumer",
+    "obligations": [
+      "PSP02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "consumer",
+          "name"
+        ],
+        "value": "other"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "node-extra-field",
+    "obligations": [
+      "PSP05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "nodes",
+          0,
+          "artifact_path"
+        ],
+        "value": "/fixture/bin/helper"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "unreachable-extra-node",
+    "obligations": [
+      "PSP02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "nodes"
+        ],
+        "value": [
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          {
+            "kind": "skill",
+            "name": "unused",
+            "source": "github.com/example/unused",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ]
+      },
+      {
+        "path": [
+          "lock",
+          "members"
+        ],
+        "value": [
+          {
+            "kind": "context",
+            "name": "sample-profile",
+            "source": "github.com/example/profile",
+            "commit": "1111111111111111111111111111111111111111",
+            "version": "1.0.0",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [
+              "memory"
+            ],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [
+              "sample-profile"
+            ],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "unused",
+            "source": "github.com/example/unused",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false
+          }
+        ]
+      },
+      {
+        "path": [
+          "packages"
+        ],
+        "value": [
+          {
+            "kind": "context",
+            "name": "sample-profile",
+            "source": "github.com/example/profile",
+            "commit": "1111111111111111111111111111111111111111",
+            "version": "1.0.0",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false,
+            "requirements": [
+              {
+                "source": "github.com/example/memory",
+                "commit": "1111111111111111111111111111111111111111",
+                "directory": ".",
+                "provider": "memory",
+                "ref": {
+                  "kind": "revision",
+                  "value": "1111111111111111111111111111111111111111"
+                },
+                "mode": "runtime",
+                "commands": [
+                  "memory"
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "requirements": [],
+            "commands": {
+              "helper": "script"
+            },
+            "admitted_tags": {}
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "requirements": [
+              {
+                "source": "github.com/example/helper",
+                "commit": "1111111111111111111111111111111111111111",
+                "directory": ".",
+                "provider": "helper",
+                "ref": {
+                  "kind": "revision",
+                  "value": "1111111111111111111111111111111111111111"
+                },
+                "mode": "context"
+              }
+            ],
+            "commands": {
+              "doctor": "script",
+              "memory": "build",
+              "git": "system"
+            },
+            "admitted_tags": {}
+          },
+          {
+            "kind": "skill",
+            "name": "unused",
+            "source": "github.com/example/unused",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "requirements": [],
+            "commands": {},
+            "admitted_tags": {}
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "cycle",
+    "obligations": [
+      "PSP02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "packages",
+          1,
+          "requirements"
+        ],
+        "value": [
+          {
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "full"
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "selected-missing",
+    "obligations": [
+      "PSP03"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "commands"
+        ],
+        "value": [
+          "missing"
+        ]
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "commands"
+        ],
+        "value": [
+          "missing"
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_command_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "selected-git",
+    "obligations": [
+      "PSP03",
+      "PSP04"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "commands"
+        ],
+        "value": [
+          "git"
+        ]
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "commands"
+        ],
+        "value": [
+          "git"
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_command_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "selection-empty",
+    "obligations": [
+      "PSP03"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "commands"
+        ],
+        "value": []
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "commands"
+        ],
+        "value": []
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "selection-duplicate",
+    "obligations": [
+      "PSP03"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "commands"
+        ],
+        "value": [
+          "memory",
+          "memory"
+        ]
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "commands"
+        ],
+        "value": [
+          "memory",
+          "memory"
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "selection-unsorted",
+    "obligations": [
+      "PSP03"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "commands"
+        ],
+        "value": [
+          "memory",
+          "doctor"
+        ]
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "commands"
+        ],
+        "value": [
+          "memory",
+          "doctor"
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "bad-plan-digest",
+    "obligations": [
+      "PSP05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan_sha256"
+        ],
+        "value": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    ],
+    "rebind": false,
+    "expected": {
+      "diagnostic": "profile_skill_plan_binding_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "bad-runtime-binding",
+    "obligations": [
+      "PSP05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "runtime_lock_sha256"
+        ],
+        "value": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+      }
+    ],
+    "rebind": false,
+    "expected": {
+      "diagnostic": "profile_skill_plan_binding_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "tampered-selection-digest",
+    "obligations": [
+      "PSP05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "commands"
+        ],
+        "value": [
+          "doctor"
+        ]
+      }
+    ],
+    "rebind": false,
+    "expected": {
+      "diagnostic": "profile_skill_plan_binding_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "revision-pin-disagreement",
+    "obligations": [
+      "PSP02",
+      "PSP03"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "ref",
+          "value"
+        ],
+        "value": "9999999999999999999999999999999999999999"
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "ref",
+          "value"
+        ],
+        "value": "9999999999999999999999999999999999999999"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "admitted-tag-pinned-reuse",
+    "obligations": [
+      "PSP02",
+      "PSP06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "ref"
+        ],
+        "value": {
+          "kind": "tag",
+          "value": "v1.0.0"
+        }
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "ref"
+        ],
+        "value": {
+          "kind": "tag",
+          "value": "v1.0.0"
+        }
+      },
+      {
+        "path": [
+          "packages",
+          2,
+          "admitted_tags"
+        ],
+        "value": {
+          "v1.0.0": "1111111111111111111111111111111111111111"
+        }
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "moved-tag-refuses",
+    "obligations": [
+      "PSP06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "ref"
+        ],
+        "value": {
+          "kind": "tag",
+          "value": "v1.0.0"
+        }
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "ref"
+        ],
+        "value": {
+          "kind": "tag",
+          "value": "v1.0.0"
+        }
+      },
+      {
+        "path": [
+          "packages",
+          2,
+          "admitted_tags"
+        ],
+        "value": {
+          "v1.0.0": "1111111111111111111111111111111111111111"
+        }
+      },
+      {
+        "path": [
+          "packages",
+          2,
+          "observed_tags"
+        ],
+        "value": {
+          "v1.0.0": "4444444444444444444444444444444444444444"
+        }
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_pin_changed",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "missing-tag-evidence",
+    "obligations": [
+      "PSP02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "ref"
+        ],
+        "value": {
+          "kind": "tag",
+          "value": "v1.0.0"
+        }
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "ref"
+        ],
+        "value": {
+          "kind": "tag",
+          "value": "v1.0.0"
+        }
+      },
+      {
+        "path": [
+          "packages",
+          2,
+          "admitted_tags"
+        ],
+        "value": {
+          "v1.0.0": "1111111111111111111111111111111111111111"
+        }
+      },
+      {
+        "path": [
+          "packages",
+          2,
+          "admitted_tags"
+        ],
+        "value": {}
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "unrelated-unknown",
+    "obligations": [
+      "PSR01",
+      "PSR02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "direct",
+          0,
+          "observed"
+        ],
+        "value": "unreadable"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "unreadable",
+          "state": "unknown"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    },
+    "negative": true
+  },
+  {
+    "id": "unrelated-drift-absent",
+    "obligations": [
+      "PSR01",
+      "PSR02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "direct",
+          0,
+          "observed"
+        ],
+        "value": null
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": null,
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    },
+    "negative": true
+  },
+  {
+    "id": "unrelated-in-sync",
+    "obligations": [
+      "PSR01",
+      "PSR02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "direct",
+          0,
+          "observed"
+        ],
+        "value": "1111111111111111111111111111111111111111"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "1111111111111111111111111111111111111111",
+          "state": "in-sync"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "stale-owned-only",
+    "obligations": [
+      "PSR01"
+    ],
+    "patch": [
+      {
+        "path": [
+          "stale"
+        ],
+        "value": [
+          {
+            "name": "old-command",
+            "owners": [
+              "profile"
+            ]
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [
+        "old-command"
+      ],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "stale-shared-retained",
+    "obligations": [
+      "PSR01"
+    ],
+    "patch": [
+      {
+        "path": [
+          "stale"
+        ],
+        "value": [
+          {
+            "name": "old-command",
+            "owners": [
+              "profile",
+              "direct"
+            ]
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "stale-ownership-unknown",
+    "obligations": [
+      "PSR01"
+    ],
+    "patch": [
+      {
+        "path": [
+          "stale"
+        ],
+        "value": [
+          {
+            "name": "old-command",
+            "owners": "unknown"
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_ownership_unknown",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "retained-command-conflict",
+    "obligations": [
+      "PSR04"
+    ],
+    "patch": [
+      {
+        "path": [
+          "retained_commands"
+        ],
+        "value": [
+          {
+            "command": "memory",
+            "provider": "task-board"
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_command_conflict",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "case-alias-conflict",
+    "obligations": [
+      "PSR04"
+    ],
+    "patch": [
+      {
+        "path": [
+          "case_insensitive"
+        ],
+        "value": true
+      },
+      {
+        "path": [
+          "retained_commands"
+        ],
+        "value": [
+          {
+            "command": "MEMORY",
+            "provider": "task-board"
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_command_conflict",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "case-sensitive-neighbor",
+    "obligations": [
+      "PSR04"
+    ],
+    "patch": [
+      {
+        "path": [
+          "retained_commands"
+        ],
+        "value": [
+          {
+            "command": "MEMORY",
+            "provider": "task-board"
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "unmanaged-destination",
+    "obligations": [
+      "PSR04"
+    ],
+    "patch": [
+      {
+        "path": [
+          "unmanaged"
+        ],
+        "value": [
+          "memory"
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "environment_surface_unmanaged_conflict",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "reserved-name",
+    "obligations": [
+      "PSR04"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          0,
+          "commands"
+        ],
+        "value": [
+          "curator-poison"
+        ]
+      },
+      {
+        "path": [
+          "packages",
+          0,
+          "requirements",
+          0,
+          "commands"
+        ],
+        "value": [
+          "curator-poison"
+        ]
+      },
+      {
+        "path": [
+          "packages",
+          2,
+          "commands"
+        ],
+        "value": {
+          "curator-poison": "script"
+        }
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "environment_reserved_command_name",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "inactive-command-does-not-collide",
+    "obligations": [
+      "PSP04",
+      "PSR04"
+    ],
+    "patch": [
+      {
+        "path": [
+          "packages",
+          1,
+          "commands"
+        ],
+        "value": {
+          "memory": "script"
+        }
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "selected-command-conflict",
+    "obligations": [
+      "PSR04"
+    ],
+    "patch": [
+      {
+        "path": [
+          "packages",
+          1,
+          "commands"
+        ],
+        "value": {
+          "memory": "script"
+        }
+      },
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges",
+          1,
+          "mode"
+        ],
+        "value": "full"
+      },
+      {
+        "path": [
+          "packages",
+          2,
+          "requirements",
+          0,
+          "mode"
+        ],
+        "value": "full"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_command_conflict",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "prepare-signer",
+    "obligations": [
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "fault"
+        ],
+        "value": "signer"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "context_source_signer_rejected",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "prepare-audit",
+    "obligations": [
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "fault"
+        ],
+        "value": "audit"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "audit.capability.network-undeclared",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "prepare-driver",
+    "obligations": [
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "fault"
+        ],
+        "value": "driver"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "unsupported_build_driver",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "prepare-compile",
+    "obligations": [
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "fault"
+        ],
+        "value": "compile"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_compile_failed",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "prepare-receipt",
+    "obligations": [
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "fault"
+        ],
+        "value": "receipt"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_binding_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "recover-absent",
+    "obligations": [
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "recover"
+      },
+      {
+        "path": [
+          "phase"
+        ],
+        "value": "absent"
+      },
+      {
+        "path": [
+          "fault"
+        ],
+        "value": "compile"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [
+        "recover-old"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "recover-preparing",
+    "obligations": [
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "recover"
+      },
+      {
+        "path": [
+          "phase"
+        ],
+        "value": "preparing"
+      },
+      {
+        "path": [
+          "fault"
+        ],
+        "value": "compile"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [
+        "recover-old"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "recover-prepared",
+    "obligations": [
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "recover"
+      },
+      {
+        "path": [
+          "phase"
+        ],
+        "value": "prepared"
+      },
+      {
+        "path": [
+          "fault"
+        ],
+        "value": "compile"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "recover-new"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "recover-committing",
+    "obligations": [
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "recover"
+      },
+      {
+        "path": [
+          "phase"
+        ],
+        "value": "committing"
+      },
+      {
+        "path": [
+          "fault"
+        ],
+        "value": "compile"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "recover-new"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "recover-cleanup",
+    "obligations": [
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "recover"
+      },
+      {
+        "path": [
+          "phase"
+        ],
+        "value": "cleanup"
+      },
+      {
+        "path": [
+          "fault"
+        ],
+        "value": "compile"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "recover-new"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "recover-rolling_back",
+    "obligations": [
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "recover"
+      },
+      {
+        "path": [
+          "phase"
+        ],
+        "value": "rolling_back"
+      },
+      {
+        "path": [
+          "fault"
+        ],
+        "value": "compile"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [
+        "recover-old"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "recover-rollback_cleanup",
+    "obligations": [
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "recover"
+      },
+      {
+        "path": [
+          "phase"
+        ],
+        "value": "rollback_cleanup"
+      },
+      {
+        "path": [
+          "fault"
+        ],
+        "value": "compile"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [
+        "recover-old"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "recover-corrupt",
+    "obligations": [
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "recover"
+      },
+      {
+        "path": [
+          "phase"
+        ],
+        "value": "corrupt"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_recovery_failed",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "closed",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "handled-adapter-conflict",
+    "obligations": [
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "fault"
+        ],
+        "value": "handled-adapter-conflict"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "environment_surface_unmanaged_conflict",
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation",
+        "restore-in-place-preimages"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "partial-adapter",
+    "obligations": [
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "fault"
+        ],
+        "value": "partial-adapter"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_use_partial",
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "old",
+        "surfaces": "per-entry"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-missing-install",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "missing"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "install"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-missing-use",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "missing"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "use"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-missing-sync",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "missing"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "sync"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-missing-repair",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "missing"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "repair"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-missing-recover",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "missing"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "recover"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-mismatched-install",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "mismatched"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "install"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-mismatched-use",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "mismatched"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "use"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-mismatched-sync",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "mismatched"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "sync"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-mismatched-repair",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "mismatched"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "repair"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-mismatched-recover",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "mismatched"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "recover"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-unknown-install",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "unknown"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "install"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-unknown-use",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "unknown"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "use"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-unknown-sync",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "unknown"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "sync"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-unknown-repair",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "unknown"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "repair"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-unknown-recover",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "unknown"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "recover"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-other-profile-install",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "other-profile"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "install"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-other-profile-use",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "other-profile"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "use"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-other-profile-sync",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "other-profile"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "sync"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-other-profile-repair",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "other-profile"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "repair"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-other-profile-recover",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "other-profile"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "recover"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "inactive-routing-unchanged",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "inactive"
+      },
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "missing"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "scoped-use-routing-unchanged",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "scoped-use"
+      },
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "missing"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "old",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "status-read-only",
+    "obligations": [
+      "PSP06",
+      "PSR02"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "status"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "status-pending-recovery",
+    "obligations": [
+      "PSP06",
+      "PSR05"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "status"
+      },
+      {
+        "path": [
+          "phase"
+        ],
+        "value": "committing"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_recovery_pending",
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "exclusive-first-activate",
+    "obligations": [
+      "PSP06",
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "first-activate"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "exclusive-update",
+    "obligations": [
+      "PSP06",
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "update"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "exclusive-use",
+    "obligations": [
+      "PSP06",
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "use"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "exclusive-sync",
+    "obligations": [
+      "PSP06",
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "sync"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "exclusive-repair",
+    "obligations": [
+      "PSP06",
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "repair"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-missing-first-activate",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "missing"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "first-activate"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-mismatched-first-activate",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "mismatched"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "first-activate"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-unknown-first-activate",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "unknown"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "first-activate"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-other-profile-first-activate",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "other-profile"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "first-activate"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-missing-update",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "missing"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "update"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-mismatched-update",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "mismatched"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "update"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-unknown-update",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "unknown"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "update"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "routing-other-profile-update",
+    "obligations": [
+      "PSR06"
+    ],
+    "patch": [
+      {
+        "path": [
+          "routing"
+        ],
+        "value": "other-profile"
+      },
+      {
+        "path": [
+          "operation"
+        ],
+        "value": "update"
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_routing_unproven",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "context-plus-narrow-runtime",
+    "obligations": [
+      "PSP02",
+      "PSP03",
+      "PSP04"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "members"
+        ],
+        "value": [
+          {
+            "kind": "context",
+            "name": "addon",
+            "source": "github.com/example/addon",
+            "commit": "1111111111111111111111111111111111111111",
+            "version": "1.0.0",
+            "weight": 0,
+            "required_by": [
+              "sample-profile"
+            ],
+            "overlay": false
+          },
+          {
+            "kind": "context",
+            "name": "sample-profile",
+            "source": "github.com/example/profile",
+            "commit": "1111111111111111111111111111111111111111",
+            "version": "1.0.0",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [
+              "memory"
+            ],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [
+              "addon",
+              "sample-profile"
+            ],
+            "overlay": false
+          }
+        ]
+      },
+      {
+        "path": [
+          "packages"
+        ],
+        "value": [
+          {
+            "kind": "context",
+            "name": "sample-profile",
+            "source": "github.com/example/profile",
+            "commit": "1111111111111111111111111111111111111111",
+            "version": "1.0.0",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false,
+            "requirements": [
+              {
+                "source": "github.com/example/memory",
+                "commit": "1111111111111111111111111111111111111111",
+                "directory": ".",
+                "provider": "memory",
+                "ref": {
+                  "kind": "revision",
+                  "value": "1111111111111111111111111111111111111111"
+                },
+                "mode": "runtime",
+                "commands": [
+                  "memory"
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "requirements": [],
+            "commands": {
+              "helper": "script"
+            },
+            "admitted_tags": {}
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "requirements": [
+              {
+                "source": "github.com/example/helper",
+                "commit": "1111111111111111111111111111111111111111",
+                "directory": ".",
+                "provider": "helper",
+                "ref": {
+                  "kind": "revision",
+                  "value": "1111111111111111111111111111111111111111"
+                },
+                "mode": "context"
+              }
+            ],
+            "commands": {
+              "doctor": "script",
+              "memory": "build",
+              "git": "system"
+            },
+            "admitted_tags": {}
+          },
+          {
+            "kind": "context",
+            "name": "addon",
+            "source": "github.com/example/addon",
+            "commit": "1111111111111111111111111111111111111111",
+            "version": "1.0.0",
+            "weight": 0,
+            "required_by": [
+              "sample-profile"
+            ],
+            "overlay": false,
+            "requirements": [
+              {
+                "source": "github.com/example/memory",
+                "commit": "1111111111111111111111111111111111111111",
+                "directory": ".",
+                "provider": "memory",
+                "ref": {
+                  "kind": "revision",
+                  "value": "1111111111111111111111111111111111111111"
+                },
+                "mode": "context"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges"
+        ],
+        "value": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "addon"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          },
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": true,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "runtime-selection-union",
+    "obligations": [
+      "PSP02",
+      "PSP03",
+      "PSP04"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "members"
+        ],
+        "value": [
+          {
+            "kind": "context",
+            "name": "addon",
+            "source": "github.com/example/addon",
+            "commit": "1111111111111111111111111111111111111111",
+            "version": "1.0.0",
+            "weight": 0,
+            "required_by": [
+              "sample-profile"
+            ],
+            "overlay": false
+          },
+          {
+            "kind": "context",
+            "name": "sample-profile",
+            "source": "github.com/example/profile",
+            "commit": "1111111111111111111111111111111111111111",
+            "version": "1.0.0",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [
+              "memory"
+            ],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [
+              "addon",
+              "sample-profile"
+            ],
+            "overlay": false
+          }
+        ]
+      },
+      {
+        "path": [
+          "packages"
+        ],
+        "value": [
+          {
+            "kind": "context",
+            "name": "sample-profile",
+            "source": "github.com/example/profile",
+            "commit": "1111111111111111111111111111111111111111",
+            "version": "1.0.0",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false,
+            "requirements": [
+              {
+                "source": "github.com/example/memory",
+                "commit": "1111111111111111111111111111111111111111",
+                "directory": ".",
+                "provider": "memory",
+                "ref": {
+                  "kind": "revision",
+                  "value": "1111111111111111111111111111111111111111"
+                },
+                "mode": "runtime",
+                "commands": [
+                  "memory"
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "requirements": [],
+            "commands": {
+              "helper": "script"
+            },
+            "admitted_tags": {}
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "requirements": [
+              {
+                "source": "github.com/example/helper",
+                "commit": "1111111111111111111111111111111111111111",
+                "directory": ".",
+                "provider": "helper",
+                "ref": {
+                  "kind": "revision",
+                  "value": "1111111111111111111111111111111111111111"
+                },
+                "mode": "context"
+              }
+            ],
+            "commands": {
+              "doctor": "script",
+              "memory": "build",
+              "git": "system"
+            },
+            "admitted_tags": {}
+          },
+          {
+            "kind": "context",
+            "name": "addon",
+            "source": "github.com/example/addon",
+            "commit": "1111111111111111111111111111111111111111",
+            "version": "1.0.0",
+            "weight": 0,
+            "required_by": [
+              "sample-profile"
+            ],
+            "overlay": false,
+            "requirements": [
+              {
+                "source": "github.com/example/memory",
+                "commit": "1111111111111111111111111111111111111111",
+                "directory": ".",
+                "provider": "memory",
+                "ref": {
+                  "kind": "revision",
+                  "value": "1111111111111111111111111111111111111111"
+                },
+                "mode": "runtime",
+                "commands": [
+                  "doctor"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "path": [
+          "lock",
+          "skill_plan",
+          "edges"
+        ],
+        "value": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "addon"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "doctor"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "doctor",
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "retained-lock-member",
+    "obligations": [
+      "PSP02",
+      "PSR01"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "members"
+        ],
+        "value": [
+          {
+            "kind": "context",
+            "name": "sample-profile",
+            "source": "github.com/example/profile",
+            "commit": "1111111111111111111111111111111111111111",
+            "version": "1.0.0",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [
+              "memory"
+            ],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [
+              "sample-profile"
+            ],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "task-board",
+            "source": "github.com/example/task-board",
+            "commit": "2222222222222222222222222222222222222222",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false
+          }
+        ]
+      },
+      {
+        "path": [
+          "retained_members"
+        ],
+        "value": [
+          {
+            "kind": "skill",
+            "name": "task-board",
+            "source": "github.com/example/task-board",
+            "commit": "2222222222222222222222222222222222222222",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "unproven-extra-member",
+    "obligations": [
+      "PSP02",
+      "PSR01"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "members"
+        ],
+        "value": [
+          {
+            "kind": "context",
+            "name": "sample-profile",
+            "source": "github.com/example/profile",
+            "commit": "1111111111111111111111111111111111111111",
+            "version": "1.0.0",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [
+              "memory"
+            ],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [
+              "sample-profile"
+            ],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "task-board",
+            "source": "github.com/example/task-board",
+            "commit": "2222222222222222222222222222222222222222",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "rewritten-retained-member",
+    "obligations": [
+      "PSP02",
+      "PSR01"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "members"
+        ],
+        "value": [
+          {
+            "kind": "context",
+            "name": "sample-profile",
+            "source": "github.com/example/profile",
+            "commit": "1111111111111111111111111111111111111111",
+            "version": "1.0.0",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [
+              "memory"
+            ],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [
+              "sample-profile"
+            ],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "task-board",
+            "source": "github.com/example/task-board",
+            "commit": "3333333333333333333333333333333333333333",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false
+          }
+        ]
+      },
+      {
+        "path": [
+          "retained_members"
+        ],
+        "value": [
+          {
+            "kind": "skill",
+            "name": "task-board",
+            "source": "github.com/example/task-board",
+            "commit": "2222222222222222222222222222222222222222",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": "profile_skill_plan_invalid",
+      "activation": {},
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "old",
+        "runtime": "old",
+        "routing": "old",
+        "surfaces": "old"
+      },
+      "effects": [],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  },
+  {
+    "id": "retained-legacy-root",
+    "obligations": [
+      "PSP02",
+      "PSR01"
+    ],
+    "patch": [
+      {
+        "path": [
+          "lock",
+          "members"
+        ],
+        "value": [
+          {
+            "kind": "context",
+            "name": "sample-profile",
+            "source": "github.com/example/profile",
+            "commit": "1111111111111111111111111111111111111111",
+            "version": "1.0.0",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [
+              "memory"
+            ],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [
+              "sample-profile"
+            ],
+            "overlay": false
+          },
+          {
+            "kind": "skill",
+            "name": "task-board",
+            "source": "github.com/example/task-board",
+            "commit": "2222222222222222222222222222222222222222",
+            "directory": ".",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false
+          }
+        ]
+      },
+      {
+        "path": [
+          "retained_members"
+        ],
+        "value": [
+          {
+            "kind": "skill",
+            "name": "task-board",
+            "source": "github.com/example/task-board",
+            "commit": "2222222222222222222222222222222222222222",
+            "weight": 0,
+            "required_by": [],
+            "overlay": false
+          }
+        ]
+      }
+    ],
+    "rebind": true,
+    "expected": {
+      "diagnostic": null,
+      "activation": {
+        "helper": {
+          "context": true,
+          "commands": []
+        },
+        "memory": {
+          "context": false,
+          "commands": [
+            "memory"
+          ]
+        }
+      },
+      "drift": [
+        {
+          "name": "task-board",
+          "declared": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "observed": "2222222222222222222222222222222222222222",
+          "state": "drift"
+        }
+      ],
+      "state": {
+        "records": "new",
+        "runtime": "new",
+        "routing": "new",
+        "surfaces": "new"
+      },
+      "effects": [
+        "audit-selected",
+        "compile-selected",
+        "verify-receipts",
+        "journal-prepare",
+        "publish-lock-and-generation"
+      ],
+      "unrelated": "preserved",
+      "global_manifest": "preserved",
+      "unrelated_calls": [],
+      "removed": [],
+      "domain": "open",
+      "convergence": "selected-only"
+    }
+  }
+]

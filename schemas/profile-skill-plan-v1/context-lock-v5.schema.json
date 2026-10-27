@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/profile-skill-plan-v1/context-lock-v5.schema.json",
+  "title": "Proposed context-lock-v5 with profile skill plan",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "hash_version",
+    "root",
+    "members",
+    "codex_settings",
+    "codex_settings_contributions",
+    "precedence",
+    "skill_plan",
+    "skill_plan_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 5
+    },
+    "root": {
+      "$ref": "../v1/common.schema.json#/$defs/identifier"
+    },
+    "members": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/member"
+      }
+    },
+    "hash_version": {
+      "const": 2
+    },
+    "codex_settings": {
+      "$ref": "../profile-codex-settings-v1/codex-settings-v1.schema.json"
+    },
+    "codex_settings_contributions": {
+      "type": "array",
+      "maxItems": 0
+    },
+    "precedence": {
+      "$ref": "../v1/agent-environment-marker-v1.schema.json#/$defs/precedence"
+    },
+    "skill_plan": {
+      "$ref": "profile-skill-plan-v1.schema.json"
+    },
+    "skill_plan_sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$(?![\\s\\S])"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sourceIdentity": {
+      "$ref": "../v1/common.schema.json#/$defs/networkSourceIdentity/properties/value"
+    },
+    "member": {
+      "type": "object",
+      "required": [
+        "kind",
+        "name",
+        "weight",
+        "required_by",
+        "overlay"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "context",
+            "mcp",
+            "skill"
+          ]
+        },
+        "name": {
+          "$ref": "../v1/common.schema.json#/$defs/identifier"
+        },
+        "source": {
+          "$ref": "#/$defs/sourceIdentity"
+        },
+        "directory": {},
+        "version": {
+          "$ref": "../v1/agent-context-v1.schema.json#/$defs/packageVersion"
+        },
+        "commit": {
+          "$ref": "../v1/common.schema.json#/$defs/commit"
+        },
+        "state_sha256": {
+          "$ref": "../v1/common.schema.json#/$defs/hex256"
+        },
+        "weight": {
+          "$ref": "../v1/agent-context-v1.schema.json#/$defs/weight"
+        },
+        "required_by": {
+          "$ref": "../v1/common.schema.json#/$defs/identifierSet"
+        },
+        "overlay": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": [
+            "source",
+            "commit"
+          ],
+          "not": {
+            "required": [
+              "state_sha256"
+            ]
+          }
+        },
+        {
+          "required": [
+            "state_sha256"
+          ],
+          "properties": {
+            "kind": {
+              "const": "context"
+            }
+          },
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "source"
+                ]
+              },
+              {
+                "required": [
+                  "commit"
+                ]
+              },
+              {
+                "required": [
+                  "directory"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "skill"
+              }
+            }
+          },
+          "else": {
+            "required": [
+              "version"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "overlay": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kind": {
+                "const": "context"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "skill"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "directory"
+            ],
+            "properties": {
+              "directory": {
+                "oneOf": [
+                  {
+                    "const": "."
+                  },
+                  {
+                    "$ref": "../v1/common.schema.json#/$defs/portablePath"
+                  }
+                ]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "directory": {
+                "$ref": "../v1/common.schema.json#/$defs/portablePath"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

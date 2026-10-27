@@ -1,0 +1,284 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+  "title": "Proposed profile skill-plan v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "nodes",
+    "edges",
+    "direct_constraints"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "name",
+          "source",
+          "commit",
+          "directory",
+          "hash_version",
+          "content_sha256"
+        ],
+        "properties": {
+          "kind": {
+            "const": "skill"
+          },
+          "name": {
+            "$ref": "../v1/common.schema.json#/$defs/identifier"
+          },
+          "source": {
+            "$ref": "../v1/common.schema.json#/$defs/networkSourceIdentity/properties/value"
+          },
+          "commit": {
+            "$ref": "../v1/common.schema.json#/$defs/commit"
+          },
+          "directory": {
+            "oneOf": [
+              {
+                "const": "."
+              },
+              {
+                "$ref": "../v1/common.schema.json#/$defs/portablePath"
+              }
+            ]
+          },
+          "hash_version": {
+            "const": 2
+          },
+          "content_sha256": {
+            "$ref": "../v1/common.schema.json#/$defs/hex256"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "consumer",
+          "provider",
+          "ref",
+          "mode"
+        ],
+        "properties": {
+          "consumer": {
+            "type": "object",
+            "required": [
+              "kind",
+              "name"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "context",
+                  "skill",
+                  "machine"
+                ]
+              },
+              "name": {
+                "$ref": "../v1/common.schema.json#/$defs/identifier"
+              }
+            },
+            "additionalProperties": false
+          },
+          "provider": {
+            "$ref": "../v1/common.schema.json#/$defs/identifier"
+          },
+          "ref": {
+            "oneOf": [
+              {
+                "type": "object",
+                "required": [
+                  "kind",
+                  "value"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "revision"
+                  },
+                  "value": {
+                    "$ref": "../v1/common.schema.json#/$defs/commit"
+                  }
+                },
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "required": [
+                  "kind",
+                  "value"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "tag"
+                  },
+                  "value": {
+                    "allOf": [
+                      {
+                        "$ref": "../v1/common.schema.json#/$defs/gitRefName"
+                      },
+                      {
+                        "$ref": "../v1/common.schema.json#/$defs/ref/properties/value"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "mode": {
+            "enum": [
+              "full",
+              "runtime",
+              "context"
+            ]
+          },
+          "commands": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "../v1/common.schema.json#/$defs/identifier"
+            }
+          }
+        },
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "required": [
+                "commands"
+              ]
+            },
+            "then": {
+              "properties": {
+                "mode": {
+                  "const": "runtime"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "consumer": {
+                  "properties": {
+                    "kind": {
+                      "const": "machine"
+                    }
+                  }
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "mode": {
+                  "const": "full"
+                }
+              },
+              "not": {
+                "required": [
+                  "commands"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "direct_constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "source",
+          "commit",
+          "directory",
+          "ref",
+          "declaration_sha256"
+        ],
+        "properties": {
+          "name": {
+            "$ref": "../v1/common.schema.json#/$defs/identifier"
+          },
+          "source": {
+            "$ref": "../v1/common.schema.json#/$defs/networkSourceIdentity/properties/value"
+          },
+          "commit": {
+            "$ref": "../v1/common.schema.json#/$defs/commit"
+          },
+          "directory": {
+            "oneOf": [
+              {
+                "const": "."
+              },
+              {
+                "$ref": "../v1/common.schema.json#/$defs/portablePath"
+              }
+            ]
+          },
+          "ref": {
+            "oneOf": [
+              {
+                "type": "object",
+                "required": [
+                  "kind",
+                  "value"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "revision"
+                  },
+                  "value": {
+                    "$ref": "../v1/common.schema.json#/$defs/commit"
+                  }
+                },
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "required": [
+                  "kind",
+                  "value"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "tag"
+                  },
+                  "value": {
+                    "allOf": [
+                      {
+                        "$ref": "../v1/common.schema.json#/$defs/gitRefName"
+                      },
+                      {
+                        "$ref": "../v1/common.schema.json#/$defs/ref/properties/value"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          },
+          "declaration_sha256": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$(?![\\s\\S])"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

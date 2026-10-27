@@ -1,0 +1,205 @@
+{
+  "lock": {
+    "schema_version": 5,
+    "hash_version": 2,
+    "root": "sample-profile",
+    "members": [
+      {
+        "kind": "context",
+        "name": "sample-profile",
+        "source": "github.com/example/profile",
+        "commit": "1111111111111111111111111111111111111111",
+        "version": "1.0.0",
+        "weight": 0,
+        "required_by": [],
+        "overlay": false
+      },
+      {
+        "kind": "skill",
+        "name": "helper",
+        "source": "github.com/example/helper",
+        "commit": "1111111111111111111111111111111111111111",
+        "directory": ".",
+        "weight": 0,
+        "required_by": [
+          "memory"
+        ],
+        "overlay": false
+      },
+      {
+        "kind": "skill",
+        "name": "memory",
+        "source": "github.com/example/memory",
+        "commit": "1111111111111111111111111111111111111111",
+        "directory": ".",
+        "weight": 0,
+        "required_by": [
+          "sample-profile"
+        ],
+        "overlay": false
+      }
+    ],
+    "codex_settings": {},
+    "codex_settings_contributions": [],
+    "precedence": {
+      "winner": "higher-weight",
+      "placement": "winner-last"
+    },
+    "skill_plan": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "skill_plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076"
+  },
+  "runtime_lock_sha256": "sha256:3d11420dfdba59a7f12dbb179ca7494c95ec10f23f43b7436d8f70c16f528c0c",
+  "reader_version": 5,
+  "operation": "install",
+  "packages": [
+    {
+      "kind": "context",
+      "name": "sample-profile",
+      "source": "github.com/example/profile",
+      "commit": "1111111111111111111111111111111111111111",
+      "version": "1.0.0",
+      "weight": 0,
+      "required_by": [],
+      "overlay": false,
+      "requirements": [
+        {
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "skill",
+      "name": "helper",
+      "source": "github.com/example/helper",
+      "commit": "1111111111111111111111111111111111111111",
+      "directory": ".",
+      "hash_version": 2,
+      "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "requirements": [],
+      "commands": {
+        "helper": "script"
+      },
+      "admitted_tags": {}
+    },
+    {
+      "kind": "skill",
+      "name": "memory",
+      "source": "github.com/example/memory",
+      "commit": "1111111111111111111111111111111111111111",
+      "directory": ".",
+      "hash_version": 2,
+      "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "requirements": [
+        {
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "commands": {
+        "doctor": "script",
+        "memory": "build",
+        "git": "system"
+      },
+      "admitted_tags": {}
+    }
+  ],
+  "direct": [
+    {
+      "name": "task-board",
+      "source": "github.com/example/task-board",
+      "commit": "1111111111111111111111111111111111111111",
+      "directory": ".",
+      "ref": {
+        "kind": "revision",
+        "value": "1111111111111111111111111111111111111111"
+      },
+      "declaration": {
+        "git": "https://github.com/example/task-board.git",
+        "revision": "1111111111111111111111111111111111111111"
+      },
+      "observed": "2222222222222222222222222222222222222222"
+    }
+  ],
+  "retained_commands": [
+    {
+      "command": "task-board",
+      "provider": "task-board"
+    }
+  ],
+  "stale": [],
+  "unmanaged": [],
+  "case_insensitive": false,
+  "routing": "exclusive",
+  "phase": "absent",
+  "fault": null
+}

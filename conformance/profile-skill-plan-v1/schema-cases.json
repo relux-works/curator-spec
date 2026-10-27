@@ -1,0 +1,3030 @@
+[
+  {
+    "id": "context-lock-v5-valid",
+    "schema": "profile-skill-plan-v1/context-lock-v5.schema.json",
+    "instance": {
+      "schema_version": 5,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      },
+      "skill_plan": {
+        "schema_version": 1,
+        "nodes": [
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ],
+        "edges": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ],
+        "direct_constraints": []
+      },
+      "skill_plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076"
+    },
+    "valid": true,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "context-lock-v5-missing-schema_version",
+    "schema": "profile-skill-plan-v1/context-lock-v5.schema.json",
+    "instance": {
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      },
+      "skill_plan": {
+        "schema_version": 1,
+        "nodes": [
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ],
+        "edges": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ],
+        "direct_constraints": []
+      },
+      "skill_plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076"
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "context-lock-v5-missing-hash_version",
+    "schema": "profile-skill-plan-v1/context-lock-v5.schema.json",
+    "instance": {
+      "schema_version": 5,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      },
+      "skill_plan": {
+        "schema_version": 1,
+        "nodes": [
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ],
+        "edges": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ],
+        "direct_constraints": []
+      },
+      "skill_plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076"
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "context-lock-v5-missing-root",
+    "schema": "profile-skill-plan-v1/context-lock-v5.schema.json",
+    "instance": {
+      "schema_version": 5,
+      "hash_version": 2,
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      },
+      "skill_plan": {
+        "schema_version": 1,
+        "nodes": [
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ],
+        "edges": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ],
+        "direct_constraints": []
+      },
+      "skill_plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076"
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "context-lock-v5-missing-members",
+    "schema": "profile-skill-plan-v1/context-lock-v5.schema.json",
+    "instance": {
+      "schema_version": 5,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      },
+      "skill_plan": {
+        "schema_version": 1,
+        "nodes": [
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ],
+        "edges": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ],
+        "direct_constraints": []
+      },
+      "skill_plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076"
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "context-lock-v5-missing-codex_settings",
+    "schema": "profile-skill-plan-v1/context-lock-v5.schema.json",
+    "instance": {
+      "schema_version": 5,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      },
+      "skill_plan": {
+        "schema_version": 1,
+        "nodes": [
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ],
+        "edges": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ],
+        "direct_constraints": []
+      },
+      "skill_plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076"
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "context-lock-v5-missing-codex_settings_contributions",
+    "schema": "profile-skill-plan-v1/context-lock-v5.schema.json",
+    "instance": {
+      "schema_version": 5,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      },
+      "skill_plan": {
+        "schema_version": 1,
+        "nodes": [
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ],
+        "edges": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ],
+        "direct_constraints": []
+      },
+      "skill_plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076"
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "context-lock-v5-missing-precedence",
+    "schema": "profile-skill-plan-v1/context-lock-v5.schema.json",
+    "instance": {
+      "schema_version": 5,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "skill_plan": {
+        "schema_version": 1,
+        "nodes": [
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ],
+        "edges": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ],
+        "direct_constraints": []
+      },
+      "skill_plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076"
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "context-lock-v5-missing-skill_plan",
+    "schema": "profile-skill-plan-v1/context-lock-v5.schema.json",
+    "instance": {
+      "schema_version": 5,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      },
+      "skill_plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076"
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "context-lock-v5-missing-skill_plan_sha256",
+    "schema": "profile-skill-plan-v1/context-lock-v5.schema.json",
+    "instance": {
+      "schema_version": 5,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      },
+      "skill_plan": {
+        "schema_version": 1,
+        "nodes": [
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ],
+        "edges": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ],
+        "direct_constraints": []
+      }
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "context-lock-v5-closed",
+    "schema": "profile-skill-plan-v1/context-lock-v5.schema.json",
+    "instance": {
+      "schema_version": 5,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      },
+      "skill_plan": {
+        "schema_version": 1,
+        "nodes": [
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ],
+        "edges": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ],
+        "direct_constraints": []
+      },
+      "skill_plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076",
+      "unknown": true
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "profile-skill-plan-v1-valid",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": true,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "profile-skill-plan-v1-missing-schema_version",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "profile-skill-plan-v1-missing-nodes",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "profile-skill-plan-v1-missing-edges",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "profile-skill-plan-v1-missing-direct_constraints",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ]
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "profile-skill-plan-v1-closed",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": [],
+      "unknown": true
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "legacy-1-valid",
+    "schema": "v1/context-lock-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ]
+    },
+    "valid": true,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "legacy-1-reject-skill_plan",
+    "schema": "v1/context-lock-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "skill_plan": {
+        "schema_version": 1,
+        "nodes": [
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ],
+        "edges": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ],
+        "direct_constraints": []
+      }
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "legacy-1-reject-skill_plan_sha256",
+    "schema": "v1/context-lock-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "skill_plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076"
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "legacy-2-valid",
+    "schema": "v1/context-lock-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ]
+    },
+    "valid": true,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "legacy-2-reject-skill_plan",
+    "schema": "v1/context-lock-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "skill_plan": {
+        "schema_version": 1,
+        "nodes": [
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ],
+        "edges": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ],
+        "direct_constraints": []
+      }
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "legacy-2-reject-skill_plan_sha256",
+    "schema": "v1/context-lock-v2.schema.json",
+    "instance": {
+      "schema_version": 2,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "skill_plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076"
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "legacy-4-valid",
+    "schema": "rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      }
+    },
+    "valid": true,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "legacy-4-reject-skill_plan",
+    "schema": "rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      },
+      "skill_plan": {
+        "schema_version": 1,
+        "nodes": [
+          {
+            "kind": "skill",
+            "name": "helper",
+            "source": "github.com/example/helper",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          {
+            "kind": "skill",
+            "name": "memory",
+            "source": "github.com/example/memory",
+            "commit": "1111111111111111111111111111111111111111",
+            "directory": ".",
+            "hash_version": 2,
+            "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ],
+        "edges": [
+          {
+            "consumer": {
+              "kind": "context",
+              "name": "sample-profile"
+            },
+            "provider": "memory",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "runtime",
+            "commands": [
+              "memory"
+            ]
+          },
+          {
+            "consumer": {
+              "kind": "skill",
+              "name": "memory"
+            },
+            "provider": "helper",
+            "ref": {
+              "kind": "revision",
+              "value": "1111111111111111111111111111111111111111"
+            },
+            "mode": "context"
+          }
+        ],
+        "direct_constraints": []
+      }
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "legacy-4-reject-skill_plan_sha256",
+    "schema": "rc7-carriers-v1/context-lock-v4.schema.json",
+    "instance": {
+      "schema_version": 4,
+      "hash_version": 2,
+      "root": "sample-profile",
+      "members": [
+        {
+          "kind": "context",
+          "name": "sample-profile",
+          "source": "github.com/example/profile",
+          "commit": "1111111111111111111111111111111111111111",
+          "version": "1.0.0",
+          "weight": 0,
+          "required_by": [],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "memory"
+          ],
+          "overlay": false
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "weight": 0,
+          "required_by": [
+            "sample-profile"
+          ],
+          "overlay": false
+        }
+      ],
+      "codex_settings": {},
+      "codex_settings_contributions": [],
+      "precedence": {
+        "winner": "higher-weight",
+        "placement": "winner-last"
+      },
+      "skill_plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076"
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01"
+    ]
+  },
+  {
+    "id": "shape-empty-commands",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": []
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "shape-duplicate-commands",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory",
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "shape-context-narrowing",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "shape-unknown-mode",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "sometimes",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "shape-branch-ref",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "branch",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "branch",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "shape-range-ref",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "range",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "range",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "shape-short-revision",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1234567"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1234567"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "shape-empty-tag",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "tag",
+            "value": ""
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "shape-range-in-tag",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "tag",
+            "value": "^1.0.0"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "shape-missing-directory",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "shape-escape-directory",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": "../escape",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "shape-absolute-directory",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": "/escape",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "shape-source-with-suffix",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper.git",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "shape-content-newline",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "shape-receipt-in-plan",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "receipt": {}
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "context",
+            "name": "sample-profile"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  },
+  {
+    "id": "shape-machine-runtime",
+    "schema": "profile-skill-plan-v1/profile-skill-plan-v1.schema.json",
+    "instance": {
+      "schema_version": 1,
+      "nodes": [
+        {
+          "kind": "skill",
+          "name": "helper",
+          "source": "github.com/example/helper",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "kind": "skill",
+          "name": "memory",
+          "source": "github.com/example/memory",
+          "commit": "1111111111111111111111111111111111111111",
+          "directory": ".",
+          "hash_version": 2,
+          "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        }
+      ],
+      "edges": [
+        {
+          "consumer": {
+            "kind": "machine",
+            "name": "memory"
+          },
+          "provider": "memory",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "runtime",
+          "commands": [
+            "memory"
+          ]
+        },
+        {
+          "consumer": {
+            "kind": "skill",
+            "name": "memory"
+          },
+          "provider": "helper",
+          "ref": {
+            "kind": "revision",
+            "value": "1111111111111111111111111111111111111111"
+          },
+          "mode": "context"
+        }
+      ],
+      "direct_constraints": []
+    },
+    "valid": false,
+    "obligations": [
+      "PSP01",
+      "PSP03",
+      "PSP05"
+    ]
+  }
+]
