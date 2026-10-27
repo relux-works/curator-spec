@@ -218,9 +218,11 @@ schemas. Its separate schema and corpus require implementation qualification.
   non-admitting terminal acquire replay and paired launcher no-start controls.
 
 - Profile command PATH companion: `python3 -B -m unittest discover -s tools -p
-  'test_profile_command_path.py' -v` checks the paired specification-data
-  witnesses under `conformance/profile-command-path/`. `make validate` includes
-  these tests. They qualify no launcher or hosted process; logs go in `.temp/`.
+  'test_profile_command_path.py' -v` validates the closed root-receipt/native-state
+  schemas under `schemas/profile-command-path-v1/` and the paired availability,
+  verification, PATH admission and child-witness corpus under
+  `conformance/profile-command-path/`. `make validate` includes these tests.
+  They qualify no launcher or hosted process; logs go in `.temp/`.
 
 - Provisioning-origin publication: `python3 tools/provisioning_origin.py` and
   `python3 -B -m unittest discover -s tools -p 'test_provisioning_origin.py' -v`

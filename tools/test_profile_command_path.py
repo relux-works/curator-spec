@@ -1,129 +1,376 @@
-"""Profile PATH specification-data witnesses; no process or runtime qualification."""
-
+"""Closed companion data and bounded witnesses; no launcher or filesystem qualification."""
 from __future__ import annotations
 
-import copy
+from copy import deepcopy
+import hashlib
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+import posixpath
 import unittest
+from unittest.mock import patch
+
+from jsonschema import Draft202012Validator
+
+ROOT = Path(__file__).resolve().parents[1]
+CORPUS = ROOT / 'conformance/profile-command-path'
+SCHEMAS = ROOT / 'schemas/profile-command-path-v1'
 
 
-CORPUS = Path(__file__).resolve().parents[1] / "conformance/profile-command-path/cases.json"
-BINDINGS = ("profile", "lock_sha256", "plan_sha256", "generation")
+def load(path):
+    return json.loads(path.read_text(encoding='utf-8'))
+
+
+def digest(text):
+    return 'sha256:' + hashlib.sha256(text.encode('utf-8')).hexdigest()
 
 
 def merge(base, changes):
-    result = copy.deepcopy(base)
+    result = deepcopy(base)
     for key, value in changes.items():
-        if isinstance(value, dict):
-            result[key] = merge(result[key], value)
-        else:
-            result[key] = copy.deepcopy(value)
+        result[key] = merge(result[key], value) if isinstance(value, dict) else deepcopy(value)
     return result
 
 
-def candidate_violations(evidence):
-    """Compare abstract start-boundary evidence, without authenticating its inputs."""
-    admitted, candidate = evidence["admitted"], evidence["candidate"]
-    violations = []
-    if admitted["root_state"] != "verified":
-        violations.append("root-integrity")
-    if admitted["current_profile"] != admitted["binding"]["profile"]:
-        violations.append("isolated-current-profile")
-    if admitted["routing"] != "exclusive":
-        violations.append("exclusive-routing")
-    if candidate["transport"] != "supported":
-        violations.append("required-understanding")
-    if candidate["path_prepend"] != admitted["root"] or candidate["receipt"]["root"] != admitted["root"]:
-        violations.append("verified-root")
-    for prefix, binding in (("receipt", candidate["receipt"]["binding"]),
-                            ("process", candidate["binding"])):
-        for field in BINDINGS:
-            if binding.get(field) != admitted["binding"][field]:
-                violations.append(f"{prefix}-{field.removesuffix('_sha256')}-binding")
-    expected_path = admitted["protected_tools"] + [admitted["root"]] + admitted["base_path"]
-    if candidate["path"] != expected_path:
-        violations.append("effective-path")
-    if candidate["command"] != admitted["command"]:
-        violations.append("reached-command")
-    return violations
+def metadata_safe(value, kind='executable'):
+    # The semantic filesystem examples are POSIX. Windows shape validity below
+    # does not establish native descriptor interpretation or ACL enforcement.
+    if value['platform'] != 'posix' or value['owner'] != 'uid:1000':
+        return False
+    if kind == 'symlink':
+        return True  # Link mutation is governed by the checked parent directory.
+    required = 0o400 if kind == 'receipt' else 0o500
+    return value['mode'] & 0o7022 == 0 and value['mode'] & required == required
 
 
-def child_violations(evidence, child):
-    """Compare a supplied final-child witness with admitted identity and order."""
-    violations = candidate_violations(evidence)
-    if child is None:
-        return violations + ["missing-child-witness"]
-    candidate = evidence["candidate"]
-    if child["path"] != candidate["path"] or child["path_value"] != ":".join(child["path"]):
-        violations.append("child-path")
-    if child["command"] != candidate["command"]:
-        violations.append("child-command")
-    if child["binding"] != candidate["binding"]:
-        violations.append("child-binding")
-    return violations
+def root_violations(data, receipt_validator):
+    admitted, observed = data['trusted'], data['observed']
+    receipt = data['receipt']
+    if not receipt_validator.is_valid(receipt):
+        return ['receipt-shape']
+    if receipt['binding'] != admitted['binding']:
+        return ['receipt-binding']
+    if receipt != admitted['receipt']:
+        return ['receipt-authority']
+    if data['routing'] != 'exclusive':
+        return ['routing-unproven']
+    root = receipt['root']
+    if observed['root_status'] != 'readable':
+        return ['root-' + observed['root_status']]
+    if observed['root_metadata'] != root['metadata'] or not metadata_safe(observed['root_metadata']):
+        return ['root-metadata']
+    if observed['root_kind'] != 'directory':
+        return ['root-type']
+    if (observed['receipt_kind'] != 'regular'
+            or observed['receipt_metadata'] != admitted['receipt_metadata']
+            or not metadata_safe(observed['receipt_metadata'], 'receipt')):
+        return ['receipt-boundary']
+    if observed['root_entries'] != ['.curator-profile-command-root.json'] + [c['name'] for c in receipt['commands']]:
+        return ['root-inventory']
+    for command in receipt['commands']:
+        chain = command['chain']
+        if chain[0]['path'] != root['path'] + '/' + command['name']:
+            return ['shim-entry']
+        seen = set()
+        for index, hop in enumerate(chain):
+            path = hop['path']
+            if path in seen or not any(PurePosixPath(path).is_relative_to(PurePosixPath(b))
+                                       for b in admitted['boundaries']):
+                return ['chain-confinement']
+            seen.add(path)
+            actual = observed['objects'].get(path)
+            if actual is None or not actual['readable']:
+                return ['chain-unreadable']
+            if actual['metadata'] != hop['metadata'] or not metadata_safe(actual['metadata'], hop['kind']):
+                return ['chain-metadata']
+            if actual['kind'] != hop['kind'] or actual['links'] != 1:
+                return ['chain-type']
+            if digest(actual['bytes']) != hop['sha256']:
+                return ['chain-digest']
+            final = index == len(chain) - 1
+            if final:
+                if hop['kind'] != 'executable' or hop['target'] is not None:
+                    return ['chain-terminal']
+            else:
+                target = chain[index + 1]['path']
+                if hop['kind'] not in ('symlink', 'forwarder'):
+                    return ['chain-type']
+                # Synthetic corpus forwarder format, not a product shell grammar.
+                if hop['kind'] == 'forwarder' and not (
+                        actual['bytes'].startswith('FIXTURE-FORWARD/1\n')
+                        and actual['bytes'].endswith('\n')):
+                    return ['chain-format']
+                decoded = (actual['bytes'] if hop['kind'] == 'symlink' else
+                           actual['bytes'].removeprefix('FIXTURE-FORWARD/1\n').removesuffix('\n'))
+                if hop['target'] != target or decoded != target:
+                    return ['chain-target']
+    return []
+
+
+def admit_path(data, protected):
+    kept, issues, exclusions = [], [], []
+    seen_paths = set(protected)
+    seen_ids = {data['path_facts'][p]['identity'] for p in protected}
+    root_ids = set(data['trusted']['profile_root_ids'])
+    for entry in data['base_path']:
+        fact = data['path_facts'].get(entry)
+        predicate = None
+        if entry == '':
+            predicate = 'empty'
+        elif not posixpath.isabs(entry):
+            predicate = 'relative'
+        elif fact is None or not fact['readable'] or fact['kind'] != 'directory':
+            predicate = 'unreadable'
+        elif fact['identity'] in root_ids:
+            exclusions.append(entry)
+            continue
+        elif fact['mode'] & 0o002:
+            predicate = 'world-writable'
+        elif posixpath.normpath(entry) in seen_paths:
+            predicate = 'duplicate'
+        elif fact['identity'] in seen_ids:
+            predicate = 'alias'
+        if predicate:
+            action = ('refuse' if data['policy'] == 'managed' and
+                      predicate in ('unreadable', 'world-writable') else 'drop')
+            issues.append({'entry': entry, 'predicate': predicate, 'action': action})
+        else:
+            kept.append(entry)
+            seen_paths.add(posixpath.normpath(entry))
+            seen_ids.add(fact['identity'])
+    return kept, issues, exclusions
+
+
+def decision(data, receipt_validator):
+    launch = data['launch']
+    availability, reason = 'active', None
+    if not launch['exports']:
+        availability = 'none'
+    elif launch['route'] == 'hosted' and not launch['hosted_carrier']:
+        availability, reason = 'empty', 'hosted-carrier-unavailable'
+    elif launch['current_profile'] != data['trusted']['binding']['profile']:
+        availability, reason = 'empty', 'slice-a-non-current'
+    violations = root_violations(data, receipt_validator) if availability == 'active' else []
+    protected = data['protected_tools']
+    if protected and not metadata_safe(data['protected_metadata']):
+        violations.append('protected-boundary')
+    root = data['trusted']['receipt']['root']['path'] if availability == 'active' else None
+    # Known roots are excluded independently; selected root enters only here.
+    kept, admission, exclusions = admit_path(data, protected)
+    if any(i['action'] == 'refuse' for i in admission):
+        violations.append('base-path-unsafe')
+    path = protected + ([root] if root else []) + kept
+    command = None
+    if availability == 'active':
+        final = data['trusted']['receipt']['commands'][0]['chain'][-1]
+        command = {'path': final['path'], 'sha256': final['sha256']}
+    return {'violations': violations, 'starts': int(not violations), 'availability': availability,
+            'reason': reason, 'path_prepend': root, 'path': path, 'path_value': ':'.join(path),
+            'command': command, 'binding': data['trusted']['binding'], 'admission': admission,
+            'profile_root_exclusions': exclusions,
+            'diagnostic_lines': int(bool(reason)) + int(bool(admission or exclusions)),
+            'final_path_claim': launch['route'] == 'native' or launch['hosted_carrier'],
+            'live_preimage': 'unchanged', 'fallbacks': 0}
+
+
+def witness_violations(expected, supplied):
+    if supplied is None:
+        return ['missing-child-witness']
+    failures = []
+    for key, label in [('path', 'child-path'), ('path_value', 'child-path-value'),
+                       ('command', 'child-command'), ('binding', 'child-binding')]:
+        if supplied[key] != expected[key]:
+            failures.append(label)
+    return failures
+
+
+def check_cases(base, cases, validator):
+    for case in cases:
+        result = decision(merge(base, case['changes']), validator)
+        for key, expected in case['expected'].items():
+            if result[key] != expected:
+                raise ValueError(case['name'] + ':' + key)
+
+
+def state_violations(state, expected, base, validator):
+    if not validator.is_valid(state):
+        return ['state-shape']
+    fields = ['path', 'path_value', 'binding', 'availability', 'reason', 'admission',
+              'profile_root_exclusions']
+    failures = ['state-' + key for key in fields if state[key] != expected[key]]
+    if state['fragment_sha256'] != digest('synthetic complete fragment bytes'):
+        failures.append('state-fragment')
+    receipt = base['receipt']
+    root = receipt['root'] if expected['availability'] == 'active' else None
+    receipt_hash = digest(json.dumps(receipt, indent=2) + '\n') if root else None
+    if state['root'] != root or state['receipt_sha256'] != receipt_hash:
+        failures.append('state-receipt')
+    return failures
 
 
 class ProfileCommandPathTests(unittest.TestCase):
-    def setUp(self):
-        self.corpus = json.loads(CORPUS.read_text(encoding="utf-8"))
-        self.cases = {case["name"]: case for case in self.corpus["cases"]}
+    @classmethod
+    def setUpClass(cls):
+        cls.base = load(CORPUS / 'baseline.json')
+        cls.cases = load(CORPUS / 'cases.json')
+        cls.schemas = {p.name: load(p) for p in SCHEMAS.glob('*.schema.json')}
+        cls.validators = {n: Draft202012Validator(s) for n, s in cls.schemas.items()}
+        cls.receipt_validator = cls.validators['root-receipt.schema.json']
 
-    # Pins the required fault inventory and route/form matrix, not product support.
-    def test_case_matrix(self):
-        self.assertEqual(self.corpus["kind"], "profile-command-path-evidence-not-wire")
-        self.assertEqual(self.corpus["slice"], "A")
-        self.assertEqual(self.corpus["launch_forms"], [
-            "interactive", "managed-one-shot", "new-child-on-resume-or-restart"])
-        self.assertEqual(len(self.cases), len(self.corpus["cases"]))
-        self.assertEqual(set(self.cases), {
-            "verified-root", "empty-command-set", "missing-root", "tampered-root", "unreadable-root",
-            "stale-lock", "wrong-plan", "wrong-generation", "foreign-inherited-root",
-            "hosted-drops-root", "inert-path-prepend", "root-before-protected-tools",
-            "ambient-path-recomputed", "wrong-reached-path", "wrong-reached-digest",
-            "missing-lock-binding", "unsupported-transport", "other-current-profile", "routing-unproven",
-        })
-        for name, case in self.cases.items():
-            self.assertEqual(case["routes"], ["hosted"] if name == "hosted-drops-root" else ["native", "hosted"])
+    # Closed receipt/state shapes, including required fields, unknown members,
+    # exact-end digests and native metadata variants. No native ACL is queried.
+    def test_closed_schemas(self):
+        for schema in self.schemas.values():
+            Draft202012Validator.check_schema(schema)
+        for case in load(CORPUS / 'schema-cases.json'):
+            with self.subTest(case=case['name']):
+                self.assertEqual(self.validators[case['schema']].is_valid(case['document']), case['valid'])
 
-    # Every row detects its named assertion failure; successful controls require
-    # all three child witnesses. Refusals preserve preimages and forbid starts/fallback.
-    def test_paired_start_boundary_and_child_witnesses(self):
-        for case in self.cases.values():
-            evidence = merge(self.corpus["base"], case["changes"])
-            expected = case["expected"]
-            for route in case["routes"]:
-                for form in self.corpus["launch_forms"]:
-                    with self.subTest(case=case["name"], route=route, form=form):
-                        violations = candidate_violations(evidence)
-                        self.assertEqual(violations, expected["violations"])
-                        self.assertEqual(not violations, expected["admissible"])
-                        self.assertEqual(expected["fallbacks"], 0)
-                        self.assertEqual(expected["live_preimage"], "unchanged")
-                        if expected["admissible"]:
-                            self.assertEqual(expected["provider_starts"], 1)
-                            self.assertEqual(child_violations(evidence, expected["child"]), [])
-                        else:
-                            self.assertEqual(expected["provider_starts"], 0)
-                            self.assertIsNone(expected["child"])
+    # Pins explicit paired outcomes for B1/B2, G1–G4 and the former integrity
+    # refusals. These are independent literals, never generated by decision().
+    def test_published_cases(self):
+        names = {c['name'] for c in self.cases}
+        self.assertEqual(len(names), len(self.cases))
+        check_cases(self.base, self.cases, self.receipt_validator)
+        for name in ['current-native', 'no-export', 'non-current', 'hosted-without-carrier',
+                     'hosted-with-carrier', 'interactive-drops', 'managed-drops',
+                     'managed-refuses-world-writable', 'managed-refuses-unreadable',
+                     'missing-root', 'tampered-root', 'stale-lock', 'foreign-root-excluded']:
+            self.assertIn(name, names)
+        for case in self.cases:
+            with self.subTest(case=case['name']):
+                data = merge(self.base, case['changes'])
+                result = decision(data, self.receipt_validator)
+                for key, value in case['expected'].items():
+                    self.assertEqual(result[key], value, key)
+                control = next(c for c in self.cases if c['name'] == case['positive_control'])
+                self.assertEqual(control['expected']['starts'], 1)
 
-    # Bounded instrument controls: corrupt actual-child PATH, reached path/digest
-    # or lock binding, and require the intended failure alongside a valid control.
-    def test_forged_successful_child_is_rejected(self):
-        evidence = self.corpus["base"]
-        child = self.cases["verified-root"]["expected"]["child"]
-        self.assertEqual(child_violations(evidence, child), [])
+    # Baseline lock and plan identities are independently recomputed from the
+    # existing admitted-plan fixture; this does not re-qualify its source pins.
+    def test_baseline_lock_binding(self):
+        from assurance import ccj1_sha256
+        source = load(CORPUS.parent / 'profile-skill-plan-v1/baseline.json')
+        self.assertEqual(self.base['trusted']['binding']['lock_sha256'], ccj1_sha256(source['lock']))
+        self.assertEqual(self.base['trusted']['binding']['plan_sha256'], ccj1_sha256(source['lock']['skill_plan']))
+
+    # Persisted native-state data must bind the exact fragment and receipt bytes
+    # and effective PATH, not just pass the closed shape. No real file is written.
+    def test_native_state_bindings(self):
+        state = load(CORPUS / 'launcher-state.json')
+        expected = decision(self.base, self.receipt_validator)
+        validator = self.validators['launcher-state.schema.json']
+        self.assertEqual(state_violations(state, expected, self.base, validator), [])
+        for changes, failure in [({'path_value': '/ambient'}, 'state-path_value'),
+                                 ({'fragment_sha256': digest('other')}, 'state-fragment'),
+                                 ({'receipt_sha256': digest('other')}, 'state-receipt'),
+                                 ({'binding': {'lock_sha256': digest('other')}}, 'state-binding'),
+                                 ({'binding': {'plan_sha256': digest('other')}}, 'state-binding'),
+                                 ({'binding': {'generation': 'other'}}, 'state-binding')]:
+            self.assertEqual(state_violations(merge(state, changes), expected, self.base, validator), [failure])
+        for name in ['no-export', 'non-current', 'hosted-without-carrier']:
+            case = next(c for c in self.cases if c['name'] == name)
+            outcome = decision(merge(self.base, case['changes']), self.receipt_validator)
+            unavailable = deepcopy(state)
+            for key in ['path', 'path_value', 'binding', 'availability', 'reason', 'admission',
+                        'profile_root_exclusions']:
+                unavailable[key] = outcome[key]
+            unavailable.update(root=None, receipt_sha256=None)
+            self.assertEqual(state_violations(unavailable, outcome, self.base, validator), [])
+
+    # Actual byte changes are detected against separately pinned artifact
+    # hashes. Owner/mode, object identity, shim chain and confinement are isolated.
+    def test_root_verifier_controls(self):
+        self.assertEqual(root_violations(self.base, self.receipt_validator), [])
+        root = self.base['receipt']['root']['path']
+        artifact = self.base['receipt']['commands'][0]['chain'][-1]['path']
         plants = [
-            ({"path": child["path"][1:], "path_value": ":".join(child["path"][1:])}, "child-path"),
-            ({"command": {"path": "/fixture/foreign/sample"}}, "child-command"),
-            ({"command": {"sha256": "sha256:" + "0" * 64}}, "child-command"),
-            ({"binding": {"lock_sha256": "sha256:" + "0" * 64}}, "child-binding"),
+            ({'observed': {'root_metadata': {'owner': 'uid:2000'}}}, 'root-metadata'),
+            ({'observed': {'root_metadata': {'mode': 0o777}}}, 'root-metadata'),
+            ({'observed': {'root_metadata': {'object_id': 'replaced'}}}, 'root-metadata'),
+            ({'observed': {'root_kind': 'symlink'}}, 'root-type'),
+            ({'observed': {'objects': {artifact: {'bytes': 'tampered'}}}}, 'chain-digest'),
+            ({'observed': {'objects': {artifact: {'metadata': {'object_id': 'other'}}}}}, 'chain-metadata'),
+            ({'observed': {'objects': {artifact: {'links': 2}}}}, 'chain-type'),
+            ({'observed': {'objects': {root + '/memory': {'readable': False}}}}, 'chain-unreadable'),
         ]
-        for changes, failure in plants:
-            with self.subTest(changes=changes):
-                self.assertEqual(child_violations(evidence, merge(child, changes)), [failure])
-        self.assertEqual(child_violations(evidence, None), ["missing-child-witness"])
+        for changes, wanted in plants:
+            with self.subTest(wanted=wanted, changes=changes):
+                self.assertEqual(root_violations(merge(self.base, changes), self.receipt_validator), [wanted])
+        # Re-pin both abstract trusted record and receipt to isolate the chain
+        # relation from digest authenticity; outside-root lookalikes still fail.
+        for kind in ['confinement', 'target', 'terminal', 'type']:
+            data = deepcopy(self.base)
+            chain = data['receipt']['commands'][0]['chain']
+            if kind == 'confinement':
+                chain[1]['path'] = '/fixture/cache-foreign/sample'
+                chain[0]['target'] = chain[1]['path']
+                chain[0]['sha256'] = digest(chain[1]['path'])
+                data['observed']['objects'][root + '/memory']['bytes'] = chain[1]['path']
+            elif kind == 'target':
+                chain[0]['target'] = '/fixture/cache/other'
+            elif kind == 'type':
+                chain[0]['kind'] = 'executable'
+                chain[0]['metadata'] = deepcopy(chain[1]['metadata'])
+                data['observed']['objects'][root + '/memory'].update(
+                    kind='executable', metadata=deepcopy(chain[1]['metadata']))
+            else:
+                chain[-1]['target'] = '/fixture/cache/other'
+            data['trusted']['receipt'] = deepcopy(data['receipt'])
+            self.assertEqual(root_violations(data, self.receipt_validator), ['chain-' + kind])
+        # The synthetic forwarder positive and unknown-format negative exercise
+        # decoding separately from a mere bytes/digest mismatch.
+        data = deepcopy(self.base)
+        hop = data['receipt']['commands'][0]['chain'][0]
+        actual = data['observed']['objects'][hop['path']]
+        for content, wanted in [('FIXTURE-FORWARD/1\n' + artifact + '\n', []),
+                                (artifact, ['chain-format'])]:
+            hop.update(kind='forwarder', metadata=deepcopy(self.base['receipt']['root']['metadata']),
+                       sha256=digest(content))
+            actual.update(kind='forwarder', metadata=deepcopy(hop['metadata']), bytes=content)
+            data['trusted']['receipt'] = deepcopy(data['receipt'])
+            self.assertEqual(root_violations(data, self.receipt_validator), wanted)
+
+    # Every active success needs all three correlated child witnesses; omission,
+    # order, path/digest, lock binding or late ambient substitution is detected.
+    def test_child_witness_controls(self):
+        expected = decision(self.base, self.receipt_validator)
+        self.assertEqual(witness_violations(expected, expected), [])
+        plants = [({'path': expected['path'][1:]}, 'child-path'),
+                  ({'path_value': '/ambient/bin'}, 'child-path-value'),
+                  ({'command': {'path': '/foreign/sample'}}, 'child-command'),
+                  ({'command': {'sha256': digest('foreign')}}, 'child-command'),
+                  ({'binding': {'lock_sha256': digest('stale')}}, 'child-binding')]
+        for changes, wanted in plants:
+            self.assertEqual(witness_violations(expected, merge(expected, changes)), [wanted])
+        self.assertEqual(witness_violations(expected, None), ['missing-child-witness'])
+        for route in ['native', 'hosted']:
+            with self.subTest(route=route):
+                data = merge(self.base, {'launch': {'route': route, 'hosted_carrier': True}})
+                result = decision(data, self.receipt_validator)
+                self.assertEqual(result['starts'], 1)
+                self.assertEqual(witness_violations(result, result), [])
+                self.assertEqual(witness_violations(result, merge(result, {'path': result['path'][1:]})),
+                                 ['child-path'])
+
+    # Bounded checker mutants must fail the intended corpus assertions, rather
+    # than merely crashing. Positive controls exclude an always-refuse checker.
+    def test_policy_mutants(self):
+        original = decision
+        for name, field, wrong in [('non-current', 'starts', 0),
+                                   ('hosted-without-carrier', 'starts', 0),
+                                   ('no-export', 'path_prepend', '/foreign/root'),
+                                   ('managed-refuses-world-writable', 'starts', 1)]:
+            case = next(c for c in self.cases if c['name'] == name)
+            selected = merge(self.base, case['changes'])
+            def mutant(data, validator):
+                actual = original(data, validator)
+                if data == selected:
+                    actual[field] = wrong
+                return actual
+            with patch(__name__ + '.decision', mutant):
+                with self.assertRaisesRegex(ValueError, name + ':' + field):
+                    check_cases(self.base, self.cases, self.receipt_validator)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

@@ -31,17 +31,21 @@ package self-grant, hidden prompt or unqualified launch fallback.
 
 ## Managed-session profile command PATH publication gates
 
-The [environments §§9.4/10.2 companion](protocol/environments.md#94-profile-scoped-skills-and-migration)
-settles final-child delivery and protected-tools/profile-root/base-PATH order.
-Joint Curator, curator-run and hosted-manager publication still needs the
-complete successor carrier/capability negotiation and start-boundary diagnostic
-mapping; reserved historical `path_prepend` syntax is insufficient. Slice B
-additionally needs its exact generation-root grammar and lease/GC protocol.
-The existing project `command_environment` exclusion remains until a combined
-carrier is accepted. These are publication gates, not authority to silently
-omit delivery. The [paired vectors](conformance/profile-command-path/README.md)
-are specification data; native/hosted runtime qualification and the separate
-protected-command inventory companion remain required for adoption.
+The [native-first companion](protocol/profile-command-path.md) fixes no-export
+and unavailable launch semantics, closed root/receipt schema and independent
+verification, interactive protected tools, closed base-PATH predicates and
+native state-file provenance. Curator and curator-run still need native
+release-pair support and real qualification. Hosted delivery needs a joint
+carrier amendment owned by curator-run and the session host, with Curator for
+binding: required-understanding request/schema/module pins, PATH/root/receipt
+binding, start checks and manager record. `launch-delegated/1` remains closed;
+until then hosted commands are explicitly unavailable with a diagnostic and
+no refusal for that reason. Caller-local empty provenance proves no final
+hosted PATH. Slice B's exact generation-root and lease/GC carrier remains open.
+Project `command_environment` plus `path_prepend` still needs a combined carrier.
+No-export/empty continuation does not clear `profile_skill_companion_required`;
+all-profile native/hosted witnesses and the separate protected-command inventory
+companion remain required. Abstract vectors are not runtime qualification.
 
 ## Agent stations
 

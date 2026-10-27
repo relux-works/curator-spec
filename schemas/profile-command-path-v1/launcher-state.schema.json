@@ -1,0 +1,443 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/profile-command-path-v1/launcher-state.schema.json",
+  "type": "object",
+  "required": [
+    "record",
+    "launch_id",
+    "path",
+    "path_value",
+    "fragment_sha256",
+    "binding",
+    "availability",
+    "reason",
+    "root",
+    "receipt_sha256",
+    "admission",
+    "profile_root_exclusions"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "record": {
+      "const": "launcher-path-state/1"
+    },
+    "launch_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$(?![\\s\\S])"
+    },
+    "path": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "allOf": [
+          {
+            "pattern": "^(?:/[^:]*|[A-Za-z]:[\\\\/][^;]*)$(?![\\s\\S])"
+          },
+          {
+            "not": {
+              "pattern": "[\\x00-\\x1f\\x7f]"
+            }
+          },
+          {
+            "not": {
+              "pattern": "(?:^|[/\\\\])\\.\\.(?:[/\\\\]|$)"
+            }
+          }
+        ]
+      },
+      "uniqueItems": true
+    },
+    "path_value": {
+      "type": "string"
+    },
+    "fragment_sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "binding": {
+      "type": "object",
+      "required": [
+        "profile",
+        "lock_sha256",
+        "plan_sha256",
+        "generation"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "profile": {
+          "allOf": [
+            {
+              "allOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9_-])?$",
+                  "maxLength": 128
+                },
+                {
+                  "not": {
+                    "pattern": "^(?:[Cc][Oo][Nn]|[Pp][Rr][Nn]|[Aa][Uu][Xx]|[Nn][Uu][Ll]|[Cc][Oo][Mm][1-9]|[Ll][Pp][Tt][1-9])(?:\\.|$)"
+                  }
+                }
+              ]
+            },
+            {
+              "not": {
+                "pattern": "[\\x00-\\x1f\\x7f]"
+              }
+            }
+          ]
+        },
+        "lock_sha256": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "plan_sha256": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "generation": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "availability": {
+      "enum": [
+        "active",
+        "none",
+        "empty"
+      ]
+    },
+    "reason": {
+      "enum": [
+        null,
+        "slice-a-non-current",
+        "hosted-carrier-unavailable"
+      ]
+    },
+    "root": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "path",
+            "metadata"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "allOf": [
+                {
+                  "pattern": "^(?:/[^:]*|[A-Za-z]:[\\\\/][^;]*)$(?![\\s\\S])"
+                },
+                {
+                  "not": {
+                    "pattern": "[\\x00-\\x1f\\x7f]"
+                  }
+                },
+                {
+                  "not": {
+                    "pattern": "(?:^|[/\\\\])\\.\\.(?:[/\\\\]|$)"
+                  }
+                }
+              ]
+            },
+            "metadata": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "required": [
+                    "platform",
+                    "owner",
+                    "filesystem_id",
+                    "object_id",
+                    "mode"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "platform": {
+                      "const": "posix"
+                    },
+                    "owner": {
+                      "type": "string",
+                      "pattern": "^uid:(0|[1-9][0-9]*)$(?![\\s\\S])"
+                    },
+                    "filesystem_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "object_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "mode": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 4095
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "platform",
+                    "owner",
+                    "filesystem_id",
+                    "object_id",
+                    "security_descriptor_sha256"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "platform": {
+                      "const": "windows"
+                    },
+                    "owner": {
+                      "type": "string",
+                      "pattern": "^sid:S-[0-9]+(?:-[0-9]+)+$(?![\\s\\S])"
+                    },
+                    "filesystem_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "object_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "security_descriptor_sha256": {
+                      "type": "string",
+                      "pattern": "^sha256:[0-9a-f]{64}$(?![\\s\\S])"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "receipt_sha256": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "admission": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "entry",
+          "predicate",
+          "action"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "entry": {
+            "type": "string"
+          },
+          "predicate": {
+            "enum": [
+              "empty",
+              "relative",
+              "duplicate",
+              "unreadable",
+              "world-writable",
+              "alias"
+            ]
+          },
+          "action": {
+            "enum": [
+              "drop",
+              "refuse"
+            ]
+          }
+        }
+      }
+    },
+    "profile_root_exclusions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "allOf": [
+          {
+            "pattern": "^(?:/[^:]*|[A-Za-z]:[\\\\/][^;]*)$(?![\\s\\S])"
+          },
+          {
+            "not": {
+              "pattern": "[\\x00-\\x1f\\x7f]"
+            }
+          },
+          {
+            "not": {
+              "pattern": "(?:^|[/\\\\])\\.\\.(?:[/\\\\]|$)"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "availability": {
+            "const": "active"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "root": {
+            "type": "object",
+            "required": [
+              "path",
+              "metadata"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string",
+                "allOf": [
+                  {
+                    "pattern": "^(?:/[^:]*|[A-Za-z]:[\\\\/][^;]*)$(?![\\s\\S])"
+                  },
+                  {
+                    "not": {
+                      "pattern": "[\\x00-\\x1f\\x7f]"
+                    }
+                  },
+                  {
+                    "not": {
+                      "pattern": "(?:^|[/\\\\])\\.\\.(?:[/\\\\]|$)"
+                    }
+                  }
+                ]
+              },
+              "metadata": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "required": [
+                      "platform",
+                      "owner",
+                      "filesystem_id",
+                      "object_id",
+                      "mode"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "platform": {
+                        "const": "posix"
+                      },
+                      "owner": {
+                        "type": "string",
+                        "pattern": "^uid:(0|[1-9][0-9]*)$(?![\\s\\S])"
+                      },
+                      "filesystem_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "object_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "mode": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 4095
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "required": [
+                      "platform",
+                      "owner",
+                      "filesystem_id",
+                      "object_id",
+                      "security_descriptor_sha256"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "platform": {
+                        "const": "windows"
+                      },
+                      "owner": {
+                        "type": "string",
+                        "pattern": "^sid:S-[0-9]+(?:-[0-9]+)+$(?![\\s\\S])"
+                      },
+                      "filesystem_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "object_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "security_descriptor_sha256": {
+                        "type": "string",
+                        "pattern": "^sha256:[0-9a-f]{64}$(?![\\s\\S])"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "receipt_sha256": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$(?![\\s\\S])"
+          },
+          "reason": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "root": {
+            "type": "null"
+          },
+          "receipt_sha256": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "availability": {
+            "const": "empty"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "reason": {
+            "enum": [
+              "slice-a-non-current",
+              "hosted-carrier-unavailable"
+            ]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "reason": {
+            "type": "null"
+          }
+        }
+      }
+    }
+  ]
+}

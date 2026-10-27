@@ -148,21 +148,36 @@ argv substitution; retry requires fresh preparation and a new plan.
 
 ## 4. Exact process and runtime writers
 
-For every managed hosted launch with a profile,
-[environments §9.4](environments.md#94-profile-scoped-skills-and-migration)
-and [§10.2](environments.md#102-the-launch-environment-fragment) additionally
-require the verified profile command root in the final agent child's PATH:
-protected tools, verified profile root, admitted base PATH, with existing
-protected dispatcher rules retained. Curator publishes the root and verified
-fragment; curator-run verifies and applies `path_prepend`; the hosted manager
-carries the effective PATH and profile/lock/plan/generation binding through to
-execution. Exact-plan delivery seals them with the complete process;
-delegated delivery requires its own supported binding contract. Neither an
-inert field nor a daemon-environment merge conforms. Unsupported transport,
-lost roots and stale/substituted bindings refuse before child execution with
-no route fallback. The [companion vectors](../conformance/profile-command-path/README.md)
-require final-child and reached-artifact evidence on both routes. This
-amendment publishes no successor hosted wire shape or runtime qualification.
+Profile command delivery follows the native-first
+[environments §§9.4/10.2 companion](environments.md#94-profile-scoped-skills-and-migration)
+and its [detailed availability/receipt contract](profile-command-path.md).
+A no-export profile has no prepend and no refusal from this companion. Hosted
+command delivery is a named joint dependency owned by curator-run and the
+session host, with Curator for binding. It needs a new required-understanding
+carrier (for example `launch-delegated/2`), schema/module pins and receiver
+support. Closed `launch-delegated/1` has no PATH member; reserved `child_env`
+cannot carry it. No old carrier is widened here.
+
+Until that carrier exists, a command-exporting hosted launch proceeds with an
+explicit caller-local empty root decision and a commands-unavailable diagnostic,
+without refusing for missing command delivery. Empty is null root/receipt and
+zero profile command paths, not an empty PATH entry. The caller records this
+outcome without claiming it changed the old receiver's final PATH. This is
+not successful hosted command delivery and does not clear
+`profile_skill_companion_required`.
+
+After joint publication, supported hosted delivery MUST preserve protected
+tools → verified profile root → admitted base PATH into the actual agent child,
+with existing dispatcher rules. Curator publishes the root/fragment; curator-run
+independently verifies and applies `path_prepend`; the manager carries effective
+PATH, fragment digest, complete lock/plan and generation binding in the
+session-launch request and manager session record. Exact-plan delivery covers
+them with its complete process digest; delegated delivery uses the jointly
+published binding contract. Start verification refuses a dropped active root
+or stale/substituted binding, without route fallback. The
+[paired vectors](../conformance/profile-command-path/README.md) distinguish
+future active delivery from today's unavailable-but-launching case. Native
+success does not qualify hosted transport. No implementation is supplied here.
 
 The daemon MUST execute the planned absolute binary, ordered argv, full env,
 cwd, stdin and selected home. It MUST NOT concatenate a shell command,

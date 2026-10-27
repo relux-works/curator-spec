@@ -55,10 +55,11 @@ suite identities. Its publication gate claims no production authorization or
 vendor qualification.
 
 The separate [profile command PATH companion](profile-command-path/README.md)
-defines native/hosted final-child PATH, reached-command and lock-binding
-witnesses, with paired missing/tampered/stale/foreign-root and transport
-refusals. Its executable specification-data checks do not qualify a runtime
-or allocate a successor fragment/hosted wire carrier.
+defines native-first availability, closed root receipts and launcher-state
+records, independent verification, PATH drop/refuse cases and final-child
+witnesses. No-export/non-current/hosted-without-carrier cases preserve launch
+availability. Its executable data checks qualify no runtime and allocate no
+hosted successor carrier.
 
 The unreleased [Codex seed-C corpus](codex-seed-c-v1/README.md) separately
 specifies trust exclusion for new provisioning and preservation of existing

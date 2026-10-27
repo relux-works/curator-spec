@@ -1,0 +1,256 @@
+{
+  "launch": {
+    "route": "native",
+    "hosted_carrier": false,
+    "exports": true,
+    "current_profile": "sample-profile"
+  },
+  "policy": "interactive-native",
+  "protected_tools": [],
+  "protected_metadata": {
+    "platform": "posix",
+    "owner": "uid:1000",
+    "filesystem_id": "device:1",
+    "object_id": "20",
+    "mode": 493
+  },
+  "base_path": [
+    "/usr/bin",
+    "/bin"
+  ],
+  "path_facts": {
+    "/usr/bin": {
+      "identity": "usr",
+      "readable": true,
+      "kind": "directory",
+      "mode": 493
+    },
+    "/bin": {
+      "identity": "bin",
+      "readable": true,
+      "kind": "directory",
+      "mode": 493
+    },
+    "/fixture/tools": {
+      "identity": "tools",
+      "readable": true,
+      "kind": "directory",
+      "mode": 493
+    },
+    "/fixture/domain/global/bin": {
+      "identity": "root",
+      "readable": true,
+      "kind": "directory",
+      "mode": 493
+    },
+    "/foreign/profile/bin": {
+      "identity": "foreign",
+      "readable": true,
+      "kind": "directory",
+      "mode": 493
+    },
+    "/alias/usrbin": {
+      "identity": "usr",
+      "readable": true,
+      "kind": "directory",
+      "mode": 493
+    },
+    "/usr/./bin": {
+      "identity": "usr",
+      "readable": true,
+      "kind": "directory",
+      "mode": 493
+    },
+    "/unsafe/bin": {
+      "identity": "unsafe",
+      "readable": true,
+      "kind": "directory",
+      "mode": 511
+    },
+    "/unreadable/bin": {
+      "identity": "unreadable",
+      "readable": false,
+      "kind": "directory",
+      "mode": 493
+    }
+  },
+  "routing": "exclusive",
+  "trusted": {
+    "binding": {
+      "profile": "sample-profile",
+      "lock_sha256": "sha256:3d11420dfdba59a7f12dbb179ca7494c95ec10f23f43b7436d8f70c16f528c0c",
+      "plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076",
+      "generation": "sample-a1"
+    },
+    "boundaries": [
+      "/fixture/domain",
+      "/fixture/cache"
+    ],
+    "profile_root_ids": [
+      "root",
+      "foreign"
+    ],
+    "receipt": {
+      "receipt": "profile-command-root/1",
+      "binding": {
+        "profile": "sample-profile",
+        "lock_sha256": "sha256:3d11420dfdba59a7f12dbb179ca7494c95ec10f23f43b7436d8f70c16f528c0c",
+        "plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076",
+        "generation": "sample-a1"
+      },
+      "root": {
+        "path": "/fixture/domain/global/bin",
+        "metadata": {
+          "platform": "posix",
+          "owner": "uid:1000",
+          "filesystem_id": "device:1",
+          "object_id": "10",
+          "mode": 493
+        }
+      },
+      "commands": [
+        {
+          "name": "memory",
+          "chain": [
+            {
+              "path": "/fixture/domain/global/bin/memory",
+              "kind": "symlink",
+              "metadata": {
+                "platform": "posix",
+                "owner": "uid:1000",
+                "filesystem_id": "device:1",
+                "object_id": "11",
+                "mode": 511
+              },
+              "sha256": "sha256:4f366226b12e0d5edc23af7ba2f4fd3267aa7f7b901bf164a44bdcffd90839bf",
+              "target": "/fixture/cache/sample-a1/memory"
+            },
+            {
+              "path": "/fixture/cache/sample-a1/memory",
+              "kind": "executable",
+              "metadata": {
+                "platform": "posix",
+                "owner": "uid:1000",
+                "filesystem_id": "device:1",
+                "object_id": "12",
+                "mode": 493
+              },
+              "sha256": "sha256:bb247bbbe1fa33445940ce53ee3351763184357361abf7019ebf758be42cfec6",
+              "target": null
+            }
+          ]
+        }
+      ]
+    },
+    "receipt_metadata": {
+      "platform": "posix",
+      "owner": "uid:1000",
+      "filesystem_id": "device:1",
+      "object_id": "13",
+      "mode": 384
+    }
+  },
+  "receipt": {
+    "receipt": "profile-command-root/1",
+    "binding": {
+      "profile": "sample-profile",
+      "lock_sha256": "sha256:3d11420dfdba59a7f12dbb179ca7494c95ec10f23f43b7436d8f70c16f528c0c",
+      "plan_sha256": "sha256:6dc77f7c3464e7c41bce08b6c6a3eb5e4373081ec099eafe47b00067908ff076",
+      "generation": "sample-a1"
+    },
+    "root": {
+      "path": "/fixture/domain/global/bin",
+      "metadata": {
+        "platform": "posix",
+        "owner": "uid:1000",
+        "filesystem_id": "device:1",
+        "object_id": "10",
+        "mode": 493
+      }
+    },
+    "commands": [
+      {
+        "name": "memory",
+        "chain": [
+          {
+            "path": "/fixture/domain/global/bin/memory",
+            "kind": "symlink",
+            "metadata": {
+              "platform": "posix",
+              "owner": "uid:1000",
+              "filesystem_id": "device:1",
+              "object_id": "11",
+              "mode": 511
+            },
+            "sha256": "sha256:4f366226b12e0d5edc23af7ba2f4fd3267aa7f7b901bf164a44bdcffd90839bf",
+            "target": "/fixture/cache/sample-a1/memory"
+          },
+          {
+            "path": "/fixture/cache/sample-a1/memory",
+            "kind": "executable",
+            "metadata": {
+              "platform": "posix",
+              "owner": "uid:1000",
+              "filesystem_id": "device:1",
+              "object_id": "12",
+              "mode": 493
+            },
+            "sha256": "sha256:bb247bbbe1fa33445940ce53ee3351763184357361abf7019ebf758be42cfec6",
+            "target": null
+          }
+        ]
+      }
+    ]
+  },
+  "observed": {
+    "root_status": "readable",
+    "root_kind": "directory",
+    "root_metadata": {
+      "platform": "posix",
+      "owner": "uid:1000",
+      "filesystem_id": "device:1",
+      "object_id": "10",
+      "mode": 493
+    },
+    "receipt_kind": "regular",
+    "receipt_metadata": {
+      "platform": "posix",
+      "owner": "uid:1000",
+      "filesystem_id": "device:1",
+      "object_id": "13",
+      "mode": 384
+    },
+    "root_entries": [
+      ".curator-profile-command-root.json",
+      "memory"
+    ],
+    "objects": {
+      "/fixture/domain/global/bin/memory": {
+        "readable": true,
+        "kind": "symlink",
+        "metadata": {
+          "platform": "posix",
+          "owner": "uid:1000",
+          "filesystem_id": "device:1",
+          "object_id": "11",
+          "mode": 511
+        },
+        "links": 1,
+        "bytes": "/fixture/cache/sample-a1/memory"
+      },
+      "/fixture/cache/sample-a1/memory": {
+        "readable": true,
+        "kind": "executable",
+        "metadata": {
+          "platform": "posix",
+          "owner": "uid:1000",
+          "filesystem_id": "device:1",
+          "object_id": "12",
+          "mode": 493
+        },
+        "links": 1,
+        "bytes": "fixture memory artifact version one\n"
+      }
+    }
+  }
+}

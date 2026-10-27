@@ -3152,69 +3152,68 @@ row): the profile is reported as `environment_store_untrusted` and left
 unmaterialized.
 
 **Commands.** Ordinary shell delivery retains the manager's machine-current
-forwarding shims (manager §12.1; core §12.1). Managed-session delivery instead
-MUST satisfy the following companion contract on **every launch with a
-profile**, native and hosted, including resume/restart paths that create a
-new agent child. This amends revision 1's managed-home command limitation;
-it does not assert that existing launchers implement the amendment.
+forwarding shims (manager §12.1; core §12.1). The managed-session companion
+applies on every new agent child with a profile, including one-shot and
+restart/resume. The detailed [root receipt, verification, PATH admission and
+provenance contract](profile-command-path.md) is normative.
 
-**Verified profile command root.** Curator MUST publish an absolute,
-manager-owned command root and verified fragment bound to the selected
-profile and the section 1.3 digest of its complete lock. The active command
-set comes from that lock's admitted skill plan. Executable paths and digests
-remain in protected runtime receipts bound to the lock and plan, outside the
-portable lock. Matching the lock means verifying this chain, including the
-source pins, selected exports, shim targets and reached artifact bytes;
-a command name, directory spelling or digest without authority is insufficient.
+A profile whose admitted plan exports no commands gets **no prepend and no
+refusal** from this companion. In **Slice A**, a command-exporting non-current
+profile launches with an **explicit empty root decision** and diagnostic
+`profile commands unavailable: slice A serves only the machine-current profile`;
+this reason MUST NOT refuse launch. Empty means zero command paths, null
+root/receipt and no `path_prepend`, never an empty PATH component or a borrowed
+singleton root. The current profile instead requires the independently verified
+isolated machine-current root and exclusive routing admission covering
+verification through start. Missing, tampered, unreadable, stale or mismatched
+active evidence refuses without repair or fallback. The non-current test does
+not try to verify another profile through the current singleton root.
 
-In **Slice A**, the root is the isolated routing domain's machine-current
-command root. The selected profile MUST equal that domain's current profile,
-and the supervisor-issued exclusive routing admission MUST cover the root,
-runtime generation and all admitted consumers. Consumer admission MUST
-serialize root verification and process start against routing mutation under
-that domain's existing admission contract. A different profile, unknown
-consumer or unproven isolation refuses launch; inherited singleton shims never
-satisfy another profile's requirement.
-This changes the required launch delivery, not Slice A's publication boundary.
-In **Slice B later**, the root is the selected lock-bound immutable generation
-root. Its exact root grammar, successor carriers and lease/GC protocol require
-joint publication before use. Active sessions, retained snapshots, rollback
-slots and pending transactions MUST keep their referenced generation and
-receipts live. An update MUST NOT silently retarget a running session.
+**Native first; hosted dependency.** Hosted command delivery needs a joint
+carrier amendment owned by curator-run and the session host, with Curator for
+binding, for example `launch-delegated/2`. Until that carrier is jointly
+published, implemented and supported, a command-exporting hosted launch also
+uses an explicit empty root decision with a commands-unavailable diagnostic
+and **does not refuse for that reason**. The decision is caller-local: no PATH
+or root field is inserted into closed `launch-delegated/1` or its reserved
+`child_env`, and no changed final hosted PATH is claimed. Native delivery does
+not wait for that carrier. Slice A meets the owner requirement for the current
+profile after native qualification; **Slice B later** must deliver every
+selected profile's lock-bound generation, with joint carrier/root/lease/GC
+publication, concurrent version witnesses and no retargeting of active sessions.
 
-Before launch, missing, unreadable, tampered or stale roots, mismatched
-profile/lock/plan/generation bindings and unsupported delivery MUST refuse;
-there is no ambient-PATH or other-profile fallback. Verification covers owner,
-mode, confinement, filesystem identity and executable/receipt integrity under
-section 4, with the binding revalidated at the process-start boundary. A
-profile with no active exports still supplies a verified empty root; it does
-not authorize lookup of inactive commands through a foreign profile root.
+**PATH delivery.** Curator publishes the root and verified fragment; curator-run
+independently verifies its protected receipt/lock/plan/generation chain and
+applies `path_prepend` to the actual native child. Ordering is **protected tools,
+then verified profile root, then admitted base PATH**. Interactive native has
+no protected-tool directory by default; an operator-configured Curator-owned
+directory is verified and placed first. Managed/unattended D-PATH and dispatcher
+rules remain required. No-export/empty cases omit the middle list.
 
-**PATH delivery and owners.** The effective child PATH MUST contain protected
-tools first, then exactly one verified profile root, then the admitted base
-PATH. This adopts the accepted design's D-PATH placement recommendation for
-managed sessions, including managed one-shot launches. The verified root is
-prepended to the base PATH, never ahead of protected tools. Existing protected
-dispatcher placement, project-dispatch authentication, heavy-command controls
-and command-admission rules remain required. Base admission MUST reject
-foreign profile roots, unsafe or unreadable components, aliases that change
-the verified order, and ambiguous command owners; an inherited PATH is not
-authority. A later ambient PATH change MUST NOT trigger recomposition.
+Base admission has six closed predicates: empty, relative, duplicate, unreadable,
+world-writable and alias. Interactive native drops offending entries with one
+diagnostic line listing entries/actions. Managed or unattended refuses unreadable
+or world-writable entries and drops empty/relative/duplicate/alias entries with
+the same line. Aliases retain the first admitted filesystem identity; safety
+checks precede deduplication. User-writable is not by itself unsafe. Known
+manager-published profile roots are excluded from inherited PATH before this
+scan, as an authority rule; only the verified root is inserted anew. The detailed
+contract fixes predicate order, native-equivalent access checks and diagnostic
+escaping. Never recompose from a later ambient PATH.
 
 | Owner | Conformance obligation |
 | --- | --- |
-| Curator | Publish the verified root, its protected runtime/lock binding and the verified fragment carrying `path_prepend`; refuse invalid roots/bindings before successful fragment publication. Demonstrate valid and missing/tampered/stale-root cases without changing unrelated state. |
-| curator-run | Independently verify the fragment, selected profile pin, root and runtime binding; apply `path_prepend` after protected tools and before the admitted base PATH to the actual child environment. Record the effective PATH, fragment digest, lock/plan and generation binding. Demonstrate final-child PATH and reached-command path/digest, including rejection of inherited foreign roots and inert transport. Parsing the field alone is insufficient. |
-| Hosted session manager | Carry that same verified PATH and binding through the supported hosted contract to the final agent child. Verify admission/start bindings and preserve the sealed process environment; never drop the root, merge daemon PATH or resolve against machine-current shims. Demonstrate the same final-child and command witnesses through the real hosted route; an incapable receiver refuses without fallback. |
+| Curator | Publish the verified root, closed receipt and `path_prepend` fragment bound to the complete lock, plan and protected generation; preserve unrelated state on invalid-root refusals. No-export and unavailable cases publish no active root. |
+| curator-run | Independently check owner, mode, confinement, filesystem identity, complete shim chain and digests under the published procedure; reverify at start, apply native PATH once and persist effective PATH, fragment digest, lock/plan/generation and availability in a per-launch file under `${XDG_STATE_HOME}/swarma/launcher/`. Qualify both default/configured protected tools, drops/refusals and all three active-child witnesses. |
+| Hosted session manager, jointly with curator-run | Publish and implement the new required-understanding carrier before hosted delivery; carry the same root/PATH/binding into the final child and provenance into the session-launch request and manager session record. Qualify real hosted witnesses and refusal of a dropped negotiated root. Before that carrier exists, qualify continuation with explicit caller-local empty-root diagnostic, without claiming active delivery. |
 
-The [companion vectors](../conformance/profile-command-path/README.md) require
-the child's actual PATH, the reached command's path and digest, and binding
-to the complete lock digest on both routes. Printed fragments and abstract
-specification checks alone qualify none of these runtime obligations.
-Completion/adoption still refuses `profile_skill_companion_required` until
-the required companion allocations are accepted and the corresponding real
-runtime witnesses are qualified. The separate protected-command inventory
-companion remains required; this amendment does not allocate that inventory.
+The [paired vectors](../conformance/profile-command-path/README.md) require
+actual-child PATH, reached artifact path plus digest, and complete-lock binding
+for active native and supported hosted delivery. Abstract checks qualify no
+runtime. The combined completion/adoption gate
+`profile_skill_companion_required` stays until applicable companions and
+native/hosted/all-profile qualifications exist; empty-root launches do not clear
+it. The separate protected-command inventory companion remains required.
 
 Managed skill bin directories and any directory a skill
 publishes onto `PATH` MUST NOT carry an executable whose name begins with
@@ -3987,39 +3986,39 @@ unknown kinds, and unknown semantics or argument values.
   outside the environments root. These historical schema/reader meanings do
   not establish support for the managed-session companion below.
 
-**Managed-session command delivery companion.** Section 9.4 requires Curator
-to deliver its verified profile command root through `path_prepend`, and
-curator-run to verify and apply it to the final child PATH on both native and
-hosted launches. The value is one absolute root under the admitted manager
-boundary, with no `..` segment, bound to that fragment's profile lock digest
-and protected runtime receipt. Slice A's root can be the isolated domain's
-canonical command root outside the environments subtree; a historical reader
-that cannot verify this boundary MUST refuse, never relax its old check.
-No profile-authored PATH literal or shell initialization substitutes for it.
+**Managed-session command delivery companion.** Section 9.4 and the
+[detailed contract](profile-command-path.md) define native-first delivery.
+For an active root, Curator emits `path_prepend`; curator-run independently
+verifies the closed protected root receipt against the fragment's complete-lock
+pin, admitted plan and generation, then applies the field to the actual child.
+No-export and explicit empty-root availability cases omit it and do not refuse
+for that omission. They carry no empty-string path or profile-authored PATH.
 
-This is a required-understanding semantic amendment, not a new full-fragment
-revision allocation. Before emission the joint Curator/launcher/hosted
-publication MUST negotiate a complete carrier that transports the verified
-root, profile/lock/plan/generation binding and effective-PATH provenance.
-Published fragment schemas and historical closed carriers remain unchanged;
-the presence of reserved `path_prepend` in an old schema is not capability
-negotiation. An absent or unsupported carrier/consumer refuses the managed
-launch rather than ignoring the field or silently omitting command delivery.
-The project-context rule forbidding coexistence of `command_environment`
-with `path_prepend` remains in force: until a jointly specified combined
-carrier supports both operations, a request needing both MUST refuse.
+This is a required-understanding native semantic amendment, not a new full
+fragment revision. Joint Curator/curator-run release support and qualification
+must establish independent receipt verification and PATH application before
+active emission. The value is one absolute root within the independently
+admitted manager boundary, without `..` segments. Slice A's canonical root can
+be outside the environments subtree; an old reader that cannot verify that
+boundary must reject an active value, never relax its historical check.
+Existing full-fragment schemas and other required-understanding gates stay
+closed; reserved syntax alone establishes no capability.
 
-The launcher MUST construct the complete effective PATH once, after
-verification and base admission, in the section 9.4 order. Native execution
-MUST pass that value to the actual child; hosted execution MUST carry the
-same value and bindings in its required-understanding launch contract.
-Exact-plan hosting MUST cover them with the complete process digest;
-delegated hosting MUST preserve and verify them through its own negotiated
-contract, without claiming snapshot provenance. The final process-start
-boundary MUST reject substituted or dropped PATH/binding data, without native
-fallback, a new session or repair. Existing credential and permission policy
-remain unchanged. Slice B's full carrier, root grammar and lease/GC allocation
-remain separate publication gates; this amendment claims no runtime support.
+Native execution constructs PATH once after verification/base admission and
+records the closed per-launch provenance under `${XDG_STATE_HOME}/swarma/launcher/`.
+The future hosted carrier must carry effective PATH, root/receipt and binding
+in its session-launch request and manager record, with independent start checks.
+`launch-delegated/1` cannot carry these and MUST NOT gain ad hoc fields or
+reserved `child_env.PATH`. Until a joint amendment owned by curator-run and the
+session host exists, hosted command availability is explicitly empty with a
+diagnostic, without refusing the otherwise valid launch or claiming delivery.
+A supported carrier that drops an active root fails verification before start.
+
+The `command_environment`/`path_prepend` exclusion remains: needing both
+requires a jointly accepted combined carrier or refuses. Existing permission,
+credential, dispatcher and command-admission policy remain in force. Slice B
+root/lease/GC and all-profile delivery remain separate publication and runtime
+gates. This amendment implements and qualifies no launcher or session host.
 
 **`launch-env-fragment-v3`.** Revision v3 retains the v2 permissions
 contract and adds `muse` with exactly the four section 7.1 XDG variables.
