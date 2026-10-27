@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/skillfile-mcp-v1/mcp-approval-v1.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "capability": {
+      "const": "skillfile-mcp-stage-a-v1"
+    },
+    "kind": {
+      "const": "package-ownership-action"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}(?![\\s\\S])"
+    },
+    "server_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    },
+    "content_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    },
+    "operation": {
+      "enum": [
+        "replace",
+        "restore",
+        "remove",
+        "release"
+      ]
+    },
+    "approver": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "policy_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    },
+    "state": {
+      "enum": [
+        "active",
+        "revoked"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "capability",
+    "kind",
+    "project_id",
+    "name",
+    "server_sha256",
+    "content_sha256",
+    "operation",
+    "approver",
+    "policy_sha256",
+    "state"
+  ],
+  "additionalProperties": false
+}

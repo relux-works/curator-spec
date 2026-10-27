@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/skillfile-mcp-v1/mcp-plan-v1.schema.json",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "capability": {
+      "const": "skillfile-mcp-stage-a-v1"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "manifest_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    },
+    "lock_sha256": {
+      "oneOf": [
+        {
+          "$ref": "../v1/common.schema.json#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "dry_run": {
+      "type": "boolean"
+    },
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}(?![\\s\\S])"
+          },
+          "environment": {
+            "enum": [
+              "claude_code",
+              "codex_cli",
+              "opencode",
+              "pi",
+              "muse"
+            ]
+          },
+          "path": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "../v1/common.schema.json#/$defs/portablePath"
+              }
+            ]
+          },
+          "outcome": {
+            "enum": [
+              "added",
+              "updated",
+              "unchanged",
+              "restored",
+              "removed",
+              "released",
+              "skipped: drift",
+              "skipped: unsupported",
+              "conflict: foreign entry",
+              "refused"
+            ]
+          },
+          "code": {
+            "enum": [
+              null,
+              "mcp_declaration_invalid",
+              "mcp_package_not_allowed",
+              "mcp_package_allowlist_empty",
+              "mcp_inline_approval_unsupported",
+              "mcp_contribution_policy_refused",
+              "mcp_native_entry_conflict",
+              "context-secret-material",
+              "source_snapshot_unavailable",
+              "source_snapshot_changed",
+              "source_lock_stale",
+              "context_source_signer_rejected",
+              "environment_surface_unreadable",
+              "profile_source_invalid",
+              "context_source_unsigned",
+              "context_source_signers_missing",
+              "context_version_mismatch",
+              "source_allowlist_empty"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "environment",
+          "path",
+          "outcome",
+          "code"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "install_options": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,127}(?![\\s\\S])"
+          },
+          "option": {
+            "type": "string"
+          },
+          "handling": {
+            "const": "ignored"
+          }
+        },
+        "required": [
+          "name",
+          "option",
+          "handling"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "plan_sha256": {
+      "$ref": "../v1/common.schema.json#/$defs/sha256"
+    }
+  },
+  "required": [
+    "schema_version",
+    "capability",
+    "project_id",
+    "manifest_sha256",
+    "lock_sha256",
+    "dry_run",
+    "rows",
+    "install_options",
+    "plan_sha256"
+  ],
+  "additionalProperties": false
+}

@@ -57,6 +57,16 @@ behavior not expressible in a schema. Conformance vectors define exact bytes
 and required outcomes. If these sources disagree, the release is defective;
 an implementation is never the normative oracle.
 
+## Project Skillfile MCP stage A
+
+[Stage A revision 1](protocol/skillfile-mcp.md) and
+[Decision 0030](decisions/0030-project-skillfile-mcp-stage-a.md) publish project
+schema 3, package-first MCP trust, the [closed runtime-pin sheet](protocol/mcp-runtime-pins.md),
+[versioned carriers](schemas/skillfile-mcp-v1/README.md) and
+[a separate corpus](conformance/skillfile-mcp-v1/README.md). Inline arms remain
+refused pending CIP-0002 admission. No native writer or launch qualification
+is claimed by these specification artifacts.
+
 ## Accepted source extension
 
 [Skillfile sources revision 1](protocol/skillfile-sources.md) defines the
@@ -196,6 +206,12 @@ schemas. Its separate schema and corpus require implementation qualification.
   validate closed records and authority cases under
   `conformance/provisioning-origin-v1/`. The production validator dispatches
   this gate. Store logs in `.temp/`; no manager lifecycle is executed here.
+
+- Skillfile MCP stage-A gate: `python3 tools/validate.py` dispatches
+  `tools/skillfile_mcp.py`; focused controls run with
+  `python3 -B -m unittest discover -s tools -p 'test_skillfile_mcp.py'`.
+  Inputs and expected verdicts live in `conformance/skillfile-mcp-v1/`; checks
+  report to stdout and do not acquire packages or write native configuration.
 
 Published `release/<version>.json` records are byte-frozen against release
 tags. Regeneration updates [candidate metadata](conformance/candidate.json)
@@ -379,3 +395,10 @@ through `python3 tools/validate.py`; regeneration uses
 `python3 tools/generate_project_context_vectors.py --check`. Outputs go to
 stdout; task-local logs belong in `.temp/`. These static checks qualify no
 native runtime or permission boundary.
+
+The stage-A grammar oracle reuses `tools/ccj1_grammar.py` for lexical integer
+spelling, pre-conversion token bounds, per-component portable paths and
+private-catalog true-end guards. Run the shared positive, negative
+and narrowing controls with
+`python3 -B -m unittest discover -s tools -p test_ccj1_grammar.py`. These tests
+emit no files and do not rewrite released schema documents.

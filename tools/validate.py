@@ -12190,6 +12190,16 @@ def validate_codex_seed_c() -> None:
     print(f"Codex seed C: {count} specification cases; runtime qualification: unverified")
 
 
+def validate_skillfile_mcp() -> None:
+    import skillfile_mcp
+
+    try:
+        total, negatives = skillfile_mcp.check_corpus(ROOT)
+    except (ValueError, OSError, SchemaError) as exc:
+        raise ValidationFailure(f"Skillfile MCP stage A: {exc}") from exc
+    print(f"Skillfile MCP stage-A cases: {total}/{total}; negatives: {negatives}/{negatives}; native writer qualification: unrun")
+
+
 def main(*, release_history_only: bool = False) -> int:
     checks = [
         validate_released_record_immutability,
@@ -12203,6 +12213,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_provisioning_origin,
         validate_project_context_leaf1,
         validate_codex_seed_c,
+        validate_skillfile_mcp,
         validate_draft_source_schemas,
         validate_draft_sources_manifest,
         validate_source_marker_ownership_vectors,
