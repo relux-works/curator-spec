@@ -27,5 +27,14 @@ blocking records only for a leased-home diagnostic, with count equal to rows;
 `list` includes terminal records too. No negative shape case counts as runtime
 lease/no-write proof. See the [paired corpus](../../conformance/home-leases-v1/README.md).
 
+Acquire `acquired` results carry a currently blocking lease. Identical acquire
+replay after termination instead returns `already_released` or `already_broken`
+with the matching current terminal phase, `changed:false`, exit 0 and `ok:true`.
+These are non-admitting retrieval outcomes: HL06/HL21 require zero manager calls,
+settled not-started op.json and launcher `session_home_lease_unavailable` carrying
+Curator's terminal reason. A historical prepared snapshot cannot authorize a
+start after termination; freshness against the store is a semantic requirement.
+Bind success likewise cannot report a terminal lease.
+
 Run `python3 tools/home_leases.py` and the focused unittest command in the corpus
 README. Normal `python3 tools/validate.py` invokes the same corpus checks.

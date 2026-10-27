@@ -70,10 +70,18 @@ Schema-valid shape alone supplies no lifecycle or observation authority.
 
 **HL06.** Acquire MUST use a launcher-persisted `request_id` and canonical payload
 binding, durable before its first attempt. Replaying an identical request returns
-the same lease and original outcome, including after a lost reply; changing its
-payload returns `environment_lease_holder_mismatch/request_conflict`. The request
-index is manager-wide and retained with tombstones; retries never revive a
-terminal lease. First acquire requires a prepared holder matching `--request-id`.
+the same lease at its current disposition, including after a lost reply; changing
+its payload returns `environment_lease_holder_mismatch/request_conflict`. While
+the lease remains blocking, replay returns `acquired` with `changed:false`.
+Current terminal disposition MUST take precedence over historical acquire
+success: a released/broken replay returns `already_released`/`already_broken`,
+respectively, with the current terminal record and `changed:false` (exit 0,
+`ok:true`, `code:null`). This is a **non-admitting terminal replay**: successful
+outcome retrieval is not current launch authority. The consumer MUST follow
+HL21's no-start rule. The request index is manager-wide and retained with
+tombstones; replay MUST NOT allocate, revive or alter the lease, binding,
+tombstone or audit. Only fresh admission under a new `request_id` can lease
+again. First acquire requires a prepared holder matching `--request-id`.
 Its prepared record is blocking before success is acknowledged.
 
 **HL07.** Bind MUST compare `--if-revision` and the exact request, manager ID and
@@ -81,7 +89,9 @@ registration incarnation, Werkstatt and session/generation/process tuple from
 authoritative manager evidence. It changes prepared to active, advances the
 revision by one and makes the bound tuple immutable. An identical committed
 retry with the original revision/payload returns that bind outcome without a
-write; other stale revisions conflict. A different tuple, wrong incarnation,
+write only while the lease is nonterminal; terminal refusal takes precedence
+over this idempotent retry. Other stale revisions conflict. A different tuple,
+wrong incarnation,
 unknown ID or terminal lease refuses. Binding is not a liveness assertion.
 
 **HL08.** Prepared, active and unknown records MUST all block overlapping writers.
@@ -247,15 +257,27 @@ boundaries are not redefined by this table. A break retry may report
 `already_broken` only for the same original break identity/revision/reason;
 conflicting retries refuse. Release takes no caller-evidence flag: observation
 is Curator's reconciliation dependency, not JSON supplied as authority.
+For acquire, exit 0 with `already_released` or `already_broken` reports only
+terminal replay retrieval; it MUST NOT admit a launch (HL06/HL21). `acquired`
+MUST carry a currently blocking record, never a terminal record or a historical
+prepared snapshot in place of the current terminal disposition.
 
 ## 5. Consumer requirements and isolation policy
 
 **HL21 (L1).** curator-run MUST durably write recoverable `op.json` phase
 `lease_requested` with request ID, env, profile, admitted digest and identical
 holder payload **before** first acquire for every hosted launch/resume and
-`werkstatt up`. The manager call follows successful acquire. Lost-reply recovery
-retries exactly that payload, then proceeds or reconciles no-start evidence.
-Lock mismatch requires fresh admission, never silent digest replacement.
+`werkstatt up`. When reconciling a `lease_requested` op.json, curator-run MUST
+replay the identical acquire. If the replay reports a released or broken lease,
+the result is non-admitting: the launcher MUST make **zero manager calls**,
+settle op.json as **not started**, and refuse with
+`session_home_lease_unavailable` (exit 1), carrying Curator's terminal reason
+(`already_released` or `already_broken`). It MUST NOT treat exit 0/`ok:true`
+alone as launch authority. Only fresh admission with a new `request_id` can
+lease again. Paired lost-reply control: replay of a still-prepared blocking
+lease returns `acquired` for the same lease with `changed:false`, then proceeds
+to the manager call **exactly once**. Lock mismatch requires fresh admission,
+never silent digest replacement.
 
 **HL22 (L2).** After manager `started`, curator-run MUST bind immediately with exact
 manager registration, session, generation, process incarnation and Werkstatt,
@@ -266,8 +288,12 @@ A future reserve/start split binds durably before provider start.
 **HL23 (L3).** curator-run MUST request release only after exact `down`/termination
 or proven no-start from settled operation/manager evidence. Unknown, unreachable,
 `draining`, absent or re-registered managers retain the lease. It must expose the
-closed registry/status observation contract needed by HL09; forwarding its own
-assertion is insufficient. `recover --abandon-operation` never releases/breaks
+read-only command `curator-run session-manager observe <id> --session <handle> --json`
+as the closed registry/status observation contract needed by HL09.
+curator-run owns this command; Curator MUST NOT speak the manager plugin
+protocol directly. The observation must satisfy HL09's exact-incarnation and
+no-start evidence requirements; forwarding its own assertion is insufficient.
+`recover --abandon-operation` never releases/breaks
 by itself: report the exact lease/revision and explicit operator break command.
 This also carries L4. Acquire failures become launcher
 `session_home_lease_unavailable` (exit 1), preserving Curator code/reason; lock

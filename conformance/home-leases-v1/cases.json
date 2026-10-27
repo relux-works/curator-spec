@@ -159,9 +159,9 @@
       "positive": {
         "setup": "Persist request R then crash after durable acquire before reply/op.json progress",
         "steps": [
-          "Retry identical R; list orphan; retry after terminal"
+          "Retry identical R while still prepared after a lost reply; list orphan"
         ],
-        "expected": "same_id_no_duplicate_no_revive"
+        "expected": "same_id_acquired_changed_false_no_duplicate_then_exactly_one_manager_call"
       }
     },
     {
@@ -1911,6 +1911,286 @@
           "code": null,
           "reason": "listed"
         }
+      }
+    },
+    {
+      "requirement": "HL06",
+      "negative": {
+        "setup": "Durable lease_requested op.json for R; acquire committed but reply lost; lease later released; retained terminal record, binding, request tombstone and audit preimages",
+        "steps": [
+          "Reconcile lease_requested by replaying exactly R and its original acquire payload",
+          "Inspect reply, manager-call counter, settled op.json and launcher refusal"
+        ],
+        "expected": {
+          "operation": "acquire",
+          "exit": 0,
+          "ok": true,
+          "code": null,
+          "reason": "already_released",
+          "phase": "released",
+          "changed": false,
+          "same_lease_id": true,
+          "manager_calls": 0,
+          "op_settlement": "not_started",
+          "launcher_exit": 1,
+          "launcher_code": "session_home_lease_unavailable",
+          "curator_reason": "already_released"
+        },
+        "preserve": [
+          "terminal_record_bytes_and_revision",
+          "immutable_acquisition_binding",
+          "request_index_and_tombstone",
+          "permanent_terminal_audit",
+          "home_bytes_links_modes",
+          "other_holders"
+        ],
+        "forbidden": [
+          "manager_call",
+          "provider_start",
+          "historical_acquired_reply",
+          "historical_prepared_snapshot",
+          "lease_allocation_or_revival",
+          "silent_request_id_replacement"
+        ]
+      },
+      "positive": {
+        "setup": "The old R lease is released; the home is freshly admitted under a new request_id R2 and current digest",
+        "steps": [
+          "Persist a separate lease_requested operation for R2; acquire R2",
+          "Start through the manager once under the new prepared lease"
+        ],
+        "expected": {
+          "reason": "acquired",
+          "phase": "prepared",
+          "changed": true,
+          "new_lease_id": true,
+          "new_request_id": true,
+          "manager_calls": 1,
+          "old_terminal_record_tombstone_audit_unchanged": true
+        }
+      }
+    },
+    {
+      "requirement": "HL21",
+      "negative": {
+        "setup": "Durable lease_requested op.json for R; acquire committed but reply lost; lease later released; retained terminal record, binding, request tombstone and audit preimages",
+        "steps": [
+          "Reconcile lease_requested by replaying exactly R and its original acquire payload",
+          "Inspect reply, manager-call counter, settled op.json and launcher refusal"
+        ],
+        "expected": {
+          "operation": "acquire",
+          "exit": 0,
+          "ok": true,
+          "code": null,
+          "reason": "already_released",
+          "phase": "released",
+          "changed": false,
+          "same_lease_id": true,
+          "manager_calls": 0,
+          "op_settlement": "not_started",
+          "launcher_exit": 1,
+          "launcher_code": "session_home_lease_unavailable",
+          "curator_reason": "already_released"
+        },
+        "preserve": [
+          "terminal_record_bytes_and_revision",
+          "immutable_acquisition_binding",
+          "request_index_and_tombstone",
+          "permanent_terminal_audit",
+          "home_bytes_links_modes",
+          "other_holders"
+        ],
+        "forbidden": [
+          "manager_call",
+          "provider_start",
+          "historical_acquired_reply",
+          "historical_prepared_snapshot",
+          "lease_allocation_or_revival",
+          "silent_request_id_replacement"
+        ]
+      },
+      "positive": {
+        "setup": "Durable lease_requested op.json for R; acquire committed but reply lost; the same lease is still prepared and blocking; no manager call has occurred",
+        "steps": [
+          "Reconcile lease_requested by replaying exactly R and its original acquire payload",
+          "Recover the same prepared lease and proceed to the manager call exactly once"
+        ],
+        "expected": {
+          "reason": "acquired",
+          "phase": "prepared",
+          "changed": false,
+          "same_lease_id": true,
+          "manager_calls": 1,
+          "no_duplicate_reservation": true
+        }
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "An identical bind committed, then its lease became released",
+        "steps": [
+          "Replay the original committed bind payload and revision after termination"
+        ],
+        "expected": "terminal_refusal_precedes_historical_bound_outcome",
+        "preserve": [
+          "terminal_record_bytes_and_revision",
+          "request_tombstone",
+          "permanent_terminal_audit"
+        ],
+        "forbidden": [
+          "historical_bound_success",
+          "revival",
+          "record_or_audit_write"
+        ]
+      },
+      "positive": {
+        "setup": "The same committed bind remains active and nonterminal",
+        "steps": [
+          "Replay the identical original bind payload and revision"
+        ],
+        "expected": "bound_same_outcome_no_write_retry"
+      }
+    },
+    {
+      "requirement": "HL06",
+      "negative": {
+        "setup": "Durable lease_requested op.json for R; acquire committed but reply lost; lease later broken; retained terminal record, binding, request tombstone and audit preimages",
+        "steps": [
+          "Reconcile lease_requested by replaying exactly R and its original acquire payload",
+          "Inspect reply, manager-call counter, settled op.json and launcher refusal"
+        ],
+        "expected": {
+          "operation": "acquire",
+          "exit": 0,
+          "ok": true,
+          "code": null,
+          "reason": "already_broken",
+          "phase": "broken",
+          "changed": false,
+          "same_lease_id": true,
+          "manager_calls": 0,
+          "op_settlement": "not_started",
+          "launcher_exit": 1,
+          "launcher_code": "session_home_lease_unavailable",
+          "curator_reason": "already_broken"
+        },
+        "preserve": [
+          "terminal_record_bytes_and_revision",
+          "immutable_acquisition_binding",
+          "request_index_and_tombstone",
+          "permanent_terminal_audit",
+          "home_bytes_links_modes",
+          "other_holders"
+        ],
+        "forbidden": [
+          "manager_call",
+          "provider_start",
+          "historical_acquired_reply",
+          "historical_prepared_snapshot",
+          "lease_allocation_or_revival",
+          "silent_request_id_replacement"
+        ]
+      },
+      "positive": {
+        "setup": "The old R lease is broken; the home is freshly admitted under a new request_id R2 and current digest",
+        "steps": [
+          "Persist a separate lease_requested operation for R2; acquire R2",
+          "Start through the manager once under the new prepared lease"
+        ],
+        "expected": {
+          "reason": "acquired",
+          "phase": "prepared",
+          "changed": true,
+          "new_lease_id": true,
+          "new_request_id": true,
+          "manager_calls": 1,
+          "old_terminal_record_tombstone_audit_unchanged": true
+        }
+      }
+    },
+    {
+      "requirement": "HL21",
+      "negative": {
+        "setup": "Durable lease_requested op.json for R; acquire committed but reply lost; lease later broken; retained terminal record, binding, request tombstone and audit preimages",
+        "steps": [
+          "Reconcile lease_requested by replaying exactly R and its original acquire payload",
+          "Inspect reply, manager-call counter, settled op.json and launcher refusal"
+        ],
+        "expected": {
+          "operation": "acquire",
+          "exit": 0,
+          "ok": true,
+          "code": null,
+          "reason": "already_broken",
+          "phase": "broken",
+          "changed": false,
+          "same_lease_id": true,
+          "manager_calls": 0,
+          "op_settlement": "not_started",
+          "launcher_exit": 1,
+          "launcher_code": "session_home_lease_unavailable",
+          "curator_reason": "already_broken"
+        },
+        "preserve": [
+          "terminal_record_bytes_and_revision",
+          "immutable_acquisition_binding",
+          "request_index_and_tombstone",
+          "permanent_terminal_audit",
+          "home_bytes_links_modes",
+          "other_holders"
+        ],
+        "forbidden": [
+          "manager_call",
+          "provider_start",
+          "historical_acquired_reply",
+          "historical_prepared_snapshot",
+          "lease_allocation_or_revival",
+          "silent_request_id_replacement"
+        ]
+      },
+      "positive": {
+        "setup": "Durable lease_requested op.json for R; acquire committed but reply lost; the same lease is still prepared and blocking; no manager call has occurred",
+        "steps": [
+          "Reconcile lease_requested by replaying exactly R and its original acquire payload",
+          "Recover the same prepared lease and proceed to the manager call exactly once"
+        ],
+        "expected": {
+          "reason": "acquired",
+          "phase": "prepared",
+          "changed": false,
+          "same_lease_id": true,
+          "manager_calls": 1,
+          "no_duplicate_reservation": true
+        }
+      }
+    },
+    {
+      "requirement": "HL07",
+      "negative": {
+        "setup": "An identical bind committed, then its lease became broken",
+        "steps": [
+          "Replay the original committed bind payload and revision after termination"
+        ],
+        "expected": "terminal_refusal_precedes_historical_bound_outcome",
+        "preserve": [
+          "terminal_record_bytes_and_revision",
+          "request_tombstone",
+          "permanent_terminal_audit"
+        ],
+        "forbidden": [
+          "historical_bound_success",
+          "revival",
+          "record_or_audit_write"
+        ]
+      },
+      "positive": {
+        "setup": "The same committed bind remains active and nonterminal",
+        "steps": [
+          "Replay the identical original bind payload and revision"
+        ],
+        "expected": "bound_same_outcome_no_write_retry"
       }
     }
   ]

@@ -94,7 +94,22 @@
               "type": "boolean"
             },
             "lease": {
-              "$ref": "record.schema.json"
+              "allOf": [
+                {
+                  "$ref": "record.schema.json"
+                },
+                {
+                  "properties": {
+                    "phase": {
+                      "enum": [
+                        "prepared",
+                        "active",
+                        "unknown"
+                      ]
+                    }
+                  }
+                }
+              ]
             }
           }
         },
@@ -134,7 +149,22 @@
               "type": "boolean"
             },
             "lease": {
-              "$ref": "record.schema.json"
+              "allOf": [
+                {
+                  "$ref": "record.schema.json"
+                },
+                {
+                  "properties": {
+                    "phase": {
+                      "enum": [
+                        "prepared",
+                        "active",
+                        "unknown"
+                      ]
+                    }
+                  }
+                }
+              ]
             }
           }
         },
@@ -680,6 +710,104 @@
         },
         "details": {
           "$ref": "#/$defs/details"
+        }
+      }
+    },
+    {
+      "properties": {
+        "operation": {
+          "const": "acquire"
+        },
+        "ok": {
+          "const": true
+        },
+        "exit": {
+          "const": 0
+        },
+        "code": {
+          "type": "null"
+        },
+        "reason": {
+          "const": "already_released"
+        },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "changed",
+            "lease"
+          ],
+          "properties": {
+            "changed": {
+              "const": false
+            },
+            "lease": {
+              "allOf": [
+                {
+                  "$ref": "record.schema.json"
+                },
+                {
+                  "properties": {
+                    "phase": {
+                      "const": "released"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "details": {
+          "type": "null"
+        }
+      }
+    },
+    {
+      "properties": {
+        "operation": {
+          "const": "acquire"
+        },
+        "ok": {
+          "const": true
+        },
+        "exit": {
+          "const": 0
+        },
+        "code": {
+          "type": "null"
+        },
+        "reason": {
+          "const": "already_broken"
+        },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "changed",
+            "lease"
+          ],
+          "properties": {
+            "changed": {
+              "const": false
+            },
+            "lease": {
+              "allOf": [
+                {
+                  "$ref": "record.schema.json"
+                },
+                {
+                  "properties": {
+                    "phase": {
+                      "const": "broken"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "details": {
+          "type": "null"
         }
       }
     }

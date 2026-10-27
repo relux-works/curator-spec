@@ -209,7 +209,8 @@ schemas. Its separate schema and corpus require implementation qualification.
   in [home-lease conformance](conformance/home-leases-v1/README.md); logs go in
   `.temp/`. These commands execute no lease runtime or provider. The
   [contract](protocol/home-leases.md) records CIP-0016's 2026-10-27 confirmed
-  refuse and per-Werkstatt/lane conditions before implementation.
+  refuse and per-Werkstatt/lane conditions before implementation, including
+  non-admitting terminal acquire replay and paired launcher no-start controls.
 
 - Provisioning-origin publication: `python3 tools/provisioning_origin.py` and
   `python3 -B -m unittest discover -s tools -p 'test_provisioning_origin.py' -v`

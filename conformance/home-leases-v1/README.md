@@ -19,6 +19,15 @@ structured expectations pin the explicit code/exit projection. A negative can
 be a safe successful no-op (unknown release), with creation of a record/event as
 the forbidden outcome. Pair IDs refer to protocol obligations, not case names.
 
+Terminal acquire replay vectors separately cover released and broken leases:
+zero manager calls, not-started op.json, launcher refusal carrying Curator's
+terminal reason, and unchanged record/binding/tombstone/audit. Each is paired
+with a still-prepared lost-reply replay or fresh admission under a new request ID;
+both admitting controls require exactly one manager call. Shape pairs reject
+terminal records labeled `acquired`, mismatched terminal outcomes, changed
+terminal retrievals and terminal outcomes carrying historical prepared snapshots.
+HL07 pairs require terminal refusal before historical bind replay success.
+
 The data checker verifies schema/decoder verdicts and requirement/pair coverage.
 It executes no manager, launcher, lock, process, recovery engine or home writer.
 Later runtime qualification must drive each real writer/CLI and consumer path
