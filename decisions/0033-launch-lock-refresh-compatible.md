@@ -19,8 +19,11 @@ retained resolution record, not permission, a signature or a policy grant.
 Ordinary launch currently invokes only
 `curator env resolve <env> [--profile <P>] --repair --format json`.
 It repairs or consumes the stored lock; it does not call `profile update` or
-refresh dependency ranges. This is the launcher source owner's reported fact,
-not a runtime test performed for this draft. The proposed refresh belongs
+refresh dependency ranges. The launcher source owner additionally distinguishes
+native provider-thread relaunch from hosted identity-preserving resume: native
+launch has no stored launcher admission identity, while hosted resume does.
+These are reported source facts, not runtime tests performed for this draft.
+The proposed refresh belongs
 inside that resolve operation, not in a launcher wrapper or a second update
 prelude. Manual per-keeper updates would cease for eligible new launches.
 
@@ -82,7 +85,7 @@ Propose these resolve inputs, negotiated before use:
 ```text
 curator env resolve <env> [--profile <P>] --repair --format json
     [--expect-lock sha256:<64 lowercase hex>] [--no-refresh]
-    [--confirm-system-delta]
+    [--confirm-system-delta] [--readmit-profile <protected-readmission-ref>]
 ```
 
 `--expect-lock` supplies an independently admitted **complete profile lock**
@@ -95,8 +98,8 @@ later. All Werkstatt runs keep their admitted pin, including up/recycle of an
 existing record. Refresh is a separate stopped-task operator action, outside
 this decision's automatic path.
 
-The launcher sends `--no-refresh` on **every resume and continue path**, native
-or hosted, and also passes the session's admitted lock via `--expect-lock`.
+The launcher sends `--no-refresh` by default on **hosted resume and continue**,
+and passes the session's admitted lock via `--expect-lock`.
 No-refresh prohibits resolution or lock identity migration, including an
 otherwise automatic v1-to-v2 migration. Apply the existing preserve-lock
 discipline: repair to exactly that lock or refuse before mutation. It cannot
@@ -106,11 +109,11 @@ its existing migration refusal. An explicit no-refresh is always permitted;
 it does not authorize any other operation. Without `--repair`, resolve remains
 read-only and never fetches, refreshes or recovers a journal.
 
-A restarted process is not necessarily a new session. A restart continuing
-an existing provider thread follows resume rules. Only a genuinely new
-session without an admitted record/session pin is eligible. Updating an
-existing keeper while preserving its thread needs a separately approved
-identity/adoption contract; this draft does not claim to deliver that case.
+**Never refresh under a RUNNING session or a running Werkstatt task.** A
+stopped native thread's deliberate relaunch and an explicitly re-admitted down
+hosted session may refresh and continue the same thread, under the route rules
+below. Same-thread upgrade/restart is part of this decision, not a separate
+design decision. Frozen hosted resume remains the default.
 
 Propose one required, closed JSON member in a **negotiated successor resolve
 fragment**, named `lock_refresh`, with exactly these fields:
@@ -135,20 +138,128 @@ the jointly negotiated hosted request. It does not resolve versions, choose
 policy or mutate a lock. Missing successor support cannot silently drop the
 resume/pin inputs or label the old behavior as refresh-capable.
 
+### 2.1 Native stopped-thread upgrade and restart
+
+Native keepers launch through
+`curator run <env> --profile P --native -- <provider resume arguments>`.
+There is no launcher admission record to replace. Each launch resolves P
+through `env resolve --repair`; native resume arguments are the provider's own
+continuation request, not hosted `resume SES-…`. They do not imply no-refresh
+or an old `--expect-lock` pin. The operator stops the keeper at a safe checkpoint,
+waits for termination and reconciles any outstanding work, then deliberately
+relaunches the same thread with P's refresh-compatible policy. That relaunch's
+resolve may adopt the newest compatible lock and render it before provider
+resume. Explicit frozen policy/no-refresh still keeps the old lock.
+
+The thread identifier, history, goals and continuation data remain in the same
+managed home; refreshing managed context/commands must not replace the home,
+clear native state or create a fresh thread/keeper identity. Record old/new
+locks through `lock_refresh` and the new per-launch provenance. Recheck the
+normal operator, signer, confirmation and launch gates. Native launches acquire
+no hosted home lease; manager mutation serialization and the checks against any
+overlapping hosted lease still apply. A running native consumer of the affected
+home, or unconfirmed termination at this restart checkpoint, refuses before
+refresh writes. A lack of native lifetime leases is not evidence of idleness:
+native stop/ownership observation is a qualification obligation of the refresh
+route, not a claim that #193 already tracks native sessions.
+
+### 2.2 Hosted stopped-session operator re-admission
+
+Ordinary FRONT-DOOR §5.3 resume keeps its stored admitted Curator identity.
+If the current identity differs, refuse `session_curator_identity_stale` before
+provider start, without updating the stored record. No-refresh is not permission
+to ignore this comparison. The explicit operator alternative is
+`resume SES-… --readmit-profile`, owned by curator-run's FRONT-DOOR amendment.
+It is prohibited for Werkstatt records with `profile_lock_sha256`.
+
+The launcher calls the proposed Curator resolve form above with
+`--readmit-profile <protected-readmission-ref>`, without `--expect-lock`,
+`--no-refresh` or `--preserve-lock`. Combining those inputs is `usage`, not a
+silent override of a frozen pin. The protected reference is issued through
+independently authenticated operator/manager authority; a caller-supplied
+`down` boolean, session ID or pair of matching digests is not admission.
+The resolve contract is:
+
+1. Validate a closed, single-operation readmission record binding the operator
+   approval, operation ID, registered manager incarnation, exact session and
+   generation, profile/environment/home, stored admitted identity, current
+   complete profile lock and authoritative stop/checkpoint observation. The
+   manager must report that exact generation **`down`**, with provider and
+   descendants terminated and ownership reconciled. Running, draining, unknown,
+   unreachable, stale or different-generation observations refuse before writes.
+   Stored session lock and current profile lock are separate preimages: a stale
+   session may be deliberately re-admitted, but neither preimage may be replaced
+   by an unchecked caller value. Frozen machine policy still vetoes automatic
+   range refresh; readmission grants no override of policy or system consent.
+2. Hold an exclusive readmission reservation under Curator's home-lease authority
+   for that exact down session/home while resolving, verifying and adopting the
+   candidate. Validate the reservation's operation, incarnation and revision
+   under the manager-home lock at every publication boundary. No other prepared,
+   active or unknown holder may overlap. The lease remains held through identity
+   recording and transfer to start admission; no release/reacquire gap is allowed.
+   This proposes a scoped successor to #193's guarded-write contract: only this
+   authenticated reservation authorizes its own listed lock/render writes.
+   An ordinary prepared lease never grants such an exception. Existing closed
+   holders and immutable acquisition bindings are not silently reinterpreted.
+3. Run the same compatible resolution, verification, system-delta confirmation,
+   journal and render algorithm. Journal the old/current lock preimages, the
+   new lock/generation and an immutable readmission receipt. Retain old lock,
+   managed history and prior continuation record. The receipt binds both complete
+   old stored-session identity and new admitted identity (profile, lock, plan,
+   protected generation), the current-lock preimage, exact session/generation,
+   operation/manager/operator and held reservation reference. Record the actual
+   actor and approver; neither a package nor a keeper relay can approve it.
+4. Return the new fragment plus a protected receipt reference/digest in a
+   negotiated closed readmission result. `lock_refresh` continues to report the
+   current-profile-lock transition; the receipt separately records the stored
+   session identity transition, even if the profile was already at the target
+   lock and `lock_refresh.status` is `unchanged`. The session host must CAS its
+   still-down exact generation/old identity to the new identity and append the
+   receipt before provider resume, preserving the same native thread/history.
+   curator-run owns the orchestration; **swarma-session-host owns the stored
+   identity and resume/1 change**, not tb-sessiond. Curator does not edit the
+   session host's ledger directly or claim a cross-process atomic rename.
+5. A lost reply/retry uses the operation's retained receipt and journal; it does
+   not refresh again or append a second identity transition. If manager CAS or
+   acknowledgement fails after Curator publication, keep the session down, keep
+   the reservation and pending receipt, and refuse start until reconciliation.
+   Never report old identity with a usable new start. A race to running or
+   generation drift cannot be fixed by overwriting the manager record. On
+   successful CAS, consume the reservation into a fresh prepared start lease
+   bound to the new identity, then recheck and bind before provider start.
+   Retain the old reservation/binding as terminal audit, never retarget its
+   immutable lock binding or accept terminal replay as start authority.
+
+A deferred refresh is not successful hosted readmission: report the lease or
+offline condition, keep the old identity and session down, and do not issue a
+new start from that outcome. Any already acquired reservation is reconciled
+through its recorded no-start/ownership evidence; uncertainty keeps it held.
+
+The closed input/result/receipt and lease-reservation successor must be
+jointly published and qualified with curator-run and swarma-session-host before
+use. This decision defines their required authority and transitions; it does
+not add fields to today's #193 or resume/1 schemas. Unsupported readmission
+refuses without falling back to ordinary frozen resume or a new thread.
+
 ### 3. Launch-time algorithm
 
 1. **Read authority and classify.** Validate effective machine policy, stored
    lock, declared sources/ranges, operator restrictions and launch intent.
    Unknown policy/invalid flags refuse. A missing/unreadable lock is not an
    outage fallback baseline. First installation retains its own explicit
-   install contract. Read-only, frozen, pinned, preserve-lock and resume
-   resolves take the existing pinned repair/read path, with no remote refresh.
+   install contract. Read-only, frozen, pinned, preserve-lock and ordinary hosted
+   resume resolves take the existing pinned repair/read path, with no remote
+   refresh. Stopped native relaunch and explicit hosted readmission follow §2.1
+   and §2.2; running-session refresh always refuses.
 
 2. **Obtain exclusive home-lease write admission.** A refresh needs the
    lease-protected mutation boundary from #193: acquire the existing canonical
    manager-home operation lock and preflight every affected home, current/old
    lock and shared dependency, retaining that held witness through publication.
-   No prepared, active or unknown hosted holder may overlap. This is exclusive
+   No unrelated prepared, active or unknown hosted holder may overlap. The
+   explicit down-session readmission of §2.2 holds its own scoped reservation
+   through its authorized writes; a generic lease is never a write permit.
+   This is exclusive
    mutation admission under the home-lease contract, not a new lease store or
    a session-lifetime OS lock. Do not borrow or break another session's lease.
    Native launch posture still has a null session lease under #197. If a
@@ -169,8 +280,11 @@ resume/pin inputs or label the old behavior as refresh-capable.
    admissible candidate refuses `context_range_conflict`; it does not edit
    declarations. "Newest" is under that resolver, not a global SAT optimum.
 
-   For 0.x, `>=0.1.5 <1.0.0-0` permits 0.2; `^0.1.5` still excludes 0.2.
-   This policy never changes caret semantics. Existing `*`/`latest` is bounded
+   The owner's intended 0.x range remains question 5: an explicitly declared
+   `>=0.1.5 <1.0.0` permits stable 0.2, while `^0.1.5` excludes it. This draft
+   presents both choices and does not choose or rewrite the declared range.
+   Existing prerelease admission rules still apply; the automatic next-major
+   bound above excludes next-major prereleases. Existing `*`/`latest` is bounded
    by the installed member's major. Exact tags, revisions, direct fixed skill
    declarations and manifest exact dependencies retain their commits and
    directories. Moved-tag checks never turn a fixed tag into a movable pin.
@@ -236,7 +350,9 @@ resume/pin inputs or label the old behavior as refresh-capable.
    fragment. Generate a fresh plan, command root/receipt, PATH state and
    effective posture for the final lock and generation. Recheck bindings at
    actual start; never patch hashes on an already admitted old plan. Hosted
-   consumers acquire their prepared session lease against this final lock.
+   consumers acquire their prepared session lease against this final lock;
+   explicit readmission instead transfers its held reservation under §2.2,
+   after the down-session identity CAS and before provider resume.
    A race with another mutation refuses under existing lease/start admission.
    Only then may the launcher start the provider. No running session is
    patched, restarted or relabeled by refresh.
@@ -269,7 +385,7 @@ fails, return that refusal without a fragment.
 
 | Condition | Proposed outcome/code |
 | --- | --- |
-| Matching pin, frozen policy, resume/no-refresh/preserve-lock | `lock_refresh.status=frozen`, identical hashes; no release lookup |
+| Matching pin, frozen policy, ordinary hosted resume/no-refresh/preserve-lock | `lock_refresh.status=frozen`, identical hashes; no release lookup |
 | Successful adoption / no eligible change | `refreshed` / `unchanged` |
 | Held home lease | Reuse `environment_home_leased/blocking_holders`; `deferred-lease` only when old-lock read is admissible |
 | Manager lock busy; unreadable lease; pending mutation | Reuse `environment_lock_unavailable`, `environment_lease_unreadable`, `environment_lease_recovery_required`; refuse, not an invented holder |
@@ -279,6 +395,8 @@ fails, return that refusal without a fragment.
 | Offline source or registry | New diagnostic `profile_lock_refresh_deferred_offline`; reuse `registry_unreachable_during_install` for the registry gate notice; `deferred-offline` only with admissible old lock |
 | Expected lock differs | New `profile_lock_expectation_mismatch` (exit 1), expected/actual digests; no writes. Launcher retains `werkstatt_profile_lock_mismatch` or `session_curator_identity_stale` mapping in its amendment |
 | New member's major is ambiguous | New `profile_lock_refresh_range_unbounded` (exit 1); explicit update needed |
+| Hosted frozen resume's current identity differs from stored identity | Existing launcher `session_curator_identity_stale`; no record update or provider start |
+| Readmission or native restart checkpoint is running/unknown, or readmission authority/receipt is invalid | New `profile_readmission_refused` (exit 1), with closed reasons `session_not_down`, `stop_unconfirmed`, `authority_invalid`, `generation_changed`, `werkstatt_pinned`, `identity_record_pending`, `unsupported`; no start or unauthorized writes |
 | Unknown policy, malformed digest or conflicting flags | Existing `usage` (exit 2); unknown configuration refused, never treated as absent |
 | Journal publication/recovery or render failure | Existing transaction/materialization refusal, no fragment or start; implementation slice must enumerate exact existing mappings before code |
 
@@ -294,8 +412,11 @@ lock, `>=1.2.0 <2.0.0-0`, signed/audited inputs, unchanged non-system payload,
 free lease admission and a new unpinned session. `L0` is the complete old lock;
 `L1` is independently computed from the specified candidate. Successful refresh
 must prove exact emitted bytes, marker, command receipt and launch binding to
-L1. Every refusal proves no provider start and unchanged lock/home/policy/pins;
-deferred success proves binding to L0 and an explicit diagnostic.
+L1. Pre-publication refusals prove no provider start and unchanged
+lock/home/policy/pins; post-publication interruptions in V15/V28 prove the
+specified journaled state and no start until reconciliation. Deferred success
+proves binding to L0 and an explicit diagnostic. History preservation is checked
+against retained pre-restart bytes, not inferred from a reused thread label.
 
 | ID | Input/control | Required verdict and effects |
 | --- | --- | --- |
@@ -307,20 +428,26 @@ deferred success proves binding to L0 and an explicit diagnostic.
 | V06 | Change system module bytes or MCP URL; no confirm flag | Refuse `profile_update_confirmation_required`; same delta with per-run flag admits; saved config consent alone still refuses |
 | V07 | Skill revision S is fixed; newer skill tag exists | Context may advance to L1, but skill source/commit/directory remain S; a candidate requiring a different exact skill pin refuses conflict |
 | V08 | Prepared/active/unknown lease held elsewhere | No refresh writes; diagnostic names holders. If old home current, read L0 as `deferred-lease`; if repair needed, refuse `environment_home_leased`. Idle control admits V01 |
-| V09 | Resume/continue with `--no-refresh --expect-lock L0` | Keep L0 and same session identity, even when 1.3.0 exists; no lookup/migration. New-session control admits V01 |
+| V09 | Hosted frozen resume/continue with `--no-refresh --expect-lock L0` | Keep L0 and same session identity when still current, even when 1.3.0 exists; no lookup/migration. If current profile is already L1, refuse stale identity before writes/start |
 | V10 | Registry outage / offline source | Keep L0; `deferred-offline`, explicit diagnostic. Unreadable/invalid L0 refuses; restored registry control admits V01 |
 | V11 | Werkstatt up/recycle with `--expect-lock L0` | Freeze L0, no mid-task/new-launch refresh; mismatch against current L1 refuses before journal recovery or writes |
 | V12 | Plain `env resolve` without repair; explicit frozen policy | Read-only / frozen; no network or lock writes despite available 1.3.0 |
-| V13 | 0.1.5 lock, explicit `>=0.1.5 <1.0.0-0`, candidates 0.2.0 and 1.0.0 | Admit 0.2.0 only; paired `^0.1.5` keeps 0.1.x |
+| V13 | 0.1.5 lock, candidates 0.2.0 and 1.0.0, two explicitly declared ranges | Conditional range controls: `>=0.1.5 <1.0.0` admits 0.2.0 only; `^0.1.5` keeps 0.1.x. Owner question 5 selects intended profile range; no semantic reinterpretation |
 | V14 | Revoked attestation / mismatched content / tampered registry signature | Refuse under owning integrity/registry gate, not outage fallback; verified exact-artifact control admits |
 | V15 | Kill before publication, after lock replacement, during render | Respectively old baseline or journaled recovery; no mixed fragment/start; hold acquired after crash prevents recovery writes |
 | V16 | L0 or policy/lease revision moves between staging and publication | Refuse before publication, retain intervening state; no overwrite or implicit retry with weaker constraints |
 | V17 | Changed lock with old PATH receipt, plan, grant or effective posture | Refuse start; fresh independently admitted bindings are positive control, recomputed caller hashes alone are not |
-| V18 | Frozen/resume resolve encounters legacy lock needing hash migration | Preserve identical identity or refuse before any migration write; ordinary repair's migration is not a refresh exemption |
+| V18 | Frozen/ordinary hosted resume resolve encounters legacy lock needing hash migration | Preserve identical identity or refuse before any migration write; ordinary repair's migration is not a refresh exemption |
 | V19 | New dependency has unbounded range / exact existing tag moves | Refuse ambiguous-major / existing strict-tag failure respectively; single-major new dependency / unchanged exact tag are controls |
 | V20 | Remove system module or MCP declaration | Require per-run confirmation just as V06; this tests the proposed trigger tightening explicitly |
 | V21 | `lock_refresh` unknown field/status, unequal frozen hashes, or fragment hash mismatch | Reject successor JSON; valid refreshed and frozen objects are controls; no progress text on stdout |
 | V22 | Source fetch/registry times out, but newer bytes are cached | Keep L0 and report deferral, never silently adopt cached L1; no older lock or bootstrap fabrication if L0 absent |
+| V23 | Native keeper stopped at a confirmed safe checkpoint; deliberate relaunch with provider resume of thread T | Resolve adopts L1 then resumes T in the same managed home. Existing history/continuation bytes and goals survive; emitted context/commands and provenance bind L1; no new thread/identity |
+| V24 | Hosted frozen resume stores identity I0, current profile has I1 | Refuse `session_curator_identity_stale`, even with no-refresh; stored I0/history unchanged and zero starts. Matching-I0 current-profile control resumes frozen |
+| V25 | Operator `resume SES --readmit-profile`, exact generation down, authentic reservation, stored I0 | Adopt compatible L1 under held reservation, retain L0 and I0/continuation, record I0→I1 with receipt and CAS, transfer lease and resume the same thread; history survives. Include profile-already-L1 control: unchanged lock still records I0→I1 |
+| V26 | Same native restart/readmission attempt while session running, draining or unknown, or generation changed | Refuse before refresh writes and provider resume; preserve lock/home/identity/history. Confirmed stopped/down controls V23/V25 admit |
+| V27 | Readmission with pinned Werkstatt, forged/down-only assertion, unrelated lease, or conflicting no-refresh/expect-lock | Refuse intended pin/authority/lease/usage gate before writes; no implicit pin edit, lease break or policy override |
+| V28 | Curator publishes readmission; manager CAS fails or reply is lost | Hold reservation and pending receipt, session stays down and no start; retry reconciles same operation once, records one transition and preserves history. Running-generation race never overwrites identity |
 
 Future validation must drive real resolve/launcher entries in isolated homes,
 not a wrapper that calls explicit update. Each gate must demonstrate an intended
@@ -357,18 +484,22 @@ it does not promise fresh revocation knowledge while offline.
 1. Confirm the relayed requirement and `refresh-compatible` as the activated
    absent-field default, including the transition for existing profiles?
    Recommendation: yes, with visible activation and explicit frozen overrides.
-2. Does "ordinary keeper restart" include continuing the same provider thread?
-   Recommendation: keep faithful resume frozen. If same-thread upgrades are
-   required, separately design a stopped-checkpoint identity/adoption operation
-   preserving history and the old continuation record, without rewriting pins
-   or weakening leases. Fresh-session refresh alone does not fulfill that case.
+2. Confirm the same-thread routes in §2.1 and §2.2: deliberate stopped native
+   relaunch may refresh, ordinary hosted resume stays frozen, and explicit
+   operator readmission of an exact down hosted generation holds the lease and
+   records old/new identity before resuming? Recommendation: yes, preserving
+   history and continuation records; running/unknown sessions always refuse.
 3. Confirm operator-owned per-profile machine policy, fleet frozen veto and no
    package authority? Recommendation: yes, following Decision 0031's provenance.
 4. Confirm required signer configuration and attestation evidence for automatic
    refresh even on permissive machines? Recommendation: yes; use explicit update
    for deliberate exceptions under its existing contract.
-5. Confirm the same-major/no-downgrade bound, literal 0.x ranges and explicit
-   update for a new dependency whose major is unbounded? Recommendation: yes.
+5. For 0.x, should the profile declare `>=0.1.5 <1.0.0` (permits 0.2 and later
+   0.x minors) or `^0.1.5` (permits 0.1 patches, excludes 0.2)? Recommendation:
+   choose explicitly; the first matches a literal below-next-major requirement,
+   while caret gives the tighter 0.x compatibility boundary. Neither is selected
+   by this draft, and the resolver never rewrites a declared caret. Also confirm
+   no automatic downgrade and explicit update for an unbounded new member.
 6. Confirm refusal on unconfirmed system/MCP changes and the proposed removal
    trigger tightening? Recommendation: yes; no automatic old-lock fallback for
    this refusal and no stored confirmation.

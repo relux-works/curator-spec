@@ -280,5 +280,7 @@ this question does not authorize repair, migration or trust deletion.
 awaits owner confirmation of the relayed requirement, activated default and
 transition, operator policy authority, automatic signer/attestation gates,
 same-major bounds, system/MCP removal confirmation and offline/lease deferral.
-Same-thread keeper upgrade/restart needs an explicit identity/adoption decision;
-the draft preserves frozen resume and does not claim that case is delivered.
+The same-thread native restart and explicit down-session hosted readmission
+contracts are included in this draft, with frozen hosted resume as the default.
+Owner review includes their lease/identity transitions and the choice between
+below-1.0 and caret ranges for 0.x; no route implementation is claimed.

@@ -31,8 +31,9 @@ implementation.
 ## Specification set
 
 [Draft Decision 0033: compatible lock refresh on ordinary launch](decisions/0033-launch-lock-refresh-compatible.md)
-proposes an operator-owned refresh policy, pinned resume/Werkstatt behavior and
-lease/confirmation gates. Owner confirmation is pending; no runtime behavior or
+proposes an operator-owned refresh policy, stopped-thread restart/readmission,
+frozen hosted resume/Werkstatt pins and lease/confirmation gates. Owner
+confirmation is pending; no runtime behavior or
 released carrier changes are enabled by this proposal.
 
 The release consists of the following documents and artifacts:
