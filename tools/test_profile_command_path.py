@@ -384,7 +384,8 @@ class ProfileCommandPathTests(unittest.TestCase):
                 case = next(c for c in self.cases if c['name'] == control)
                 result = decision(merge(self.base, case['changes']), self.receipt_validator)
                 safe = lookup(result['path_value'])
-                self.assertEqual(safe.returncode, 1, safe.stderr)
+                # Shells use different positive statuses for a miss; signals must still fail.
+                self.assertGreater(safe.returncode, 0, safe.stderr)
                 self.assertEqual(safe.stdout, '')
 
     # Actual byte changes are detected against separately pinned artifact
