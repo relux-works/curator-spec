@@ -12,6 +12,11 @@ from unittest.mock import patch
 from jsonschema import Draft202012Validator
 
 import validate
+from fixture_environment import isolated_environment
+
+
+def setUpModule():
+    unittest.enterModuleContext(isolated_environment())
 
 
 SUITE = validate.DRAFT_SOURCES_SUITE
