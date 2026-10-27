@@ -86,6 +86,12 @@ s.close()
         (shim / "sitecustomize.py").write_text(r'''
 import builtins,json,os,pathlib,sys,threading,time
 if pathlib.Path(sys.argv[0]).name=='fixture_environment.py' and '--go-test' in sys.argv:
+    # File existence is this plant's readiness signal. Publish complete bytes
+    # atomically so a reader never mistakes an in-progress write for a record.
+    def publish(name,data):
+        path=pathlib.Path(os.environ['STARTUP_CASE'],name)
+        pending=path.with_name(path.name+'.pending')
+        pending.write_bytes(data);pending.replace(path)
     if os.environ['STARTUP_FAULT'] in ('foreign-eof','foreign-error','foreign-timeout'):
         # Reuse the actual child identity, nonce and live connection. Only its
         # delivery is held, as in the independent authority-order witness.
@@ -104,7 +110,7 @@ if pathlib.Path(sys.argv[0]).name=='fixture_environment.py' and '--go-test' in s
                     data=downstream.recv(1024)
                     if not data: raise RuntimeError('premature phase EOF in plant')
                     packet+=data
-                pathlib.Path(os.environ['STARTUP_CASE'],'phase-held.json').write_bytes(packet)
+                publish('phase-held.json',packet)
                 time.sleep(15 if os.environ['STARTUP_FAULT']=='foreign-timeout' else 6)
                 upstream.sendall(packet)
         threading.Thread(target=hold_phase,daemon=True).start()
@@ -114,7 +120,7 @@ if pathlib.Path(sys.argv[0]).name=='fixture_environment.py' and '--go-test' in s
         except (ValueError,TypeError,IndexError): return original(*args,**kwargs)
         if record.get('event')!='started': return original(*args,**kwargs)
         case=pathlib.Path(os.environ['STARTUP_CASE']);root=pathlib.Path(sys.argv[2])
-        (case/'provider.json').write_text(json.dumps(dict(pid=os.getpid(),child=record['pid'],root=str(root))))
+        publish('provider.json',json.dumps(dict(pid=os.getpid(),child=record['pid'],root=str(root))).encode())
         os.link(os.environ['STARTUP_OUTSIDE'],root/'outside-hardlink')
         if os.name!='nt': (root/'outside-symlink').symlink_to(pathlib.Path(os.environ['STARTUP_OUTSIDE']).parent,target_is_directory=True)
         def send():
@@ -122,7 +128,7 @@ if pathlib.Path(sys.argv[0]).name=='fixture_environment.py' and '--go-test' in s
             while not (case/'grandchild.json').exists() and time.monotonic()<end: time.sleep(.01)
             if not (case/'grandchild.json').exists(): os._exit(9)
             fault=os.environ['STARTUP_FAULT']
-            (case/'plant.json').write_text(json.dumps(dict(actual=record,fault=fault)))
+            publish('plant.json',json.dumps(dict(actual=record,fault=fault)).encode())
             if fault=='eof': os.close(1)
             elif fault=='invalid': original(json.dumps(dict(record,event='invalid-started')),flush=True)
             elif fault=='malformed': original('{broken}',flush=True)
