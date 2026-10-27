@@ -3190,16 +3190,27 @@ no protected-tool directory by default; an operator-configured Curator-owned
 directory is verified and placed first. Managed/unattended D-PATH and dispatcher
 rules remain required. No-export/empty cases omit the middle list.
 
-Base admission has six closed predicates: empty, relative, duplicate, unreadable,
-world-writable and alias. Interactive native drops offending entries with one
-diagnostic line listing entries/actions. Managed or unattended refuses unreadable
-or world-writable entries and drops empty/relative/duplicate/alias entries with
-the same line. Aliases retain the first admitted filesystem identity; safety
-checks precede deduplication. User-writable is not by itself unsafe. Known
-manager-published profile roots are excluded from inherited PATH before this
-scan, as an authority rule; only the verified root is inserted anew. The detailed
-contract fixes predicate order, native-equivalent access checks and diagnostic
-escaping. Never recompose from a later ambient PATH.
+Base admission has eight closed predicates: empty, relative, duplicate,
+unreadable, world-writable, alias, non-canonical (`.` or `..` segments) and
+control-characters (U+0000–001F or U+007F–009F). Interactive native drops
+these with one diagnostic line listing entries/actions. Managed or unattended
+refuses unreadable/world-writable entries and drops the other six predicates
+with the same line. Reject spellings by dropping, never by lexical rewriting;
+admission and the mandatory state record share canonical, control-free absolute
+entries. Aliases retain the first admitted filesystem identity; safety checks
+precede deduplication. User-writable is not by itself unsafe. Known
+manager-published profile roots are excluded as an authority rule; only the
+verified root is inserted anew. Never recompose from a later ambient PATH.
+
+The composed PATH MUST contain at least one admitted absolute directory. If
+all base entries were dropped, admit the fixed platform defaults through the
+same rules (Unix: `/usr/bin`, `/bin`, `/usr/sbin`, `/sbin`). A managed safety
+refusal is never retried with defaults. If no protected directory, active root
+or admitted base/default remains, refuse with `launch_path_unavailable`, emit
+no successful state and start no child. This PATH-safety refusal is distinct
+from B1's never-refuse rule for command availability; no empty PATH/CWD search
+is permitted. The detailed contract fixes predicate order, default scanning
+and diagnostic escaping.
 
 | Owner | Conformance obligation |
 | --- | --- |

@@ -18,8 +18,11 @@ Versioning for the complete specification set.
   no-export profiles get no prepend; Slice A non-current and hosted-without-carrier
   launches get an explicit empty-root diagnostic without refusal. Publish closed
   root/receipt and native launcher-state schemas, independent verification,
-  default/configured protected tools, six PATH predicates with drop/refuse
-  actions and paired conformance controls. Hosted delivery remains a joint
+  default/configured protected tools, eight PATH predicates with drop/refuse
+  actions and paired conformance controls. Require a nonempty composed PATH,
+  checked fixed platform defaults after all base entries drop, and distinct
+  `launch_path_unavailable` refusal on exhaustion; drop dot/parent and control
+  spellings so successful PATH and mandatory state agree. Hosted delivery remains a joint
   curator-run/session-host carrier dependency; all-profile Slice B, companion
   acceptance and real qualification gates stay open. No implementation claimed.
 

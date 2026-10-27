@@ -339,7 +339,7 @@
     }
   },
   {
-    "name": "normalized-duplicate",
+    "name": "non-canonical-duplicate-spelling",
     "positive_control": "current-native",
     "changes": {
       "base_path": [
@@ -361,7 +361,7 @@
       "admission": [
         {
           "entry": "/usr/./bin",
-          "predicate": "duplicate",
+          "predicate": "non-canonical",
           "action": "drop"
         }
       ],
@@ -731,6 +731,863 @@
       ],
       "live_preimage": "unchanged",
       "fallbacks": 0
+    }
+  },
+  {
+    "name": "no-export-safe-base",
+    "positive_control": "no-export",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "base_path": [
+        "/fixture/base-safe"
+      ]
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "availability": "none",
+      "reason": null,
+      "path_prepend": null,
+      "command": null,
+      "path": [
+        "/fixture/base-safe"
+      ],
+      "path_value": "/fixture/base-safe",
+      "admission": [],
+      "default_path_used": false,
+      "diagnostic_lines": 0
+    }
+  },
+  {
+    "name": "no-export-default-path",
+    "positive_control": "no-export-safe-base",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "base_path": [
+        "",
+        "relative"
+      ]
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "availability": "none",
+      "reason": null,
+      "path_prepend": null,
+      "command": null,
+      "path": [
+        "/usr/bin",
+        "/bin",
+        "/usr/sbin",
+        "/sbin"
+      ],
+      "path_value": "/usr/bin:/bin:/usr/sbin:/sbin",
+      "admission": [
+        {
+          "entry": "",
+          "predicate": "empty",
+          "action": "drop"
+        },
+        {
+          "entry": "relative",
+          "predicate": "relative",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": true,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "no-export-no-admitted-path",
+    "positive_control": "no-export-default-path",
+    "compose_state": false,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "base_path": [
+        "",
+        "relative"
+      ],
+      "path_facts": {
+        "/usr/bin": {
+          "readable": false
+        },
+        "/bin": {
+          "readable": false
+        },
+        "/usr/sbin": {
+          "readable": false
+        },
+        "/sbin": {
+          "readable": false
+        }
+      }
+    },
+    "expected": {
+      "starts": 0,
+      "violations": [
+        "launch_path_unavailable"
+      ],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "availability": "none",
+      "reason": null,
+      "path_prepend": null,
+      "command": null,
+      "path": [],
+      "path_value": null,
+      "admission": [
+        {
+          "entry": "",
+          "predicate": "empty",
+          "action": "drop"
+        },
+        {
+          "entry": "relative",
+          "predicate": "relative",
+          "action": "drop"
+        },
+        {
+          "entry": "/usr/bin",
+          "predicate": "unreadable",
+          "action": "drop"
+        },
+        {
+          "entry": "/bin",
+          "predicate": "unreadable",
+          "action": "drop"
+        },
+        {
+          "entry": "/usr/sbin",
+          "predicate": "unreadable",
+          "action": "drop"
+        },
+        {
+          "entry": "/sbin",
+          "predicate": "unreadable",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": true,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "non-current-safe-base",
+    "positive_control": "non-current",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "current_profile": "other"
+      },
+      "base_path": [
+        "/fixture/base-safe"
+      ]
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "availability": "empty",
+      "reason": "slice-a-non-current",
+      "path_prepend": null,
+      "command": null,
+      "path": [
+        "/fixture/base-safe"
+      ],
+      "path_value": "/fixture/base-safe",
+      "admission": [],
+      "default_path_used": false,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "non-current-default-path",
+    "positive_control": "non-current-safe-base",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "current_profile": "other"
+      },
+      "base_path": [
+        "",
+        "relative"
+      ]
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "availability": "empty",
+      "reason": "slice-a-non-current",
+      "path_prepend": null,
+      "command": null,
+      "path": [
+        "/usr/bin",
+        "/bin",
+        "/usr/sbin",
+        "/sbin"
+      ],
+      "path_value": "/usr/bin:/bin:/usr/sbin:/sbin",
+      "admission": [
+        {
+          "entry": "",
+          "predicate": "empty",
+          "action": "drop"
+        },
+        {
+          "entry": "relative",
+          "predicate": "relative",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": true,
+      "diagnostic_lines": 2
+    }
+  },
+  {
+    "name": "non-current-no-admitted-path",
+    "positive_control": "non-current-default-path",
+    "compose_state": false,
+    "changes": {
+      "launch": {
+        "current_profile": "other"
+      },
+      "base_path": [
+        "",
+        "relative"
+      ],
+      "path_facts": {
+        "/usr/bin": {
+          "readable": false
+        },
+        "/bin": {
+          "readable": false
+        },
+        "/usr/sbin": {
+          "readable": false
+        },
+        "/sbin": {
+          "readable": false
+        }
+      }
+    },
+    "expected": {
+      "starts": 0,
+      "violations": [
+        "launch_path_unavailable"
+      ],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "availability": "empty",
+      "reason": "slice-a-non-current",
+      "path_prepend": null,
+      "command": null,
+      "path": [],
+      "path_value": null,
+      "admission": [
+        {
+          "entry": "",
+          "predicate": "empty",
+          "action": "drop"
+        },
+        {
+          "entry": "relative",
+          "predicate": "relative",
+          "action": "drop"
+        },
+        {
+          "entry": "/usr/bin",
+          "predicate": "unreadable",
+          "action": "drop"
+        },
+        {
+          "entry": "/bin",
+          "predicate": "unreadable",
+          "action": "drop"
+        },
+        {
+          "entry": "/usr/sbin",
+          "predicate": "unreadable",
+          "action": "drop"
+        },
+        {
+          "entry": "/sbin",
+          "predicate": "unreadable",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": true,
+      "diagnostic_lines": 2
+    }
+  },
+  {
+    "name": "no-export-empty-base-default-path",
+    "positive_control": "no-export-safe-base",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "base_path": []
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "path": [
+        "/usr/bin",
+        "/bin",
+        "/usr/sbin",
+        "/sbin"
+      ],
+      "path_value": "/usr/bin:/bin:/usr/sbin:/sbin",
+      "admission": [],
+      "default_path_used": true,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "managed-default-path",
+    "positive_control": "managed-valid",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "policy": "managed",
+      "base_path": [
+        "",
+        "relative"
+      ]
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "path": [
+        "/usr/bin",
+        "/bin",
+        "/usr/sbin",
+        "/sbin"
+      ],
+      "admission": [
+        {
+          "entry": "",
+          "predicate": "empty",
+          "action": "drop"
+        },
+        {
+          "entry": "relative",
+          "predicate": "relative",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": true,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "managed-unsafe-default-path",
+    "positive_control": "managed-default-path",
+    "compose_state": false,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "policy": "managed",
+      "base_path": [
+        "",
+        "relative"
+      ],
+      "path_facts": {
+        "/usr/bin": {
+          "mode": 511
+        }
+      }
+    },
+    "expected": {
+      "starts": 0,
+      "violations": [
+        "base-path-unsafe"
+      ],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "admission": [
+        {
+          "entry": "",
+          "predicate": "empty",
+          "action": "drop"
+        },
+        {
+          "entry": "relative",
+          "predicate": "relative",
+          "action": "drop"
+        },
+        {
+          "entry": "/usr/bin",
+          "predicate": "world-writable",
+          "action": "refuse"
+        }
+      ],
+      "default_path_used": true,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "partial-default-path",
+    "positive_control": "no-export-default-path",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "base_path": [
+        "",
+        "relative"
+      ],
+      "path_facts": {
+        "/usr/bin": {
+          "mode": 511
+        },
+        "/usr/sbin": {
+          "readable": false
+        },
+        "/sbin": {
+          "identity": "bin"
+        }
+      }
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "path": [
+        "/bin"
+      ],
+      "path_value": "/bin",
+      "admission": [
+        {
+          "entry": "",
+          "predicate": "empty",
+          "action": "drop"
+        },
+        {
+          "entry": "relative",
+          "predicate": "relative",
+          "action": "drop"
+        },
+        {
+          "entry": "/usr/bin",
+          "predicate": "world-writable",
+          "action": "drop"
+        },
+        {
+          "entry": "/usr/sbin",
+          "predicate": "unreadable",
+          "action": "drop"
+        },
+        {
+          "entry": "/sbin",
+          "predicate": "alias",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": true,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "active-root-without-base",
+    "positive_control": "current-native",
+    "compose_state": true,
+    "changes": {
+      "base_path": [
+        "",
+        "relative"
+      ],
+      "path_facts": {
+        "/usr/bin": {
+          "readable": false
+        },
+        "/bin": {
+          "readable": false
+        },
+        "/usr/sbin": {
+          "readable": false
+        },
+        "/sbin": {
+          "readable": false
+        }
+      }
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "path": [
+        "/fixture/domain/global/bin"
+      ],
+      "default_path_used": true,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "interactive-drop-parent-segment",
+    "positive_control": "no-export-safe-base",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "policy": "interactive-native",
+      "base_path": [
+        "/fixture/base/../bin",
+        "/fixture/base-safe"
+      ]
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "path": [
+        "/fixture/base-safe"
+      ],
+      "path_value": "/fixture/base-safe",
+      "admission": [
+        {
+          "entry": "/fixture/base/../bin",
+          "predicate": "non-canonical",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": false,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "managed-drop-parent-segment",
+    "positive_control": "no-export-safe-base",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "policy": "managed",
+      "base_path": [
+        "/fixture/base/../bin",
+        "/fixture/base-safe"
+      ]
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "path": [
+        "/fixture/base-safe"
+      ],
+      "path_value": "/fixture/base-safe",
+      "admission": [
+        {
+          "entry": "/fixture/base/../bin",
+          "predicate": "non-canonical",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": false,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "interactive-drop-dot-segment",
+    "positive_control": "no-export-safe-base",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "policy": "interactive-native",
+      "base_path": [
+        "/fixture/./bin",
+        "/fixture/base-safe"
+      ]
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "path": [
+        "/fixture/base-safe"
+      ],
+      "path_value": "/fixture/base-safe",
+      "admission": [
+        {
+          "entry": "/fixture/./bin",
+          "predicate": "non-canonical",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": false,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "managed-drop-dot-segment",
+    "positive_control": "no-export-safe-base",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "policy": "managed",
+      "base_path": [
+        "/fixture/./bin",
+        "/fixture/base-safe"
+      ]
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "path": [
+        "/fixture/base-safe"
+      ],
+      "path_value": "/fixture/base-safe",
+      "admission": [
+        {
+          "entry": "/fixture/./bin",
+          "predicate": "non-canonical",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": false,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "interactive-drop-newline",
+    "positive_control": "no-export-safe-base",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "policy": "interactive-native",
+      "base_path": [
+        "/fixture/base\nname",
+        "/fixture/base-safe"
+      ]
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "path": [
+        "/fixture/base-safe"
+      ],
+      "path_value": "/fixture/base-safe",
+      "admission": [
+        {
+          "entry": "/fixture/base\nname",
+          "predicate": "control-characters",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": false,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "managed-drop-newline",
+    "positive_control": "no-export-safe-base",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "policy": "managed",
+      "base_path": [
+        "/fixture/base\nname",
+        "/fixture/base-safe"
+      ]
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "path": [
+        "/fixture/base-safe"
+      ],
+      "path_value": "/fixture/base-safe",
+      "admission": [
+        {
+          "entry": "/fixture/base\nname",
+          "predicate": "control-characters",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": false,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "interactive-drop-del",
+    "positive_control": "no-export-safe-base",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "policy": "interactive-native",
+      "base_path": [
+        "/fixture/base\u007fname",
+        "/fixture/base-safe"
+      ]
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "path": [
+        "/fixture/base-safe"
+      ],
+      "path_value": "/fixture/base-safe",
+      "admission": [
+        {
+          "entry": "/fixture/base\u007fname",
+          "predicate": "control-characters",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": false,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "managed-drop-del",
+    "positive_control": "no-export-safe-base",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "policy": "managed",
+      "base_path": [
+        "/fixture/base\u007fname",
+        "/fixture/base-safe"
+      ]
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "path": [
+        "/fixture/base-safe"
+      ],
+      "path_value": "/fixture/base-safe",
+      "admission": [
+        {
+          "entry": "/fixture/base\u007fname",
+          "predicate": "control-characters",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": false,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "interactive-drop-c1-control",
+    "positive_control": "no-export-safe-base",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "policy": "interactive-native",
+      "base_path": [
+        "/fixture/base\u0085name",
+        "/fixture/base-safe"
+      ]
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "path": [
+        "/fixture/base-safe"
+      ],
+      "path_value": "/fixture/base-safe",
+      "admission": [
+        {
+          "entry": "/fixture/base\u0085name",
+          "predicate": "control-characters",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": false,
+      "diagnostic_lines": 1
+    }
+  },
+  {
+    "name": "managed-drop-c1-control",
+    "positive_control": "no-export-safe-base",
+    "compose_state": true,
+    "changes": {
+      "launch": {
+        "exports": false
+      },
+      "policy": "managed",
+      "base_path": [
+        "/fixture/base\u0085name",
+        "/fixture/base-safe"
+      ]
+    },
+    "expected": {
+      "starts": 1,
+      "violations": [],
+      "live_preimage": "unchanged",
+      "fallbacks": 0,
+      "path": [
+        "/fixture/base-safe"
+      ],
+      "path_value": "/fixture/base-safe",
+      "admission": [
+        {
+          "entry": "/fixture/base\u0085name",
+          "predicate": "control-characters",
+          "action": "drop"
+        }
+      ],
+      "default_path_used": false,
+      "diagnostic_lines": 1
     }
   }
 ]

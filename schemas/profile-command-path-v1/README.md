@@ -12,7 +12,14 @@ Unreleased JSON Schema Draft 2020-12 allocation for the
   exact fragment/receipt digests, binding and admission decisions.
 
 Identifiers preserve the existing common identifier grammar with explicit
-control-character rejection. Paths are absolute and have no parent segment.
+control-character rejection. State PATH arrays contain at least one canonical,
+control-free absolute entry, and `path_value` is nonempty; equality with the
+platform serialization is also a semantic check. The state drops model eight
+predicates, including dot/parent segments and controls (U+0000–001F,
+U+007F–009F). Rejected input spellings remain representable in `admission` for
+escaped diagnostics. Empty final PATH is invalid even when command availability
+is empty. Fixed defaults must pass admission; exhaustion refuses separately as
+`launch_path_unavailable`. Root-receipt confinement remains its own contract.
 Mode is the native POSIX permission/special-bit integer; identity values are
 lossless native device/inode or volume/file strings. Windows metadata uses an
 owner SID and exact native security-descriptor digest. Native access and

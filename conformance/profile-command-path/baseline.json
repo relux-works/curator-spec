@@ -72,6 +72,54 @@
       "readable": false,
       "kind": "directory",
       "mode": 493
+    },
+    "/usr/sbin": {
+      "identity": "usr-sbin",
+      "readable": true,
+      "kind": "directory",
+      "mode": 493
+    },
+    "/sbin": {
+      "identity": "sbin",
+      "readable": true,
+      "kind": "directory",
+      "mode": 493
+    },
+    "/fixture/base-safe": {
+      "identity": "base-safe",
+      "readable": true,
+      "kind": "directory",
+      "mode": 493
+    },
+    "/fixture/base/../bin": {
+      "identity": "parent-segment",
+      "readable": true,
+      "kind": "directory",
+      "mode": 493
+    },
+    "/fixture/./bin": {
+      "identity": "dot-segment",
+      "readable": true,
+      "kind": "directory",
+      "mode": 493
+    },
+    "/fixture/base\nname": {
+      "identity": "newline",
+      "readable": true,
+      "kind": "directory",
+      "mode": 493
+    },
+    "/fixture/base\u007fname": {
+      "identity": "del",
+      "readable": true,
+      "kind": "directory",
+      "mode": 493
+    },
+    "/fixture/base\u0085name": {
+      "identity": "c1-control",
+      "readable": true,
+      "kind": "directory",
+      "mode": 493
     }
   },
   "routing": "exclusive",

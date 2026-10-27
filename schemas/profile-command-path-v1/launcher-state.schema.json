@@ -35,20 +35,25 @@
           },
           {
             "not": {
-              "pattern": "[\\x00-\\x1f\\x7f]"
+              "pattern": "[\\x00-\\x1f\\x7f-\\x9f]"
             }
           },
           {
             "not": {
-              "pattern": "(?:^|[/\\\\])\\.\\.(?:[/\\\\]|$)"
+              "pattern": "(?:^|[/\\\\])\\.{1,2}(?:[/\\\\]|$)"
             }
           }
         ]
       },
-      "uniqueItems": true
+      "uniqueItems": true,
+      "minItems": 1
     },
     "path_value": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "pattern": "[\\x00-\\x1f\\x7f-\\x9f]"
+      }
     },
     "fragment_sha256": {
       "type": "string",
@@ -251,7 +256,9 @@
               "duplicate",
               "unreadable",
               "world-writable",
-              "alias"
+              "alias",
+              "non-canonical",
+              "control-characters"
             ]
           },
           "action": {
@@ -273,12 +280,12 @@
           },
           {
             "not": {
-              "pattern": "[\\x00-\\x1f\\x7f]"
+              "pattern": "[\\x00-\\x1f\\x7f-\\x9f]"
             }
           },
           {
             "not": {
-              "pattern": "(?:^|[/\\\\])\\.\\.(?:[/\\\\]|$)"
+              "pattern": "(?:^|[/\\\\])\\.{1,2}(?:[/\\\\]|$)"
             }
           }
         ]

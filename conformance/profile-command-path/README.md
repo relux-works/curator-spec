@@ -35,13 +35,24 @@ not an allocated shell or product shim grammar.
 | `no-export`, `no-export-hosted` | No prepend, no availability refusal or diagnostic; no active receipt needed |
 | `non-current`, `non-current-no-root-needed` | Explicit empty root decision, one commands-unavailable diagnostic, launch continues; paired with current native |
 | `hosted-without-carrier`, `hosted-with-carrier` | Old hosted route continues with caller-local empty decision/diagnostic, no final-PATH claim; future jointly supported carrier has active witnesses |
-| `interactive-drops`, `managed-drops`, `normalized-duplicate` | Closed predicate classification, retained order and one admission line; managed benign entries drop as interactive does |
+| `interactive-drops`, `managed-drops`, `non-canonical-duplicate-spelling` | Closed predicate classification, retained order and one admission line; managed benign entries drop as interactive does |
 | `managed-refuses-world-writable`, `managed-refuses-unreadable`, `unsafe-alias-not-hidden` | Exact unsafe refusal, zero provider starts/fallbacks; paired with `managed-valid` |
 | `user-writable-valid` | Operator/group writable alone is not world-writable; no broad developer-directory rejection |
 | `foreign-root-excluded`, `non-current-foreign-root-excluded` | Known inherited profile root excluded; only newly verified root inserted, no borrowed singleton on empty native launch |
 | `missing-root`, `unreadable-root`, `tampered-root` | Exact active-root verification failure; current-native positive control |
 | `stale-lock`, `wrong-plan`, `wrong-generation` | Protected receipt/complete-lock/plan/generation mismatch, no start |
 | `routing-unproven`, `root-extra-export`, `protected-owner-wrong`, `receipt-symlink` | Corresponding boundary/inventory refusal, with a valid nearby control |
+
+The 21 additional composition rows pair `no-export` and `non-current` safe
+bases with all-dropped fixed-default success and `launch_path_unavailable`
+refusal when no directory survives. Empty input, partial/unsafe defaults,
+managed default scanning and a surviving active root are distinct controls.
+Interactive and managed `*-drop-parent-segment`, `*-drop-dot-segment`,
+`*-drop-newline`, `*-drop-del` and `*-drop-c1-control` cases drop benign
+spellings and retain the paired safe base. Every successful new row passes the
+unchanged effective PATH through supplied-child comparison and the mandatory
+state validator; refusals produce no successful state. The existing duplicate
+spelling with `.` is now classified non-canonical before deduplication.
 
 Availability `empty` means a zero-command decision with null root/receipt and
 omitted prepend, not an empty PATH entry. Both explicit empty and no-export
@@ -78,10 +89,14 @@ must never be relabeled successful command delivery.
 POSIX strings and metadata support the semantic fixtures; a Windows metadata
 schema example proves **shape only**, not SID/DACL interpretation, lookup,
 separators or filesystem behavior. Every claimed real platform needs independent
-owner/mode/identity and actual-child evidence. Four bounded checker mutants
+owner/mode/identity and actual-child evidence. Six bounded checker mutants
 (reject non-current, reject old hosted, prepend on no-export, admit unsafe
-managed PATH) must fail the intended corpus assertion; positive controls also
-pass. These controls qualify neither products nor runtime effects.
+managed PATH, start with no admitted directory, retain a parent segment) must
+fail the intended corpus assertion; positive controls also pass. A lookup-only
+POSIX shell control finds a private fixture via `PATH=""`, while retained-safe
+and fixed-default PATHs do not find it. The executable is never run. This
+control is skipped on non-POSIX hosts; the abstract policy/schema checks still
+run there. These checks qualify no Curator/launcher/hosted runtime behavior.
 
 Curator owns publication and protected receipt authority; curator-run owns
 independent verification, PATH application and native per-launch provenance;

@@ -4,8 +4,11 @@ from __future__ import annotations
 from copy import deepcopy
 import hashlib
 import json
+import os
 from pathlib import Path, PurePosixPath
 import posixpath
+import subprocess
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -14,6 +17,7 @@ from jsonschema import Draft202012Validator
 ROOT = Path(__file__).resolve().parents[1]
 CORPUS = ROOT / 'conformance/profile-command-path'
 SCHEMAS = ROOT / 'schemas/profile-command-path-v1'
+UNIX_DEFAULT_PATH = ('/usr/bin', '/bin', '/usr/sbin', '/sbin')
 
 
 def load(path):
@@ -106,18 +110,22 @@ def root_violations(data, receipt_validator):
     return []
 
 
-def admit_path(data, protected):
+def admit_path(data, protected, entries=None):
     kept, issues, exclusions = [], [], []
     seen_paths = set(protected)
     seen_ids = {data['path_facts'][p]['identity'] for p in protected}
     root_ids = set(data['trusted']['profile_root_ids'])
-    for entry in data['base_path']:
+    for entry in data['base_path'] if entries is None else entries:
         fact = data['path_facts'].get(entry)
         predicate = None
         if entry == '':
             predicate = 'empty'
         elif not posixpath.isabs(entry):
             predicate = 'relative'
+        elif any(ord(c) < 32 or 127 <= ord(c) <= 159 for c in entry):
+            predicate = 'control-characters'
+        elif any(part in ('.', '..') for part in entry.split('/')):
+            predicate = 'non-canonical'
         elif fact is None or not fact['readable'] or fact['kind'] != 'directory':
             predicate = 'unreadable'
         elif fact['identity'] in root_ids:
@@ -156,18 +164,27 @@ def decision(data, receipt_validator):
     root = data['trusted']['receipt']['root']['path'] if availability == 'active' else None
     # Known roots are excluded independently; selected root enters only here.
     kept, admission, exclusions = admit_path(data, protected)
+    default_path_used = not kept and not any(i['action'] == 'refuse' for i in admission)
+    if default_path_used:
+        kept, default_issues, default_exclusions = admit_path(data, protected, UNIX_DEFAULT_PATH)
+        admission.extend(default_issues)
+        exclusions.extend(default_exclusions)
     if any(i['action'] == 'refuse' for i in admission):
         violations.append('base-path-unsafe')
     path = protected + ([root] if root else []) + kept
+    if not path and not violations:
+        violations.append('launch_path_unavailable')
     command = None
     if availability == 'active':
         final = data['trusted']['receipt']['commands'][0]['chain'][-1]
         command = {'path': final['path'], 'sha256': final['sha256']}
     return {'violations': violations, 'starts': int(not violations), 'availability': availability,
-            'reason': reason, 'path_prepend': root, 'path': path, 'path_value': ':'.join(path),
+            'reason': reason, 'path_prepend': root, 'path': path,
+            'path_value': ':'.join(path) if path else None,
             'command': command, 'binding': data['trusted']['binding'], 'admission': admission,
             'profile_root_exclusions': exclusions,
-            'diagnostic_lines': int(bool(reason)) + int(bool(admission or exclusions)),
+            'default_path_used': default_path_used,
+            'diagnostic_lines': int(bool(reason)) + int(bool(admission or exclusions or default_path_used)),
             'final_path_claim': launch['route'] == 'native' or launch['hosted_carrier'],
             'live_preimage': 'unchanged', 'fallbacks': 0}
 
@@ -277,6 +294,99 @@ class ProfileCommandPathTests(unittest.TestCase):
             unavailable.update(root=None, receipt_sha256=None)
             self.assertEqual(state_violations(unavailable, outcome, self.base, validator), [])
 
+    # Regression: unavailable commands still need a nonempty safe PATH. Fixed
+    # defaults are admitted, or a distinct PATH-safety refusal prevents start.
+    def test_nonempty_path_regression(self):
+        defaults = ['/usr/bin', '/bin', '/usr/sbin', '/sbin']
+        for launch in [{'exports': False}, {'current_profile': 'other'}]:
+            for usable in [True, False]:
+                with self.subTest(launch=launch, defaults_usable=usable):
+                    data = merge(self.base, {'launch': launch, 'base_path': ['', 'relative']})
+                    for entry in defaults:
+                        data['path_facts'][entry] = {
+                            'identity': entry, 'readable': usable, 'kind': 'directory', 'mode': 0o755}
+                    result = decision(data, self.receipt_validator)
+                    self.assertEqual(result['starts'], int(usable))
+                    self.assertEqual(result['violations'], [] if usable else ['launch_path_unavailable'])
+                    if usable:
+                        self.assertEqual(result['path'], defaults)
+                        self.assertEqual(result['path_value'], ':'.join(defaults))
+
+    # Regression: benign spelling drops compose with the mandatory state shape
+    # for both interactive and managed launches, without lexical rewriting.
+    def test_path_state_composition_regression(self):
+        safe = '/fixture/base-safe'
+        bad = ['/fixture/base/../bin', '/fixture/./bin', '/fixture/base\nname',
+               '/fixture/base\x7fname', '/fixture/base\x85name']
+        for policy in ['interactive-native', 'managed']:
+            data = merge(self.base, {'launch': {'exports': False}, 'policy': policy,
+                                     'base_path': [safe] + bad})
+            for entry in [safe] + bad:
+                data['path_facts'][entry] = {
+                    'identity': entry, 'readable': True, 'kind': 'directory', 'mode': 0o755}
+            result = decision(data, self.receipt_validator)
+            self.assertEqual(result['starts'], 1)
+            self.assertEqual(result['path'], [safe])
+            self.assertEqual(result['admission'], [
+                {'entry': entry, 'predicate': ('non-canonical' if i < 2 else 'control-characters'),
+                 'action': 'drop'} for i, entry in enumerate(bad)])
+            state = load(CORPUS / 'launcher-state.json')
+            for field in ['path', 'path_value', 'binding', 'availability', 'reason', 'admission',
+                          'profile_root_exclusions']:
+                state[field] = result[field]
+            state.update(root=None, receipt_sha256=None)
+            self.assertEqual(state_violations(state, result, data,
+                             self.validators['launcher-state.schema.json']), [])
+
+    # Each new successful policy row passes unchanged through PATH serialization,
+    # supplied-child comparison and mandatory state validation. Refusals emit no
+    # successful state; these abstract checks do not observe product writes.
+    def test_composed_path_and_state_cases(self):
+        for case in self.cases:
+            if 'compose_state' not in case:
+                continue
+            with self.subTest(case=case['name']):
+                data = merge(self.base, case['changes'])
+                result = decision(data, self.receipt_validator)
+                self.assertEqual(bool(result['starts']), case['compose_state'])
+                if not case['compose_state']:
+                    self.assertEqual(result['starts'], 0)
+                    continue
+                self.assertGreater(len(result['path']), 0)
+                self.assertTrue(result['path_value'])
+                self.assertEqual(result['path_value'].split(':'), result['path'])
+                self.assertEqual(witness_violations(result, result), [])
+                state = load(CORPUS / 'launcher-state.json')
+                for field in ['path', 'path_value', 'binding', 'availability', 'reason', 'admission',
+                              'profile_root_exclusions']:
+                    state[field] = result[field]
+                if result['availability'] != 'active':
+                    state.update(root=None, receipt_sha256=None)
+                self.assertEqual(state_violations(state, result, data,
+                                 self.validators['launcher-state.schema.json']), [])
+
+    # A lookup-only POSIX control reproduces empty-PATH CWD search; retained or
+    # fallback absolute PATHs cannot find the private fixture. Never execute it.
+    @unittest.skipUnless(os.name == 'posix' and Path('/bin/sh').is_file(), 'POSIX shell lookup only')
+    def test_default_path_does_not_search_cwd(self):
+        with tempfile.TemporaryDirectory(prefix='profile-path-') as directory:
+            name = 'lookup_' + Path(directory).name
+            probe = Path(directory) / name
+            probe.write_text('#!/bin/sh\nexit 99\n', encoding='utf-8')
+            probe.chmod(0o700)
+            def lookup(path):
+                return subprocess.run(['/bin/sh', '-c', 'command -v "$1"', 'sh', name],
+                                      cwd=directory, env={'PATH': path}, capture_output=True, text=True)
+            unsafe = lookup('')
+            self.assertEqual(unsafe.returncode, 0)
+            self.assertIn(name, unsafe.stdout)
+            for control in ['no-export-default-path', 'non-current-default-path', 'no-export']:
+                case = next(c for c in self.cases if c['name'] == control)
+                result = decision(merge(self.base, case['changes']), self.receipt_validator)
+                safe = lookup(result['path_value'])
+                self.assertEqual(safe.returncode, 1, safe.stderr)
+                self.assertEqual(safe.stdout, '')
+
     # Actual byte changes are detected against separately pinned artifact
     # hashes. Owner/mode, object identity, shim chain and confinement are isolated.
     def test_root_verifier_controls(self):
@@ -359,7 +469,10 @@ class ProfileCommandPathTests(unittest.TestCase):
         for name, field, wrong in [('non-current', 'starts', 0),
                                    ('hosted-without-carrier', 'starts', 0),
                                    ('no-export', 'path_prepend', '/foreign/root'),
-                                   ('managed-refuses-world-writable', 'starts', 1)]:
+                                   ('managed-refuses-world-writable', 'starts', 1),
+                                   ('no-export-no-admitted-path', 'starts', 1),
+                                   ('interactive-drop-parent-segment', 'path',
+                                    ['/fixture/base/../bin', '/fixture/base-safe'])]:
             case = next(c for c in self.cases if c['name'] == name)
             selected = merge(self.base, case['changes'])
             def mutant(data, validator):

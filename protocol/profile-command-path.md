@@ -145,13 +145,21 @@ The POSIX fixture strings in the corpus do not qualify Windows parsing.
 | --- | --- | --- | --- |
 | empty | Zero-length component | Drop | Drop |
 | relative | Not an absolute directory path | Drop | Drop |
+| non-canonical | Contains a `.` or `..` path segment | Drop | Drop |
+| control-characters | Contains U+0000–001F or U+007F–009F | Drop | Drop |
 | unreadable | Cannot establish directory identity, read/search access or safety metadata; includes missing/non-directory entries | Drop | Refuse |
 | world-writable | Anyone/everyone can mutate the directory; POSIX other-write bit, or native equivalent | Drop | Refuse |
 | duplicate | Same platform-normalized path as an earlier retained component or protected/profile root | Drop later entry | Drop later entry |
 | alias | Different spelling resolves to the same directory identity as an earlier retained component or protected/profile root | Drop later entry | Drop later entry |
 
-Evaluate empty/relative first, then unreadable/world-writable before deduplication:
-an alias cannot hide an unsafe directory. Otherwise keep the first identity.
+Evaluate empty/relative first, then control-characters/non-canonical, then
+unreadable/world-writable before deduplication: an alias cannot hide an unsafe
+directory. The two new spelling predicates are benign drops on both policies,
+not refusals. A segment is delimited by the target platform's path separators;
+`.hidden` and `..hidden` are not dot segments. Do not lexically rewrite or
+resolve away a rejected spelling: traversal through a symlink can change
+identity. Retain the checked canonical, control-free absolute spelling and the
+first admitted identity.
 User-writable directories are not world-writable merely because the operator
 can write them; this is not a rule rejecting all developer PATH directories.
 Interactive native means the operator's interactive route. Trusted supervisor
@@ -165,20 +173,41 @@ the offending entries in input order with their predicates and actions.
 Escape control characters so an entry cannot forge another line. A refusal
 starts no provider and leaves live state unchanged. A valid launch with drops
 records the retained PATH and separately lists profile-root source exclusions;
-it does not silently change lookup. No new wire diagnostic code is allocated. This line is separate from an availability
+it does not silently change lookup. This line is separate from an availability
 diagnostic, when both are applicable.
 
 Before generic base admission, remove inherited entries within **known
 manager-published profile command-root namespaces**, including the selected
 root; only the newly verified root may enter the middle list. Record these as
 root-source exclusions in the same line. This is authority separation, not a
-seventh generic PATH safety predicate. Resolve aliases before exclusion;
+further generic PATH safety predicate. Resolve aliases before exclusion;
 unreadable evidence follows the unreadable rule. An arbitrary unrecognized
 directory is not labeled foreign by spelling alone; the separate protected
 command-admission companion covers dynamic command collisions. Empty-root
 launches must not borrow another profile's exports. On the old hosted route,
 the caller can exclude its own roots but cannot assert control over daemon
 PATH; no final-child command delivery or isolation is claimed there.
+
+**Nonempty final PATH.** The composed PATH MUST contain at least one admitted
+absolute directory. If no base entry remains (including an empty input), scan
+only the fixed platform default list through the same predicates, authority
+exclusions and identity deduplication against protected tools. On Unix the list
+is exactly `/usr/bin`, `/bin`, `/usr/sbin`, `/sbin`, in that order. Keep only
+admitted defaults, after protected tools and any active root; record default
+selection and its drop/refuse decisions in the same admission diagnostic line.
+Do not retry a managed unreadable/world-writable refusal with defaults. An
+unsafe default also follows that policy; the fixed list grants no trust.
+Another platform needs its fixed native list published with its supported
+launcher contract; neither inherited PATH nor CWD supplies a default.
+
+If protected tools, active root and admitted base/defaults together contain no
+directory, refuse before child start with the distinct launcher diagnostic
+`launch_path_unavailable`. Never serialize or deliver an empty PATH string,
+an empty component, `.` or an implicit CWD fallback; emit no successful state
+record for this refusal. An already-admitted protected directory or active
+root can satisfy the nonempty invariant when no base/default survives.
+This is PATH-safety refusal, separate from B1's prohibition on refusing merely
+because profile commands are unavailable. It allocates no hosted wire code.
 
 Apply the constructed value to the actual native child, overriding inherited
 module PATH; do not recompose after a later ambient change. Preserve existing
@@ -196,7 +225,8 @@ an operator-owned directory with private mutation permissions and a regular
 owner-only file, no symlink traversal, exclusive creation and atomic publish.
 It records the closed
 [`launcher-path-state/1`](../schemas/profile-command-path-v1/launcher-state.schema.json)
-shape: effective PATH components and serialized value, exact fragment digest,
+shape: nonempty canonical, control-free absolute PATH components and their
+nonempty serialized value, exact fragment digest,
 profile/lock/plan binding, generation, availability, root/receipt digest or
 explicit nulls, and admission diagnostic entries. Failure to safely persist
 refuses before start. Do not log the full environment, credentials or argv.
