@@ -467,6 +467,12 @@ or an operational alias for interactive execution. There is one launcher-owned
 wire, not a parallel Curator schema. Its proposed transport exits never stand in
 for observed native outcome, task acceptance or complete cleanup.
 
+The [Stage2 bounded-decoder source clarification](https://github.com/relux-works/curator-agent-launcher/blob/cfc660b2750f5451df34eba05f45cf8b87e39611/docs/same-user-executor-wire.md#2-bytes-schema-and-limits)
+is a separate launcher source candidate. The Stage1 baseline at
+`301b2dbf38c04960273a022e9353f755cc3967dc` remains frozen; neither this locator
+nor bounded decoding establishes admission, a supported tuple, qualification
+or activation.
+
 Amendments v1/v2 remain intact. Launcher SPEC §10 continues as the separately
 protected dispatcher/worker-account/broker target, unimplemented/unqualified
 under its own intake/FD/privilege/network/provider/lifecycle/activation gates.
