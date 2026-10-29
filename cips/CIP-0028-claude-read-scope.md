@@ -15,7 +15,10 @@ member's working directory. This CIP lets repair project a narrow, literal
 `Read` allow set for exactly those paths into the managed home's
 `settings.json`, on Claude releases for which that projection is qualified.
 Ownership comes from a separate private record of the occurrences Curator
-itself introduced, never from rule shape or byte equality. Ownership that has
+itself introduced, never from rule shape or byte equality. An occurrence
+stays provably Curator's only while neither the `allow` bytes nor the file's
+write evidence (file identity and status-change time) has changed since
+Curator's commit, so an identical rewrite also forfeits it. Ownership that has
 once become ambiguous is never re-established. Publication and retirement are
 recoverable per-home transactions. Frozen markers, locks and fragments do not
 change.
@@ -158,25 +161,34 @@ Paths use POSIX form (`C:\x` becomes `/c/x`), and the gitignore metacharacters
 `\ * ? [ ]` are escaped with a backslash. `settings.json` remains undeclared as
 a seed.
 
-### 2. Edit grammar and preservation
+### 2. Edit grammar, creation and preservation
 
-The projection edits `settings.json` only by inserting or removing whole string
-elements of the top-level `permissions.allow` array. The editor works on the
-original bytes and does not re-encode the document:
+The projection changes `settings.json` only through these named spans. The
+editor works on the original bytes and never re-encodes the document. Every
+preexisting byte outside the named spans is preserved exactly, including
+whitespace, member order, string escapes, number lexemes, `deny`, `ask` and
+every other member.
 
-- every byte outside an inserted or removed element and its one adjoining
-  separator is preserved exactly. That includes whitespace, member order,
-  string escapes and number lexemes, and the `deny`, `ask` and every other
-  member;
-- an insertion appends the element at the end of `allow`, in the canonical
-  JSON string form of the rule;
-- a removal deletes exactly one recorded occurrence and one adjoining comma;
-- when `permissions` or `allow` is absent, the editor appends the missing
-  member at the end of its parent object with an empty array, and records that
-  it created it. A created container is never removed by retirement.
+- **Element insertion.** One string element, in the canonical JSON string form
+  of the rule, appended at the end of `allow`. The span is the element plus
+  one separating comma when `allow` was not empty.
+- **Element removal.** Exactly one recorded occurrence plus one adjoining
+  comma.
+- **Container creation.** When `permissions` or `allow` is absent from an
+  existing document, one member is appended at the end of its parent object:
+  `"permissions":{"allow":[]}` or `"allow":[]`. The span is the member plus
+  one separating comma when the parent was not empty. This is the only
+  exception to element-only edits. The record notes the creation, and a
+  created container is never removed: emptied containers are retained.
+- **File creation.** When `settings.json` is absent (the no-follow `lstat`
+  reports that no entry exists), a new home may receive exactly
+  `{"permissions":{"allow":[...]}}` followed by a newline, holding only the
+  inserted elements. The record notes that Curator created the file.
+  Absence is distinct from an entry that exists but cannot be read: that is
+  unprojectable (section 5).
 
 There is no other permitted change. A document that this grammar cannot edit
-is unprojectable (section 5).
+is unprojectable.
 
 ### 3. Private record (amends §8.3)
 
@@ -190,38 +202,72 @@ beside `.agent-environment.json`, with closed schema `claude-read-scope/1`:
 | `generation` | Per-home publication counter, incremented by each committed publication |
 | `encoder` | Rule encoder revision (escaping, variant and POSIX rules above) |
 | `inputs` | Selected skill names with lexical path, resolved root and projection hash version; context member names with store root |
-| `occurrences` | Every occurrence Curator inserted and has not yet retired, each with its exact rule bytes, the generation that introduced it, and a `state` of `proven` or `unresolved`. An `unresolved` occurrence also carries the generation and the `allow` digest at which its proof was lost |
+| `occurrences` | Every occurrence Curator inserted and has not yet retired, each with its exact rule bytes, the generation that introduced it, and a `state` of `proven` or `unresolved`. An `unresolved` occurrence also carries the generation and the reason (`content`, `write_observed`, `evidence_unavailable` or `recovery`) at which its proof was lost |
 | `satisfied` | Desired rules that were already present when Curator first needed them; operator-owned and never retired |
-| `postimage` | Digest of the exact `permissions.allow` array bytes and of the whole file as Curator committed them |
+| `created` | Whether Curator created the file, the `permissions` member or the `allow` member |
+| `postimage` | Digests of the exact `permissions.allow` array bytes and of the whole file as Curator committed them |
+| `write_evidence` | The file-system identity of `settings.json` read immediately after Curator's committed rename: device, file identity, size, modification time and status-change time at full precision (on Windows, the volume serial number, file ID, last-write time and change time) |
 
 A rule is *introduced* only if no equal element existed in `allow` immediately
 before Curator inserted it. Equal bytes never establish ownership.
 
-### 4. Ownership proof and its loss
+### 4. Ownership evidence and its limits
 
-At the start of every publication, before any write, the writer compares the
-current `permissions.allow` array bytes with the recorded `allow` postimage:
+Equal bytes cannot show who wrote them. When the operator removes an occurrence
+Curator introduced and later adds the same element back, the array can return
+to the exact bytes Curator committed, and no comparison of content can tell
+that state from an untouched file. Ownership therefore rests on two
+independently observable facts at the start of every publication, before any
+write:
 
-- **Equal.** Every `proven` occurrence remains `proven`. Other members of the
-  file may have changed; this array may not.
-- **Different.** Every `proven` occurrence becomes `unresolved`, with the
-  current generation and `allow` digest. This covers reordering, duplicates,
-  edits, removals, an equal element the operator may have added, and an
-  unrelated operator element appended to the array.
+1. the current `permissions.allow` array bytes equal the recorded `allow`
+   postimage; and
+2. the current file-system identity of `settings.json` equals the recorded
+   `write_evidence`.
+
+The status-change time is the decisive part. Every write, rename or
+metadata change moves it, and an ordinary process cannot set it back to an
+earlier value on POSIX systems. An identical rewrite therefore changes it even
+when the bytes come back unchanged. A replacement through a new file changes
+the file identity as well.
+
+When both facts hold, every `proven` occurrence stays `proven`. When either
+fails, every `proven` occurrence becomes `unresolved` with its reason. The
+array differs (`content`); the bytes match but a write happened since Curator's
+commit (`write_observed`); or the platform or file system does not supply
+stable identity and status-change time (`evidence_unavailable`). That covers
+reordering, duplicates, edits, removals, an identical remove-and-re-add, any
+write by the operator or by the vendor's own tools, a restore from backup and
+a copy of the home to another place.
+
+Limits of this evidence, stated as part of the contract:
+
+- It shows that no write happened since Curator's commit. It does not show who
+  wrote, so every observed write forfeits all earlier proofs, including writes
+  the vendor makes itself, for example when a session saves a permission rule.
+- On Windows the change time can be set through
+  `SetFileInformationByHandle`. A process that deliberately forges file
+  metadata defeats the evidence there; that is outside this guarantee. On
+  POSIX, the same holds for an actor that can change the system clock or write
+  the raw device.
+- A file system without stable file identity or status-change time (some
+  network and FUSE mounts, FAT) never yields a proof. Occurrences on it are
+  `unresolved` from the first publication and are never retired.
 
 The `unresolved` state is permanent for that occurrence. No later
-publication, postimage equality, equal bytes, position or neighbor match makes
-it `proven` again. A later publication re-records the postimage, but that only
-makes occurrences introduced by that publication provable.
+publication, postimage equality, equal bytes, metadata match, position or
+neighbor match makes it `proven` again. A later publication records new
+evidence, which only makes occurrences introduced by that publication
+provable. A later operator occurrence is never redefined as Curator-owned.
 
 Retirement of an occurrence that is no longer desired:
 
 - a `proven` occurrence is removed in the same committed publication;
 - an `unresolved` occurrence is never deleted. Its bytes and the record are
-  kept. If the rule is still present in `allow`, the home is not converged, and
-  the generation is reported stale with
-  `claude_read_scope_ownership_ambiguous`. A supported writer refuses a usable
-  resolve for that home until a repair can prove convergence;
+  kept. If the rule is still present in `allow`, the home is not converged,
+  the generation is reported with `claude_read_scope_ownership_ambiguous`, and
+  a supported writer refuses a usable resolve for that home until a repair can
+  prove convergence;
 - convergence for an `unresolved` obsolete occurrence is proven only when no
   element equal to it remains in `allow`. A repair then drops it from the
   record. This needs no new command: it happens when the operator edits
@@ -231,57 +277,87 @@ Retirement of an occurrence that is no longer desired:
 An `unresolved` occurrence that is still desired leaves the home converged,
 because the desired rule is present. It still never becomes retirable.
 
-Revision 1 deliberately keeps this proof conservative. Any change to the
-`allow` array after a publication makes the earlier occurrences permanently
-unretirable by Curator. When one of those skills is later dropped, the home is
-refused until the operator removes the rule. Open question 4 asks whether
-that cost is acceptable.
+If file-system evidence is not accepted as ownership evidence, no in-home
+proof remains that survives an identical rewrite. The clean alternatives are
+then to never retire an introduced occurrence (every obsolete one refuses
+until the operator removes it), or a launch-time settings file that Curator
+owns as a whole, which is outside this unit. Open question 1 asks for that
+decision.
 
 ### 5. Recoverable per-home publication (amends §§8.3.1, 8.4.1, 9.2, 10.1)
 
 Add to the §8.3.1 closed lists, with the same no-follow atomic replacement:
 
-- the structured edit of the managed `settings.json` (section 2);
+- the structured edit or creation of the managed `settings.json` (section 2);
 - the record `.agent-claude-read-scope.json`;
 - the journal `.agent-claude-read-scope.journal.json`, which holds one
   in-flight unit;
 - the recovery evidence file `.agent-claude-read-scope.recovery.json`.
 
-Under the manager-home mutation lock, one transaction covers `settings.json`,
-the record, and any marker change of the same repair. The writer first
-journals the preimages of both files, their digests, the input identities, and
-the complete planned record, including every `unresolved` state decided in
-section 4. It rechecks the preimages before each destructive step.
+**Targets.** One unit covers `settings.json`, the record, and the marker when
+the same repair changes it, under the existing manager-home mutation lock. For
+each target, the journal holds whether it existed, the digest of its
+preimage, and its planned postimage digest. For `settings.json` it also holds
+the file-system identity before the unit. It also holds the input identities
+and the complete planned record, including every `unresolved` state decided in
+section 4.
 
-Recovery after a restart runs before the home emits any fragment. It either
-restores both preimages or completes the journaled unit with the journaled
-record. It never recomputes ownership from the current file, so a crash cannot
-turn an `unresolved` occurrence back into `proven`. Before restoring a
-preimage, recovery compares the current `settings.json` with the journaled
-postimage. If the operator changed it after Curator's write, recovery keeps the
-operator's bytes and does not compensate. It moves the journal to the recovery
-evidence file and marks every occurrence of that unit `unresolved`. The
-recovery evidence file is kept until a later publication proves convergence,
-and is then removed in that publication. A second conflict while a recovery
-evidence file exists refuses a usable resolve and never overwrites the
-evidence. No callback-only recovery is allowed.
+**Order.**
+
+1. The journal is written (phase 1).
+2. `settings.json` is replaced or created.
+3. Its new file-system identity is read and added to the journal (phase 2).
+4. The record is committed with that identity as `write_evidence`.
+5. The marker change of the same repair follows the existing marker
+   transaction, which stays the commit point of the repair.
+6. The journal is removed.
+
+Before each destructive step the writer rechecks that the target still matches
+its journaled preimage. A mismatch stops the unit before that step.
+
+**Recovery** runs after a restart, before the home emits any fragment and
+before the marker transaction's own recovery. It never recomputes ownership
+from the current file, so it cannot turn an `unresolved` occurrence back into
+`proven`.
+
+| State found | Action |
+| --- | --- |
+| `settings.json` still has its journaled preimage identity and bytes (or is still absent) | The rename did not happen. The record keeps its preimage and the unit is abandoned. Nothing in `settings.json` changes |
+| `settings.json` has the journaled postimage bytes and the phase-2 identity | Complete the unit with the journaled record |
+| `settings.json` has the postimage bytes but no phase-2 identity was journaled, or a different identity | Complete the unit, and record every occurrence of the home `unresolved` with reason `recovery`: a write after the rename cannot be excluded |
+| `settings.json` matches neither image | Keep the operator's bytes and do not compensate. Move the journal to the recovery evidence file and record every occurrence `unresolved` with reason `recovery` |
+| The record matches neither its preimage nor its planned postimage | Refuse; keep the journal and every file |
+
+Compensation deletes a file Curator created only when its current bytes and
+identity still equal the created postimage. Otherwise the file is kept.
+
+The recovery evidence file is kept until a later publication proves
+convergence, and is removed in that publication. A second conflict while a
+recovery evidence file exists refuses a usable resolve and never overwrites
+the evidence. No callback-only recovery is allowed.
 
 Generations follow §9.2's per-home convergence. A lock change marks the home
 stale (§9.2 step 6). The next repair publishes generation N+1 and retires the
 `proven` obsolete occurrences of N in the same committed transaction. A lock
 change alone is not a global revocation.
 
-Verification (§10.1) for a home that requires the projection:
+**Verification (§10.1).** The integrity checks in the first five rows apply
+to every `claude_code` home that has a record, a journal or a recovery
+evidence file, whatever release it now selects:
 
 | Condition | Result |
 | --- | --- |
-| A desired rule is absent, or a `proven` obsolete occurrence remains | Stale; repair converges |
-| An `unresolved` obsolete occurrence remains | `claude_read_scope_ownership_ambiguous`; refused, no deletion |
 | The record is unreadable, invalid, of an unsupported revision, or bound to another marker digest | Refused under the §8.4.1 read-failure row; never treated as absent |
 | A journal is pending, or a second recovery conflict exists | Refused until recovery completes |
-| `settings.json` is unprojectable: a link, a non-regular file, not UTF-8, not a JSON object, a duplicate member name on the edited path, a non-object `permissions`, or a non-array `allow` or one with a non-string element | `claude_read_scope_unprojectable`; stops before writes and refuses a usable resolve. Link targets, every operator byte and the preimages stay untouched |
+| An `unresolved` obsolete occurrence remains | `claude_read_scope_ownership_ambiguous`; refused, no deletion |
+| A `proven` obsolete occurrence remains | Qualified release: stale, and repair converges. Unqualified release: `claude_read_scope_adapter_unqualified`; refused, because the frozen state cannot converge |
+| `settings.json` is unprojectable: a link, a non-regular file, an entry that exists but cannot be read, not UTF-8, not a JSON object, a duplicate member name on the edited path, a non-object `permissions`, or a non-array `allow` or one with a non-string element | `claude_read_scope_unprojectable`; stops before writes and refuses a usable resolve. Link targets, every operator byte and the preimages stay untouched |
+| Qualified release: a desired rule is absent | Stale; repair converges |
 
-There is no warning-as-success path for a home that requires the projection.
+There is no warning-as-success path. A home without a record, journal or
+recovery evidence file on an unqualified release is the legacy case. It is
+neither corrupt nor owned, gets no edit, and carries no qualification or
+no-prompt claim.
 
 ### 6. Vendor qualification (CIP-0020 boundary)
 
@@ -293,20 +369,23 @@ sibling home's link, a shared store target, a retargeted link, an unselected
 context and another tool's private configuration. It is admitted separately
 from this CIP, and adopting this CIP qualifies no release.
 
-On an unqualified release, documentation confidence authorizes neither an
-automatic projection nor a claim that the member will not prompt. Repair
-inserts nothing there and reports `claude_read_scope_adapter_unqualified` with
-a qualification hint, as CIP-0020 §5 requires.
+On an unqualified release every read-scope edit is frozen: no insertion and no
+retirement. Documentation confidence authorizes neither a projection nor a
+claim that the member will not prompt. Repair reports
+`claude_read_scope_adapter_unqualified` with a qualification hint, as CIP-0020
+§5 requires. Existing record, journal and recovery state is still validated by
+section 5 and is never skipped because of the release selected. A
+narrowing-only path on unqualified releases would be a separate proposal.
 
 ## Implementation plan
 
 1. The operator accepts or amends this proposal. Publish
-   `protocol/claude-read-scope.md`, the closed schema, the Decision record and
+   `protocol/claude-read-scope.md`, the closed schema, a Decision record and
    paired vectors in curator-spec, after an exact-head independent review and
-   the required checks.
+   the required checks. The Decision number is the next free one at that time.
 2. A separate adapter qualification admits the first Claude release.
 3. A successor Curator change implements the record, the edit grammar, the
-   journaled transaction and the ownership proof. It may reuse the earlier
+   journaled transaction and the ownership evidence. It may reuse the earlier
    candidate's emission, escaping and variant code where they still hold. No
    implementation starts before step 1 is accepted.
 
@@ -325,6 +404,7 @@ must fail for the named reason.
 | Two homes share a store entry | Each home's own link | Home A's rules matching home B's link to the same entry |
 | A link is retargeted after publication | Nothing for the new target | The old rule matching the new target |
 | Outside paths | Nothing | Another tool's private configuration directory, the home outside `skills/`, an ancestor |
+| The profile drops a skill whose rule Curator introduced | Untouched file: the rule is retired | Identical rewrite (the operator removes the rule and adds the same element back, restoring the exact array): the rule is retired |
 
 ### Ownership, preservation and recovery
 
@@ -333,15 +413,20 @@ must fail for the named reason.
 | Literal encoding | Paths with `[ ] * ? \` and spaces match only themselves | An escaped path matches a neighbor; a glob rule is emitted |
 | Introduced vs satisfied | A desired rule absent before insertion is recorded as introduced | A preexisting equal operator rule is recorded as introduced, now or after any later repair |
 | Operator rule survives | The profile drops skill S: the operator's preexisting equal rule for S stays | It is removed |
-| Proven retirement | Untouched `allow`; the skill digest changes: N+1 retires both variants of the old introduced rules, and verification after repair is current | An old-digest rule survives and repair reports stale, or a non-introduced rule is removed |
-| No rebaseline | Publish A; the operator reorders, duplicates or extends `allow`; a repair appends B; a later repair drops A: A stays, unresolved, bytes kept, generation not current, `claude_read_scope_ownership_ambiguous` | A is removed, or the generation is reported current |
-| Ambiguity resolved by the operator | After the case above, the operator removes A, and repair drops A from the record and converges | A new command is required, or A is re-added |
-| Preservation | Whitespace, member order, escapes, number lexemes, `deny`, `ask`, other members and operator allow entries are byte-identical | Any byte change outside the inserted or removed element and its separator |
-| Unprojectable | A link, non-regular, non-object or duplicate-member `settings.json` is left byte-identical, the link target untouched, resolve refused | Any write through or over it, or a usable resolve |
+| Proven retirement | Untouched file; the skill digest changes: N+1 retires both variants of the old introduced rules, and verification after repair is current | An old-digest rule survives and repair reports stale, or a non-introduced rule is removed |
+| Identical rewrite | Publish A; the operator removes A and adds the same element back, restoring the exact bytes; the profile drops A: A stays, `unresolved` with reason `write_observed`, refused with `claude_read_scope_ownership_ambiguous` | A is removed because the bytes match |
+| Any observed write | A write that restores identical bytes, or a vendor write, forfeits earlier proofs | A proof survives an observed write |
+| No rebaseline | Publish A; the operator reorders, duplicates or extends `allow`; a repair appends B; a later repair drops A: A stays, unresolved, bytes kept, generation not current | A is removed, or the generation is reported current |
+| Evidence unavailable | A file system without stable identity or change time never proves an occurrence | A proof from content alone |
+| Ambiguity resolved by the operator | After an ambiguous case, the operator removes A, and repair drops A from the record and converges | A new command is required, or A is re-added |
+| Preservation | Every byte outside the named spans is identical: whitespace, member order, escapes, number lexemes, `deny`, `ask`, other members, operator allow entries | Any byte change outside an insertion, removal or creation span |
+| Creation | An absent `settings.json` is created with only `permissions.allow`; a missing `permissions` or `allow` is created as one appended member and is kept when emptied | A created container is removed; an unreadable existing file is treated as absent |
+| Unprojectable | A link, non-regular, unreadable, non-object or duplicate-member `settings.json` is left byte-identical, the link target untouched, resolve refused | Any write through or over it, or a usable resolve |
 | Record failures | An unreadable, invalid, unsupported or mismatched record refuses a usable resolve without writes | It is treated as absent, or a fragment is emitted |
-| Crash recovery | A crash after the `settings.json` rename and before the record commit is restored or completed before any fragment; journaled `unresolved` states survive | A partial unit is visible to resolve; recovery turns an occurrence `proven` again; compensation overwrites a later operator change |
+| Crash recovery | A crash at each step of the order: before the rename, the unit is abandoned; after the phase-2 journal, the unit completes with its proofs; between the rename and the phase-2 journal, the unit completes with every occurrence `unresolved` | A partial unit is visible to resolve; recovery turns an occurrence `proven` again; compensation overwrites a later operator change or deletes a created file the operator changed |
+| Qualification change | A home with a record moved to an unqualified release still refuses a pending journal, a mismatched record and an ambiguous or obsolete occurrence, and gets no edit | The release switch makes such a home usable, or reports a current projection |
+| Legacy home | A home without a record on an unqualified release gets no edit and no claim, and is not refused | It is refused, or its equal rules become owned |
 | New and existing homes | A home without a record gains the projection at the next repair on a qualified release | A home without a record is refused, or its existing equal rules become owned |
-| Qualification | An unqualified release gets no insertion and `claude_read_scope_adapter_unqualified` | A projection or a no-prompt claim on an unqualified release |
 | Writer lifecycle | A supporting reader refuses an unsupported record revision | A claim that an old writer enforces retirement or refusal |
 
 A real Claude Read on a qualified release, with the positive and paired
@@ -349,17 +434,15 @@ negatives above, is adapter qualification, not a source fixture.
 
 ## Open questions for the operator
 
-1. **Retirement on an unqualified release.** Recommended: allow repair to
-   retire `proven` obsolete occurrences even on an unqualified release, since
-   removal only narrows grants and uses Curator's own edit grammar.
-   Alternative: freeze all read-scope edits on an unqualified release.
-2. **Recovery evidence retention.** Recommended: a single retained recovery
-   evidence file per home, removed by the next converged publication.
-   Alternative: keep a bounded history of them.
-3. **Created containers.** Recommended: never remove a `permissions` or
-   `allow` member that Curator created. Alternative: remove it when it is empty
-   and was created by Curator.
-4. **Cost of the conservative proof.** Revision 1 makes earlier occurrences
-   permanently unretirable after any change to `allow`. Recommended: accept that
-   cost in revision 1. Alternative: a later revision with a finer
-   per-occurrence proof, which must never re-establish ownership once lost.
+1. **File-system evidence for ownership.** Recommended: accept the write
+   evidence of section 4 (file identity and status-change time, with the limits
+   stated there), which detects an identical rewrite on POSIX file systems.
+   Alternatives, if it is not accepted: never retire an introduced occurrence,
+   so every obsolete one refuses until the operator removes it; or move the
+   projection to a launch-time settings file that Curator owns as a whole, in
+   a separate unit.
+
+Resolved by the source owner and applied above: read-scope edits freeze on an
+unqualified release, while existing state is still validated; one recovery
+evidence file per home, never overwritten; emptied containers are retained.
+The whole-array comparison stays as the content half of the evidence.
