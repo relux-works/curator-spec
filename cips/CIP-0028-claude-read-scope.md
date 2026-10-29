@@ -11,17 +11,20 @@
 A Claude Code member launched by Curator stops on the vendor's "read outside
 the working directories" prompt when it reads its own declared skills or
 selected context modules. Both live in the Curator contexts store, outside the
-member's working directory. This CIP lets repair project a narrow, literal
-`Read` allow set for exactly those paths into the managed home's
-`settings.json`, on Claude releases for which that projection is qualified.
-Ownership comes from a separate private record of the occurrences Curator
-itself introduced, never from rule shape or byte equality. An occurrence
-stays provably Curator's only while neither the `allow` bytes nor the file's
-write evidence (file identity and status-change time) has changed since
-Curator's commit, so an identical rewrite also forfeits it. Ownership that has
-once become ambiguous is never re-established. Publication and retirement are
-recoverable per-home transactions. Frozen markers, locks and fragments do not
-change.
+member's working directory. This CIP grants a narrow, literal `Read` allow set
+for exactly those paths, on Claude releases for which that grant is qualified.
+Retiring a grant is the hard part. Once Curator writes a rule into the
+vendor's `settings.json`, the file's content cannot show who wrote an equal
+rule later, and file-system metadata is not a general write proof. The CIP
+therefore asks the operator to choose between two delivery models (section 4):
+
+- an in-home projection that never retires a grant automatically, so an
+  obsolete grant refuses the home until the operator removes it; or
+- a launch-time settings file that Curator owns as a whole, passed with
+  `--settings`, which removes the merge and the ownership question at the
+  cost of launcher and fragment changes.
+
+Frozen markers and locks do not change under either model.
 
 ## Motivation and user stories
 
@@ -80,49 +83,61 @@ change.
 3. **Allow rules owned by shape or equality.** No record, but it cannot tell an
    operator's identical rule from Curator's and cannot prove retirement.
    Rejected.
-4. **Recorded introduced-occurrence ownership with per-home recoverable
-   publication.** A private record lists exactly the occurrences Curator
-   inserted and whether each is still provably Curator's. Retirement removes
-   only occurrences that are still provable. Selected.
-5. **A launch-time settings file (`--settings <file>`).** No merge into vendor
-   state, but it needs a fragment schema and a launcher change. Outside this
-   unit; a later CIP may propose it as a successor.
+4. **In-home projection with a record of introduced occurrences and no
+   automatic retirement (option A, section 4).** A private record lists the
+   occurrences Curator inserted. Curator never deletes one; an obsolete one
+   refuses the home until the operator removes it.
+5. **A launch-time settings file that Curator owns (option B, section 4).**
+   No merge into vendor state and no ownership question, but it needs fragment,
+   launcher, session-manager and SAM policy changes.
+6. **Automatic in-home retirement backed by file-system write evidence** (file
+   identity and timestamps). Not proposed. Timestamp resolution is
+   implementation-defined and may be coarse, so equal metadata does not prove
+   that no write happened, and a write right after Curator's own rename cannot
+   be told apart from it. Such a backend would need its own separately
+   qualified, bounded proposal.
 
 ### Recommendation
 
-Adopt option 4 as normative amendment `protocol/claude-read-scope.md`
-revision 1 (sketch below), with a Decision record, a closed schema for
-`claude-read-scope/1` and paired conformance vectors. Projection is activated
-per Claude release only by a separate adapter qualification (section 6).
+The operator chooses between options A and B (section 4 and open question 1);
+this proposal recommends B. The adopted model then becomes normative amendment
+`protocol/claude-read-scope.md` revision 1, with a Decision record, closed
+schemas and paired conformance vectors. Grants are activated per Claude
+release only by a separate adapter qualification (section 6).
 
 ## Security considerations
 
-- The projection grants only `Read`, and only for literal absolute paths: this
-  home's declared skill links, their resolved immutable store roots, and its own
-  lock's selected context member roots. It never grants an ancestor, the store
-  root, a sibling home, Edit or Write, MCP, a permission mode or
-  `additionalDirectories`. Deny and ask rules from every source keep precedence.
+- Both options grant only `Read`, and only for literal absolute paths: this
+  home's declared skill links, their resolved immutable store roots (sub-option
+  A2 widens these to the skill's projection), and its own lock's selected
+  context member roots. Neither grants an ancestor, the store root, a sibling
+  home, Edit or Write, MCP, a permission mode or `additionalDirectories`. Deny
+  and ask rules from every source keep precedence.
 - A sibling home's link into the same immutable entry is not admitted, because
   its requested path does not match. A retargeted link is not admitted, because
   its resolved path does not match.
-- The record is ownership accounting, not authorization. Every use recomputes
+- Under option A, the record is accounting, not authorization. Every use recomputes
   the desired scope from the validated lock and store. The record holds paths,
   rule bytes and digests only. It is private machine state and never enters
   packages, locks, fragments, logs or snapshots.
-- Writes follow §8.3.1 no-follow atomic replacement. A linked, non-regular or
-  unreadable `settings.json`, record or journal stops before writes. No content
-  compare-and-swap against an external writer is claimed. Rereading immediately
-  before the rename narrows that race but does not close it.
+- Writes follow §8.3.1 no-follow atomic replacement. Under option A, a linked,
+  non-regular or unreadable `settings.json`, record or journal stops before
+  writes. No content compare-and-swap against an external writer is claimed;
+  rereading immediately before the rename narrows that race but does not close
+  it. Under option B, Curator writes only its own settings file.
 - Tool permissions are not an OS sandbox. A running session is not refreshed,
   and no live-session revocation is claimed.
 
 ## Compatibility and migration
 
-- Markers, locks, fragments and release metadata stay byte-identical. The
-  record refers one way to the existing marker, by the digest of its exact
-  bytes. No marker field, reverse reference, reinterpreted hash, wire change or
-  global lock is added.
-- A home without a record has no Curator-introduced occurrences. Absence alone
+- Markers, locks and release metadata stay byte-identical under both options.
+  Under option A, fragments stay byte-identical too, and the record refers one
+  way to the existing marker, by the digest of its exact bytes. No marker field,
+  reverse reference, reinterpreted hash, wire change or global lock is added.
+  Under option B, the launch plan or fragment gains one member naming the
+  settings file, a versioned change of that schema, and a launcher that does
+  not pass it gives no grant: the member prompts, which is fail-safe.
+- Under option A, a home without a record has no Curator-introduced occurrences. Absence alone
   is neither corruption nor ownership. Its first publication starts from the
   current `settings.json`, and every preexisting equal rule is recorded as
   operator-satisfied. Such a rule never becomes Curator-owned, including after
@@ -130,8 +145,8 @@ per Claude release only by a separate adapter qualification (section 6).
   ownership. This differs from CIP-0027, where absence of the record loses
   authority. A valid pre-amendment home converges through ordinary repair.
 - **Supported writers.** A supported writer is a Curator release that
-  implements `claude-read-scope/1`. Only supported writers create, change or
-  retire projected occurrences, the record or the journal. A supporting reader
+  implements `claude-read-scope/1`. Only supported writers insert projected
+  occurrences or write the record or the journal. A supporting reader
   refuses a record whose `record` value or revision it does not support, and a
   pending journal, before it emits a usable fragment.
 - **Old writers.** A release without this amendment does not read the record
@@ -145,7 +160,7 @@ per Claude release only by a separate adapter qualification (section 6).
 
 ## Specification changes (normative sketch)
 
-### 1. Projection (amends §7.4)
+### 1. Grant set (both options; amends §7.4)
 
 For a `claude_code` managed home whose Claude release is qualified (section 6),
 repair evaluates a **read-scope projection**: the exact rule set
@@ -161,7 +176,7 @@ Paths use POSIX form (`C:\x` becomes `/c/x`), and the gitignore metacharacters
 `\ * ? [ ]` are escaped with a backslash. `settings.json` remains undeclared as
 a seed.
 
-### 2. Edit grammar, creation and preservation
+### 2. Edit grammar, creation and preservation (option A)
 
 The projection changes `settings.json` only through these named spans. The
 editor works on the original bytes and never re-encodes the document. Every
@@ -190,7 +205,7 @@ every other member.
 There is no other permitted change. A document that this grammar cannot edit
 is unprojectable.
 
-### 3. Private record (amends §8.3)
+### 3. Private record (option A; amends §8.3)
 
 A manager-owned, owner-private regular file `.agent-claude-read-scope.json`
 beside `.agent-environment.json`, with closed schema `claude-read-scope/1`:
@@ -202,89 +217,91 @@ beside `.agent-environment.json`, with closed schema `claude-read-scope/1`:
 | `generation` | Per-home publication counter, incremented by each committed publication |
 | `encoder` | Rule encoder revision (escaping, variant and POSIX rules above) |
 | `inputs` | Selected skill names with lexical path, resolved root and projection hash version; context member names with store root |
-| `occurrences` | Every occurrence Curator inserted and has not yet retired, each with its exact rule bytes, the generation that introduced it, and a `state` of `proven` or `unresolved`. An `unresolved` occurrence also carries the generation and the reason (`content`, `write_observed`, `evidence_unavailable` or `recovery`) at which its proof was lost |
-| `satisfied` | Desired rules that were already present when Curator first needed them; operator-owned and never retired |
+| `introduced` | Every occurrence Curator inserted that has not yet left `allow`, each with its exact rule bytes and the generation that introduced it |
+| `satisfied` | Desired rules that were already present when Curator first needed them; operator-owned, never refused over and never retired |
 | `created` | Whether Curator created the file, the `permissions` member or the `allow` member |
-| `postimage` | Digests of the exact `permissions.allow` array bytes and of the whole file as Curator committed them |
-| `write_evidence` | The file-system identity of `settings.json` read immediately after Curator's committed rename: device, file identity, size, modification time and status-change time at full precision (on Windows, the volume serial number, file ID, last-write time and change time) |
 
 A rule is *introduced* only if no equal element existed in `allow` immediately
-before Curator inserted it. Equal bytes never establish ownership.
+before Curator inserted it. Equal bytes never establish ownership, and the
+record is accounting, not proof: it tells Curator which rules it once inserted,
+not who owns an equal element today.
 
-### 4. Ownership evidence and its limits
+### 4. Retirement: decision packet
 
-Equal bytes cannot show who wrote them. When the operator removes an occurrence
-Curator introduced and later adds the same element back, the array can return
-to the exact bytes Curator committed, and no comparison of content can tell
-that state from an untouched file. Ownership therefore rests on two
-independently observable facts at the start of every publication, before any
-write:
+**Constraint.** Retiring a grant means deleting an element from a file the
+operator and the vendor also write. Content cannot show who wrote an equal
+element: when the operator removes a rule Curator inserted and adds the same
+element back, the file can return to exactly the bytes Curator committed.
+File-system metadata does not close that gap in general. Timestamp resolution
+is implementation-defined and may be coarse, so equal size, modification time
+and status-change time do not prove that no write happened. A write between
+Curator's rename and its first metadata capture is indistinguishable from
+Curator's own. Any evidence backend would need a separately qualified,
+explicitly bounded proposal, and unknown or unsupported evidence could never
+authorize deletion. This unit therefore offers two delivery models that need
+no ownership proof. The operator chooses one.
 
-1. the current `permissions.allow` array bytes equal the recorded `allow`
-   postimage; and
-2. the current file-system identity of `settings.json` equals the recorded
-   `write_evidence`.
+**Option A: in-home projection without automatic retirement.** Sections 1–3,
+5 and 6 as sketched. Curator inserts desired rules and never deletes one.
 
-The status-change time is the decisive part. Every write, rename or
-metadata change moves it, and an ordinary process cannot set it back to an
-earlier value on POSIX systems. An identical rewrite therefore changes it even
-when the bytes come back unchanged. A replacement through a new file changes
-the file identity as well.
+- An introduced occurrence that is no longer desired refuses a usable resolve
+  with `claude_read_scope_cleanup_required`, naming the rule, until the
+  operator removes it from `settings.json`. The next repair then drops it from
+  the record. An equal element the operator adds later is the operator's own.
+- A satisfied rule that is no longer desired is the operator's and changes
+  nothing.
+- **Cost.** The resolved-root rule names the immutable entry of one skill
+  version (`…/v<n>/<digest>`). Every skill update therefore leaves an obsolete
+  introduced rule, and the member refuses until the operator edits
+  `settings.json`. So does every dropped skill or context. For unattended
+  members, a routine skill update stops launches.
+- **Sub-option A2.** Emit the resolved-root rule one level up, at
+  `contexts/skill-context/<projection>/**`. Updates of the same skill then
+  produce no obsolete rule, and only drops need cleanup. The grant widens to
+  every immutable version of that skill's projection.
 
-When both facts hold, every `proven` occurrence stays `proven`. When either
-fails, every `proven` occurrence becomes `unresolved` with its reason. The
-array differs (`content`); the bytes match but a write happened since Curator's
-commit (`write_observed`); or the platform or file system does not supply
-stable identity and status-change time (`evidence_unavailable`). That covers
-reordering, duplicates, edits, removals, an identical remove-and-re-add, any
-write by the operator or by the vendor's own tools, a restore from backup and
-a copy of the home to another place.
+**Option B: a launch-time settings file that Curator owns.** Curator never
+edits the vendor's `settings.json`.
 
-Limits of this evidence, stated as part of the contract:
+- Resolve publishes, per home generation, a manager-owned, owner-private file
+  holding exactly `{"permissions":{"allow":[...]}}` with the rules of section 1,
+  written under §8.3.1 no-follow atomic replacement outside `settings.json`.
+- The launch carries that file to Claude Code with `--settings <file>`.
+  Retirement is publishing the next generation's file. No operator byte is
+  touched, so no ownership record, proof or cleanup refusal exists.
+- **Required contracts.**
+  - A launch-plan or fragment member naming the file (curator-spec).
+  - `curator-run` passing it, and refusing when the native arguments already
+    carry `--settings` (launcher).
+  - Hosted session managers forwarding it (session-manager contract).
+  - The SAM Claude permission policy admitting the settings source for the
+    release and mode. The proposed 2.1.312 policy row scans an explicit
+    settings source on yolo launches and admits a `permissions` member of
+    string arrays; other modes need their own check.
+  - Qualification that Claude Code adds `allow` rules from `--settings` to
+    those of the user settings, while `deny` and `ask` from every source keep
+    precedence.
+- **Cost and limits.** Work in several repositories before the first grant. A
+  session started without the carrier, for example a plain `claude` with the
+  home's configuration directory, gets no grant and prompts. That is
+  fail-safe.
 
-- It shows that no write happened since Curator's commit. It does not show who
-  wrote, so every observed write forfeits all earlier proofs, including writes
-  the vendor makes itself, for example when a session saves a permission rule.
-- On Windows the change time can be set through
-  `SetFileInformationByHandle`. A process that deliberately forges file
-  metadata defeats the evidence there; that is outside this guarantee. On
-  POSIX, the same holds for an actor that can change the system clock or write
-  the raw device.
-- A file system without stable file identity or status-change time (some
-  network and FUSE mounts, FAT) never yields a proof. Occurrences on it are
-  `unresolved` from the first publication and are never retired.
+| Aspect | A (in-home, no automatic retirement) | A2 (A, projection-level rule) | B (launch-time file) |
+| --- | --- | --- | --- |
+| Operator bytes in `settings.json` | Element insertions, container or file creation | Same as A | None |
+| Skill update | Refuses until the operator removes the old rule | No effect | No effect |
+| Skill or context dropped | Refuses until the operator removes the rule | Same as A | No effect |
+| Grant width | Exact skill version | Every version of the skill's projection | Exact skill version |
+| Launch outside `curator-run` | Grants apply (in-home) | Same as A | No grant; prompts |
+| Repositories changed | curator-spec, curator | Same as A | curator-spec, curator, curator-agent-launcher, session-manager contract, SAM policy |
+| Record, journal, recovery | Needed (sections 3 and 5) | Same as A | Only the file's own atomic publication |
 
-The `unresolved` state is permanent for that occurrence. No later
-publication, postimage equality, equal bytes, metadata match, position or
-neighbor match makes it `proven` again. A later publication records new
-evidence, which only makes occurrences introduced by that publication
-provable. A later operator occurrence is never redefined as Curator-owned.
+**Recommendation: option B.** It is the only model in which an obsolete grant
+leaves without operator work, and it never touches operator bytes. If B is
+not chosen, A2 limits refusals to drops. Plain A stops unattended members at
+every skill update.
 
-Retirement of an occurrence that is no longer desired:
-
-- a `proven` occurrence is removed in the same committed publication;
-- an `unresolved` occurrence is never deleted. Its bytes and the record are
-  kept. If the rule is still present in `allow`, the home is not converged,
-  the generation is reported with `claude_read_scope_ownership_ambiguous`, and
-  a supported writer refuses a usable resolve for that home until a repair can
-  prove convergence;
-- convergence for an `unresolved` obsolete occurrence is proven only when no
-  element equal to it remains in `allow`. A repair then drops it from the
-  record. This needs no new command: it happens when the operator edits
-  `settings.json`. After that, an equal element added by the operator is the
-  operator's own, under the absence rule above.
-
-An `unresolved` occurrence that is still desired leaves the home converged,
-because the desired rule is present. It still never becomes retirable.
-
-If file-system evidence is not accepted as ownership evidence, no in-home
-proof remains that survives an identical rewrite. The clean alternatives are
-then to never retire an introduced occurrence (every obsolete one refuses
-until the operator removes it), or a launch-time settings file that Curator
-owns as a whole, which is outside this unit. Open question 1 asks for that
-decision.
-
-### 5. Recoverable per-home publication (amends §§8.3.1, 8.4.1, 9.2, 10.1)
+### 5. Recoverable per-home publication (option A; amends §§8.3.1, 8.4.1, 9.2, 10.1)
 
 Add to the §8.3.1 closed lists, with the same no-follow atomic replacement:
 
@@ -296,52 +313,45 @@ Add to the §8.3.1 closed lists, with the same no-follow atomic replacement:
 
 **Targets.** One unit covers `settings.json`, the record, and the marker when
 the same repair changes it, under the existing manager-home mutation lock. For
-each target, the journal holds whether it existed, the digest of its
-preimage, and its planned postimage digest. For `settings.json` it also holds
-the file-system identity before the unit. It also holds the input identities
-and the complete planned record, including every `unresolved` state decided in
-section 4.
+each target the journal holds whether it existed, the digest of its preimage
+and its planned postimage digest, plus the input identities and the complete
+planned record.
 
 **Order.**
 
-1. The journal is written (phase 1).
+1. The journal is written.
 2. `settings.json` is replaced or created.
-3. Its new file-system identity is read and added to the journal (phase 2).
-4. The record is committed with that identity as `write_evidence`.
-5. The marker change of the same repair follows the existing marker
+3. The record is committed.
+4. The marker change of the same repair follows the existing marker
    transaction, which stays the commit point of the repair.
-6. The journal is removed.
+5. The journal is removed.
 
 Before each destructive step the writer rechecks that the target still matches
 its journaled preimage. A mismatch stops the unit before that step.
 
 **Recovery** runs after a restart, before the home emits any fragment and
-before the marker transaction's own recovery. It never recomputes ownership
-from the current file, so it cannot turn an `unresolved` occurrence back into
-`proven`.
+before the marker transaction's own recovery. It never deletes an element and
+never deletes a file, because deletion would need the ownership proof this
+option does not have.
 
 | State found | Action |
 | --- | --- |
-| `settings.json` still has its journaled preimage identity and bytes (or is still absent) | The rename did not happen. The record keeps its preimage and the unit is abandoned. Nothing in `settings.json` changes |
-| `settings.json` has the journaled postimage bytes and the phase-2 identity | Complete the unit with the journaled record |
-| `settings.json` has the postimage bytes but no phase-2 identity was journaled, or a different identity | Complete the unit, and record every occurrence of the home `unresolved` with reason `recovery`: a write after the rename cannot be excluded |
-| `settings.json` matches neither image | Keep the operator's bytes and do not compensate. Move the journal to the recovery evidence file and record every occurrence `unresolved` with reason `recovery` |
+| `settings.json` still has its journaled preimage bytes (or is still absent) | The unit is abandoned; the record keeps its preimage |
+| `settings.json` has the journaled postimage bytes | The unit completes with the journaled record |
+| `settings.json` matches neither image | Keep the operator's bytes. Move the journal to the recovery evidence file and refuse until a later repair converges from the current file |
 | The record matches neither its preimage nor its planned postimage | Refuse; keep the journal and every file |
 
-Compensation deletes a file Curator created only when its current bytes and
-identity still equal the created postimage. Otherwise the file is kept.
-
-The recovery evidence file is kept until a later publication proves
-convergence, and is removed in that publication. A second conflict while a
-recovery evidence file exists refuses a usable resolve and never overwrites
-the evidence. No callback-only recovery is allowed.
+The recovery evidence file is kept until a later publication converges, and is
+removed in that publication. A second conflict while a recovery evidence file
+exists refuses a usable resolve and never overwrites the evidence. No
+callback-only recovery is allowed. The external-writer race narrowed by the
+preimage recheck stays a stated limit; no exclusion is claimed.
 
 Generations follow §9.2's per-home convergence. A lock change marks the home
-stale (§9.2 step 6). The next repair publishes generation N+1 and retires the
-`proven` obsolete occurrences of N in the same committed transaction. A lock
+stale (§9.2 step 6), and the next repair publishes generation N+1. A lock
 change alone is not a global revocation.
 
-**Verification (§10.1).** The integrity checks in the first five rows apply
+**Verification (§10.1).** The integrity checks in the first four rows apply
 to every `claude_code` home that has a record, a journal or a recovery
 evidence file, whatever release it now selects:
 
@@ -349,8 +359,7 @@ evidence file, whatever release it now selects:
 | --- | --- |
 | The record is unreadable, invalid, of an unsupported revision, or bound to another marker digest | Refused under the §8.4.1 read-failure row; never treated as absent |
 | A journal is pending, or a second recovery conflict exists | Refused until recovery completes |
-| An `unresolved` obsolete occurrence remains | `claude_read_scope_ownership_ambiguous`; refused, no deletion |
-| A `proven` obsolete occurrence remains | Qualified release: stale, and repair converges. Unqualified release: `claude_read_scope_adapter_unqualified`; refused, because the frozen state cannot converge |
+| An introduced occurrence that is no longer desired is still present | `claude_read_scope_cleanup_required`; refused, no deletion |
 | `settings.json` is unprojectable: a link, a non-regular file, an entry that exists but cannot be read, not UTF-8, not a JSON object, a duplicate member name on the edited path, a non-object `permissions`, or a non-array `allow` or one with a non-string element | `claude_read_scope_unprojectable`; stops before writes and refuses a usable resolve. Link targets, every operator byte and the preimages stay untouched |
 | Qualified release: a desired rule is absent | Stale; repair converges |
 
@@ -361,88 +370,97 @@ no-prompt claim.
 
 ### 6. Vendor qualification (CIP-0020 boundary)
 
-The `claude_code` adapter names the Claude releases on which the projection is
-qualified. A home requires the projection only when its release is in that
-set. Qualification covers grammar and matching on that release, with
+The `claude_code` adapter names the Claude releases on which read-scope
+grants are qualified. A home requires the grants only when its release is in
+that set. Qualification covers grammar and matching on that release, with
 positives for own skill links and selected contexts, and negatives for a
 sibling home's link, a shared store target, a retargeted link, an unselected
-context and another tool's private configuration. It is admitted separately
-from this CIP, and adopting this CIP qualifies no release.
+context and another tool's private configuration. Under option B it also
+covers how `--settings` rules combine with the user settings. It is admitted
+separately from this CIP, and adopting this CIP qualifies no release.
 
-On an unqualified release every read-scope edit is frozen: no insertion and no
-retirement. Documentation confidence authorizes neither a projection nor a
-claim that the member will not prompt. Repair reports
-`claude_read_scope_adapter_unqualified` with a qualification hint, as CIP-0020
-§5 requires. Existing record, journal and recovery state is still validated by
-section 5 and is never skipped because of the release selected. A
-narrowing-only path on unqualified releases would be a separate proposal.
+On an unqualified release every read-scope edit is frozen. Documentation
+confidence authorizes neither a grant nor a claim that the member will not
+prompt. Repair reports `claude_read_scope_adapter_unqualified` with a
+qualification hint, as CIP-0020 §5 requires. Under option A, existing record,
+journal and recovery state is still validated by section 5 and is never
+skipped because of the release selected.
 
 ## Implementation plan
 
-1. The operator accepts or amends this proposal. Publish
-   `protocol/claude-read-scope.md`, the closed schema, a Decision record and
-   paired vectors in curator-spec, after an exact-head independent review and
-   the required checks. The Decision number is the next free one at that time.
+1. The operator chooses the delivery model (open question 1). The CIP is then
+   revised to that model alone. Publish `protocol/claude-read-scope.md`, its
+   closed schemas, a Decision record and paired vectors in curator-spec after
+   an exact-head independent review and the required checks. The Decision
+   number is the next free one at that time.
 2. A separate adapter qualification admits the first Claude release.
-3. A successor Curator change implements the record, the edit grammar, the
-   journaled transaction and the ownership evidence. It may reuse the earlier
-   candidate's emission, escaping and variant code where they still hold. No
-   implementation starts before step 1 is accepted.
+3. Successor changes implement the chosen model: in curator for A, or in
+   curator, the launcher, the session-manager contract and the SAM policy for
+   B. They may reuse the earlier candidate's emission, escaping and variant
+   code where it still holds. No implementation starts before step 1 is
+   accepted.
 
 ## Test plan
 
 Each rule below has a valid control (V) and a forbidden scenario (F). All are
-production-entry `Resolve` tests on temporary homes, with mutant controls that
-must fail for the named reason.
+production-entry tests on temporary homes, with mutant controls that must fail
+for the named reason.
 
-### Declaration scenarios
+### Declaration scenarios (both options)
 
-| Declaration | V (projected and matched) | F (never projected or matched) |
+| Declaration | V (granted and matched) | F (never granted or matched) |
 | --- | --- | --- |
 | Profile declares skill `example-skill` | `<home>/skills/example-skill/SKILL.md` and `.../references/guide.md`, by lexical and by resolved path | A file of an undeclared skill present in the store |
 | Profile selects context `example-context` | Its member's store root | An unselected context package, or the store root |
 | Two homes share a store entry | Each home's own link | Home A's rules matching home B's link to the same entry |
 | A link is retargeted after publication | Nothing for the new target | The old rule matching the new target |
 | Outside paths | Nothing | Another tool's private configuration directory, the home outside `skills/`, an ancestor |
-| The profile drops a skill whose rule Curator introduced | Untouched file: the rule is retired | Identical rewrite (the operator removes the rule and adds the same element back, restoring the exact array): the rule is retired |
 
-### Ownership, preservation and recovery
+### Option A
 
 | Rule | V (must hold) | F (must not happen) |
 | --- | --- | --- |
 | Literal encoding | Paths with `[ ] * ? \` and spaces match only themselves | An escaped path matches a neighbor; a glob rule is emitted |
 | Introduced vs satisfied | A desired rule absent before insertion is recorded as introduced | A preexisting equal operator rule is recorded as introduced, now or after any later repair |
-| Operator rule survives | The profile drops skill S: the operator's preexisting equal rule for S stays | It is removed |
-| Proven retirement | Untouched file; the skill digest changes: N+1 retires both variants of the old introduced rules, and verification after repair is current | An old-digest rule survives and repair reports stale, or a non-introduced rule is removed |
-| Identical rewrite | Publish A; the operator removes A and adds the same element back, restoring the exact bytes; the profile drops A: A stays, `unresolved` with reason `write_observed`, refused with `claude_read_scope_ownership_ambiguous` | A is removed because the bytes match |
-| Any observed write | A write that restores identical bytes, or a vendor write, forfeits earlier proofs | A proof survives an observed write |
-| No rebaseline | Publish A; the operator reorders, duplicates or extends `allow`; a repair appends B; a later repair drops A: A stays, unresolved, bytes kept, generation not current | A is removed, or the generation is reported current |
-| Evidence unavailable | A file system without stable identity or change time never proves an occurrence | A proof from content alone |
-| Ambiguity resolved by the operator | After an ambiguous case, the operator removes A, and repair drops A from the record and converges | A new command is required, or A is re-added |
-| Preservation | Every byte outside the named spans is identical: whitespace, member order, escapes, number lexemes, `deny`, `ask`, other members, operator allow entries | Any byte change outside an insertion, removal or creation span |
-| Creation | An absent `settings.json` is created with only `permissions.allow`; a missing `permissions` or `allow` is created as one appended member and is kept when emptied | A created container is removed; an unreadable existing file is treated as absent |
+| Operator rule survives | The profile drops skill S: the operator's preexisting equal rule for S stays and nothing refuses | It is removed, or the home refuses over it |
+| No automatic retirement | The profile drops a skill, or a skill update obsoletes its resolved-root rule: the introduced rule stays and the home refuses with `claude_read_scope_cleanup_required` | Curator removes the rule |
+| Identical rewrite | The operator removes an introduced rule and adds the same element back; the profile then drops it: the rule stays and the home refuses | The rule is removed because the bytes match |
+| Cleanup by the operator | After a refusal, the operator removes the rule; repair drops it from the record and converges | A new command is required, or the rule is re-added |
+| Preservation | Every byte outside the named spans is identical: whitespace, member order, escapes, number lexemes, `deny`, `ask`, other members, operator allow entries | Any byte change outside an insertion or creation span |
+| Creation | An absent `settings.json` is created with only `permissions.allow`; a missing `permissions` or `allow` is created as one appended member | A created container or file is removed; an unreadable existing file is treated as absent |
 | Unprojectable | A link, non-regular, unreadable, non-object or duplicate-member `settings.json` is left byte-identical, the link target untouched, resolve refused | Any write through or over it, or a usable resolve |
 | Record failures | An unreadable, invalid, unsupported or mismatched record refuses a usable resolve without writes | It is treated as absent, or a fragment is emitted |
-| Crash recovery | A crash at each step of the order: before the rename, the unit is abandoned; after the phase-2 journal, the unit completes with its proofs; between the rename and the phase-2 journal, the unit completes with every occurrence `unresolved` | A partial unit is visible to resolve; recovery turns an occurrence `proven` again; compensation overwrites a later operator change or deletes a created file the operator changed |
-| Qualification change | A home with a record moved to an unqualified release still refuses a pending journal, a mismatched record and an ambiguous or obsolete occurrence, and gets no edit | The release switch makes such a home usable, or reports a current projection |
+| Crash recovery | A crash before the rename abandons the unit; after it, the unit completes; a later operator change is kept with recovery evidence | A partial unit is visible to resolve; recovery deletes an element or a file |
+| Qualification change | A home with a record moved to an unqualified release still refuses a pending journal, a mismatched record and an obsolete introduced rule, and gets no edit | The release switch makes such a home usable |
 | Legacy home | A home without a record on an unqualified release gets no edit and no claim, and is not refused | It is refused, or its equal rules become owned |
-| New and existing homes | A home without a record gains the projection at the next repair on a qualified release | A home without a record is refused, or its existing equal rules become owned |
-| Writer lifecycle | A supporting reader refuses an unsupported record revision | A claim that an old writer enforces retirement or refusal |
+| Writer lifecycle | A supporting reader refuses an unsupported record revision | A claim that an old writer enforces refusal |
+
+### Option B
+
+| Rule | V (must hold) | F (must not happen) |
+| --- | --- | --- |
+| Carrier | A `curator-run` launch passes exactly the current generation's file with `--settings`; a hosted launch forwards it | A launch carries another generation's file, or none while claiming the grant |
+| No vendor-file edit | `settings.json` is byte-identical before and after every resolve | Any write to it |
+| Retirement | A dropped skill or a skill update is absent from the next generation's file, with no refusal | An obsolete rule survives in the current file |
+| Operator `--settings` | Native arguments that already carry `--settings` refuse before launch | Two settings sources are passed, or one replaces the other silently |
+| Precedence | An operator `deny` or `ask` for a granted path still applies | The carrier overrides it |
+| Outside the carrier | A plain `claude` with the home's configuration directory gets no grant | A grant appears without the carrier |
 
 A real Claude Read on a qualified release, with the positive and paired
 negatives above, is adapter qualification, not a source fixture.
 
 ## Open questions for the operator
 
-1. **File-system evidence for ownership.** Recommended: accept the write
-   evidence of section 4 (file identity and status-change time, with the limits
-   stated there), which detects an identical rewrite on POSIX file systems.
-   Alternatives, if it is not accepted: never retire an introduced occurrence,
-   so every obsolete one refuses until the operator removes it; or move the
-   projection to a launch-time settings file that Curator owns as a whole, in
-   a separate unit.
+1. **Delivery model.** Recommended: option B, a launch-time settings file that
+   Curator owns, because it retires grants without operator work and never
+   touches operator bytes, at the cost of changes in several repositories.
+   Alternatives: option A2 (in-home, projection-level resolved rule; refuses
+   only on drops until the operator cleans up) or option A (in-home, exact
+   rule; refuses after every skill update until the operator cleans up). A
+   file-system evidence backend for automatic in-home retirement is not
+   proposed here; it would need its own separately qualified, bounded
+   proposal.
 
-Resolved by the source owner and applied above: read-scope edits freeze on an
-unqualified release, while existing state is still validated; one recovery
+Resolved by the source owner and applied above: integrity checks run whatever
+the release; read-scope edits freeze on an unqualified release; one recovery
 evidence file per home, never overwritten; emptied containers are retained.
-The whole-array comparison stays as the content half of the evidence.
