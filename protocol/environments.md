@@ -4219,6 +4219,11 @@ adoption remain separate gates. This amendment promises no tag/version, new
 source writer, installed capability
 or runtime qualification and widens no frozen schema or released vector bytes.
 
+The [candidate decision](../decisions/0035-muse-invocation-context-policy.md) and
+[separate specification-data corpus](../conformance/environments-muse-invocation-policy/README.md)
+record the rationale and declaration checks; neither establishes runtime
+qualification or replaces required review and repository checks.
+
 No launcher argv or sealing path may stat, lstat, open, readlink, hash, or
 recognize headers in Curator content to decide exclusion. Absence never
 permits filesystem inference. A transformation relocating XDG parents MUST

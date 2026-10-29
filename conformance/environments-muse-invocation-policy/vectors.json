@@ -1,0 +1,941 @@
+{
+  "capability": "agent-environments",
+  "capability_revision": 1,
+  "normative_section": "protocol/environments.md §10.2",
+  "claim": "specification-data-consistency-only",
+  "argument_matrix": {
+    "choices": [
+      "strict",
+      "allowance"
+    ],
+    "permissions": [
+      "native",
+      "yolo"
+    ]
+  },
+  "selection_cases": [
+    {
+      "name": "default-interactive",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        }
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "-c",
+          "context.foreign_personal_skills=false"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "explicit-strict-interactive",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": "strict",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        }
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "-c",
+          "context.foreign_personal_skills=false"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "default-exec",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "exec",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        }
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "--no-foreign-personal-context"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "default-dry-run",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "dry-run",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        }
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "--no-foreign-personal-context"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "strict-absent-fact",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": null,
+        "root_context_present": false,
+        "raw_fact": null
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "explicit-interactive-mixed",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": "allowance",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        }
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "MIXED",
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "allowance-exec",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "exec",
+        "headless": false,
+        "choice": "allowance",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        }
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "allowance-serve",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "serve",
+        "headless": false,
+        "choice": "allowance",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        }
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "allowance-dry-run",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "dry-run",
+        "headless": false,
+        "choice": "allowance",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        }
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "allowance-hosted",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "hosted",
+        "form": "interactive",
+        "headless": false,
+        "choice": "allowance",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        }
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "allowance-headless",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": true,
+        "choice": "allowance",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        }
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "allowance-other-runtime",
+      "input": {
+        "runtime": "other",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": "allowance",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        }
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "allowance-fact-absent",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": "allowance",
+        "root_context_present": false,
+        "raw_fact": null
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "allowance-fact-null",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": "allowance",
+        "root_context_present": true,
+        "raw_fact": null
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "allowance-fact-false",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": "allowance",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": false
+        }
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "allowance-fact-empty",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": "allowance",
+        "root_context_present": true,
+        "raw_fact": {}
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "allowance-fact-string",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": "allowance",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": "true"
+        }
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "allowance-fact-extra",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": "allowance",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true,
+          "extra": true
+        }
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    }
+  ],
+  "identity_cases": [
+    {
+      "name": "strict-identity",
+      "requested_choice": "strict",
+      "retained_choice": "strict",
+      "original": {
+        "fragment": {
+          "fragment": "launch-env-fragment-v4",
+          "environment": "muse",
+          "profile": {
+            "name": "example-profile",
+            "lock_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+          },
+          "precedence": {
+            "winner": "higher-weight",
+            "placement": "winner-last"
+          },
+          "permissions": {
+            "mode": "native",
+            "locked": false,
+            "source": "default"
+          },
+          "env": {
+            "XDG_CONFIG_HOME": "/fixture/managed/config",
+            "XDG_DATA_HOME": "/fixture/managed/data",
+            "XDG_STATE_HOME": "/fixture/managed/state",
+            "XDG_CACHE_HOME": "/fixture/managed/cache",
+            "TBH_CREDENTIAL_BACKEND": "file"
+          },
+          "credential_store": {
+            "selection": "file"
+          },
+          "root_context": {
+            "exclusive": true
+          }
+        },
+        "whole_fragment_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "provenance": {
+          "manager": "fixture-manager",
+          "binding": "3333333333333333333333333333333333333333333333333333333333333333"
+        },
+        "inherited_HOME": "/fixture/native"
+      },
+      "retained": {
+        "fragment": {
+          "fragment": "launch-env-fragment-v4",
+          "environment": "muse",
+          "profile": {
+            "name": "example-profile",
+            "lock_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+          },
+          "precedence": {
+            "winner": "higher-weight",
+            "placement": "winner-last"
+          },
+          "permissions": {
+            "mode": "native",
+            "locked": false,
+            "source": "default"
+          },
+          "env": {
+            "XDG_CONFIG_HOME": "/fixture/managed/config",
+            "XDG_DATA_HOME": "/fixture/managed/data",
+            "XDG_STATE_HOME": "/fixture/managed/state",
+            "XDG_CACHE_HOME": "/fixture/managed/cache",
+            "TBH_CREDENTIAL_BACKEND": "file"
+          },
+          "credential_store": {
+            "selection": "file"
+          },
+          "root_context": {
+            "exclusive": true
+          }
+        },
+        "whole_fragment_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "provenance": {
+          "manager": "fixture-manager",
+          "binding": "3333333333333333333333333333333333333333333333333333333333333333"
+        },
+        "inherited_HOME": "/fixture/native"
+      }
+    },
+    {
+      "name": "allowance-identity",
+      "requested_choice": "allowance",
+      "retained_choice": "allowance",
+      "original": {
+        "fragment": {
+          "fragment": "launch-env-fragment-v4",
+          "environment": "muse",
+          "profile": {
+            "name": "example-profile",
+            "lock_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+          },
+          "precedence": {
+            "winner": "higher-weight",
+            "placement": "winner-last"
+          },
+          "permissions": {
+            "mode": "native",
+            "locked": false,
+            "source": "default"
+          },
+          "env": {
+            "XDG_CONFIG_HOME": "/fixture/managed/config",
+            "XDG_DATA_HOME": "/fixture/managed/data",
+            "XDG_STATE_HOME": "/fixture/managed/state",
+            "XDG_CACHE_HOME": "/fixture/managed/cache",
+            "TBH_CREDENTIAL_BACKEND": "file"
+          },
+          "credential_store": {
+            "selection": "file"
+          },
+          "root_context": {
+            "exclusive": true
+          }
+        },
+        "whole_fragment_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "provenance": {
+          "manager": "fixture-manager",
+          "binding": "3333333333333333333333333333333333333333333333333333333333333333"
+        },
+        "inherited_HOME": "/fixture/native"
+      },
+      "retained": {
+        "fragment": {
+          "fragment": "launch-env-fragment-v4",
+          "environment": "muse",
+          "profile": {
+            "name": "example-profile",
+            "lock_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+          },
+          "precedence": {
+            "winner": "higher-weight",
+            "placement": "winner-last"
+          },
+          "permissions": {
+            "mode": "native",
+            "locked": false,
+            "source": "default"
+          },
+          "env": {
+            "XDG_CONFIG_HOME": "/fixture/managed/config",
+            "XDG_DATA_HOME": "/fixture/managed/data",
+            "XDG_STATE_HOME": "/fixture/managed/state",
+            "XDG_CACHE_HOME": "/fixture/managed/cache",
+            "TBH_CREDENTIAL_BACKEND": "file"
+          },
+          "credential_store": {
+            "selection": "file"
+          },
+          "root_context": {
+            "exclusive": true
+          }
+        },
+        "whole_fragment_digest": "2222222222222222222222222222222222222222222222222222222222222222",
+        "provenance": {
+          "manager": "fixture-manager",
+          "binding": "3333333333333333333333333333333333333333333333333333333333333333"
+        },
+        "inherited_HOME": "/fixture/native"
+      }
+    }
+  ],
+  "argument_cases": [
+    {
+      "name": "rules-false-config-separated-option-before",
+      "metadata": {
+        "dimension": "rules",
+        "value": false,
+        "spelling": "config-separated",
+        "position": "option-before"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "rules-false-config-separated-option-after",
+      "metadata": {
+        "dimension": "rules",
+        "value": false,
+        "spelling": "config-separated",
+        "position": "option-after"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "rules-false-config-joined-option-before",
+      "metadata": {
+        "dimension": "rules",
+        "value": false,
+        "spelling": "config-joined",
+        "position": "option-before"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "rules-false-config-joined-option-after",
+      "metadata": {
+        "dimension": "rules",
+        "value": false,
+        "spelling": "config-joined",
+        "position": "option-after"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "rules-true-config-separated-option-before",
+      "metadata": {
+        "dimension": "rules",
+        "value": true,
+        "spelling": "config-separated",
+        "position": "option-before"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "rules-true-config-separated-option-after",
+      "metadata": {
+        "dimension": "rules",
+        "value": true,
+        "spelling": "config-separated",
+        "position": "option-after"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "rules-true-config-joined-option-before",
+      "metadata": {
+        "dimension": "rules",
+        "value": true,
+        "spelling": "config-joined",
+        "position": "option-before"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "rules-true-config-joined-option-after",
+      "metadata": {
+        "dimension": "rules",
+        "value": true,
+        "spelling": "config-joined",
+        "position": "option-after"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "skills-false-config-separated-option-before",
+      "metadata": {
+        "dimension": "skills",
+        "value": false,
+        "spelling": "config-separated",
+        "position": "option-before"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "skills-false-config-separated-option-after",
+      "metadata": {
+        "dimension": "skills",
+        "value": false,
+        "spelling": "config-separated",
+        "position": "option-after"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "skills-false-config-joined-option-before",
+      "metadata": {
+        "dimension": "skills",
+        "value": false,
+        "spelling": "config-joined",
+        "position": "option-before"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "skills-false-config-joined-option-after",
+      "metadata": {
+        "dimension": "skills",
+        "value": false,
+        "spelling": "config-joined",
+        "position": "option-after"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "skills-true-config-separated-option-before",
+      "metadata": {
+        "dimension": "skills",
+        "value": true,
+        "spelling": "config-separated",
+        "position": "option-before"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "skills-true-config-separated-option-after",
+      "metadata": {
+        "dimension": "skills",
+        "value": true,
+        "spelling": "config-separated",
+        "position": "option-after"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "skills-true-config-joined-option-before",
+      "metadata": {
+        "dimension": "skills",
+        "value": true,
+        "spelling": "config-joined",
+        "position": "option-before"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "skills-true-config-joined-option-after",
+      "metadata": {
+        "dimension": "skills",
+        "value": true,
+        "spelling": "config-joined",
+        "position": "option-after"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "combined-exclude-option-before",
+      "metadata": {
+        "dimension": "combined",
+        "value": "exclude",
+        "spelling": "combined-switch",
+        "position": "option-before"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "combined-exclude-option-after",
+      "metadata": {
+        "dimension": "combined",
+        "value": "exclude",
+        "spelling": "combined-switch",
+        "position": "option-after"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "combined-enable-option-before",
+      "metadata": {
+        "dimension": "combined",
+        "value": "enable",
+        "spelling": "combined-switch",
+        "position": "option-before"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "combined-enable-option-after",
+      "metadata": {
+        "dimension": "combined",
+        "value": "enable",
+        "spelling": "combined-switch",
+        "position": "option-after"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "command-exec",
+      "metadata": {
+        "dimension": "form",
+        "value": "exec",
+        "spelling": "command-word",
+        "position": "command"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "command-serve",
+      "metadata": {
+        "dimension": "form",
+        "value": "serve",
+        "spelling": "command-word",
+        "position": "command"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "opaque-rules",
+      "metadata": {
+        "dimension": "opaque",
+        "value": "context.foreign_personal_rules=true",
+        "spelling": "literal-data",
+        "position": "after-provider-separator"
+      },
+      "expected": "preserve-data"
+    },
+    {
+      "name": "opaque-skills",
+      "metadata": {
+        "dimension": "opaque",
+        "value": "context.foreign_personal_skills=false",
+        "spelling": "literal-data",
+        "position": "after-provider-separator"
+      },
+      "expected": "preserve-data"
+    },
+    {
+      "name": "opaque-combined",
+      "metadata": {
+        "dimension": "opaque",
+        "value": "--no-foreign-personal-context",
+        "spelling": "literal-data",
+        "position": "after-provider-separator"
+      },
+      "expected": "preserve-data"
+    },
+    {
+      "name": "opaque-exec",
+      "metadata": {
+        "dimension": "opaque",
+        "value": "exec",
+        "spelling": "literal-data",
+        "position": "after-provider-separator"
+      },
+      "expected": "preserve-data"
+    },
+    {
+      "name": "opaque-serve",
+      "metadata": {
+        "dimension": "opaque",
+        "value": "serve",
+        "spelling": "literal-data",
+        "position": "after-provider-separator"
+      },
+      "expected": "preserve-data"
+    },
+    {
+      "name": "unknown-policy",
+      "metadata": {
+        "dimension": "unknown",
+        "value": "unknown",
+        "spelling": "unqualified-policy-syntax",
+        "position": "option-before"
+      },
+      "expected": "refuse"
+    },
+    {
+      "name": "unparseable-policy",
+      "metadata": {
+        "dimension": "unknown",
+        "value": "unparseable",
+        "spelling": "unqualified-policy-syntax",
+        "position": "option-before"
+      },
+      "expected": "refuse"
+    }
+  ],
+  "fidelity_cases": [
+    {
+      "name": "vendor-none",
+      "route": "vendor",
+      "failure": "none",
+      "expected": "preserve-bound-decision"
+    },
+    {
+      "name": "vendor-dropped-choice",
+      "route": "vendor",
+      "failure": "dropped-choice",
+      "expected": "refuse"
+    },
+    {
+      "name": "vendor-replaced-choice",
+      "route": "vendor",
+      "failure": "replaced-choice",
+      "expected": "refuse"
+    },
+    {
+      "name": "vendor-unsupported-capability",
+      "route": "vendor",
+      "failure": "unsupported-capability",
+      "expected": "refuse"
+    },
+    {
+      "name": "vendor-unsupported-fidelity",
+      "route": "vendor",
+      "failure": "unsupported-fidelity",
+      "expected": "refuse"
+    },
+    {
+      "name": "vendor-missing-seal",
+      "route": "vendor",
+      "failure": "missing-seal",
+      "expected": "refuse"
+    },
+    {
+      "name": "vendor-unsupported-version",
+      "route": "vendor",
+      "failure": "unsupported-version",
+      "expected": "refuse"
+    },
+    {
+      "name": "system-only-none",
+      "route": "system-only",
+      "failure": "none",
+      "expected": "preserve-bound-decision"
+    },
+    {
+      "name": "system-only-dropped-choice",
+      "route": "system-only",
+      "failure": "dropped-choice",
+      "expected": "refuse"
+    },
+    {
+      "name": "system-only-replaced-choice",
+      "route": "system-only",
+      "failure": "replaced-choice",
+      "expected": "refuse"
+    },
+    {
+      "name": "system-only-unsupported-capability",
+      "route": "system-only",
+      "failure": "unsupported-capability",
+      "expected": "refuse"
+    },
+    {
+      "name": "system-only-unsupported-fidelity",
+      "route": "system-only",
+      "failure": "unsupported-fidelity",
+      "expected": "refuse"
+    },
+    {
+      "name": "system-only-missing-seal",
+      "route": "system-only",
+      "failure": "missing-seal",
+      "expected": "refuse"
+    },
+    {
+      "name": "system-only-unsupported-version",
+      "route": "system-only",
+      "failure": "unsupported-version",
+      "expected": "refuse"
+    }
+  ]
+}

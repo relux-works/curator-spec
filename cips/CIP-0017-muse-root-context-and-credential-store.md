@@ -314,6 +314,10 @@ adoption follows from this amendment. The historical implementation and test
 plans below retain their original evidence limits; they do not qualify this
 successor. Governance adoption and release obligations remain separate gates.
 
+See [Draft Decision 0035](../decisions/0035-muse-invocation-context-policy.md)
+and the [separate specification-data corpus/checker](../conformance/environments-muse-invocation-policy/README.md)
+for the rationale and bounded declaration checks, not runtime qualification.
+
 #### 2. Managed file credentials
 
 For managed Muse, the v4 fragment `env` MUST include the four existing
