@@ -43,7 +43,8 @@ class MuseInvocationPolicyTests(unittest.TestCase):
         # These labels describe corpus scenarios, not a proposed consumer wire/API grammar.
         result = {"runtime": "muse", "execution_kind": "native", "form": form,
                   "headless": False, "choice": choice, "root_context_present": present,
-                  "raw_fact": {"exclusive": True} if present else None}
+                  "raw_fact": {"exclusive": True} if present else None,
+                  "selector_source": "none" if choice is None else "explicit"}
         result.update(overrides)
         return result
 
@@ -73,6 +74,12 @@ class MuseInvocationPolicyTests(unittest.TestCase):
             "strict-absent-fact", "explicit-interactive-mixed",
             *(f"allowance-{form}" for form in ("exec", "serve", "dry-run", "hosted", "headless", "other-runtime")),
             *(f"allowance-fact-{shape}" for shape in ("absent", "null", "false", "empty", "string", "extra")),
+            *(f"inherited-{source}-{form}" for source, form in itertools.product(
+                ("environment", "configuration", "profile", "permission-yolo", "default"),
+                ("interactive", "exec", "dry-run"))),
+            *(f"invalid-choice-{shape}" for shape in (
+                "upper-mixed", "lower-mixed", "title-allowance", "boolean-true", "empty-string",
+                "unknown-token", "boolean-false", "number-zero", "number-one", "explicit-null")),
         }
         self.assertEqual(set(self.groups["selection_cases"]), selection_names)
         self.assertEqual(set(self.groups["identity_cases"]), {"strict-identity", "allowance-identity"})
@@ -98,6 +105,30 @@ class MuseInvocationPolicyTests(unittest.TestCase):
         ):
             with self.subTest(case=name):
                 self.assert_selection(name, self.selection_input(choice, form, present), effective, argv)
+
+    def test_selector_boundary_no_inheritance_aliases_or_coercion(self):
+        # §10.2: non-invocation selectors never opt in; explicit aliases/coerced values refuse.
+        # These closed declarations test neither native input parsing nor runtime policy selection.
+        interactive = ["-c", "context.foreign_personal_skills=false"]
+        self.assert_selection("explicit-strict-interactive", self.selection_input("strict"), "strict", interactive)
+        self.assert_selection("explicit-interactive-mixed", self.selection_input("allowance"), "MIXED", [])
+        for source, form in itertools.product(
+            ("environment", "configuration", "profile", "permission-yolo", "default"),
+            ("interactive", "exec", "dry-run"),
+        ):
+            with self.subTest(source=source, form=form):
+                self.assert_selection(f"inherited-{source}-{form}",
+                    self.selection_input(form=form, selector_source=source), "strict",
+                    interactive if form == "interactive" else ["--no-foreign-personal-context"])
+        # Boolean/number neighbours remain distinct; explicit null is not outer-option absence.
+        for shape, choice in (
+            ("upper-mixed", "MIXED"), ("lower-mixed", "mixed"), ("title-allowance", "Allowance"),
+            ("boolean-true", True), ("empty-string", ""), ("unknown-token", "unknown-choice"),
+            ("boolean-false", False), ("number-zero", 0), ("number-one", 1), ("explicit-null", None),
+        ):
+            with self.subTest(invalid_choice=shape):
+                self.assert_selection(f"invalid-choice-{shape}",
+                    self.selection_input(choice, selector_source="explicit"), None, [])
 
     def test_forbidden_form_allowances_must_refuse(self):
         # §10.2: these otherwise-valid allowances MUST NOT declare MIXED on any forbidden route.

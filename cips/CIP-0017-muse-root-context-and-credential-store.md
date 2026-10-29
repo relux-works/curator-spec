@@ -261,7 +261,7 @@ fragment identity/digest, profile/lock, provenance or managed home. Recommendati
 2 below, including all four XDG parents, unchanged `HOME`, file backend and
 credential-mode/liveness/conflict rules, is unchanged by this amendment.
 
-Only one deliberately selected native interactive managed Muse invocation with
+Only a deliberately selected native interactive managed Muse invocation with
 the valid raw fact MAY waive effective foreign-personal exclusion and its
 form/build exclusion qualification. It MUST report MIXED, omit the consumer
 exclusion override, and MUST NOT add an enabling flag, force a cached native

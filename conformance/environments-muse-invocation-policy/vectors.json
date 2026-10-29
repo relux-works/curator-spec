@@ -25,7 +25,8 @@
         "root_context_present": true,
         "raw_fact": {
           "exclusive": true
-        }
+        },
+        "selector_source": "none"
       },
       "expected": {
         "verdict": "permit-declaration",
@@ -49,7 +50,8 @@
         "root_context_present": true,
         "raw_fact": {
           "exclusive": true
-        }
+        },
+        "selector_source": "explicit"
       },
       "expected": {
         "verdict": "permit-declaration",
@@ -73,7 +75,8 @@
         "root_context_present": true,
         "raw_fact": {
           "exclusive": true
-        }
+        },
+        "selector_source": "none"
       },
       "expected": {
         "verdict": "permit-declaration",
@@ -96,7 +99,8 @@
         "root_context_present": true,
         "raw_fact": {
           "exclusive": true
-        }
+        },
+        "selector_source": "none"
       },
       "expected": {
         "verdict": "permit-declaration",
@@ -117,7 +121,8 @@
         "headless": false,
         "choice": null,
         "root_context_present": false,
-        "raw_fact": null
+        "raw_fact": null,
+        "selector_source": "none"
       },
       "expected": {
         "verdict": "permit-declaration",
@@ -138,7 +143,8 @@
         "root_context_present": true,
         "raw_fact": {
           "exclusive": true
-        }
+        },
+        "selector_source": "explicit"
       },
       "expected": {
         "verdict": "permit-declaration",
@@ -159,7 +165,8 @@
         "root_context_present": true,
         "raw_fact": {
           "exclusive": true
-        }
+        },
+        "selector_source": "explicit"
       },
       "expected": {
         "verdict": "refuse",
@@ -180,7 +187,8 @@
         "root_context_present": true,
         "raw_fact": {
           "exclusive": true
-        }
+        },
+        "selector_source": "explicit"
       },
       "expected": {
         "verdict": "refuse",
@@ -201,7 +209,8 @@
         "root_context_present": true,
         "raw_fact": {
           "exclusive": true
-        }
+        },
+        "selector_source": "explicit"
       },
       "expected": {
         "verdict": "refuse",
@@ -222,7 +231,8 @@
         "root_context_present": true,
         "raw_fact": {
           "exclusive": true
-        }
+        },
+        "selector_source": "explicit"
       },
       "expected": {
         "verdict": "refuse",
@@ -243,7 +253,8 @@
         "root_context_present": true,
         "raw_fact": {
           "exclusive": true
-        }
+        },
+        "selector_source": "explicit"
       },
       "expected": {
         "verdict": "refuse",
@@ -264,7 +275,8 @@
         "root_context_present": true,
         "raw_fact": {
           "exclusive": true
-        }
+        },
+        "selector_source": "explicit"
       },
       "expected": {
         "verdict": "refuse",
@@ -283,7 +295,8 @@
         "headless": false,
         "choice": "allowance",
         "root_context_present": false,
-        "raw_fact": null
+        "raw_fact": null,
+        "selector_source": "explicit"
       },
       "expected": {
         "verdict": "refuse",
@@ -302,7 +315,8 @@
         "headless": false,
         "choice": "allowance",
         "root_context_present": true,
-        "raw_fact": null
+        "raw_fact": null,
+        "selector_source": "explicit"
       },
       "expected": {
         "verdict": "refuse",
@@ -323,7 +337,8 @@
         "root_context_present": true,
         "raw_fact": {
           "exclusive": false
-        }
+        },
+        "selector_source": "explicit"
       },
       "expected": {
         "verdict": "refuse",
@@ -342,7 +357,8 @@
         "headless": false,
         "choice": "allowance",
         "root_context_present": true,
-        "raw_fact": {}
+        "raw_fact": {},
+        "selector_source": "explicit"
       },
       "expected": {
         "verdict": "refuse",
@@ -363,7 +379,8 @@
         "root_context_present": true,
         "raw_fact": {
           "exclusive": "true"
-        }
+        },
+        "selector_source": "explicit"
       },
       "expected": {
         "verdict": "refuse",
@@ -385,7 +402,593 @@
         "raw_fact": {
           "exclusive": true,
           "extra": true
-        }
+        },
+        "selector_source": "explicit"
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "inherited-environment-interactive",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "environment"
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "-c",
+          "context.foreign_personal_skills=false"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "inherited-environment-exec",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "exec",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "environment"
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "--no-foreign-personal-context"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "inherited-environment-dry-run",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "dry-run",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "environment"
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "--no-foreign-personal-context"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "inherited-configuration-interactive",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "configuration"
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "-c",
+          "context.foreign_personal_skills=false"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "inherited-configuration-exec",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "exec",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "configuration"
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "--no-foreign-personal-context"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "inherited-configuration-dry-run",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "dry-run",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "configuration"
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "--no-foreign-personal-context"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "inherited-profile-interactive",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "profile"
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "-c",
+          "context.foreign_personal_skills=false"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "inherited-profile-exec",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "exec",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "profile"
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "--no-foreign-personal-context"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "inherited-profile-dry-run",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "dry-run",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "profile"
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "--no-foreign-personal-context"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "inherited-permission-yolo-interactive",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "permission-yolo"
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "-c",
+          "context.foreign_personal_skills=false"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "inherited-permission-yolo-exec",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "exec",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "permission-yolo"
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "--no-foreign-personal-context"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "inherited-permission-yolo-dry-run",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "dry-run",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "permission-yolo"
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "--no-foreign-personal-context"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "inherited-default-interactive",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "default"
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "-c",
+          "context.foreign_personal_skills=false"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "inherited-default-exec",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "exec",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "default"
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "--no-foreign-personal-context"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "inherited-default-dry-run",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "dry-run",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "default"
+      },
+      "expected": {
+        "verdict": "permit-declaration",
+        "effective": "strict",
+        "exclusion_argv": [
+          "--no-foreign-personal-context"
+        ],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "invalid-choice-upper-mixed",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": "MIXED",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "explicit"
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "invalid-choice-lower-mixed",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": "mixed",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "explicit"
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "invalid-choice-title-allowance",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": "Allowance",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "explicit"
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "invalid-choice-boolean-true",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": true,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "explicit"
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "invalid-choice-empty-string",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": "",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "explicit"
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "invalid-choice-unknown-token",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": "unknown-choice",
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "explicit"
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "invalid-choice-boolean-false",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": false,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "explicit"
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "invalid-choice-number-zero",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": 0,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "explicit"
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "invalid-choice-number-one",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": 1,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "explicit"
+      },
+      "expected": {
+        "verdict": "refuse",
+        "effective": null,
+        "exclusion_argv": [],
+        "enabling_argv": [],
+        "forces_cached_true": false
+      }
+    },
+    {
+      "name": "invalid-choice-explicit-null",
+      "input": {
+        "runtime": "muse",
+        "execution_kind": "native",
+        "form": "interactive",
+        "headless": false,
+        "choice": null,
+        "root_context_present": true,
+        "raw_fact": {
+          "exclusive": true
+        },
+        "selector_source": "explicit"
       },
       "expected": {
         "verdict": "refuse",

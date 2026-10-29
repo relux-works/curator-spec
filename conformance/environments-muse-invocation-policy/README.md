@@ -25,6 +25,18 @@ applies to both choices and both permission modes in `argument_matrix`; this
 declares invariance, not executed native combinations. Refusal rows must never
 be reclassified as MIXED or successful strict fallback.
 
+There are 43 selection, 2 identity, 29 argument and 14 fidelity declarations
+(88 rows). Selection metadata `selector_source` describes an attempted source,
+not a runtime/configuration field: `none` means no explicit or competing selector;
+`explicit` identifies an invocation choice; environment, configuration, profile,
+permission-yolo and default labels describe attempted inherited allowance with
+no explicit choice. Each inherited row stays strict on interactive/exec/dry-run,
+with the existing exact form argv. Explicit alias/unknown strings, booleans,
+numeric zero/one, empty string and explicit null refuse with effective null.
+An explicit null declaration is distinct from outer-option absence; neither is
+coerced into allowance. Exact strict/allowance controls remain adjacent coverage.
+These rows pin the selector boundary as specification data, not native parsing.
+
 The checker independently fixes required case inputs, coverage and expected
 declarations from §10.2, rather than trusting a fixture-supplied success label.
 It compares complete original/retained identity, including raw fact, full
