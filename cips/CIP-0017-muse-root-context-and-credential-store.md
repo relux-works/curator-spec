@@ -12,8 +12,11 @@
 
 Curator will explicitly declare a materialized Muse root context with
 `root_context: {"exclusive": true}` in a new launch-fragment revision.
-The launcher will map this fact to Muse's form-specific exclusion arguments
-without inspecting Curator's files. Managed Muse homes will select file
+The launcher will map this fact to Muse's default strict form-specific exclusion
+arguments without inspecting Curator's files. The
+[2026-10-29 invocation-policy amendment](#invocation-policy-amendment-2026-10-29)
+separates that unchanged producer fact from one explicit native interactive
+consumer choice, reported as MIXED. Managed Muse homes will select file
 credentials with `TBH_CREDENTIAL_BACKEND=file`, admitting both `isolated`
 and `shared` now, optimistically, under owner decision 2026-10-15 (D10).
 This proposal corrects the environments §7.4 Muse row using the owner decision 2026-10-15
@@ -215,7 +218,10 @@ repair rules; it MUST NOT yield a successful fragment with the member
 silently omitted. A failed repair emits no fragment.
 
 The launcher validates the whole fragment, transports the typed fact
-through the launch request, and maps presence to:
+through the launch request, and, under the default strict policy, maps presence
+to the following unchanged argv. The separate
+[invocation-policy amendment](#invocation-policy-amendment-2026-10-29) defines
+the sole explicit native interactive allowance:
 
 | Muse form | Required argv |
 |---|---|
@@ -231,8 +237,9 @@ the exclusion are rejected rather than applied after it.
 No launcher path may stat, lstat, open, readlink, hash, or recognize a
 header in Curator content to decide whether to add these arguments.
 Remove the inspection from both argv building and sealing. Tool-release
-qualification remains a separate responsibility: if the selected build
-cannot apply the required form, refuse before exec instead of dropping it.
+qualification remains a separate responsibility: when effective policy requires
+exclusion and the selected build cannot apply the required form, refuse before
+exec instead of dropping it.
 This CIP defines no new refusal-code spelling for that future gate.
 
 If a launch transformation relocates the effective XDG home, it must
@@ -242,6 +249,70 @@ It must not suppress the member for a network launch or recreate a
 second layout verifier. `serve` remains outside the qualified exclusion
 forms: a request carrying this fact MUST refuse before execution, rather
 than warn and continue. Without the fact, the standing residual applies.
+
+#### Invocation-policy amendment (2026-10-29)
+
+The raw v4 `root_context` remains exactly `{"exclusive":true}` and records
+Curator-verified materialization plus the default strict loader obligation.
+The [separate consumer contract in environments §10.2](../protocol/environments.md#102-the-launch-environment-fragment)
+determines effective exclusion; it changes no fragment member, complete
+fragment identity/digest, profile/lock, provenance or managed home. Recommendation
+1's producer, resolve/repair and strict argv rules remain in force. Recommendation
+2 below, including all four XDG parents, unchanged `HOME`, file backend and
+credential-mode/liveness/conflict rules, is unchanged by this amendment.
+
+Only one deliberately selected native interactive managed Muse invocation with
+the valid raw fact MAY waive effective foreign-personal exclusion and its
+form/build exclusion qualification. It MUST report MIXED, omit the consumer
+exclusion override, and MUST NOT add an enabling flag, force a cached native
+setting true, guarantee foreign loading or claim qualified exclusivity. Absence
+of an explicit choice selects strict; no inherited environment, config, profile
+or `yolo` default selects MIXED. Hosted, `exec`, `serve`, dry-run and headless
+workers gain no exception. Missing/invalid facts and unsupported choice, carrier,
+scope or fidelity MUST refuse; an explicit allowance dropped or replaced by
+strict MUST NOT succeed, even on a strict-qualified build.
+
+Both `context.foreign_personal_rules` and `context.foreign_personal_skills`
+are protected dimensions. Caller native options MUST NOT replace, override or
+contradict either dimension, including combined exclusion switches, enabling
+options and equivalent spellings/alternate option positions, even if apparently
+redundant. Opaque prompt/data after the provider separator remains data.
+Unknown or unparseable policy semantics MUST refuse, without guessing native
+grammar; command-position form switches cannot turn interactive into `exec` or
+`serve`. Strict retains exactly `--no-foreign-personal-context` for exec/dry-run
+and the two interactive elements `-c`, `context.foreign_personal_skills=false`
+(JSON boolean false). No new mapping or build/form qualification is inferred.
+
+The required successor is a finite versioned typed invocation request and ONE
+SAM-owned immutable bound decision, with a matching adapter capability and
+policy-aware seal successor. Both vendor and system-only paths MUST retain and
+verify the same request, raw identity and decision against an independently
+retained caller expectation. Mode-less `ChildEnv` MUST consume that decision's
+bound mode. SAM remains the sole native argv owner, and SAM-owned verification
+of the exact final composed process immediately before execution is REQUIRED.
+A consumer-only check cannot bridge `composition.Value`/`runNative`. These are
+downstream requirements, not an installed API/version declaration; unsupported
+capability, seal or composition MUST refuse without a legacy retry.
+
+The [§7.1 observations and residuals](../protocol/environments.md#71-revision-1-adapters)
+and [§7.9 qualification bounds](../protocol/environments.md#79-recorded-tool-versions-and-size-advisories)
+remain. Personal Claude Code/Codex fallback is distinct from retained Muse
+configuration, `.agents` and trusted project discovery. General skills guidance,
+static strings and help alone prove neither exact 1.4.14 rules precedence nor
+interactive override semantics. This amendment rewrites no historical measured
+evidence into new proof and adds no build qualification row. Binary/build,
+model/effort, help, permissions, network, credentials and integrity admission
+remain independent gates.
+
+Canonical normative publication precedes one accounted shared SAM writer,
+independent review, required checks, signed integration and a signed compatible
+release under an unused version; the launcher then pins that exact release and
+implements the typed contract. Exact native qualification and adoption are
+separate. No promised tag/version, second SAM author, source release, installed
+support or host
+adoption follows from this amendment. The historical implementation and test
+plans below retain their original evidence limits; they do not qualify this
+successor. Governance adoption and release obligations remain separate gates.
 
 #### 2. Managed file credentials
 
@@ -361,11 +432,23 @@ refresh: each home can have a separate lock. Refuse ambiguous repairs and
 preserve both stores for explicit operator recovery. A missing file and a
 failed metadata read must remain distinguishable through every entry point.
 
-Root-context exclusivity describes required loader controls. Workspace
-rules can still prevail; model-visible foreign removal and managed skills
-discovery remain unverified. The public guarantee must retain those bounds.
+The raw root-context fact records verified materialization and default strict
+loader controls. The [invocation-policy amendment](#invocation-policy-amendment-2026-10-29)
+separately determines effective exclusion; MIXED is permission for mixture, not
+evidence of foreign loading or qualified exclusivity. Workspace rules can still
+prevail; model-visible foreign removal and managed skills discovery remain
+unverified. The public guarantee must retain those bounds.
 
 ## Compatibility and migration
+
+The following numbered steps describe the original v4 adoption. The
+[2026-10-29 amendment](#invocation-policy-amendment-2026-10-29) adds a separate
+required-understanding consumer contract while preserving v4 bytes, producer
+semantics, strict defaults and Recommendation 2. Its unsupported or dropped
+explicit choice MUST refuse, with no old-API fallback. Historical proposed tags
+below establish no successor capability or promised release; canonical source,
+SAM successor publication, exact launcher pin and separate native qualification
+and adoption remain ordered gates.
 
 1. Publish the v4 schema and conformance vectors under a new identity.
    Keep released v1/v2/v3 schema bytes and their old interpretation frozen.

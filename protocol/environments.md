@@ -1535,8 +1535,13 @@ count from one to zero while the own XDG file continued loading
   fallback is active, that is, without the native file.
 
 These loader observations do not verify model-visible removal of foreign
-contents. Section 10.2 requires the form-specific exclusion argv for managed
-`exec` and interactive launches whose environment materializes that target.
+contents. Section 10.2 requires the default strict form-specific exclusion argv
+for managed `exec` and interactive launches whose environment materializes that
+target. Its separate invocation policy permits only a deliberately selected
+native interactive invocation to report MIXED and omit the consumer exclusion
+override. That choice changes neither these observations nor materialization,
+home layout, credential policy or the raw producer fact. MIXED permits foreign
+personal context; it does not establish that any foreign content loads.
 XDG retargeting and credential sharing alone do not exclude foreign
 personal context. `muse serve` has no such flag
 ([muse-issues 013](https://github.com/relux-works/muse-issues)).
@@ -2215,6 +2220,20 @@ execution. The probe leaf precedes consumer release, so a 1.4.7-only equality
 check cannot silently drop a required exclusion on 1.4.8. This release gate
 neither retracts D10 credential-mode admission nor waits for token refresh.
 Linux and Windows native Muse login and refresh remain unqualified.
+
+**Invocation policy and qualification.** Section 10.2's explicit native
+interactive MIXED choice waives only effective foreign-personal exclusion and
+its form/build exclusion qualification for that invocation. Default strict
+launches retain the existing qualification requirements and exact argv mappings.
+The choice adds no release/build qualification row, including for 1.4.14, and
+exec qualification cannot qualify interactive behavior. Binary/build identity,
+model/effort, help, permission, credential, network and fragment admission remain
+independent requirements. General skills guidance, static strings and help
+output alone do not qualify exact 1.4.14 rules precedence or interactive override
+semantics. Personal Claude Code/Codex fallback is distinct from retained native
+Muse configuration, `.agents` discovery and trusted project discovery; MIXED
+neither disables those sources nor establishes their exact precedence. The
+recorded workspace, skills-discovery and model-visible limitations remain.
 
 **Erratum fast path.** A recorded fact that fails to reproduce on a release
 this table names is corrected by an erratum on the decision that introduced
@@ -4100,8 +4119,10 @@ standing residual. A stale, missing, drifted or unreadable required surface
 follows existing resolve/repair refusals and MUST NOT produce a successful
 fragment with the fact silently omitted. Failed repair emits no fragment.
 
-**Muse managed launch argv.** The launcher MUST carry the validated fact
-through launch requests and sealing. Presence requires
+**Muse managed launch argv — default strict.** The consumer MUST carry the
+validated fact through launch requests and sealing, preserving the complete
+original fragment identity/digest, profile name/lock and existing provenance.
+With no explicit admitted invocation allowance, presence requires
 `--no-foreign-personal-context` on `exec`, or exactly two elements `-c` and
 `context.foreign_personal_skills=false` on interactive launch. The value is
 JSON boolean false, not a string or an alternative spelling. The 1.4.7
@@ -4113,6 +4134,90 @@ form/build unable to apply required exclusion MUST refuse before exec.
 In particular, `serve` with `root_context` MUST refuse, rather than warn and
 continue; without the fact, `serve` retains the standing residual.
 No new refusal-code spelling for form/build qualification is allocated here.
+
+**Separate Muse invocation policy (2026-10-29).** Only a deliberately selected
+native interactive managed Muse invocation MAY waive effective
+foreign-personal-context exclusion. The choice MUST be carried by a separate,
+finite, versioned typed consumer request; it MUST NOT be a fragment member,
+persistent configuration knob or rewritten producer fact. At the invocation
+input boundary, absence selects strict. No inherited environment, configuration,
+profile, permission mode (including `yolo`) or default MAY select the allowance.
+Explicit allowance requires a valid managed Muse v4 fragment with the original
+`root_context` exactly `{"exclusive":true}`. Absence of that fact refuses the
+allowance; invalid facts refuse before policy selection. Strict with a genuinely
+absent fact retains the existing no-exclusion/standing-residual contract.
+
+For an admitted explicit allowance the effective result MUST be reported as
+MIXED. The consumer MUST omit its exclusion override, MUST NOT add an enabling
+provider flag or force a cached native setting true, and MUST NOT claim actual
+foreign-content loading or qualified exclusivity. The raw fact, complete
+fragment identity/digest, profile/lock, provenance and managed home MUST remain
+unchanged. No hosted, `exec`, `serve`, dry-run or headless worker invocation
+receives this exception. Their existing strict obligations/refusals remain;
+an explicit allowance on those routes MUST refuse before execution, never
+switch form, retry a weaker route or fall back to native defaults.
+
+Both `context.foreign_personal_rules` and `context.foreign_personal_skills`
+MUST be protected in both policy choices and permission modes. Caller-supplied
+native options MUST NOT replace, override or contradict either dimension of the
+typed choice. This includes exclusion/enabling switches, combined switches such
+as `--no-foreign-personal-context`, and equivalent configuration spellings or
+alternate option positions, even if apparently redundant with strict or MIXED.
+SAM's native grammar handling MUST distinguish options/command positions from
+opaque prompt/data after the provider separator and preserve that data without
+interpreting it as policy. Unparseable or unknown policy-affecting semantics
+MUST refuse; consumers MUST NOT guess native grammar. A form-switch keyword in
+command position MUST NOT turn the allowed interactive invocation into `exec`
+or `serve`. Recognizing conflicts does not qualify a new exclusion spelling:
+the exact strict mappings above remain until separately accepted exact-build
+and form qualification permits a replacement.
+
+**Downstream ownership and fidelity requirements.** These are requirements for
+a coordinated successor, not declarations of an installed API or version.
+The finite typed request MUST select exactly strict or the explicit allowance,
+with no aliases or coercion, and include its version, execution kind/mode,
+original whole-fragment digest and validated raw-context identity/provenance.
+Only the outer input boundary may normalize absence to
+strict; missing, unknown, duplicate, coerced or unsupported choice/carrier
+semantics on the new policy path MUST refuse. SAM (skill-agents-management)
+MUST create ONE immutable bound decision from that request after raw validation
+and scope/capability admission, before vendor dispatch or effectful preparation,
+observation or preflight. Validation, argv construction, environment preparation
+and sealing MUST consume that same decision. Mode-less `ChildEnv` MUST receive
+its bound mode from the same decision, rather than infer an allowance or
+recompute a mode. A matching adapter capability and policy-aware seal successor
+are REQUIRED; a token declaration or module-version comparison alone is
+insufficient. Legacy strict entry points/seals cannot carry an allowance.
+
+Vendor dispatch AND system-only passthrough, request preparation, result copies
+and composition MUST preserve and verify the request, raw identity and decision.
+The caller MUST retain an independent immutable expectation from parsed input
+and the original fragment, and compare the bound result against it. Dropped,
+defaulted, replaced or unsupported explicit policy MUST refuse, including an
+allowance silently replaced by otherwise qualified strict success. Echoing an
+old digest while changing raw fields is not fidelity. Detached result/provenance
+views MUST NOT mutate the private bound basis. Missing/unknown capability or seal
+version, changed scope, identity or decision, and unsupported transport MUST
+refuse without a legacy retry or resealing of changed inputs.
+
+SAM remains the sole native argv owner. Composition MUST retain SAM's bound
+decision, receipt and verifier and MUST NOT construct, strip or replace Muse
+policy arguments. SAM-owned final verification MUST check the exact composed
+process immediately before actual execution, including the original fact and
+fragment identity, choice/mode, binary/build, argv, environment/home/backend and
+existing help/permission/integrity bindings. Missing verification or a mismatch
+MUST prevent execution. A consumer-only receipt or boolean check cannot bridge
+the `composition.Value`/`runNative` verification gap. The allowance waives only
+effective exclusion and its qualification; every unrelated admission, credential,
+resolve/repair and integrity requirement remains in force.
+
+Canonical normative publication MUST precede one accounted shared SAM source
+writer, independent review, required checks, signed integration and a signed
+compatible release under an unused version. The launcher then pins that exact
+release and implements the typed contract; exact native qualification and
+adoption remain separate gates. This amendment promises no tag/version, new
+source writer, installed capability
+or runtime qualification and widens no frozen schema or released vector bytes.
 
 No launcher argv or sealing path may stat, lstat, open, readlink, hash, or
 recognize headers in Curator content to decide exclusion. Absence never
