@@ -119,3 +119,4 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0025](CIP-0025-execution-isolation-contract.md) | Execution Isolation Contract | Review |
 | [CIP-0026](CIP-0026-foreign-code-execution.md) | Foreign-code execution | Review |
 | [CIP-0027](CIP-0027-provisioning-origin.md) | Persist managed-home provisioning origin | Accepted |
+| [CIP-0028](CIP-0028-claude-read-scope.md) | Read scope of declared skills and selected contexts in Claude managed homes | Draft |
