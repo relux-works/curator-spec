@@ -344,6 +344,43 @@
     ],
     "entry_cardinality": "exactly-one-per-inventory-control",
     "examples": {
+      "linux": {
+        "controls": [
+          {
+            "availability": "available",
+            "name": "descendant-domain-termination",
+            "probed_at": "pre-worker-launch",
+            "status": "applied"
+          },
+          {
+            "availability": "unavailable",
+            "name": "active-process-count-limit",
+            "probed_at": "pre-worker-launch",
+            "status": "unavailable"
+          },
+          {
+            "availability": "unavailable",
+            "name": "aggregate-memory-limit",
+            "probed_at": "pre-worker-launch",
+            "status": "unavailable"
+          },
+          {
+            "availability": "available",
+            "name": "per-file-size-limit",
+            "probed_at": "pre-worker-launch",
+            "status": "applied"
+          },
+          {
+            "availability": "available",
+            "name": "inherited-handle-restriction",
+            "probed_at": "pre-worker-launch",
+            "status": "applied"
+          }
+        ],
+        "execution_policy": "manager-worker-v1",
+        "platform": "linux",
+        "record_version": "capability-evidence-v1"
+      },
       "macos": {
         "controls": [
           {
@@ -430,7 +467,7 @@
       "install-result",
       "status-result"
     ],
-    "inventory_version": "rc5-native-control-inventory-v1",
+    "inventory_version": "rc5-native-control-inventory-v2",
     "probe_timings": [
       "pre-worker-launch"
     ],
@@ -801,7 +838,7 @@
       "hardened_guarantee": false,
       "name": "inventory-native-controls-applied",
       "portable": true,
-      "requirement": "every control rc5-native-control-inventory-v1 marks available for the host platform is applied, and nothing outside that inventory is applied or reported",
+      "requirement": "every control rc5-native-control-inventory-v2 marks available for the host platform is applied, and nothing outside that inventory is applied or reported",
       "scope": "resources"
     },
     {
@@ -825,6 +862,11 @@
         "hardened_guarantee": false,
         "name": "descendant-domain-termination",
         "platforms": {
+          "linux": {
+            "availability": "available",
+            "mechanism": "process-group-and-session-teardown",
+            "unavailable_reason": null
+          },
           "macos": {
             "availability": "available",
             "mechanism": "process-group-and-session-teardown",
@@ -842,6 +884,11 @@
         "hardened_guarantee": false,
         "name": "active-process-count-limit",
         "platforms": {
+          "linux": {
+            "availability": "unavailable",
+            "mechanism": null,
+            "unavailable_reason": "no-private-aggregate-domain"
+          },
           "macos": {
             "availability": "unavailable",
             "mechanism": null,
@@ -859,6 +906,11 @@
         "hardened_guarantee": false,
         "name": "aggregate-memory-limit",
         "platforms": {
+          "linux": {
+            "availability": "unavailable",
+            "mechanism": null,
+            "unavailable_reason": "no-private-aggregate-domain"
+          },
           "macos": {
             "availability": "unavailable",
             "mechanism": null,
@@ -876,6 +928,11 @@
         "hardened_guarantee": false,
         "name": "per-file-size-limit",
         "platforms": {
+          "linux": {
+            "availability": "available",
+            "mechanism": "rlimit-fsize",
+            "unavailable_reason": null
+          },
           "macos": {
             "availability": "available",
             "mechanism": "rlimit-fsize",
@@ -893,6 +950,11 @@
         "hardened_guarantee": false,
         "name": "inherited-handle-restriction",
         "platforms": {
+          "linux": {
+            "availability": "available",
+            "mechanism": "close-on-exec-and-explicit-descriptor-release",
+            "unavailable_reason": null
+          },
           "macos": {
             "availability": "available",
             "mechanism": "close-on-exec-and-explicit-descriptor-release",
@@ -909,6 +971,7 @@
     "exhaustive": true,
     "platforms": [
       "macos",
+      "linux",
       "windows"
     ],
     "probe_scope": "per-operation",
@@ -916,7 +979,7 @@
     "unavailable_reasons": [
       "no-private-aggregate-domain"
     ],
-    "version": "rc5-native-control-inventory-v1"
+    "version": "rc5-native-control-inventory-v2"
   },
   "package_influence_cases": [
     {

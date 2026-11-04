@@ -174,7 +174,7 @@ rejects before the worker starts, and nothing else at this boundary rejects.
 Because the execution-policy identity is inside the hashed build input, a
 portable artifact, receipt, marker, and claim can never be mistaken for hardened
 output. Host capability evidence is one closed `capability-evidence-v1` record
-per operation over the exhaustive `rc5-native-control-inventory-v1` inventory. It
+per operation over the exhaustive `rc5-native-control-inventory-v2` inventory. It
 is result-only reporting and never enters cache, receipt, marker, or claim
 identity, so it cannot become a capability claim a reader would rely on.
 
@@ -214,7 +214,7 @@ snapshot and re-verify its identity before publication, standard input is
 closed, and stdout/stderr MUST be bounded and redacted before presentation.
 Under the portable execution policy, managers MUST apply the mandatory controls
 of `protocol/core.md` section 4.2.1 plus exactly the controls that the
-exhaustive `rc5-native-control-inventory-v1` inventory marks available for the
+exhaustive `rc5-native-control-inventory-v2` inventory marks available for the
 host platform, and MUST record the remaining inventory controls as unavailable
 rather than as applied. No control outside that inventory is applied or
 reported, and an unavailable one is never a rejection. Bounding a compile-only

@@ -69,7 +69,7 @@ const (
 	// nativeControlInventoryVersion names the exhaustive rc.5 per-platform
 	// native-control inventory. Adding, removing, or re-scoping an entry
 	// requires a new inventory version.
-	nativeControlInventoryVersion = "rc5-native-control-inventory-v1"
+	nativeControlInventoryVersion = "rc5-native-control-inventory-v2"
 	// capabilityEvidenceRecordVersion names the closed per-operation reporting
 	// record. It never enters a cache key, receipt, marker, or claim.
 	capabilityEvidenceRecordVersion       = "capability-evidence-v1"
@@ -1559,7 +1559,7 @@ func writeGoHostExecutionPolicyVectors(dir string) {
 		"version":             nativeControlInventoryVersion,
 		"exhaustive":          true,
 		"authority":           "conformance/v1/vectors/go-host-execution-policy.json#native_control_inventory",
-		"platforms":           []any{"macos", "windows"},
+		"platforms":           []any{"macos", "linux", "windows"},
 		"availability_states": []any{"available", "unavailable"},
 		"unavailable_reasons": []any{unavailableNativeControlReason},
 		"probe_timing":        "pre-worker-launch",
@@ -1925,7 +1925,8 @@ func unavailablePlatform() map[string]any {
 func nativeControl(name string, macos, windows map[string]any) map[string]any {
 	return map[string]any{
 		"name": name, "applied_when_available": true, "hardened_guarantee": false,
-		"platforms": map[string]any{"macos": macos, "windows": windows},
+		"platforms": map[string]any{"linux": macos,
+			"macos": macos, "windows": windows},
 	}
 }
 
@@ -1935,7 +1936,7 @@ func nativeControl(name string, macos, windows map[string]any) map[string]any {
 // are derived from the inventory so a record and the inventory can never drift.
 func capabilityEvidenceRecord(inventoryControls []any) map[string]any {
 	examples := map[string]any{}
-	for _, platform := range []string{"macos", "windows"} {
+	for _, platform := range []string{"macos", "linux", "windows"} {
 		entries := make([]any, 0, len(inventoryControls))
 		for _, raw := range inventoryControls {
 			item := raw.(map[string]any)

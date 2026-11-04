@@ -1227,7 +1227,7 @@ func TestPortableGoHostExecutionPolicyContract(t *testing.T) {
 		inventory["probe_timing"] != "pre-worker-launch" || inventory["probe_scope"] != "per-operation" {
 		t.Fatalf("native-control inventory is not the exhaustive versioned authority: %#v", inventory)
 	}
-	if !reflect.DeepEqual(inventory["platforms"], []any{"macos", "windows"}) ||
+	if !reflect.DeepEqual(inventory["platforms"], []any{"macos", "linux", "windows"}) ||
 		!reflect.DeepEqual(inventory["availability_states"], []any{"available", "unavailable"}) ||
 		!reflect.DeepEqual(inventory["unavailable_reasons"], []any{unavailableNativeControlReason}) {
 		t.Fatalf("native-control inventory vocabulary is not closed: %#v", inventory)
@@ -1248,6 +1248,9 @@ func TestPortableGoHostExecutionPolicyContract(t *testing.T) {
 			"macos":   "close-on-exec-and-explicit-descriptor-release",
 			"windows": "explicit-handle-inheritance-list",
 		},
+	}
+	for _, mechanisms := range wantNative {
+		mechanisms["linux"] = mechanisms["macos"]
 	}
 	if len(native) != len(wantNative) {
 		t.Fatalf("native-control inventory = %d controls, want exactly %d", len(native), len(wantNative))
@@ -1504,10 +1507,10 @@ func assertCapabilityEvidenceRecord(t *testing.T, vector map[string]any, native,
 	}
 
 	examples, ok := record["examples"].(map[string]any)
-	if !ok || len(examples) != 2 {
+	if !ok || len(examples) != 3 {
 		t.Fatalf("capability-evidence record lacks per-platform examples: %#v", record["examples"])
 	}
-	for _, platform := range []string{"macos", "windows"} {
+	for _, platform := range []string{"macos", "linux", "windows"} {
 		example, present := examples[platform].(map[string]any)
 		if !present || len(example) != 4 {
 			t.Fatalf("%s evidence example is not the closed record: %#v", platform, examples[platform])

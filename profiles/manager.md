@@ -301,13 +301,13 @@ and the manager re-verifies both identities after the last child exits.
 
 The manager implements exactly the portable execution policy of Protocol Core
 section 4.2.1 and applies it identically to `go-v1` and `go-repository-v1` on
-macOS and Windows. The worker is one hidden-mode re-execution of the installed
+macOS, Linux, and Windows. The worker is one hidden-mode re-execution of the installed
 manager executable. In order, one operation:
 
 1. runs the package-independent toolchain probes and freezes the validated
    source snapshot;
 2. probes, once for this operation, which controls of the
-   `rc5-native-control-inventory-v1` inventory this platform provides, without
+   `rc5-native-control-inventory-v2` inventory this platform provides, without
    substituting a host label, a cached result, or configuration for the probe;
 3. resolves its own executable to a canonical regular installed file, rejects
    symlink, reparse-point, and hard-link substitution, records strong file
@@ -346,13 +346,13 @@ and normative per platform. The manager applies exactly the controls it marks
 available for the host platform and MUST NOT apply, name, or report a control
 outside it:
 
-| Control | macOS | Windows |
-|---|---|---|
-| `descendant-domain-termination` | available: process group and session teardown | available: Job Object kill-on-close |
-| `active-process-count-limit` | unavailable: `no-private-aggregate-domain` | available: Job Object active-process limit |
-| `aggregate-memory-limit` | unavailable: `no-private-aggregate-domain` | available: Job Object process and job memory limit |
-| `per-file-size-limit` | available: `RLIMIT_FSIZE` | unavailable: `no-private-aggregate-domain` |
-| `inherited-handle-restriction` | available: close-on-exec plus explicit descriptor release | available: explicit handle inheritance list |
+| Control | macOS | Linux | Windows |
+|---|---|---|---|
+| `descendant-domain-termination` | available: process group and session teardown | available: process group and session teardown | available: Job Object kill-on-close |
+| `active-process-count-limit` | unavailable: `no-private-aggregate-domain` | unavailable: `no-private-aggregate-domain` | available: Job Object active-process limit |
+| `aggregate-memory-limit` | unavailable: `no-private-aggregate-domain` | unavailable: `no-private-aggregate-domain` | available: Job Object process and job memory limit |
+| `per-file-size-limit` | available: `RLIMIT_FSIZE` | available: `RLIMIT_FSIZE` | unavailable: `no-private-aggregate-domain` |
+| `inherited-handle-restriction` | available: close-on-exec plus explicit descriptor release | available: close-on-exec plus explicit descriptor release | available: explicit handle inheritance list |
 
 The manager emits exactly one `capability-evidence-v1` record per operation,
 containing exactly `record_version`, `execution_policy`, `platform`, and
@@ -938,7 +938,7 @@ report a control outside the inventory:
 | `filesystem-write-confinement` | unavailable: `no-unprivileged-filesystem-domain` | host-conditional: Landlock write rights | unavailable: `no-unprivileged-filesystem-domain` |
 | `network-isolation-domain` | unavailable: `no-unprivileged-network-domain` | host-conditional: network namespace without interfaces | unavailable: `no-unprivileged-network-domain` |
 
-This inventory is independent of `rc5-native-control-inventory-v1`. Its first
+This inventory is independent of `rc5-native-control-inventory-v2`. Its first
 five rows carry the same macOS and Windows verdicts because the underlying host
 facts do not depend on what the child is, but the two inventories are versioned
 separately and a revision of one MUST NOT re-scope the other.

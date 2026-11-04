@@ -327,7 +327,7 @@ external `go-repository-v1` receipt-v2 commands independently. Both run under
 the portable `manager-worker-v1` execution policy. Install, dry-run plan, and
 status results MAY report the operation's `capability-evidence-v1` record: one
 `{name, availability, status, probed_at}` entry for each control of the
-exhaustive `rc5-native-control-inventory-v1` inventory. Such capability evidence
+exhaustive `rc5-native-control-inventory-v2` inventory. Such capability evidence
 is reporting only. It never claims a deferred hardened guarantee, never affects
 a cache key, receipt, marker, or claim, and an `unavailable` entry is never a
 failure. Execution-boundary failures use the `execution`

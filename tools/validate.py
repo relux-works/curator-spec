@@ -81,7 +81,7 @@ MODULE_ROOT_FIELDS = ("modules",)
 HARDENED_EXECUTION_OWNER = "STORY-260728-327soo"
 # The exhaustive rc.5 per-platform native-control inventory and the closed
 # per-operation capability-evidence record that reports it.
-NATIVE_CONTROL_INVENTORY_VERSION = "rc5-native-control-inventory-v1"
+NATIVE_CONTROL_INVENTORY_VERSION = "rc5-native-control-inventory-v2"
 CAPABILITY_EVIDENCE_RECORD_VERSION = "capability-evidence-v1"
 SCRIPT_NATIVE_CONTROL_INVENTORY_VERSION = "script-worker-v1-native-control-inventory-v1"
 SCRIPT_CAPABILITY_EVIDENCE_RECORD_VERSION = "script-capability-evidence-v1"
@@ -1467,6 +1467,9 @@ NATIVE_CONTROL_INVENTORY = {
         "windows": "explicit-handle-inheritance-list",
     },
 }
+for _record in NATIVE_CONTROL_INVENTORY.values():
+    _record["linux"] = _record["macos"]
+
 
 CAPABILITY_EVIDENCE_RECORD_FIELDS = {
     "controls",
@@ -1884,7 +1887,7 @@ def validate_go_host_execution_policy(vector: Any = None) -> None:
     if (
         inventory.get("version") != NATIVE_CONTROL_INVENTORY_VERSION
         or inventory.get("exhaustive") is not True
-        or inventory.get("platforms") != ["macos", "windows"]
+        or inventory.get("platforms") != ["macos", "linux", "windows"]
         or inventory.get("availability_states") != ["available", "unavailable"]
         or inventory.get("unavailable_reasons") != [UNAVAILABLE_NATIVE_CONTROL_REASON]
         or inventory.get("probe_timing") != "pre-worker-launch"
@@ -1903,7 +1906,7 @@ def validate_go_host_execution_policy(vector: Any = None) -> None:
         ):
             raise ValidationFailure(f"{name} is not an available-only portable control")
         platforms = control.get("platforms")
-        if not isinstance(platforms, dict) or set(platforms) != {"macos", "windows"}:
+        if not isinstance(platforms, dict) or set(platforms) != {"macos", "linux", "windows"}:
             raise ValidationFailure(f"{name} lacks exact macOS and Windows availability")
         for system, mechanism in NATIVE_CONTROL_INVENTORY[name].items():
             state = platforms[system]
@@ -2082,7 +2085,7 @@ def validate_capability_evidence_record(
             raise ValidationFailure(f"capability-evidence rule {rule} has no stable diagnostic")
 
     examples = record.get("examples")
-    if not isinstance(examples, dict) or set(examples) != {"macos", "windows"}:
+    if not isinstance(examples, dict) or set(examples) != {"macos", "linux", "windows"}:
         raise ValidationFailure("capability-evidence record lacks per-platform examples")
     for platform, example in examples.items():
         if set(example) != CAPABILITY_EVIDENCE_RECORD_FIELDS:

@@ -1,7 +1,7 @@
 {
   "core": {
     "manifest_path": "conformance/v1/manifest.json",
-    "manifest_sha256": "sha256:6f832d813efc768ea154a7d5076b512ab4be6aa9409d92e11469d21ea9bc69f5"
+    "manifest_sha256": "sha256:f68501449a85bf55813165e06f36bd000801d59248f4d3dec39c1b91e76b4ca6"
   },
   "skillfile_sources_v1": {
     "manifest_path": "conformance/skillfile-sources-v1/manifest.json",

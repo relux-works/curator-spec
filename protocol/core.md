@@ -478,7 +478,7 @@ Its authority is the `native_control_inventory` section of
 | `filesystem-write-confinement` | unavailable: `no-unprivileged-filesystem-domain` | host-conditional: Landlock write rights | unavailable: `no-unprivileged-filesystem-domain` |
 | `network-isolation-domain` | unavailable: `no-unprivileged-network-domain` | host-conditional: network namespace without interfaces | unavailable: `no-unprivileged-network-domain` |
 
-This inventory is independent of `rc5-native-control-inventory-v1`. The first
+This inventory is independent of `rc5-native-control-inventory-v2`. The first
 five rows carry the same macOS and Windows verdicts because the underlying host
 facts do not depend on what the child is, but they are copied, not referenced:
 each inventory is versioned on its own, and a revision motivated by the build
@@ -846,15 +846,15 @@ implementation can mistake one for the other:
 The rc.5 native-control inventory is exhaustive and normative per platform. Its
 authority is the `native_control_inventory` section of
 `conformance/v1/vectors/go-host-execution-policy.json`, version
-`rc5-native-control-inventory-v1`:
+`rc5-native-control-inventory-v2`:
 
-| Control | macOS | Windows |
-|---|---|---|
-| `descendant-domain-termination` | available: process group and session teardown | available: Job Object kill-on-close |
-| `active-process-count-limit` | unavailable: `no-private-aggregate-domain` | available: Job Object active-process limit |
-| `aggregate-memory-limit` | unavailable: `no-private-aggregate-domain` | available: Job Object process and job memory limit |
-| `per-file-size-limit` | available: `RLIMIT_FSIZE` | unavailable: `no-private-aggregate-domain` |
-| `inherited-handle-restriction` | available: close-on-exec plus explicit descriptor release | available: explicit handle inheritance list |
+| Control | macOS | Linux | Windows |
+|---|---|---|---|
+| `descendant-domain-termination` | available: process group and session teardown | available: process group and session teardown | available: Job Object kill-on-close |
+| `active-process-count-limit` | unavailable: `no-private-aggregate-domain` | unavailable: `no-private-aggregate-domain` | available: Job Object active-process limit |
+| `aggregate-memory-limit` | unavailable: `no-private-aggregate-domain` | unavailable: `no-private-aggregate-domain` | available: Job Object process and job memory limit |
+| `per-file-size-limit` | available: `RLIMIT_FSIZE` | available: `RLIMIT_FSIZE` | unavailable: `no-private-aggregate-domain` |
+| `inherited-handle-restriction` | available: close-on-exec plus explicit descriptor release | available: close-on-exec plus explicit descriptor release | available: explicit handle inheritance list |
 
 A manager MUST apply exactly the controls the inventory marks available for its
 platform, MUST NOT apply or report a control outside the inventory, and MUST NOT
@@ -865,9 +865,18 @@ inventory version. That is a specification revision, not an execution-policy
 revision, because inventory membership never enters a build input, an artifact,
 or any hashed identity.
 
+Version 2 succeeds `rc5-native-control-inventory-v1` solely by adding Linux.
+The five control names and all macOS and Windows records retain their version 1
+meaning. Existing receipts and installed artifacts remain readable and valid;
+no receipt, cache key, execution-policy identity, or evidence record version
+changes. Inventory version is specification metadata, never an installation
+input. Linux requires no root, sudo, or cgroup delegation. Process group teardown
+narrows descendant lifetime but does not confine a descendant that creates a
+new session; no hardened aggregate-domain guarantee is claimed.
+
 Host capability evidence is exactly one closed `capability-evidence-v1` record
 per operation. The record contains exactly `record_version`, `execution_policy`,
-`platform`, and `controls`. `platform` is `macos` or `windows`. `controls`
+`platform`, and `controls`. `platform` is `macos`, `linux`, or `windows`. `controls`
 contains exactly one entry per inventory control, and each entry contains
 exactly `name`, `availability`, `status`, and `probed_at`. `availability` is
 `available` or `unavailable`, `status` is `applied` or `unavailable`, and
