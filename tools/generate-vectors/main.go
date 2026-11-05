@@ -69,7 +69,7 @@ const (
 	// nativeControlInventoryVersion names the exhaustive rc.5 per-platform
 	// native-control inventory. Adding, removing, or re-scoping an entry
 	// requires a new inventory version.
-	nativeControlInventoryVersion = "rc5-native-control-inventory-v2"
+	nativeControlInventoryVersion = "rc5-native-control-inventory-v1"
 	// capabilityEvidenceRecordVersion names the closed per-operation reporting
 	// record. It never enters a cache key, receipt, marker, or claim.
 	capabilityEvidenceRecordVersion       = "capability-evidence-v1"
@@ -219,6 +219,7 @@ func main() {
 	skillfileSourcesManifestSHA256 := writeSkillfileSourcesManifest(*root)
 	writeDraftSourcesManifest(*root)
 	writeCandidateMetadata(*root, suite, skillfileSourcesManifestSHA256)
+	writeGoHostExecutionPolicyInventory(filepath.Join(*root, "conformance/go-native-controls-v2"), "rc5-native-control-inventory-v2")
 }
 
 // writeModuleRootVectors emits the filesystem and build-graph cases that JSON
@@ -1503,6 +1504,18 @@ func writeExternalRepositoryVectors(dir string) {
 // and proves that portable, hardened, and pre-revision cache identities cannot
 // alias.
 func writeGoHostExecutionPolicyVectors(dir string) {
+	writeGoHostExecutionPolicyInventory(dir, nativeControlInventoryVersion)
+}
+
+// The successor is generated outside the frozen rc.14 corpus.
+func writeGoHostExecutionPolicyInventory(dir, inventoryVersion string) {
+	nativeControlInventoryVersion := inventoryVersion
+	platforms := []any{"macos", "windows"}
+	authority := "conformance/v1/vectors/go-host-execution-policy.json#native_control_inventory"
+	if inventoryVersion == "rc5-native-control-inventory-v2" {
+		platforms = []any{"macos", "linux", "windows"}
+		authority = "conformance/go-native-controls-v2/go-host-execution-policy.json#native_control_inventory"
+	}
 	sessionStates := []any{
 		"parent-package-independent-toolchain-probe",
 		"parent-native-control-availability-probe",
@@ -1555,11 +1568,25 @@ func writeGoHostExecutionPolicyVectors(dir string) {
 			availablePlatform("close-on-exec-and-explicit-descriptor-release"),
 			availablePlatform("explicit-handle-inheritance-list")),
 	}
+	if inventoryVersion == "rc5-native-control-inventory-v2" {
+		// Linux records are explicit: future macOS edits must not re-scope Linux.
+		linux := map[string]map[string]any{
+			"descendant-domain-termination": availablePlatform("process-group-and-session-teardown"),
+			"active-process-count-limit":    unavailablePlatform(),
+			"aggregate-memory-limit":        unavailablePlatform(),
+			"per-file-size-limit":           availablePlatform("rlimit-fsize"),
+			"inherited-handle-restriction":  availablePlatform("close-on-exec-and-explicit-descriptor-release"),
+		}
+		for _, raw := range inventoryControls {
+			control := raw.(map[string]any)
+			control["platforms"].(map[string]any)["linux"] = linux[control["name"].(string)]
+		}
+	}
 	nativeControlInventory := map[string]any{
 		"version":             nativeControlInventoryVersion,
 		"exhaustive":          true,
-		"authority":           "conformance/v1/vectors/go-host-execution-policy.json#native_control_inventory",
-		"platforms":           []any{"macos", "linux", "windows"},
+		"authority":           authority,
+		"platforms":           platforms,
 		"availability_states": []any{"available", "unavailable"},
 		"unavailable_reasons": []any{unavailableNativeControlReason},
 		"probe_timing":        "pre-worker-launch",
@@ -1723,7 +1750,7 @@ func writeGoHostExecutionPolicyVectors(dir string) {
 		"session_states":                       sessionStates,
 		"mandatory_controls":                   mandatoryControls,
 		"native_control_inventory":             nativeControlInventory,
-		"capability_evidence_record":           capabilityEvidenceRecord(inventoryControls),
+		"capability_evidence_record":           capabilityEvidenceRecord(inventoryControls, inventoryVersion, platforms),
 		"deferred_hardened_guarantees":         deferredGuarantees,
 		"deferred_capability_rejection_guards": rejectionGuards,
 		"failure_boundary":                     failureBoundary,
@@ -1925,8 +1952,7 @@ func unavailablePlatform() map[string]any {
 func nativeControl(name string, macos, windows map[string]any) map[string]any {
 	return map[string]any{
 		"name": name, "applied_when_available": true, "hardened_guarantee": false,
-		"platforms": map[string]any{"linux": macos,
-			"macos": macos, "windows": windows},
+		"platforms": map[string]any{"macos": macos, "windows": windows},
 	}
 }
 
@@ -1934,9 +1960,10 @@ func nativeControl(name string, macos, windows map[string]any) map[string]any {
 // fields, allowed states, probe timing, exposure, exclusion from every hashed
 // identity, and the consistency rules whose violation is an error. The examples
 // are derived from the inventory so a record and the inventory can never drift.
-func capabilityEvidenceRecord(inventoryControls []any) map[string]any {
+func capabilityEvidenceRecord(inventoryControls []any, inventoryVersion string, platforms []any) map[string]any {
 	examples := map[string]any{}
-	for _, platform := range []string{"macos", "linux", "windows"} {
+	for _, rawPlatform := range platforms {
+		platform := rawPlatform.(string)
 		entries := make([]any, 0, len(inventoryControls))
 		for _, raw := range inventoryControls {
 			item := raw.(map[string]any)
@@ -1961,7 +1988,7 @@ func capabilityEvidenceRecord(inventoryControls []any) map[string]any {
 	}
 	return map[string]any{
 		"record_version":       capabilityEvidenceRecordVersion,
-		"inventory_version":    nativeControlInventoryVersion,
+		"inventory_version":    inventoryVersion,
 		"record_fields":        []any{"controls", "execution_policy", "platform", "record_version"},
 		"control_entry_fields": []any{"availability", "name", "probed_at", "status"},
 		"availability_states":  []any{"available", "unavailable"},

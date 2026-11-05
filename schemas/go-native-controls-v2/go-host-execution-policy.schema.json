@@ -1,0 +1,446 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/go-native-controls-v2/go-host-execution-policy.schema.json",
+  "title": "Unreleased native Go execution controls v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "cache_identity",
+    "capability_evidence_cases",
+    "capability_evidence_record",
+    "deferred_capability_rejection_guards",
+    "deferred_hardened_guarantees",
+    "drivers",
+    "execution_policy",
+    "failure_boundary",
+    "hardened_profile_owner",
+    "identity_and_protocol_cases",
+    "mandatory_controls",
+    "native_control_inventory",
+    "package_influence_cases",
+    "policy_semantics",
+    "process_graph",
+    "protocol_version",
+    "reserved_hardened_execution_policy",
+    "schema_version",
+    "session_states"
+  ],
+  "properties": {
+    "cache_identity": {
+      "type": "object"
+    },
+    "capability_evidence_cases": {
+      "type": "array"
+    },
+    "capability_evidence_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "availability_states",
+        "consistency_rules",
+        "control_entry_fields",
+        "entry_cardinality",
+        "examples",
+        "excluded_from",
+        "exposed_in",
+        "inventory_version",
+        "probe_timings",
+        "record_fields",
+        "record_version",
+        "result_only",
+        "status_states"
+      ],
+      "properties": {
+        "availability_states": {
+          "const": [
+            "available",
+            "unavailable"
+          ]
+        },
+        "consistency_rules": {
+          "const": [
+            {
+              "expected_error": "build_execution_capability_evidence_invalid",
+              "rule": "available-control-must-report-status-applied"
+            },
+            {
+              "expected_error": "build_execution_capability_evidence_invalid",
+              "rule": "unavailable-control-must-report-status-unavailable"
+            },
+            {
+              "expected_error": "build_execution_capability_evidence_invalid",
+              "rule": "exactly-one-entry-per-inventory-control"
+            },
+            {
+              "expected_error": "build_execution_capability_evidence_invalid",
+              "rule": "no-entry-outside-the-inventory"
+            },
+            {
+              "expected_error": "build_execution_capability_evidence_invalid",
+              "rule": "unknown-record-version-is-rejected"
+            },
+            {
+              "expected_error": "build_execution_capability_evidence_invalid",
+              "rule": "availability-probed-per-operation-before-worker-launch"
+            },
+            {
+              "expected_error": "build_execution_hardened_claim_forbidden",
+              "rule": "no-deferred-hardened-guarantee-entry"
+            },
+            {
+              "expected_error": "build_execution_hardened_claim_forbidden",
+              "rule": "record-execution-policy-must-be-the-portable-identity"
+            }
+          ]
+        },
+        "control_entry_fields": {
+          "const": [
+            "availability",
+            "name",
+            "probed_at",
+            "status"
+          ]
+        },
+        "entry_cardinality": {
+          "const": "exactly-one-per-inventory-control"
+        },
+        "examples": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "macos",
+            "linux",
+            "windows"
+          ],
+          "properties": {
+            "macos": {
+              "type": "object"
+            },
+            "linux": {
+              "type": "object"
+            },
+            "windows": {
+              "type": "object"
+            }
+          }
+        },
+        "excluded_from": {
+          "const": [
+            "cache-key",
+            "conformance-claim",
+            "install-marker",
+            "receipt"
+          ]
+        },
+        "exposed_in": {
+          "const": [
+            "dry-run-plan-result",
+            "install-result",
+            "status-result"
+          ]
+        },
+        "inventory_version": {
+          "const": "rc5-native-control-inventory-v2"
+        },
+        "probe_timings": {
+          "const": [
+            "pre-worker-launch"
+          ]
+        },
+        "record_fields": {
+          "const": [
+            "controls",
+            "execution_policy",
+            "platform",
+            "record_version"
+          ]
+        },
+        "record_version": {
+          "const": "capability-evidence-v1"
+        },
+        "result_only": {
+          "const": true
+        },
+        "status_states": {
+          "const": [
+            "applied",
+            "unavailable"
+          ]
+        }
+      }
+    },
+    "deferred_capability_rejection_guards": {
+      "type": "array"
+    },
+    "deferred_hardened_guarantees": {
+      "type": "array"
+    },
+    "drivers": {
+      "type": "array"
+    },
+    "execution_policy": {
+      "type": "string"
+    },
+    "failure_boundary": {
+      "type": "object"
+    },
+    "hardened_profile_owner": {
+      "type": "string"
+    },
+    "identity_and_protocol_cases": {
+      "type": "array"
+    },
+    "mandatory_controls": {
+      "type": "array"
+    },
+    "native_control_inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority",
+        "availability_states",
+        "exhaustive",
+        "platforms",
+        "probe_scope",
+        "probe_timing",
+        "unavailable_reasons",
+        "version",
+        "controls"
+      ],
+      "properties": {
+        "authority": {
+          "const": "conformance/go-native-controls-v2/go-host-execution-policy.json#native_control_inventory"
+        },
+        "availability_states": {
+          "const": [
+            "available",
+            "unavailable"
+          ]
+        },
+        "exhaustive": {
+          "const": true
+        },
+        "platforms": {
+          "const": [
+            "macos",
+            "linux",
+            "windows"
+          ]
+        },
+        "probe_scope": {
+          "const": "per-operation"
+        },
+        "probe_timing": {
+          "const": "pre-worker-launch"
+        },
+        "unavailable_reasons": {
+          "const": [
+            "no-private-aggregate-domain"
+          ]
+        },
+        "version": {
+          "const": "rc5-native-control-inventory-v2"
+        },
+        "controls": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "applied_when_available",
+              "hardened_guarantee",
+              "platforms"
+            ],
+            "properties": {
+              "name": {
+                "enum": [
+                  "descendant-domain-termination",
+                  "active-process-count-limit",
+                  "aggregate-memory-limit",
+                  "per-file-size-limit",
+                  "inherited-handle-restriction"
+                ]
+              },
+              "applied_when_available": {
+                "const": true
+              },
+              "hardened_guarantee": {
+                "const": false
+              },
+              "platforms": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "macos",
+                  "linux",
+                  "windows"
+                ],
+                "properties": {
+                  "macos": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "availability",
+                          "mechanism",
+                          "unavailable_reason"
+                        ],
+                        "properties": {
+                          "availability": {
+                            "const": "available"
+                          },
+                          "mechanism": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "unavailable_reason": {
+                            "type": "null"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "availability",
+                          "mechanism",
+                          "unavailable_reason"
+                        ],
+                        "properties": {
+                          "availability": {
+                            "const": "unavailable"
+                          },
+                          "mechanism": {
+                            "type": "null"
+                          },
+                          "unavailable_reason": {
+                            "const": "no-private-aggregate-domain"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "linux": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "availability",
+                          "mechanism",
+                          "unavailable_reason"
+                        ],
+                        "properties": {
+                          "availability": {
+                            "const": "available"
+                          },
+                          "mechanism": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "unavailable_reason": {
+                            "type": "null"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "availability",
+                          "mechanism",
+                          "unavailable_reason"
+                        ],
+                        "properties": {
+                          "availability": {
+                            "const": "unavailable"
+                          },
+                          "mechanism": {
+                            "type": "null"
+                          },
+                          "unavailable_reason": {
+                            "const": "no-private-aggregate-domain"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "windows": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "availability",
+                          "mechanism",
+                          "unavailable_reason"
+                        ],
+                        "properties": {
+                          "availability": {
+                            "const": "available"
+                          },
+                          "mechanism": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "unavailable_reason": {
+                            "type": "null"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "availability",
+                          "mechanism",
+                          "unavailable_reason"
+                        ],
+                        "properties": {
+                          "availability": {
+                            "const": "unavailable"
+                          },
+                          "mechanism": {
+                            "type": "null"
+                          },
+                          "unavailable_reason": {
+                            "const": "no-private-aggregate-domain"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "package_influence_cases": {
+      "type": "array"
+    },
+    "policy_semantics": {
+      "type": "object"
+    },
+    "process_graph": {
+      "type": "array"
+    },
+    "protocol_version": {
+      "type": "string"
+    },
+    "reserved_hardened_execution_policy": {
+      "type": "string"
+    },
+    "schema_version": {
+      "type": "integer"
+    },
+    "session_states": {
+      "type": "array"
+    }
+  }
+}

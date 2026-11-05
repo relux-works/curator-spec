@@ -82,17 +82,20 @@ starting the worker or Go:
 ### The exhaustive native-control inventory
 
 The normative authority is the `native_control_inventory` section of
-[`conformance/v1/vectors/go-host-execution-policy.json`](../conformance/v1/vectors/go-host-execution-policy.json),
-version `rc5-native-control-inventory-v1`. It is exhaustive: apply exactly what
+[`conformance/go-native-controls-v2/go-host-execution-policy.json`](../conformance/go-native-controls-v2/go-host-execution-policy.json),
+version `rc5-native-control-inventory-v2`. It is exhaustive: apply exactly what
 it marks available for your platform, and never apply or report anything else.
 
-| Control | macOS | Windows |
-|---|---|---|
-| `descendant-domain-termination` | available: process group and session teardown | available: Job Object kill-on-close |
-| `active-process-count-limit` | unavailable: `no-private-aggregate-domain` | available: Job Object active-process limit |
-| `aggregate-memory-limit` | unavailable: `no-private-aggregate-domain` | available: Job Object process and job memory limit |
-| `per-file-size-limit` | available: `RLIMIT_FSIZE` | unavailable: `no-private-aggregate-domain` |
-| `inherited-handle-restriction` | available: close-on-exec plus explicit descriptor release | available: explicit handle inheritance list |
+| Control | macOS | Linux | Windows |
+|---|---|---|---|
+| `descendant-domain-termination` | available: process group and session teardown | available: process group and session teardown | available: Job Object kill-on-close |
+| `active-process-count-limit` | unavailable: `no-private-aggregate-domain` | host-conditional: delegated cgroup v2 `pids.max` | available: Job Object active-process limit |
+| `aggregate-memory-limit` | unavailable: `no-private-aggregate-domain` | host-conditional: delegated cgroup v2 `memory.max` | available: Job Object process and job memory limit |
+| `per-file-size-limit` | available: `RLIMIT_FSIZE` | available: `RLIMIT_FSIZE` | unavailable: `no-private-aggregate-domain` |
+| `inherited-handle-restriction` | available: close-on-exec plus explicit descriptor release | available: close-on-exec plus explicit descriptor release | available: explicit handle inheritance list |
+| `descendant-exec-denial` | unavailable: `no-unprivileged-per-process-exec-policy` | host-conditional: Landlock execute right | unavailable: `child-process-policy-requires-appcontainer` |
+| `filesystem-write-confinement` | unavailable: `no-unprivileged-filesystem-domain` | host-conditional: Landlock write rights | unavailable: `no-unprivileged-filesystem-domain` |
+| `network-isolation-domain` | unavailable: `no-unprivileged-network-domain` | host-conditional: network namespace without interfaces | unavailable: `no-unprivileged-network-domain` |
 
 Probe availability once per operation, before launching the worker. A host
 label, a build-time constant, and a configuration file are not probes.
@@ -170,7 +173,7 @@ identity without adding any guarantee a reader may rely on.
 
 Because the identity is hashed, three inputs that differ only in execution
 policy produce three different cache keys. The executable proof is
-[`conformance/v1/vectors/go-host-execution-policy.json`](../conformance/v1/vectors/go-host-execution-policy.json),
+[`conformance/go-native-controls-v2/go-host-execution-policy.json`](../conformance/go-native-controls-v2/go-host-execution-policy.json),
 whose `cache_identity` section carries the portable input, a reserved hardened
 input, and the pre-revision input that carried no execution policy at all, each
 with its recomputable key. A pre-revision candidate entry therefore misses; it

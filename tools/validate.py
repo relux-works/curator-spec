@@ -81,7 +81,8 @@ MODULE_ROOT_FIELDS = ("modules",)
 HARDENED_EXECUTION_OWNER = "STORY-260728-327soo"
 # The exhaustive rc.5 per-platform native-control inventory and the closed
 # per-operation capability-evidence record that reports it.
-NATIVE_CONTROL_INVENTORY_VERSION = "rc5-native-control-inventory-v2"
+NATIVE_CONTROL_INVENTORY_VERSION = "rc5-native-control-inventory-v1"
+SUCCESSOR_NATIVE_CONTROL_INVENTORY_VERSION = "rc5-native-control-inventory-v2"
 CAPABILITY_EVIDENCE_RECORD_VERSION = "capability-evidence-v1"
 SCRIPT_NATIVE_CONTROL_INVENTORY_VERSION = "script-worker-v1-native-control-inventory-v1"
 SCRIPT_CAPABILITY_EVIDENCE_RECORD_VERSION = "script-capability-evidence-v1"
@@ -1467,9 +1468,6 @@ NATIVE_CONTROL_INVENTORY = {
         "windows": "explicit-handle-inheritance-list",
     },
 }
-for _record in NATIVE_CONTROL_INVENTORY.values():
-    _record["linux"] = _record["macos"]
-
 
 CAPABILITY_EVIDENCE_RECORD_FIELDS = {
     "controls",
@@ -1839,7 +1837,7 @@ def validate_script_host_execution_policy(vector: Any = None) -> None:
         raise ValidationFailure("enforced script is labeled declared-only")
 
 
-def validate_go_host_execution_policy(vector: Any = None) -> None:
+def validate_go_host_execution_policy(vector: Any = None, *, inventory_version: str = NATIVE_CONTROL_INVENTORY_VERSION) -> None:
     """Check the executable portable `manager-worker-v1` execution contract."""
     if vector is None:
         vector = load_json(SUITE / "vectors" / "go-host-execution-policy.json")
@@ -1861,6 +1859,22 @@ def validate_go_host_execution_policy(vector: Any = None) -> None:
         "fingerprinted-goroot-pkg-tool-child",
     ]:
         raise ValidationFailure("execution policy does not fix the four-node process graph")
+
+    if inventory_version not in {NATIVE_CONTROL_INVENTORY_VERSION, SUCCESSOR_NATIVE_CONTROL_INVENTORY_VERSION}:
+        raise ValidationFailure("unknown native-control corpus version")
+    expected_inventory = {name: dict(records) for name, records in NATIVE_CONTROL_INVENTORY.items()}
+    expected_platforms = ["macos", "windows"]
+    if inventory_version == SUCCESSOR_NATIVE_CONTROL_INVENTORY_VERSION:
+        expected_platforms = ["macos", "linux", "windows"]
+        linux = {
+            "descendant-domain-termination": "process-group-and-session-teardown",
+            "active-process-count-limit": None,
+            "aggregate-memory-limit": None,
+            "per-file-size-limit": "rlimit-fsize",
+            "inherited-handle-restriction": "close-on-exec-and-explicit-descriptor-release",
+        }
+        for name, mechanism in linux.items():
+            expected_inventory[name]["linux"] = mechanism
 
     states = vector.get("session_states")
     if not isinstance(states, list) or len(states) != len(set(states)):
@@ -1885,9 +1899,9 @@ def validate_go_host_execution_policy(vector: Any = None) -> None:
     if not isinstance(inventory, dict):
         raise ValidationFailure("execution policy has no native-control inventory")
     if (
-        inventory.get("version") != NATIVE_CONTROL_INVENTORY_VERSION
+        inventory.get("version") != inventory_version
         or inventory.get("exhaustive") is not True
-        or inventory.get("platforms") != ["macos", "linux", "windows"]
+        or inventory.get("platforms") != expected_platforms
         or inventory.get("availability_states") != ["available", "unavailable"]
         or inventory.get("unavailable_reasons") != [UNAVAILABLE_NATIVE_CONTROL_REASON]
         or inventory.get("probe_timing") != "pre-worker-launch"
@@ -1906,9 +1920,9 @@ def validate_go_host_execution_policy(vector: Any = None) -> None:
         ):
             raise ValidationFailure(f"{name} is not an available-only portable control")
         platforms = control.get("platforms")
-        if not isinstance(platforms, dict) or set(platforms) != {"macos", "linux", "windows"}:
-            raise ValidationFailure(f"{name} lacks exact macOS and Windows availability")
-        for system, mechanism in NATIVE_CONTROL_INVENTORY[name].items():
+        if not isinstance(platforms, dict) or set(platforms) != set(expected_platforms):
+            raise ValidationFailure(f"{name} lacks exact availability for {expected_platforms}")
+        for system, mechanism in expected_inventory[name].items():
             state = platforms[system]
             if not isinstance(state, dict) or set(state) != {
                 "availability",
@@ -1989,7 +2003,7 @@ def validate_go_host_execution_policy(vector: Any = None) -> None:
         if identity[name].get("compiler_started") is not False:
             raise ValidationFailure(f"{name} must fail before the compiler starts")
 
-    validate_capability_evidence_record(vector, native, deferred)
+    validate_capability_evidence_record(vector, native, deferred, inventory_version=inventory_version, expected_platforms=expected_platforms)
     validate_capability_evidence_cases(vector, native, deferred)
     validate_execution_failure_boundary(vector, native, deferred)
 
@@ -2020,7 +2034,9 @@ def validate_go_host_execution_policy(vector: Any = None) -> None:
 
 
 def validate_capability_evidence_record(
-    vector: Any, native: dict[str, Any], deferred: dict[str, Any]
+    vector: Any, native: dict[str, Any], deferred: dict[str, Any], *,
+    inventory_version: str = NATIVE_CONTROL_INVENTORY_VERSION,
+    expected_platforms: list[str] | None = None,
 ) -> None:
     """Check the closed per-operation capability-evidence record."""
     record = vector.get("capability_evidence_record")
@@ -2028,7 +2044,7 @@ def validate_capability_evidence_record(
         raise ValidationFailure("execution policy has no closed capability-evidence record")
     if (
         record.get("record_version") != CAPABILITY_EVIDENCE_RECORD_VERSION
-        or record.get("inventory_version") != NATIVE_CONTROL_INVENTORY_VERSION
+        or record.get("inventory_version") != inventory_version
         or set(record.get("record_fields") or []) != CAPABILITY_EVIDENCE_RECORD_FIELDS
         or set(record.get("control_entry_fields") or []) != CAPABILITY_EVIDENCE_ENTRY_FIELDS
         or record.get("availability_states") != ["available", "unavailable"]
@@ -2085,7 +2101,7 @@ def validate_capability_evidence_record(
             raise ValidationFailure(f"capability-evidence rule {rule} has no stable diagnostic")
 
     examples = record.get("examples")
-    if not isinstance(examples, dict) or set(examples) != {"macos", "linux", "windows"}:
+    if not isinstance(examples, dict) or set(examples) != set(expected_platforms or ["macos", "windows"]):
         raise ValidationFailure("capability-evidence record lacks per-platform examples")
     for platform, example in examples.items():
         if set(example) != CAPABILITY_EVIDENCE_RECORD_FIELDS:
@@ -4695,6 +4711,7 @@ def validate_vector_semantics() -> None:
         raise ValidationFailure("schema-8 lifecycle does not bind to the marker-v4 golden")
 
     validate_go_host_execution_policy()
+    validate_go_native_controls_v2()
     validate_script_host_execution_policy()
     validate_local_go_receipt_oracles()
     validate_build_driver_vectors()
@@ -12288,6 +12305,17 @@ def main(*, release_history_only: bool = False) -> int:
         return 0
     print(f"validated {len(list(SCHEMAS.glob('*.json')))} schemas and {len(load_json(SUITE / 'manifest.json')['files'])} vector files")
     return 0
+
+
+
+def validate_go_native_controls_v2() -> None:
+    """Validate the separate successor schema and semantic authority, never the frozen corpus."""
+    vector = load_json(ROOT / "conformance/go-native-controls-v2/go-host-execution-policy.json")
+    schema = load_json(ROOT / "schemas/go-native-controls-v2/go-host-execution-policy.schema.json")
+    errors = list(Draft202012Validator(schema).iter_errors(vector))
+    if errors:
+        raise ValidationFailure("successor inventory schema: " + errors[0].message)
+    validate_go_host_execution_policy(vector, inventory_version=SUCCESSOR_NATIVE_CONTROL_INVENTORY_VERSION)
 
 
 if __name__ == "__main__":

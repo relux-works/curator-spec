@@ -530,3 +530,9 @@ do not qualify native Windows socket/job behavior; Windows CI remains required.
 `python3 tools/fixture_environment.py COMMAND [ARG ...]` applies the same
 boundary to source-history tools. `make validate` uses it for the validator
 and Go tools suite; unittest modules still establish their own boundaries.
+
+The unreleased [Go native controls v2 corpus](conformance/go-native-controls-v2/README.md)
+is generated with `go run ./tools/generate-vectors -root .`, validated by
+`python tools/validate.py`, and tested by
+`python -B -m unittest discover -s tools -p 'test_*.py'`. Generated inputs stay in
+that separate namespace; test logs and scratch state belong in `.temp/`.

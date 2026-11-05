@@ -108,7 +108,7 @@ policy explicitly; marker v2 binds it transitively through its recorded cache
 key and receipt hash.
 
 The per-platform native-control inventory and the capability-evidence record are
-versioned separately from the execution policy. `rc5-native-control-inventory-v1`
+versioned separately from the execution policy. `rc5-native-control-inventory-v2`
 is the exhaustive authority for which native controls a portable manager applies,
 and `capability-evidence-v1` is the closed record that reports them. Extending or
 re-scoping the inventory requires a new inventory version and a protocol

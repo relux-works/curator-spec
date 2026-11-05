@@ -771,7 +771,7 @@ generation, rollback, or any other reason.
 Every source-aware `go-v1` and `go-repository-v1` operation runs under exactly
 one named execution policy. Protocol 1.0 defines exactly one, the portable
 `manager-worker-v1` policy, and every conforming manager MUST implement it on
-macOS and Windows. The policy identity is a normative cache, receipt, marker,
+macOS, Linux, and Windows. The policy identity is a normative cache, receipt, marker,
 and claim input. It is never a package-visible option, a host label, or an
 operator preference.
 
@@ -845,7 +845,7 @@ implementation can mistake one for the other:
 
 The rc.5 native-control inventory is exhaustive and normative per platform. Its
 authority is the `native_control_inventory` section of
-`conformance/v1/vectors/go-host-execution-policy.json`, version
+`conformance/go-native-controls-v2/go-host-execution-policy.json`, version
 `rc5-native-control-inventory-v2`:
 
 | Control | macOS | Linux | Windows |

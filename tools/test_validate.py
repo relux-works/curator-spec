@@ -1015,7 +1015,7 @@ class WireSemanticValidationTests(unittest.TestCase):
             ].__setitem__("exhaustive", False),
             "native-control inventory version drifts": lambda item: item[
                 "native_control_inventory"
-            ].__setitem__("version", "rc5-native-control-inventory-v2"),
+            ].__setitem__("version", "rc5-native-control-inventory-v999"),
             "inventory availability contradicts the platform record": lambda item: case(
                 item["native_control_inventory"]["controls"], "aggregate-memory-limit"
             )["platforms"]["macos"].__setitem__("availability", "available"),

@@ -29,7 +29,13 @@ PORTABLE_EXECUTION_POLICY = "manager-worker-v1"
 # The exhaustive native-control inventory and closed capability-evidence record
 # a portable candidate reports. They are versioned separately from the policy
 # because neither enters a build input or a hashed identity.
-NATIVE_CONTROL_INVENTORY_VERSION = "rc5-native-control-inventory-v1"
+# Published metadata retains its historical inventory; unreleased successors
+# must bind the separately published v2 authority, never silently relabel rc.5/6.
+LEGACY_NATIVE_CONTROL_INVENTORIES = {
+    "1.0.0-rc.5": "rc5-native-control-inventory-v1",
+    "1.0.0-rc.6": "rc5-native-control-inventory-v1",
+}
+SUCCESSOR_NATIVE_CONTROL_INVENTORY_VERSION = "rc5-native-control-inventory-v2"
 CAPABILITY_EVIDENCE_RECORD_VERSION = "capability-evidence-v1"
 # The one manager-neutral repository-root build descriptor. Its retired
 # implementation-branded name is not an alias, so no release surface may carry
@@ -737,6 +743,18 @@ def git(*arguments: str) -> str:
     return result.stdout.strip()
 
 
+def validate_execution_inventory(version: str, reported: Any) -> None:
+    """Keep historical release identities, and check a successor against its corpus."""
+    expected = LEGACY_NATIVE_CONTROL_INVENTORIES.get(version)
+    if expected is None:
+        vector = load_json(ROOT / "conformance/go-native-controls-v2/go-host-execution-policy.json")
+        expected = vector.get("native_control_inventory", {}).get("version")
+        if expected != SUCCESSOR_NATIVE_CONTROL_INVENTORY_VERSION:
+            raise ReleaseFailure("successor native-control inventory authority is invalid")
+    if reported != expected:
+        raise ReleaseFailure("release does not honestly record its native-control inventory")
+
+
 def validate_version(version: str) -> None:
     if SEMVER.fullmatch(version) is None:
         raise ReleaseFailure(f"{version!r} is not a supported semantic version")
@@ -784,13 +802,13 @@ def validate_version(version: str) -> None:
                 )
         else:
             execution = metadata.get("execution_policy", {})
+            if isinstance(execution, dict):
+                validate_execution_inventory(version, execution.get("native_control_inventory_version"))
             if (
                 not isinstance(execution, dict)
                 or execution.get("portable") != PORTABLE_EXECUTION_POLICY
                 or execution.get("hardened_profile_claimed") is not False
                 or not execution.get("hardened_profile_owner")
-                or execution.get("native_control_inventory_version")
-                != NATIVE_CONTROL_INVENTORY_VERSION
                 or execution.get("capability_evidence_record_version")
                 != CAPABILITY_EVIDENCE_RECORD_VERSION
             ):

@@ -5102,7 +5102,7 @@
     },
     {
       "path": "vectors/go-host-execution-policy.json",
-      "sha256": "sha256:db213a8e7a36d060e642710ab282090c98ba09b3f95a35f28d73134173685579"
+      "sha256": "sha256:45a25803620a5c1032f3f01351860cc46f541d0fad42ad18f4237f3a5dd34769"
     },
     {
       "path": "vectors/identifiers.json",
