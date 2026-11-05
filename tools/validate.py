@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 import assurance
+import build_ssh_project_bin
 import managed_home_snapshots
 from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import SchemaError
@@ -12240,10 +12241,18 @@ def validate_home_leases() -> None:
     print(f"home leases: {schemas} schema/decoder pairs; {semantic} semantic pairs; runtime unverified")
 
 
+def validate_build_ssh_project_bin() -> None:
+    try:
+        build_ssh_project_bin.validate()
+    except (ValueError, KeyError, TypeError) as exc:
+        raise ValidationFailure(f"draft SSH/project ownership: {exc}") from exc
+
+
 def main(*, release_history_only: bool = False) -> int:
     checks = [
         validate_released_record_immutability,
         validate_released_schema_immutability,
+        validate_build_ssh_project_bin,
         validate_schemas,
         validate_managed_home_snapshots,
         validate_login_readiness,

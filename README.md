@@ -537,6 +537,14 @@ is generated with `go run ./tools/generate-vectors -root .`, validated by
 `python -B -m unittest discover -s tools -p 'test_*.py'`. Generated inputs stay in
 that separate namespace; test logs and scratch state belong in `.temp/`.
 
+The build SSH and project-bin amendment has draft witnesses in
+`conformance/draft-build-ssh-project-bin/`. Run
+`python3 tools/build_ssh_project_bin.py` to check their independent selection,
+policy, diagnostic and ownership rules; `python3 -B -m unittest discover -s tools
+-p 'test_build_ssh_project_bin.py'` proves each vector detects a planted defect.
+These commands write no artifacts and run within the ordinary specification
+validation and hosted test gates. Released v1 vectors remain immutable.
+
 ## Proposed machine Claude output limit
 
 [CIP-0029](cips/CIP-0029-machine-claude-output-limit.md) proposes a closed,

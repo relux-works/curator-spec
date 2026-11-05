@@ -1,0 +1,57 @@
+{
+  "selection_order": [
+    "operator-absolute",
+    "fixed-system-list"
+  ],
+  "inherited_path": false,
+  "forbidden_roots": [
+    "project-bin",
+    "manager-bin",
+    "managed-command-root"
+  ],
+  "fingerprint": "sha256",
+  "tuple": [
+    "argc",
+    "argv[0]",
+    "host",
+    "remote-command"
+  ],
+  "mandatory_option": "EscapeChar=none",
+  "unsupported_option": "EnableEscapeCommandline=no",
+  "unix_policy": "read-only-descriptor",
+  "windows_policy": "current-user-only-protected-record",
+  "cases": [
+    {
+      "name": "valid-identity",
+      "condition": "valid",
+      "code": null,
+      "snapshot": true
+    },
+    {
+      "name": "missing-selection",
+      "condition": "no-credentials",
+      "code": "build_repository_ssh_credential_missing",
+      "snapshot": false
+    },
+    {
+      "name": "missing-host-keys",
+      "condition": "no-host-keys",
+      "code": "build_repository_credential_policy_invalid",
+      "snapshot": false
+    },
+    {
+      "name": "wrong-key",
+      "condition": "auth",
+      "code": "build_repository_credential_policy_invalid",
+      "reason": "authentication_failed",
+      "snapshot": false
+    },
+    {
+      "name": "unknown-host",
+      "condition": "host-key",
+      "code": "build_repository_credential_policy_invalid",
+      "reason": "host_key_verification_failed",
+      "snapshot": false
+    }
+  ]
+}

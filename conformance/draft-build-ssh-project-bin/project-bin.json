@@ -1,0 +1,47 @@
+{
+  "ledger": ".agents/.curator-bin-ownership.json",
+  "preflight_before_build": true,
+  "unrelated_foreign_opened": false,
+  "cases": [
+    {
+      "name": "legacy-adopt",
+      "marker": true,
+      "enforced": true,
+      "sidecar_matches": true,
+      "desired": true,
+      "code": null,
+      "mutated": true,
+      "pair_removed": false
+    },
+    {
+      "name": "legacy-remove",
+      "marker": true,
+      "enforced": true,
+      "sidecar_matches": true,
+      "desired": false,
+      "code": null,
+      "mutated": true,
+      "pair_removed": true
+    },
+    {
+      "name": "sidecar-mismatch",
+      "marker": true,
+      "enforced": true,
+      "sidecar_matches": false,
+      "desired": true,
+      "code": "project_bin_legacy_enforced",
+      "mutated": false,
+      "pair_removed": false
+    },
+    {
+      "name": "marker-absent",
+      "marker": false,
+      "enforced": true,
+      "sidecar_matches": true,
+      "desired": true,
+      "code": "project_bin_legacy_enforced",
+      "mutated": false,
+      "pair_removed": false
+    }
+  ]
+}

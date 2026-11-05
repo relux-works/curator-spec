@@ -1635,6 +1635,19 @@ credential broker, binary SSH wrapper, and OpenSSH executable are selected
 only by the manager or operator policy and are fingerprinted or pinned. An
 unknown release family is unsupported even when it appears newer.
 
+Executable selection MUST ignore inherited `PATH`. For both `ssh` and `git`,
+an operator-configured absolute path takes precedence; an invalid configured
+path MUST refuse rather than fall through. Without a configured path the fixed
+Unix search order is `/usr/bin`, `/bin`, `/usr/local/bin`, `/opt/homebrew/bin`.
+Windows searches `C:\Windows\System32\OpenSSH\ssh.exe` for SSH, and
+`C:\Program Files\Git\cmd\git.exe` then `C:\Program Files\Git\bin\git.exe`
+for Git. Resolve links before admission. Any resolved executable inside a
+project bin, manager bin, or managed command root MUST refuse, including a
+path explicitly configured by the operator. Pin executable bytes with SHA-256
+and revalidate before use. A missing SSH executable has one deterministic
+`no ssh executable found` diagnostic; selection order MUST NOT depend on map
+iteration or ambient environment selectors.
+
 The permitted child graph is limited to:
 
 - manager to the absolute trusted `git` for private `init`, one exact
@@ -1828,7 +1841,21 @@ descriptor to the binary wrapper. It contains exactly the expected
 `[user@]host`, raw path, remote command
 `git-upload-pack '<raw-path>'`, operator-trusted SSH executable, empty SSH
 configuration, empty global known-hosts file, selected operator known-hosts
-file, timeout, and one authentication mode. The wrapper accepts only:
+file, timeout, one authentication mode, and the SSH executable SHA-256
+fingerprint. The wrapper revalidates that fingerprint before execution.
+On Unix, the policy descriptor is read-only, survives Git, and does not replace
+any standard stream.
+
+Git for Windows restricts helper inheritance to its standard handles (see
+[Git process launch](https://raw.githubusercontent.com/git/git/v2.50.1/compat/mingw.c)).
+A native direct-child positive control and a Git-helper negative control MUST
+confirm this boundary. Windows therefore MAY pass the absolute path of a
+bounded, operation-private policy record instead: its directory MUST have a
+protected, current-user-only inheritable DACL before either policy or wrapper
+is created; neither a mode argument nor an ambient shared directory suffices.
+The wrapper refuses reparse points and non-regular or oversized records. No
+credential bytes are carried in the record or its environment locator.
+The wrapper accepts only:
 
 ```text
 argv[0] = <absolute-manager-binary-wrapper>
@@ -1871,7 +1898,6 @@ executes:
  "-o", "ControlPersist=no",
  "-o", "RequestTTY=no",
  "-o", "EscapeChar=none",
- "-o", "EnableEscapeCommandline=no",
  "-o", "CanonicalizeHostname=no",
  "-o", "ConnectionAttempts=1",
  "-o", "ConnectTimeout=<manager-policy-seconds>",
@@ -1879,6 +1905,16 @@ executes:
  <expected-host-or-user@host>,
  <exact-expected-git-upload-pack-command>]
 ```
+
+`EscapeChar=none` remains mandatory: the [OpenSSH manual](https://man.openbsd.org/ssh_config.5#EscapeChar)
+specifies that it disables escape processing entirely. The additional
+`EnableEscapeCommandline=no` option is omitted because it was introduced in
+[OpenSSH 9.2](https://www.openssh.org/txt/release-9.2) and is unavailable in 8.9;
+it provides no additional escape channel when `EscapeChar=none` is fixed.
+The real-client compatibility floor qualified by this amendment is OpenSSH 8.9.
+Identity-only authentication requires an unencrypted private key; batch mode
+cannot answer a passphrase prompt. Operator `known_hosts` is a prerequisite,
+including when an identity or agent is selected.
 
 The authentication tail is exactly one of:
 
@@ -2366,6 +2402,7 @@ coverage-claiming audit. The following mappings are normative:
 | `build_repository_local_layout_unsafe` | `source` | `corrupt` | `error` | Local containment, link, ownership, or file-type proof fails |
 | `build_repository_local_format_unsupported` | `source` | `unsupported` | `error` | Local config, refs, extension, promisor, or partial-clone state is unsupported |
 | `build_repository_local_object_format_unsupported` | `object-proof` | `unsupported` | `error` | Local pack/index/container form is unsupported or malformed |
+| `build_repository_ssh_credential_missing` | `transport-policy` | `blocked` | `error` | No operator identity or agent selection; primary actionable SSH diagnostic, and a specific credential-policy refusal |
 | `build_repository_credential_policy_invalid` | `transport-policy` | `blocked` | `error` | Credentials, proxy, host verification, or authentication mode is absent or outside operator policy |
 | `build_repository_audit_failed` | `audit` | `blocked` | `error` | Independent allowlist, registry, revocation, tag-lock, or audit policy fails |
 | `build_repository_protected_boundary_untrusted` | `cache` | `corrupt` | `error` | Snapshot or artifact protection/containment cannot be proved |
@@ -2420,6 +2457,48 @@ hooks, filters, attributes, alternates, replacements, grafts, promisor/lazy
 network reads, credentials, proxy, host verification, compiler program, argv,
 environment, target, output, PATH entry, signing identity, signer argv,
 timestamp/notary service, fallback, or diagnostic rendering.
+
+
+Credential-policy refusals retain typed reasons through the pipeline. Authentication
+failure uses the static label `authentication_failed`; host-key failure uses
+`host_key_verification_failed`. Unknown or truncated remote output is a
+`build_repository_source_unavailable` / `transport_failed` refusal, never a
+credential or pin diagnosis. Missing key files, missing selected host-key files,
+and an absent host-key selection use `build_repository_credential_policy_invalid`.
+Remote message text MUST NOT be used to route an already classified error.
+
+### Project command ownership diagnostics
+
+The project ownership ledger is `.agents/.curator-bin-ownership.json`, alongside
+`.agents/bin`. Only entries desired by this operation, named by the ledger, or
+eligible for marker-based legacy adoption are fingerprinted. Unrelated foreign
+files are not opened, even when unreadable. A read-only inspection runs before
+builds for real install and dry-run; commit rechecks preimages before journaling.
+
+Without a ledger, an earlier enforced launcher may be adopted only when an
+installed marker names the command, its frozen manifest declares enforcement,
+and its sidecar bytes exactly match the sidecar derived from that evidence.
+The earlier launcher bytes cannot be proved by this rule; the accepted evidence
+is the marker-derived sidecar, not the filename or a current executable hash.
+Removing an adopted command removes both launcher and sidecar. Deleting a
+current ledger does not by itself establish ownership. Missing or mismatched
+legacy enforced evidence refuses and requires the operator to move the launcher
+and sidecar aside manually. No automatic cleanup is authorized.
+
+| Code | Meaning and one remedy |
+| --- | --- |
+| `project_bin_unmanaged_conflict` | Desired path is foreign; move that foreign entry before reinstalling. |
+| `project_bin_unmanaged_preserved` | Unrelated foreign entry is preserved; leave it in place or move it manually. |
+| `project_bin_legacy_enforced` | Legacy enforced ownership cannot be proved; move the launcher and sidecar aside before reinstalling. |
+| `project_bin_ownership_invalid` | Ledger structure or ownership evidence is invalid; restore a trusted ledger before reinstalling. |
+| `manager_state_unreadable` | State-read permission/I/O refusal; restore read access before reinstalling. |
+
+A malformed ledger is preserved and refused, never treated as an absent ledger.
+Recovery restores a trusted backup or manually moves the ledger and affected
+launchers/sidecars aside before explicit reinstall; it never blindly deletes an
+unproved command. This amendment allocates no lock version, journal class, or
+schema number. Its vectors are separate from the immutable released v1 suite.
+
 
 ## 12. Agent-environments manager profile
 
