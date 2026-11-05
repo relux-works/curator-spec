@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/machine-claude-env-v1/projection.schema.json",
+  "description": "Synthetic extension contribution only, never a whole process environment or complete launcher projection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["runtime", "env"],
+  "properties": {
+    "runtime": {"enum": ["claude_code", "codex_cli", "opencode", "pi", "muse"]},
+    "env": {"$ref": "claude-env.schema.json"}
+  },
+  "if": {"properties": {"runtime": {"const": "claude_code"}}, "required": ["runtime"]},
+  "else": {"properties": {"env": {"maxProperties": 0}}}
+}
