@@ -752,7 +752,7 @@ def validate_execution_inventory(version: str, reported: Any) -> None:
         if expected != SUCCESSOR_NATIVE_CONTROL_INVENTORY_VERSION:
             raise ReleaseFailure("successor native-control inventory authority is invalid")
     if reported != expected:
-        raise ReleaseFailure("release does not honestly record its native-control inventory")
+        raise ReleaseFailure("release does not honestly record its execution policy: native-control inventory mismatch")
 
 
 def validate_version(version: str) -> None:
