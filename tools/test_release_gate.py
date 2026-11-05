@@ -159,7 +159,7 @@ class StableReleaseGateTests(unittest.TestCase):
                     "hardened_profile_claimed": False,
                     "hardened_profile_owner": "STORY-260728-327soo",
                     "native_control_inventory_version": (
-                        release_gate.NATIVE_CONTROL_INVENTORY_VERSION
+                        release_gate.LEGACY_NATIVE_CONTROL_INVENTORIES[version]
                     ),
                     "capability_evidence_record_version": (
                         release_gate.CAPABILITY_EVIDENCE_RECORD_VERSION
@@ -237,7 +237,7 @@ class StableReleaseGateTests(unittest.TestCase):
                 "hardened_profile_claimed": False,
                 "hardened_profile_owner": "STORY-260728-327soo",
                 "native_control_inventory_version": (
-                    release_gate.NATIVE_CONTROL_INVENTORY_VERSION
+                    release_gate.LEGACY_NATIVE_CONTROL_INVENTORIES[version]
                 ),
                 "capability_evidence_record_version": (
                     release_gate.CAPABILITY_EVIDENCE_RECORD_VERSION

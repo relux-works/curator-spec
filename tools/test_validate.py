@@ -1803,6 +1803,7 @@ class WorkflowRegenerationScopeTests(unittest.TestCase):
     GENERATED_FILE_INVENTORY = (
         "conformance/v1",
         "conformance/candidate.json",
+        "conformance/go-native-controls-v2",
         "conformance/skillfile-sources-v1/manifest.json",
         "conformance/draft-sources-v2/manifest.json",
         "release/1.0.0-rc.14.json",
