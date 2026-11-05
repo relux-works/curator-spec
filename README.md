@@ -530,3 +530,18 @@ do not qualify native Windows socket/job behavior; Windows CI remains required.
 `python3 tools/fixture_environment.py COMMAND [ARG ...]` applies the same
 boundary to source-history tools. `make validate` uses it for the validator
 and Go tools suite; unittest modules still establish their own boundaries.
+
+## Proposed machine Claude output limit
+
+[CIP-0029](cips/CIP-0029-machine-claude-output-limit.md) proposes a closed,
+per-account `extensions.claude_env` selection without profile or lock changes.
+Its [member schemas](schemas/machine-claude-env-v1/README.md) and
+[corpus](conformance/machine-claude-env-v1/README.md) are unreleased and allocate
+no complete carrier; proposed schema 9 depends on the pending schema-8 carrier.
+No production or runtime behavior is claimed.
+
+The Go checker uses the pinned JSON Schema dependency in `go.mod` and `go.sum`.
+Run `go run ./tools/validate-claude-env -root .` and
+`go test ./tools/validate-claude-env` from the repository root. It prints fixture
+IDs and stable verdicts; validation logs belong in ignored `.temp/`. These
+checks are also included by the existing `go test ./tools/...` CI lane.
