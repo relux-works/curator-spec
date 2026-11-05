@@ -47,7 +47,7 @@ Illustrative subtree (not a complete configuration):
 
 `claude_env` is OPTIONAL. Absence and `{}` select no override. If present, it
 MUST be an object with at most the single exact, case-sensitive name
-`BASH_MAX_OUTPUT_LENGTH`. Null, duplicate members, malformed JSON, unknown
+`BASH_MAX_OUTPUT_LENGTH`. Null, duplicate members, malformed JSON or invalid UTF-8, unknown
 names and unknown containing extension members MUST be rejected. No generic
 environment map, credential, proxy selector, permission setting or hook is added.
 
@@ -85,7 +85,7 @@ claim runtime effect without the evidence in section 5.
 | Absent member or `{}` / any admitted runtime | Existing launch behavior; no contribution from this extension |
 | Valid selection / `claude_code` | Exact string in that child's extension contribution only |
 | Same valid machine selection / another admitted runtime | Launch retains its existing behavior; extension contribution is empty |
-| An extension contribution containing the name / non-Claude child | Reject with `claude_env_runtime_ineligible`; no child starts from that invalid plan |
+| An otherwise valid extension contribution containing the name / non-Claude child | Reject with `claude_env_runtime_ineligible`; no child starts from that invalid plan |
 | Invalid explicit declaration / any target | Reject before any child, write or fallback |
 | Existing unrelated proxy/auth/notification or environment settings | Preserve their accepted validation, delivery and security semantics |
 
@@ -106,12 +106,22 @@ be passed through verbatim. The conformance codes are:
 
 | Condition | Code |
 | --- | --- |
-| Invalid object, duplicate/malformed JSON or projection shape | `claude_env_invalid` |
+| Invalid object, duplicate/malformed JSON, invalid UTF-8 or projection shape | `claude_env_invalid` |
 | Unknown declaration name | `claude_env_name_not_allowed` |
 | Wrong JSON type or noncanonical integer spelling | `claude_env_value_not_integer` |
 | Zero or negative integer | `claude_env_value_nonpositive` |
 | Integer above 65536, including overflow | `claude_env_value_over_bound` |
 | Non-Claude extension contribution contains the variable | `claude_env_runtime_ineligible` |
+
+Refusal precedence is deterministic: first reject malformed/duplicate JSON or
+an invalid projection shape/runtime; then validate declaration names and value;
+then check runtime eligibility for an otherwise valid contribution. For example,
+a non-Claude contribution with `"0"` refuses as `claude_env_value_nonpositive`;
+one with valid `"8000"` refuses as `claude_env_runtime_ineligible`. An empty
+contribution remains valid for each admitted target. For spellings matching
+`-?(0|[1-9][0-9]*)`, zero or negative values, including `"-0"`, are classified
+as `claude_env_value_nonpositive`; other forbidden spellings use
+`claude_env_value_not_integer`. This classification admits no signed spelling.
 
 A refusal publishes no usable launch plan, starts no child, performs no native
 or machine-file write, and leaves the previous accepted state intact. Invalid

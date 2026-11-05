@@ -31,3 +31,11 @@ diagnostic redaction, no-write/no-child invariants or actual output spilling.
 The future implementation must run the actual selected parser/editor/status,
 projection, child launch/resume and real-runtime witnesses in contract section
 5. No such runtime case is measured by this corpus.
+
+Corpus metadata is itself a closed input: each case requires exactly `id`,
+`claim`, `entry`, `input_json`, `want` and `schema_valid`; each plant requires
+exactly `id`, `claim`, `entry`, `valid_json`, `invalid_json` and `want`. Field
+names are case-sensitive. Duplicate (including escaped), missing, unknown,
+case-variant or wrongly typed metadata fields, malformed/invalid-UTF-8 JSON and trailing
+values refuse with fixed corpus-setup output. No last-wins decoding is allowed.
+Paired command controls prove these refusals and nearby valid corpus loading.

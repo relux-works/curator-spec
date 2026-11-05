@@ -171,7 +171,7 @@
     "id": "unicode-digit",
     "claim": "Section2 requires a JSON string with canonical ASCII integer spelling",
     "entry": "declaration",
-    "input_json": "{\"BASH_MAX_OUTPUT_LENGTH\":\"٨\"}",
+    "input_json": "{\"BASH_MAX_OUTPUT_LENGTH\":\"\u0668\"}",
     "want": "claude_env_value_not_integer",
     "schema_valid": false
   },
@@ -278,5 +278,53 @@
     "input_json": "{\"runtime\":\"claude_code\"}",
     "want": "claude_env_invalid",
     "schema_valid": false
+  },
+  {
+    "id": "lowercase-name",
+    "entry": "declaration",
+    "input_json": "{\"bash_max_output_length\":\"8000\"}",
+    "want": "claude_env_name_not_allowed",
+    "schema_valid": false,
+    "claim": "Section2 admits only the exact case-sensitive declaration name"
+  },
+  {
+    "id": "mixed-case-name",
+    "entry": "declaration",
+    "input_json": "{\"Bash_MAX_OUTPUT_LENGTH\":\"8000\"}",
+    "want": "claude_env_name_not_allowed",
+    "schema_valid": false,
+    "claim": "Section2 rejects a case variant beside otherwise valid input"
+  },
+  {
+    "id": "escaped-duplicate-name",
+    "entry": "declaration",
+    "input_json": "{\"BASH_MAX_OUTPUT_LENGTH\":\"8000\",\"\\u0042ASH_MAX_OUTPUT_LENGTH\":\"1\"}",
+    "want": "claude_env_invalid",
+    "schema_valid": true,
+    "claim": "Section2 rejects decoded duplicate names, including escaped spellings"
+  },
+  {
+    "id": "trailing-comma",
+    "entry": "declaration",
+    "input_json": "{\"BASH_MAX_OUTPUT_LENGTH\":\"8000\",}",
+    "want": "claude_env_invalid",
+    "schema_valid": false,
+    "claim": "Section2 rejects a trailing comma rather than admitting relaxed JSON"
+  },
+  {
+    "id": "non-claude-invalid-value",
+    "entry": "projection",
+    "input_json": "{\"runtime\":\"codex_cli\",\"env\":{\"BASH_MAX_OUTPUT_LENGTH\":\"0\"}}",
+    "want": "claude_env_value_nonpositive",
+    "schema_valid": false,
+    "claim": "Section4 validates a declared value before checking contribution eligibility"
+  },
+  {
+    "id": "non-claude-unknown-name",
+    "entry": "projection",
+    "input_json": "{\"runtime\":\"codex_cli\",\"env\":{\"UNLISTED\":\"SYNTHETIC_DO_NOT_ECHO\"}}",
+    "want": "claude_env_name_not_allowed",
+    "schema_valid": false,
+    "claim": "Section4 validates declaration names before checking contribution eligibility"
   }
 ]

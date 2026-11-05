@@ -193,9 +193,95 @@ func TestStrictDecoder(t *testing.T) {
 		`{"runtime":"claude_code","env":{"BASH_MAX_OUTPUT_LENGTH":"1","BASH_MAX_OUTPUT_LENGTH":"2"}}`,
 		`{"BASH_MAX_OUTPUT_LENGTH":"1"} {}`,
 		`{"BASH_MAX_OUTPUT_LENGTH":`,
+		"\ufeff{}",
+		`{"BASH_MAX_OUTPUT_LENGTH":"` + string([]byte{0xff}) + `"}`,
 	} {
 		if got := semantic("declaration", input); got != "claude_env_invalid" {
 			t.Fatalf("strict input gave wrong reason: %s", got)
+		}
+	}
+}
+
+// Proves the actual command refuses ambiguous or out-of-contract corpus
+// metadata with a fixed setup diagnostic, while the neighboring corpus runs.
+// These are checker-input controls, not production launch/parser evidence.
+func TestCorpusAdmissionControls(t *testing.T) {
+	for _, name := range []string{"cases.json", "plants.json"} {
+		original, err := os.ReadFile(filepath.Join(root(), "conformance", "machine-claude-env-v1", name))
+		if err != nil {
+			t.Fatal("corpus unavailable")
+		}
+		for _, fault := range []string{"duplicate", "escaped-duplicate", "unknown", "case-variant", "missing", "wrong-type", "trailing-value", "trailing-comma", "invalid-utf8"} {
+			t.Run(name+"/"+fault, func(t *testing.T) {
+				fixture := t.TempDir()
+				for _, path := range []string{
+					"schemas/machine-claude-env-v1/claude-env.schema.json",
+					"schemas/machine-claude-env-v1/projection.schema.json",
+					"conformance/machine-claude-env-v1/cases.json",
+					"conformance/machine-claude-env-v1/plants.json",
+				} {
+					data, err := os.ReadFile(filepath.Join(root(), path))
+					if err != nil || os.MkdirAll(filepath.Dir(filepath.Join(fixture, path)), 0700) != nil || os.WriteFile(filepath.Join(fixture, path), data, 0600) != nil {
+						t.Fatal("isolated fixture setup failed")
+					}
+				}
+				var output bytes.Buffer
+				if run(fixture, &output) != 0 || !strings.Contains(output.String(), "failures=0 runtime-cases=0") {
+					t.Fatal("nearby valid corpus rejected")
+				}
+				var changed []map[string]json.RawMessage
+				if json.Unmarshal(original, &changed) != nil {
+					t.Fatal("control copy failed")
+				}
+				const marker = "SYNTHETIC_CORPUS_MUST_NOT_APPEAR"
+				switch fault {
+				case "duplicate", "escaped-duplicate":
+					// Raw bytes retain the duplicate that a map would discard.
+				case "unknown":
+					changed[0]["unexpected"] = json.RawMessage(`"` + marker + `"`)
+				case "case-variant":
+					changed[0]["ID"] = changed[0]["id"]
+					delete(changed[0], "id")
+				case "missing":
+					delete(changed[0], "claim")
+				case "wrong-type":
+					changed[0]["claim"] = json.RawMessage(`123`)
+				}
+				bad, err := json.Marshal(changed)
+				if err != nil {
+					t.Fatal("control encoding failed")
+				}
+				switch fault {
+				case "duplicate":
+					bad = bytes.Replace(bad, []byte(`"id":`), []byte(`"id":"`+marker+`","id":`), 1)
+				case "escaped-duplicate":
+					bad = bytes.Replace(bad, []byte(`"id":`), []byte(`"\u0069d":"`+marker+`","id":`), 1)
+				case "trailing-value":
+					bad = append(bad, []byte(` []`)...)
+				case "trailing-comma":
+					bad = append(bad[:len(bad)-1], ',', ']')
+				case "invalid-utf8":
+					bad = bytes.Replace(bad, []byte(`"claim":"`), append([]byte(`"claim":"`), 0xff), 1)
+				}
+				path := filepath.Join(fixture, "conformance", "machine-claude-env-v1", name)
+				if os.WriteFile(path, bad, 0600) != nil {
+					t.Fatal("plant write failed")
+				}
+				output.Reset()
+				if code := run(fixture, &output); code != 2 || output.String() != "FAIL corpus-setup\n" {
+					t.Fatal("plant did not reach the intended fixed corpus refusal")
+				}
+				if strings.Contains(output.String(), marker) {
+					t.Fatal("corpus diagnostic reflected input")
+				}
+				if os.WriteFile(path, original, 0600) != nil {
+					t.Fatal("control restore failed")
+				}
+				output.Reset()
+				if run(fixture, &output) != 0 {
+					t.Fatal("restored valid corpus rejected")
+				}
+			})
 		}
 	}
 }

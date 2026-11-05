@@ -119,6 +119,6 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0025](CIP-0025-execution-isolation-contract.md) | Execution Isolation Contract | Review |
 | [CIP-0026](CIP-0026-foreign-code-execution.md) | Foreign-code execution | Review |
 | [CIP-0027](CIP-0027-provisioning-origin.md) | Persist managed-home provisioning origin | Accepted |
-| [CIP-0029](CIP-0029-machine-claude-output-limit.md) | Machine-scoped Claude output limit | Draft |
+| [CIP-0029](CIP-0029-machine-claude-output-limit.md) | Machine-scoped Claude output limit | Review |
 
 CIP-0028 remains allocated separately in [PR #205](https://github.com/relux-works/curator-spec/pull/205); this proposal does not reuse it.

@@ -13,6 +13,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/santhosh-tekuri/jsonschema/v5"
 )
@@ -94,6 +95,9 @@ func objectValue(d *json.Decoder) (any, error) {
 }
 
 func decodeStrict(raw string) (any, error) {
+	if !utf8.ValidString(raw) {
+		return nil, errors.New("invalid JSON")
+	}
 	d := json.NewDecoder(strings.NewReader(raw))
 	d.UseNumber()
 	v, err := objectValue(d)
@@ -104,6 +108,46 @@ func decodeStrict(raw string) (any, error) {
 		return nil, errors.New("trailing input")
 	}
 	return v, nil
+}
+
+// Corpus metadata is a closed contract too: refuse duplicate or unknown fields
+// before decoding the typed cases, without exposing supplied field names.
+func decodeCorpus(raw []byte, target any) error {
+	invalid := func() error { return errors.New("invalid corpus") }
+	var fields []string
+	switch target.(type) {
+	case *[]vector:
+		fields = []string{"id", "claim", "entry", "input_json", "want", "schema_valid"}
+	case *[]plant:
+		fields = []string{"id", "claim", "entry", "valid_json", "invalid_json", "want"}
+	default:
+		return invalid()
+	}
+	v, err := decodeStrict(string(raw))
+	if err != nil {
+		return invalid()
+	}
+	items, ok := v.([]any)
+	if !ok || len(items) == 0 {
+		return invalid()
+	}
+	for _, item := range items {
+		object, ok := item.(map[string]any)
+		if !ok || len(object) != len(fields) {
+			return invalid()
+		}
+		for _, field := range fields {
+			if _, present := object[field]; !present {
+				return invalid()
+			}
+		}
+	}
+	d := json.NewDecoder(bytes.NewReader(raw))
+	d.DisallowUnknownFields()
+	if err := d.Decode(target); err != nil {
+		return invalid()
+	}
+	return nil
 }
 
 func declaration(v any) string {
@@ -234,12 +278,12 @@ func check(w io.Writer, compiled map[string]*jsonschema.Schema, cases []vector) 
 func load(root string) ([]vector, error) {
 	var cases []vector
 	b, err := os.ReadFile(filepath.Join(root, "conformance", "machine-claude-env-v1", "cases.json"))
-	if err != nil || json.Unmarshal(b, &cases) != nil || len(cases) == 0 {
+	if err != nil || decodeCorpus(b, &cases) != nil || len(cases) == 0 {
 		return nil, errors.New("case corpus unavailable or invalid")
 	}
 	var plants []plant
 	b, err = os.ReadFile(filepath.Join(root, "conformance", "machine-claude-env-v1", "plants.json"))
-	if err != nil || json.Unmarshal(b, &plants) != nil || len(plants) != 6 {
+	if err != nil || decodeCorpus(b, &plants) != nil || len(plants) != 6 {
 		return nil, errors.New("six control plants required")
 	}
 	for _, p := range plants {
