@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/profile-command-roots-v1/fragment-members.schema.json",
+  "title": "Non-emittable B-a member model",
+  "$comment": "No fragment token or whole-object allocation. Joint v5 emission remains closed pending carrier-owner integration.",
+  "type": "object",
+  "properties": {
+    "command_root": {
+      "type": "object",
+      "properties": {
+        "lock_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "plan_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "generation": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "platform": {
+          "enum": [
+            "darwin-arm64",
+            "darwin-amd64",
+            "linux-arm64",
+            "linux-amd64",
+            "windows-arm64",
+            "windows-amd64"
+          ]
+        },
+        "receipt_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "marker_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "inventory_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "lock_sha256",
+        "plan_sha256",
+        "generation",
+        "platform",
+        "receipt_sha256",
+        "marker_sha256",
+        "inventory_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "path_prepend": {
+      "$ref": "#/$defs/absolutePath"
+    }
+  },
+  "required": [
+    "command_root",
+    "path_prepend"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "absolutePath": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 4096,
+      "pattern": "^(?:/(?!/)[^:;\\\\\\x00-\\x1f\\x7f]*|[A-Za-z]:/[^:;\\\\\\x00-\\x1f\\x7f]+)$(?![\\s\\S])",
+      "not": {
+        "pattern": "(?:^|/)(?:\\.|\\.\\.)(?:/|$)"
+      }
+    }
+  }
+}

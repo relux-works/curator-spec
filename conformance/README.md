@@ -375,3 +375,9 @@ schema cases and semantic writer/recovery/lifecycle cases for CIP-0016's
 The separate [Go native controls v2 corpus](go-native-controls-v2/README.md)
 adds Linux execution control records without modifying frozen rc.14 vectors.
 Its closed schema, generator and independent semantic validator run in CI.
+
+The separate [Slice B-a command-root corpus](profile-command-roots-v1/README.md)
+checks exact refusal reasons, compatibility, retained references, launcher PATH,
+snapshot/process retention, repair/journal models and hook transitions. Its
+required case IDs and control plants are independent of the generator. It is
+unreleased specification evidence, with no product runtime qualification.

@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/profile-command-roots-v1/persistent-reference.schema.json",
+  "type": "object",
+  "properties": {
+    "record": {
+      "const": "profile-command-reference/1"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "profile": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,62}[A-Za-z0-9_-])?$(?![\\s\\S])",
+      "maxLength": 64
+    },
+    "binding": {
+      "type": "object",
+      "properties": {
+        "lock_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "plan_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "generation": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "platform": {
+          "enum": [
+            "darwin-arm64",
+            "darwin-amd64",
+            "linux-arm64",
+            "linux-amd64",
+            "windows-arm64",
+            "windows-amd64"
+          ]
+        },
+        "receipt_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "marker_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "inventory_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "lock_sha256",
+        "plan_sha256",
+        "generation",
+        "platform",
+        "receipt_sha256",
+        "marker_sha256",
+        "inventory_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "command": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,62}$(?![\\s\\S])"
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "settings_resource": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "gateway": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "gateway_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "distribution_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "phase": {
+      "enum": [
+        "prepared",
+        "active",
+        "released"
+      ]
+    }
+  },
+  "required": [
+    "record",
+    "id",
+    "profile",
+    "binding",
+    "command",
+    "owner",
+    "settings_resource",
+    "gateway",
+    "gateway_sha256",
+    "distribution_sha256",
+    "revision",
+    "phase"
+  ],
+  "additionalProperties": false
+}

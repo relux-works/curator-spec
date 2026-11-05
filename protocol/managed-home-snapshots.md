@@ -192,8 +192,12 @@ Required discovery/support content MUST be in the inventory. HOME is preserved.
 
 No absolute source paths, credentials or machine-local PATH prefixes may
 appear in the descriptor. `path_prepend` is not admitted by this version:
-a source fragment requiring it MUST refuse until a separately covered tool
-resource contract exists. The descriptor does not export tool binaries,
+a source fragment requiring it MUST refuse unless the separately covered
+[Slice B-a tool-resource contract](profile-command-roots.md#publication-restore-and-snapshots)
+is admitted with its exact-descriptor, required-understanding local retention
+sidecar. That contract covers local root retention and native resume only; it
+does not insert paths or tool binaries into this portable descriptor, nor
+qualify portable executable restore or hosted transport. The descriptor does not export tool binaries,
 profile Codex settings or credential backend policy; their separate owning
 contracts must cover them at plan composition.
 

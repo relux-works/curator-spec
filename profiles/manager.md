@@ -3323,3 +3323,8 @@ claiming to erase loaded context. Refusals MUST use the
 [environments §10.6 registry](../protocol/environments.md#106-project-context-diagnostics),
 preserve prior home/approval state, emit no success fragment and never downgrade
 to legacy discovery or native execution.
+
+The unreleased [lock-bound profile command root companion](../protocol/profile-command-roots.md)
+specifies native interactive Slice B-a publication, executable identity,
+retained hook references and GC. Its independent root-emission and hook-activation
+gates remain closed; existing Slice A and hosted gates also remain.

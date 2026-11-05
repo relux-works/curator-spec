@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/profile-command-roots-v1/inventory.schema.json",
+  "type": "object",
+  "properties": {
+    "record": {
+      "const": "profile-command-inventory/1"
+    },
+    "root": {
+      "$ref": "../profile-command-path-v1/root-receipt.schema.json#/properties/root"
+    },
+    "commands": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{0,62}$(?![\\s\\S])"
+          },
+          "chain": {
+            "allOf": [
+              {
+                "$ref": "../profile-command-path-v1/root-receipt.schema.json#/properties/commands/items/properties/chain"
+              },
+              {
+                "maxItems": 8
+              }
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "chain"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "record",
+    "root",
+    "commands"
+  ],
+  "additionalProperties": false
+}

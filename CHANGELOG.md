@@ -7,6 +7,13 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Specify unreleased lock-bound profile command roots (Slice B-a), generation
+  recovery, retained-command gateway ABI, bounded verification and independent
+  required-case conformance models. Stable gateway binding awaits the marked
+  owner decision; root emission and hook activation have independent closed gates.
+  Root paths preserve generation identity within the path budget; provisional
+  hook bindings are scoped per settings resource. Runtime adoption remains gated.
+
 - Require Linux Go build execution controls at macOS parity through the separate
   `go-native-controls-v2` corpus. Preserve frozen rc.14 data and existing macOS/Windows
   evidence identities; Linux conformance claims remain separately unqualified.

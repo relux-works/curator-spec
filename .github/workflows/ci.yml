@@ -46,6 +46,9 @@ jobs:
       - name: Check Skillfile-source independence from rc.10
         run: python tools/fixture_environment.py python tools/verify_skillfile_sources_independence.py
 
+      - name: Check command-root corpus regeneration
+        run: python tools/fixture_environment.py python tools/generate_profile_command_roots.py --check
+
       - name: Test stable release gate
         run: python -B -m unittest discover -s tools -p 'test_*.py'
 

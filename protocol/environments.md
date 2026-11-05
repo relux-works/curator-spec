@@ -3912,7 +3912,7 @@ revision token: v1–v3 below remain closed, path-only, and MUST reject that
 policy member or literal. Publication must coordinate the pending fragment
 changes before emission; no downgrade or silent policy loss is permitted.
 
-Four fragment revisions exist, `launch-env-fragment-v1`,
+The four predecessor fragment revisions are `launch-env-fragment-v1`,
 `launch-env-fragment-v2`, `launch-env-fragment-v3`, and
 `launch-env-fragment-v4`, named by the REQUIRED `fragment` member,
 which is the fragment's revision token. `launch-env-fragment-v2` is
@@ -5117,3 +5117,22 @@ profile lock and shared dependency before Curator writes, including recovery
 and rollback. `environment_home_leased` names every prepared, active and unknown
 holder. Read-only resolve/status stay read-only; failed resolve emits no fragment.
 This unreleased amendment adds no fields to existing released environment carriers.
+
+Slice B-a native interactive lock-bound roots are specified by the additive
+[profile command roots contract](profile-command-roots.md); its v5 carrier
+does not change historical fragment meanings or qualify runtime delivery.
+
+The unreleased Slice B-a [diagnostic registry and adoption gates](profile-command-roots.md#diagnostics-conformance-and-adoption)
+add root/refusal codes without changing predecessor mappings. Once root-emission
+gates open, v5 is mandatory for active native B-a roots even for older launchers;
+no B-a capability advert gates emission. The coordinated carrier's separate
+pre-emission support rule for nonempty Codex policy still applies.
+Legacy-manager admission must be fenced before activation. Root reconstruction
+is excluded from `env resolve --repair`, including its unconditional use by
+curator-run. The sole whole-object v5 schema remains the coordinated rc7 carrier;
+B-a has only a non-emittable member model, preserving `codex_settings` ownership.
+Joint requiredness and Windows paths must be accepted before emission. Protected
+root-state locations, admission policy, journal and session integration remain
+closed root-emission gates. Gateway naming, settings adapters, gateway aggregate
+and separate Windows dispatcher pins are additional hook-activation gates; native
+root delivery does not wait for that open naming decision.

@@ -12248,6 +12248,14 @@ def validate_build_ssh_project_bin() -> None:
         raise ValidationFailure(f"draft SSH/project ownership: {exc}") from exc
 
 
+def validate_profile_command_roots():
+    from profile_command_roots import validate
+    try:
+        validate()
+    except (ValueError, KeyError) as exc:
+        raise ValidationFailure(str(exc)) from exc
+
+
 def main(*, release_history_only: bool = False) -> int:
     checks = [
         validate_released_record_immutability,
@@ -12299,6 +12307,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_umbrella_provider_vectors,
         validate_security_posture_vectors,
         validate_takeover_closed_set_text,
+        validate_profile_command_roots,
         validate_local_links,
     ]
     if release_history_only:

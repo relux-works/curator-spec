@@ -563,3 +563,11 @@ checks are also included by the existing `go test ./tools/...` CI lane.
 ## Package-directory overlay range proposal
 
 [CIP-0030](cips/CIP-0030-package-prefixed-overlay-ranges.md) proposes directory-prefixed context version tags and exact tag/commit lock evidence. The [contract](protocol/package-overlay-tags-proposal.md) and [synthetic metadata corpus](conformance/package-overlay-tags-proposal/README.md) record the conditional context-lock version 6 decision without emitting a complete carrier or claiming runtime support. Run the bounded Go checker with `go run ./tools/check-overlay-range-proposal -root .` and its controls with `go test ./tools/check-overlay-range-proposal -count=1`; output is a case/mismatch count on stdout, with zero runtime cases. Full Git, signature, installation and no-write controls remain implementation requirements.
+
+## Lock-bound profile command roots proposal
+
+The unreleased [Slice B-a command-root contract](protocol/profile-command-roots.md)
+has a separate corpus. Generate/check it with
+`python tools/generate_profile_command_roots.py --check`; validate it with
+`python tools/profile_command_roots.py`. Outputs live in
+`conformance/profile-command-roots-v1`; no product runtime is qualified.

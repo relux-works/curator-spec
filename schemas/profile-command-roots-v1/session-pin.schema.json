@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/profile-command-roots-v1/session-pin.schema.json",
+  "type": "object",
+  "properties": {
+    "record": {
+      "const": "profile-command-session-pin/1"
+    },
+    "lease_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "request_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "profile": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,62}[A-Za-z0-9_-])?$(?![\\s\\S])",
+      "maxLength": 64
+    },
+    "binding": {
+      "type": "object",
+      "properties": {
+        "lock_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "plan_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "generation": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "platform": {
+          "enum": [
+            "darwin-arm64",
+            "darwin-amd64",
+            "linux-arm64",
+            "linux-amd64",
+            "windows-arm64",
+            "windows-amd64"
+          ]
+        },
+        "receipt_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "marker_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        },
+        "inventory_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "lock_sha256",
+        "plan_sha256",
+        "generation",
+        "platform",
+        "receipt_sha256",
+        "marker_sha256",
+        "inventory_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "supervisor_instance": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "boot_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "process_started_at": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "process_domain": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "phase": {
+      "enum": [
+        "prepared",
+        "active",
+        "unknown",
+        "released",
+        "broken"
+      ]
+    }
+  },
+  "required": [
+    "record",
+    "lease_id",
+    "request_id",
+    "profile",
+    "binding",
+    "supervisor_instance",
+    "boot_id",
+    "process_started_at",
+    "process_domain",
+    "revision",
+    "phase"
+  ],
+  "additionalProperties": false
+}
