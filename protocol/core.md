@@ -478,7 +478,8 @@ Its authority is the `native_control_inventory` section of
 | `filesystem-write-confinement` | unavailable: `no-unprivileged-filesystem-domain` | host-conditional: Landlock write rights | unavailable: `no-unprivileged-filesystem-domain` |
 | `network-isolation-domain` | unavailable: `no-unprivileged-network-domain` | host-conditional: network namespace without interfaces | unavailable: `no-unprivileged-network-domain` |
 
-This inventory is independent of `rc5-native-control-inventory-v2`. The first
+This script-worker inventory is independent of the Go native-control inventory,
+including both `rc5-native-control-inventory-v1` and its v2 successor. The first
 five rows carry the same macOS and Windows verdicts because the underlying host
 facts do not depend on what the child is, but they are copied, not referenced:
 each inventory is versioned on its own, and a revision motivated by the build

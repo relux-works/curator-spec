@@ -300,7 +300,9 @@ validity is not qualification: every emitted tuple requires immutable native
 evidence against the exact suite pin. Rc.6 defines no new claim schema and
 emits no claim; claim v3 remains historical rc.5 wire evidence. macOS and
 Windows qualification remains downstream, and Linux is excluded until
-`TASK-260728-1skseh` passes. Claims do not replace release CI evidence or
+`TASK-260728-1skseh` passes. This exclusion concerns historical Linux claims, not
+Linux execution: the successor Go inventory requires Linux execution controls,
+while the frozen claim-v3 qualification vector still excludes Linux claims. Claims do not replace release CI evidence or
 artifact attestations.
 
 Claim schema 4 was introduced by rc.7 and remains byte-frozen for rc.8 with
@@ -367,3 +369,9 @@ frozen inputs; runtime qualification remains separate.
 [Home-lease v1](home-leases-v1/README.md) publishes paired closed-holder/CLI
 schema cases and semantic writer/recovery/lifecycle cases for CIP-0016's
 2026-10-27 confirmed conditions. These checks are specification evidence only.
+
+## Go native-control successor
+
+The separate [Go native controls v2 corpus](go-native-controls-v2/README.md)
+adds Linux execution control records without modifying frozen rc.14 vectors.
+Its closed schema, generator and independent semantic validator run in CI.

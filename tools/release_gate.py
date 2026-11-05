@@ -35,6 +35,7 @@ LEGACY_NATIVE_CONTROL_INVENTORIES = {
     "1.0.0-rc.5": "rc5-native-control-inventory-v1",
     "1.0.0-rc.6": "rc5-native-control-inventory-v1",
 }
+FROZEN_ASSURANCE_RELEASES = frozenset(f"1.0.0-rc.{n}" for n in range(7, 15))
 SUCCESSOR_NATIVE_CONTROL_INVENTORY_VERSION = "rc5-native-control-inventory-v2"
 CAPABILITY_EVIDENCE_RECORD_VERSION = "capability-evidence-v1"
 # The one manager-neutral repository-root build descriptor. Its retired
@@ -746,6 +747,8 @@ def git(*arguments: str) -> str:
 def validate_execution_inventory(version: str, reported: Any) -> None:
     """Keep historical release identities, and check a successor against its corpus."""
     expected = LEGACY_NATIVE_CONTROL_INVENTORIES.get(version)
+    if version in FROZEN_ASSURANCE_RELEASES:
+        raise ReleaseFailure("historical assurance release has no native-control inventory field")
     if expected is None:
         vector = load_json(ROOT / "conformance/go-native-controls-v2/go-host-execution-policy.json")
         expected = vector.get("native_control_inventory", {}).get("version")
@@ -784,7 +787,7 @@ def validate_version(version: str) -> None:
             or downstream.get("required_manifest_sha256") != expected
         ):
             raise ReleaseFailure(f"{metadata_path.relative_to(ROOT)} does not pin the exact suite manifest")
-        if version == PROTOCOL_VERSION:
+        if version in FROZEN_ASSURANCE_RELEASES or version == PROTOCOL_VERSION:
             assurance = metadata.get("assurance", {})
             if (
                 not isinstance(assurance, dict)
@@ -800,7 +803,9 @@ def validate_version(version: str) -> None:
                 raise ReleaseFailure(
                     f"{metadata_path.relative_to(ROOT)} does not honestly record its assurance policy"
                 )
-        else:
+        # Published assurance releases retain their original metadata. Every
+        # successor, including the current candidate, must bind inventory v2.
+        if version not in FROZEN_ASSURANCE_RELEASES:
             execution = metadata.get("execution_policy", {})
             if isinstance(execution, dict):
                 validate_execution_inventory(version, execution.get("native_control_inventory_version"))

@@ -7,6 +7,10 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Require Linux Go build execution controls at macOS parity through the separate
+  `go-native-controls-v2` corpus. Preserve frozen rc.14 data and existing macOS/Windows
+  evidence identities; Linux conformance claims remain separately unqualified.
+
 - Confirm CIP-0016 home lease option **refuse**, one profile per Werkstatt and
   one managed home per unattended lane (owner decision 2026-10-27). Publish
   home-lease v1 storage/lifecycle, complete writer/recovery guard, closed CLI

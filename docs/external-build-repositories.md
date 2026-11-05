@@ -151,7 +151,9 @@ platform evidence. Rc.6 defines no new claim schema and emits no claim. A
 future driver/platform tuple requires a versioned claim schema plus immutable
 native evidence against the pinned suite. macOS and Windows external-driver
 qualification remains pending downstream native runs, and Linux is explicitly
-excluded until `TASK-260728-1skseh` passes.
+excluded until `TASK-260728-1skseh` passes. This exclusion concerns historical Linux claims, not
+Linux execution: the successor Go inventory requires Linux execution controls,
+while the frozen claim-v3 qualification vector still excludes Linux claims.
 
 ## Threat review for a new build driver
 

@@ -938,7 +938,8 @@ report a control outside the inventory:
 | `filesystem-write-confinement` | unavailable: `no-unprivileged-filesystem-domain` | host-conditional: Landlock write rights | unavailable: `no-unprivileged-filesystem-domain` |
 | `network-isolation-domain` | unavailable: `no-unprivileged-network-domain` | host-conditional: network namespace without interfaces | unavailable: `no-unprivileged-network-domain` |
 
-This inventory is independent of `rc5-native-control-inventory-v2`. Its first
+This script-worker inventory is independent of the Go native-control inventory,
+including both `rc5-native-control-inventory-v1` and its v2 successor. Its first
 five rows carry the same macOS and Windows verdicts because the underlying host
 facts do not depend on what the child is, but the two inventories are versioned
 separately and a revision of one MUST NOT re-scope the other.

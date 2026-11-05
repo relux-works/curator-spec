@@ -15,3 +15,21 @@ paired corpus/version and lost-Linux controls. This is unreleased specification
 data, not a release, installed artifact invalidation or runtime qualification.
 The historical policy protocol-version metadata is retained; the inventory's
 v2 identity and this namespace identify the amendment.
+
+## Literal frozen-corpus audit and claim scope
+
+The frozen policy vector binds v1 in `native_control_inventory.version`,
+`capability_evidence_record.inventory_version` and `mandatory_controls[16].requirement`.
+The last field constrains the five controls, whose names are unchanged; it is
+not an inventory-version wire field. The frozen unknown-record case rejects
+`capability-evidence-v2`, a separate namespace. None forbids reporting v2.
+
+`conformance-claim-v3-qualification.json` excludes Linux under its rc.14
+protocol metadata and `no-unevidenced-platform` rule; the invalid Linux claim
+schema case preserves that exclusion. Linux execution controls are required by
+the successor inventory, while a Linux claim remains excluded by the frozen
+qualification vector. Build-driver target/path cases do not change that scope.
+
+The existing commit pin identifies these bytes; this amendment adds no digest
+manifest and changes no normative vector or schema. Generator regeneration and
+independent validator tests remain the evidence for this namespace.
