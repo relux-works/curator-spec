@@ -33,7 +33,7 @@ jobs:
           repository: relux-works/curator
           # Linux inventory v2 candidate, including exact suite case-count pins.
           # Producer PR: relux-works/curator#219; no landing implied by this pin.
-          ref: 437ab6ab14943d73eb4be413dcefc0a87dc0df31
+          ref: e27480a245c96095b70c6bda2d9dc2e52bb9fcaa
           path: implementations/go
           submodules: true
           # The Go suite does not use the board state. Excluding its deep paths
