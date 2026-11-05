@@ -1,0 +1,1158 @@
+[
+  {
+    "id": "accept-lower",
+    "claim": "Exact namespace and stable range admit 0.1.17",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v0.1.17",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.1.17"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "accept",
+      "tag": "contexts/sample/v0.1.17",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.1.17",
+      "warning": false
+    }
+  },
+  {
+    "id": "accept-minor",
+    "claim": "Exact namespace and stable range admit 0.2.0",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "accept",
+      "tag": "contexts/sample/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0",
+      "warning": false
+    }
+  },
+  {
+    "id": "accept-next-major-ceiling",
+    "claim": "Exact namespace and stable range admit 0.9.9",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v0.9.9",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.9.9"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "accept",
+      "tag": "contexts/sample/v0.9.9",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.9.9",
+      "warning": false
+    }
+  },
+  {
+    "id": "root-plain",
+    "claim": "Exact namespace and stable range admit 0.2.0",
+    "phase": "resolve",
+    "directory": "",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "accept",
+      "tag": "v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0",
+      "warning": false
+    }
+  },
+  {
+    "id": "nested-directory",
+    "claim": "Exact namespace and stable range admit 0.2.0",
+    "phase": "resolve",
+    "directory": "contexts/nested/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/nested/sample/v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "accept",
+      "tag": "contexts/nested/sample/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0",
+      "warning": false
+    }
+  },
+  {
+    "id": "unicode-directory",
+    "claim": "Exact namespace and stable range admit 0.2.0",
+    "phase": "resolve",
+    "directory": "contexts/café",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/café/v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "accept",
+      "tag": "contexts/café/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0",
+      "warning": false
+    }
+  },
+  {
+    "id": "case-exact-directory",
+    "claim": "Exact namespace and stable range admit 0.2.0",
+    "phase": "resolve",
+    "directory": "Contexts/Sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "Contexts/Sample/v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "accept",
+      "tag": "Contexts/Sample/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0",
+      "warning": false
+    }
+  },
+  {
+    "id": "sha256-commit",
+    "claim": "Exact namespace and stable range admit 0.2.0",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v0.2.0",
+        "commit": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "accept",
+      "tag": "contexts/sample/v0.2.0",
+      "commit": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "version": "0.2.0",
+      "warning": false
+    }
+  },
+  {
+    "id": "wildcard-stable",
+    "claim": "Exact namespace and stable range admit 2.4.1",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": "*",
+    "tags": [
+      {
+        "name": "contexts/sample/v2.4.1",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "2.4.1"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "accept",
+      "tag": "contexts/sample/v2.4.1",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "2.4.1",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-below-lower",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v0.1.16",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-at-major",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v1.0.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-above-major",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v1.0.1",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-sibling",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/other/v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-nested-child",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/child/v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-partial-prefix",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample-extra/v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-plain-fallback",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-case-lookalike",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "Contexts/sample/v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-basename-alias",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "sample/v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-encoded-prefix",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts%2fsample/v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-prerelease",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v0.2.0-rc.1",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-build-metadata",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v0.2.0+build",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-leading-zero",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v0.02.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-missing-v",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-uppercase-v",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/V0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-trailing-space",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v0.2.0 ",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "reject-root-prefixed",
+    "claim": "Ineligible tag cannot supply this namespace/range",
+    "phase": "resolve",
+    "directory": "",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_range_conflict",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "highest-package-only",
+    "claim": "Higher plain/sibling/nested releases do not override selected package",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "v0.9.9",
+        "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "manifest_version": "0.9.9"
+      },
+      {
+        "name": "contexts/other/v0.9.9",
+        "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "manifest_version": "0.9.9"
+      },
+      {
+        "name": "contexts/sample/nested/v0.9.9",
+        "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "manifest_version": "0.9.9"
+      },
+      {
+        "name": "contexts/sample/v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.2.0"
+      },
+      {
+        "name": "contexts/sample/v0.1.17",
+        "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "manifest_version": "0.1.17"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "accept",
+      "tag": "contexts/sample/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0",
+      "warning": false
+    }
+  },
+  {
+    "id": "manifest-mismatch",
+    "claim": "Selected package manifest must equal selected tag version",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.1.17"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_version_mismatch",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "no-lower-retry",
+    "claim": "Broken highest release refuses despite a valid lower release",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v0.2.0",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.1.17"
+      },
+      {
+        "name": "contexts/sample/v0.1.17",
+        "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifest_version": "0.1.17"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "context_version_mismatch",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "invalid-object",
+    "claim": "A selected non-object identifier is not an admitted commit",
+    "phase": "resolve",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v0.2.0",
+        "commit": "not-a-commit",
+        "manifest_version": "0.2.0"
+      }
+    ],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "object_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "directory-dot",
+    "claim": "Invalid declaration or unsafe range namespace refuses without normalization",
+    "phase": "resolve",
+    "directory": "contexts/./sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "profile_source_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "directory-parent",
+    "claim": "Invalid declaration or unsafe range namespace refuses without normalization",
+    "phase": "resolve",
+    "directory": "contexts/../sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "profile_source_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "directory-absolute",
+    "claim": "Invalid declaration or unsafe range namespace refuses without normalization",
+    "phase": "resolve",
+    "directory": "/contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "profile_source_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "directory-double-slash",
+    "claim": "Invalid declaration or unsafe range namespace refuses without normalization",
+    "phase": "resolve",
+    "directory": "contexts//sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "profile_source_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "directory-backslash",
+    "claim": "Invalid declaration or unsafe range namespace refuses without normalization",
+    "phase": "resolve",
+    "directory": "contexts\\sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "profile_source_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "directory-reserved",
+    "claim": "Invalid declaration or unsafe range namespace refuses without normalization",
+    "phase": "resolve",
+    "directory": "contexts/CON",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "profile_source_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "directory-trailing-dot",
+    "claim": "Invalid declaration or unsafe range namespace refuses without normalization",
+    "phase": "resolve",
+    "directory": "contexts/sample.",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "profile_source_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "directory-unsafe-ref-space",
+    "claim": "Invalid declaration or unsafe range namespace refuses without normalization",
+    "phase": "resolve",
+    "directory": "contexts/my sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "profile_source_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "directory-unsafe-ref-dot",
+    "claim": "Invalid declaration or unsafe range namespace refuses without normalization",
+    "phase": "resolve",
+    "directory": "contexts/.sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "profile_source_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "directory-unsafe-ref-reflog",
+    "claim": "Invalid declaration or unsafe range namespace refuses without normalization",
+    "phase": "resolve",
+    "directory": "contexts/sample@{x",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "profile_source_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "directory-unsafe-ref-lock",
+    "claim": "Invalid declaration or unsafe range namespace refuses without normalization",
+    "phase": "resolve",
+    "directory": "contexts/sample.lock",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": null,
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "profile_source_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "replay-newer-tag",
+    "claim": "New published tags do not advance an existing exact lock",
+    "phase": "replay",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [
+      {
+        "name": "contexts/sample/v0.9.9",
+        "commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "manifest_version": "0.9.9"
+      }
+    ],
+    "lock": {
+      "directory": "contexts/sample",
+      "tag": "contexts/sample/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0"
+    },
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "accept",
+      "tag": "contexts/sample/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0",
+      "warning": false
+    }
+  },
+  {
+    "id": "replay-no-observation",
+    "claim": "Cached exact replay does not invent a tag lookup",
+    "phase": "replay",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": {
+      "directory": "contexts/sample",
+      "tag": "contexts/sample/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0"
+    },
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "accept",
+      "tag": "contexts/sample/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0",
+      "warning": false
+    }
+  },
+  {
+    "id": "replay-same-tag",
+    "claim": "Observed matching ref retains the exact pin",
+    "phase": "replay",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": {
+      "directory": "contexts/sample",
+      "tag": "contexts/sample/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0"
+    },
+    "observed_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "strict": true,
+    "want": {
+      "reason": "accept",
+      "tag": "contexts/sample/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0",
+      "warning": false
+    }
+  },
+  {
+    "id": "moved-tag-strict",
+    "claim": "Observed ref movement refuses under strict policy",
+    "phase": "replay",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": {
+      "directory": "contexts/sample",
+      "tag": "contexts/sample/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0"
+    },
+    "observed_commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "strict": true,
+    "want": {
+      "reason": "strict_tag_refused",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "moved-tag-advisory",
+    "claim": "Advisory warning retains original commit and version",
+    "phase": "replay",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": {
+      "directory": "contexts/sample",
+      "tag": "contexts/sample/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0"
+    },
+    "observed_commit": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "strict": false,
+    "want": {
+      "reason": "accept",
+      "tag": "contexts/sample/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0",
+      "warning": true
+    }
+  },
+  {
+    "id": "lock-tag-mismatch",
+    "claim": "Lock projection must bind exact directory/tag/version/commit",
+    "phase": "replay",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": {
+      "directory": "contexts/sample",
+      "tag": "contexts/other/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0"
+    },
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "lock_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "lock-version-mismatch",
+    "claim": "Lock projection must bind exact directory/tag/version/commit",
+    "phase": "replay",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": {
+      "directory": "contexts/sample",
+      "tag": "contexts/sample/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.1.17"
+    },
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "lock_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "lock-commit-mismatch",
+    "claim": "Lock projection must bind exact directory/tag/version/commit",
+    "phase": "replay",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": {
+      "directory": "contexts/sample",
+      "tag": "contexts/sample/v0.2.0",
+      "commit": "BAD",
+      "version": "0.2.0"
+    },
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "lock_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  },
+  {
+    "id": "lock-directory-mismatch",
+    "claim": "Lock projection must bind exact directory/tag/version/commit",
+    "phase": "replay",
+    "directory": "contexts/sample",
+    "range": ">=0.1.17 <1.0.0",
+    "tags": [],
+    "lock": {
+      "directory": "contexts/other",
+      "tag": "contexts/sample/v0.2.0",
+      "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "version": "0.2.0"
+    },
+    "observed_commit": "",
+    "strict": true,
+    "want": {
+      "reason": "lock_invalid",
+      "tag": "",
+      "commit": "",
+      "version": "",
+      "warning": false
+    }
+  }
+]
