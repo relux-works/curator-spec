@@ -311,13 +311,12 @@ class ManifestDependencyDirectoryTests(unittest.TestCase):
 
 
 class AcceptedSourceCorpusIsolationTests(unittest.TestCase):
-    """The rc.14 accepted skillfile-sources-v1 corpus stays byte-identical.
-
-    The manifest schema-9 amendment lives in draft-sources-v2. The only
-    accepted-manifest input that moves with the live tree is the draft-owned
-    source contract, pinned live by the draft manifest instead.
+    """Claim: accepted inputs, including their source document, keep rc.14
+    bytes. Draft amendments have a separate, independently checked live pin.
+    Named drift refusals preserve planted bytes and accept restored controls.
     """
 
+    ACCEPTED_TAG = "v1.0.0-rc.14"
     ACCEPTED_ROOTS = (
         "conformance/skillfile-sources-v1",
         "schemas/skillfile-sources-v1",
@@ -326,7 +325,7 @@ class AcceptedSourceCorpusIsolationTests(unittest.TestCase):
     def tagged_tree_files(self, root: str) -> list[str]:
         listed = subprocess.run(
             ["git", "ls-tree", "-r", "--name-only", "-z",
-             validate.SKILLFILE_SOURCES_ACCEPTED_TAG, "--", root],
+             self.ACCEPTED_TAG, "--", root],
             cwd=validate.ROOT,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -339,7 +338,7 @@ class AcceptedSourceCorpusIsolationTests(unittest.TestCase):
 
     def tagged_bytes(self, relative: str) -> bytes:
         shown = subprocess.run(
-            ["git", "show", f"{validate.SKILLFILE_SOURCES_ACCEPTED_TAG}:{relative}"],
+            ["git", "show", f"{self.ACCEPTED_TAG}:{relative}"],
             cwd=validate.ROOT,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -367,67 +366,70 @@ class AcceptedSourceCorpusIsolationTests(unittest.TestCase):
                     compared += 1
         self.assertGreater(compared, 100, "accepted corpus comparison is vacuous")
         self.assertEqual(
+            (validate.ROOT / "protocol/skillfile-sources.md").read_bytes(),
+            self.tagged_bytes("protocol/skillfile-sources.md"),
+            "accepted source document drifted from the published tag",
+        )
+        self.assertEqual(
             (validate.ROOT / "conformance" / "candidate.json").read_bytes(),
             self.tagged_bytes("conformance/candidate.json"),
             "candidate pin drifted from the accepted tag",
         )
+
+    def assert_manifest_rejects_drift(self, path: Path, check, diagnostic: str) -> None:
+        check()
+        original = path.read_bytes()
+        plant = original + b"\n"
+        try:
+            path.write_bytes(plant)
+            with self.assertRaisesRegex(validate.ValidationFailure, re.escape(diagnostic)):
+                check()
+            self.assertEqual(path.read_bytes(), plant)
+        finally:
+            path.write_bytes(original)
+        check()
 
     def test_accepted_case_drift_is_rejected_through_manifest(self) -> None:
         path = (
             validate.ROOT / "conformance" / "skillfile-sources-v1"
             / "schema-cases" / "build-receipt-v3" / "valid.json"
         )
-        original = path.read_bytes()
-        try:
-            path.write_bytes(original + b"\n")
-            with self.assertRaisesRegex(
-                validate.ValidationFailure,
-                "skillfile-sources-v1 manifest digest mismatch",
-            ):
-                validate.validate_skillfile_sources_manifest()
-        finally:
-            path.write_bytes(original)
+        self.assert_manifest_rejects_drift(
+            path, validate.validate_skillfile_sources_manifest,
+            "skillfile-sources-v1 manifest digest mismatch: "
+            "conformance/skillfile-sources-v1/schema-cases/build-receipt-v3/valid.json",
+        )
 
     def test_accepted_schema_drift_is_rejected_through_manifest(self) -> None:
         path = validate.SOURCES_SCHEMAS / "source-types-v1.schema.json"
-        original = path.read_bytes()
-        try:
-            path.write_bytes(original + b"\n")
-            with self.assertRaisesRegex(
-                validate.ValidationFailure,
-                "skillfile-sources-v1 manifest digest mismatch",
-            ):
-                validate.validate_skillfile_sources_manifest()
-        finally:
-            path.write_bytes(original)
+        self.assert_manifest_rejects_drift(
+            path, validate.validate_skillfile_sources_manifest,
+            "skillfile-sources-v1 manifest digest mismatch: "
+            "schemas/skillfile-sources-v1/source-types-v1.schema.json",
+        )
 
-    def test_tag_exemption_covers_only_the_draft_owned_document(self) -> None:
+    def test_all_accepted_documents_are_pinned_without_exemption(self) -> None:
         for relative in (
+            "protocol/skillfile-sources.md",
             "protocol/repository-transport.md",
             "docs/skillfile-sources.md",
         ):
             with self.subTest(path=relative):
                 path = validate.ROOT / relative
-                original = path.read_bytes()
-                try:
-                    path.write_bytes(original + b"\n")
-                    with self.assertRaisesRegex(
-                        validate.ValidationFailure,
-                        "skillfile-sources-v1 manifest digest mismatch",
-                    ):
-                        validate.validate_skillfile_sources_manifest()
-                finally:
-                    path.write_bytes(original)
+                self.assert_manifest_rejects_drift(
+                    path, validate.validate_skillfile_sources_manifest,
+                    "skillfile-sources-v1 manifest digest mismatch: " + relative,
+                )
 
-    def test_missing_accepted_tag_is_rejected_loudly(self) -> None:
-        with patch.object(
-            validate, "SKILLFILE_SOURCES_ACCEPTED_TAG", "v9.9.9-missing"
-        ):
-            with self.assertRaisesRegex(
-                validate.ValidationFailure,
-                r"cannot read accepted protocol/skillfile-sources\.md at v9\.9\.9-missing",
-            ):
-                validate.validate_skillfile_sources_manifest()
+    def test_live_hash_validation_does_not_require_git_tags(self) -> None:
+        # Claim: live-byte hashing works without tag lookup and still refuses
+        # document drift; published-tag comparison is separate test evidence.
+        with patch.object(subprocess, "run", side_effect=AssertionError("unexpected Git lookup")):
+            self.assert_manifest_rejects_drift(
+                validate.ROOT / "protocol/skillfile-sources.md",
+                validate.validate_skillfile_sources_manifest,
+                "skillfile-sources-v1 manifest digest mismatch: protocol/skillfile-sources.md",
+            )
 
     def test_draft_additions_are_admitted_by_both_manifests(self) -> None:
         self.assertTrue(validate.DRAFT_SOURCES_SUITE.is_dir())
@@ -437,17 +439,11 @@ class AcceptedSourceCorpusIsolationTests(unittest.TestCase):
         validate.validate_manifest()
 
     def test_draft_manifest_pins_the_live_source_contract(self) -> None:
-        path = validate.ROOT / "protocol" / "skillfile-sources.md"
-        original = path.read_bytes()
-        try:
-            path.write_bytes(original + b"\n")
-            with self.assertRaisesRegex(
-                validate.ValidationFailure,
-                r"draft-sources-v2 manifest digest mismatch: protocol/skillfile-sources\.md",
-            ):
-                validate.validate_draft_sources_manifest()
-        finally:
-            path.write_bytes(original)
+        self.assert_manifest_rejects_drift(
+            validate.ROOT / "protocol/skillfile-sources-draft.md",
+            validate.validate_draft_sources_manifest,
+            "draft-sources-v2 manifest digest mismatch: protocol/skillfile-sources-draft.md",
+        )
 
 
 class WireSemanticValidationTests(unittest.TestCase):
@@ -1760,18 +1756,29 @@ class SkillfileSourcesSuiteManifestTests(unittest.TestCase):
         return status, stderr.getvalue()
 
     def test_source_contract_bytes_are_pinned_through_main(self) -> None:
-        # The draft amendment owns the live source contract: the frozen
-        # accepted check reads that input from its tag, and the draft
-        # manifest pins the live bytes. Unreviewed drift still fails main.
-        path = validate.ROOT / "protocol" / "skillfile-sources.md"
-        original = path.read_bytes()
-        try:
-            path.write_bytes(original + b"\nSuite-pin mutation.\n")
-            status, stderr = self.run_validation()
-            self.assertEqual(status, 1)
-            self.assertIn("draft-sources-v2 manifest digest mismatch", stderr)
-        finally:
-            path.write_bytes(original)
+        # Claim: main hashes accepted and draft source documents separately;
+        # either drift refuses by its own pin, preserving the planted bytes.
+        for filename, suite in (
+            ("skillfile-sources.md", "skillfile-sources-v1"),
+            ("skillfile-sources-draft.md", "draft-sources-v2"),
+        ):
+            with self.subTest(path=filename):
+                self.assertEqual(self.run_validation(), (0, ""))
+                path = validate.ROOT / "protocol" / filename
+                original = path.read_bytes()
+                plant = original + b"\nSuite-pin mutation.\n"
+                try:
+                    path.write_bytes(plant)
+                    status, stderr = self.run_validation()
+                    self.assertEqual(status, 1)
+                    self.assertEqual(
+                        stderr,
+                        f"validation failed: {suite} manifest digest mismatch: protocol/{filename}\n",
+                    )
+                    self.assertEqual(path.read_bytes(), plant)
+                finally:
+                    path.write_bytes(original)
+                self.assertEqual(self.run_validation(), (0, ""))
 
     def test_manifest_cannot_omit_a_case_even_with_a_recomputed_candidate_pin(self) -> None:
         manifest_path = validate.ROOT / "conformance" / "skillfile-sources-v1" / "manifest.json"
