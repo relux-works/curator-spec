@@ -17,8 +17,8 @@ def check_gate_text(text):
 
 def joint_candidate():
     """Preserve sole rc7 semantics while proposing a conditional native B-a pair."""
-    schema = deepcopy(json.loads((ROOT/'schemas/rc7-carriers-v1/launch-env-fragment-v5.schema.json').read_text()))
-    leaf = json.loads((SCHEMAS/'fragment-members.schema.json').read_text())
+    schema = deepcopy(json.loads((ROOT/'schemas/rc7-carriers-v1/launch-env-fragment-v5.schema.json').read_text(encoding='utf-8')))
+    leaf = json.loads((SCHEMAS/'fragment-members.schema.json').read_text(encoding='utf-8'))
     schema['properties']['command_root'] = deepcopy(leaf['properties']['command_root'])
     schema['properties']['command_root']['properties']['platform'] = {'enum':['linux-arm64','linux-amd64']}
     schema.setdefault('dependentRequired', {}).update(
@@ -117,14 +117,14 @@ def identity_environment(identity, directory, inherited):
 
 
 def validate():
-    case = json.loads((CORPUS/'native-admission-proposal.json').read_text())
+    case = json.loads((CORPUS/'native-admission-proposal.json').read_text(encoding='utf-8'))
     policy = case['policy']
     observed = dict(home='/home/agent/.curator',uid=1000,policy_revision=1,
                     selected=deepcopy(case['selected']), **{k:deepcopy(policy[k]) for k in ['manager','launcher']})
     check_candidate(case,observed)
     case['variant'] = 'pins'
-    case['session'] = json.loads((CORPUS/'native-pins-alternative.json').read_text())
+    case['session'] = json.loads((CORPUS/'native-pins-alternative.json').read_text(encoding='utf-8'))
     observed['request'] = deepcopy(case['session']['request'])
     check_candidate(case,observed)
-    check_gate_text((ROOT/'protocol/profile-command-root-admission.md').read_text())
+    check_gate_text((ROOT/'protocol/profile-command-root-admission.md').read_text(encoding='utf-8'))
     print('Native admission model: operator prune and optional pins; seven packet rows checked CLOSED; no runtime evidence')

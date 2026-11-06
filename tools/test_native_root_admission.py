@@ -4,6 +4,7 @@ import ast
 import json
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 from jsonschema import Draft202012Validator
 from referencing import Resource
 
@@ -14,9 +15,9 @@ import generate_profile_command_roots as fixtures
 
 class NativeRootAdmission(unittest.TestCase):
     def setUp(self):
-        self.base=json.loads((model.CORPUS/'native-admission-proposal.json').read_text())
+        self.base=json.loads((model.CORPUS/'native-admission-proposal.json').read_text(encoding='utf-8'))
         self.case=deepcopy(self.base);self.case['variant']='pins'
-        self.case['session']=json.loads((model.CORPUS/'native-pins-alternative.json').read_text())
+        self.case['session']=json.loads((model.CORPUS/'native-pins-alternative.json').read_text(encoding='utf-8'))
         p=self.base['policy']
         self.observed=dict(home='/home/agent/.curator',uid=1000,policy_revision=1,
                            selected=deepcopy(self.base['selected']),
@@ -24,7 +25,7 @@ class NativeRootAdmission(unittest.TestCase):
                            **{k:deepcopy(p[k]) for k in ['manager','launcher']})
 
     def mutant(self, module, function, reason=None, expression=None, replacement='True'):
-        source=Path(module.__file__).read_text()
+        source=Path(module.__file__).read_text(encoding='utf-8')
         node=next(n for n in ast.parse(source).body if isinstance(n,ast.FunctionDef) and n.name==function)
         if expression is None:
             guard=next(n for n in ast.walk(node) if isinstance(n,ast.Call) and isinstance(n.func,ast.Name)
@@ -135,7 +136,7 @@ class NativeRootAdmission(unittest.TestCase):
         # Neither/paired B-a members pass; half pairs and non-Linux B-a refuse.
         # Production schema still rejects the candidate extension.
         candidate=proposal.joint_candidate()
-        core=json.loads((model.ROOT/'conformance/rc7-carriers-v1/cases/fragment-file.json').read_text())
+        core=json.loads((model.ROOT/'conformance/rc7-carriers-v1/cases/fragment-file.json').read_text(encoding='utf-8'))
         pair=deepcopy(core);pair.update({k:fixtures.fixture()['fragment'][k] for k in ['command_root','path_prepend']})
         self.assertTrue(candidate.is_valid(core));self.assertTrue(candidate.is_valid(pair))
         for key in ['command_root','path_prepend','codex_settings']:
@@ -143,7 +144,7 @@ class NativeRootAdmission(unittest.TestCase):
         bad=deepcopy(pair);bad['credential_store']['config_overrides']={'cli_auth_credentials_store':'file'}
         self.assertFalse(candidate.is_valid(bad),'legacy Codex ownership')
         self.assertFalse(candidate.is_valid(dict(pair,extra=True)))
-        wire=Draft202012Validator(json.loads((model.ROOT/'schemas/rc7-carriers-v1/launch-env-fragment-v5.schema.json').read_text()),registry=model.validators()['native-admission-proposal.schema.json']._registry)
+        wire=Draft202012Validator(json.loads((model.ROOT/'schemas/rc7-carriers-v1/launch-env-fragment-v5.schema.json').read_text(encoding='utf-8')),registry=model.validators()['native-admission-proposal.schema.json']._registry)
         self.assertFalse(wire.is_valid(pair))
         bare=deepcopy(pair);bare.pop('command_root');schema=deepcopy(candidate.schema);schema.pop('dependentRequired')
         mutant=candidate.evolve(schema=schema)
@@ -308,8 +309,20 @@ class NativeRootAdmission(unittest.TestCase):
     def test_actual_gate_rows_and_plants(self):
         # Each actual CLOSED packet row is checked; changing it to OPEN or deleting
         # it fails by that row's name. This is text consistency, not acceptance.
-        text=(model.ROOT/'protocol/profile-command-root-admission.md').read_text()
+        text=(model.ROOT/'protocol/profile-command-root-admission.md').read_text(encoding='utf-8')
         proposal.check_gate_text(text)
+        # A cp1252 default must still decode the actual UTF-8 packet. The
+        # explicit wrong-codec plant fails by decoding, not by a model verdict.
+        read_text=Path.read_text
+        packet=model.ROOT/'protocol/profile-command-root-admission.md'
+        def cp1252_default(path, encoding=None, **kwargs):
+            return read_text(path, encoding=encoding or ('cp1252' if path == packet else 'utf-8'), **kwargs)
+        with patch.object(Path, 'read_text', cp1252_default):
+            proposal.validate()
+            wrong_codec=self.mutant(proposal,'validate',expression="(ROOT/'protocol/profile-command-root-admission.md').read_text(encoding='utf-8')",replacement="(ROOT/'protocol/profile-command-root-admission.md').read_text(encoding='cp1252')")
+            with self.assertRaises(UnicodeDecodeError) as failure:wrong_codec['validate']()
+            self.assertEqual(failure.exception.reason,'character maps to <undefined>')
+        print('encoding regression plant detected: packet-utf8-read (intended wrong-codec decode failure)')
         mutant=self.mutant(proposal,'check_gate_text',expression="len(rows) == 1 and rows[0].startswith('| '+gate+' — **CLOSED** |')")
         mutant['check_gate_text'](text)
         for gate in proposal.GATES:
