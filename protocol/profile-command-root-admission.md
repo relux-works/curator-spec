@@ -238,7 +238,8 @@ Other `A2A_*` variables are not silently described as covered by this two-key ch
 For every **new native session**, remove inherited `A2A_SESSION_ID` and
 `CODEX_THREAD_ID` before provider start, with or without identity flags; never invent
 replacement session IDs. The new runtime supplies its own metadata. This follows
-a2a's [session rule](https://github.com/relux-works/a2a-swarm/blob/b88918c7/docs/cli.md).
+a2a's documented session rule (`docs/cli.md`, source revision
+`b88918c7a5378686cabec54ab642d591ff400b42`).
 Without identity flags the identity/config pair passes through without a new claim.
 For Codex `inherit=core`, propose typed per-launch
 `shell_environment_policy.set.A2A_AGENT` and `.A2A_CONFIG_DIR`, merged through the
