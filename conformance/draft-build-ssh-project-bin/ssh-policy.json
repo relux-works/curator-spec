@@ -52,6 +52,12 @@
       "code": "build_repository_credential_policy_invalid",
       "reason": "host_key_verification_failed",
       "snapshot": false
+    },
+    {
+      "name": "missing-executable",
+      "condition": "no-ssh",
+      "code": "build_repository_credential_policy_invalid",
+      "snapshot": false
     }
   ]
 }

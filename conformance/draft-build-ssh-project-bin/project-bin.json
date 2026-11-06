@@ -43,5 +43,31 @@
       "mutated": false,
       "pair_removed": false
     }
+  ],
+  "diagnostic_cases": [
+    {
+      "condition": "desired-foreign",
+      "code": "project_bin_unmanaged_conflict",
+      "install_allowed": false,
+      "foreign_preserved": true
+    },
+    {
+      "condition": "unrelated-foreign",
+      "code": "project_bin_unmanaged_preserved",
+      "install_allowed": true,
+      "foreign_preserved": true
+    },
+    {
+      "condition": "malformed-ledger",
+      "code": "project_bin_ownership_invalid",
+      "install_allowed": false,
+      "foreign_preserved": true
+    },
+    {
+      "condition": "unreadable-relevant",
+      "code": "manager_state_unreadable",
+      "install_allowed": false,
+      "foreign_preserved": true
+    }
   ]
 }

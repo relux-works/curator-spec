@@ -15,7 +15,7 @@ def validate_ssh(v):
     require(v["tuple"] == ["argc", "argv[0]", "host", "remote-command"], "complete four-value tuple required")
     require(v["mandatory_option"] == "EscapeChar=none" and v["unsupported_option"] == "EnableEscapeCommandline=no", "OpenSSH 8.9 escape isolation required")
     require(v["unix_policy"] == "read-only-descriptor" and v["windows_policy"] == "current-user-only-protected-record", "protected policy transport required")
-    require({c["condition"] for c in v["cases"]} == {"valid", "no-credentials", "no-host-keys", "auth", "host-key"}, "SSH positive and refusal controls required")
+    require({c["condition"] for c in v["cases"]} == {"valid", "no-credentials", "no-host-keys", "no-ssh", "auth", "host-key"}, "SSH positive and refusal controls required")
     for c in v["cases"]:
         expected = None if c["condition"] == "valid" else ("build_repository_ssh_credential_missing" if c["condition"] == "no-credentials" else "build_repository_credential_policy_invalid")
         require(c["code"] == expected and c["snapshot"] == (expected is None), "credential refusal and snapshot mapping")
@@ -31,6 +31,11 @@ def validate_ownership(v):
         adopt = c["marker"] and c["enforced"] and c["sidecar_matches"]
         require(c["code"] == (None if adopt else "project_bin_legacy_enforced"), "legacy enforcement evidence refusal required")
         require(c["mutated"] == adopt and c["pair_removed"] == (adopt and not c["desired"]), "legacy refusal preserves state and removal deletes pair")
+
+    expected = {"desired-foreign": ("project_bin_unmanaged_conflict", False), "unrelated-foreign": ("project_bin_unmanaged_preserved", True), "malformed-ledger": ("project_bin_ownership_invalid", False), "unreadable-relevant": ("manager_state_unreadable", False)}
+    require({c["condition"] for c in v["diagnostic_cases"]} == set(expected), "project diagnostic coverage required")
+    for c in v["diagnostic_cases"]:
+        require((c["code"], c["install_allowed"]) == expected[c["condition"]] and c["foreign_preserved"] is True, "project diagnostic refusal and preservation mapping")
 
 def validate():
     validate_ssh(json.loads((ROOT / "ssh-policy.json").read_text()))

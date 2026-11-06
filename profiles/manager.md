@@ -1637,16 +1637,23 @@ unknown release family is unsupported even when it appears newer.
 
 Executable selection MUST ignore inherited `PATH`. For both `ssh` and `git`,
 an operator-configured absolute path takes precedence; an invalid configured
-path MUST refuse rather than fall through. Without a configured path the fixed
-Unix search order is `/usr/bin`, `/bin`, `/usr/local/bin`, `/opt/homebrew/bin`.
-Windows searches `C:\Windows\System32\OpenSSH\ssh.exe` for SSH, and
-`C:\Program Files\Git\cmd\git.exe` then `C:\Program Files\Git\bin\git.exe`
-for Git. Resolve links before admission. Any resolved executable inside a
+path MUST refuse rather than fall through. Without a configured path, use an
+implementation-defined, fixed ordered list of absolute system executable paths;
+the implementation documents its list. Resolve links before admission. Any
+resolved executable inside a
 project bin, manager bin, or managed command root MUST refuse, including a
 path explicitly configured by the operator. Pin executable bytes with SHA-256
 and revalidate before use. A missing SSH executable has one deterministic
 `no ssh executable found` diagnostic; selection order MUST NOT depend on map
-iteration or ambient environment selectors.
+iteration or ambient `GIT_*`, `SSH_*`, or `PATH` selectors. The explicit
+operator-configured executable path remains permitted.
+
+A managed command root is a directory in which the manager publishes or retains
+command launchers or executable artifacts for project, global, runtime, or
+environment/profile scopes, including their private generation directories.
+It includes configured manager user-bin roots, regardless of their basename.
+Selecting an executable from such a root is forbidden even if the manager did
+not create the particular entry; this rule does not grant ownership of it.
 
 The permitted child graph is limited to:
 
@@ -1713,7 +1720,9 @@ outlive the fetch that needed it. For SSH the environment adds only:
 ```text
 GIT_SSH=<absolute-manager-binary-wrapper>
 GIT_SSH_VARIANT=ssh
-<manager-private-policy-fd-number>
+CURATOR_BUILD_SSH_WRAPPER_STATE=<manager-private-policy-fd-number-on-Unix>
+# Windows record-path alternative, under the protected directory defined in 11.3:
+CURATOR_BUILD_SSH_WRAPPER_STATE=<absolute-operation-private-policy-record-on-Windows>
 ```
 
 `GIT_PROTOCOL` is absent. Source credentials, SSH state, and broker values
@@ -1837,7 +1846,8 @@ non-empty and neither `.` nor `..`. Quotes, whitespace, shell metacharacters,
 escapes, and non-ASCII bytes are rejected before Git.
 
 The manager passes a protected read-only policy record through an already-open
-descriptor to the binary wrapper. It contains exactly the expected
+descriptor to the binary wrapper. It contains exactly the absolute manager-binary
+wrapper path, expected
 `[user@]host`, raw path, remote command
 `git-upload-pack '<raw-path>'`, operator-trusted SSH executable, empty SSH
 configuration, empty global known-hosts file, selected operator known-hosts
@@ -2403,7 +2413,7 @@ coverage-claiming audit. The following mappings are normative:
 | `build_repository_local_format_unsupported` | `source` | `unsupported` | `error` | Local config, refs, extension, promisor, or partial-clone state is unsupported |
 | `build_repository_local_object_format_unsupported` | `object-proof` | `unsupported` | `error` | Local pack/index/container form is unsupported or malformed |
 | `build_repository_ssh_credential_missing` | `transport-policy` | `blocked` | `error` | No operator identity or agent selection; primary actionable SSH diagnostic, and a specific credential-policy refusal |
-| `build_repository_credential_policy_invalid` | `transport-policy` | `blocked` | `error` | Credentials, proxy, host verification, or authentication mode is absent or outside operator policy |
+| `build_repository_credential_policy_invalid` | `transport-policy` | `blocked` | `error` | Credentials, proxy, host verification, or authentication mode is absent or outside operator policy; no admitted SSH executable reports `no ssh executable found` before fetch |
 | `build_repository_audit_failed` | `audit` | `blocked` | `error` | Independent allowlist, registry, revocation, tag-lock, or audit policy fails |
 | `build_repository_protected_boundary_untrusted` | `cache` | `corrupt` | `error` | Snapshot or artifact protection/containment cannot be proved |
 | `build_repository_receipt_invalid` | `cache` | `corrupt` | `error` | Receipt version, canonical bytes, input, key, or hash is invalid |
@@ -2466,6 +2476,14 @@ failure uses the static label `authentication_failed`; host-key failure uses
 credential or pin diagnosis. Missing key files, missing selected host-key files,
 and an absent host-key selection use `build_repository_credential_policy_invalid`.
 Remote message text MUST NOT be used to route an already classified error.
+
+An absent admitted SSH executable reports
+`build_repository_credential_policy_invalid: no ssh executable found` before
+any fetch. Invalid configured executable paths preserve their static selection
+reason instead of being relabelled as absence. `locked_ref_unavailable` is the
+static reason on `build_repository_source_unavailable` when the server reports
+the exact requested locked object or ref missing; it does not mean a generic
+connection failure and does not authorize another acquisition form.
 
 ### Project command ownership diagnostics
 
