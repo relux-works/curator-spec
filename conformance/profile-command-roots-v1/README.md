@@ -38,7 +38,9 @@ composition is a path model only; the current normative rc7 reader refuses it.
 Session cases bind manager-issued pins to profile/root authority; launcher cases
 jointly bind an active pin. Hook revision CAS is modelled; the persistent aggregate,
 inventory location and separate Windows dispatcher pin remain closed admission gates.
-Repair pinned-restore/stale-session cases assert preserved-old outcomes only.
+Repair rows have distinct no-edge/live/unknown inputs, exact refusal reasons and
+old-edge/preimage preservation. Unknown repair requires quiescence or fenced,
+revision-matched audited break; no persistent store is qualified.
 
 Root paths omit the redundant lock component while binding it in metadata. The
 corpus includes an 18-byte manager home with a 23-byte profile, reachable 64-byte
@@ -48,12 +50,21 @@ can independently select the same or different generations. The naming decision
 and proof/registration contracts remain closed hook gates. Tests inject naming
 drift and remove rollback and active-release guards to witness their effects.
 Session and hook projections are partial: they do not qualify pin issuance,
-incarnation/revision revalidation or process supervision.
+OS incarnation observation, protected revision revalidation or process supervision.
 
 Command-path admission uses `home + profile + export <= 135/134/129` on
 Linux/macOS/Windows; receipt paths also bound `home + profile <= 101/100/99`.
 Shape assertions independently hold the 18-byte home, 23/64-byte profiles and
 second distinct settings resource. HookModel fixes `a2a` and omits the second
 command dimension in its resource key; it cannot qualify hook admission.
-Session/launcher binding and distinct repair-edge projections must close under
-the session-integration/native-runtime gates before implementation admission.
+A9/A10 are closed in the bounded model; protected integration, native observer
+and durable restore witnesses still gate implementation admission.
+
+The [native owner packet](../../protocol/profile-command-root-admission.md) keeps
+all six gates CLOSED. `native-admission-proposal.json` and its candidate schema
+model a private policy, exact final paths and acquire/replay records without
+allocating production names. Run
+`python -B -m unittest discover -s tools -p test_native_root_admission.py` for
+named candidate, pin-authority and repair-edge vectors and noncrashing plants.
+Each plant preserves a passing nearby control. Journal staging/backup paths and
+native runtime outcomes require owner decisions and actual implementation evidence.

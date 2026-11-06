@@ -35,7 +35,9 @@ REQUIRED = {
     'launchers': set('''launcher-valid launcher-windows launcher-ambient-first
         launcher-root-absent launcher-path-value launcher-binding launcher-prior
         launcher-lease launcher-schema launcher-session-schema launcher-session-generation
-        launcher-session-profile launcher-session-id launcher-session-phase'''.split()),
+        launcher-session-profile launcher-session-id launcher-session-phase launcher-next-revision
+        launcher-session-revision launcher-session-supervisor launcher-session-boot launcher-session-domain
+        launcher-session-start launcher-session-request launcher-authority-unknown'''.split()),
     'retention': set('''retention-valid retention-missing retention-descriptor
         retention-reference retention-binding retention-cap retention-unknown'''.split()),
     'lifecycle': set('''retained-hook session-live snapshot-live rollback-live journal-live
@@ -47,9 +49,10 @@ REQUIRED = {
         hook-metadata-tamper hook-command-missing'''.split()),
     'sessions': set('''session-active session-unknown session-release session-dead-pid
         session-descendant session-break session-break-unfenced session-schema
-        session-incarnation session-request session-profile session-generation session-discriminator'''.split()),
+        session-incarnation session-request session-profile session-generation session-discriminator
+        session-lease session-supervisor session-revision session-domain session-start session-next-revision session-phase'''.split()),
     'transactions': set('''repair-tampered-launch repair-valid-launch repair-explicit
-        repair-pinned-restore repair-stale-session repair-inputs-differ repair-generation-reused repair-input-missing update-refused
+        repair-pinned-restore repair-stale-session repair-stale-reconciled repair-stale-broken repair-stale-unfenced repair-stale-unaudited repair-stale-revision repair-stale-descendant repair-retargeted repair-live-dropped repair-inputs-differ repair-generation-reused repair-input-missing update-refused
         journal-preparing journal-prepared journal-committing journal-cleanup
         journal-rolling-back journal-rollback-cleanup journal-unknown'''.split()),
 }
@@ -259,6 +262,7 @@ def launcher_check(case, checks):
     require(r['lease_id'] == case['lease_authority'] == pin['lease_id']
             and pin['profile'] == s['trusted']['profile'] and pin['binding'] == b
             and pin['phase'] == 'active', 'launcher-lease')
+    pin_authority(pin, case['pin_authority'], 'launcher-session')
     expected = case['protected_tools']+[s['fragment']['path_prepend']]+case['base_path']
     require(r['effective_path'] == expected, 'launcher-order')
     sep = ';' if b['platform'].startswith('windows-') else ':'
@@ -277,6 +281,15 @@ def retention_check(case, checks):
             and all(i in case['available_references'] for i in r['references']), 'retention-missing')
 
 
+def pin_authority(pin, authority, prefix):
+    # Authority is a fresh protected observation, independent of the received pin.
+    for field, reason in [('lease_id', 'lease'), ('request_id', 'request'),
+                          ('revision', 'revision'), ('supervisor_instance', 'supervisor'),
+                          ('boot_id', 'boot'), ('process_domain', 'domain'),
+                          ('process_started_at', 'start'), ('phase', 'phase')]:
+        require(pin[field] == authority[field], prefix+'-'+reason)
+
+
 def session_check(case, checks):
     r = case['record']
     require(checks['session-pin.schema.json'].is_valid(r), 'session-schema')
@@ -285,6 +298,7 @@ def session_check(case, checks):
     require(r['request_id'] == case['request_authority'], 'session-request')
     require((r['boot_id'], r['process_domain'], r['process_started_at'])
             == tuple(case['incarnation_authority']), 'session-incarnation')
+    pin_authority(r, case['pin_authority'], 'session')
     if case['operation'] == 'release':
         require(case['observer_confirmed'] and case['descendants_quiescent'], 'session-unconfirmed')
     if case['operation'] == 'break':
@@ -351,8 +365,19 @@ def transaction(state):
                    'committing': 'complete-new', 'cleanup': 'complete-new',
                    'rolling_back': 'all-preimages-old', 'rollback_cleanup': 'all-preimages-old'
                    }.get(state['phase'], 'refuse-preserve-journal')
+    refusal = 'repair-inputs-or-generation' if op == 'explicit-repair' and outcome == 'refuse-unchanged' else ''
+    if op == 'explicit-repair':
+        edge = state['retained_edge']
+        if edge['kind'] == 'unknown-session' and not (
+                state['observer_confirmed'] and state['descendants_quiescent']
+                or state['operator'] and state['fenced'] and state['audit_durable']
+                and bool(state['reason']) and state['if_revision'] == edge['revision']):
+            outcome = 'refuse-unchanged'; refusal = 'repair-session-unconfirmed'
+        if state['staged_edge'] != edge:
+            outcome = 'refuse-unchanged'; refusal = 'repair-edge-changed'
     publish = outcome in {'complete-new', 'fresh-generation-preserve-old'}
-    return dict(outcome=outcome, live=staged if publish else old,
+    return dict(refusal=refusal, outcome=outcome, live=staged if publish else old,
+                retained_edge=deepcopy(state['retained_edge']),
                 preserved_old=old, pending_journal=outcome == 'refuse-preserve-journal',
                 evidence_generations=([state['old_generation'], state['new_generation']]
                                       if publish or outcome == 'refuse-preserve-journal'
@@ -489,6 +514,8 @@ def validate():
     try:
         data = json.loads((CORPUS/'cases.json').read_text())
         validate_data(data)
+        from native_root_admission import validate as validate_native_candidate
+        validate_native_candidate()
     except (Refusal, ValidationError, ValueError, KeyError, TypeError, OSError) as exc:
         raise ValueError('command-root validation failed: '+str(exc)) from exc
     print('Slice B-a: '+', '.join(f'{len(data[k])} {k}' for k in REQUIRED)

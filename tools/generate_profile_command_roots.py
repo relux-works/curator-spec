@@ -95,7 +95,7 @@ def launcher(s):
     tools=['C:/tools'] if windows else ['/tools']; base=['C:/base'] if windows else ['/usr/bin']
     effective=tools+[s['fragment']['path_prepend']]+base
     r=dict(record='launcher-path-state/2',prior_state=prior,command_root=deepcopy(b),lease_id=digest('lease'),effective_path=effective,path_value=(';' if windows else ':').join(effective))
-    return dict(root=s,record=r,session_pin=session_pin(s),lease_authority=digest('lease'),protected_tools=tools,base_path=base)
+    return dict(root=s,record=r,session_pin=session_pin(s),lease_authority=digest('lease'),pin_authority=deepcopy(session_pin(s)),protected_tools=tools,base_path=base)
 
 
 def retention(s):
@@ -200,9 +200,10 @@ def output():
     add('hooks','hook-metadata-tamper',hook,'marker-pin',lambda c:c['root']['observed'].update(marker=c['root']['observed']['marker']+' '))
     add('hooks','hook-command-missing',hook,'hook-command',lambda c:c.update(command='missing'))
     pin=session_pin(base)
-    session=dict(record=pin,profile_authority=base['trusted']['profile'],binding_authority=deepcopy(base['trusted']['binding']),request_authority=pin['request_id'],incarnation_authority=['boot-one','domain-one','start-one'],operation='observe',observer_confirmed=True,descendants_quiescent=True,operator=False,fenced=False,revision=1,reason='',audit_durable=False)
+    session=dict(record=pin,pin_authority=deepcopy(pin),profile_authority=base['trusted']['profile'],binding_authority=deepcopy(base['trusted']['binding']),request_authority=pin['request_id'],incarnation_authority=['boot-one','domain-one','start-one'],operation='observe',observer_confirmed=True,descendants_quiescent=True,operator=False,fenced=False,revision=1,reason='',audit_durable=False)
     add('sessions','session-active',session)
-    add('sessions','session-unknown',session,change=lambda c:c['record'].update(phase='unknown'))
+    add('sessions','session-unknown',session,change=lambda c:(c['record'].update(phase='unknown'),c['pin_authority'].update(phase='unknown')))
+    add('sessions','session-phase',session,'session-phase',lambda c:c['record'].update(phase='released'))
     add('sessions','session-release',session,change=lambda c:c.update(operation='release'))
     add('sessions','session-dead-pid',session,'session-unconfirmed',lambda c:c.update(operation='release',observer_confirmed=False))
     add('sessions','session-descendant',session,'session-unconfirmed',lambda c:c.update(operation='release',descendants_quiescent=False))
@@ -214,6 +215,14 @@ def output():
     add('sessions','session-generation',session,'session-binding',lambda c:c['record']['binding'].update(generation='f'*64))
     add('sessions','session-discriminator',session,'session-schema',lambda c:c['record'].pop('record'))
     add('sessions','session-request',session,'session-request',lambda c:c['record'].update(request_id='f'*64))
+    for field, label in [('lease_id','lease'), ('supervisor_instance','supervisor'),
+                         ('revision','revision'), ('process_domain','domain'),
+                         ('process_started_at','start')]:
+        value = 2 if field == 'revision' else digest('other')
+        add('sessions','session-'+label,session,('session-incarnation' if label in ['domain','start'] else 'session-'+label),
+            lambda c,f=field,v=value:c['record'].update({f:v}))
+    add('sessions','session-next-revision',session,change=lambda c:(
+        c['record'].update(revision=2),c['pin_authority'].update(revision=2)))
     for section,seed in [('references',reference(base)),('launchers',launcher(base)),('retention',retention(base))]:
         prefix={'references':'reference','launchers':'launcher','retention':'retention'}[section]
         add(section,prefix+'-valid',seed)
@@ -253,6 +262,15 @@ def output():
         ('prior','launcher-prior',lambda c:c['record']['prior_state']['binding'].update(profile='foreign')),
         ('lease','launcher-lease',lambda c:c['record'].update(lease_id='f'*64))]:
         add('launchers','launcher-'+label,launch,reason,change)
+    for field, label in [('revision','revision'), ('supervisor_instance','supervisor'),
+                         ('boot_id','boot'), ('process_domain','domain'),
+                         ('process_started_at','start'), ('request_id','request')]:
+        value = 2 if field == 'revision' else digest('other')
+        add('launchers','launcher-session-'+label,launch,'launcher-session-'+label,
+            lambda c,f=field,v=value:c['session_pin'].update({f:v}))
+    add('launchers','launcher-next-revision',launch,change=lambda c:(
+        c['session_pin'].update(revision=2),c['pin_authority'].update(revision=2)))
+    add('launchers','launcher-authority-unknown',launch,'launcher-session-phase',lambda c:c['pin_authority'].update(phase='unknown'))
     ret=retention(base)
     for label,reason,change in [
         ('missing','retention-missing',lambda c:c.update(available_roots=[])),
@@ -279,7 +297,15 @@ def output():
     for label,op,valid,inputs,expected in [
         ('repair-tampered-launch','resolve-repair',False,True,'refuse-unchanged'),('repair-valid-launch','resolve-repair',True,True,'unchanged'),
         ('repair-explicit','explicit-repair',False,True,'fresh-generation-preserve-old'),('repair-pinned-restore','explicit-repair',False,True,'fresh-generation-preserve-old'),
-        ('repair-stale-session','explicit-repair',False,True,'fresh-generation-preserve-old'),
+        ('repair-stale-session','explicit-repair',False,True,'refuse-unchanged'),
+        ('repair-stale-reconciled','explicit-repair',False,True,'fresh-generation-preserve-old'),
+        ('repair-stale-broken','explicit-repair',False,True,'fresh-generation-preserve-old'),
+        ('repair-stale-unfenced','explicit-repair',False,True,'refuse-unchanged'),
+        ('repair-stale-unaudited','explicit-repair',False,True,'refuse-unchanged'),
+        ('repair-stale-revision','explicit-repair',False,True,'refuse-unchanged'),
+        ('repair-stale-descendant','explicit-repair',False,True,'refuse-unchanged'),
+        ('repair-retargeted','explicit-repair',False,True,'refuse-unchanged'),
+        ('repair-live-dropped','explicit-repair',False,True,'refuse-unchanged'),
         ('repair-inputs-differ','explicit-repair',False,True,'refuse-unchanged'),('repair-generation-reused','explicit-repair',False,True,'refuse-unchanged'),('repair-input-missing','explicit-repair',False,False,'refuse-unchanged'),
         ('update-refused','refused-update',False,True,'all-preimages-old')]:
         transition('transactions',label,dict(operation=op,valid=valid,inputs=inputs),expected)
@@ -296,8 +322,21 @@ def output():
         state.update(before=deepcopy(old),staged=staged,old_generation=digest('old generation'),new_generation=digest('new generation'))
         if case['id']=='repair-inputs-differ': staged['source']=digest('different source')
         if case['id']=='repair-generation-reused': state['new_generation']=state['old_generation']
+        edge=dict(kind='none',generation=state['old_generation'],revision=1)
+        label=case['id']
+        if label in ['repair-pinned-restore','repair-retargeted','repair-live-dropped']: edge['kind']='live-session'
+        if label.startswith('repair-stale-'): edge['kind']='unknown-session'
+        state.update(retained_edge=edge,staged_edge=deepcopy(edge),observer_confirmed=False,
+                     descendants_quiescent=False,operator=False,fenced=False,audit_durable=False,
+                     reason='',if_revision=1)
+        if label in ['repair-stale-reconciled','repair-stale-descendant']: state.update(observer_confirmed=True,descendants_quiescent=label=='repair-stale-reconciled')
+        if label in ['repair-stale-broken','repair-stale-unfenced','repair-stale-unaudited','repair-stale-revision']:
+            state.update(operator=True,fenced=label!='repair-stale-unfenced',audit_durable=label!='repair-stale-unaudited',reason='domain fenced')
+        if label=='repair-stale-revision': state['if_revision']=2
+        if label=='repair-retargeted': state['staged_edge']['generation']=state['new_generation']
+        if label=='repair-live-dropped': state['staged_edge']['kind']='none'
         publish=outcome in ['complete-new','fresh-generation-preserve-old']
-        case['expected']=dict(outcome=outcome,live=deepcopy(staged if publish else old),preserved_old=deepcopy(old),pending_journal=outcome=='refuse-preserve-journal',evidence_generations=([state['old_generation'],state['new_generation']] if publish or outcome=='refuse-preserve-journal' else [state['old_generation']]))
+        case['expected']=dict(refusal=({'repair-stale-session':'repair-session-unconfirmed','repair-stale-unfenced':'repair-session-unconfirmed','repair-retargeted':'repair-edge-changed','repair-live-dropped':'repair-edge-changed'}.get(label,'repair-session-unconfirmed' if label.startswith('repair-stale-') else 'repair-inputs-or-generation') if state['operation']=='explicit-repair' and outcome=='refuse-unchanged' else ''),retained_edge=deepcopy(edge),outcome=outcome,live=deepcopy(staged if publish else old),preserved_old=deepcopy(old),pending_journal=outcome=='refuse-preserve-journal',evidence_generations=([state['old_generation'],state['new_generation']] if publish or outcome=='refuse-preserve-journal' else [state['old_generation']]))
     return data
 
 

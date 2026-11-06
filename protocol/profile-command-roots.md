@@ -17,7 +17,8 @@ The fixture validator composes it in memory with rc7 v5, preserving rc7 Codex
 ownership and modelling Windows paths/profile bounds; that composition allocates
 no wire carrier. The rc7 schema still rejects `command_root`. Joint requiredness
 for non-B-a fragments and Windows path admission require carrier-owner acceptance;
-emission remains CLOSED until that joint schema is accepted. Lock 5, journal 84/85, config schemas
+emission remains CLOSED until that joint schema is accepted. Proposed resolution:
+a conditional B-a member pair preserving rc7 in the [native decision packet](profile-command-root-admission.md#candidate-carrier-integration). Lock 5, journal 84/85, config schemas
 8/9 and lock 6 remain their owning lanes' allocations. No new lock, config,
 launcher-config or journal number is allocated here.
 
@@ -27,6 +28,11 @@ reference/settings transitions. Existing 84-profile-generation and
 extend them. The journal owner must provide an allocation or explicitly approve
 reuse before implementation admission. The atomic state transitions below are
 specification models, not evidence that an existing transaction class covers them.
+Proposed resolution: the named [journal coverage decision](profile-command-root-admission.md#journal-decision-and-native-witnesses),
+with dedicated classes recommended and numbers left to the journal owner.
+
+Owner acceptance is requested in the [six-gate native decision packet](profile-command-root-admission.md).
+Its candidate resolutions do not open any gate.
 
 ## Compatibility and admission
 
@@ -74,7 +80,9 @@ contract require acceptance by the admission/carrier owners. For a home requirin
 B-a, absent, corrupt or unsupported policy MUST refuse before manager invocation;
 absence never means legacy permission. This is a required acceptance rule, not an
 allocated policy carrier. The compatibility truth table assumes this fence and
-does not qualify its implementation.
+does not qualify its implementation. Proposed resolution: the exact
+[operator policy and controlled entry point](profile-command-root-admission.md#candidate-policy-and-controlled-entry-point),
+with same-UID configuration scoping and explicit legacy-route limits.
 
 V1–v4 `path_prepend` remains reserved/inert and can never attest B-a. A v5
 fragment with bare `path_prepend` and no `command_root` likewise cannot attest
@@ -168,7 +176,9 @@ emit B-a until the source/carrier owners accept those locations and include ever
 resulting record path in the 240-unit preflight. This gate applies independently
 of the gateway naming decision. In-memory metadata observations below model
 byte/binding checks only;
-they do not prove inventory discovery or record-path length coverage.
+they do not prove inventory discovery or record-path length coverage. Proposed
+resolution: the exact [protected paths and candidate records](profile-command-root-admission.md#candidate-protected-paths-and-records),
+including final-path bounds; journal staging/backup paths still need owner choice.
 
 ## Independent admission gates
 
@@ -184,12 +194,14 @@ must accept the manager operation that issues/replays a pin, its request and
 revision contract, the carrier delivering its lease ID to the launcher before
 verification, and protected discovery of the admitted manager by launcher/tools.
 The current resolve argv and rc7 fragment allocate none of these. The state model
-and CLI table below do not invent an acquire verb, environment variable or wire
-member. Missing accepted integration refuses B-a before start. Hook pin acquisition
-requires this same integration before hook activation. The session and launcher
-models currently omit some revision/incarnation comparisons; passing them cannot
-open this gate. Those comparisons must be modelled with independent negative
-vectors before implementation admission, in addition to the native observer witness.
+and CLI table below allocate no acquire verb, environment variable or wire
+member. The linked decision packet proposes a separate acquire/check integration
+for owner acceptance; it is not current CLI support. Missing accepted integration refuses B-a before start. Hook pin acquisition
+requires this same integration before hook activation. A9 is closed in the session/launcher model by independent revision, request,
+supervisor and process-incarnation authority comparisons and named negative
+vectors. That does not obtain OS authority or open this gate: the protected
+manager integration and native observer witness remain unaccepted. Proposed
+resolution: [native acquire/replay, revision checks and identity delivery](profile-command-root-admission.md#candidate-native-acquire-replay-and-identity).
 
 ## Verification budget, process pins and GC
 
@@ -458,11 +470,11 @@ preimages. Existing handled adapter-conflict exceptions remain precisely their
 old contract, not permission to publish a failed root. Inactive profiles may
 publish their own generation without retargeting any current/running profile.
 
-**Native runtime gate remains CLOSED for restore:** the repair corpus currently
-shares one reconstruction input for plain, live-pin and stale-session labels.
-Before implementation admission the model must distinguish retained old edges,
-reconciliation and fenced break, with negative controls; native restore and GC
-witnesses remain independently required by the runtime gate below.
+**Native runtime gate remains CLOSED for restore:** A10's model vectors now
+separate no edge, live-pin and unknown-session inputs and enforce preservation,
+quiescence or fenced audited break. They do not witness persistent retained edges
+or native reconciliation. Those runtime receipts still precede implementation
+admission under the unresolved bootstrap decision in the owner packet.
 
 Explicit repair after restore/migration preserves old evidence at its old
 path and materializes a new generation under the same lock from identical source,
@@ -534,7 +546,9 @@ Before native root-delivery adoption, Curator and curator-run must witness real
 isolated publication, no-write refusals, restore, supervision and release/break,
 two versions concurrently, all age pairs, tamper with ambient decoy and full-launch
 verification budgets. Journal owner coverage and protected legacy-entry exclusion
-are native admission gates. Hook adoption additionally requires pre-start external
+are native admission gates. The [native witness packet](profile-command-root-admission.md#journal-decision-and-native-witnesses)
+proposes the matrix and exposes the implementation/witness bootstrap decision;
+it supplies no runtime receipt or exception. Hook adoption additionally requires pre-start external
 gateway admission, selected-chain verification budgets, real retain/settings/
 upgrade/GC/hook execution and witnessed hook-runner blocking semantics. Those hook
 witnesses do not gate native root delivery. Future capability release must bind this namespace,
@@ -551,13 +565,14 @@ OS source references: [Go Darwin](https://go.dev/src/os/executable_darwin.go),
 [Go Windows](https://go.dev/src/os/executable_windows.go),
 [Linux comm](https://kernel.org/doc/html/v6.10/filesystems/proc.html).
 
-The `repair-pinned-restore` and `repair-stale-session` transaction cases model
-fresh-generation/preserved-old outcomes only. Edge reachability is exercised by
-the separate GC union cases; no persistent retained-edge migration is qualified.
+A10 is closed in the bounded transaction model: plain, live-pin and unknown-session
+repair have distinct edge inputs; unknown refuses without confirmed quiescence
+or fenced audited operator break. Repair preserves old edges verbatim, refusing
+drop or retarget. No persistent reconciliation or migration is qualified.
 
 The session/launcher models check only their explicit authority inputs; they do
 not qualify a supervisor observer, pre-start revision revalidation or protected
 manager discovery. Hook chain inputs contain no session pin. Those obligations
 remain closed under the session-integration/runtime gates, regardless of a model
-acceptance. The repair edge-labelled cases share a reconstruction projection;
-they do not distinguish live-pin restoration or reconciliation.
+acceptance. The distinct repair-edge vectors qualify only that bounded projection;
+they are not native store/reconciliation witnesses.

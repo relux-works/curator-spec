@@ -1,0 +1,123 @@
+{
+  "policy": {
+    "record": "candidate/profile-command-admission/1",
+    "revision": 1,
+    "manager_home": "/m",
+    "uid": 1000,
+    "entry_point": {
+      "path": "/opt/tools/native-launch",
+      "legacy_excluded": true
+    },
+    "writer_cohort": "operator-controlled",
+    "manager": {
+      "path": "/opt/tools/curator",
+      "sha256": "adaddd22c4e51ece04959fd30ad3257676bc1d42594ad51f7247bf122f49bf56",
+      "distribution_sha256": "5e29410d9295b5ff42b9d859668b82d2530dfcb5075183528d9227f088b96cad",
+      "capability": "native-command-roots-v1"
+    },
+    "launcher": {
+      "path": "/opt/tools/curator-run",
+      "sha256": "6620178fa51bb30a13ac966afa2de72796fbd74c489e29fd3db237d9900733a7",
+      "distribution_sha256": "a785931b62736339f15207bc21c22c02a9da92e20944e1b729a3a9fb96180dbb",
+      "capability": "native-command-roots-v1"
+    },
+    "profiles": [
+      {
+        "profile": "work",
+        "lock_sha256": "8bc24501f8cbe9a27499d2ca5304b4a4723904def91c17cb496fef950998c897",
+        "required": true
+      }
+    ]
+  },
+  "acquire": {
+    "record": "candidate/profile-command-acquire/1",
+    "request_id": "1f58b9145b24d108d7ac38887338b3ea3229833b9c1e418250343f907bfd1047",
+    "profile": "work",
+    "binding": {
+      "lock_sha256": "8bc24501f8cbe9a27499d2ca5304b4a4723904def91c17cb496fef950998c897",
+      "plan_sha256": "330a4c3555457cdeeb0b92033059c4bf044b301faa9a32fb822f56281ae2a61d",
+      "generation": "9a7793405705416bd1379b2d5a45be9e4adf77c74ab4a76ce2a762c076c46c3f",
+      "platform": "linux-amd64",
+      "receipt_sha256": "5a12e6d112597863e3d2d58e4b2022a648281c07417bb4e7f090c3e5c23ef2c6",
+      "marker_sha256": "4afbe6a5f6659c39478b60d313399a9f6ad93e754db8679beb710be1cfaeb5ac",
+      "inventory_sha256": "7bbdf87d262934c024c9e549ca49d8778b9513b5a9399fe952c4a5f35abcb671"
+    },
+    "supervisor_instance": "0834c2d60725ac5902257b3b78dd161ad26d1c0290dbf1e47cc14add5b8c8142",
+    "boot_id": "boot-one",
+    "process_domain": "domain-one",
+    "process_started_at": "start-one",
+    "if_revision": 0
+  },
+  "generation": {
+    "record": "candidate/profile-command-generation-state/1",
+    "profile": "work",
+    "binding": {
+      "lock_sha256": "8bc24501f8cbe9a27499d2ca5304b4a4723904def91c17cb496fef950998c897",
+      "plan_sha256": "330a4c3555457cdeeb0b92033059c4bf044b301faa9a32fb822f56281ae2a61d",
+      "generation": "9a7793405705416bd1379b2d5a45be9e4adf77c74ab4a76ce2a762c076c46c3f",
+      "platform": "linux-amd64",
+      "receipt_sha256": "5a12e6d112597863e3d2d58e4b2022a648281c07417bb4e7f090c3e5c23ef2c6",
+      "marker_sha256": "4afbe6a5f6659c39478b60d313399a9f6ad93e754db8679beb710be1cfaeb5ac",
+      "inventory_sha256": "7bbdf87d262934c024c9e549ca49d8778b9513b5a9399fe952c4a5f35abcb671"
+    },
+    "root": "/m/environments/work/commands/9a7793405705416bd1379b2d5a45be9e4adf77c74ab4a76ce2a762c076c46c3f/linux-amd64/bin",
+    "inventory": "/m/environments/work/commands/9a7793405705416bd1379b2d5a45be9e4adf77c74ab4a76ce2a762c076c46c3f/linux-amd64/inventory.json"
+  },
+  "selected": {
+    "record": "candidate/profile-command-selection/1",
+    "profile": "work",
+    "binding": {
+      "lock_sha256": "8bc24501f8cbe9a27499d2ca5304b4a4723904def91c17cb496fef950998c897",
+      "plan_sha256": "330a4c3555457cdeeb0b92033059c4bf044b301faa9a32fb822f56281ae2a61d",
+      "generation": "9a7793405705416bd1379b2d5a45be9e4adf77c74ab4a76ce2a762c076c46c3f",
+      "platform": "linux-amd64",
+      "receipt_sha256": "5a12e6d112597863e3d2d58e4b2022a648281c07417bb4e7f090c3e5c23ef2c6",
+      "marker_sha256": "4afbe6a5f6659c39478b60d313399a9f6ad93e754db8679beb710be1cfaeb5ac",
+      "inventory_sha256": "7bbdf87d262934c024c9e549ca49d8778b9513b5a9399fe952c4a5f35abcb671"
+    },
+    "revision": 1
+  },
+  "replay": {
+    "record": "candidate/profile-command-replay/1",
+    "request": {
+      "record": "candidate/profile-command-acquire/1",
+      "request_id": "1f58b9145b24d108d7ac38887338b3ea3229833b9c1e418250343f907bfd1047",
+      "profile": "work",
+      "binding": {
+        "lock_sha256": "8bc24501f8cbe9a27499d2ca5304b4a4723904def91c17cb496fef950998c897",
+        "plan_sha256": "330a4c3555457cdeeb0b92033059c4bf044b301faa9a32fb822f56281ae2a61d",
+        "generation": "9a7793405705416bd1379b2d5a45be9e4adf77c74ab4a76ce2a762c076c46c3f",
+        "platform": "linux-amd64",
+        "receipt_sha256": "5a12e6d112597863e3d2d58e4b2022a648281c07417bb4e7f090c3e5c23ef2c6",
+        "marker_sha256": "4afbe6a5f6659c39478b60d313399a9f6ad93e754db8679beb710be1cfaeb5ac",
+        "inventory_sha256": "7bbdf87d262934c024c9e549ca49d8778b9513b5a9399fe952c4a5f35abcb671"
+      },
+      "supervisor_instance": "0834c2d60725ac5902257b3b78dd161ad26d1c0290dbf1e47cc14add5b8c8142",
+      "boot_id": "boot-one",
+      "process_domain": "domain-one",
+      "process_started_at": "start-one",
+      "if_revision": 0
+    },
+    "pin": {
+      "record": "profile-command-session-pin/1",
+      "lease_id": "b544a7686d1186680a9d8f24ff542b00d8ae60da4dd2613a38f6292a8337cc37",
+      "request_id": "1f58b9145b24d108d7ac38887338b3ea3229833b9c1e418250343f907bfd1047",
+      "profile": "work",
+      "binding": {
+        "lock_sha256": "8bc24501f8cbe9a27499d2ca5304b4a4723904def91c17cb496fef950998c897",
+        "plan_sha256": "330a4c3555457cdeeb0b92033059c4bf044b301faa9a32fb822f56281ae2a61d",
+        "generation": "9a7793405705416bd1379b2d5a45be9e4adf77c74ab4a76ce2a762c076c46c3f",
+        "platform": "linux-amd64",
+        "receipt_sha256": "5a12e6d112597863e3d2d58e4b2022a648281c07417bb4e7f090c3e5c23ef2c6",
+        "marker_sha256": "4afbe6a5f6659c39478b60d313399a9f6ad93e754db8679beb710be1cfaeb5ac",
+        "inventory_sha256": "7bbdf87d262934c024c9e549ca49d8778b9513b5a9399fe952c4a5f35abcb671"
+      },
+      "supervisor_instance": "0834c2d60725ac5902257b3b78dd161ad26d1c0290dbf1e47cc14add5b8c8142",
+      "boot_id": "boot-one",
+      "process_domain": "domain-one",
+      "process_started_at": "start-one",
+      "revision": 1,
+      "phase": "active"
+    }
+  }
+}

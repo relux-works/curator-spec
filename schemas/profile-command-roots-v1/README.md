@@ -16,3 +16,10 @@ sole Codex `codex_settings` ownership. The validator's in-memory fixture composi
 adds these required members and models B-a Windows paths/profile grammar; it
 cannot authorize emission. Joint carrier acceptance and protected-state locations/aggregate/
 Windows pinning remain closed gates in the contract.
+
+`native-admission-proposal.schema.json` contains explicitly unaccepted candidate
+policy, generation/selection, acquire/session-key and request replay layouts for
+the [six-gate owner packet](../../protocol/profile-command-root-admission.md).
+Its `candidate/` discriminators allocate no production carrier. The native joint
+composition is conditional and Linux-only, preserving inherited rc7 definitions;
+it is distinct from the earlier cross-platform path model.

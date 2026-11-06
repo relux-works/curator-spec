@@ -575,3 +575,11 @@ has a separate corpus. Generate/check it with
 `python tools/generate_profile_command_roots.py --check`; validate it with
 `python tools/profile_command_roots.py`. Outputs live in
 `conformance/profile-command-roots-v1`; no product runtime is qualified.
+
+The [native admission decision packet](protocol/profile-command-root-admission.md)
+keeps all six root-emission gates CLOSED and asks their owners to accept concrete
+resolutions. Check its candidate policy/paths, conditional carrier and pin/repair
+controls with `python -B -m unittest discover -s tools -p test_native_root_admission.py`.
+The candidate fixture is `conformance/profile-command-roots-v1/native-admission-proposal.json`;
+the validator prints model-only results to stdout. No implementation or runtime
+acceptance follows from these checks.

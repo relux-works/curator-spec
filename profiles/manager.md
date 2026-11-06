@@ -3328,3 +3328,9 @@ The unreleased [lock-bound profile command root companion](../protocol/profile-c
 specifies native interactive Slice B-a publication, executable identity,
 retained hook references and GC. Its independent root-emission and hook-activation
 gates remain closed; existing Slice A and hosted gates also remain.
+
+The [native root-emission decision packet](../protocol/profile-command-root-admission.md)
+proposes six owner resolutions while keeping all six gates CLOSED. It includes
+the protected session-pin location, native identity configuration limits and the
+unresolved implementation/runtime-witness bootstrap decision; no owner acceptance
+or implementation admission follows from its model vectors.
