@@ -45,11 +45,10 @@ const (
 	rc9ReleaseMetadataSHA256          = "sha256:a0c58ff5e44bc93c013e4c7526573c2fc7e2467a67455b6898647db6a0879f82"
 	rc9SourceCommit                   = "0ed5c691e9208eea52f21db2fc05e226ce3516fd"
 	rc10CoreManifestSHA256            = "sha256:803918bf8672f76cf990985e51db213b826674cd5bb54fbf47731b8404b44403"
-	// skillfileSourcesAcceptedTag froze the accepted skillfile-sources-v1
-	// manifest. The draft amendment owns protocol/skillfile-sources.md, so
-	// the generator pins that input at its tagged bytes while the draft
-	// manifest pins the live bytes. A Go test checks this digest against
-	// the tag; validate.py checks the manifest entry the same way.
+	// skillfileSourcesAcceptedTag froze the accepted document and manifest.
+	// The generator retains that published digest; the validator checks live
+	// bytes against it. Draft amendments use a separate document and manifest.
+	// A Go test checks this digest against the release tag.
 	skillfileSourcesAcceptedTag            = "v1.0.0-rc.14"
 	skillfileSourcesAcceptedContractSHA256 = "sha256:f31eb9178edc877d8ec8c3456dbd77fb999bd0af77fb0108a209d0e805d21483"
 
@@ -2276,8 +2275,8 @@ func writeCandidateMetadata(root, suite, skillfileSourcesManifestSHA256 string) 
 
 // writeSkillfileSourcesManifest pins the accepted source-extension suite and
 // its schemas independently of the generated conformance/v1 core suite.
-// Inputs the draft amendment owns keep their frozen tag digest instead of
-// tracking live bytes; the draft manifest pins the live bytes.
+// The accepted document retains its frozen digest; draft amendments live in
+// a separate document and manifest.
 func writeSkillfileSourcesManifest(root string) string {
 	return writeSuiteManifest(root, "conformance/skillfile-sources-v1/manifest.json", "skillfile-sources-v1",
 		[]string{
@@ -2293,12 +2292,12 @@ func writeSkillfileSourcesManifest(root string) string {
 }
 
 // writeDraftSourcesManifest pins the unreleased draft-sources-v2 amendment:
-// the live source-contract input plus the draft schemas and corpus. Unlike
+// the separate amended source contract plus the draft schemas and corpus. Unlike
 // the accepted manifest, every entry tracks live bytes.
 func writeDraftSourcesManifest(root string) string {
 	return writeSuiteManifest(root, "conformance/draft-sources-v2/manifest.json", "draft-sources-v2",
 		[]string{
-			"protocol/skillfile-sources.md",
+			"protocol/skillfile-sources-draft.md",
 			"schemas/draft-sources-v2",
 			"conformance/draft-sources-v2",
 		},

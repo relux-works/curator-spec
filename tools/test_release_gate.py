@@ -5,6 +5,7 @@ import io
 import json
 import shutil
 import subprocess
+import sys
 import tarfile
 import tempfile
 import unittest
@@ -711,13 +712,8 @@ class ProtocolRC14ReleaseGateTests(unittest.TestCase):
 
 
 class LiveCandidateAcceptedCorpusTests(unittest.TestCase):
-    """The strict rc.14 gate still guards the live candidate's accepted suite.
-
-    Historical rc.14 verification above runs against the published tag. These
-    checks run the unchanged release gate against the live tree:
-    draft-sources-v2 additions are outside the gate's scope, and the only
-    live deviation from the rc.14 artifact set is the draft-owned source
-    contract, pinned live by the draft manifest instead.
+    """Claim: live accepted inputs keep their published bytes while amendments
+    remain separate. Hash controls reject drift without rewriting the inputs.
     """
 
     VERSION = "1.0.0-rc.14"
@@ -753,58 +749,153 @@ class LiveCandidateAcceptedCorpusTests(unittest.TestCase):
         path = self.root / "release" / f"{self.VERSION}.json"
         return json.loads(path.read_text(encoding="utf-8"))
 
-    def restore_draft_owned_document(self) -> None:
-        (self.root / "protocol" / "skillfile-sources.md").write_bytes(
-            self.tagged_bytes("protocol/skillfile-sources.md")
+    def test_live_gate_accepts_frozen_source_document(self) -> None:
+        # Frozen means live bytes, not substituting tagged bytes during checks.
+        self.assertEqual(
+            (self.root / "protocol/skillfile-sources.md").read_bytes(),
+            self.tagged_bytes("protocol/skillfile-sources.md"),
         )
+        release_gate.validate_skillfile_sources_manifest(self.release_metadata())
 
-    def test_live_tree_is_not_the_frozen_rc14_artifact_set(self) -> None:
-        with self.assertRaisesRegex(
-            release_gate.ReleaseFailure,
-            r"skillfile-sources-v1 manifest digest mismatch: protocol/skillfile-sources\.md",
-        ):
-            release_gate.validate_skillfile_sources_manifest(self.release_metadata())
-
-    def test_live_gate_admits_draft_with_tagged_document(self) -> None:
-        self.assertTrue((self.root / "conformance" / "draft-sources-v2").is_dir())
-        self.assertTrue((self.root / "schemas" / "draft-sources-v2").is_dir())
-        self.restore_draft_owned_document()
+    def test_live_gate_admits_separate_draft_contract(self) -> None:
+        # Draft extensions and the MCP compatibility paragraph remain reachable
+        # without changing the accepted source document or its release pin.
+        draft = self.root / "protocol/skillfile-sources-draft.md"
+        self.assertIn("[Skillfile MCP stage A]", draft.read_text(encoding="utf-8"))
+        self.assertIn("### 4.1 Canonical ownership", draft.read_text(encoding="utf-8"))
+        self.assertTrue((self.root / "conformance/draft-sources-v2").is_dir())
+        self.assertTrue((self.root / "schemas/draft-sources-v2").is_dir())
         release_gate.validate_skillfile_sources_manifest(self.release_metadata())
 
     def test_live_accepted_case_drift_is_rejected(self) -> None:
-        self.restore_draft_owned_document()
+        # Claim: an accepted input-byte change refuses without repairing it.
+        release_gate.validate_skillfile_sources_manifest(self.release_metadata())
         path = (
             self.root / "conformance" / "skillfile-sources-v1"
             / "schema-cases" / "build-receipt-v3" / "valid.json"
         )
-        path.write_bytes(path.read_bytes() + b"\n")
+        original = path.read_bytes()
+        plant = original + b"\n"
+        path.write_bytes(plant)
         with self.assertRaisesRegex(
             release_gate.ReleaseFailure,
             r"skillfile-sources-v1 manifest digest mismatch: "
             r"conformance/skillfile-sources-v1/schema-cases/build-receipt-v3/valid\.json",
         ):
             release_gate.validate_skillfile_sources_manifest(self.release_metadata())
+        self.assertEqual(path.read_bytes(), plant)
+        path.write_bytes(original)
+        release_gate.validate_skillfile_sources_manifest(self.release_metadata())
 
     def test_live_accepted_schema_drift_is_rejected(self) -> None:
-        self.restore_draft_owned_document()
+        # Claim: an accepted input-byte change refuses without repairing it.
+        release_gate.validate_skillfile_sources_manifest(self.release_metadata())
         path = self.root / "schemas" / "skillfile-sources-v1" / "source-types-v1.schema.json"
-        path.write_bytes(path.read_bytes() + b"\n")
+        original = path.read_bytes()
+        plant = original + b"\n"
+        path.write_bytes(plant)
         with self.assertRaisesRegex(
             release_gate.ReleaseFailure,
             r"skillfile-sources-v1 manifest digest mismatch: "
             r"schemas/skillfile-sources-v1/source-types-v1\.schema\.json",
         ):
             release_gate.validate_skillfile_sources_manifest(self.release_metadata())
+        self.assertEqual(path.read_bytes(), plant)
+        path.write_bytes(original)
+        release_gate.validate_skillfile_sources_manifest(self.release_metadata())
 
-    def test_live_document_is_the_only_manifest_deviation(self) -> None:
-        manifest_path = self.root / "conformance" / "skillfile-sources-v1" / "manifest.json"
+    def test_live_inputs_match_the_frozen_manifest(self) -> None:
+        # Claim: the manifest itself is frozen and every live input matches
+        # its published SHA-256 pin; no per-input tag substitution is allowed.
+        relative = "conformance/skillfile-sources-v1/manifest.json"
+        manifest_path = self.root / relative
+        self.assertEqual(manifest_path.read_bytes(), self.tagged_bytes(relative))
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        deviated = []
-        for entry in manifest["files"]:
-            relative = entry["path"]
-            if (self.root / relative).read_bytes() != self.tagged_bytes(relative):
-                deviated.append(relative)
-        self.assertEqual(deviated, ["protocol/skillfile-sources.md"])
+        deviated = [
+            entry["path"] for entry in manifest["files"]
+            if "sha256:" + hashlib.sha256((self.root / entry["path"]).read_bytes()).hexdigest()
+            != entry["sha256"]
+        ]
+        self.assertEqual(deviated, [])
+
+    def test_public_validator_rejects_live_frozen_document_drift(self) -> None:
+        # Claim: the ordinary CI validator hashes live document bytes too;
+        # it rejects a plant without substituting the release tag or rewriting.
+        import validate
+
+        document = self.root / "protocol/skillfile-sources.md"
+        original = document.read_bytes()
+        with patch.object(validate, "ROOT", self.root):
+            validate.validate_skillfile_sources_manifest()
+            plant = original + b"\n"
+            document.write_bytes(plant)
+            with self.assertRaisesRegex(
+                validate.ValidationFailure,
+                r"skillfile-sources-v1 manifest digest mismatch: protocol/skillfile-sources\.md",
+            ):
+                validate.validate_skillfile_sources_manifest()
+            self.assertEqual(document.read_bytes(), plant)
+            document.write_bytes(original)
+            validate.validate_skillfile_sources_manifest()
+
+    def test_full_live_gate_detects_frozen_document_drift(self) -> None:
+        # Claim: the actual release CLI accepts a clean candidate, rejects a
+        # committed document-byte plant by name, and accepts restored bytes.
+        # A clean plant checkout proves the hash gate, not the dirty-tree guard.
+        def git(*args: str) -> str:
+            result = subprocess.run(
+                ["git", *args], cwd=self.root, check=True,
+                capture_output=True, text=True, timeout=60,
+            )
+            return result.stdout.strip()
+
+        def commit() -> None:
+            git("add", ".")
+            git("-c", "commit.gpgsign=false", "commit", "-qm", "Release gate fixture")
+
+        def check() -> subprocess.CompletedProcess[str]:
+            return subprocess.run(
+                [sys.executable, str(self.root / "tools/release_gate.py"),
+                 "--version", self.VERSION, "--commit", "HEAD"],
+                cwd=self.root, capture_output=True, text=True, timeout=60,
+            )
+
+        git("init", "-q")
+        git("config", "user.name", "Release Fixture")
+        git("config", "user.email", "release-fixture@example.invalid")
+        commit()
+        result = check()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("release gate passed for " + self.VERSION, result.stdout)
+        print("PASS release-gate clean candidate", flush=True)
+
+        document = self.root / "protocol/skillfile-sources.md"
+        manifest = self.root / "conformance/skillfile-sources-v1/manifest.json"
+        original, pin = document.read_bytes(), manifest.read_bytes()
+        plant = original + b"\n"
+        document.write_bytes(plant)
+        commit()
+        result = check()
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertEqual(
+            result.stdout.strip(),
+            "release gate failed: skillfile-sources-v1 manifest digest mismatch: "
+            "protocol/skillfile-sources.md",
+        )
+        self.assertEqual(document.read_bytes(), plant)
+        self.assertEqual(manifest.read_bytes(), pin)
+        self.assertEqual(git("status", "--porcelain"), "")
+        print("PASS release-gate plant: skillfile-sources-v1 manifest digest mismatch: "
+              "protocol/skillfile-sources.md", flush=True)
+
+        document.write_bytes(original)
+        commit()
+        result = check()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(document.read_bytes(), original)
+        self.assertEqual(manifest.read_bytes(), pin)
+        self.assertEqual(git("status", "--porcelain"), "")
+        print("PASS release-gate restored candidate", flush=True)
 
 
 if __name__ == "__main__":

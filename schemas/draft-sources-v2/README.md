@@ -13,7 +13,7 @@ definitions are reused by relative references
 | `install-marker-v6` | Marker v5 shape recording manifest schema 9 or explicit manifest absence |
 | `agent-skill-v9` / `csk-skill-v9` | Opt-in manifest directory selection for transitive skill dependencies |
 
-The [source contract](../../protocol/skillfile-sources.md) and
+The [source contract](../../protocol/skillfile-sources-draft.md) and
 [core section 4.4](../../protocol/core.md#44-dependencies) define semantic
 requirements beyond schema checks: the shared directory grammar, containment,
 package identity, closure unification, lock and audit binding. Schemas alone

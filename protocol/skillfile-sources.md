@@ -15,18 +15,6 @@ force. Definitions reused from `schemas/v1` are unchanged.
 
 ## 1. Acquisition and selection
 
-[Skillfile MCP stage A](skillfile-mcp.md) adds project schema 3 as schema 2
-plus optional `mcp_servers`. Source aliases, skill selection, immutable
-snapshots and full-document CCJ-1 `manifest_sha256` retain this revision’s meanings; normalized
-MCP digests never replace that full-document CCJ-1 manifest identity. Schema 1/2 reject the new
-member; unsupported or machine-global schema 3 fails with the upgrade error.
-No writer implicitly upgrades a file. New MCP carriers live in a separate
-namespace and do not extend the released source lock in place.
-
-Network source acquisition is a Git acquisition lane under
-[repository-transport §1–§3](repository-transport.md#1-identity-and-declarations);
-a declared URL supplies identity and a connection hint, not a transport pin.
-
 This revision defines project-scope Skillfiles. Machine-global Skillfiles
 follow [environments §9.4 profile locks](environments.md#94-profile-scoped-skills-and-migration)
 when the manager implements that capability. A manager without machine-global
@@ -39,9 +27,6 @@ name; it is not a path relative to the project. Schema 2 preserves `project`,
 `agents`, `locale` and legacy skill entries by reference to schema 1. No
 on-disk migration is implicit. Unsupported versions fail with an upgrade error.
 Skill manifest versions remain independent and need no collection-specific edit.
-The shared package identity and audit rules in this document also govern
-manifest schema 9 dependency directories under core section 4.4; accepting that
-manifest field does not make Skillfile schema 2 mandatory.
 
 `sources` is an optional map of case-sensitive aliases to acquisition objects:
 
@@ -72,13 +57,6 @@ Resolve symlinks before containment checks; an escaping selector always fails.
 Explicit source paths may point outside the project; selectors may not escape
 that chosen source. An individual name MUST equal validated SKILL.md metadata
 and the resolved skill manifest identity, where that manifest declares one.
-
-These are the canonical directory grammar and containment rules for selected
-skill packages. A manifest schema-9 `dependencies.skills` entry reuses them
-for its repository-relative `directory`; see [core section 4.4](core.md#44-dependencies).
-In both forms the selected path is relative to the acquired repository or
-source root, and the resolved package directory must contain its own
-`SKILL.md`.
 
 Collections enumerate immediate child directories only. `include` is a
 non-empty unique list of literal portable folder identifiers or `*`; `exclude`
@@ -171,12 +149,6 @@ A package identity is the disjoint union in source-types schema 1:
   name exactly as in schema 1. This is a scoped configured-root identity, not
   a network trust identity; existing Git commit semantics remain unchanged.
 
-For a schema-9 transitive dependency, the package's directory is the manifest
-selection normalized to `.` when absent. Distinct directories of one Git
-repository at one commit are distinct package identities; the same directory
-selected repeatedly for one skill name is one identity and unifies under core
-section 7.
-
 Git snapshots retain existing raw-object and integrity requirements. Every
 member from one Git alias uses the same resolved commit. A local collection
 freezes each package and the expanded membership together in one transaction.
@@ -244,47 +216,24 @@ bootstrap or prebuilt binary-distribution route is added. External repositories
 of a local package still obey manager section 11; local skill acquisition does
 not turn their committed-HEAD substitutions into dirty-byte snapshots.
 
-For schema-2 installations write marker schema 5, except that a core schema-9
-installation or a package without a manifest writes draft marker schema 6,
-including when its root project still uses Skillfile schema 1; marker v5 cannot
-record manifest version 9 or manifest absence. Its
-`package` replaces legacy `source/git/ref_kind/ref/commit` fields;
+For schema-2 installations write marker schema 5, regardless of skill manifest
+version. Its `package` replaces legacy `source/git/ref_kind/ref/commit` fields;
 its `lock_sha256` binds the installed selection and declared ref through the
 validated lock and matching manifest. The following migration is exhaustive;
 fields not replaced here retain core section 10 meaning, including applicability,
 requiredness and canonical set ordering.
 
-| Marker v4 fields | Source marker v5 / draft v6 representation |
+| Marker v4 fields | Marker v5 representation |
 |---|---|
-| `schema_version` | `5`; `6` for schema-9 or manifestless installations |
+| `schema_version` | `5` |
 | `source`, `git`, `ref_kind`, `ref`, `commit` | Effective `package`; declaration/ref selection in the manifest and bound lock. Never infer these from a transport endpoint. |
-| `skill_schema_version` | Actual manifest version, 1 through 8 in v5, 1 through 9 in draft v6; JSON `null` only in draft v6 when no manifest exists |
+| `skill_schema_version` | Actual manifest version, 1 through 8 |
 | `name`, `content_sha256`, `locale`, `agents`, `commands`, `dependencies`, `runtime_roots`, `build_roots`, `installed_at`, `files` | Retained, required |
 | `build_source`, `requirements`, `mcp_servers`, `activation`, `requirers` | Retained with existing conditional/optional meaning |
 | `attestation` | Retained registry/status/optional key ID summary for eligible Git packages; forbidden for `local-snapshot` |
 | `substituted` | Retained non-empty legacy skill development-substitution identifier; forbidden for `local-snapshot` |
 | `builds` | Retained driver-specific records below, with receipt version 3 |
 | No predecessor | Required `package` and `lock_sha256` |
-
-Draft marker v6 is marker v5 with `schema_version` 6, `skill_schema_version`
-through 9, and one additional representation: the required
-`skill_schema_version` member is JSON `null` for a pure context package with
-no manifest. No manifest version is fabricated. This form is allowed only when
-the package declares no commands, runtime or build. Its `commands`,
-`dependencies`, `runtime_roots` and `build_roots` MUST be empty arrays, `builds`
-MUST be an empty object, and `build_source`, `requirements` and `mcp_servers`
-MUST be absent. If `activation` is present, its `commands` MUST be empty.
-An integer version and manifest absence are mutually exclusive values of this
-single member; no parallel manifest-version or no-manifest flag is defined.
-A present manifest MUST validate under core section 4; invalid or unreadable
-manifests MUST NOT be treated as absent.
-
-Every other field, requiredness rule and currentness comparison is unchanged.
-Writers use draft marker v6 exactly for core schema-9 installations and packages
-without a manifest; every other installation keeps its existing writer rule.
-Readers implementing this amendment MUST accept source marker v5 and draft v6.
-Existing markers MUST NOT be rewritten merely to change versions; there is no
-v5-to-v6 migration. These draft additions make no release conformance claim.
 
 `attestation` MUST be present exactly when the effective plan selects existing
 registry evidence and MUST equal its registry, status and key ID (including key
@@ -389,13 +338,6 @@ Network-Git members may use existing registry evidence only with exact name,
 canonical repository, commit and context hash matching. No registry redesign
 or new signed record format is implied.
 
-For a schema-9 dependency, the source-audit record's package identity carries
-the normalized selected directory. Audit-cache equality includes the complete
-package identity, so a decision for another directory in the same repository
-and commit is not reusable. Registry records keep their existing repository
-and content matching rules; they do not replace this package-specific audit
-record.
-
 Assurance permits, execution receipts and checkpoints retain their versioned
 shapes: bind the exact receipt-3 build input digest in `build_input_sha256`.
 This adds no verified-provider script operation; script-worker rules retain
@@ -404,48 +346,12 @@ Their provider, nonce, freshness, artifact and checkpoint bindings remain
 required. An implementation unable to bind that input MUST reject execution;
 it MUST NOT downgrade or claim compatibility based on a context-only hash.
 
-### 4.1 Canonical ownership before publication
-
-For each existing canonical node under `.agents/skills`, ownership is proven
-only by its preceding `.csk-install.json`: it MUST be a regular readable file
-reached without following links (including links at the node or its parents),
-parse as a JSON object, carry a recognized source-marker schema identity
-(`schema_version` equal to integer 5 for the accepted source marker or integer
-6 for the draft source marker), and have `name` equal to the canonical node's
-basename. These are ownership evidence, separate from full schema validation,
-currentness, build validity and authorization. Invalid, missing or mismatching
-build/evidence fields within such a marker make the installation non-current
-and require re-derivation from the exact locked source under all existing gates;
-they do not remove ownership. In particular the existing
-`external-evidence-mismatch-*` status/repair outcomes are unchanged. A marker
-summary never authorizes candidate bytes or execution.
-
-A missing, unreadable or unparseable marker, a non-object JSON value, a wrong
-name, an unrecognized schema identity, a link or a special file leaves ownership
-unproven. A reader that does not recognize draft v6 MUST treat it this way,
-never as permission to delete. A failed read MUST NOT be treated as absence.
-
-Install MUST enumerate existing canonical entries and prove ownership before
-removing or replacing any of them. An unowned sibling as well as an unowned
-selected destination MUST cause `source_ownership_unproven` before any
-destructive publication; diagnostics MUST name every ownership-unproven path.
-The refusal MUST preserve all prior canonical entries, lock, adapters, runtime
-and shims without partial publication. Stale cleanup MUST remove only
-ownership-proven nodes and MUST NOT remove other entries in the canonical
-store. New destinations that do not exist need no preceding marker; inability
-to inspect a destination is not proof that it does not exist. Recheck ownership
-and physical boundaries under the manager section 2.5 serialization immediately
-before publication; a changed preimage refuses without destructive publication.
-This canonical-store rule does not replace the core section 11 adapter ledger.
-
 ## 5. Diagnostics and conformance bounds
 
 Required stable error classes are `source_alias_unknown`, `source_selection_invalid`,
 `source_member_missing`, `source_member_invalid`, `source_name_conflict`,
 `source_output_overlap`, `source_snapshot_changed`, `source_snapshot_unavailable`
-and `source_lock_stale`. `source_ownership_unproven` identifies canonical-store
-ownership refusal, distinct from `source_output_overlap` input/output
-separation failure. Report every conflicting path and reason without secrets.
+and `source_lock_stale`. Report the selector/member and reason without secrets.
 Selection, snapshot, closure, audit or publication failure changes neither the
 previous lock nor installed state. Schema failures precede filesystem/network
 work. The [dedicated vectors](../conformance/skillfile-sources-v1/README.md) distinguish

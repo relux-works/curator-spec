@@ -95,3 +95,18 @@ Run the local release gate before signing a tag:
 ```text
 python tools/fixture_environment.py python tools/release_gate.py --version 1.0.0 --commit HEAD
 ```
+
+For the current release candidate, use its declared version rather than the
+stable-promotion example above:
+
+```sh
+version="$(python -c 'import json; print(json.load(open("conformance/v1/manifest.json"))["protocol_version"])')"
+python tools/fixture_environment.py python tools/release_gate.py --version "$version" --commit HEAD
+```
+
+The **Candidate release gate** workflow runs this full check on pull requests
+and pushes to main. Its clean-fixture control runs the real CLI before a
+committed frozen-document mismatch, checks the exact manifest refusal and
+unchanged inputs, removes the plant, and requires the restored candidate to
+pass. This does not verify release-target or tag signatures, independent
+stable-promotion reviews for a prerelease, or native implementation behavior.

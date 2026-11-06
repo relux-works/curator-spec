@@ -1,0 +1,30 @@
+name: Candidate release gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-gate:
+    name: Candidate release gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
+      - name: Install validation dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Check clean candidate with the release CLI
+        run: |
+          version="$(python -c 'import json; print(json.load(open("conformance/v1/manifest.json"))["protocol_version"])')"
+          python tools/fixture_environment.py python tools/release_gate.py --version "$version" --commit HEAD
+      - name: Prove frozen-document drift refuses and restoration passes
+        run: python -B -m unittest discover -s tools -p 'test_release_gate.py' -k test_full_live_gate_detects_frozen_document_drift -v

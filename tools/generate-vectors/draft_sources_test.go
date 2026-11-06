@@ -100,7 +100,7 @@ func TestAcceptedManifestWriterPreservesDraftOwnedEntry(t *testing.T) {
 // live source-contract input and draft files, excluding itself.
 func TestDraftManifestWriterTracksLiveBytes(t *testing.T) {
 	root := t.TempDir()
-	writeFixture(t, root, "protocol/skillfile-sources.md", "# amended live contract\n")
+	writeFixture(t, root, "protocol/skillfile-sources-draft.md", "# amended live contract\n")
 	writeFixture(t, root, "schemas/draft-sources-v2/agent-skill-v9.schema.json", "{}\n")
 	writeFixture(t, root, "conformance/draft-sources-v2/index.json", "[]\n")
 	writeFixture(t, root, "conformance/draft-sources-v2/manifest.json", "stale\n")
@@ -115,15 +115,15 @@ func TestDraftManifestWriterTracksLiveBytes(t *testing.T) {
 		t.Fatalf("entries = %d, want 3", len(entries))
 	}
 	live := sha256.Sum256([]byte("# amended live contract\n"))
-	if want := "sha256:" + hex.EncodeToString(live[:]); entries["protocol/skillfile-sources.md"] != want {
-		t.Fatalf("draft contract entry = %s, want live %s", entries["protocol/skillfile-sources.md"], want)
+	if want := "sha256:" + hex.EncodeToString(live[:]); entries["protocol/skillfile-sources-draft.md"] != want {
+		t.Fatalf("draft contract entry = %s, want live %s", entries["protocol/skillfile-sources-draft.md"], want)
 	}
 
-	writeFixture(t, root, "protocol/skillfile-sources.md", "# amended live contract\n# more\n")
+	writeFixture(t, root, "protocol/skillfile-sources-draft.md", "# amended live contract\n# more\n")
 	writeDraftSourcesManifest(root)
 	_, rerun := manifestEntries(t, root, "conformance/draft-sources-v2/manifest.json")
 	updated := sha256.Sum256([]byte("# amended live contract\n# more\n"))
-	if want := "sha256:" + hex.EncodeToString(updated[:]); rerun["protocol/skillfile-sources.md"] != want {
-		t.Fatalf("rerun contract entry = %s, want live %s", rerun["protocol/skillfile-sources.md"], want)
+	if want := "sha256:" + hex.EncodeToString(updated[:]); rerun["protocol/skillfile-sources-draft.md"] != want {
+		t.Fatalf("rerun contract entry = %s, want live %s", rerun["protocol/skillfile-sources-draft.md"], want)
 	}
 }

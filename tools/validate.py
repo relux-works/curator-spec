@@ -36,12 +36,8 @@ PROTOCOL_VERSION = "1.0.0-rc.14"
 # Release preparation advances the candidate before its tag exists. Historical
 # guards remain anchored to the latest published release until publication.
 LATEST_RELEASED_PROTOCOL_VERSION = "1.0.0-rc.13"
-# The accepted skillfile-sources-v1 manifest pins its normative document inputs
-# at rc.14. The draft amendment owns protocol/skillfile-sources.md: the frozen
-# accepted check reads that input from the tag below, and the draft manifest
-# pins the live bytes instead. No other accepted input may drift.
-SKILLFILE_SOURCES_ACCEPTED_TAG = "v1.0.0-rc.14"
-DRAFT_OWNED_SOURCES_DOCUMENTS = frozenset({"protocol/skillfile-sources.md"})
+# The accepted source document and manifest retain their rc.14 bytes. Draft
+# amendments have a separate document and manifest; neither changes that pin.
 RC9_PROTOCOL_VERSION = "1.0.0-rc.9"
 RC8_PROTOCOL_VERSION = "1.0.0-rc.8"
 RC7_PROTOCOL_VERSION = "1.0.0-rc.7"
@@ -1100,33 +1096,6 @@ def validate_manifest() -> None:
             raise ValidationFailure(f"candidate {name} pin does not match the suite manifest")
 
 
-def tagged_sources_document(relative: str) -> bytes:
-    """Frozen bytes of a draft-owned document input for the accepted check.
-
-    The accepted skillfile-sources-v1 manifest pins its normative inputs at
-    the rc.14 tag. Inputs the draft amendment owns are compared against those
-    tagged bytes here, while the draft manifest pins their live bytes. A
-    missing tag or blob is fatal, never an empty input.
-    """
-    shown = subprocess.run(
-        ["git", "show", f"{SKILLFILE_SOURCES_ACCEPTED_TAG}:{relative}"],
-        cwd=ROOT,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        check=False,
-    )
-    if shown.returncode != 0:
-        detail = shown.stderr.decode("utf-8", errors="replace").strip()
-        raise ValidationFailure(
-            f"cannot read accepted {relative} at {SKILLFILE_SOURCES_ACCEPTED_TAG}: {detail}"
-        )
-    if not shown.stdout:
-        raise ValidationFailure(
-            f"accepted {relative} is empty at {SKILLFILE_SOURCES_ACCEPTED_TAG}"
-        )
-    return shown.stdout
-
-
 def validate_skillfile_sources_manifest() -> str:
     manifest_path = ROOT / "conformance" / "skillfile-sources-v1" / "manifest.json"
     manifest = load_json(manifest_path)
@@ -1167,11 +1136,6 @@ def validate_skillfile_sources_manifest() -> str:
         if path not in expected_paths:
             raise ValidationFailure(f"skillfile-sources-v1 manifest lists an out-of-scope path: {path}")
         paths.append(path)
-        if path in DRAFT_OWNED_SOURCES_DOCUMENTS:
-            tagged_digest = "sha256:" + hashlib.sha256(tagged_sources_document(path)).hexdigest()
-            if digest != tagged_digest:
-                raise ValidationFailure(f"skillfile-sources-v1 manifest digest mismatch: {path}")
-            continue
         target = ROOT / path
         if not target.is_file():
             raise ValidationFailure(f"skillfile-sources-v1 manifest path is missing: {path}")
@@ -1195,7 +1159,7 @@ def validate_draft_sources_manifest() -> str:
 
     expected_paths: set[str] = set()
     roots = (
-        ROOT / "protocol" / "skillfile-sources.md",
+        ROOT / "protocol" / "skillfile-sources-draft.md",
         ROOT / "schemas" / "draft-sources-v2",
         ROOT / "conformance" / "draft-sources-v2",
     )
