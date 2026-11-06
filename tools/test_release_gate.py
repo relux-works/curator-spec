@@ -842,6 +842,11 @@ class LiveCandidateAcceptedCorpusTests(unittest.TestCase):
         # Claim: the actual release CLI accepts a clean candidate, rejects a
         # committed document-byte plant by name, and accepts restored bytes.
         # A clean plant checkout proves the hash gate, not the dirty-tree guard.
+        # The candidate version follows its manifest; the accepted corpus
+        # remains independently frozen at VERSION when a successor is prepared.
+        candidate_version = json.loads(
+            (self.root / "conformance/v1/manifest.json").read_text(encoding="utf-8")
+        )["protocol_version"]
         def git(*args: str) -> str:
             result = subprocess.run(
                 ["git", *args], cwd=self.root, check=True,
@@ -856,7 +861,7 @@ class LiveCandidateAcceptedCorpusTests(unittest.TestCase):
         def check() -> subprocess.CompletedProcess[str]:
             return subprocess.run(
                 [sys.executable, str(self.root / "tools/release_gate.py"),
-                 "--version", self.VERSION, "--commit", "HEAD"],
+                 "--version", candidate_version, "--commit", "HEAD"],
                 cwd=self.root, capture_output=True, text=True, timeout=60,
             )
 
@@ -866,7 +871,7 @@ class LiveCandidateAcceptedCorpusTests(unittest.TestCase):
         commit()
         result = check()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("release gate passed for " + self.VERSION, result.stdout)
+        self.assertIn("release gate passed for " + candidate_version, result.stdout)
         print("PASS release-gate clean candidate", flush=True)
 
         document = self.root / "protocol/skillfile-sources.md"
