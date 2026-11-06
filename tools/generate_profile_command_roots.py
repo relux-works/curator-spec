@@ -304,6 +304,9 @@ def output():
         ('repair-stale-unaudited','explicit-repair',False,True,'refuse-unchanged'),
         ('repair-stale-revision','explicit-repair',False,True,'refuse-unchanged'),
         ('repair-stale-descendant','explicit-repair',False,True,'refuse-unchanged'),
+        ('repair-stale-observer','explicit-repair',False,True,'refuse-unchanged'),
+        ('repair-stale-operator','explicit-repair',False,True,'refuse-unchanged'),
+        ('repair-stale-reason','explicit-repair',False,True,'refuse-unchanged'),
         ('repair-retargeted','explicit-repair',False,True,'refuse-unchanged'),
         ('repair-live-dropped','explicit-repair',False,True,'refuse-unchanged'),
         ('repair-inputs-differ','explicit-repair',False,True,'refuse-unchanged'),('repair-generation-reused','explicit-repair',False,True,'refuse-unchanged'),('repair-input-missing','explicit-repair',False,False,'refuse-unchanged'),
@@ -329,9 +332,12 @@ def output():
         state.update(retained_edge=edge,staged_edge=deepcopy(edge),observer_confirmed=False,
                      descendants_quiescent=False,operator=False,fenced=False,audit_durable=False,
                      reason='',if_revision=1)
-        if label in ['repair-stale-reconciled','repair-stale-descendant']: state.update(observer_confirmed=True,descendants_quiescent=label=='repair-stale-reconciled')
-        if label in ['repair-stale-broken','repair-stale-unfenced','repair-stale-unaudited','repair-stale-revision']:
+        if label in ['repair-stale-reconciled','repair-stale-descendant','repair-stale-observer']:
+            state.update(observer_confirmed=label!='repair-stale-observer',descendants_quiescent=label!='repair-stale-descendant')
+        if label in ['repair-stale-broken','repair-stale-unfenced','repair-stale-unaudited','repair-stale-revision','repair-stale-operator','repair-stale-reason']:
             state.update(operator=True,fenced=label!='repair-stale-unfenced',audit_durable=label!='repair-stale-unaudited',reason='domain fenced')
+        if label=='repair-stale-operator': state['operator']=False
+        if label=='repair-stale-reason': state['reason']=''
         if label=='repair-stale-revision': state['if_revision']=2
         if label=='repair-retargeted': state['staged_edge']['generation']=state['new_generation']
         if label=='repair-live-dropped': state['staged_edge']['kind']='none'

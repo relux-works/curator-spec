@@ -273,3 +273,13 @@ including authority, path existence, symlink handling, precedence and lifecycle
 ownership. The current empty-only `codex_settings` grammar remains in force.
 Legacy seed entries have no reliable copied-versus-user-authored provenance;
 this question does not authorize repair, migration or trust deletion.
+
+## Native command-root milestone decisions
+
+The [seven-gate owner packet](protocol/profile-command-root-admission.md) remains
+unaccepted. Recommend operator prune with no automatic command-root GC (no disk
+bound), explicit policy lock/CAS, two journal classes and native companion scope.
+Full pins instead needs non-root Linux supervision and request retirement designs.
+W0 must establish real tool-shell PATH/identity delivery and settings precedence.
+Journal inode preservation/staging paths and actual runtime receipts remain open.
+No production names, numbers, gate opening or capability are allocated here.

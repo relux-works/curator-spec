@@ -577,9 +577,11 @@ has a separate corpus. Generate/check it with
 `conformance/profile-command-roots-v1`; no product runtime is qualified.
 
 The [native admission decision packet](protocol/profile-command-root-admission.md)
-keeps all six root-emission gates CLOSED and asks their owners to accept concrete
-resolutions. Check its candidate policy/paths, conditional carrier and pin/repair
+keeps all seven root-emission gates CLOSED and asks their owners to accept concrete
+resolutions, recommending operator prune with no automatic command-root GC.
+Check its candidate policy/CAS, paths, conditional carrier and optional pin/repair
 controls with `python -B -m unittest discover -s tools -p test_native_root_admission.py`.
 The candidate fixture is `conformance/profile-command-roots-v1/native-admission-proposal.json`;
-the validator prints model-only results to stdout. No implementation or runtime
+the pins-only addition is `conformance/profile-command-roots-v1/native-pins-alternative.json`.
+The validator prints model-only results to stdout. No implementation or runtime
 acceptance follows from these checks.

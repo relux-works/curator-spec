@@ -4,6 +4,16 @@ import json
 from profile_command_roots import ROOT, SCHEMAS, CORPUS, validators, require, absolute, bounded_path, strict_pairs, Refusal
 from jsonschema import Draft202012Validator
 
+GATES = ('Joint v5 carrier', 'Protected admission policy', 'Protected-state locations',
+         'Session integration', 'Journal coverage', 'Native runtime witnesses', 'Companion admission')
+
+
+def check_gate_text(text):
+    # Checks the seven actual packet rows, not owner acceptance or runtime state.
+    for gate in GATES:
+        rows = [line for line in text.splitlines() if line.startswith('| '+gate+' — ')]
+        require(len(rows) == 1 and rows[0].startswith('| '+gate+' — **CLOSED** |'), 'gate-status-'+gate)
+
 
 def joint_candidate():
     """Preserve sole rc7 semantics while proposing a conditional native B-a pair."""
@@ -16,46 +26,64 @@ def joint_candidate():
     return Draft202012Validator(schema, registry=validators()['native-admission-proposal.schema.json']._registry)
 
 
-def locations(home, profile, generation, platform, lease, request):
+def locations(home, profile, generation, platform, session=None):
     tree = f'{home}/environments/{profile}/commands/{generation}/{platform}'
     state = home+'/state/command-roots'
-    return dict(root=tree+'/bin', inventory=tree+'/inventory.json',
-                receipt=tree+'/bin/.curator-profile-command-root.json', marker=tree+'/generation.json',
-                generation=f'{state}/g/{generation}.json', selected=f'{state}/selected/{profile}.json',
-                session=f'{state}/sessions/{lease}.json', replay=f'{state}/requests/{profile}/{request}.json',
-                policy=state+'/admission.json')
+    paths = dict(root=tree+'/bin', inventory=tree+'/inventory.json',
+                 receipt=tree+'/bin/.curator-profile-command-root.json', marker=tree+'/generation.json',
+                 selected=f'{state}/selected/{profile}.json', policy=state+'/admission.json')
+    if session is not None:
+        paths['session'] = f'{state}/sessions/{session}.json'
+    return paths
 
 
-def check_candidate(case, trusted):
+def check_candidate(case, observed):
     require(validators()['native-admission-proposal.schema.json'].is_valid(case), 'candidate-schema')
-    policy = case['policy']; req = case['acquire']; replay = case['replay']; pin = replay['pin']
-    require(policy['manager_home'] == trusted['home'] and policy['uid'] == trusted['uid']
-            and policy['revision'] == trusted['policy_revision'], 'candidate-policy-authority')
-    for name in ['manager','launcher','entry_point']:
-        require(absolute(policy[name]['path']) and policy[name] == trusted[name], 'candidate-'+name)
-    require(all(absolute(v) for v in [policy['manager_home'],policy['entry_point']['path']]), 'candidate-path')
+    policy = case['policy']; selected = case['selected']; binding = selected['binding']
+    # Observed home is the explicit operator launch input, not missing-policy inference.
+    require(policy['manager_home'] == observed['home'] and policy['uid'] == observed['uid']
+            and policy['revision'] == observed['policy_revision'], 'candidate-policy-authority')
+    for name in ['manager','launcher']:
+        require(absolute(policy[name]['path']) and policy[name] == observed[name], 'candidate-'+name)
     profiles = policy['profiles']
     require(len({p['profile'] for p in profiles}) == len(profiles), 'candidate-profile-duplicate')
-    require(any(p['profile'] == req['profile'] and p['lock_sha256'] == req['binding']['lock_sha256']
+    require(any(p['profile'] == selected['profile'] and p['lock_sha256'] == binding['lock_sha256']
                 for p in profiles), 'candidate-selected-lock')
-    require(req['binding']['platform'].startswith('linux-'), 'candidate-native-linux')
-    require(case['selected']['profile'] == req['profile']
-            and case['selected']['binding'] == req['binding']
-            and case['selected']['revision'] == trusted['selected_revision'], 'candidate-selection')
-    require(req == replay['request'], 'session-request-conflict')
-    for key in ['request_id','profile','binding','supervisor_instance','boot_id','process_domain','process_started_at']:
-        require(req[key] == pin[key], 'candidate-issued-'+key)
-    require(pin['phase'] == 'active' and pin['revision'] == 1, 'candidate-issued-phase')
-    # The transport cannot supply its own authority: the launcher retained this
-    # full request before acquire; manager and response must agree with it.
-    require(req == trusted['request'], 'candidate-request-authority')
-    paths = locations(policy['manager_home'],req['profile'],req['binding']['generation'],
-                      req['binding']['platform'],pin['lease_id'],req['request_id'])
-    generation = case['generation']
-    require(generation['profile'] == req['profile'] and generation['binding'] == req['binding'], 'candidate-generation-binding')
-    require(generation['root'] == paths['root'] and generation['inventory'] == paths['inventory'], 'candidate-generation-location')
+    require(binding['platform'].startswith('linux-'), 'candidate-native-linux')
+    require(selected == observed['selected'], 'candidate-selection')
+    sid = None
+    if case['variant'] == 'pins':
+        session = case['session']; req = session['request']; pin = session['pin']
+        require(req['profile'] == selected['profile'] and req['binding'] == binding, 'candidate-request-binding')
+        for key in ['request_id','profile','binding','supervisor_instance','boot_id','process_domain','process_started_at']:
+            require(req[key] == pin[key], 'candidate-issued-'+key)
+        require(pin['phase'] == 'active' and pin['revision'] == 1, 'candidate-issued-phase')
+        require(pin['lease_id'] == req['request_id'], 'candidate-session-key')
+        require(req == observed['request'], 'candidate-request-authority')
+        sid = req['request_id']
+    paths = locations(policy['manager_home'],selected['profile'],binding['generation'],binding['platform'],sid)
     require(all(bounded_path(p) for p in paths.values()), 'candidate-path-limit')
     return paths
+
+
+def policy_update(current, proposed, if_revision, selected):
+    # Pure CAS/postimage consistency model; atomic filesystem durability is unqualified.
+    check = validators()['native-admission-proposal.schema.json']
+    shape = check.evolve(schema={'$ref': check.schema['$id']+'#/$defs/policy'})
+    require(shape.is_valid(proposed), 'policy-update-schema')
+    revision = current['revision'] if current else 0
+    require(if_revision == revision, 'policy-update-cas')
+    require(proposed['revision'] == revision+1, 'policy-update-revision')
+    require(all(selected.get(p['profile']) == p['lock_sha256'] for p in proposed['profiles']), 'policy-update-lock')
+    return deepcopy(proposed)
+
+
+def prune_candidate(automatic, operator_stopped, retained):
+    # Attestation is an operator assertion, not an OS quiescence measurement.
+    require(not automatic, 'prune-automatic')
+    require(operator_stopped, 'prune-attestation')
+    require(not retained, 'prune-retained')
+    return 'operator-prune'
 
 
 def decode_acquire(raw):
@@ -75,24 +103,28 @@ def replay_acquire(saved, request):
 
 
 def identity_environment(identity, directory, inherited):
-    # Operator inputs scope configuration; this supplies no identity enforcement.
+    # New native sessions scrub both old session keys, even without identity flags.
+    result = {k:v for k,v in inherited.items() if k not in {'A2A_SESSION_ID','CODEX_THREAD_ID'}}
     if identity is None and directory is None:
-        return deepcopy(inherited)
+        return result
     require(isinstance(identity, str) and bool(identity) and directory is not None,
             'native-identity-pair')
     require(isinstance(directory, str) and absolute(directory), 'native-identity-directory')
     values = dict(A2A_AGENT=identity, A2A_CONFIG_DIR=directory)
     for key, value in values.items():
-        require(inherited.get(key, value) == value, 'native-identity-conflict')
-    return dict(inherited, **values)
+        require(inherited.get(key) in (None, '', value), 'native-identity-conflict')
+    return dict(result, **values)
 
 
 def validate():
     case = json.loads((CORPUS/'native-admission-proposal.json').read_text())
-    # Fixture authority is literal in the tests; validation here checks the
-    # committed candidate structure, not signatures or runtime provisioning.
-    policy=case['policy']
-    trusted=dict(home='/m',uid=1000,policy_revision=1,selected_revision=1,
-                 request=deepcopy(case['acquire']), **{k:deepcopy(policy[k]) for k in ['manager','launcher','entry_point']})
-    check_candidate(case,trusted)
-    print('Native root admission candidate: shape/path/replay consistency only; all gates CLOSED')
+    policy = case['policy']
+    observed = dict(home='/home/agent/.curator',uid=1000,policy_revision=1,
+                    selected=deepcopy(case['selected']), **{k:deepcopy(policy[k]) for k in ['manager','launcher']})
+    check_candidate(case,observed)
+    case['variant'] = 'pins'
+    case['session'] = json.loads((CORPUS/'native-pins-alternative.json').read_text())
+    observed['request'] = deepcopy(case['session']['request'])
+    check_candidate(case,observed)
+    check_gate_text((ROOT/'protocol/profile-command-root-admission.md').read_text())
+    print('Native admission model: operator prune and optional pins; seven packet rows checked CLOSED; no runtime evidence')

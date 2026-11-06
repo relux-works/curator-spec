@@ -57,12 +57,14 @@ Linux/macOS/Windows; receipt paths also bound `home + profile <= 101/100/99`.
 Shape assertions independently hold the 18-byte home, 23/64-byte profiles and
 second distinct settings resource. HookModel fixes `a2a` and omits the second
 command dimension in its resource key; it cannot qualify hook admission.
-A9/A10 are closed in the bounded model; protected integration, native observer
-and durable restore witnesses still gate implementation admission.
+A9/A10 are bounded checks for the pins alternative. They are inapplicable to the
+recommended no-GC milestone. Matrix acceptance admits fenced implementation;
+accepted receipts precede emission and adoption.
 
 The [native owner packet](../../protocol/profile-command-root-admission.md) keeps
-all six gates CLOSED. `native-admission-proposal.json` and its candidate schema
-model a private policy, exact final paths and acquire/replay records without
+all seven gates CLOSED. `native-admission-proposal.json` and its candidate schema
+model operator-prune admission; `native-pins-alternative.json` supplies the optional
+one-record pins addition, without
 allocating production names. Run
 `python -B -m unittest discover -s tools -p test_native_root_admission.py` for
 named candidate, pin-authority and repair-edge vectors and noncrashing plants.

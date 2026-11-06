@@ -22,16 +22,19 @@ a conditional B-a member pair preserving rc7 in the [native decision packet](pro
 8/9 and lock 6 remain their owning lanes' allocations. No new lock, config,
 launcher-config or journal number is allocated here.
 
-B-a needs journal coverage for generation publication, session pins and
-reference/settings transitions. Existing 84-profile-generation and
+B-a needs journal coverage for generation publication and selection;
+reference/settings transitions remain hook work. The full-pins alternative uses
+one atomic session record, not a per-launch engine transaction. Existing
+84-profile-generation and
 85-profile-routing retain their existing scopes: this document does not silently
-extend them. The journal owner must provide an allocation or explicitly approve
-reuse before implementation admission. The atomic state transitions below are
+extend them. The journal owner must accept dedicated publication/selection
+coverage before implementation of those journal contracts; extending 84/85 is
+not proposed. The atomic state transitions below are
 specification models, not evidence that an existing transaction class covers them.
 Proposed resolution: the named [journal coverage decision](profile-command-root-admission.md#journal-decision-and-native-witnesses),
 with dedicated classes recommended and numbers left to the journal owner.
 
-Owner acceptance is requested in the [six-gate native decision packet](profile-command-root-admission.md).
+Owner acceptance is requested in the [seven-gate native decision packet](profile-command-root-admission.md).
 Its candidate resolutions do not open any gate.
 
 ## Compatibility and admission
@@ -62,17 +65,22 @@ Root reconstruction is only the explicit operator operation below.
 | Old / old | B-a home admission refuses before manager invocation; no fallback. | Existing behavior, no B-a claim. |
 
 A reader cannot infer required commands from an old fragment's absence of a
-field. The manager-home operator must provision a protected admission policy
-binding the selected profile/lock to required B-a capability and the exact
-admitted manager executable/distribution and launcher capability. New launchers
-read that policy before calling the manager; old-manager output cannot override
-it. Legacy launcher/manager entry points must be excluded by that operator's
-controlled entry point and writer cohort. If that exclusion cannot be enforced,
-the manager MUST refuse activation/emission for that home. Lock revision rejection
-alone is not the admission mechanism. Uncontrolled legacy entry points remain
-unqualified, rather than an asserted security boundary. Manager discovery is the
-policy's protected absolute image, never a `PATH` lookup. There is no new config
-revision here.
+field. The operator provisions admission binding selected profile/lock and exact
+manager/launcher image bytes. New launchers read it before invoking the absolute
+manager image, never a PATH lookup. No distribution signer is implied.
+The operator attests that legacy entry points are excluded from this workflow and writer cohort. Without that attestation, the manager MUST refuse activation/emission for that home.
+Lock revision rejection alone is not admission. Uncontrolled legacy entry points
+remain unqualified. The [candidate policy](profile-command-root-admission.md#candidate-policy-and-controlled-entry-point)
+uses an explicit operator-invoked operation with lock/CAS; install and auto-upgrade
+never invoke it. No new config revision is allocated here.
+
+### Protected state definition
+
+“Protected” means operator-provisioned, same-owner private state checked for
+cooperative integrity; it provides no exclusion against another process under
+the same UID. Such a process can read and use another agent's a2a credentials,
+including access tokens and passwords, and rewrite admission. This accepted limit
+is configuration scoping, not identity enforcement or secret isolation.
 
 **CLOSED root-emission gate — protected admission policy:** the policy schema,
 protected location, provisioning/update authority and legacy entry-point exclusion
@@ -160,7 +168,7 @@ These IDs are local materialization evidence, not portable build/cache keys.
 The root receipt is `bin/.curator-profile-command-root.json`; `generation.json`
 is in the platform directory immediately above `bin`. The inventory's bytes
 are pinned by the receipt, the receipt by the marker, and all three by external
-protected generation state and the fragment. No object hashes itself. The
+protected selected/retention state and the fragment. No object hashes itself. The
 receipt binds source/commit/directory, driver, original build receipt and final
 executable digest for each export. Unknown inventory entries refuse. Equal-byte
 object substitution is detected for the root and command chain objects. Metadata
@@ -169,7 +177,7 @@ pinned native object identities; equal-byte replacement of those metadata files
 alone is outside the substitution claim.
 
 **CLOSED root-emission gate — protected-state locations:** the inventory's exact
-location, protected generation-store layout and session-pin store path below
+location, selected/retention-store layout and optional session-store path below
 have not been accepted. The reference/binding store is separately covered by the hook-activation gates.
 Implementations MUST NOT infer them from this corpus, search provider homes or
 emit B-a until the source/carrier owners accept those locations and include every
@@ -184,24 +192,43 @@ including final-path bounds; journal staging/backup paths still need owner choic
 
 Root emission and native launcher `path_prepend` delivery require the joint v5
 carrier, protected root-state locations, protected admission policy, journal
-coverage, session integration and native runtime witnesses. They do not depend
+coverage, session integration, native runtime witnesses and companion admission.
+They do not depend
 on the gateway naming decision, settings adapters, gateway aggregate or Windows
 dispatcher pins. Hook activation additionally requires every hook gate below;
 accepting this proposal opens none of these gates.
 
 **CLOSED root-emission gate — session integration:** the source/carrier owners
-must accept the manager operation that issues/replays a pin, its request and
-revision contract, the carrier delivering its lease ID to the launcher before
-verification, and protected discovery of the admitted manager by launcher/tools.
-The current resolve argv and rc7 fragment allocate none of these. The state model
-and CLI table below allocate no acquire verb, environment variable or wire
-member. The linked decision packet proposes a separate acquire/check integration
-for owner acceptance; it is not current CLI support. Missing accepted integration refuses B-a before start. Hook pin acquisition
-requires this same integration before hook activation. A9 is closed in the session/launcher model by independent revision, request,
-supervisor and process-incarnation authority comparisons and named negative
-vectors. That does not obtain OS authority or open this gate: the protected
-manager integration and native observer witness remain unaccepted. Proposed
-resolution: [native acquire/replay, revision checks and identity delivery](profile-command-root-admission.md#candidate-native-acquire-replay-and-identity).
+must accept protected manager discovery, identity delivery and the milestone
+retention choice. Recommend [operator prune without automatic command-root GC](profile-command-root-admission.md#candidate-native-acquire-replay-and-identity):
+no acquire/release/request cap or process-domain observation is required. It gives
+up automatic reclamation, a disk bound and A9/A10 relevance for now. Full pins is
+the named additive alternative; it still needs non-root Linux supervision (L)
+and terminal-request/prior-boot retirement with an after-cap route (M to L).
+Its one atomic session record replaces a duplicate request tree. Missing accepted
+integration refuses B-a before start. Hook pins remain separately gated.
+A9's bounded pin-authority comparisons are retained for that alternative; they
+obtain no OS observer authority or runtime qualification.
+
+**CLOSED root-emission gate — companion admission:** source owners must accept
+`profile-command-admission` and `managed-session-skill-cli`. Recommend the
+[native milestone scope](profile-command-root-admission.md#source-seams-and-companion-scope),
+including protected-name inventory with pinned aqua/mise inputs and independent
+admitted-base-PATH collision checks, plus actual final-tool-shell delivery.
+B-a does not discharge command admission. Full companion adoption remains the
+alternative. Curator's unconditional adoption refusal and `CommandChecks` seam
+remain until accepted contracts and runtime receipts qualify their replacement.
+
+The process-pin and automatic-GC provisions below describe the **full-pins
+alternative and future hooks**.
+They do not silently require pins for the recommended no-GC milestone. If owners
+select operator prune, all automatic command-root and dependent-artifact collection
+is disabled (including update/remove/repair/startup); explicit prune under the
+manager lock needs operator stop attestation and refuses selected/snapshot/resume/
+rollback/journal/reference edges. Roots and dependent evidence persist otherwise.
+Pins stay additive. The production carrier/provenance must explicitly allocate
+an unpinned variant before use; no dummy pin or released capability is inferred.
+Both choices remain proposals with every gate CLOSED.
 
 ## Verification budget, process pins and GC
 
@@ -227,13 +254,17 @@ are performance gates for that machine, not measured claims in this spec.
 Independent reflink copies (`clonefile`/`FICLONE`) are allowed if they retain
 private mutation, distinct IDs and link count one. Hard links remain forbidden.
 
-The manager issues a durable session pin under the existing manager mutation/GC
-lock before verification. Its protected store is
-`<manager-home>/state/command-roots/sessions/<lease_id>.json`; the closed
+For the full-pins alternative, the manager issues a durable session pin under
+the existing manager mutation/GC lock before verification. Its protected store is
+`<manager-home>/state/command-roots/sessions/<request_id>.json`; the closed
 [session pin schema](../schemas/profile-command-roots-v1/session-pin.schema.json)
 uses discriminator `profile-command-session-pin/1` and binds lease ID, exact root binding/profile, supervisor instance, boot ID,
 OS process-start incarnation and process-domain ID, revision and disposition.
-The launcher MUST jointly match its lease ID, profile and full root binding to an active manager-issued pin before start. Request identity is durable before acquire and idempotently replays the same pin.
+The launcher MUST jointly match lease ID, profile and full binding to an active
+manager-issued pin before start. In this alternative lease ID equals request ID;
+one atomic session record contains request, pin and audit. The launcher keeps its
+request in memory for same-process retries only; a new launcher does not resume
+that authority.
 The issuer is the admitted manager, not the tool or provider. The launcher or
 hook gateway runs as a supervisor which spawns the selected image; the gateway
 itself does not exec away. It forwards stdin/stdout/stderr, cwd, environment and
@@ -265,7 +296,7 @@ state retains conservatively and refuses collection; complete state with no
 edges permits collection. Descendants retain independently of the original PID.
 Cache receipts and source artifacts are live through every retained generation.
 
-Persist `launcher-path-state/2` before child start. It contains unchanged `/1`
+For full pins, persist `launcher-path-state/2` before child start. It contains unchanged `/1`
 `prior_state`, command-root binding, lease ID, `effective_path` and native-joined
 `path_value`. Prior state records base/global admission, not the resulting PATH.
 The result is exactly protected-tools → selected root → admitted base, constructed
@@ -473,8 +504,9 @@ publish their own generation without retargeting any current/running profile.
 **Native runtime gate remains CLOSED for restore:** A10's model vectors now
 separate no edge, live-pin and unknown-session inputs and enforce preservation,
 quiescence or fenced audited break. They do not witness persistent retained edges
-or native reconciliation. Those runtime receipts still precede implementation
-admission under the unresolved bootstrap decision in the owner packet.
+or native reconciliation. Matrix acceptance admits fenced implementation;
+accepted runtime receipts precede emission and adoption. With operator prune,
+no pin reconciliation is claimed or needed; old generations are not auto-collected.
 
 Explicit repair after restore/migration preserves old evidence at its old
 path and materializes a new generation under the same lock from identical source,
@@ -543,12 +575,13 @@ Sibling helpers remain outside B-a; undeclared keychain helpers cannot be copied
 or inferred. Self-update/deleting immutable images is forbidden.
 
 Before native root-delivery adoption, Curator and curator-run must witness real
-isolated publication, no-write refusals, restore, supervision and release/break,
-two versions concurrently, all age pairs, tamper with ambient decoy and full-launch
+isolated publication, no-write refusals and restore; full pins additionally needs
+supervision and release/break. Both need two versions concurrently, all age pairs, tamper with ambient decoy and full-launch
 verification budgets. Journal owner coverage and protected legacy-entry exclusion
 are native admission gates. The [native witness packet](profile-command-root-admission.md#journal-decision-and-native-witnesses)
-proposes the matrix and exposes the implementation/witness bootstrap decision;
-it supplies no runtime receipt or exception. Hook adoption additionally requires pre-start external
+splits matrix acceptance for fenced implementation from receipt acceptance for
+emission/adoption; it supplies no runtime receipt. The fence is defined there once.
+Hook adoption additionally requires pre-start external
 gateway admission, selected-chain verification budgets, real retain/settings/
 upgrade/GC/hook execution and witnessed hook-runner blocking semantics. Those hook
 witnesses do not gate native root delivery. Future capability release must bind this namespace,
@@ -565,7 +598,8 @@ OS source references: [Go Darwin](https://go.dev/src/os/executable_darwin.go),
 [Go Windows](https://go.dev/src/os/executable_windows.go),
 [Linux comm](https://kernel.org/doc/html/v6.10/filesystems/proc.html).
 
-A10 is closed in the bounded transaction model: plain, live-pin and unknown-session
+A10 is checked in the bounded transaction model for the pins alternative:
+plain, live-pin and unknown-session
 repair have distinct edge inputs; unknown refuses without confirmed quiescence
 or fenced audited operator break. Repair preserves old edges verbatim, refusing
 drop or retarget. No persistent reconciliation or migration is qualified.

@@ -32131,6 +32131,294 @@
       }
     },
     {
+      "id": "repair-stale-observer",
+      "state": {
+        "operation": "explicit-repair",
+        "valid": false,
+        "inputs": true,
+        "before": {
+          "lock": "7ec32b146c6620d1ebd4e18753d67245f07d7f0d9af1a55348fb0353084b419a",
+          "source": "470f5e33c65605ccb235dfaab0f3bc914bb2c23ea7a408bf3ad81218feae39a2",
+          "plan": "38184f39fc427e52eb99c655590b58e7a31452ac0f37ca0ecee6e489dece285f",
+          "executable": "710cd00a8040e844b23be3f1064317cd9a976b2f14ffbc674f04c732c4d02838",
+          "build_receipt": "7e798838d285ac77f782f49b18f5ed38ebd02c673b3bacaa030ab56f11054502",
+          "root": "0d030ed1c5eae002028b3ab77d79d0f52437495aab58df9373a19732402b0da9",
+          "marker": "c05f270a3db5233db19d532ddcd8ba7f1f05efd1f711554d6f3f2cfadab265e2",
+          "receipt": "5528467168f63dbfec6b5d3176198d2aa00dfe6903dd2b69284e94c5bac015f9",
+          "inventory": "a52761da8f0abfe56e18c2d3795753dd522c0395d304f6c396e78c816bb04045",
+          "pointer": "2a716cd4dceeca8b4bb3bbb8852a51746bbbdab68f8005d27d654c22964a3115",
+          "prompt": "af7d6b9c88d227363a4e2ce2f928071c9582d90499be1fd273414350195a3b10",
+          "unrelated": "f13cdf1ad81652a9f21e7dc5daeb2324488cb685eb6585fca8af2acf5558dd55"
+        },
+        "staged": {
+          "lock": "7ec32b146c6620d1ebd4e18753d67245f07d7f0d9af1a55348fb0353084b419a",
+          "source": "470f5e33c65605ccb235dfaab0f3bc914bb2c23ea7a408bf3ad81218feae39a2",
+          "plan": "38184f39fc427e52eb99c655590b58e7a31452ac0f37ca0ecee6e489dece285f",
+          "executable": "710cd00a8040e844b23be3f1064317cd9a976b2f14ffbc674f04c732c4d02838",
+          "build_receipt": "7e798838d285ac77f782f49b18f5ed38ebd02c673b3bacaa030ab56f11054502",
+          "root": "2bbd4fea238b0b3839c331a4ea3f49f4433b9a7d2a115f398980114e1768befc",
+          "marker": "bd513f7414b48c39d7f58b2f1407498c804f0730aac46b80ce96e0e033ca1708",
+          "receipt": "f9a494d44a78d24694b3a49f2b4bd1caaedca561afee898afe51ea3636a0c746",
+          "inventory": "07c0640bf370f19bf190f467054bdce66a90e63f092089ab5439e1f0de326d6c",
+          "pointer": "502923848da3b098f704c7bc2b5077e87699e3488e1b3e6748460c1f8ddad0d5",
+          "prompt": "c8e794dbda1ae17d4b49d82f31eae032220a555087a8b2693c0f83f84c32d9e2",
+          "unrelated": "f13cdf1ad81652a9f21e7dc5daeb2324488cb685eb6585fca8af2acf5558dd55"
+        },
+        "old_generation": "038e284cdb0dfa7b218e9269cd873c021d522da2d31ee718bbd40d56b84aeb9b",
+        "new_generation": "47e1b0b1dc1d0d6354ce0cc7d5784910f4e3a8cff8fe1f1262919f11f1c4f4fa",
+        "retained_edge": {
+          "kind": "unknown-session",
+          "generation": "038e284cdb0dfa7b218e9269cd873c021d522da2d31ee718bbd40d56b84aeb9b",
+          "revision": 1
+        },
+        "staged_edge": {
+          "kind": "unknown-session",
+          "generation": "038e284cdb0dfa7b218e9269cd873c021d522da2d31ee718bbd40d56b84aeb9b",
+          "revision": 1
+        },
+        "observer_confirmed": false,
+        "descendants_quiescent": true,
+        "operator": false,
+        "fenced": false,
+        "audit_durable": false,
+        "reason": "",
+        "if_revision": 1
+      },
+      "expected": {
+        "refusal": "repair-session-unconfirmed",
+        "retained_edge": {
+          "kind": "unknown-session",
+          "generation": "038e284cdb0dfa7b218e9269cd873c021d522da2d31ee718bbd40d56b84aeb9b",
+          "revision": 1
+        },
+        "outcome": "refuse-unchanged",
+        "live": {
+          "lock": "7ec32b146c6620d1ebd4e18753d67245f07d7f0d9af1a55348fb0353084b419a",
+          "source": "470f5e33c65605ccb235dfaab0f3bc914bb2c23ea7a408bf3ad81218feae39a2",
+          "plan": "38184f39fc427e52eb99c655590b58e7a31452ac0f37ca0ecee6e489dece285f",
+          "executable": "710cd00a8040e844b23be3f1064317cd9a976b2f14ffbc674f04c732c4d02838",
+          "build_receipt": "7e798838d285ac77f782f49b18f5ed38ebd02c673b3bacaa030ab56f11054502",
+          "root": "0d030ed1c5eae002028b3ab77d79d0f52437495aab58df9373a19732402b0da9",
+          "marker": "c05f270a3db5233db19d532ddcd8ba7f1f05efd1f711554d6f3f2cfadab265e2",
+          "receipt": "5528467168f63dbfec6b5d3176198d2aa00dfe6903dd2b69284e94c5bac015f9",
+          "inventory": "a52761da8f0abfe56e18c2d3795753dd522c0395d304f6c396e78c816bb04045",
+          "pointer": "2a716cd4dceeca8b4bb3bbb8852a51746bbbdab68f8005d27d654c22964a3115",
+          "prompt": "af7d6b9c88d227363a4e2ce2f928071c9582d90499be1fd273414350195a3b10",
+          "unrelated": "f13cdf1ad81652a9f21e7dc5daeb2324488cb685eb6585fca8af2acf5558dd55"
+        },
+        "preserved_old": {
+          "lock": "7ec32b146c6620d1ebd4e18753d67245f07d7f0d9af1a55348fb0353084b419a",
+          "source": "470f5e33c65605ccb235dfaab0f3bc914bb2c23ea7a408bf3ad81218feae39a2",
+          "plan": "38184f39fc427e52eb99c655590b58e7a31452ac0f37ca0ecee6e489dece285f",
+          "executable": "710cd00a8040e844b23be3f1064317cd9a976b2f14ffbc674f04c732c4d02838",
+          "build_receipt": "7e798838d285ac77f782f49b18f5ed38ebd02c673b3bacaa030ab56f11054502",
+          "root": "0d030ed1c5eae002028b3ab77d79d0f52437495aab58df9373a19732402b0da9",
+          "marker": "c05f270a3db5233db19d532ddcd8ba7f1f05efd1f711554d6f3f2cfadab265e2",
+          "receipt": "5528467168f63dbfec6b5d3176198d2aa00dfe6903dd2b69284e94c5bac015f9",
+          "inventory": "a52761da8f0abfe56e18c2d3795753dd522c0395d304f6c396e78c816bb04045",
+          "pointer": "2a716cd4dceeca8b4bb3bbb8852a51746bbbdab68f8005d27d654c22964a3115",
+          "prompt": "af7d6b9c88d227363a4e2ce2f928071c9582d90499be1fd273414350195a3b10",
+          "unrelated": "f13cdf1ad81652a9f21e7dc5daeb2324488cb685eb6585fca8af2acf5558dd55"
+        },
+        "pending_journal": false,
+        "evidence_generations": [
+          "038e284cdb0dfa7b218e9269cd873c021d522da2d31ee718bbd40d56b84aeb9b"
+        ]
+      }
+    },
+    {
+      "id": "repair-stale-operator",
+      "state": {
+        "operation": "explicit-repair",
+        "valid": false,
+        "inputs": true,
+        "before": {
+          "lock": "7ec32b146c6620d1ebd4e18753d67245f07d7f0d9af1a55348fb0353084b419a",
+          "source": "470f5e33c65605ccb235dfaab0f3bc914bb2c23ea7a408bf3ad81218feae39a2",
+          "plan": "38184f39fc427e52eb99c655590b58e7a31452ac0f37ca0ecee6e489dece285f",
+          "executable": "710cd00a8040e844b23be3f1064317cd9a976b2f14ffbc674f04c732c4d02838",
+          "build_receipt": "7e798838d285ac77f782f49b18f5ed38ebd02c673b3bacaa030ab56f11054502",
+          "root": "0d030ed1c5eae002028b3ab77d79d0f52437495aab58df9373a19732402b0da9",
+          "marker": "c05f270a3db5233db19d532ddcd8ba7f1f05efd1f711554d6f3f2cfadab265e2",
+          "receipt": "5528467168f63dbfec6b5d3176198d2aa00dfe6903dd2b69284e94c5bac015f9",
+          "inventory": "a52761da8f0abfe56e18c2d3795753dd522c0395d304f6c396e78c816bb04045",
+          "pointer": "2a716cd4dceeca8b4bb3bbb8852a51746bbbdab68f8005d27d654c22964a3115",
+          "prompt": "af7d6b9c88d227363a4e2ce2f928071c9582d90499be1fd273414350195a3b10",
+          "unrelated": "f13cdf1ad81652a9f21e7dc5daeb2324488cb685eb6585fca8af2acf5558dd55"
+        },
+        "staged": {
+          "lock": "7ec32b146c6620d1ebd4e18753d67245f07d7f0d9af1a55348fb0353084b419a",
+          "source": "470f5e33c65605ccb235dfaab0f3bc914bb2c23ea7a408bf3ad81218feae39a2",
+          "plan": "38184f39fc427e52eb99c655590b58e7a31452ac0f37ca0ecee6e489dece285f",
+          "executable": "710cd00a8040e844b23be3f1064317cd9a976b2f14ffbc674f04c732c4d02838",
+          "build_receipt": "7e798838d285ac77f782f49b18f5ed38ebd02c673b3bacaa030ab56f11054502",
+          "root": "2bbd4fea238b0b3839c331a4ea3f49f4433b9a7d2a115f398980114e1768befc",
+          "marker": "bd513f7414b48c39d7f58b2f1407498c804f0730aac46b80ce96e0e033ca1708",
+          "receipt": "f9a494d44a78d24694b3a49f2b4bd1caaedca561afee898afe51ea3636a0c746",
+          "inventory": "07c0640bf370f19bf190f467054bdce66a90e63f092089ab5439e1f0de326d6c",
+          "pointer": "502923848da3b098f704c7bc2b5077e87699e3488e1b3e6748460c1f8ddad0d5",
+          "prompt": "c8e794dbda1ae17d4b49d82f31eae032220a555087a8b2693c0f83f84c32d9e2",
+          "unrelated": "f13cdf1ad81652a9f21e7dc5daeb2324488cb685eb6585fca8af2acf5558dd55"
+        },
+        "old_generation": "038e284cdb0dfa7b218e9269cd873c021d522da2d31ee718bbd40d56b84aeb9b",
+        "new_generation": "47e1b0b1dc1d0d6354ce0cc7d5784910f4e3a8cff8fe1f1262919f11f1c4f4fa",
+        "retained_edge": {
+          "kind": "unknown-session",
+          "generation": "038e284cdb0dfa7b218e9269cd873c021d522da2d31ee718bbd40d56b84aeb9b",
+          "revision": 1
+        },
+        "staged_edge": {
+          "kind": "unknown-session",
+          "generation": "038e284cdb0dfa7b218e9269cd873c021d522da2d31ee718bbd40d56b84aeb9b",
+          "revision": 1
+        },
+        "observer_confirmed": false,
+        "descendants_quiescent": false,
+        "operator": false,
+        "fenced": true,
+        "audit_durable": true,
+        "reason": "domain fenced",
+        "if_revision": 1
+      },
+      "expected": {
+        "refusal": "repair-session-unconfirmed",
+        "retained_edge": {
+          "kind": "unknown-session",
+          "generation": "038e284cdb0dfa7b218e9269cd873c021d522da2d31ee718bbd40d56b84aeb9b",
+          "revision": 1
+        },
+        "outcome": "refuse-unchanged",
+        "live": {
+          "lock": "7ec32b146c6620d1ebd4e18753d67245f07d7f0d9af1a55348fb0353084b419a",
+          "source": "470f5e33c65605ccb235dfaab0f3bc914bb2c23ea7a408bf3ad81218feae39a2",
+          "plan": "38184f39fc427e52eb99c655590b58e7a31452ac0f37ca0ecee6e489dece285f",
+          "executable": "710cd00a8040e844b23be3f1064317cd9a976b2f14ffbc674f04c732c4d02838",
+          "build_receipt": "7e798838d285ac77f782f49b18f5ed38ebd02c673b3bacaa030ab56f11054502",
+          "root": "0d030ed1c5eae002028b3ab77d79d0f52437495aab58df9373a19732402b0da9",
+          "marker": "c05f270a3db5233db19d532ddcd8ba7f1f05efd1f711554d6f3f2cfadab265e2",
+          "receipt": "5528467168f63dbfec6b5d3176198d2aa00dfe6903dd2b69284e94c5bac015f9",
+          "inventory": "a52761da8f0abfe56e18c2d3795753dd522c0395d304f6c396e78c816bb04045",
+          "pointer": "2a716cd4dceeca8b4bb3bbb8852a51746bbbdab68f8005d27d654c22964a3115",
+          "prompt": "af7d6b9c88d227363a4e2ce2f928071c9582d90499be1fd273414350195a3b10",
+          "unrelated": "f13cdf1ad81652a9f21e7dc5daeb2324488cb685eb6585fca8af2acf5558dd55"
+        },
+        "preserved_old": {
+          "lock": "7ec32b146c6620d1ebd4e18753d67245f07d7f0d9af1a55348fb0353084b419a",
+          "source": "470f5e33c65605ccb235dfaab0f3bc914bb2c23ea7a408bf3ad81218feae39a2",
+          "plan": "38184f39fc427e52eb99c655590b58e7a31452ac0f37ca0ecee6e489dece285f",
+          "executable": "710cd00a8040e844b23be3f1064317cd9a976b2f14ffbc674f04c732c4d02838",
+          "build_receipt": "7e798838d285ac77f782f49b18f5ed38ebd02c673b3bacaa030ab56f11054502",
+          "root": "0d030ed1c5eae002028b3ab77d79d0f52437495aab58df9373a19732402b0da9",
+          "marker": "c05f270a3db5233db19d532ddcd8ba7f1f05efd1f711554d6f3f2cfadab265e2",
+          "receipt": "5528467168f63dbfec6b5d3176198d2aa00dfe6903dd2b69284e94c5bac015f9",
+          "inventory": "a52761da8f0abfe56e18c2d3795753dd522c0395d304f6c396e78c816bb04045",
+          "pointer": "2a716cd4dceeca8b4bb3bbb8852a51746bbbdab68f8005d27d654c22964a3115",
+          "prompt": "af7d6b9c88d227363a4e2ce2f928071c9582d90499be1fd273414350195a3b10",
+          "unrelated": "f13cdf1ad81652a9f21e7dc5daeb2324488cb685eb6585fca8af2acf5558dd55"
+        },
+        "pending_journal": false,
+        "evidence_generations": [
+          "038e284cdb0dfa7b218e9269cd873c021d522da2d31ee718bbd40d56b84aeb9b"
+        ]
+      }
+    },
+    {
+      "id": "repair-stale-reason",
+      "state": {
+        "operation": "explicit-repair",
+        "valid": false,
+        "inputs": true,
+        "before": {
+          "lock": "7ec32b146c6620d1ebd4e18753d67245f07d7f0d9af1a55348fb0353084b419a",
+          "source": "470f5e33c65605ccb235dfaab0f3bc914bb2c23ea7a408bf3ad81218feae39a2",
+          "plan": "38184f39fc427e52eb99c655590b58e7a31452ac0f37ca0ecee6e489dece285f",
+          "executable": "710cd00a8040e844b23be3f1064317cd9a976b2f14ffbc674f04c732c4d02838",
+          "build_receipt": "7e798838d285ac77f782f49b18f5ed38ebd02c673b3bacaa030ab56f11054502",
+          "root": "0d030ed1c5eae002028b3ab77d79d0f52437495aab58df9373a19732402b0da9",
+          "marker": "c05f270a3db5233db19d532ddcd8ba7f1f05efd1f711554d6f3f2cfadab265e2",
+          "receipt": "5528467168f63dbfec6b5d3176198d2aa00dfe6903dd2b69284e94c5bac015f9",
+          "inventory": "a52761da8f0abfe56e18c2d3795753dd522c0395d304f6c396e78c816bb04045",
+          "pointer": "2a716cd4dceeca8b4bb3bbb8852a51746bbbdab68f8005d27d654c22964a3115",
+          "prompt": "af7d6b9c88d227363a4e2ce2f928071c9582d90499be1fd273414350195a3b10",
+          "unrelated": "f13cdf1ad81652a9f21e7dc5daeb2324488cb685eb6585fca8af2acf5558dd55"
+        },
+        "staged": {
+          "lock": "7ec32b146c6620d1ebd4e18753d67245f07d7f0d9af1a55348fb0353084b419a",
+          "source": "470f5e33c65605ccb235dfaab0f3bc914bb2c23ea7a408bf3ad81218feae39a2",
+          "plan": "38184f39fc427e52eb99c655590b58e7a31452ac0f37ca0ecee6e489dece285f",
+          "executable": "710cd00a8040e844b23be3f1064317cd9a976b2f14ffbc674f04c732c4d02838",
+          "build_receipt": "7e798838d285ac77f782f49b18f5ed38ebd02c673b3bacaa030ab56f11054502",
+          "root": "2bbd4fea238b0b3839c331a4ea3f49f4433b9a7d2a115f398980114e1768befc",
+          "marker": "bd513f7414b48c39d7f58b2f1407498c804f0730aac46b80ce96e0e033ca1708",
+          "receipt": "f9a494d44a78d24694b3a49f2b4bd1caaedca561afee898afe51ea3636a0c746",
+          "inventory": "07c0640bf370f19bf190f467054bdce66a90e63f092089ab5439e1f0de326d6c",
+          "pointer": "502923848da3b098f704c7bc2b5077e87699e3488e1b3e6748460c1f8ddad0d5",
+          "prompt": "c8e794dbda1ae17d4b49d82f31eae032220a555087a8b2693c0f83f84c32d9e2",
+          "unrelated": "f13cdf1ad81652a9f21e7dc5daeb2324488cb685eb6585fca8af2acf5558dd55"
+        },
+        "old_generation": "038e284cdb0dfa7b218e9269cd873c021d522da2d31ee718bbd40d56b84aeb9b",
+        "new_generation": "47e1b0b1dc1d0d6354ce0cc7d5784910f4e3a8cff8fe1f1262919f11f1c4f4fa",
+        "retained_edge": {
+          "kind": "unknown-session",
+          "generation": "038e284cdb0dfa7b218e9269cd873c021d522da2d31ee718bbd40d56b84aeb9b",
+          "revision": 1
+        },
+        "staged_edge": {
+          "kind": "unknown-session",
+          "generation": "038e284cdb0dfa7b218e9269cd873c021d522da2d31ee718bbd40d56b84aeb9b",
+          "revision": 1
+        },
+        "observer_confirmed": false,
+        "descendants_quiescent": false,
+        "operator": true,
+        "fenced": true,
+        "audit_durable": true,
+        "reason": "",
+        "if_revision": 1
+      },
+      "expected": {
+        "refusal": "repair-session-unconfirmed",
+        "retained_edge": {
+          "kind": "unknown-session",
+          "generation": "038e284cdb0dfa7b218e9269cd873c021d522da2d31ee718bbd40d56b84aeb9b",
+          "revision": 1
+        },
+        "outcome": "refuse-unchanged",
+        "live": {
+          "lock": "7ec32b146c6620d1ebd4e18753d67245f07d7f0d9af1a55348fb0353084b419a",
+          "source": "470f5e33c65605ccb235dfaab0f3bc914bb2c23ea7a408bf3ad81218feae39a2",
+          "plan": "38184f39fc427e52eb99c655590b58e7a31452ac0f37ca0ecee6e489dece285f",
+          "executable": "710cd00a8040e844b23be3f1064317cd9a976b2f14ffbc674f04c732c4d02838",
+          "build_receipt": "7e798838d285ac77f782f49b18f5ed38ebd02c673b3bacaa030ab56f11054502",
+          "root": "0d030ed1c5eae002028b3ab77d79d0f52437495aab58df9373a19732402b0da9",
+          "marker": "c05f270a3db5233db19d532ddcd8ba7f1f05efd1f711554d6f3f2cfadab265e2",
+          "receipt": "5528467168f63dbfec6b5d3176198d2aa00dfe6903dd2b69284e94c5bac015f9",
+          "inventory": "a52761da8f0abfe56e18c2d3795753dd522c0395d304f6c396e78c816bb04045",
+          "pointer": "2a716cd4dceeca8b4bb3bbb8852a51746bbbdab68f8005d27d654c22964a3115",
+          "prompt": "af7d6b9c88d227363a4e2ce2f928071c9582d90499be1fd273414350195a3b10",
+          "unrelated": "f13cdf1ad81652a9f21e7dc5daeb2324488cb685eb6585fca8af2acf5558dd55"
+        },
+        "preserved_old": {
+          "lock": "7ec32b146c6620d1ebd4e18753d67245f07d7f0d9af1a55348fb0353084b419a",
+          "source": "470f5e33c65605ccb235dfaab0f3bc914bb2c23ea7a408bf3ad81218feae39a2",
+          "plan": "38184f39fc427e52eb99c655590b58e7a31452ac0f37ca0ecee6e489dece285f",
+          "executable": "710cd00a8040e844b23be3f1064317cd9a976b2f14ffbc674f04c732c4d02838",
+          "build_receipt": "7e798838d285ac77f782f49b18f5ed38ebd02c673b3bacaa030ab56f11054502",
+          "root": "0d030ed1c5eae002028b3ab77d79d0f52437495aab58df9373a19732402b0da9",
+          "marker": "c05f270a3db5233db19d532ddcd8ba7f1f05efd1f711554d6f3f2cfadab265e2",
+          "receipt": "5528467168f63dbfec6b5d3176198d2aa00dfe6903dd2b69284e94c5bac015f9",
+          "inventory": "a52761da8f0abfe56e18c2d3795753dd522c0395d304f6c396e78c816bb04045",
+          "pointer": "2a716cd4dceeca8b4bb3bbb8852a51746bbbdab68f8005d27d654c22964a3115",
+          "prompt": "af7d6b9c88d227363a4e2ce2f928071c9582d90499be1fd273414350195a3b10",
+          "unrelated": "f13cdf1ad81652a9f21e7dc5daeb2324488cb685eb6585fca8af2acf5558dd55"
+        },
+        "pending_journal": false,
+        "evidence_generations": [
+          "038e284cdb0dfa7b218e9269cd873c021d522da2d31ee718bbd40d56b84aeb9b"
+        ]
+      }
+    },
+    {
       "id": "repair-retargeted",
       "state": {
         "operation": "explicit-repair",

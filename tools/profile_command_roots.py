@@ -52,7 +52,7 @@ REQUIRED = {
         session-incarnation session-request session-profile session-generation session-discriminator
         session-lease session-supervisor session-revision session-domain session-start session-next-revision session-phase'''.split()),
     'transactions': set('''repair-tampered-launch repair-valid-launch repair-explicit
-        repair-pinned-restore repair-stale-session repair-stale-reconciled repair-stale-broken repair-stale-unfenced repair-stale-unaudited repair-stale-revision repair-stale-descendant repair-retargeted repair-live-dropped repair-inputs-differ repair-generation-reused repair-input-missing update-refused
+        repair-pinned-restore repair-stale-session repair-stale-reconciled repair-stale-broken repair-stale-unfenced repair-stale-unaudited repair-stale-revision repair-stale-descendant repair-stale-observer repair-stale-operator repair-stale-reason repair-retargeted repair-live-dropped repair-inputs-differ repair-generation-reused repair-input-missing update-refused
         journal-preparing journal-prepared journal-committing journal-cleanup
         journal-rolling-back journal-rollback-cleanup journal-unknown'''.split()),
 }
@@ -282,7 +282,8 @@ def retention_check(case, checks):
 
 
 def pin_authority(pin, authority, prefix):
-    # Authority is a fresh protected observation, independent of the received pin.
+    # Authority is a fresh manager observation, distinct from the response;
+    # the model does not establish independent trust or OS provenance.
     for field, reason in [('lease_id', 'lease'), ('request_id', 'request'),
                           ('revision', 'revision'), ('supervisor_instance', 'supervisor'),
                           ('boot_id', 'boot'), ('process_domain', 'domain'),

@@ -3330,7 +3330,8 @@ retained hook references and GC. Its independent root-emission and hook-activati
 gates remain closed; existing Slice A and hosted gates also remain.
 
 The [native root-emission decision packet](../protocol/profile-command-root-admission.md)
-proposes six owner resolutions while keeping all six gates CLOSED. It includes
-the protected session-pin location, native identity configuration limits and the
-unresolved implementation/runtime-witness bootstrap decision; no owner acceptance
-or implementation admission follows from its model vectors.
+proposes seven owner resolutions while keeping all seven gates CLOSED. It
+recommends operator prune without automatic command-root GC, an explicit policy
+operation with lock/CAS, and narrowed native companions. Full pins remains additive
+open work. Matrix acceptance admits fenced implementation; accepted receipts admit
+emission/adoption. Model vectors provide neither owner acceptance nor runtime evidence.

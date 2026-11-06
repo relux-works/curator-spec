@@ -18,8 +18,8 @@ cannot authorize emission. Joint carrier acceptance and protected-state location
 Windows pinning remain closed gates in the contract.
 
 `native-admission-proposal.schema.json` contains explicitly unaccepted candidate
-policy, generation/selection, acquire/session-key and request replay layouts for
-the [six-gate owner packet](../../protocol/profile-command-root-admission.md).
+policy, selection and optional atomic session layouts for
+the [seven-gate owner packet](../../protocol/profile-command-root-admission.md).
 Its `candidate/` discriminators allocate no production carrier. The native joint
 composition is conditional and Linux-only, preserving inherited rc7 definitions;
 it is distinct from the earlier cross-platform path model.
