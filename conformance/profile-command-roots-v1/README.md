@@ -49,3 +49,11 @@ and proof/registration contracts remain closed hook gates. Tests inject naming
 drift and remove rollback and active-release guards to witness their effects.
 Session and hook projections are partial: they do not qualify pin issuance,
 incarnation/revision revalidation or process supervision.
+
+Command-path admission uses `home + profile + export <= 135/134/129` on
+Linux/macOS/Windows; receipt paths also bound `home + profile <= 101/100/99`.
+Shape assertions independently hold the 18-byte home, 23/64-byte profiles and
+second distinct settings resource. HookModel fixes `a2a` and omits the second
+command dimension in its resource key; it cannot qualify hook admission.
+Session/launcher binding and distinct repair-edge projections must close under
+the session-integration/native-runtime gates before implementation admission.

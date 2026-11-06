@@ -14,5 +14,5 @@ is allocated by these additive files.
 token. The sole whole-object v5 definition remains coordinated rc7 v5, including
 sole Codex `codex_settings` ownership. The validator's in-memory fixture composition
 adds these required members and models B-a Windows paths/profile grammar; it
-cannot authorize emission. Joint carrier acceptance and R2 locations/aggregate/
+cannot authorize emission. Joint carrier acceptance and protected-state locations/aggregate/
 Windows pinning remain closed gates in the contract.

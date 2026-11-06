@@ -131,6 +131,11 @@ UTF-8 bytes and on Windows 240 UTF-16 units. Check the longest path before write
 not just the marker. At most 256 exports, 1024 checked files, 1 MiB for each
 marker/receipt/inventory, 64 MiB total script/forwarder bytes and 1 GiB total
 native bytes are admitted. Over-limit admission refuses before publication.
+For ASCII command paths the combined budget is `home + profile + export <= 135/134/129` for Linux/macOS/
+Windows respectively (the Windows bound includes the suffix). Receipt paths
+also require `home + profile <= 101/100/99`. These sums, not the independent
+grammar maxima, determine admission; a 64-byte profile and 63-byte export need
+not fit together. Native unit and every protected-record path checks still apply.
 
 Coordinated v5 retains the rc7 adapter/permissions/module contract: for Codex,
 `codex_settings` is the sole typed payload and legacy
@@ -156,8 +161,8 @@ pinned native object identities; equal-byte replacement of those metadata files
 alone is outside the substitution claim.
 
 **CLOSED root-emission gate — protected-state locations:** the inventory's exact
-location and protected generation-store layout have not been accepted. The
-reference/binding store is separately covered by the hook-activation gates.
+location, protected generation-store layout and session-pin store path below
+have not been accepted. The reference/binding store is separately covered by the hook-activation gates.
 Implementations MUST NOT infer them from this corpus, search provider homes or
 emit B-a until the source/carrier owners accept those locations and include every
 resulting record path in the 240-unit preflight. This gate applies independently
@@ -181,7 +186,10 @@ verification, and protected discovery of the admitted manager by launcher/tools.
 The current resolve argv and rc7 fragment allocate none of these. The state model
 and CLI table below do not invent an acquire verb, environment variable or wire
 member. Missing accepted integration refuses B-a before start. Hook pin acquisition
-requires this same integration before hook activation.
+requires this same integration before hook activation. The session and launcher
+models currently omit some revision/incarnation comparisons; passing them cannot
+open this gate. Those comparisons must be modelled with independent negative
+vectors before implementation admission, in addition to the native observer witness.
 
 ## Verification budget, process pins and GC
 
@@ -332,6 +340,9 @@ The bounded HookModel exercises per-reference revision CAS but its ID list and
 active/rollback pointers are model projections, not the CLI's full record list
 or an accepted persistent aggregate encoding. These stable-form projections
 depend on the open gateway decision; stale settings do not identify an old reference ID.
+HookModel currently fixes the command to `a2a` and keys retain/selection by settings
+resource and generation. It does not model the text's resource-and-command key or
+two commands in one resource; hook admission remains closed on that distinction.
 
 Idempotency is by `(profile, command, canonical settings resource, selected
 root binding)`, with request replay indexed durably. A crash before settings
@@ -345,8 +356,13 @@ scripts). Installed profiles and snapshots are separately operator-bounded;
 there is no claim of a machine-wide disk quota. Age/TTL alone cannot reclaim.
 At most 4096 reference request/tombstone entries per profile are stored; a new
 request past that cap refuses the same limit diagnostic, while known identical
-retries still work. This allows sixteen full 256-reference turnovers while
-bounding replay metadata; operators must explicitly archive/fence the old request
+retries still work. The caps are per profile, so settings resources multiply their
+use: with one
+command and one rollback per resource, 256 references serve at most 128 resources.
+At one new request per resource per upgrade, 4096 entries allow at most
+`floor(4096 / resources)` upgrades (204 at 20 resources); fresh-ID retries also
+consume entries. These are bounds, not an upgrade guarantee. To bound replay
+metadata, operators must explicitly archive/fence the old request
 epoch before a later maintenance transition. This slice does not allocate that
 transition or silently discard replay protection.
 
@@ -442,6 +458,12 @@ preimages. Existing handled adapter-conflict exceptions remain precisely their
 old contract, not permission to publish a failed root. Inactive profiles may
 publish their own generation without retargeting any current/running profile.
 
+**Native runtime gate remains CLOSED for restore:** the repair corpus currently
+shares one reconstruction input for plain, live-pin and stale-session labels.
+Before implementation admission the model must distinguish retained old edges,
+reconciliation and fenced break, with negative controls; native restore and GC
+witnesses remain independently required by the runtime gate below.
+
 Explicit repair after restore/migration preserves old evidence at its old
 path and materializes a new generation under the same lock from identical source,
 plan and build-content pins. New native IDs produce new receipt/inventory/marker
@@ -519,6 +541,10 @@ witnesses do not gate native root delivery. Future capability release must bind 
 required-ID corpus and these exact runtime witnesses in the release inventory/gate;
 rc.14 remains byte-frozen and gains no capability claim. The design's earlier
 shim/path proposal must be updated by its owner at implementation adoption.
+Curator's landed Slice A seam publishes forwarding shims under `global/bin` and
+refuses skill-plan adoption. That seam does not emit a B-a profile root or prove
+launcher delivery; the manager owner must select the B-a delivery path explicitly
+at adoption, without silently treating the global generation as a B-a generation.
 
 OS source references: [Go Darwin](https://go.dev/src/os/executable_darwin.go),
 [Go procfs](https://go.dev/src/os/executable_procfs.go),

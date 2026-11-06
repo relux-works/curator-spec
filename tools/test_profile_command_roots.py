@@ -356,6 +356,22 @@ class ProfileCommandRoots(unittest.TestCase):
             model.retain('/settings/hooks', 'over-cap')
 
 
+    def test_named_witness_shapes(self):
+        # A coherent generator edit cannot shrink the named path/resource witnesses.
+        cases = {c['id']: c['state'] for c in self.data['cases']}
+        for label, profile_size in [('realistic-shape', 23), ('profile-64', 64),
+                                    ('profile-64-windows', 64)]:
+            trusted = cases[label]['trusted']
+            with self.subTest(row=label):
+                self.assertEqual((len(trusted['manager'].encode()),
+                                  len(trusted['profile'].encode())), (18, profile_size), label)
+        references = {c['id']: c['state']['record'] for c in self.data['references']}
+        first = references['reference-valid']; second = references['reference-second-resource']
+        self.assertEqual((second['profile'], second['command'], second['binding'],
+                          second['settings_resource'] != first['settings_resource']),
+                         (first['profile'], first['command'], first['binding'], True),
+                         'reference-second-resource')
+
     def test_path_budget_boundaries_and_realistic_profiles(self):
         # Complete root admission reaches a 64-byte profile and distinguishes 240/241.
         cases = {c['id']: c for c in self.data['cases']}
