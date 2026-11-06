@@ -74,6 +74,19 @@ def replay_acquire(saved, request):
     return deepcopy(saved['pin'])
 
 
+def identity_environment(identity, directory, inherited):
+    # Operator inputs scope configuration; this supplies no identity enforcement.
+    if identity is None and directory is None:
+        return deepcopy(inherited)
+    require(isinstance(identity, str) and bool(identity) and directory is not None,
+            'native-identity-pair')
+    require(isinstance(directory, str) and absolute(directory), 'native-identity-directory')
+    values = dict(A2A_AGENT=identity, A2A_CONFIG_DIR=directory)
+    for key, value in values.items():
+        require(inherited.get(key, value) == value, 'native-identity-conflict')
+    return dict(inherited, **values)
+
+
 def validate():
     case = json.loads((CORPUS/'native-admission-proposal.json').read_text())
     # Fixture authority is literal in the tests; validation here checks the

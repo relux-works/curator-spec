@@ -133,6 +133,33 @@ class NativeRootAdmission(unittest.TestCase):
         self.assertEqual(ns['replay_acquire'](self.case['replay'],request),self.case['replay']['pin'],'changed-generation replay plant')
         print('plant detected by named vector: changed-generation replay')
 
+    def test_native_identity_configuration_only(self):
+        # Explicit pair supplies only configuration; inherited conflicts and a
+        # half pair refuse unchanged. No flags invents neither identity nor ID.
+        env={'PATH':'/tools:/usr/bin'};before=deepcopy(env)
+        expected=dict(env,A2A_AGENT='agent-one',A2A_CONFIG_DIR='/identities/one')
+        self.assertEqual(proposal.identity_environment(None,None,env),env)
+        self.assertEqual(proposal.identity_environment('agent-one','/identities/one',env),expected)
+        self.assertEqual(proposal.identity_environment('agent-one','/identities/one',expected),expected)
+        for identity,directory,inherited,reason in [
+            ('agent-one',None,env,'native-identity-pair'),
+            (None,'/identities/one',env,'native-identity-pair'),
+            ('agent-one','relative',env,'native-identity-directory'),
+            ('agent-one','/identities/one',dict(env,A2A_AGENT='agent-two'),'native-identity-conflict'),
+            ('agent-one','/identities/one',dict(env,A2A_CONFIG_DIR='/identities/two'),'native-identity-conflict')]:
+            old=deepcopy(inherited)
+            with self.subTest(reason=reason),self.assertRaisesRegex(model.Refusal,'^'+reason+'$'):
+                proposal.identity_environment(identity,directory,inherited)
+            self.assertEqual(inherited,old,reason)
+        self.assertEqual(env,before)
+        source=Path(proposal.__file__).read_text();ns={'__file__':proposal.__file__,'__name__':'identity_plant'}
+        exec(compile(source.replace("inherited.get(key, value) == value",'True'),proposal.__file__,'exec'),ns)
+        self.assertEqual(ns['identity_environment']('agent-one','/identities/one',env),expected,'identity control')
+        for key,value in [('A2A_AGENT','agent-two'),('A2A_CONFIG_DIR','/identities/two')]:
+            conflict=dict(env,**{key:value})
+            self.assertEqual(ns['identity_environment']('agent-one','/identities/one',conflict),expected,key+' conflict plant')
+            print('plant detected by named vector: native-identity-conflict '+key)
+
     def test_a9_independent_pin_authorities(self):
         # Each single pin-field substitution is refused against fresh authority;
         # a genuine revision advance admits, with inputs unchanged on refusal.

@@ -105,7 +105,7 @@ or nested fallback store is permitted.
 The closed policy has `record`, monotone `revision`, canonical `manager_home`,
 nonzero numeric `uid`, `entry_point`, `writer_cohort`, pinned `manager` and
 `launcher` images, and `profiles`. Each image contains absolute `path`, raw-byte
-`sha256`, signed `distribution_sha256` and exact capability `native-command-roots-v1`.
+`sha256`, signed `distribution_sha256` and exact capability `profile-command-roots-v1`.
 A profile entry contains `profile`, `lock_sha256`, `required: true`. The entry
 point contains its absolute `path` and `legacy_excluded: true`; writer cohort is
 exactly `operator-controlled`. The booleans describe an operator obligation and
@@ -144,6 +144,8 @@ For this native proposal the supervisor establishes its domain before acquire;
 there is no separately allocated activate operation.
 The pin is a GC edge before full byte verification starts.
 
+Under the manager lock, replay lookup by R precedes current-selection checks;
+only a new R is subject to new issuance against the current selection.
 On exact replay of R, the full canonical request must equal its durable preimage:
 return the originally issued pin and revision, even after a newer generation is
 selected. A different payload under R is `session-request-conflict`, no writes.
@@ -177,7 +179,10 @@ the recorded request/revision transition; no restoration of active authority.
 Supervisor/kernel evidence acquisition and durability still need native witnesses.
 
 Proposed native identity flags are explicit operator inputs `--a2a <identity>` and
-`--a2a-config-dir <absolute-directory>`. Conflicts with inherited `A2A_*` values
+`--a2a-config-dir <absolute-directory>`. A qualified identity launch supplies both
+flags together; a half pair refuses before manager invocation. Neither flag keeps
+the inherited environment without a new identity-delivery claim. Identity syntax
+and actual configuration loading remain owned by a2a. Conflicts with inherited `A2A_*` values
 refuse; identical values may pass. Without flags, existing inherited values pass
 through without inventing an identity. With flags, the launcher supplies the
 selected `A2A_AGENT` and `A2A_CONFIG_DIR` to the launched agent and its actual tool

@@ -62,7 +62,7 @@
               "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
             },
             "capability": {
-              "const": "native-command-roots-v1"
+              "const": "profile-command-roots-v1"
             }
           },
           "required": [
@@ -90,7 +90,7 @@
               "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
             },
             "capability": {
-              "const": "native-command-roots-v1"
+              "const": "profile-command-roots-v1"
             }
           },
           "required": [

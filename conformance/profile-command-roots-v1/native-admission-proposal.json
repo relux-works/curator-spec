@@ -13,13 +13,13 @@
       "path": "/opt/tools/curator",
       "sha256": "adaddd22c4e51ece04959fd30ad3257676bc1d42594ad51f7247bf122f49bf56",
       "distribution_sha256": "5e29410d9295b5ff42b9d859668b82d2530dfcb5075183528d9227f088b96cad",
-      "capability": "native-command-roots-v1"
+      "capability": "profile-command-roots-v1"
     },
     "launcher": {
       "path": "/opt/tools/curator-run",
       "sha256": "6620178fa51bb30a13ac966afa2de72796fbd74c489e29fd3db237d9900733a7",
       "distribution_sha256": "a785931b62736339f15207bc21c22c02a9da92e20944e1b729a3a9fb96180dbb",
-      "capability": "native-command-roots-v1"
+      "capability": "profile-command-roots-v1"
     },
     "profiles": [
       {
