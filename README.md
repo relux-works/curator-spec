@@ -79,9 +79,11 @@ declared mirrors and host aliases). See the
 [schemas](schemas/skillfile-sources-v1/README.md) and the dedicated
 [conformance corpus](conformance/skillfile-sources-v1/README.md). These schemas
 and vectors remain in their own namespace; they are not merged into
-`conformance/v1`. The separate [amended source contract](protocol/skillfile-sources-draft.md)
+`conformance/v1`. The separate [amended source contract](protocol/skillfile-sources-amendments.md)
 retains dependency-directory, marker, ownership and MCP compatibility clauses
-outside the frozen source document.
+outside the frozen source document. It states their status and precedence:
+canonical ownership binds source installations through core section 10;
+schema 9 and marker v6 remain opt-in draft.
 
 ## Accepted local hosted direction
 

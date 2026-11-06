@@ -6,10 +6,11 @@ source-marker amendment separately from the accepted
 [skillfile-sources-v1 corpus](../skillfile-sources-v1/README.md) and the core
 `conformance/v1` suite. It is not part of any release claim. The
 [`manifest.json`](manifest.json) pins this draft corpus, its schemas, and the
-amended [source contract](../../protocol/skillfile-sources-draft.md) input; the
+amended [source contract](../../protocol/skillfile-sources-amendments.md) input; the
 accepted rc.14 source document and manifest remain byte-identical to their
-release tag. The amended contract is a separate, non-frozen document. [Core section 4.4](../../protocol/core.md#44-dependencies) and the
-source contract define the required outcomes. `index.json` lists structural
+release tag. The amended contract is a separate, non-frozen document.
+[Core section 4.4](../../protocol/core.md#44-dependencies) and the source
+contract define the required outcomes. `index.json` lists structural
 positives and negatives; `manifest-dependency-directories.json` covers
 schema-9 subfolder selection, root-default identity, missing package paths,
 audit/lock identity and same-repository diamond unification.

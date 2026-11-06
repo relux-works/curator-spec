@@ -757,10 +757,10 @@ class LiveCandidateAcceptedCorpusTests(unittest.TestCase):
         )
         release_gate.validate_skillfile_sources_manifest(self.release_metadata())
 
-    def test_live_gate_admits_separate_draft_contract(self) -> None:
-        # Draft extensions and the MCP compatibility paragraph remain reachable
+    def test_live_gate_admits_separate_amendments(self) -> None:
+        # Source amendments and the MCP compatibility paragraph remain reachable
         # without changing the accepted source document or its release pin.
-        draft = self.root / "protocol/skillfile-sources-draft.md"
+        draft = self.root / "protocol/skillfile-sources-amendments.md"
         self.assertIn("[Skillfile MCP stage A]", draft.read_text(encoding="utf-8"))
         self.assertIn("### 4.1 Canonical ownership", draft.read_text(encoding="utf-8"))
         self.assertTrue((self.root / "conformance/draft-sources-v2").is_dir())

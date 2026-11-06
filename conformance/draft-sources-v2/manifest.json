@@ -2,7 +2,7 @@
   "files": [
     {
       "path": "conformance/draft-sources-v2/README.md",
-      "sha256": "sha256:616e1bb59ebdc9508a32ad0e6f9a98d6b8b638717695f801fc384bb11672d723"
+      "sha256": "sha256:0885dd08c9723a5f2b376bbec10d95c56ac27bb87c9d070fc7467f47e31a5ff5"
     },
     {
       "path": "conformance/draft-sources-v2/index.json",
@@ -217,12 +217,12 @@
       "sha256": "sha256:f9a0cc9caffca4b33a54337bb897b7e959a4ea0d5d097961d41dffec6a30f330"
     },
     {
-      "path": "protocol/skillfile-sources-draft.md",
-      "sha256": "sha256:21af3182578fc73a02ae2434af37bfae5a59c57a0b4ec7965b4b26f62fa74cf7"
+      "path": "protocol/skillfile-sources-amendments.md",
+      "sha256": "sha256:c7fe7773ca97879a91c2255cbc6907f077fd28051aa5685d96814e4c32db724c"
     },
     {
       "path": "schemas/draft-sources-v2/README.md",
-      "sha256": "sha256:47bb95b3b8cb25918d231fdafb32f95c683917147300f9731778311a227193e8"
+      "sha256": "sha256:f37976c3a05afb72c31c4cee93b3a583b5462d443c6d19b51ea34b1f5c876b51"
     },
     {
       "path": "schemas/draft-sources-v2/agent-skill-v9.schema.json",

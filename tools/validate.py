@@ -1159,7 +1159,7 @@ def validate_draft_sources_manifest() -> str:
 
     expected_paths: set[str] = set()
     roots = (
-        ROOT / "protocol" / "skillfile-sources-draft.md",
+        ROOT / "protocol" / "skillfile-sources-amendments.md",
         ROOT / "schemas" / "draft-sources-v2",
         ROOT / "conformance" / "draft-sources-v2",
     )
@@ -5332,6 +5332,21 @@ def validate_takeover_closed_set_text(
     section123 = markdown_h3_section(manager_text, "### 12.3 Profile lifecycle", label="profiles/manager.md")
     require_exact_takeover_sentence(section123, TAKEOVER_EXCLUSION_MANAGER, label="profiles/manager.md section 12.3")
     validate_cli_takeover_rows(cli_text, carrying, takeover_cli_clause(section95))
+
+
+def validate_source_ownership_reference() -> None:
+    """Check core's specific normative delegation, not general link fragments."""
+    core = (ROOT / "protocol/core.md").read_text(encoding="utf-8")
+    section = core.split("\n## 10. Install markers\n", 1)[1].split("\n## 11.", 1)[0]
+    target = "skillfile-sources-amendments.md#41-canonical-ownership-before-publication"
+    references = re.findall(r"\[source section 4\.1\]\(([^)]+)\)", section)
+    if references != [target]:
+        raise ValidationFailure("core section 10 canonical ownership reference must target " + target)
+    amendment = ROOT / "protocol/skillfile-sources-amendments.md"
+    if not amendment.is_file() or "### 4.1 Canonical ownership before publication" not in (
+        amendment.read_text(encoding="utf-8").splitlines()
+    ):
+        raise ValidationFailure("core section 10 canonical ownership target section 4.1 is missing")
 
 
 def validate_local_links() -> None:
@@ -12272,6 +12287,7 @@ def main(*, release_history_only: bool = False) -> int:
         validate_security_posture_vectors,
         validate_takeover_closed_set_text,
         validate_profile_command_roots,
+        validate_source_ownership_reference,
         validate_local_links,
     ]
     if release_history_only:

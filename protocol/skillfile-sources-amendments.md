@@ -1,16 +1,40 @@
-# Skillfile sources revision 1
+# Skillfile source amendments
 
-This separately maintained document preserves the amended source contract,
-including schema-9 directories, draft marker v6, canonical ownership and MCP
-stage-A compatibility. Section numbers and rule text are retained. It is
-outside the frozen rc.14 source suite; the accepted
-[Skillfile sources revision 1](skillfile-sources.md) and its manifest retain
-their published bytes. These amendments do not create a release claim.
+This document maintains amendments to the accepted
+[Skillfile sources revision 1](skillfile-sources.md), outside its frozen rc.14
+source suite. The accepted document and manifest retain their published bytes.
+Section numbers and the amended rule body are retained for continuity; this
+is a separate amendment document, not another copy of the accepted revision.
 
-This accepted, optional extension defines project-scope Skillfile schema 2.
+Status and precedence apply per rule:
+
+- Section 4.1 canonical ownership and section 5's `source_ownership_unproven`
+  class, including reporting every ownership-unproven path, bind every source
+  installation through [core section 10](core.md#10-install-markers).
+- Schema-9 dependency directories and marker v6 remain unreleased, opt-in draft
+  capabilities under core sections 4.4 and 10. For a manager implementing the
+  applicable capability, section 4's writer rule governs schema-9 and
+  manifestless installations, including roots using Skillfile schema 1. For
+  all other installations, the accepted document's writer rule continues to
+  govern; there is no version-only marker migration.
+- For source installations, section 5 governs where its diagnostics differ
+  from the accepted document: `source_ownership_unproven` is distinct from
+  `source_output_overlap`, and every conflicting path and reason is reported
+  without secrets. The accepted error classes and failure-state guarantees
+  remain in force.
+- The MCP and repository-transport paragraphs in section 1 point to their
+  own normative documents; those documents govern their respective lanes.
+
+The accepted revision governs unchanged source rules. The repeated baseline
+text below retains its original scope; implementing schema 2 does not by
+itself opt into schema 9 or marker v6. The release-conformance disclaimer in
+section 4 applies only to the draft marker additions to which it was attached.
+
+The accepted, optional extension defines project-scope Skillfile schema 2.
 A manager MAY omit the project-scope extension; schema 2 MUST then fail with
 the upgrade error. A manager that implements the extension accepts Skillfile
-schema 2 and MUST implement this complete revision. Implementing managers
+schema 2 and MUST implement the complete accepted revision, with the
+applicable amendments identified above. Implementing managers
 enable the extension by default; no operator switch is part of the contract.
 It extends core sections 3, 5–6 and 8–10 and manager sections 2–3 and 7 only
 for Skillfile schema 2. The separately scoped, accepted

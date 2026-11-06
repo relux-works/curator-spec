@@ -168,7 +168,7 @@ part of rc.14.
 
 A pure context package without a manifest declares no commands, runtime or
 build. Its explicit no-manifest marker representation is defined in
-[source section 4](skillfile-sources.md#4-runtime-builds-audit-and-persistent-records)
+[source section 4](skillfile-sources-amendments.md#4-runtime-builds-audit-and-persistent-records)
 using draft marker v6; absence MUST NOT be encoded as a fabricated manifest
 version. Invalid or unreadable manifests are errors, not manifest absence.
 
@@ -1954,7 +1954,7 @@ or an error under strict-tag policy.
 
 For source installations, canonical node ownership is determined separately
 from currentness and full marker validity by
-[source section 4.1](skillfile-sources.md#41-canonical-ownership-before-publication).
+[source section 4.1](skillfile-sources-amendments.md#41-canonical-ownership-before-publication).
 Install MUST prove that ownership before replacing or removing canonical nodes;
 unrecognized markers never authorize deletion. Invalid build/evidence fields
 in an ownership-proven marker require re-derivation, not an unmanaged takeover.

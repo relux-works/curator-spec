@@ -7,6 +7,14 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Restore the frozen rc.14 source document and manifest without re-pinning.
+  Maintain later source amendments separately with per-rule status and
+  precedence: canonical ownership remains binding through core section 10;
+  schema 9 and marker v6 remain opt-in draft. Retarget core's ownership and
+  no-manifest references and check the ownership section's reachability.
+  Run the candidate release CLI on main and pull requests with a named drift
+  control; validate live accepted bytes without substituting tagged bytes.
+
 - Specify unreleased lock-bound profile command roots (Slice B-a), generation
   recovery, retained-command gateway ABI, bounded verification and independent
   required-case conformance models. Stable gateway binding awaits the marked
@@ -204,9 +212,9 @@ Versioning for the complete specification set.
   rc.14 pin check; raw blob bytes are restored for export-subst paths.
   Live-candidate checks beside them prove the accepted corpus and pin
   match the tag, admit the draft additions, and still reject accepted
-  drift on the live tree. The vector generator pins the draft-owned
-  source-contract input at its frozen tag digest when rewriting the
-  accepted manifest, and owns the new draft manifest; the
+  drift on the live tree. The vector generator preserves the accepted source
+  document’s frozen tag digest when rewriting the accepted manifest, and
+  independently hashes the amended source document in the unreleased draft manifest;
   regenerate-check covers both.
 
 ## 1.0.0-rc.14 - 2026-10-02

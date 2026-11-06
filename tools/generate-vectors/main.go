@@ -2297,7 +2297,7 @@ func writeSkillfileSourcesManifest(root string) string {
 func writeDraftSourcesManifest(root string) string {
 	return writeSuiteManifest(root, "conformance/draft-sources-v2/manifest.json", "draft-sources-v2",
 		[]string{
-			"protocol/skillfile-sources-draft.md",
+			"protocol/skillfile-sources-amendments.md",
 			"schemas/draft-sources-v2",
 			"conformance/draft-sources-v2",
 		},

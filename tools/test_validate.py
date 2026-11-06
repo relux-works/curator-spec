@@ -310,6 +310,46 @@ class ManifestDependencyDirectoryTests(unittest.TestCase):
             path.write_bytes(original)
 
 
+class SourceOwnershipReferenceTests(unittest.TestCase):
+    # Proves the specific core section 10 delegation reaches the canonical
+    # ownership heading; does not validate arbitrary Markdown fragments.
+    def test_live_reference_and_heading(self) -> None:
+        validate.validate_source_ownership_reference()
+
+    def test_wrong_target_and_missing_heading_refuse_without_changes(self) -> None:
+        core = (validate.ROOT / "protocol/core.md").read_text(encoding="utf-8")
+        amendment = (validate.ROOT / "protocol/skillfile-sources-amendments.md").read_text(encoding="utf-8")
+        target = "skillfile-sources-amendments.md#41-canonical-ownership-before-publication"
+        heading = "### 4.1 Canonical ownership before publication"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "protocol").mkdir()
+            core_path = root / "protocol/core.md"
+            amendment_path = root / "protocol/skillfile-sources-amendments.md"
+            with patch.object(validate, "ROOT", root):
+                for changed_core, changed_amendment, diagnostic in (
+                    (core.replace(target, "skillfile-sources.md#41-canonical-ownership-before-publication"),
+                     amendment, "canonical ownership reference must target"),
+                    (core.replace(target, target.replace("#41-", "#42-")),
+                     amendment, "canonical ownership reference must target"),
+                    (core, amendment.replace(heading, "### 4.2 Canonical ownership before publication"),
+                     "canonical ownership target section 4.1 is missing"),
+                ):
+                    with self.subTest(diagnostic=diagnostic, target=changed_core == core):
+                        core_path.write_text(core, encoding="utf-8")
+                        amendment_path.write_text(amendment, encoding="utf-8")
+                        validate.validate_source_ownership_reference()
+                        core_path.write_text(changed_core, encoding="utf-8")
+                        amendment_path.write_text(changed_amendment, encoding="utf-8")
+                        before = (core_path.read_bytes(), amendment_path.read_bytes())
+                        with self.assertRaisesRegex(validate.ValidationFailure, diagnostic):
+                            validate.validate_source_ownership_reference()
+                        self.assertEqual(before, (core_path.read_bytes(), amendment_path.read_bytes()))
+                core_path.write_text(core, encoding="utf-8")
+                amendment_path.write_text(amendment, encoding="utf-8")
+                validate.validate_source_ownership_reference()
+
+
 class AcceptedSourceCorpusIsolationTests(unittest.TestCase):
     """Claim: accepted inputs, including their source document, keep rc.14
     bytes. Draft amendments have a separate, independently checked live pin.
@@ -440,9 +480,9 @@ class AcceptedSourceCorpusIsolationTests(unittest.TestCase):
 
     def test_draft_manifest_pins_the_live_source_contract(self) -> None:
         self.assert_manifest_rejects_drift(
-            validate.ROOT / "protocol/skillfile-sources-draft.md",
+            validate.ROOT / "protocol/skillfile-sources-amendments.md",
             validate.validate_draft_sources_manifest,
-            "draft-sources-v2 manifest digest mismatch: protocol/skillfile-sources-draft.md",
+            "draft-sources-v2 manifest digest mismatch: protocol/skillfile-sources-amendments.md",
         )
 
 
@@ -1760,7 +1800,7 @@ class SkillfileSourcesSuiteManifestTests(unittest.TestCase):
         # either drift refuses by its own pin, preserving the planted bytes.
         for filename, suite in (
             ("skillfile-sources.md", "skillfile-sources-v1"),
-            ("skillfile-sources-draft.md", "draft-sources-v2"),
+            ("skillfile-sources-amendments.md", "draft-sources-v2"),
         ):
             with self.subTest(path=filename):
                 self.assertEqual(self.run_validation(), (0, ""))
