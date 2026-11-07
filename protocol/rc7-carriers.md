@@ -149,7 +149,7 @@ their own existing gates. No login authorization gate is added to launch.
 
 In v5, `credential_store` is closed agreement metadata with only REQUIRED
 `selection`. `codex_settings` is the sole typed Codex argv payload, except for
-the proposed [SAM-rendered non-secret per-launch identity block](profile-command-root-admission.md#candidate-native-acquire-replay-and-identity),
+the proposed [SAM-rendered non-secret per-launch identity and manager-home block](profile-command-root-admission.md#candidate-native-acquire-replay-and-identity),
 which is separate from lock-owned settings and remains behind the native gates.
 Legacy config_overrides is forbidden in v5, even when identical to the payload.
 For Codex:

@@ -120,6 +120,81 @@ class NativeRootAdmission(unittest.TestCase):
         with self.assertRaisesRegex(model.Refusal,'^candidate-schema$'):proposal.check_candidate(bad,self.observed)
         self.assertEqual(bad,before)
 
+    def test_home_delivery_vectors_and_plants(self):
+        # On H launches, supplied planning/tool observations must name H even
+        # without identity. A missing/different locator fails by intended reason;
+        # this does not execute SAM, inherit=core or a provider tool shell.
+        config = self.base['policy']['manager_home']+'/config.json'
+        for identity in [False, True]:
+            good = dict(CURATOR_CONFIG=config)
+            if identity:
+                good.update(A2A_AGENT='lane', A2A_CONFIG_DIR='/fixture/a2a')
+            proposal.home_delivery(config, good, good)
+            for field, reason in [('plan', 'native-home-plan-delivery'),
+                                  ('tool', 'native-home-tool-delivery')]:
+                for value in [None, '/default/config.json']:
+                    plan, tool = deepcopy(good), deepcopy(good)
+                    target = plan if field == 'plan' else tool
+                    if value is None: target.pop('CURATOR_CONFIG')
+                    else: target['CURATOR_CONFIG'] = value
+                    before = deepcopy((plan, tool))
+                    with self.assertRaisesRegex(model.Refusal, '^'+reason+'$'):
+                        proposal.home_delivery(config, plan, tool)
+                    self.assertEqual((plan, tool), before)
+                    mutant = self.mutant(proposal, 'home_delivery', reason)
+                    mutant['home_delivery'](config, good, good)
+                    mutant['home_delivery'](config, plan, tool)
+                    self.assertEqual((plan, tool), before)
+                    print('plant detected by named vector:', reason+'-'+
+                          ('identity' if identity else 'no-identity')+'-'+
+                          ('absent' if value is None else 'different'))
+
+    def test_home_namespace_spelling_vectors_and_plant(self):
+        # Missing or unsafe entries spelled inside H's namespace are excluded
+        # without facts. Lookalike/foreign paths still refuse under unattended
+        # policy; dot/control paths drop before exclusion. No native FS queried.
+        import test_profile_command_path as path_model
+        home = self.base['policy']['manager_home']
+        data = path_model.load(path_model.CORPUS/'baseline.json')
+        data['policy'] = 'managed'
+        control = deepcopy(data)
+        root = home+'/environments/Work.1/commands/old/linux-amd64/bin'
+        prefix = home+'/environments/'
+        for entry in [root, root+'/nested', prefix+'Work.1/commands']:
+            for fact in [None, dict(identity='substituted', readable=True, kind='directory', mode=511)]:
+                case = deepcopy(data);case['base_path'] = [entry]+data['base_path']
+                if fact is not None: case['path_facts'][entry] = fact
+                before = deepcopy(case)
+                kept, issues, excluded = path_model.admit_path(case, [], manager_home=home)
+                self.assertEqual((kept, issues, excluded), (data['base_path'], [], [entry]))
+                self.assertEqual(case, before)
+        for entry in [home+'-other/environments/Work.1/commands/old/bin',
+                      prefix+'Work.1/commands-other/bin', prefix+'Work.1./commands/bin',
+                      '/outside/missing', '/outside/unsafe']:
+            case = deepcopy(data);case['base_path'] = [entry]+data['base_path']
+            if entry.endswith('/unsafe'):
+                case['path_facts'][entry] = dict(identity='unsafe',readable=True,kind='directory',mode=511)
+            _, issues, excluded = path_model.admit_path(case, [], manager_home=home)
+            self.assertEqual(excluded, [])
+            self.assertEqual(issues, [dict(entry=entry, predicate=('world-writable' if entry.endswith('/unsafe')
+                                                                  else 'unreadable'), action='refuse')])
+        for entry, predicate in [(prefix+'Work.1/commands/../bin', 'non-canonical'),
+                                 (root+'\n', 'control-characters')]:
+            case=deepcopy(data);case['base_path']=[entry]+data['base_path']
+            _, issues, excluded=path_model.admit_path(case, [], manager_home=home)
+            self.assertEqual(excluded, [])
+            self.assertEqual(issues, [dict(entry=entry,predicate=predicate,action='drop')])
+        case=deepcopy(data);case['base_path']=[root]+data['base_path']
+        expression = "manager_home is not None and entry.startswith(manager_home+'/environments/')\n              and re.fullmatch(r'[A-Za-z0-9](?:[A-Za-z0-9._-]{0,62}[A-Za-z0-9_-])?/commands(?:/.*)?',\n                               entry[len(manager_home+'/environments/'):])"
+        mutant=self.mutant(path_model,'admit_path',expression=expression,replacement='False')
+        self.assertEqual(mutant['admit_path'](control,[],manager_home=home),
+                         path_model.admit_path(control,[],manager_home=home))
+        kept, issues, excluded=mutant['admit_path'](case,[],manager_home=home)
+        self.assertEqual(excluded, [])
+        self.assertEqual(issues,[dict(entry=root,predicate='unreadable',action='refuse')])
+        self.assertEqual(kept,data['base_path'])
+        print('plant detected by named vector: base-path-pruned-home-root-exclusion (unreadable)')
+
     def test_candidate_home_route_wiring(self):
         # A real candidate path drives the config conflict; deleting the helper
         # call admits that exact conflict while the valid control still passes.

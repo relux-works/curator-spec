@@ -185,9 +185,18 @@ Before generic base admission, remove inherited entries within **known
 manager-published profile command-root namespaces**, including the selected
 root; only the newly verified root may enter the middle list. Record these as
 root-source exclusions in the same line. This is authority separation, not a
-further generic PATH safety predicate. Resolve aliases before exclusion;
-unreadable evidence follows the unreadable rule. An arbitrary unrecognized
-directory is not labeled foreign by spelling alone; the separate protected
+further generic PATH safety predicate. On the proposed explicit H route, first
+exclude canonical absolute spellings at or below `H/environments/P/commands`,
+where P is one valid profile-name segment, before filesystem checks, even if
+operator prune removed the directory. Reject dot-segment/control spellings under
+the table before this test; use separator boundaries, not a lookalike prefix.
+This spelling exclusion gives up identity, publication, existence and safety
+checks on excluded entries, including substituted or world-writable directories;
+none enters the child PATH. Outside that spelling namespace, resolve aliases
+for identity-based exclusion; unreadable evidence follows the unreadable rule.
+Missing/unreadable or world-writable entries there refuse on the H route; fix
+the launching shell PATH, not the policy operation. An arbitrary unrecognized
+directory outside the explicit H namespace is not labeled foreign by spelling alone; the separate protected
 command-admission companion covers dynamic command collisions. Empty-root
 launches must not borrow another profile's exports. On the old hosted route,
 the caller can exclude its own roots but cannot assert control over daemon

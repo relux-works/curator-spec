@@ -4176,7 +4176,7 @@ from its schema-module revision. Unsupported nonempty delivery MUST refuse.
 the complete successor: selection is agreement metadata, `codex_settings` is
 the sole fragment-owned Codex typed payload; the proposed
 [native admission block](profile-command-root-admission.md#candidate-native-acquire-replay-and-identity)
-is rendered by SAM from launcher-selected non-secret identity values. Legacy
+is rendered by SAM from launcher-selected non-secret identity and manager-home values. Legacy
 `config_overrides` is forbidden. V4
 above remains unchanged. Nonempty Codex env/shell requests refuse with
 `codex_settings_unsupported` and no partial output. Native/empty projections

@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import posixpath
+import re
 import subprocess
 import tempfile
 import unittest
@@ -110,7 +111,7 @@ def root_violations(data, receipt_validator):
     return []
 
 
-def admit_path(data, protected, entries=None):
+def admit_path(data, protected, entries=None, manager_home=None):
     kept, issues, exclusions = [], [], []
     seen_paths = set(protected)
     seen_ids = {data['path_facts'][p]['identity'] for p in protected}
@@ -126,6 +127,13 @@ def admit_path(data, protected, entries=None):
             predicate = 'control-characters'
         elif any(part in ('.', '..') for part in entry.split('/')):
             predicate = 'non-canonical'
+        # H-route spelling exclusion precedes filesystem facts: removed roots
+        # cannot leak into child PATH or make a keeper's stale PATH refuse.
+        elif (manager_home is not None and entry.startswith(manager_home+'/environments/')
+              and re.fullmatch(r'[A-Za-z0-9](?:[A-Za-z0-9._-]{0,62}[A-Za-z0-9_-])?/commands(?:/.*)?',
+                               entry[len(manager_home+'/environments/'):])):
+            exclusions.append(entry)
+            continue
         elif fact is None or not fact['readable'] or fact['kind'] != 'directory':
             predicate = 'unreadable'
         elif fact['identity'] in root_ids:

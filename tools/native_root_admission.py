@@ -43,6 +43,12 @@ def home_route(home, has_pair, policy, inherited_config=None):
     return config
 
 
+def home_delivery(config, planning_environment, tool_environment):
+    # Supplied environment observations only: not SAM rendering or a real shell.
+    require(planning_environment.get('CURATOR_CONFIG') == config, 'native-home-plan-delivery')
+    require(tool_environment.get('CURATOR_CONFIG') == config, 'native-home-tool-delivery')
+
+
 def joint_candidate():
     """Preserve sole rc7 semantics while proposing a conditional native B-a pair."""
     schema = deepcopy(json.loads((ROOT/'schemas/rc7-carriers-v1/launch-env-fragment-v5.schema.json').read_text(encoding='utf-8')))
