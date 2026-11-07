@@ -66,8 +66,8 @@ def locations(home, profile, generation, platform, session=None):
 
 
 def check_candidate(case, observed):
-    home_route(observed['home'], True, case.get('policy'), observed.get('config'))
     require(validators()['native-admission-proposal.schema.json'].is_valid(case), 'candidate-schema')
+    home_route(observed['home'], True, case['policy'], observed.get('config'))
     policy = case['policy']; selected = case['selected']; binding = selected['binding']
     # Observed home is the explicit operator launch input, not missing-policy inference.
     require(policy['manager_home'] == observed['home'] and policy['uid'] == observed['uid']

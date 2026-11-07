@@ -117,7 +117,7 @@ class NativeRootAdmission(unittest.TestCase):
             mutant['home_route'](*args);self.assertEqual(args,before)
             print('plant detected by named vector:',reason)
         bad=deepcopy(self.base);bad.pop('policy');before=deepcopy(bad)
-        with self.assertRaisesRegex(model.Refusal,'^native-policy-required$'):proposal.check_candidate(bad,self.observed)
+        with self.assertRaisesRegex(model.Refusal,'^candidate-schema$'):proposal.check_candidate(bad,self.observed)
         self.assertEqual(bad,before)
 
     def test_recommended_variant_and_grammar(self):
@@ -135,7 +135,8 @@ class NativeRootAdmission(unittest.TestCase):
                 for obj in [case['session']['request'],case['session']['pin']]:obj['profile']='Work.1'
                 obs['request']=deepcopy(case['session']['request'])
             proposal.check_candidate(case,obs)
-        invalids=[dict(self.base,session=self.case['session']),dict(self.base,variant='pins')]
+        # Shape refusal precedes semantic indexing; malformed JSON values never crash.
+        invalids=[None,[],0,'invalid',dict(self.base,session=self.case['session']),dict(self.base,variant='pins')]
         for bad in invalids:
             with self.assertRaisesRegex(model.Refusal,'^candidate-schema$'):proposal.check_candidate(bad,self.observed)
         bad=deepcopy(self.base);bad['policy']['manager']['path']='curator'
