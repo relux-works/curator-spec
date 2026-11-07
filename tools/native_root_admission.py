@@ -223,6 +223,13 @@ def a2a_published_name(name):
     require(name.startswith('a2a'), 'native-a2a-published-prefix')
 
 
+def a2a_upgrade_observation(selected_image, hook_image, consumer_image):
+    # Supplied Linux dev/inode observations only; not settings install or bind.
+    require((hook_image, consumer_image) == (selected_image, selected_image),
+            'native-a2a-upgrade-image')
+    return consumer_image
+
+
 def validate():
     case = json.loads((CORPUS/'native-admission-proposal.json').read_text(encoding='utf-8'))
     policy = case['policy']

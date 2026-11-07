@@ -561,6 +561,20 @@ class NativeRootAdmission(unittest.TestCase):
             print('plant detected by named vector: native-transport-scrub '+key+' (inherited override survives)')
         self.assertEqual(env,before)
 
+    def test_a2a_upgrade_image_and_plant(self):
+        # A successful bind/PATH lookup is insufficient: stale hook settings can
+        # bind G1 in a G2 session. Supplied image pairs only, no Linux execution.
+        old, selected = '8:101', '8:202'
+        self.assertEqual(proposal.a2a_upgrade_observation(selected,selected,selected),selected)
+        mutant=self.mutant(proposal,'a2a_upgrade_observation','native-a2a-upgrade-image')
+        self.assertEqual(mutant['a2a_upgrade_observation'](selected,selected,selected),selected)
+        for hooks,consumer in [(old,old),(selected,old),(old,selected)]:
+            with self.subTest(hooks=hooks,consumer=consumer):
+                with self.assertRaisesRegex(model.Refusal,'^native-a2a-upgrade-image$'):
+                    proposal.a2a_upgrade_observation(selected,hooks,consumer)
+                self.assertEqual(mutant['a2a_upgrade_observation'](selected,hooks,consumer),consumer)
+        print('plant detected by named vector: native-a2a-upgrade-image (stale settings or consumer image)')
+
     def test_a2a_published_prefix_and_plant(self):
         # The basename rule keeps a published a2a image in the scan's candidate
         # set; it does not execute Linux enumeration or prove image identity.

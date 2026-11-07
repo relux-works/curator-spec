@@ -34,20 +34,29 @@ skill-agents-management, whose provider plugins build launcher plans and argv.
   server/store overrides for an explicit native identity pair. The launcher owner
   may instead refuse nonempty overrides; that choice stays open, but a stale
   keeper-shell variable would then stop launch. Immutable roots end automatic
-  refresh of `a2a`: the consumer only re-executes when its pinned path resolves to
-  a new file. A fix therefore needs a new session; while the old consumer lives,
-  the new generation cannot bind that identity/config root. Recommend an explicit
-  stop of the old consumer before the new session. The manager, launcher and a2a
-  owners must accept this restart requirement before enabling a2a-bearing roots.
-  Urgent delivery fixes will not reach running lanes automatically; the keeper
-  must coordinate that stop and new session, with an interruption to idle wake.
+  refresh of `a2a`: the consumer (background process that wakes an idle lane)
+  only re-executes when its pinned path resolves to a new file. Any live own-UID
+  `a2a` process with that identity/config root and a different image blocks bind,
+  not just the consumer. **Question for the a2a owner, beyond its source-only
+  answer:** for this route, should hooks be installed by the selected generation's
+  `a2a`? `hook install` records that binary's resolved absolute path, and the
+  session-start hook binds from it in-process. On that proposed per-generation
+  route, stop conflicting old-image processes, rewrite hook settings using the
+  new generation, complete any required Codex re-trust, then start a new session
+  and verify the new consumer's image. Stale settings can silently bind the old
+  image even when PATH finds the new one. A stable host hook binary is a separate
+  owner choice outside this immutable-path refresh claim; no gateway naming is
+  decided here. The manager, launcher and a2a owners must accept the hook source
+  and restart cost before enabling a2a-bearing roots. Urgent delivery fixes need
+  this coordinated settings/trust/restart work and interrupt idle wake.
 - **Companions:** recommend native scope for `profile-command-admission` and
   `managed-session-skill-cli`. Protected-name inventory and base-PATH checks remain
   substantial work. Hosted delivery is deferred: `curator-run werkstatt up` and
   hosted launch get no profile commands in this milestone; a keeper uses the direct
   native route and owns restart. Trusted a2a session-start hooks bind the idle-wake
   consumer inside tmux; outside tmux they report unavailable and do not wake an
-  idle lane. Codex hooks require the printed one-time trust step. This is the
+  idle lane. Codex hooks require the printed trust step; changing the hook command may
+  require re-trust on each generation upgrade. This is the
   milestone's stated scope, for owners to accept; these gates remain CLOSED.
 - **Policy:** recommend one explicit operator command under the manager lock with
   compare-and-swap (CAS: reject if the current revision differs from the expected
@@ -91,7 +100,7 @@ architecture; project/hybrid, macOS/Windows runtime parity and hook command acti
 | Joint v5 carrier — **CLOSED** | Curator manager, curator-run carrier/launcher and skill-agents-management (SAM) owner | Accept a conditional B-a pair in the sole coordinated v5, preserving rc7 Codex requiredness and accepting the allocated unpinned provenance below. Native Linux only initially; alternative is a later coordinated revision. |
 | Protected admission policy — **CLOSED** | Curator manager and curator-run entry-point owners | Accept explicit manager-home input, pinned image bytes, selected locks and operator attestation; explicit policy operation with lock/CAS, never install or auto-upgrade. |
 | Protected-state locations — **CLOSED** | Curator manager/journal and curator-run reader | Accept inventory and selected locations, scoped private-parent migration and actual journal staging/backup preflight. Pins alternative adds one session store; no replay tree or extra generation store. |
-| Session integration — **CLOSED** | Curator manager, curator-run launcher/carrier, its skill-agents-management argv plugin owner and a2a identity owner | Recommend no process-pin operations for the no-GC milestone; accept protected discovery, boundary verification and native identity delivery below, including the wider SAM input: the admitted PATH for provider resolution/release probing/planning and `CURATOR_CONFIG=H/config.json` on every H launch. Full pins instead needs the explicitly open supervision/retirement design. |
+| Session integration — **CLOSED** | Curator manager, curator-run launcher/carrier, its skill-agents-management argv plugin owner and a2a identity owner | Recommend no process-pin operations for the no-GC milestone; accept protected discovery, boundary verification and native identity delivery below, including the wider SAM input: the admitted PATH for provider resolution/release probing/planning and `CURATOR_CONFIG=H/config.json` on every H launch. Accept the four-key removal versus nonempty-value refusal choice and the open a2a hook-binary source, settings rewrite/possible re-trust and old-image-process stop/restart cost below. Full pins instead needs the explicitly open supervision/retirement design. |
 | Journal coverage — **CLOSED** | Curator manager and journal owner | Accept two dedicated publication/selection classes, target level and crash layout; assign numbers separately. Copying staged files changes inventory inode pins, so existing engine staging is insufficient. |
 | Native runtime witnesses — **CLOSED** | Curator manager/journal, curator-run launcher and a2a owners | Accept the matrix for fenced implementation, then actual receipts for emission/adoption. No receipts are claimed here. |
 | Companion admission — **CLOSED** | curator-spec, Curator command-publication, curator-run; hosted manager for whole-companion scope | Accept native scope for `profile-command-admission` and `managed-session-skill-cli` (recommended), or accept the whole companions. B-a alone does not satisfy the first; explicit native qualification must satisfy the second. |
@@ -153,7 +162,10 @@ the image-guard contract for implementation; it supplies no runtime receipts or
 gate acceptance. Verified against [a2a main `afa27bab`](https://github.com/relux-works/a2a-swarm/tree/afa27babaf64c9f8247c13fd4a3214754116cf8b):
 `internal/config/config.go`, `internal/cli/credentials.go`, `identity.go`, `bind.go`,
 `bind_process.go`, `bind_process_linux.go`, `bind_refresh.go` and `onboard.go`.
-This follow-up text still needs its owners' exact-head review.
+At that same main commit, `hookinstall.go` records the installing binary's resolved
+path, `bind_hook.go` calls bind in-process and `bind.go` spawns that image. These
+hook-source/upgrade implications extend the owner's answer and remain a question
+for the a2a owner. This follow-up text still needs its owners' exact-head review.
 
 ## Candidate carrier integration
 
@@ -430,8 +442,9 @@ runtime supplies its own metadata. This is its own separately reviewed launcher
 change, so the plan's exact environment already includes the scrub. This follows
 a2a's documented session rule (`docs/cli.md`, source revision
 `f8b88dd425ccc65f0f3f8324e92d081570486d81`), including its Claude bind/lease
-selector. The a2a owner accepts this three-key set as the right set at the source
-revision above. Keep `TMUX` and `TMUX_PANE`: bind requires its own pane/socket.
+selector. The a2a owner's answer accepts this set at a2a main `711ed0d6`;
+rechecked unchanged at main `afa27babaf64c9f8247c13fd4a3214754116cf8b`.
+Keep `TMUX` and `TMUX_PANE`: bind requires its own pane/socket.
 `CLAUDECODE`, `CODEX_SANDBOX` and `CODEX_SANDBOX_NETWORK_DISABLED` are onboard
 runtime-detection inputs, not session selectors, and need no scrub under this rule.
 A missed selector makes bind refuse, but lease-taking commands can use the
@@ -468,9 +481,16 @@ above; Linux identity, transport and image-guard receipts remain owed.
 Native flags install no doorbell or hooks. The a2a image guard across generations
 remains unchanged and needs the matrix controls below. Immutable roots also keep
 the consumer's pinned launch path unchanged, ending automatic refresh on that
-route: a new generation requires explicit old-consumer stop and a new session,
-not just publication or retargeting of another root. Owner acceptance of this
-operational consequence remains open, including urgent delivery-fix rollout.
+route. Stopping it and starting a new session alone does not deliver a fix:
+`hook install` records its own resolved binary path, and the session-start hook
+binds in-process. G1 settings can bind a G1 consumer without error in a G2 session,
+regardless of G2 on PATH. The proposed per-generation hook source requires settings
+rewrite by G2 and possible Codex re-trust, stopping any conflicting old-image
+process (not only the consumer), a new session and verification of the G2 consumer
+image. The hook-source choice goes beyond the a2a owner's answer and remains a
+question for that owner; restart/trust acceptance remains open, including urgent
+fix rollout. A stable host hook binary would be outside this immutable-root claim;
+no gateway naming or hook activation is accepted here.
 
 ### Managed Codex gateway exclusion
 
@@ -523,8 +543,8 @@ workstation. The W0 observations above are navigation only.
 | --- | --- |
 | W0 tool-shell delivery | Real Claude and Codex Linux tool shells: profile PATH survives startup; Codex `inherit=core` receives selected identity/config. Settings `env.A2A_AGENT`/config override conflict is prevented or refuses; valid matching settings work. Record actual precedence and carrier, not parent env alone. |
 | Real launch and identity | Two profiles with different sentinel bytes, two identities/config directories, one UID. Actual tool shells find selected commands and report selected identity. Nonempty inherited conflict refuses; empty values pass. New sessions never reuse inherited `A2A_SESSION_ID`/`CODEX_THREAD_ID`/`CLAUDE_CODE_SESSION_ID`; valid runtime-owned metadata works. No ambient decoy executes. |
-| Explicit native pair transport/store | Inherit `A2A_MATRIX_URL` differing from selected `matrix.env`: it must not reach the new identity; with a matching inherited URL, selected routing still works. Exercise the other three named overrides as well. Recommended removal drops all four before planning; the launcher owner may instead choose nonempty-value refusal, witnessed as zero starts. Unset control launches; without an explicit pair the new four-key rule is not applied. |
-| a2a image guard across generations | Linux image identity is dev/inode of `/proc/<pid>/exe`. Same identity and canonical config root: a byte-identical copy in a new root is refused as a different image; a hard link to the same inode passes the image comparison (other bind and command-root admission guards still apply). The scan covers only own-UID processes whose executable name starts with `a2a`, so the published executable name MUST retain that prefix; a differently named copy is invisible to this scan and is not a bypass claim. Nearby distinct identity/config-root controls behave as current a2a permits. With immutable roots the consumer does not refresh to a newly published generation: the new bind refuses while the old consumer lives; explicit stop followed by a new-session bind is the control. |
+| Explicit native pair transport/store | Inherit `A2A_MATRIX_URL` differing from selected `matrix.env`: it must not reach the new identity; under recommended removal a matching inherited URL still permits selected routing. Under the open nonempty-value refusal variant, matching as well as differing nonempty URLs refuse with zero starts; unset is its launch control. Exercise the other three named overrides as well. Recommended removal drops all four before planning; the launcher owner may instead choose nonempty-value refusal, witnessed as zero starts. Unset control launches; without an explicit pair the new four-key rule is not applied. |
+| a2a image guard across generations | Linux image identity is dev/inode of `/proc/<pid>/exe`. Any live own-UID `a2a` process with the same identity and canonical config root, regardless of command, participates in the different-image refusal: a byte-identical copy in a new root is refused as a different image; a hard link to the same inode passes the image comparison (other bind and command-root admission guards still apply). The scan covers only own-UID processes whose executable name starts with `a2a`, so the published executable name MUST retain that prefix; a differently named copy is invisible to this scan and is not a bypass claim. Nearby distinct identity/config-root controls behave as current a2a permits. With immutable roots the consumer does not refresh to a newly published generation. Stop all conflicting old-image processes, not only the consumer. For the proposed per-generation hook source, install settings using G2, complete required trust, start a new session and assert the consumer's `/proc/<pid>/exe` dev/inode equals G2's image, not merely successful bind or G2 on PATH. Stale G1 settings with G2 on PATH and no old process can successfully bind G1: this MUST fail the upgrade witness. Rewritten G2 settings plus an observed G2 consumer are the positive control. Hook-source choice and settings/trust/restart cost await a2a-owner acceptance. |
 | Carrier/admission age pairs | Every old/new manager/launcher pair, explicit H with missing/corrupt/stale policy, unsupported mode, policy CAS mismatch: named refusal, zero starts, unchanged state; admitted pair starts. Hosted `--a2a` alone still works, native half pair refuses, valid explicit native pair passes syntax validation. |
 | Managed Codex gateway exclusion | Exercise each selector on launcher main: explicit `--network`, launcher proxy profile, and the operator gateway default without either explicit selector. Main computes these after `plan.Build`; the proposed refusal must determine the effective gateway route before building the plan rather than reuse that later variable. B-a pair or either native identity flag: `native_root_gateway_unsupported` before planning, zero starts and unchanged state. Nearby supported plain-native pair/identity and ordinary gateway without either input remain admitted. Scrub is already in the planning environment. |
 | Every-native pre-plan scrub | New/resume, with/without B-a or native identity flags: all three inherited session selectors are absent from the planning environment; runtime-owned metadata still works. `TMUX`/`TMUX_PANE` remain intact for bind; the three onboard-only runtime markers are not scrubbed as selectors. No forwarded-argv inspection or fabricated replacement. Separate launcher change and review. |
