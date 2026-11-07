@@ -120,6 +120,30 @@ class NativeRootAdmission(unittest.TestCase):
         with self.assertRaisesRegex(model.Refusal,'^candidate-schema$'):proposal.check_candidate(bad,self.observed)
         self.assertEqual(bad,before)
 
+    def test_managed_package_root_vector_and_plant(self):
+        # An installed package supplied as an abstract mapping precedes PATH in
+        # Codex resolution. Refuse an unsanitized H-route environment before any
+        # stage; deleting the guard selects that package despite admitted PATH.
+        # No actual package layout, SAM, filesystem or provider is exercised.
+        home=self.base['policy']['manager_home']
+        package=home+'/environments/Work.1/commands/old/package'
+        binary=package+'/vendor/x86_64-unknown-linux-musl/bin/codex'
+        admitted=['/usr/bin','/bin']
+        good={stage:dict(PATH=':'.join(admitted)) for stage in ('resolve','probe','plan')}
+        executables={binary,'/usr/bin/codex'};packages={package:binary}
+        expected={stage:'/usr/bin/codex' for stage in good}
+        self.assertEqual(proposal.provider_path_observations('codex',admitted,good,executables,packages),expected)
+        mutant=self.mutant(proposal,'provider_path_observations','native-provider-managed-package-root')
+        self.assertEqual(mutant['provider_path_observations']('codex',admitted,good,executables,packages),expected)
+        for stage in good:
+            bad=deepcopy(good);bad[stage]['CODEX_MANAGED_PACKAGE_ROOT']=package
+            before=deepcopy((admitted,bad,executables,packages))
+            with self.assertRaisesRegex(model.Refusal,'^native-provider-managed-package-root$'):
+                proposal.provider_path_observations('codex',admitted,bad,executables,packages)
+            self.assertEqual(mutant['provider_path_observations']('codex',admitted,bad,executables,packages)[stage],binary)
+            self.assertEqual((admitted,bad,executables,packages),before)
+        print('plant detected by named vector: provider-managed-package-root (native-provider-managed-package-root)')
+
     def test_provider_named_decoy_path_and_plant(self):
         # Compose spelling exclusion with the ordered recheck and supplied
         # resolve/probe/plan PATH observations. A decoy exists only as a name;

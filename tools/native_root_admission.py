@@ -49,13 +49,22 @@ def home_delivery(config, planning_environment, tool_environment):
     require(tool_environment.get('CURATOR_CONFIG') == config, 'native-home-tool-delivery')
 
 
-def provider_path_observations(provider, admitted_path, environments, executables):
-    # Supplied PATHs and executable names only; no real resolver, probe or SAM.
+def provider_path_observations(provider, admitted_path, environments, executables, managed_packages=None):
+    # Supplied PATHs, executable names and package mappings only; no real SAM,
+    # package-layout validation, filesystem resolution or release probe.
     require(all(environments[stage].get('PATH') == ':'.join(admitted_path)
                 for stage in ('resolve', 'probe', 'plan')), 'native-provider-admitted-path')
-    return {stage: next((directory+'/'+provider for directory in environments[stage]['PATH'].split(':')
-                         if directory+'/'+provider in executables), None)
-            for stage in ('resolve', 'probe', 'plan')}
+    require(all('CODEX_MANAGED_PACKAGE_ROOT' not in environments[stage]
+                for stage in ('resolve', 'probe', 'plan')), 'native-provider-managed-package-root')
+    def selected(stage):
+        env = environments[stage]
+        managed = ((managed_packages or {}).get(env.get('CODEX_MANAGED_PACKAGE_ROOT'))
+                   if provider == 'codex' else None)
+        if managed in executables:
+            return managed
+        return next((directory+'/'+provider for directory in env['PATH'].split(':')
+                     if directory+'/'+provider in executables), None)
+    return {stage: selected(stage) for stage in ('resolve', 'probe', 'plan')}
 
 
 def joint_candidate():
