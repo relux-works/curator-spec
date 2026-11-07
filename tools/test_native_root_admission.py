@@ -135,7 +135,12 @@ class NativeRootAdmission(unittest.TestCase):
         self.assertEqual(proposal.provider_path_observations('codex',admitted,good,executables,packages),expected)
         mutant=self.mutant(proposal,'provider_path_observations','native-provider-managed-package-root')
         self.assertEqual(mutant['provider_path_observations']('codex',admitted,good,executables,packages),expected)
-        for stage in good:
+        for stage, package in [(stage, package) for stage in good] + [('plan','/outside/managed-codex')]:
+            if package == '/outside/managed-codex':
+                binary=package+'/vendor/x86_64-unknown-linux-musl/bin/codex'
+                executables.add(binary);packages[package]=binary
+                self.assertEqual(proposal.provider_path_observations('codex',admitted,good,executables,packages),expected)
+                self.assertEqual(mutant['provider_path_observations']('codex',admitted,good,executables,packages),expected)
             bad=deepcopy(good);bad[stage]['CODEX_MANAGED_PACKAGE_ROOT']=package
             before=deepcopy((admitted,bad,executables,packages))
             with self.assertRaisesRegex(model.Refusal,'^native-provider-managed-package-root$'):
@@ -143,6 +148,7 @@ class NativeRootAdmission(unittest.TestCase):
             self.assertEqual(mutant['provider_path_observations']('codex',admitted,bad,executables,packages)[stage],binary)
             self.assertEqual((admitted,bad,executables,packages),before)
         print('plant detected by named vector: provider-managed-package-root (native-provider-managed-package-root)')
+        print('plant detected by named vector: provider-managed-package-root-outside-home (native-provider-managed-package-root)')
 
     def test_provider_named_decoy_path_and_plant(self):
         # Compose spelling exclusion with the ordered recheck and supplied
@@ -526,6 +532,45 @@ class NativeRootAdmission(unittest.TestCase):
         print('plant detected by named vector: policy-update-missing-selection')
         self.assertEqual(proposal.policy_update(current,valid,1,selected),valid)
         self.assertEqual(proposal.prune_candidate(False,True,False),'operator-prune')
+
+    def test_explicit_pair_transport_scrub_and_plants(self):
+        # Supplied matrix.env values/default store lose to nonempty process env
+        # unless the recommended explicit-pair removal happens before planning.
+        # Matching and unset controls work; no config file or network is used.
+        selected=dict(A2A_MATRIX_URL='https://selected.invalid',A2A_MATRIX_SERVER_NAME='selected.invalid',
+                      A2A_SECRET_STORE='file',A2A_MATRIX_REGISTRATION_TOKEN='fixture-selected')
+        inherited=dict(A2A_MATRIX_URL='https://parent.invalid',A2A_MATRIX_SERVER_NAME='parent.invalid',
+                       A2A_SECRET_STORE='keychain',A2A_MATRIX_REGISTRATION_TOKEN='fixture-parent')
+        preserved=dict(TMUX='/fixture/tmux,1,0',TMUX_PANE='%7',CLAUDECODE='1',CODEX_SANDBOX='fixture',
+                       CODEX_SANDBOX_NETWORK_DISABLED='1',PATH='/usr/bin')
+        env=dict(preserved,**inherited);before=deepcopy(env)
+        def effective(result):return {key:result.get(key) or value for key,value in selected.items()}
+        expected=dict(preserved,A2A_AGENT='agent-one',A2A_CONFIG_DIR='/identities/one')
+        result=proposal.identity_environment('agent-one','/identities/one',env)
+        self.assertEqual(result,expected);self.assertEqual(effective(result),selected)
+        for control in [preserved,dict(preserved,**selected),dict(preserved,**{k:'' for k in selected})]:
+            self.assertEqual(proposal.identity_environment('agent-one','/identities/one',control),expected)
+        self.assertEqual(proposal.identity_environment(None,None,env),env)
+        expression="k not in {'A2A_MATRIX_URL','A2A_MATRIX_SERVER_NAME','A2A_SECRET_STORE','A2A_MATRIX_REGISTRATION_TOKEN'}"
+        for key in selected:
+            mutant=self.mutant(proposal,'identity_environment',expression=expression,
+                               replacement='k not in '+repr(set(selected)-{key}))
+            self.assertEqual(mutant['identity_environment']('agent-one','/identities/one',preserved),expected)
+            bad=mutant['identity_environment']('agent-one','/identities/one',env)
+            self.assertEqual(effective(bad)[key],inherited[key]);self.assertNotEqual(effective(bad)[key],selected[key])
+            print('plant detected by named vector: native-transport-scrub '+key+' (inherited override survives)')
+        self.assertEqual(env,before)
+
+    def test_a2a_published_prefix_and_plant(self):
+        # The basename rule keeps a published a2a image in the scan's candidate
+        # set; it does not execute Linux enumeration or prove image identity.
+        for name in ['a2a','a2a-native']:
+            proposal.a2a_published_name(name)
+        with self.assertRaisesRegex(model.Refusal,'^native-a2a-published-prefix$'):
+            proposal.a2a_published_name('renamed-agent')
+        mutant=self.mutant(proposal,'a2a_published_name','native-a2a-published-prefix')
+        mutant['a2a_published_name']('a2a');mutant['a2a_published_name']('renamed-agent')
+        print('plant detected by named vector: native-a2a-published-prefix')
 
     def test_identity_keys_and_plants(self):
         # Every native launch scrubs three old session keys, accepts empty selectors,

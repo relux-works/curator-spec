@@ -30,6 +30,17 @@ skill-agents-management, whose provider plugins build launcher plans and argv.
   Incorrect prune can break a running lane's next tool call, silently select a
   command from base PATH, or make it go dark when its root holds `a2a`; the operator
   receives no warning from prune. There is no process-safety claim.
+- **a2a identity and upgrades (owner decisions):** recommend removing inherited
+  server/store overrides for an explicit native identity pair. The launcher owner
+  may instead refuse nonempty overrides; that choice stays open, but a stale
+  keeper-shell variable would then stop launch. Immutable roots end automatic
+  refresh of `a2a`: the consumer only re-executes when its pinned path resolves to
+  a new file. A fix therefore needs a new session; while the old consumer lives,
+  the new generation cannot bind that identity/config root. Recommend an explicit
+  stop of the old consumer before the new session. The manager, launcher and a2a
+  owners must accept this restart requirement before enabling a2a-bearing roots.
+  Urgent delivery fixes will not reach running lanes automatically; the keeper
+  must coordinate that stop and new session, with an interruption to idle wake.
 - **Companions:** recommend native scope for `profile-command-admission` and
   `managed-session-skill-cli`. Protected-name inventory and base-PATH checks remain
   substantial work. Hosted delivery is deferred: `curator-run werkstatt up` and
@@ -136,7 +147,13 @@ exclusion below; none is claimed implemented by this packet. The launcher owner
 also sequences its existing pending change before B-a implementation.
 The [a2a hook/bind documentation at `ebb308fc`](https://github.com/relux-works/a2a-swarm/blob/ebb308fc863f672812b2dd3a403056f3e2916575/docs/cli.md)
 confirms tmux-only automatic binding and Codex's separate hook trust step; this is
-a documentation read, not a wake-up witness or the pending a2a-owner answer.
+a documentation read, not a wake-up witness. The a2a owner's source-only answer
+accepts the pair with the transport/store change below, the three-key scrub and
+the image-guard contract for implementation; it supplies no runtime receipts or
+gate acceptance. Verified against [a2a main `afa27bab`](https://github.com/relux-works/a2a-swarm/tree/afa27babaf64c9f8247c13fd4a3214754116cf8b):
+`internal/config/config.go`, `internal/cli/credentials.go`, `identity.go`, `bind.go`,
+`bind_process.go`, `bind_process_linux.go`, `bind_refresh.go` and `onboard.go`.
+This follow-up text still needs its owners' exact-head review.
 
 ## Candidate carrier integration
 
@@ -392,7 +409,17 @@ identity syntax validation remains a precondition; a2a owns loading/identity sem
 For native explicit identity, compare exactly `A2A_AGENT` and `A2A_CONFIG_DIR`:
 nonempty differing inherited values refuse, identical or empty/unset values pass.
 An orchestrator launching another identity must scrub its own pair first.
-Other `A2A_*` variables are not silently described as covered by this two-key check.
+The pair does not select the server or secret store: process environment overrides
+selected-root `matrix.env`, and `A2A_SECRET_STORE` separately selects the store.
+On the native route **with an explicit pair**, remove inherited `A2A_MATRIX_URL`,
+`A2A_MATRIX_SERVER_NAME`, `A2A_SECRET_STORE` and `A2A_MATRIX_REGISTRATION_TOKEN`
+before planning, or refuse on a nonempty value. **Recommend removing all four**,
+including matching/empty values, because the keeper's shell commonly carries
+stale values; refusal would stop those launches. The launcher owner retains the
+choice between removal and nonempty-value refusal; it is not accepted here.
+The bounded model checks only the recommended removal variant. Without an
+explicit pair this four-key rule does not apply. Other `A2A_*` variables are not
+claimed covered by the two-key comparison or this named four-key rule.
 
 For **every native launch**, including resume and launches without B-a, remove inherited `A2A_SESSION_ID`,
 `CODEX_THREAD_ID` and `CLAUDE_CODE_SESSION_ID` **before planning**, with or without
@@ -403,7 +430,13 @@ runtime supplies its own metadata. This is its own separately reviewed launcher
 change, so the plan's exact environment already includes the scrub. This follows
 a2a's documented session rule (`docs/cli.md`, source revision
 `f8b88dd425ccc65f0f3f8324e92d081570486d81`), including its Claude bind/lease
-selector. Whether Claude Code overwrites an inherited selector is unverified.
+selector. The a2a owner accepts this three-key set as the right set at the source
+revision above. Keep `TMUX` and `TMUX_PANE`: bind requires its own pane/socket.
+`CLAUDECODE`, `CODEX_SANDBOX` and `CODEX_SANDBOX_NETWORK_DISABLED` are onboard
+runtime-detection inputs, not session selectors, and need no scrub under this rule.
+A missed selector makes bind refuse, but lease-taking commands can use the
+inherited session, so refusal alone is not a substitute for scrubbing.
+Whether Claude Code overwrites an inherited selector is unverified.
 Without identity flags the identity/config pair passes through without a new claim.
 For Codex `inherit=core`, the launcher passes typed per-launch values to the
 **SAM Codex plugin**, which revalidates and renders a `-c` block separate from
@@ -430,10 +463,14 @@ Claude Code 2.1.317 with `--dangerously-skip-permissions` kept inherited `A2A_*`
 and prepended PATH. These are not qualification. Real transport, settings
 precedence and settings `env.A2A_AGENT` remain for **W0 tool-shell delivery**;
 SAM's Claude V3 yolo row refuses nonempty explicit settings env, so a `--settings` override
-is not a universal answer. The a2a-owner response is still pending; its identity
-and image-guard rows below remain unchanged.
+is not a universal answer. The a2a owner's source-only answer is incorporated
+above; Linux identity, transport and image-guard receipts remain owed.
 Native flags install no doorbell or hooks. The a2a image guard across generations
-remains unchanged and needs the matrix controls below.
+remains unchanged and needs the matrix controls below. Immutable roots also keep
+the consumer's pinned launch path unchanged, ending automatic refresh on that
+route: a new generation requires explicit old-consumer stop and a new session,
+not just publication or retargeting of another root. Owner acceptance of this
+operational consequence remains open, including urgent delivery-fix rollout.
 
 ### Managed Codex gateway exclusion
 
@@ -486,12 +523,13 @@ workstation. The W0 observations above are navigation only.
 | --- | --- |
 | W0 tool-shell delivery | Real Claude and Codex Linux tool shells: profile PATH survives startup; Codex `inherit=core` receives selected identity/config. Settings `env.A2A_AGENT`/config override conflict is prevented or refuses; valid matching settings work. Record actual precedence and carrier, not parent env alone. |
 | Real launch and identity | Two profiles with different sentinel bytes, two identities/config directories, one UID. Actual tool shells find selected commands and report selected identity. Nonempty inherited conflict refuses; empty values pass. New sessions never reuse inherited `A2A_SESSION_ID`/`CODEX_THREAD_ID`/`CLAUDE_CODE_SESSION_ID`; valid runtime-owned metadata works. No ambient decoy executes. |
-| a2a image guard across generations | Same identity/config root across old/new a2a images retains today's refusal; nearby distinct identity or config-root controls behave as current a2a permits. No claim that byte-identical named copies bypass the guard. |
+| Explicit native pair transport/store | Inherit `A2A_MATRIX_URL` differing from selected `matrix.env`: it must not reach the new identity; with a matching inherited URL, selected routing still works. Exercise the other three named overrides as well. Recommended removal drops all four before planning; the launcher owner may instead choose nonempty-value refusal, witnessed as zero starts. Unset control launches; without an explicit pair the new four-key rule is not applied. |
+| a2a image guard across generations | Linux image identity is dev/inode of `/proc/<pid>/exe`. Same identity and canonical config root: a byte-identical copy in a new root is refused as a different image; a hard link to the same inode passes the image comparison (other bind and command-root admission guards still apply). The scan covers only own-UID processes whose executable name starts with `a2a`, so the published executable name MUST retain that prefix; a differently named copy is invisible to this scan and is not a bypass claim. Nearby distinct identity/config-root controls behave as current a2a permits. With immutable roots the consumer does not refresh to a newly published generation: the new bind refuses while the old consumer lives; explicit stop followed by a new-session bind is the control. |
 | Carrier/admission age pairs | Every old/new manager/launcher pair, explicit H with missing/corrupt/stale policy, unsupported mode, policy CAS mismatch: named refusal, zero starts, unchanged state; admitted pair starts. Hosted `--a2a` alone still works, native half pair refuses, valid explicit native pair passes syntax validation. |
 | Managed Codex gateway exclusion | Exercise each selector on launcher main: explicit `--network`, launcher proxy profile, and the operator gateway default without either explicit selector. Main computes these after `plan.Build`; the proposed refusal must determine the effective gateway route before building the plan rather than reuse that later variable. B-a pair or either native identity flag: `native_root_gateway_unsupported` before planning, zero starts and unchanged state. Nearby supported plain-native pair/identity and ordinary gateway without either input remain admitted. Scrub is already in the planning environment. |
-| Every-native pre-plan scrub | New/resume, with/without B-a or native identity flags: all three inherited session selectors are absent from the planning environment; runtime-owned metadata still works. No forwarded-argv inspection or fabricated replacement. Separate launcher change and review. |
+| Every-native pre-plan scrub | New/resume, with/without B-a or native identity flags: all three inherited session selectors are absent from the planning environment; runtime-owned metadata still works. `TMUX`/`TMUX_PANE` remain intact for bind; the three onboard-only runtime markers are not scrubbed as selectors. No forwarded-argv inspection or fabricated replacement. Separate launcher change and review. |
 | H in a tool shell | Exercise Claude, Codex default-inherit and Codex `inherit=core`, with and without identity flags; SAM's typed block supplies the locator where needed under `inherit=core`. The planning environment, provider child and actual tool-shell `curator` receive `CURATOR_CONFIG=H/config.json` and use H. Witness settings `env.CURATOR_CONFIG` precedence: a conflicting override is prevented or refuses, and matching settings work where SAM admits settings env. Claude V3 yolo refuses any nonempty explicit settings `env`, including a matching locator. Missing or different delivery fails the witness; absent/matching inherited values pass and a conflicting inherited locator refuses. H-only managed gateway includes the locator in the admitted plan or refuses without a post-plan overlay. Verify launcher flag before `--`, pinned absolute manager, legacy control and the same-home lock-update consequence. Launcher and SAM owners accept this wider input before implementation. |
-| Base PATH recheck | Same retained ordered list passes; reordering/addition/removal refuses with no start, no replacement fallback. A shell holding a current/older or pruned root passes by canonical spelling within H's command-root namespace before filesystem checks, giving up identity/existence/safety checks on excluded entries; a readable recognized alias also passes. Outside the spelling exclusion, missing/unreadable/world-writable entries refuse and require fixing the launching shell, not policy. H selects unattended policy. Put a provider-named `codex` or `claude` decoy in an excluded H-namespace spelling **before the real provider in the launching shell's PATH**: it is neither release-probed nor started; provider resolution, release probing and planning use the admitted PATH or refuse. The nearby provider outside the excluded namespace is resolved/probed/started. Also inherit `CODEX_MANAGED_PACKAGE_ROOT` naming an installed Codex layout under an excluded spelling: it is removed before resolution/release probing/planning or launch refuses; that binary is neither probed nor started. With the selector absent, the admitted-PATH provider works. Observe policy/selection change during verification: spawn-boundary recheck refuses without taking the manager lock. |
+| Base PATH recheck | Same retained ordered list passes; reordering/addition/removal refuses with no start, no replacement fallback. A shell holding a current/older or pruned root passes by canonical spelling within H's command-root namespace before filesystem checks, giving up identity/existence/safety checks on excluded entries; a readable recognized alias also passes. Outside the spelling exclusion, missing/unreadable/world-writable entries refuse and require fixing the launching shell, not policy. H selects unattended policy. Put a provider-named `codex` or `claude` decoy in an excluded H-namespace spelling **before the real provider in the launching shell's PATH**: it is neither release-probed nor started; provider resolution, release probing and planning use the admitted PATH or refuse. The nearby provider outside the excluded namespace is resolved/probed/started. Also inherit `CODEX_MANAGED_PACKAGE_ROOT` naming an installed Codex layout both under an excluded spelling and **outside H**: it is removed before resolution/release probing/planning or launch refuses; that binary is neither probed nor started. With the selector absent, the admitted-PATH provider works. Observe policy/selection change during verification: spawn-boundary recheck refuses without taking the manager lock. |
 | Unpinned provenance | Durable candidate record before spawn, consistent binding/revisions/evidence digest and final PATH; write failure refuses. No lease fabricated, no automatic expiry; explicit launcher provenance prune removes only those files, never admits root GC. |
 | Verification and publication | Tamper bytes, substitute equal-byte native objects, ambient decoy or exhaust deadline: zero starts. Valid control launches. Report shape/bytes/architecture and monotonic latency against 10-second bound and qualification targets. Inventory identities survive final journal staging. |
 | Retention and restore, operator prune | G1 remains while G2 runs; identical-input repair creates G3 and preserves G1. Update/startup never automatically collect old roots. Operator prune refuses without stop attestation or with retained protected edges; explicit stopped/unreferenced control prunes. Disk growth is disclosed. No process-pin safety claim. |

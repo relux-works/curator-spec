@@ -213,7 +213,14 @@ def identity_environment(identity, directory, inherited):
     values = dict(A2A_AGENT=identity, A2A_CONFIG_DIR=directory)
     for key, value in values.items():
         require(inherited.get(key) in (None, '', value), 'native-identity-conflict')
+    # Recommended explicit-pair variant only; owner may instead choose refusal.
+    result = {k:v for k,v in result.items() if k not in {'A2A_MATRIX_URL','A2A_MATRIX_SERVER_NAME','A2A_SECRET_STORE','A2A_MATRIX_REGISTRATION_TOKEN'}}
     return dict(result, **values)
+
+
+def a2a_published_name(name):
+    # Observed executable basename only; not a native process scan or image test.
+    require(name.startswith('a2a'), 'native-a2a-published-prefix')
 
 
 def validate():
