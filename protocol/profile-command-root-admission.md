@@ -46,8 +46,10 @@ skill-agents-management, whose provider plugins build launcher plans and argv.
   a profile update stops only that profile. A change to the retained ordered base
   PATH also stops launches until the operator updates policy. Spellings inside H's
   command-root namespace are excluded even after prune, without checking identity,
-  existence or safety; they cannot enter the child PATH. This gives up detecting
-  unsafe or substituted entries there. Missing or world-writable entries outside
+  existence or safety; they cannot enter the child PATH. That exclusion gives up
+  detecting unsafe or substituted entries there. On the H route, provider resolution,
+  release probing and planning must all use the admitted PATH or refuse before
+  doing so; this widens the PATH environment SAM receives. Missing or world-writable entries outside
   that exclusion still refuse: fix the launching shell, not policy.
 - **State locations:** recommend the inventory and selection paths below and
   explicit migration of existing private directories. Pins add one session store;
@@ -67,9 +69,9 @@ skill-agents-management, whose provider plugins build launcher plans and argv.
 
 The scope is one non-root Linux OS user with several profiles and a2a identities.
 A second agent under that same user can read and use the first agent's a2a access
-credentials and rewrite policy; “protected” means cooperative integrity, not
-isolation. Qualification is per measured Linux architecture; project/hybrid,
-macOS/Windows runtime parity and hook command activation remain deferred.
+credentials and rewrite policy; “protected” addresses accident and cooperative
+integrity, not a security boundary. Qualification is per measured Linux
+architecture; project/hybrid, macOS/Windows runtime parity and hook command activation remain deferred.
 
 ## Seven decisions, no recorded acceptance
 
@@ -78,7 +80,7 @@ macOS/Windows runtime parity and hook command activation remain deferred.
 | Joint v5 carrier — **CLOSED** | Curator manager, curator-run carrier/launcher and skill-agents-management (SAM) owner | Accept a conditional B-a pair in the sole coordinated v5, preserving rc7 Codex requiredness and accepting the allocated unpinned provenance below. Native Linux only initially; alternative is a later coordinated revision. |
 | Protected admission policy — **CLOSED** | Curator manager and curator-run entry-point owners | Accept explicit manager-home input, pinned image bytes, selected locks and operator attestation; explicit policy operation with lock/CAS, never install or auto-upgrade. |
 | Protected-state locations — **CLOSED** | Curator manager/journal and curator-run reader | Accept inventory and selected locations, scoped private-parent migration and actual journal staging/backup preflight. Pins alternative adds one session store; no replay tree or extra generation store. |
-| Session integration — **CLOSED** | Curator manager, curator-run launcher/carrier, its skill-agents-management argv plugin owner and a2a identity owner | Recommend no process-pin operations for the no-GC milestone; accept protected discovery, boundary verification and native identity delivery below. Full pins instead needs the explicitly open supervision/retirement design. |
+| Session integration — **CLOSED** | Curator manager, curator-run launcher/carrier, its skill-agents-management argv plugin owner and a2a identity owner | Recommend no process-pin operations for the no-GC milestone; accept protected discovery, boundary verification and native identity delivery below, including the wider SAM input: the admitted PATH for provider resolution/release probing/planning and `CURATOR_CONFIG=H/config.json` on every H launch. Full pins instead needs the explicitly open supervision/retirement design. |
 | Journal coverage — **CLOSED** | Curator manager and journal owner | Accept two dedicated publication/selection classes, target level and crash layout; assign numbers separately. Copying staged files changes inventory inode pins, so existing engine staging is insufficient. |
 | Native runtime witnesses — **CLOSED** | Curator manager/journal, curator-run launcher and a2a owners | Accept the matrix for fenced implementation, then actual receipts for emission/adoption. No receipts are claimed here. |
 | Companion admission — **CLOSED** | curator-spec, Curator command-publication, curator-run; hosted manager for whole-companion scope | Accept native scope for `profile-command-admission` and `managed-session-skill-cli` (recommended), or accept the whole companions. B-a alone does not satisfy the first; explicit native qualification must satisfy the second. |
@@ -261,7 +263,12 @@ existence, safety and publication identity inside that namespace, including
 substituted or world-writable entries; only the freshly verified selected root is
 inserted. Missing/unreadable or world-writable entries outside this spelling
 exclusion still refuse under the unattended rule; fix the launching shell PATH,
-not the policy operation. Do not blindly substitute stored PATH to conceal a difference.
+not the policy operation. On the H route, provider resolution, the release probe
+and planning MUST all use the admitted PATH constructed for the launch, or refuse
+before resolving, probing or planning with another PATH. This widens the PATH
+environment SAM receives; do not pass raw parent PATH and overlay it after planning.
+An excluded spelling containing `codex` or `claude` must supply neither a release
+probe nor the provider executable. Do not blindly substitute stored PATH to conceal a difference.
 Any launching-shell PATH change that changes the retained ordered list stops
 launches until the operator runs the policy operation again. This costs operator
 work after environment changes; benign drops/exclusions alone do not change it.
@@ -479,8 +486,8 @@ workstation. The W0 observations above are navigation only.
 | Carrier/admission age pairs | Every old/new manager/launcher pair, explicit H with missing/corrupt/stale policy, unsupported mode, policy CAS mismatch: named refusal, zero starts, unchanged state; admitted pair starts. Hosted `--a2a` alone still works, native half pair refuses, valid explicit native pair passes syntax validation. |
 | Managed Codex gateway exclusion | Exercise each selector on launcher main: explicit `--network`, launcher proxy profile, and the operator gateway default without either explicit selector. Main computes these after `plan.Build`; the proposed refusal must determine the effective gateway route before building the plan rather than reuse that later variable. B-a pair or either native identity flag: `native_root_gateway_unsupported` before planning, zero starts and unchanged state. Nearby supported plain-native pair/identity and ordinary gateway without either input remain admitted. Scrub is already in the planning environment. |
 | Every-native pre-plan scrub | New/resume, with/without B-a or native identity flags: all three inherited session selectors are absent from the planning environment; runtime-owned metadata still works. No forwarded-argv inspection or fabricated replacement. Separate launcher change and review. |
-| H in a tool shell | On Codex `inherit=core`, with and without identity flags, SAM's typed block delivers `CURATOR_CONFIG=H/config.json`; the planning environment, provider child and actual tool-shell `curator` use H. Missing or different delivery fails the witness; absent/matching inherited values pass and a conflicting inherited locator refuses. H-only managed gateway includes the locator in the admitted plan or refuses without a post-plan overlay. Verify launcher flag before `--`, pinned absolute manager, legacy control and the same-home lock-update consequence. Launcher and SAM owners accept this wider input before implementation. |
-| Base PATH recheck | Same retained ordered list passes; reordering/addition/removal refuses with no start, no replacement fallback. A shell holding a current/older or pruned root passes by canonical spelling within H's command-root namespace before filesystem checks, giving up identity/existence/safety checks on excluded entries; a readable recognized alias also passes. Outside the spelling exclusion, missing/unreadable/world-writable entries refuse and require fixing the launching shell, not policy. H selects unattended policy. Observe policy/selection change during verification: spawn-boundary recheck refuses without taking the manager lock. |
+| H in a tool shell | Exercise Claude, Codex default-inherit and Codex `inherit=core`, with and without identity flags; SAM's typed block supplies the locator where needed under `inherit=core`. The planning environment, provider child and actual tool-shell `curator` receive `CURATOR_CONFIG=H/config.json` and use H. Witness settings `env.CURATOR_CONFIG` precedence: a conflicting override is prevented or refuses, and matching settings work. Missing or different delivery fails the witness; absent/matching inherited values pass and a conflicting inherited locator refuses. H-only managed gateway includes the locator in the admitted plan or refuses without a post-plan overlay. Verify launcher flag before `--`, pinned absolute manager, legacy control and the same-home lock-update consequence. Launcher and SAM owners accept this wider input before implementation. |
+| Base PATH recheck | Same retained ordered list passes; reordering/addition/removal refuses with no start, no replacement fallback. A shell holding a current/older or pruned root passes by canonical spelling within H's command-root namespace before filesystem checks, giving up identity/existence/safety checks on excluded entries; a readable recognized alias also passes. Outside the spelling exclusion, missing/unreadable/world-writable entries refuse and require fixing the launching shell, not policy. H selects unattended policy. Put a provider-named `codex` or `claude` decoy in an excluded H-namespace spelling: it is neither release-probed nor started; provider resolution, release probing and planning use the admitted PATH or refuse. The nearby provider outside the excluded namespace is resolved/probed/started. Observe policy/selection change during verification: spawn-boundary recheck refuses without taking the manager lock. |
 | Unpinned provenance | Durable candidate record before spawn, consistent binding/revisions/evidence digest and final PATH; write failure refuses. No lease fabricated, no automatic expiry; explicit launcher provenance prune removes only those files, never admits root GC. |
 | Verification and publication | Tamper bytes, substitute equal-byte native objects, ambient decoy or exhaust deadline: zero starts. Valid control launches. Report shape/bytes/architecture and monotonic latency against 10-second bound and qualification targets. Inventory identities survive final journal staging. |
 | Retention and restore, operator prune | G1 remains while G2 runs; identical-input repair creates G3 and preserves G1. Update/startup never automatically collect old roots. Operator prune refuses without stop attestation or with retained protected edges; explicit stopped/unreferenced control prunes. Disk growth is disclosed. No process-pin safety claim. |

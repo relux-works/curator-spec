@@ -120,6 +120,37 @@ class NativeRootAdmission(unittest.TestCase):
         with self.assertRaisesRegex(model.Refusal,'^candidate-schema$'):proposal.check_candidate(bad,self.observed)
         self.assertEqual(bad,before)
 
+    def test_provider_named_decoy_path_and_plant(self):
+        # Compose spelling exclusion with the ordered recheck and supplied
+        # resolve/probe/plan PATH observations. A decoy exists only as a name;
+        # this proves the model guard, not real resolution, execution or SAM.
+        import test_profile_command_path as path_model
+        home=self.base['policy']['manager_home']
+        data=path_model.load(path_model.CORPUS/'baseline.json');data['policy']='managed'
+        excluded=home+'/environments/Work.1/commands/substituted/bin'
+        data['base_path']=[excluded]+data['base_path']
+        data['path_facts'][excluded]=dict(identity='substituted',readable=True,kind='directory',mode=511)
+        admitted,issues,exclusions=path_model.admit_path(data,[],manager_home=home)
+        self.assertEqual(issues,[]);self.assertEqual(exclusions,[excluded])
+        record=dict(record='candidate/native-base-path/1',manager_home=home,uid=self.base['policy']['uid'],
+                    policy_revision=self.base['policy']['revision'],platform='linux-amd64',retained=['/usr/bin','/bin'])
+        self.assertEqual(proposal.base_path_recheck(record,self.base['policy'],'linux-amd64',admitted),record['retained'])
+        good={stage:dict(PATH=':'.join(admitted)) for stage in ('resolve','probe','plan')}
+        executables={excluded+'/codex','/usr/bin/codex'}
+        expected={stage:'/usr/bin/codex' for stage in good}
+        self.assertEqual(proposal.provider_path_observations('codex',admitted,good,executables),expected)
+        mutant=self.mutant(proposal,'provider_path_observations','native-provider-admitted-path')
+        self.assertEqual(mutant['provider_path_observations']('codex',admitted,good,executables),expected)
+        for stage in good:
+            bad=deepcopy(good);bad[stage]['PATH']=':'.join(data['base_path'])
+            before=deepcopy((admitted,bad,executables))
+            with self.assertRaisesRegex(model.Refusal,'^native-provider-admitted-path$'):
+                proposal.provider_path_observations('codex',admitted,bad,executables)
+            self.assertEqual(mutant['provider_path_observations']('codex',admitted,bad,executables)[stage],
+                             excluded+'/codex')
+            self.assertEqual((admitted,bad,executables),before)
+        print('plant detected by named vector: provider-named-decoy-admitted-path (native-provider-admitted-path)')
+
     def test_home_delivery_vectors_and_plants(self):
         # On H launches, supplied planning/tool observations must name H even
         # without identity. A missing/different locator fails by intended reason;

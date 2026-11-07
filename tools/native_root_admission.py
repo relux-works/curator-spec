@@ -49,6 +49,15 @@ def home_delivery(config, planning_environment, tool_environment):
     require(tool_environment.get('CURATOR_CONFIG') == config, 'native-home-tool-delivery')
 
 
+def provider_path_observations(provider, admitted_path, environments, executables):
+    # Supplied PATHs and executable names only; no real resolver, probe or SAM.
+    require(all(environments[stage].get('PATH') == ':'.join(admitted_path)
+                for stage in ('resolve', 'probe', 'plan')), 'native-provider-admitted-path')
+    return {stage: next((directory+'/'+provider for directory in environments[stage]['PATH'].split(':')
+                         if directory+'/'+provider in executables), None)
+            for stage in ('resolve', 'probe', 'plan')}
+
+
 def joint_candidate():
     """Preserve sole rc7 semantics while proposing a conditional native B-a pair."""
     schema = deepcopy(json.loads((ROOT/'schemas/rc7-carriers-v1/launch-env-fragment-v5.schema.json').read_text(encoding='utf-8')))
