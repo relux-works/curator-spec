@@ -2,7 +2,7 @@
 
 This unreleased additive contract proposes B-a members for the already allocated
 coordinated `launch-env-fragment-v5` and defines `profile-command-root/2`,
-`launcher-path-state/2`, `profile-command-reference/1`,
+`launcher-path-state/2` (full pins), `profile-command-reference/1`,
 `profile-command-generation/1`, `profile-command-inventory/1`,
 `profile-command-session-pin/1`, snapshot sidecar `profile-command-roots/1`,
 and capability `profile-command-roots-v1`.
@@ -68,7 +68,7 @@ A reader cannot infer required commands from an old fragment's absence of a
 field. The operator provisions admission binding selected profile/lock and exact
 manager/launcher image bytes. New launchers read it before invoking the absolute
 manager image, never a PATH lookup. No distribution signer is implied.
-The operator attests that legacy entry points are excluded from this workflow and writer cohort. Without that attestation, the manager MUST refuse activation/emission for that home.
+The operator attests that legacy entry points are excluded from this workflow and writer cohort. Without that attestation, the manager MUST refuse activation/emission for that home. Running the operation with explicit operator intent is that attestation; a valid current policy is its evidence.
 Lock revision rejection alone is not admission. Uncontrolled legacy entry points
 remain unqualified. The [candidate policy](profile-command-root-admission.md#candidate-policy-and-controlled-entry-point)
 uses an explicit operator-invoked operation with lock/CAS; install and auto-upgrade
@@ -206,7 +206,9 @@ up automatic reclamation, a disk bound and A9/A10 relevance for now. Full pins i
 the named additive alternative; it still needs non-root Linux supervision (L)
 and terminal-request/prior-boot retirement with an after-cap route (M to L).
 Its one atomic session record replaces a duplicate request tree. Missing accepted
-integration refuses B-a before start. Hook pins remain separately gated.
+integration refuses B-a before start. Hook pin acquisition remains CLOSED under
+all four named hook-activation/reference-admission gates below, even if native
+session integration opens without acquire.
 A9's bounded pin-authority comparisons are retained for that alternative; they
 obtain no OS observer authority or runtime qualification.
 
@@ -228,6 +230,8 @@ manager lock needs operator stop attestation and refuses selected/snapshot/resum
 rollback/journal/reference edges. Roots and dependent evidence persist otherwise.
 Pins stay additive. The production carrier/provenance must explicitly allocate
 an unpinned variant before use; no dummy pin or released capability is inferred.
+Before enabling automatic GC, drain unpinned lanes or obtain operator attestation
+that they are stopped; pre-pin lanes have no retention edge.
 Both choices remain proposals with every gate CLOSED.
 
 ## Verification budget, process pins and GC
@@ -607,6 +611,8 @@ drop or retarget. No persistent reconciliation or migration is qualified.
 The session/launcher models check only their explicit authority inputs; they do
 not qualify a supervisor observer, pre-start revision revalidation or protected
 manager discovery. Hook chain inputs contain no session pin. Those obligations
-remain closed under the session-integration/runtime gates, regardless of a model
-acceptance. The distinct repair-edge vectors qualify only that bounded projection;
+remain closed under native session-integration/runtime gates for full pins and
+the four named hook-activation/reference-admission gates for hook acquisition,
+regardless of a model acceptance. The distinct repair-edge vectors qualify only
+that bounded projection;
 they are not native store/reconciliation witnesses.

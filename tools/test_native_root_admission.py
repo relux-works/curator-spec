@@ -87,6 +87,39 @@ class NativeRootAdmission(unittest.TestCase):
             mutant['check_candidate'](bad,self.observed)
             print('plant detected by named vector:',reason)
 
+    def test_authority_clause_vectors_and_plants(self):
+        # Each independent home/revision/profile clause has a coherent failing
+        # vector; its removal admits that vector and the unchanged valid control.
+        for label,reason,expression,change in [
+            ('candidate-home','candidate-policy-authority',"policy['manager_home'] == observed['home']",lambda c:c['policy'].update(manager_home='/other-home')),
+            ('candidate-policy-revision','candidate-policy-authority',"policy['revision'] == observed['policy_revision']",lambda c:c['policy'].update(revision=2)),
+            ('candidate-selected-profile','candidate-selected-lock',"p['profile'] == selected['profile']",lambda c:c['policy']['profiles'][0].update(profile='Other.1'))]:
+            bad=deepcopy(self.base);change(bad);before=deepcopy(bad)
+            with self.assertRaisesRegex(model.Refusal,'^'+reason+'$'):proposal.check_candidate(bad,self.observed)
+            mutant=self.mutant(proposal,'check_candidate',expression=expression)
+            mutant['check_candidate'](self.base,self.observed);mutant['check_candidate'](bad,self.observed)
+            self.assertEqual(bad,before)
+            print('plant detected by named vector:',label)
+
+    def test_home_route_vectors_and_plants(self):
+        # H with absent policy and a B-a pair without H refuse before use. A
+        # conflicting inherited config refuses; valid and legacy controls pass.
+        home=self.observed['home'];policy=self.base['policy'];config=home+'/config.json'
+        self.assertIsNone(proposal.home_route(None,False,None))
+        for inherited in [None,'',config]:self.assertEqual(proposal.home_route(home,True,policy,inherited),config)
+        for reason,args in [('native-home-required',(None,True,policy)),
+                            ('native-policy-required',(home,True,None)),
+                            ('native-home-conflict',(home,True,policy,'/other/config.json'))]:
+            before=deepcopy(args)
+            with self.assertRaisesRegex(model.Refusal,'^'+reason+'$'):proposal.home_route(*args)
+            mutant=self.mutant(proposal,'home_route',reason)
+            self.assertEqual(mutant['home_route'](home,True,policy),config)
+            mutant['home_route'](*args);self.assertEqual(args,before)
+            print('plant detected by named vector:',reason)
+        bad=deepcopy(self.base);bad.pop('policy');before=deepcopy(bad)
+        with self.assertRaisesRegex(model.Refusal,'^native-policy-required$'):proposal.check_candidate(bad,self.observed)
+        self.assertEqual(bad,before)
+
     def test_recommended_variant_and_grammar(self):
         # Operator-prune admission has no session; pin data is rejected there.
         # Work.1 is valid across policy, selection and optional session records.
@@ -228,13 +261,19 @@ class NativeRootAdmission(unittest.TestCase):
             self.assertEqual(mutant['prune_candidate'](False,True,False),'operator-prune')
             self.assertEqual(mutant['prune_candidate'](*args),'operator-prune')
             print('plant detected by named vector:',reason)
+        # Missing selected profile cannot masquerade as a lock postimage.
+        with self.assertRaisesRegex(model.Refusal,'^policy-update-lock$'):proposal.policy_update(current,valid,1,{})
+        mutant=self.mutant(proposal,'policy_update',expression="selected.get(p['profile'])",replacement="selected.get(p['profile'], p['lock_sha256'])")
+        self.assertEqual(mutant['policy_update'](current,valid,1,selected),valid)
+        self.assertEqual(mutant['policy_update'](current,valid,1,{}),valid)
+        print('plant detected by named vector: policy-update-missing-selection')
         self.assertEqual(proposal.policy_update(current,valid,1,selected),valid)
         self.assertEqual(proposal.prune_candidate(False,True,False),'operator-prune')
 
     def test_identity_keys_and_plants(self):
-        # New native sessions scrub two old session keys, accept empty selectors,
+        # New native sessions scrub three old session keys, accept empty selectors,
         # and reject only nonempty mismatches in the two documented identity keys.
-        env={'PATH':'/tools:/usr/bin','A2A_SESSION_ID':'old','CODEX_THREAD_ID':'old-thread'};before=deepcopy(env)
+        env={'PATH':'/tools:/usr/bin','A2A_SESSION_ID':'old','CODEX_THREAD_ID':'old-thread','CLAUDE_CODE_SESSION_ID':'old-claude'};before=deepcopy(env)
         base={'PATH':env['PATH']};expected=dict(base,A2A_AGENT='agent-one',A2A_CONFIG_DIR='/identities/one')
         self.assertEqual(proposal.identity_environment(None,None,env),base)
         self.assertEqual(proposal.identity_environment('agent-one','/identities/one',env),expected)
@@ -254,13 +293,15 @@ class NativeRootAdmission(unittest.TestCase):
             label=reason
             if reason=='native-identity-conflict':label+=' '+('A2A_AGENT' if args[2].get('A2A_AGENT')=='other' else 'A2A_CONFIG_DIR')
             print('plant detected by named vector:',label)
-        for key in ['A2A_SESSION_ID','CODEX_THREAD_ID']:
-            expression="k not in {'A2A_SESSION_ID','CODEX_THREAD_ID'}"
-            remaining=({'A2A_SESSION_ID','CODEX_THREAD_ID'}-{key}).pop()
-            mutant=self.mutant(proposal,'identity_environment',expression=expression,replacement='k != '+repr(remaining))
+        for key in ['A2A_SESSION_ID','CODEX_THREAD_ID','CLAUDE_CODE_SESSION_ID']:
+            expression="k not in {'A2A_SESSION_ID','CODEX_THREAD_ID','CLAUDE_CODE_SESSION_ID'}"
+            remaining={'A2A_SESSION_ID','CODEX_THREAD_ID','CLAUDE_CODE_SESSION_ID'}-{key}
+            mutant=self.mutant(proposal,'identity_environment',expression=expression,replacement='k not in '+repr(remaining))
             self.assertEqual(mutant['identity_environment']('agent-one','/identities/one',base),expected)
             self.assertNotIn(key,proposal.identity_environment('agent-one','/identities/one',env))
             self.assertIn(key,mutant['identity_environment']('agent-one','/identities/one',env))
+            self.assertNotIn(key,proposal.identity_environment(None,None,env))
+            self.assertIn(key,mutant['identity_environment'](None,None,env))
             print('plant detected by named vector: native-session-scrub '+key)
         self.assertEqual(env,before)
 
@@ -333,6 +374,29 @@ class NativeRootAdmission(unittest.TestCase):
             with self.assertRaisesRegex(model.Refusal,'^gate-status-'+gate+'$'):proposal.check_gate_text(missing)
             mutant['check_gate_text'](missing)
             print('plant detected by named vector: gate-status-'+gate)
+
+    def test_gate_inventory_and_roots_plants(self):
+        # Shrinking the inventory refuses; every named roots/hook declaration
+        # refuses OPEN or absence. Positive controls prevent reject-all success.
+        text=(model.ROOT/'protocol/profile-command-root-admission.md').read_text(encoding='utf-8')
+        mutant=self.mutant(proposal,'check_gate_text','gate-inventory')
+        mutant['check_gate_text'](text)
+        with patch.object(proposal,'GATES',proposal.GATES[:-1]):
+            with self.assertRaisesRegex(model.Refusal,'^gate-inventory$'):proposal.check_gate_text(text)
+            mutant['GATES']=proposal.GATES;mutant['check_gate_text'](text)
+        print('plant detected by named vector: gate-inventory')
+        roots=(model.ROOT/'protocol/profile-command-roots.md').read_text(encoding='utf-8')
+        proposal.check_root_gate_text(roots)
+        mutant=self.mutant(proposal,'check_root_gate_text',expression="len(rows) == 1 and rows[0].startswith('**CLOSED '+marker)")
+        mutant['check_root_gate_text'](roots)
+        lines=[l for l in roots.splitlines() if l.startswith('**CLOSED ') and ' gate — ' in l]
+        self.assertEqual(len(lines),8)
+        for line in lines:
+            name=line.split(' gate — ',1)[1].split(':**',1)[0]
+            for changed in [roots.replace(line,line.replace('**CLOSED ','**OPEN ',1)),roots.replace(line,'')]:
+                with self.assertRaisesRegex(model.Refusal,'^roots-gate-status-'+name+'$'):proposal.check_root_gate_text(changed)
+                mutant['check_root_gate_text'](changed)
+            print('plant detected by named vector: roots-gate-status-'+name)
 
 
 if __name__=='__main__':unittest.main()

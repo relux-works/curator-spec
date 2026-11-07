@@ -10,9 +10,37 @@ GATES = ('Joint v5 carrier', 'Protected admission policy', 'Protected-state loca
 
 def check_gate_text(text):
     # Checks the seven actual packet rows, not owner acceptance or runtime state.
+    require(len(GATES) == 7 and len(set(GATES)) == 7, 'gate-inventory')
     for gate in GATES:
         rows = [line for line in text.splitlines() if line.startswith('| '+gate+' — ')]
         require(len(rows) == 1 and rows[0].startswith('| '+gate+' — **CLOSED** |'), 'gate-status-'+gate)
+
+
+def check_root_gate_text(text):
+    # Named declarations include hook gates; this checks text, not acceptance.
+    gates = (('root-emission', 'protected admission policy'),
+             ('root-emission', 'protected-state locations'),
+             ('root-emission', 'session integration'),
+             ('root-emission', 'companion admission'),
+             ('hook-activation', 'gateway naming decision'),
+             ('reference-admission', 'request-epoch maintenance'),
+             ('hook-activation', 'gateway aggregate and Windows pins'),
+             ('hook-activation', 'registered settings adapter and proofs'))
+    for kind, name in gates:
+        marker = kind+' gate — '+name+':**'
+        rows = [line for line in text.splitlines() if marker in line]
+        require(len(rows) == 1 and rows[0].startswith('**CLOSED '+marker), 'roots-gate-status-'+name)
+
+
+def home_route(home, has_pair, policy, inherited_config=None):
+    # Explicit B-a routing and config consistency only; no filesystem observation.
+    if home is None:
+        require(not has_pair, 'native-home-required')
+        return None
+    require(policy is not None, 'native-policy-required')
+    config = home+'/config.json'
+    require(inherited_config in (None, '', config), 'native-home-conflict')
+    return config
 
 
 def joint_candidate():
@@ -38,6 +66,7 @@ def locations(home, profile, generation, platform, session=None):
 
 
 def check_candidate(case, observed):
+    home_route(observed['home'], True, case.get('policy'), observed.get('config'))
     require(validators()['native-admission-proposal.schema.json'].is_valid(case), 'candidate-schema')
     policy = case['policy']; selected = case['selected']; binding = selected['binding']
     # Observed home is the explicit operator launch input, not missing-policy inference.
@@ -103,8 +132,8 @@ def replay_acquire(saved, request):
 
 
 def identity_environment(identity, directory, inherited):
-    # New native sessions scrub both old session keys, even without identity flags.
-    result = {k:v for k,v in inherited.items() if k not in {'A2A_SESSION_ID','CODEX_THREAD_ID'}}
+    # New native sessions scrub all three old session keys, even without identity flags.
+    result = {k:v for k,v in inherited.items() if k not in {'A2A_SESSION_ID','CODEX_THREAD_ID','CLAUDE_CODE_SESSION_ID'}}
     if identity is None and directory is None:
         return result
     require(isinstance(identity, str) and bool(identity) and directory is not None,
@@ -127,4 +156,5 @@ def validate():
     observed['request'] = deepcopy(case['session']['request'])
     check_candidate(case,observed)
     check_gate_text((ROOT/'protocol/profile-command-root-admission.md').read_text(encoding='utf-8'))
-    print('Native admission model: operator prune and optional pins; seven packet rows checked CLOSED; no runtime evidence')
+    check_root_gate_text((ROOT/'protocol/profile-command-roots.md').read_text(encoding='utf-8'))
+    print('Native admission model: operator prune and optional pins; seven packet rows and eight named roots gates checked CLOSED; no runtime evidence')

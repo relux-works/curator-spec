@@ -112,12 +112,15 @@ trusting Curator's `verified` assertion:
    without executing it. The decoded target must equal the next hop. Unknown
    forwarder formats, hidden extra hops or a final artifact disagreeing with
    its admitted selected/retained export refuse. Never execute a shim to discover trust.
-5. Hold Slice A's supervisor-issued exclusive routing admission over verification
+5. For Slice A, hold its supervisor-issued exclusive routing admission over verification
    and process start, serialized with routing mutation under its existing
    contract. Recheck identities, access, bytes and binding at that boundary;
    substituted or stale evidence refuses with no repair, re-resolution,
    singleton fallback or provider start. A current root with unproven routing
    is an integrity refusal, not the non-current-profile availability case.
+   B-a immutable named roots do not use Slice A's `Supervisor`, `Domain` or
+   routing admission; apply the same final identity/access/byte/binding recheck
+   under the [native admission contract](profile-command-root-admission.md#source-seams-and-companion-scope).
 
 The current-profile test precedes any attempt to verify that profile through
 another profile's singleton root. No-export and unavailable cases do not
