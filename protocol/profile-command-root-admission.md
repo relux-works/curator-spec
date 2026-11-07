@@ -10,7 +10,13 @@ or runtime receipts. Gateway naming remains open and independent.
 
 - **Carrier:** recommend one coordinated version-5 manager/launcher message for
   Slice B-a (immutable named command roots), preserving the existing Codex contract.
-  Allocate a launch record for sessions without pins; older pairs refuse.
+  SAM owns the typed inputs and Codex rendering with the manager/launcher owners.
+  The allocated unpinned launch record is retained until explicit operator prune,
+  with no automatic cleanup or disk bound; older pairs refuse. Managed Codex
+  gateway launches with a B-a pair or native identity flags refuse before planning.
+  Hosted launches receiving a B-a pair refuse as version-unsupported. Every native
+  launch, including resume and launches without B-a, drops inherited parent session
+  selectors before planning; this ships as a separate launcher change.
 - **Milestone and session integration:** recommend **operator prune, no automatic
   command-root garbage collection (GC)**. Keep native discovery, verification and
   identity delivery; give up automatic reclamation, a disk bound and A9/A10
@@ -23,16 +29,24 @@ or runtime receipts. Gateway naming remains open and independent.
   `managed-session-skill-cli`. Protected-name inventory and base-PATH checks remain
   substantial work. Hosted delivery is deferred: `curator-run werkstatt up` and
   hosted launch get no profile commands in this milestone; a keeper uses the direct
-  native route, owns restart and arranges wake-ups through a2a hooks. This is the
-  accepted delivery scope, not acceptance of these still-closed gates.
+  native route and owns restart. Trusted a2a session-start hooks bind the idle-wake
+  consumer inside tmux; outside tmux they report unavailable and do not wake an
+  idle lane. Codex hooks require the printed one-time trust step. This is the
+  milestone's stated scope, for owners to accept; these gates remain CLOSED.
 - **Policy:** recommend one explicit operator command under the manager lock with
   compare-and-swap (CAS: reject if the current revision differs from the expected
   one). It updates policy, lock and selection together; install and auto-upgrade
-  never invoke it. Launches refuse until the operator acts: an auto-upgrade or
-  profile update stops every launch on an unattended host until the operation runs.
+  never invoke it. Launches refuse until the operator acts: a
+  binary upgrade stops all launches on an unattended host until the operation runs;
+  a profile update stops only that profile. A change to the retained ordered base
+  PATH also stops launches until the operator updates policy. Inherited B-a roots
+  alone are excluded before comparison, so do not cause that refusal.
 - **State locations:** recommend the inventory and selection paths below and
   explicit migration of existing private directories. Pins add one session store;
-  journal staging and backup paths still need owner acceptance.
+  journal staging and backup paths still need owner acceptance. H is a launcher
+  flag before `--` (spelling owned by the launcher). Recommend passing the matching
+  `CURATOR_CONFIG=H/config.json` to child/tool shells, so their `curator` uses the
+  same home; this recommendation needs owner acceptance and a Linux witness.
 - **Journal:** recommend two dedicated classes, publication and selection; reject
   extending existing `84-profile-generation` and `85-profile-routing` transactions.
   The journal owner assigns numbers and accepts inode preservation and crash
@@ -50,7 +64,7 @@ macOS/Windows runtime parity and hook command activation remain deferred.
 
 | Gate / status | What must be accepted; owners | Proposed resolution and acceptance still requested |
 | --- | --- | --- |
-| Joint v5 carrier — **CLOSED** | Curator manager and curator-run carrier/launcher | Accept a conditional B-a pair in the sole coordinated v5, preserving rc7 Codex requiredness and explicitly allocating unpinned provenance. Native Linux only initially; alternative is a later coordinated revision. |
+| Joint v5 carrier — **CLOSED** | Curator manager, curator-run carrier/launcher and skill-agents-management (SAM) owner | Accept a conditional B-a pair in the sole coordinated v5, preserving rc7 Codex requiredness and accepting the allocated unpinned provenance below. Native Linux only initially; alternative is a later coordinated revision. |
 | Protected admission policy — **CLOSED** | Curator manager and curator-run entry-point owners | Accept explicit manager-home input, pinned image bytes, selected locks and operator attestation; explicit policy operation with lock/CAS, never install or auto-upgrade. |
 | Protected-state locations — **CLOSED** | Curator manager/journal and curator-run reader | Accept inventory and selected locations, scoped private-parent migration and actual journal staging/backup preflight. Pins alternative adds one session store; no replay tree or extra generation store. |
 | Session integration — **CLOSED** | Curator manager, curator-run launcher/carrier, its skill-agents-management argv plugin owner and a2a identity owner | Recommend no process-pin operations for the no-GC milestone; accept protected discovery, boundary verification and native identity delivery below. Full pins instead needs the explicitly open supervision/retirement design. |
@@ -72,10 +86,12 @@ and Linux platform names, provenance/completeness/upgrades and target alias rule
 It independently checks every export against the admitted destination base PATH,
 including protected names absent there; unknown/unreadable evidence refuses.
 The operator supplies the destination base PATH in the policy operation for
-publication checks; its retained admission evidence (format to allocate with the
-companion) supplies the launcher's comparison source. At launch, reclassify it
-using [PATH section 3](profile-command-path.md#3-path-construction-and-admission)
-and refuse on a difference. B-a does not use Slice A's `Supervisor`, `Domain` or
+publication checks; the closed retained evidence [allocated below](#base-path-evidence-and-launch-recheck)
+supplies the launcher's comparison source. At launch, classify inherited PATH
+using [PATH section 3](profile-command-path.md#3-path-construction-and-admission),
+selecting its unattended column for the H route, and compare ordered retained lists
+after root-namespace exclusion. Refuse a difference; do not hide it by replacing
+the inherited base with the stored list. B-a does not use Slice A's `Supervisor`, `Domain` or
 routing admission: immutable named roots remove the singleton routing they protect.
 Paired vectors include `git`, `ls`, `sh`, `cd`, registry/platform names, aliases,
 dynamic-only collisions and ordinary names, preserving preimages. Curator owns
@@ -85,7 +101,10 @@ not deletion of the refusal. Whole-companion adoption is the named alternative.
 For `managed-session-skill-cli`, accept native current/all-profile verification,
 PATH admission and per-launch provenance, no-export behavior and final-tool-shell
 witnesses. Hosted active delivery and its joint manager carrier remain closed;
-existing hosted unavailable-command behavior is unchanged. B-a supplies the native
+existing hosted unavailable-command behavior is unchanged for older fragments.
+A hosted launch receiving a B-a pair refuses by the existing
+`fragment_version_unsupported` route, with zero starts: dropping those commands
+would silently fall through to base PATH. B-a supplies the native
 immutable-root design, but neither a design nor a prepared lock qualifies adoption.
 
 Launcher
@@ -95,6 +114,17 @@ for hosted doorbell wiring and route selection, and is refused on native launche
 `--a2a-config-dir` is new proposed syntax. These are missing implementation seams,
 not runtime evidence. Existing global shim publication is not B-a materialization.
 
+Source follow-up: launcher main remains
+[`2045339f`](https://github.com/relux-works/curator-agent-launcher/blob/2045339f703ee8190705c116a05197b12b684b71/internal/plan/context.go)
+with SAM v0.5.74; [SAM main `d97ec516`](https://github.com/relux-works/skill-agents-management/blob/d97ec5166f479c08410881dc38c9cc945dfdc433/pkg/agentic/systems/codex/args.go)
+owns provider argv rendering. SAM's [gateway proposal at `a48fa206`](https://github.com/relux-works/skill-agents-management/blob/a48fa206dcd11e13b625231140b03475eb1aea7f/pkg/agentic/codex_gateway.go)
+is still open, not current main. Its exact-process checks motivate the milestone
+exclusion below; none is claimed implemented by this packet. The launcher owner
+also sequences its existing pending change before B-a implementation.
+The [a2a hook/bind documentation at `ebb308fc`](https://github.com/relux-works/a2a-swarm/blob/ebb308fc863f672812b2dd3a403056f3e2916575/docs/cli.md)
+confirms tmux-only automatic binding and Codex's separate hook trust step; this is
+a documentation read, not a wake-up witness or the pending a2a-owner answer.
+
 ## Candidate carrier integration
 
 Add `command_root` and `path_prepend` together to the sole coordinated rc7 v5;
@@ -102,9 +132,9 @@ neither is required when neither is present. Bare v5 prepend refuses. Preserve
 all other rc7 ownership, unknown-member and typed Codex policy requirements.
 The candidate model restricts B-a to Linux; it leaves the inherited path grammar
 intact. No-command profiles retain existing behavior and gain no B-a claim.
-The no-GC choice also needs an explicitly unpinned provenance variant; the current
-closed launcher-state schema still requires a lease. This is part of joint-carrier
-acceptance, not permission to invent one. Candidate composition is a review
+The no-GC choice uses the allocated unpinned provenance below; the existing
+closed `launcher-path-state/2` still requires a lease and is not relaxed. The
+allocated candidate shape needs joint-carrier acceptance before emission. Candidate composition is a review
 instrument, not another normative carrier.
 Released v1–v4 and their inert prepend stay unchanged. Unsupported old/new pairs
 refuse without downgrade, empty-root substitute, ambient fallback or inferred capability.
@@ -118,11 +148,18 @@ a missing/corrupt policy then refuses, even when all state under H disappeared.
 Without that input the launcher may use its existing legacy resolution, but that
 route is unqualified for B-a. A B-a pair on a route without H refuses.
 It never infers legacy permission from missing policy.
-This input is proposed, with production syntax still for the carrier owners;
+H is a launcher-owned flag before `--`, never a forwarded provider argument;
+its spelling is for the launcher owner to propose. This input is proposed;
 it is not a claim that today's launcher has such a setting. `CURATOR_CONFIG`,
 ambient PATH or a provider cannot override the pinned manager once selected.
 The launcher sets the manager's home from H; a conflicting inherited
-`CURATOR_CONFIG` refuses.
+`CURATOR_CONFIG` refuses. **Recommendation for the launcher owner:** also set
+`CURATOR_CONFIG=H/config.json` in the provider child and tool-shell environment,
+so a tool-shell `curator` resolves the same home. H is a directory, whereas
+[`CURATOR_CONFIG` names its config file](https://github.com/relux-works/curator/blob/163c2e98bd5d9596dca1f51f73b8f4393e8101b8/internal/config/config.go);
+do not set it to the bare directory.
+This propagation is proposed, not current launcher behavior, and needs the W0
+`curator` witness below. Legacy resolution remains unchanged.
 
 `P` follows the existing profile grammar (including `Work.1`); `G` is fresh 256-bit
 materialization identity. The manager writes operational records; the launcher
@@ -143,7 +180,8 @@ below H are included in that migration, not exempted by being old.
 | Inventory | `H/environments/P/commands/G/platform/inventory.json` | Existing inventory, command chains and native IDs, pinned by receipt/marker and selected binding. |
 | Selected generation | `H/state/command-roots/selected/P.json` | Full seven-field binding, profile and monotone revision, coherent with policy's selected lock. CAS with selection/lock/routing. |
 | Admission | `H/state/command-roots/admission.json` | Candidate operator policy, never auto-provisioned. |
-| Launcher provenance | `${XDG_STATE_HOME}/swarma/launcher/` (fallback `${HOME}/.local/state`) | Full pins uses per-launch `launcher-path-state/2`; the recommended unpinned variant still needs allocation, per [path provenance](profile-command-path.md#4-provenance-and-witnesses); launcher-owned, no admission authority. |
+| Retained base PATH | `H/state/command-roots/base-path.json` | Closed `candidate/native-base-path/1` below; replaced in the same operator transaction as policy/selection. |
+| Launcher provenance | `${XDG_STATE_HOME}/swarma/launcher/<launch_id>.json` (state-home fallback `${HOME}/.local/state`) | Operator prune uses closed `candidate/native-root-launch/1` below; full pins keeps `launcher-path-state/2`. Launcher-owned provenance, no admission authority or retention edge. |
 | Session (pins alternative only) | `H/state/command-roots/sessions/R.json` | One atomic record containing canonical request, full pin and terminal audit; R is a fresh 64-hex session/request ID and the proposed lease ID is the same R. |
 
 No `g/G.json` is needed: selected state already holds the external binding; the
@@ -162,6 +200,50 @@ selected adds 35; optional session adds 99 to H. Receipt H+P limits remain
 with Windows UTF-16 units. Cross-platform arithmetic is no runtime admission.
 Actual path computation, not constants, governs refusal. Journal layout still
 needs owner acceptance and longest-path vectors; final-path fit does not open it.
+
+## Allocated unpinned launch record
+
+The closed `$defs/unpinned_launch` in the [candidate schema](../schemas/profile-command-roots-v1/native-admission-proposal.schema.json)
+allocates `candidate/native-root-launch/1`: `prior_state` (the existing
+`launcher-path-state/1`, including its unpredictable 32-hex `launch_id`), the full
+seven-field `command_root` binding, `effective_path`, `path_value`,
+`policy_revision`, `selection_revision` and `base_path_sha256` (raw evidence-file
+bytes). There is no lease or session pin, and unknown members refuse. Prior
+profile/lock/plan and root binding must agree with the selected generation;
+PATH order/value must match the constructed child environment. Keep the existing
+private/exclusive/atomic durable publication requirements before spawn; failure
+refuses without a child. It records the pre-spawn observation, not successful
+execution, live-process authority or runtime qualification.
+
+Retention is one file per launch until **explicit operator-invoked launcher
+provenance prune**, implemented/owned by the launcher; no automatic expiry,
+cleanup or disk bound. This is separate from manager command-root prune. Deleting
+a provenance file never authorizes root GC; keeping it is not a pin. Full pins
+stays an additive alternative. These complete proposed shapes use candidate
+tokens refused by production readers; no production token or gate is opened.
+
+## Base PATH evidence and launch recheck
+
+The closed `$defs/base_path_evidence` allocates `candidate/native-base-path/1`
+with exactly `record`, canonical `manager_home`, `uid`, `policy_revision`, Linux
+`platform` and ordered `retained` absolute path strings. The manager classifies
+the operator-supplied PATH under section 3's unattended column, excluding known
+root namespaces and applying its defaults when required, and retains that list.
+The operator command atomically replaces this file alongside policy/selection;
+its home/UID/revision/platform must match the observations used by the launcher.
+
+The launcher applies those same predicates/exclusions/defaults to its inherited
+PATH and requires **ordered equality** with `retained`, not set equality. Emit
+section 3's drop/exclusion diagnostic; then prepend only the freshly verified
+selected root and protected tools to the admitted list. An inherited current or
+older B-a root, or its recognized alias, is excluded before comparison and must
+not alone cause refusal. Unreadable namespace evidence follows the unattended
+refusal rule. Do not blindly substitute stored PATH to conceal a difference.
+Any launching-shell PATH change that changes the retained ordered list stops
+launches until the operator runs the policy operation again. This costs operator
+work after environment changes; benign drops/exclusions alone do not change it.
+The bounded model receives classified lists; native classification, identities
+and namespace recognition still need the disposable-Linux witness below.
 
 ## Candidate policy and controlled entry point
 
@@ -206,8 +288,10 @@ that changes the normative binding contract and needs separate owner acceptance.
 The launcher compares canonical H and current UID to policy, selected profile and
 lock to its policy entry, and actual manager/launcher image bytes to their policy
 SHA-256 pins. It invokes that exact absolute manager, with no PATH lookup.
-The observed revision is rechecked at the spawn boundary; a concurrent policy or
-selection change refuses. These comparisons establish consistency with the
+Launcher verification takes **no manager lock**: it reads atomically replaced
+policy, selection and base-PATH evidence, rejects missing/incoherent records, and
+rechecks both policy and selection revisions at the final spawn boundary. A
+concurrent policy or selection change refuses. There is no locked-read exception. These comparisons establish consistency with the
 operator-provisioned policy, not signer provenance or same-UID security.
 
 ## Candidate native acquire, replay and identity
@@ -225,8 +309,8 @@ is warned about the silent substitution. If the root holds `a2a`, the lane canno
 post/read mail and goes dark until someone notices silence; prune reports success
 without a running-lane refusal, warning log or signal to the operator.
 There is no disk bound. No pin is fabricated to satisfy existing pin-shaped models
-or provenance: the later accepted schema must explicitly represent the unpinned
-variant, and production readers must reject it until allocated. Verification of
+or provenance: use the allocated unpinned candidate shape above, and keep
+production readers refusing it until the joint allocation is accepted. Verification of
 bytes, selection and object identities at the final spawn boundary still applies.
 Supervision and request exhaustion fall away in this variant. A9/A10 remain
 future pins-model checks, not requirements claimed satisfied for the milestone.
@@ -259,8 +343,9 @@ empty supervision promise.
 **Lock availability:** source `prepareSkillPlan` holds the manager-home lock across
 build preparation; `lockTimeout` is 30 seconds. Policy/selection and pins-alternative
 acquire can therefore refuse during another profile's build. No latency guarantee
-or unlocked bypass is promised. The operator-prune launch avoids acquire but any
-required locked observation can still contend. This is source reading, not timing.
+or unlocked bypass is promised. The operator-prune launcher avoids acquire and takes no manager lock for
+verification; the operator policy/prune operations can still contend. This is
+source reading, not timing.
 
 Native identity launch requires explicit native route selection (`--native`),
 `--a2a <identity>` and proposed new `--a2a-config-dir <absolute-directory>` together.
@@ -272,30 +357,54 @@ nonempty differing inherited values refuse, identical or empty/unset values pass
 An orchestrator launching another identity must scrub its own pair first.
 Other `A2A_*` variables are not silently described as covered by this two-key check.
 
-For every **new native session**, remove inherited `A2A_SESSION_ID`,
-`CODEX_THREAD_ID` and `CLAUDE_CODE_SESSION_ID` before provider start, with or without
+For **every native launch**, including resume and launches without B-a, remove inherited `A2A_SESSION_ID`,
+`CODEX_THREAD_ID` and `CLAUDE_CODE_SESSION_ID` **before planning**, with or without
 identity flags; never invent
-replacement session IDs. The new runtime supplies its own metadata. This follows
+replacement session IDs. Forwarded arguments after `--` are uninspected and may
+include `resume`; the launcher cannot reliably distinguish new sessions. The
+runtime supplies its own metadata. This is its own separately reviewed launcher
+change, so the plan's exact environment already includes the scrub. This follows
 a2a's documented session rule (`docs/cli.md`, source revision
 `f8b88dd425ccc65f0f3f8324e92d081570486d81`), including its Claude bind/lease
 selector. Whether Claude Code overwrites an inherited selector is unverified.
 Without identity flags the identity/config pair passes through without a new claim.
-For Codex `inherit=core`, propose a launcher-owned per-launch `-c` block setting
+For Codex `inherit=core`, the launcher passes typed per-launch identity/config
+values to the **SAM Codex plugin**, which revalidates and renders a `-c` block setting
 `shell_environment_policy.set.A2A_AGENT` and `.A2A_CONFIG_DIR`, separate from
 `codex_settings`; identity is not a lock property or a vocabulary extension.
-The launcher and its skill-agents-management argv plugin owner must coordinate
-this block, without mutating shared daemon configuration.
+SAM owns rendering and the typed-input extension, with the launcher owning value
+selection; it is separate from `codex_settings`. The launcher never appends this
+provider block after planning, nor mutates shared daemon configuration.
 The final tool-shell keys must match this selected pair. This carrier integration,
 PATH survival through shell startup and provider settings precedence are **W0 open
 questions** for real Claude/Codex tool shells on Linux. In particular settings
 `env.A2A_AGENT` can bypass a parent-env check: a conflict must refuse or be prevented
 by accepted per-launch precedence, then witnessed. No parser/model supplies W0.
-An external keeper reports a limited Codex 0.166.0 observation in a clean account
-with mock transport: default inherit kept `A2A_*`, `inherit=core` removed them,
-and plain `login=true` produced a nonlogin shell. `set` delivery is still being
-shown; this is not a qualified witness. The **W0 tool-shell delivery** row is awaited.
+An external keeper reports limited clean-account observations with mock transport:
+Codex 0.166.0 default inherit kept `A2A_*`, `inherit=core` removed them, and
+`inherit=core` plus `shell_environment_policy.set` delivered both selected values
+and dropped a third sentinel; plain `login=true` produced a nonlogin shell.
+Claude Code 2.1.317 with `--dangerously-skip-permissions` kept inherited `A2A_*`
+and prepended PATH. These are not qualification. Real transport, settings
+precedence and settings `env.A2A_AGENT` remain for **W0 tool-shell delivery**;
+SAM's Claude V3 yolo row refuses nonempty explicit settings env, so a `--settings` override
+is not a universal answer. The a2a-owner response is still pending; its identity
+and image-guard rows below remain unchanged.
 Native flags install no doorbell or hooks. The a2a image guard across generations
 remains unchanged and needs the matrix controls below.
+
+### Managed Codex gateway exclusion
+
+For this operator-prune milestone, a B-a pair **or either native identity flag**
+on a managed Codex gateway route refuses `native_root_gateway_unsupported`,
+before plan construction, with zero provider starts. The refusal is launcher-owned;
+plain native delivery without that gateway is the nearby positive control.
+Every-native session scrub still runs before planning and is not excluded.
+The proposed SAM gateway verifier binds exact argv and the final plan's complete environment
+plus only the admitted token; post-plan PATH/identity/config overlays cannot pass.
+Joint SAM/launcher work is required to admit them later. This is a milestone
+exclusion, not a new gateway naming decision. That proposed gateway admits Codex
+0.164.0; the reported 0.166.0 observation is not a gateway witness.
 
 ## Journal decision and native witnesses
 
@@ -304,8 +413,8 @@ owner assigns their names/numbers. Extending `84-profile-generation` or
 `85-profile-routing` is rejected: their lock-keyed generation file and routing
 file scopes stay unchanged. Publication targets `environments/P/commands/G`
 (**not** P or the whole commands directory); inventory, marker and receipt are
-inside that target. Selection covers pointer/lock/routing and authorized policy
-postimage in one outer transaction with publication. The inode problem is
+inside that target. Selection covers pointer/lock/routing, authorized policy and retained base-PATH
+evidence postimages in one outer transaction with publication. The inode problem is
 real: current transaction staging copies files into sidecars, creating new native
 IDs. Owner acceptance must include inode-preserving install or inventory/pin
 construction after the final staging copy, before commit, and crash recovery
@@ -328,12 +437,20 @@ replaces the separate `native-witness-bootstrap` exception lane. It does not ope
 any gate in this PR or allocate production schema. Accepted normative allocations
 still precede production implementation of those contracts.
 
+Witnesses below run on **disposable non-root Linux accounts**, not the development
+workstation. The W0 observations above are navigation only.
+
 | Native witness | Required observation and negative control |
 | --- | --- |
 | W0 tool-shell delivery | Real Claude and Codex Linux tool shells: profile PATH survives startup; Codex `inherit=core` receives selected identity/config. Settings `env.A2A_AGENT`/config override conflict is prevented or refuses; valid matching settings work. Record actual precedence and carrier, not parent env alone. |
 | Real launch and identity | Two profiles with different sentinel bytes, two identities/config directories, one UID. Actual tool shells find selected commands and report selected identity. Nonempty inherited conflict refuses; empty values pass. New sessions never reuse inherited `A2A_SESSION_ID`/`CODEX_THREAD_ID`/`CLAUDE_CODE_SESSION_ID`; valid runtime-owned metadata works. No ambient decoy executes. |
 | a2a image guard across generations | Same identity/config root across old/new a2a images retains today's refusal; nearby distinct identity or config-root controls behave as current a2a permits. No claim that byte-identical named copies bypass the guard. |
 | Carrier/admission age pairs | Every old/new manager/launcher pair, explicit H with missing/corrupt/stale policy, unsupported mode, policy CAS mismatch: named refusal, zero starts, unchanged state; admitted pair starts. Hosted `--a2a` alone still works, native half pair refuses, valid explicit native pair passes syntax validation. |
+| Managed Codex gateway exclusion | B-a pair or either native identity flag: `native_root_gateway_unsupported` before planning, zero starts and unchanged state. Nearby supported plain-native pair/identity and ordinary gateway without either input remain admitted. Scrub is already in the planning environment. |
+| Every-native pre-plan scrub | New/resume, with/without B-a or native identity flags: all three inherited session selectors are absent from the planning environment; runtime-owned metadata still works. No forwarded-argv inspection or fabricated replacement. Separate launcher change and review. |
+| H in a tool shell | Recommended child/tool-shell `CURATOR_CONFIG=H/config.json` makes `curator` use that H; a conflicting inherited locator refuses, while absent/matching values pass. Verify launcher flag before `--`, pinned absolute manager and untouched legacy route. Owner accepts propagation before implementation. |
+| Base PATH recheck | Same retained ordered list passes; reordering/addition/removal refuses with no start, no replacement fallback. A shell already holding a current/older B-a root or recognized alias passes after exclusion; unreadable/world-writable evidence refuses. H selects unattended policy. Observe policy/selection change during verification: spawn-boundary recheck refuses without taking the manager lock. |
+| Unpinned provenance | Durable candidate record before spawn, consistent binding/revisions/evidence digest and final PATH; write failure refuses. No lease fabricated, no automatic expiry; explicit launcher provenance prune removes only those files, never admits root GC. |
 | Verification and publication | Tamper bytes, substitute equal-byte native objects, ambient decoy or exhaust deadline: zero starts. Valid control launches. Report shape/bytes/architecture and monotonic latency against 10-second bound and qualification targets. Inventory identities survive final journal staging. |
 | Retention and restore, operator prune | G1 remains while G2 runs; identical-input repair creates G3 and preserves G1. Update/startup never automatically collect old roots. Operator prune refuses without stop attestation or with retained protected edges; explicit stopped/unreferenced control prunes. Disk growth is disclosed. No process-pin safety claim. |
 | Journal crash/restart | Every accepted publication/selection phase yields complete old/new state at actual target paths, with correct native IDs and no partial pointers or policy locks. Unknown journal preserves evidence and refuses. |
@@ -359,6 +476,8 @@ recommended no-GC milestone until pins are added.
 The [candidate schema](../schemas/profile-command-roots-v1/native-admission-proposal.schema.json),
 [named tests/plants](../tools/test_native_root_admission.py) and
 [corpus](../conformance/profile-command-roots-v1/README.md) validate shape,
-consistency and intended refusals. The text checks cover seven packet rows and eight named roots gate declarations,
+consistency and intended refusals, including unpinned provenance, ordered retained
+PATH, route exclusions and spawn revisions. These pure models do not exercise
+launcher planning order, atomic filesystem reads or provider/tool-shell behavior. The text checks cover seven packet rows and eight named roots gate declarations,
 detecting accidental status changes; it records no owner acceptance. Production readers still refuse
 candidate tokens. Runtime questions and every unaccepted gate remain open.

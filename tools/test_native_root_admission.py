@@ -120,6 +120,132 @@ class NativeRootAdmission(unittest.TestCase):
         with self.assertRaisesRegex(model.Refusal,'^candidate-schema$'):proposal.check_candidate(bad,self.observed)
         self.assertEqual(bad,before)
 
+    def test_candidate_home_route_wiring(self):
+        # A real candidate path drives the config conflict; deleting the helper
+        # call admits that exact conflict while the valid control still passes.
+        bad=deepcopy(self.observed);bad['config']='/other/config.json'
+        before=deepcopy(bad)
+        with self.assertRaisesRegex(model.Refusal,'^native-home-conflict$'):
+            proposal.check_candidate(self.base,bad)
+        mutant=self.mutant(proposal,'check_candidate',
+            expression="home_route(observed['home'], True, case['policy'], observed.get('config'))",replacement='None')
+        mutant['check_candidate'](self.base,self.observed)
+        mutant['check_candidate'](self.base,bad)
+        self.assertEqual(bad,before)
+        print('plant detected by named vector: candidate-home-route-wiring')
+
+    def test_route_refusals_and_spawn_recheck(self):
+        # Route refusals precede the conceptual plan boundary; these pure models
+        # do not run a launcher. Hosted legacy identity and ordinary gateway pass.
+        for args in [(False,False,True,True),(False,True,False,False),(True,False,False,False)]:
+            self.assertEqual(proposal.native_route(*args),'admitted-route')
+        for label,reason,args in [
+            ('hosted-native-pair','fragment_version_unsupported',(True,False,True,False)),
+            ('gateway-native-pair','native_root_gateway_unsupported',(False,True,True,False)),
+            ('gateway-native-identity','native_root_gateway_unsupported',(False,True,False,True))]:
+            with self.assertRaisesRegex(model.Refusal,'^'+reason+'$'):proposal.native_route(*args)
+            mutant=self.mutant(proposal,'native_route',reason)
+            self.assertEqual(mutant['native_route'](False,False,True,True),'admitted-route')
+            self.assertEqual(mutant['native_route'](*args),'admitted-route')
+            print('plant detected by named vector:',label)
+        # Both independent revision changes refuse, unchanged observations pass.
+        good=dict(policy_revision=1,selection_revision=1)
+        proposal.spawn_recheck(1,1,good)
+        for key in good:
+            bad=dict(good);bad[key]=2;reason='native-spawn-'+key.replace('_','-')
+            with self.assertRaisesRegex(model.Refusal,'^'+reason+'$'):proposal.spawn_recheck(1,1,bad)
+            mutant=self.mutant(proposal,'spawn_recheck',reason)
+            mutant['spawn_recheck'](1,1,good);mutant['spawn_recheck'](1,1,bad)
+            self.assertEqual(bad[key],2)
+            print('plant detected by named vector:',reason)
+
+    def test_base_path_evidence_and_ordered_recheck(self):
+        # Shape/binding/ordered classified-list differences refuse with no writes.
+        # Classification/exclusion observations are supplied, not native proof.
+        good=dict(record='candidate/native-base-path/1',manager_home=self.observed['home'],
+                  uid=1000,policy_revision=1,platform='linux-amd64',retained=['/usr/bin','/bin'])
+        def check(record,retained):
+            return proposal.base_path_recheck(record,self.base['policy'],'linux-amd64',retained)
+        self.assertEqual(check(good,good['retained']),good['retained'])
+        for label,reason,record,retained in [
+            ('base-path-closed-shape','native-base-path-schema',dict(good,extra=True),good['retained']),
+            ('base-path-home','native-base-path-binding',dict(good,manager_home='/other'),good['retained']),
+            ('base-path-uid','native-base-path-binding',dict(good,uid=1001),good['retained']),
+            ('base-path-revision','native-base-path-binding',dict(good,policy_revision=2),good['retained']),
+            ('base-path-platform','native-base-path-binding',dict(good,platform='linux-arm64'),good['retained']),
+            ('base-path-noncanonical','native-base-path-schema',dict(good,retained=['/usr/../bin']),['/usr/../bin']),
+            ('base-path-control','native-base-path-schema',dict(good,retained=['/usr/\x85bin']),['/usr/\x85bin']),
+            ('base-path-relative','native-base-path-schema',dict(good,retained=['relative']),['relative']),
+            ('base-path-duplicate','native-base-path-schema',dict(good,retained=['/bin','/bin']),['/bin','/bin']),
+            ('base-path-reordered','native-base-path-difference',good,['/bin','/usr/bin']),
+            ('base-path-added','native-base-path-difference',good,good['retained']+['/new']),
+            ('base-path-removed','native-base-path-difference',good,['/usr/bin'])]:
+            before=deepcopy((record,retained))
+            with self.assertRaisesRegex(model.Refusal,'^'+reason+'$'):check(record,retained)
+            mutant=self.mutant(proposal,'base_path_recheck',reason)
+            mutant['base_path_recheck'](good,self.base['policy'],'linux-amd64',good['retained'])
+            mutant['base_path_recheck'](record,self.base['policy'],'linux-amd64',retained)
+            self.assertEqual((record,retained),before)
+            print('plant detected by named vector:',label)
+        # Existing section-3 classifier supplies the inherited-root positive and
+        # its own namespace-exclusion plant, rather than duplicating that logic.
+        import test_profile_command_path as path_model
+        data=path_model.load(path_model.CORPUS/'baseline.json');data['policy']='managed'
+        ordinary=deepcopy(data);ordinary['base_path']=good['retained']
+        data['path_facts']['/alias/old-root']=deepcopy(data['path_facts']['/foreign/profile/bin'])
+        data['base_path']=['/foreign/profile/bin','/fixture/domain/global/bin','/alias/old-root']+good['retained']
+        retained,issues,excluded=path_model.admit_path(data,[])
+        self.assertEqual(issues,[]);self.assertEqual(excluded,data['base_path'][:3])
+        self.assertEqual(check(good,retained),good['retained'])
+        mutant=self.mutant(path_model,'admit_path',expression="fact['identity'] in root_ids",replacement='False')
+        self.assertEqual(check(good,mutant['admit_path'](ordinary,[])[0]),good['retained'])
+        with self.assertRaisesRegex(model.Refusal,'^native-base-path-difference$'):
+            check(good,mutant['admit_path'](data,[])[0])
+        print('plant detected by named vector: base-path-inherited-root-exclusion')
+
+    def test_unpinned_launch_allocation_and_plants(self):
+        # Closed no-lease provenance binds prior/full selection, observations and
+        # final PATH; shape/field substitutions refuse without mutating records.
+        source=fixtures.launcher(fixtures.fixture())['record']
+        good=deepcopy(source);good.pop('lease_id');good.update(record='candidate/native-root-launch/1',
+            policy_revision=1,selection_revision=1,base_path_sha256='a'*64)
+        profile=self.base['selected']['profile'];binding=good['command_root'];effective=good['effective_path']
+        good['prior_state']['binding']=dict(profile=profile,lock_sha256='sha256:'+binding['lock_sha256'],
+            plan_sha256='sha256:'+binding['plan_sha256'],generation=binding['generation'])
+        good['prior_state']['path']=deepcopy(effective);good['prior_state']['path_value']=good['path_value']
+        args=(profile,binding,1,1,'a'*64,effective)
+        self.assertEqual(proposal.unpinned_launch(good,*args),good)
+        for label,reason,change in [
+            ('unpinned-forbids-lease','native-unpinned-schema',lambda c:c.update(lease_id='b'*64)),
+            ('unpinned-binding','native-unpinned-binding',lambda c:c['command_root'].update(generation='f'*64)),
+            ('unpinned-prior','native-unpinned-prior',lambda c:c['prior_state']['binding'].update(profile='other')),
+            ('unpinned-policy-revision','native-unpinned-observation',lambda c:c.update(policy_revision=2)),
+            ('unpinned-selection-revision','native-unpinned-observation',lambda c:c.update(selection_revision=2)),
+            ('unpinned-base-evidence','native-unpinned-observation',lambda c:c.update(base_path_sha256='b'*64)),
+            ('unpinned-path-order','native-unpinned-path',lambda c:c['effective_path'].reverse()),
+            ('unpinned-path-value','native-unpinned-path',lambda c:c.update(path_value='/other')),
+            ('unpinned-prior-path','native-unpinned-path',lambda c:c['prior_state'].update(path=['/other']))]:
+            bad=deepcopy(good);change(bad);before=deepcopy(bad)
+            with self.assertRaisesRegex(model.Refusal,'^'+reason+'$'):proposal.unpinned_launch(bad,*args)
+            mutant=self.mutant(proposal,'unpinned_launch',reason)
+            self.assertEqual(mutant['unpinned_launch'](good,*args),good)
+            self.assertEqual(mutant['unpinned_launch'](bad,*args),bad)
+            self.assertEqual(bad,before)
+            print('plant detected by named vector:',label)
+        # A coherently supplied foreign-platform binding still fails the new
+        # Linux-only record allocation, rather than an unrelated binding check.
+        bad=deepcopy(good);bad['command_root']['platform']='darwin-arm64'
+        foreign_args=(profile,bad['command_root'],1,1,'a'*64,effective)
+        with self.assertRaisesRegex(model.Refusal,'^native-unpinned-schema$'):
+            proposal.unpinned_launch(bad,*foreign_args)
+        mutant=self.mutant(proposal,'unpinned_launch','native-unpinned-schema')
+        self.assertEqual(mutant['unpinned_launch'](good,*args),good)
+        self.assertEqual(mutant['unpinned_launch'](bad,*foreign_args),bad)
+        print('plant detected by named vector: unpinned-linux-only')
+        # Full-pins record still requires its lease and rejects this new token.
+        self.assertTrue(model.validators()['launcher-state.schema.json'].is_valid(source))
+        self.assertFalse(model.validators()['launcher-state.schema.json'].is_valid(good))
+
     def test_recommended_variant_and_grammar(self):
         # Operator-prune admission has no session; pin data is rejected there.
         # Work.1 is valid across policy, selection and optional session records.
@@ -272,7 +398,7 @@ class NativeRootAdmission(unittest.TestCase):
         self.assertEqual(proposal.prune_candidate(False,True,False),'operator-prune')
 
     def test_identity_keys_and_plants(self):
-        # New native sessions scrub three old session keys, accept empty selectors,
+        # Every native launch scrubs three old session keys, accepts empty selectors,
         # and reject only nonempty mismatches in the two documented identity keys.
         env={'PATH':'/tools:/usr/bin','A2A_SESSION_ID':'old','CODEX_THREAD_ID':'old-thread','CLAUDE_CODE_SESSION_ID':'old-claude'};before=deepcopy(env)
         base={'PATH':env['PATH']};expected=dict(base,A2A_AGENT='agent-one',A2A_CONFIG_DIR='/identities/one')

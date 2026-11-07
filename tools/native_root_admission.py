@@ -131,8 +131,55 @@ def replay_acquire(saved, request):
     return deepcopy(saved['pin'])
 
 
+def native_route(hosted, managed_codex_gateway, has_pair, native_identity_flags):
+    # Proposed routing refusals only; no provider planning or process is performed.
+    require(not (hosted and has_pair), 'fragment_version_unsupported')
+    require(not (managed_codex_gateway and (has_pair or native_identity_flags)),
+            'native_root_gateway_unsupported')
+    return 'admitted-route'
+
+
+def spawn_recheck(policy_revision, selection_revision, observed):
+    # Supplied observations model the final unlocked recheck, not atomic file reads.
+    require(policy_revision == observed['policy_revision'], 'native-spawn-policy-revision')
+    require(selection_revision == observed['selection_revision'], 'native-spawn-selection-revision')
+
+
+def record_validator(name):
+    check = validators()['native-admission-proposal.schema.json']
+    return check.evolve(schema={'$ref':check.schema['$id']+'#/$defs/'+name})
+
+
+def base_path_recheck(record, policy, platform, retained):
+    # Lists are already classified/excluded by section 3; no filesystem claims.
+    require(record_validator('base_path_evidence').is_valid(record), 'native-base-path-schema')
+    require((record['manager_home'], record['uid'], record['policy_revision'], record['platform'])
+            == (policy['manager_home'], policy['uid'], policy['revision'], platform),
+            'native-base-path-binding')
+    require(record['retained'] == retained, 'native-base-path-difference')
+    return deepcopy(retained)
+
+
+def unpinned_launch(record, profile, binding, policy_revision, selection_revision, evidence_sha256, effective_path):
+    # Provenance consistency only, without a lease, runtime liveness or durability.
+    require(record_validator('unpinned_launch').is_valid(record), 'native-unpinned-schema')
+    require(record['command_root'] == binding, 'native-unpinned-binding')
+    prior = record['prior_state']; pb = prior['binding']
+    require(pb == dict(profile=profile, lock_sha256='sha256:'+binding['lock_sha256'],
+                       plan_sha256='sha256:'+binding['plan_sha256'], generation=binding['generation']),
+            'native-unpinned-prior')
+    require(record['policy_revision'] == policy_revision
+            and record['selection_revision'] == selection_revision
+            and record['base_path_sha256'] == evidence_sha256, 'native-unpinned-observation')
+    require(record['effective_path'] == effective_path
+            and record['path_value'] == ':'.join(effective_path)
+            and prior['path'] == effective_path and prior['path_value'] == record['path_value'],
+            'native-unpinned-path')
+    return deepcopy(record)
+
+
 def identity_environment(identity, directory, inherited):
-    # New native sessions scrub all three old session keys, even without identity flags.
+    # Every native launch scrubs parent session keys before planning, including resume.
     result = {k:v for k,v in inherited.items() if k not in {'A2A_SESSION_ID','CODEX_THREAD_ID','CLAUDE_CODE_SESSION_ID'}}
     if identity is None and directory is None:
         return result

@@ -70,3 +70,9 @@ allocating production names. Run
 named candidate, pin-authority and repair-edge vectors and noncrashing plants.
 Each plant preserves a passing nearby control. Journal staging/backup paths and
 native runtime outcomes require owner decisions and actual implementation evidence.
+
+The native admission tests also exercise the allocated closed unpinned-launch
+and base-PATH evidence definitions, ordered rechecks, proposed gateway/hosted
+refusals, unlocked spawn revision checks and the candidate home-route call.
+Named removal plants have valid controls; supplied observations and classified
+lists prove neither filesystem enforcement nor actual launcher planning order.

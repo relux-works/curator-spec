@@ -118,9 +118,9 @@ trusting Curator's `verified` assertion:
    substituted or stale evidence refuses with no repair, re-resolution,
    singleton fallback or provider start. A current root with unproven routing
    is an integrity refusal, not the non-current-profile availability case.
-   B-a immutable named roots do not use Slice A's `Supervisor`, `Domain` or
+   Proposed B-a immutable named roots do not use Slice A's `Supervisor`, `Domain` or
    routing admission; apply the same final identity/access/byte/binding recheck
-   under the [native admission contract](profile-command-root-admission.md#source-seams-and-companion-scope).
+   under the [native launch recheck](profile-command-root-admission.md#base-path-evidence-and-launch-recheck).
 
 The current-profile test precedes any attempt to verify that profile through
 another profile's singleton root. No-export and unavailable cases do not
@@ -166,7 +166,9 @@ first admitted identity.
 User-writable directories are not world-writable merely because the operator
 can write them; this is not a rule rejecting all developer PATH directories.
 Interactive native means the operator's interactive route. Trusted supervisor
-or executor admission selects managed/unattended policy; that stricter policy
+or executor admission selects managed/unattended policy; the proposed explicit H
+route in the [native packet](profile-command-root-admission.md#base-path-evidence-and-launch-recheck)
+also selects its unattended column; that stricter policy
 wins in overlap. Selecting a profile alone does not turn a workstation
 interactive launch into an unattended one; a caller cannot downgrade a managed
 launch by claiming a terminal.

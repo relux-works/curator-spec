@@ -254,7 +254,9 @@ their version discriminants, and include these exact member contracts.
 and fragment 5, separately from snapshot descriptors. Its complete schemas,
 canonical bytes and old/new cases close the grammar-publication gate.
 V5 retains `credential_store.selection` as agreement metadata only;
-`codex_settings` is the sole typed argv payload and legacy `config_overrides`
+`codex_settings` is the sole fragment-owned typed argv payload; the proposed
+[native admission block](profile-command-root-admission.md#candidate-native-acquire-replay-and-identity)
+is rendered by SAM from launcher-selected non-secret identity values. Legacy `config_overrides`
 is forbidden. V4 is unchanged. Nonempty Codex env/shell projection refuses
 `codex_settings_unsupported` with no partial output; direct structured login
 consumes typed policy without shell evaluation. Qualification and strict

@@ -23,3 +23,8 @@ the [seven-gate owner packet](../../protocol/profile-command-root-admission.md).
 Its `candidate/` discriminators allocate no production carrier. The native joint
 composition is conditional and Linux-only, preserving inherited rc7 definitions;
 it is distinct from the earlier cross-platform path model.
+
+Its closed `$defs/base_path_evidence` and `$defs/unpinned_launch` allocate the
+proposed retained ordered base-PATH record and no-lease per-launch provenance.
+They use candidate tokens, with owner acceptance/emission still gated; full-pins
+`launcher-path-state/2` is unchanged. Retention and comparison are in the packet.

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://relux-works.github.io/curator-spec/schemas/profile-command-roots-v1/native-admission-proposal.schema.json",
-  "title": "Unaccepted native admission candidates; no wire allocation",
+  "title": "Unaccepted native admission and unpinned record allocations",
   "$comment": "Owner decisions remain CLOSED. This file is a review model, not production configuration.",
   "$defs": {
     "policy": {
@@ -231,6 +231,118 @@
         "pin"
       ],
       "additionalProperties": false
+    },
+    "base_path_evidence": {
+      "type": "object",
+      "properties": {
+        "record": {
+          "const": "candidate/native-base-path/1"
+        },
+        "manager_home": {
+          "$ref": "#/$defs/path"
+        },
+        "uid": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "policy_revision": {
+          "$ref": "#/$defs/revision"
+        },
+        "platform": {
+          "enum": [
+            "linux-amd64",
+            "linux-arm64"
+          ]
+        },
+        "retained": {
+          "type": "array",
+          "maxItems": 1024,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/base_path_entry"
+          }
+        }
+      },
+      "required": [
+        "record",
+        "manager_home",
+        "uid",
+        "policy_revision",
+        "platform",
+        "retained"
+      ],
+      "additionalProperties": false
+    },
+    "unpinned_launch": {
+      "type": "object",
+      "properties": {
+        "record": {
+          "const": "candidate/native-root-launch/1"
+        },
+        "prior_state": {
+          "$ref": "../profile-command-path-v1/launcher-state.schema.json"
+        },
+        "command_root": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/binding"
+            },
+            {
+              "properties": {
+                "platform": {
+                  "enum": [
+                    "linux-amd64",
+                    "linux-arm64"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "effective_path": {
+          "$ref": "launcher-state.schema.json#/properties/effective_path"
+        },
+        "path_value": {
+          "$ref": "launcher-state.schema.json#/properties/path_value"
+        },
+        "policy_revision": {
+          "$ref": "#/$defs/revision"
+        },
+        "selection_revision": {
+          "$ref": "#/$defs/revision"
+        },
+        "base_path_sha256": {
+          "$ref": "#/$defs/hex"
+        }
+      },
+      "required": [
+        "record",
+        "prior_state",
+        "command_root",
+        "effective_path",
+        "path_value",
+        "policy_revision",
+        "selection_revision",
+        "base_path_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "base_path_entry": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/path"
+        },
+        {
+          "not": {
+            "pattern": "(?:^|/)\\.{1,2}(?:/|$)"
+          }
+        },
+        {
+          "not": {
+            "pattern": "[\\x7f-\\x9f]"
+          }
+        }
+      ]
     }
   },
   "type": "object",

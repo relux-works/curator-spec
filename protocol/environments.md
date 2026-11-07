@@ -3899,7 +3899,7 @@ complete new outer carrier and required-understanding consumer are published
 and supported. Optional commands MUST use checked D-PATH and MUST NOT coexist
 with `path_prepend`; caller PATH is not an owned literal.
 
-The separately adopted [local setup-token source](local-setup-token-source.md#5-closed-carriers)
+The separately adopted [local setup-token source](local-setup-token-source.md#5-closed-carriers-l5)
 allocates full fragment v6 after the joint v5 carrier. Node metadata is
 required-understanding; v4/v5 stay closed, and no producer emits it until the
 launcher companion and final route are supported. Source metadata never
@@ -4174,7 +4174,10 @@ from its schema-module revision. Unsupported nonempty delivery MUST refuse.
 
 **Coordinated successor v5.** [Containing carriers](rc7-carriers.md) allocates
 the complete successor: selection is agreement metadata, `codex_settings` is
-the sole Codex typed payload, and legacy `config_overrides` is forbidden. V4
+the sole fragment-owned Codex typed payload; the proposed
+[native admission block](profile-command-root-admission.md#candidate-native-acquire-replay-and-identity)
+is rendered by SAM from launcher-selected non-secret identity values. Legacy
+`config_overrides` is forbidden. V4
 above remains unchanged. Nonempty Codex env/shell requests refuse with
 `codex_settings_unsupported` and no partial output. Native/empty projections
 and the five-value Muse projection retain their limited environment-only
