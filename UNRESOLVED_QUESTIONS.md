@@ -320,3 +320,12 @@ reader/schema reconciliation before any producer emits a successor.
 This remains a landing gate for [Core #238](https://github.com/relux-works/curator/pull/238);
 draft publication and scoped validator success do not discharge it. No move
 from pre-emission to release/qualification is authorized by this amendment.
+
+Core #238 follow-up: its inspected head
+`4f7f7681589f4c2bdc2953749afcbd973fb20b6f` accepts integral decimal/exponent
+version tokens `9.0`/`9e0` as 9 through `integerValue`. The proposal requires
+integer token 9. Reject those spellings with the integer refusal before
+qualification, alongside the predecessor schema-8 token follow-up. This is a
+declared Core divergence in the
+[containing-schema contract](schemas/machine-claude-env-v1/README.md), based on
+source inspection; no Core binary or runtime qualification is claimed.

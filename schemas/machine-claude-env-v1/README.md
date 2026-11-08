@@ -88,6 +88,17 @@ validator's carrier controls establish setup and structural verdicts only;
 production/runtime claims remain separate.
 
 Containing validation uses the integer-token profile inherited from the base
-contract; `schema_version:9.0` and `9e0` refuse beside the valid integer-9
-control. The predecessor configuration 8 and `/2` explicitly refuse
+contract for the new schema-9 and `/3` carriers; `schema_version:9.0` and `9e0`
+refuse beside the valid integer-9 control. The predecessor configuration 8 and `/2` explicitly refuse
 `claude_env`; their paired positive controls are in the containing corpus.
+
+**Declared Core divergence:** [Core #238](https://github.com/relux-works/curator/pull/238),
+inspected head `4f7f7681589f4c2bdc2953749afcbd973fb20b6f`, retains
+[`integerValue`](https://github.com/relux-works/curator/blob/4f7f7681589f4c2bdc2953749afcbd973fb20b6f/internal/config/config.go#L1336),
+which accepts integral decimal/exponent tokens `9.0` and `9e0` as 9. This
+proposal requires the integer token 9, just as the predecessor proposal requires
+8. Core must reject those spellings with its integer refusal before qualification;
+the existing `configuration-version-decimal` and `configuration-version-exponent`
+vectors record the required verdict, not the current Core verdict. Track this
+follow-up in [unresolved questions](../../UNRESOLVED_QUESTIONS.md#machine-claude-environment-containing-carrier-gate).
+This is a source observation, not a Core binary or runtime qualification claim.
