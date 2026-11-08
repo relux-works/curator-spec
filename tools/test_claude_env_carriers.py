@@ -61,6 +61,53 @@ class CarrierTests(unittest.TestCase):
             count += 1
         self.assertGreater(count, 0)
 
+    # Reviewer P1 must admit both forbidden predecessor members under mutation,
+    # while each same-carrier positive control still passes. P2-P4 independently
+    # detect wrong envelope pairing and loss of predecessor members. No runtime.
+    def test_reviewer_schema_plants(self):
+        plants = (
+            ('predecessor', 'host-notification-v1/extensions.schema.json',
+             ('schema8-claude-env-refused', 'launcher2-claude-env-refused'), True),
+            ('pair', 'machine-claude-env-v1/launcher-config-v3.schema.json',
+             ('launcher-old-config',), True),
+            ('notification', 'machine-claude-env-v1/extensions.schema.json',
+             ('configuration-notification-host',), False),
+            ('build', 'machine-claude-env-v1/manager-config-v9.schema.json',
+             ('configuration-unrelated-fields',), False),
+        )
+        original_cases = carriers.load_cases(carriers.ROOT)
+        for kind, filename, witnesses, planted_valid in plants:
+            with self.subTest(plant=kind), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                shutil.copytree(carriers.ROOT / 'schemas', root / 'schemas')
+                shutil.copytree(carriers.ROOT / 'conformance' / carriers.NAMESPACE,
+                                root / 'conformance' / carriers.NAMESPACE)
+                path = root / 'schemas' / filename
+                schema = json.loads(path.read_text())
+                if kind == 'predecessor':
+                    schema['properties']['claude_env'] = {
+                        '$ref': '../machine-claude-env-v1/claude-env.schema.json'}
+                elif kind == 'pair':
+                    schema['properties']['config_schema'] = {'enum': [8, 9]}
+                elif kind == 'notification':
+                    del schema['properties']['notification']
+                else:
+                    del schema['properties']['build_ssh']
+                path.write_text(json.dumps(schema))
+                compiled = carriers.validators(root)
+                for witness in witnesses:
+                    case = next(c for c in original_cases if c['id'] == witness)
+                    self.assertEqual(compiled[case['entry']].is_valid(carriers.strict(case['input_json'])), planted_valid)
+                if kind == 'predecessor':
+                    for name in ('schema8-control', 'launcher2-control'):
+                        case = next(c for c in original_cases if c['id'] == name)
+                        self.assertTrue(compiled[case['entry']].is_valid(carriers.strict(case['input_json'])))
+                output = io.StringIO()
+                self.assertEqual(carriers.run(root, output), 1, output.getvalue())
+                for witness in witnesses:
+                    self.assertIn('FAIL ' + witness + ' ', output.getvalue())
+        self.assertEqual(carriers.run(carriers.ROOT, io.StringIO()), 0)
+
     # Wrong expected acceptance and rejection each fail the command aggregate
     # with exit 1; later cases run and no input/schema details are reflected.
     def test_checker_violation_controls(self):

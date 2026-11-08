@@ -2,9 +2,11 @@
 
 These Draft 2020-12 schemas belong to the
 [proposed contract](../../protocol/machine-claude-env-proposal.md).
-CIP-0029 allocates configuration **9** and **`curator.launcher-config/3`** to
-`extensions.claude_env`, conditional on CIP-0031 and Core #216's schema **8** and **`/2`**
-staying as is. CIP-0029 remains **Review**; Decision 0035 remains **Proposed**.
+CIP-0029 allocates configuration **9** and **`curator.launcher-config/3`** now
+to `extensions.claude_env`, conditionally on
+[spec #216](https://github.com/relux-works/curator-spec/pull/216) and its schema
+**8** / **`/2`** predecessor. The draft may stack now; acceptance waits for the
+final predecessor shape to be accepted. CIP-0029 remains **Review**; Decision 0035 remains **Proposed**.
 Allocation does not decide adoption, which belongs to the operator.
 
 | Schema | Scope and status |
@@ -84,3 +86,8 @@ ordinary edit preservation, pre-side-effect refusal and native runtime behavior
 are semantic obligations outside JSON Schema's decoded-instance model. The
 validator's carrier controls establish setup and structural verdicts only;
 production/runtime claims remain separate.
+
+Containing validation uses the integer-token profile inherited from the base
+contract; `schema_version:9.0` and `9e0` refuse beside the valid integer-9
+control. The predecessor configuration 8 and `/2` explicitly refuse
+`claude_env`; their paired positive controls are in the containing corpus.

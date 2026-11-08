@@ -9,6 +9,7 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
+from host_notification import IntegerTokenValidator
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -65,10 +66,12 @@ def validators(root):
     # No retrieval callback: an undeclared schema reference fails closed offline.
     registry = Registry().with_resources(resources)
     return {
-        entry: Draft202012Validator(documents[f"{NAMESPACE}/{name}"], registry=registry)
+        entry: IntegerTokenValidator(documents[name], registry=registry)
         for entry, name in (
-            ("configuration", "manager-config-v9.schema.json"),
-            ("launcher", "launcher-config-v3.schema.json"),
+            ("configuration", f"{NAMESPACE}/manager-config-v9.schema.json"),
+            ("launcher", f"{NAMESPACE}/launcher-config-v3.schema.json"),
+            ("configuration-v8", "host-notification-v1/manager-config-v8.schema.json"),
+            ("launcher-v2", "host-notification-v1/launcher-config-v2.schema.json"),
         )
     }
 
@@ -84,7 +87,8 @@ def load_cases(root):
                 or any(not isinstance(case[key], str) for key in fields - {"schema_valid"})
                 or type(case["schema_valid"]) is not bool
                 or not case["claim"] or not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,79}", case["id"])
-                or case["id"] in seen or case["entry"] not in {"configuration", "launcher"}):
+                or case["id"] in seen or case["entry"] not in {
+                    "configuration", "launcher", "configuration-v8", "launcher-v2"}):
             raise SetupError("corpus-setup")
         seen.add(case["id"])
     return cases

@@ -97,8 +97,10 @@ must remain usable for non-Claude targets with an empty contribution; invalid
 explicit declarations refuse for every target rather than becoming absence.
 
 Configuration **9** and projection **`curator.launcher-config/3`** are allocated
-for `extensions.claude_env`, conditional on Core #216's schema **8** and
-**`curator.launcher-config/2`** staying as is. This allocation does not adopt the
+now for `extensions.claude_env`, conditionally on
+[spec #216](https://github.com/relux-works/curator-spec/pull/216) and its schema
+**8** / **`curator.launcher-config/2`** predecessor. The draft may stack now;
+acceptance waits for the final predecessor shape to be accepted. This allocation does not adopt the
 proposal: this CIP remains **Review** and Decision 0035 remains **Proposed**;
 acceptance is the operator's decision. A change to #216's versions or admitted
 shape requires re-review of the allocation and coordinated schema/vector changes
@@ -172,7 +174,7 @@ each platform for which usable support is claimed. No such effect is claimed her
    yes, as an explicit finite manager-policy budget. Revisit only with schema,
    prose and vectors together; do not describe it as a native maximum.
 2. **Confirm adoption and the Decision 0035 locator after final Core #216?**
-   Configuration 9 and `/3` are conditionally allocated above. The operator
+   Configuration 9 and `/3` are allocated now, conditionally on #216, above. The operator
    still decides adoption. Keep the allocation only if schema 8 and `/2` stay
    as is; reconcile all admitted forms before any producer emits the successor.
 3. **Use canonical decimal strings rather than JSON numbers?** Recommended: yes,

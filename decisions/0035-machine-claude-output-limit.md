@@ -20,9 +20,10 @@ input in diagnostics.
 
 The [contract](../protocol/machine-claude-env-proposal.md) is the complete
 proposal. Configuration **9** and projection **`curator.launcher-config/3`** are
-allocated to `extensions.claude_env`, conditional on schema **8** and
-**`curator.launcher-config/2`** in
-[Core #216](https://github.com/relux-works/curator/pull/216) staying as is.
+allocated now to `extensions.claude_env`, conditionally on
+[spec #216](https://github.com/relux-works/curator-spec/pull/216) and its schema
+**8** / **`curator.launcher-config/2`** predecessor. The draft may stack now;
+acceptance waits for the final predecessor shape to be accepted.
 This allocation leaves this decision **Proposed** and CIP-0029 **Review**;
 adoption is the operator's decision. Version or admitted-shape changes in #216
 require re-review and coordinated schema/vector updates. The

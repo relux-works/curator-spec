@@ -310,8 +310,10 @@ in [contract §§3–4](protocol/host-notification-proposal.md), not qualificati
 [CIP-0029](cips/CIP-0029-machine-claude-output-limit.md) remains Review and
 [Decision 0035](decisions/0035-machine-claude-output-limit.md) remains Proposed;
 operator adoption is pending. Configuration 9 and `curator.launcher-config/3`
-are allocated conditional on [Core #216](https://github.com/relux-works/curator/pull/216)'s
-schema 8 and `/2` staying as is. The
+are allocated now, conditionally on
+[spec #216](https://github.com/relux-works/curator-spec/pull/216) and its schema 8 /
+`/2` predecessor. The draft may stack now; acceptance waits for the final
+predecessor shape to be accepted. The
 [containing-schema drafts](schemas/machine-claude-env-v1/README.md#predecessor-snapshot-and-pending-reconciliation)
 await its final accepted shape, complete predecessor-form preservation and
 reader/schema reconciliation before any producer emits a successor.

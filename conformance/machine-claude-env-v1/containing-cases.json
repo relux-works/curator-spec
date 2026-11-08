@@ -383,5 +383,47 @@
     "entry": "launcher",
     "input_json": "{\"schema\":\"curator.launcher-config/3\",\"config_schema\":9,\"config_path\":\"/example/config.json\"}",
     "schema_valid": false
+  },
+  {
+    "id": "schema8-control",
+    "claim": "Same predecessor carrier admits notification without the successor member.",
+    "entry": "configuration-v8",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"/example/skills\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"off\"}}}",
+    "schema_valid": true
+  },
+  {
+    "id": "schema8-claude-env-refused",
+    "claim": "Same predecessor carrier refuses successor member without partial admission.",
+    "entry": "configuration-v8",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"/example/skills\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"off\"},\"claude_env\":{\"BASH_MAX_OUTPUT_LENGTH\":\"8000\"}}}",
+    "schema_valid": false
+  },
+  {
+    "id": "launcher2-control",
+    "claim": "Same predecessor carrier admits notification without the successor member.",
+    "entry": "launcher-v2",
+    "input_json": "{\"schema\":\"curator.launcher-config/2\",\"config_schema\":8,\"config_path\":\"/example/config.json\",\"extensions\":{\"notification\":{\"backend\":\"off\"}}}",
+    "schema_valid": true
+  },
+  {
+    "id": "launcher2-claude-env-refused",
+    "claim": "Same predecessor carrier refuses successor member without partial admission.",
+    "entry": "launcher-v2",
+    "input_json": "{\"schema\":\"curator.launcher-config/2\",\"config_schema\":8,\"config_path\":\"/example/config.json\",\"extensions\":{\"notification\":{\"backend\":\"off\"},\"claude_env\":{\"BASH_MAX_OUTPUT_LENGTH\":\"8000\"}}}",
+    "schema_valid": false
+  },
+  {
+    "id": "configuration-version-decimal",
+    "claim": "Containing integer-token profile rejects integral decimal/exponent spellings; valid integer 9 control remains admitted.",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":9.0,\"skills_root\":\"/example/skills\",\"projects\":{}}",
+    "schema_valid": false
+  },
+  {
+    "id": "configuration-version-exponent",
+    "claim": "Containing integer-token profile rejects integral decimal/exponent spellings; valid integer 9 control remains admitted.",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":9e0,\"skills_root\":\"/example/skills\",\"projects\":{}}",
+    "schema_valid": false
   }
 ]

@@ -15,7 +15,8 @@
       "const": "curator.launcher-config/3"
     },
     "config_schema": {
-      "const": 9
+      "const": 9,
+      "type": "integer"
     },
     "config_path": {
       "$ref": "../host-notification-v1/launcher-config-v2.schema.json#/properties/config_path"

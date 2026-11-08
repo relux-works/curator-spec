@@ -555,9 +555,11 @@ validation and hosted test gates. Released v1 vectors remain immutable.
 per-account `extensions.claude_env` selection without profile or lock changes.
 Its [schemas](schemas/machine-claude-env-v1/README.md) and
 [corpus](conformance/machine-claude-env-v1/README.md) remain unreleased.
-Configuration 9 and `curator.launcher-config/3` are conditionally allocated if
-Core #216's schema 8 and `/2` stay as is; CIP-0029 remains Review and Decision
-0035 remains Proposed. Closed containing drafts await final predecessor
+Configuration 9 and `curator.launcher-config/3` are allocated now, conditionally
+on [spec #216](https://github.com/relux-works/curator-spec/pull/216) and its schema
+8 / `/2` predecessor. The draft may stack now; acceptance waits for the final
+predecessor shape to be accepted. CIP-0029 remains Review and Decision 0035
+remains Proposed. Closed containing drafts await final predecessor
 reconciliation before emission and gate Core #238.
 No production or runtime behavior is claimed.
 

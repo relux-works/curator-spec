@@ -171,7 +171,7 @@
     "id": "unicode-digit",
     "claim": "Section2 requires a JSON string with canonical ASCII integer spelling",
     "entry": "declaration",
-    "input_json": "{\"BASH_MAX_OUTPUT_LENGTH\":\"٨\"}",
+    "input_json": "{\"BASH_MAX_OUTPUT_LENGTH\":\"\u0668\"}",
     "want": "claude_env_value_not_integer",
     "schema_valid": false
   },

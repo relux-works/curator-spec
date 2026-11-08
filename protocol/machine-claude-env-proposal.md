@@ -16,9 +16,11 @@ system configuration, `launcher.json`, or an alternate environment variable.
 It grants no cross-account authority. No profile or lock bytes change.
 
 Manager configuration **9** and typed projection **`curator.launcher-config/3`**
-are allocated to `extensions.claude_env` in CIP-0029 and draft Decision 0035,
-conditional on schema **8** and **`curator.launcher-config/2`** in
-[Core PR #216](https://github.com/relux-works/curator/pull/216) staying as is.
+are allocated now to `extensions.claude_env`, conditionally on
+[spec #216](https://github.com/relux-works/curator-spec/pull/216) and its schema
+**8** / **`curator.launcher-config/2`** predecessor. CIP-0029 and draft
+Decision 0035 record that allocation; the draft may stack now, while
+acceptance waits for the final predecessor shape to be accepted.
 This allocation does not accept the proposal: CIP-0029 remains Review and
 Decision 0035 remains Proposed; adoption is the operator's decision. If #216
 changes those versions or its admitted shape, re-review the allocation and
@@ -38,8 +40,10 @@ pins are unchanged.
 
 Ordinary configuration edits MUST preserve unrelated admitted fields and the
 selected configuration version; they MUST NOT downgrade a configuration to
-discard this member. Following the owner F3 decision recorded in
-[CIP-0031](../cips/CIP-0031-machine-host-notification.md), the claude-auth editor
+discard this member. Following the decision of the Curator orchestrator as
+Curator source owner, 2026-11-08,
+[recorded on Curator #216](https://github.com/relux-works/curator/pull/216#issuecomment-6716173552)
+and in [CIP-0031](../cips/CIP-0031-machine-host-notification.md), the claude-auth editor
 MUST admit schema 9 once admitted, preserve 9 through plan/apply/restore and
 include notification in guarded equivalence. It retains proxy and notification
 during an auth change and all selections during unrelated edits. Older readers reject the unsupported version before
@@ -117,7 +121,14 @@ parser detail, member names or values, and this is the file-level form of
 Whether a refusal blocks provider discovery depends on whether the file
 identifiably declares the member, not on the rendered diagnostic. Reader/schema
 errors must be normalized before reaching user-visible diagnostics; parser
-errors must not be passed through verbatim. The conformance codes are:
+errors must not be passed through verbatim.
+
+The Host corpus name `config_json_invalid` at `$` and this corpus's file-level
+form of `claude_env_invalid` name **one refusal**, rendered once as
+`malformed JSON in config <path>`. They are aliases at the strict-file boundary,
+not two competing member verdicts, including when one file contains both
+notification and `claude_env`. Member-level diagnostics apply only after that
+boundary passes. The conformance codes are:
 
 | Condition | Code |
 | --- | --- |

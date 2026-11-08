@@ -78,3 +78,25 @@ later cases. None establishes exhaustive final-schema-8 preservation.
 The [schema README](../../schemas/machine-claude-env-v1/README.md) lists what
 waits for Core #216. Conditional allocation and draft fixture success do not
 satisfy the unchanged pre-emission gate or permit Core #238 landing.
+
+Predecessor negatives explicitly validate schema 8 and `/2` against the base
+schemas: each refuses `claude_env`, paired with the identical carrier without
+that member as a positive control (`schema8-control`, `launcher2-control`).
+The checker compiles the containing schemas with the base integer-token profile;
+plain JSON Schema alone does not distinguish integral decimal/exponent tokens.
+
+The focused unit tests replay the reviewer plants on disposable schema copies:
+
+| Plant | Required named failure |
+| --- | --- |
+| P1: schema-8 extensions admit `claude_env` | `schema8-claude-env-refused`, `launcher2-claude-env-refused`; paired controls still pass |
+| P2: `/3` accepts config schema 8 | `launcher-old-config` |
+| P3: v9 drops notification | `configuration-notification-host` and other notification vectors |
+| P4: v9 drops build SSH | `configuration-unrelated-fields` |
+
+Each changes the intended schema verdict and returns checker exit 1, rather
+than a setup error; restored controls return 0. The declaration corpus keeps
+the escaped `\u0668` spelling for the Unicode-digit fixture. Core consumers
+must re-copy the intentional Q1 claim edits; no unrelated digit re-encoding
+is required. Strict-file diagnostic names in the two corpora are one refusal,
+as stated in contract §4.
