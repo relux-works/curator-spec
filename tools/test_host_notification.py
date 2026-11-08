@@ -168,8 +168,8 @@ class NotificationTests(unittest.TestCase):
                     self.assertIn(f'FAIL env-{member}-null-{version}\n', output.getvalue())
         self.assertEqual(notification.run(output=io.StringIO()), 0)
 
-    # Both the compiled containing schema and checker enforce integer tokens;
-    # ordinary JSON Schema alone cannot distinguish numeric spellings.
+    # The new schema-8 containing schema and checker enforce integer tokens;
+    # predecessor numeric spellings have their own positive controls below.
     def test_integer_token_profile(self):
         compiled = notification.validators(notification.ROOT)
         for token in ('8', '8.0', '8e0', '"8"', '8.5', 'null', 'true'):
@@ -178,6 +178,45 @@ class NotificationTests(unittest.TestCase):
             self.assertEqual(compiled['manager-config-v8'].is_valid(value), token == '8')
             result = notification.verdict(dict(entry='configuration', input_json=raw), compiled)
             self.assertEqual(result, notification.VALID if token == '8' else ('config_schema_unsupported', 'schema_version'))
+
+    # Released predecessor integer/decimal/exponent spellings remain admitted
+    # by the schema and model with /1. Fractional/string/bool/null versions refuse.
+    # These bounded structural controls do not execute Core or a real projection.
+    def test_predecessor_version_admission(self):
+        compiled = notification.validators(notification.ROOT)
+        for version in (1, 2, 3, 5, 7):
+            for suffix in ('', '.0', 'e0'):
+                raw = '{"schema_version":' + str(version) + suffix + ',"skills_root":"x","projects":{}}'
+                self.assertTrue(compiled[f'manager-config-v{version}'].is_valid(notification.strict(raw)))
+                self.assertEqual(notification.verdict(dict(entry='configuration', input_json=raw), compiled), notification.VALID)
+                raw = '{"schema":"curator.launcher-config/1","config_schema":' + str(version) + suffix + ',"config_path":"/example/config.json","extensions":{}}'
+                self.assertTrue(compiled['launcher-config-v1'].is_valid(notification.strict(raw)))
+                self.assertEqual(notification.verdict(dict(entry='projection', input_json=raw), compiled), notification.VALID)
+            for token in (str(version) + '.5', '"' + str(version) + '"', 'true', 'null'):
+                raw = '{"schema_version":' + token + ',"skills_root":"x","projects":{}}'
+                self.assertFalse(compiled[f'manager-config-v{version}'].is_valid(notification.strict(raw)))
+                self.assertEqual(notification.verdict(dict(entry='configuration', input_json=raw), compiled),
+                                 ('config_schema_unsupported', 'schema_version'))
+
+    # Re-extending integer-token typing to v7 rejects the named 7.0 witness;
+    # integer 7 remains valid, and the unmodified checker accepts both controls.
+    def test_predecessor_token_scope_plant(self):
+        cases = notification.load_cases(notification.ROOT)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            shutil.copytree(notification.ROOT / 'schemas', root / 'schemas')
+            path = root / 'schemas' / notification.NAMESPACE / 'manager-config-v7.schema.json'
+            schema = json.loads(path.read_text())
+            schema['properties']['schema_version']['type'] = 'integer'
+            path.write_text(json.dumps(schema))
+            compiled = notification.validators(root)
+            self.assertTrue(compiled['manager-config-v7'].is_valid(dict(schema_version=7, skills_root='x', projects={})))
+            witness = next(c for c in cases if c['id'] == 'version7-decimal-predecessor')
+            self.assertFalse(compiled['manager-config-v7'].is_valid(notification.strict(witness['input_json'])))
+            output = io.StringIO()
+            self.assertGreater(notification.check_cases(cases, compiled, output), 0)
+            self.assertIn('FAIL version7-decimal-predecessor\n', output.getvalue())
+        self.assertEqual(notification.run(output=io.StringIO()), 0)
 
     # Version-token strictness must not narrow the published predecessor's
     # numeric integer fields: integral retention is valid, fractional is not.

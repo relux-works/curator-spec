@@ -18,11 +18,12 @@ ROOT = Path(__file__).resolve().parents[1]
 NAMESPACE = "host-notification-v1"
 VALID = ("ok", "$")
 def version_token_properties(validator, properties, instance, schema):
-    # Only carrier versions have a token-spelling rule. Preserve JSON Schema's
-    # numeric integer admission for unrelated predecessor fields such as retention.
+    # Only new carrier versions explicitly declare integer-token typing.
+    # Predecessor const/enum versions retain numeric equality, as does retention.
     if isinstance(instance, dict):
         for key in ("schema_version", "config_schema"):
-            if key in properties and key in instance and type(instance[key]) is not int:
+            if (properties.get(key, {}).get("type") == "integer"
+                    and key in instance and type(instance[key]) is not int):
                 yield ValidationError("must be an integer token", path=[key])
     yield from Draft202012Validator.VALIDATORS["properties"](
         validator, properties, instance, schema)
@@ -58,6 +59,12 @@ def validators(root):
         schema = strict((root / "schemas" / NAMESPACE / (name + ".schema.json")).read_bytes())
         Draft202012Validator.check_schema(schema)
         result[name] = IntegerTokenValidator(schema, registry=registry)
+    for version in (1, 2, 3, 5):
+        family = "rc7-carriers-v1" if version == 5 else "v1"
+        name = f"manager-config-v{version}"
+        schema = strict((root / "schemas" / family / (name + ".schema.json")).read_bytes())
+        Draft202012Validator.check_schema(schema)
+        result[name] = Draft202012Validator(schema, registry=registry)
     return result
 
 
@@ -120,8 +127,10 @@ def verdict(case, compiled):
     if value.keys() - compiled["manager-config-v8"].schema["properties"].keys():
         return ("config_shape_invalid", "$")
     version = value.get("schema_version")
-    if type(version) is not int or version not in (1, 2, 3, 5, 7, 8):
+    if (type(version) not in (int, float) or version not in (1, 2, 3, 5, 7, 8)
+            or (version == 8 and type(version) is not int)):
         return ("config_schema_unsupported", "schema_version")
+    version = int(version)
     ext = value.get("extensions", {})
     if "extensions" in value and version not in (7, 8):
         return ("launcher_extensions_schema", "extensions")
@@ -134,9 +143,10 @@ def verdict(case, compiled):
         if not compiled[f"manager-config-v{version}"].is_valid(value):
             return ("config_shape_invalid", "$")
     else:
-        # Legacy configuration vectors here establish extension refusal only;
-        # full legacy admission remains in the repository's frozen suites.
-        return ("config_shape_invalid", "$")
+        # Use the unchanged published schemas for legacy admission controls;
+        # full legacy semantics remain in the repository's frozen suites.
+        if not compiled[f"manager-config-v{version}"].is_valid(value):
+            return ("config_shape_invalid", "$")
     return VALID
 
 

@@ -907,5 +907,275 @@
       "config_shape_invalid",
       "$"
     ]
+  },
+  {
+    "id": "version7-integer-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":7,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-version7-integer-predecessor",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":7,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "version7-decimal-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":7.0,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-version7-decimal-predecessor",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":7.0,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "version7-exponent-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":7e0,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-version7-exponent-predecessor",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":7e0,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "version5-integer-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":5,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-version5-integer-predecessor",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":5,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "version5-decimal-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":5.0,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-version5-decimal-predecessor",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":5.0,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "version5-exponent-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":5e0,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-version5-exponent-predecessor",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":5e0,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "version3-integer-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":3,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-version3-integer-predecessor",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":3,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "version3-decimal-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":3.0,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-version3-decimal-predecessor",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":3.0,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "version3-exponent-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":3e0,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-version3-exponent-predecessor",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":3e0,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "version2-integer-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":2,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-version2-integer-predecessor",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":2,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "version2-decimal-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":2.0,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-version2-decimal-predecessor",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":2.0,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "version2-exponent-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":2e0,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-version2-exponent-predecessor",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":2e0,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "version1-integer-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":1,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-version1-integer-predecessor",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":1,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "version1-decimal-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":1.0,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-version1-decimal-predecessor",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":1.0,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "version1-exponent-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":1e0,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-version1-exponent-predecessor",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":1e0,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
   }
 ]

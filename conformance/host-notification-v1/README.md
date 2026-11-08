@@ -27,6 +27,7 @@ absolute HOME and a deadline at most 600 seconds; keep logs under `.temp/`.
 | Admit uppercase digest | `uppercase-digest` | Same selection refusal must not become admission |
 | Relax environment list/object members to admit null | `env-provider-directories-null-7/8`, `env-source-signers-null-7/8` | Shape refusal must not become admission; paired list/object controls pass |
 | Revert Core name-first precedence | `precedence-unknown-9`, `precedence-unknown-8`, `precedence-unknown-1` | All three must remain shape refusals |
+| Re-extend integer-token typing to schema 7 | `version7-decimal-predecessor`, `version7-exponent-predecessor` | Released `7.0`/`7e0` admission must not become refusal; integer 7 still passes |
 | Emit `/1` in schema-8 envelope | `projection-8` | Valid `/2` control must not become `launcher_projection_invalid` at `schema` |
 
 Plants mutate copied schemas, compile them, require the exact changed verdict,
@@ -47,9 +48,11 @@ reverting to the previous version/extension-first order must fail the three
 mixed-defect witnesses. A correct-order control cannot honestly be called a
 killed mutation. The regression plant shows the old order is now detected.
 
-Version vectors require integer tokens; the checker compiles schemas with the
-strict integer-token profile documented in contract §3. Decimal/exponent
-integral versions are a declared Core divergence. Path vectors use a fixed
+Only new schema-8 and `/2` version vectors require integer tokens, using the
+profile documented in contract §3. Their `8.0`/`8e0` refusals remain a declared
+Core divergence. Predecessor versions 1/2/3/5/7 have paired integer, decimal
+and exponent positives in both configuration and `/1` entries; the legacy
+configuration controls use unchanged published schemas. Path vectors use a fixed
 POSIX target, with explicit Windows helper controls. Relative and unclean
 projection paths are declared launcher #92 divergences. Edit fixtures include
 auth changes, a non-writing plan with a changed planned result, stale apply

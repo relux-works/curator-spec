@@ -84,10 +84,14 @@ Proxy is exactly `{profile:reference}`. Claude auth is exactly
 and Keychain store exactly `{type:"keychain",service:reference,account:reference}`.
 Reference strings have 1..4096 UTF-8 bytes, valid Unicode, no Unicode control
 characters (Unicode category Cc) and no leading/trailing Unicode whitespace.
-`schema_version` is the integer token 8, not `8.0` or `8e0`. The containing
-schemas declare integer versions; the checker applies an integer-token profile
-to the strict decoder types. Ordinary JSON Schema numeric equality alone cannot
-distinguish those spellings; raw-file token validation is also required.
+`schema_version` is the integer token 8, not `8.0` or `8e0`. The integer-token
+profile applies only to the new schema-8 and `/2` carriers, whose version members
+explicitly declare integer typing. Schema 7 and legacy versions retain released
+Core's numeric-integer admission: `7.0`/`7e0` are 7, `5.0`/`5e0` are 5, and
+`1.0` is 1; these use `/1`. The v7 schema and `/1` preserve those admitted forms.
+The checker applies the new token rule to strict decoder types. Ordinary JSON
+Schema numeric equality alone cannot distinguish those spellings; raw-file
+token validation is also required for the new carriers.
 Absolute launcher paths add target-platform absolute and clean-path requirements; no relative, tilde,
 dot-segment or unclean repeated-separator path is admitted. These semantic
 constraints supplement JSON Schema's character bounds. They are not new limits

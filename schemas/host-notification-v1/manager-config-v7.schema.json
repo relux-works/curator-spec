@@ -12,9 +12,7 @@
   "additionalProperties": false,
   "properties": {
     "schema_version": {
-      "const": 7,
-      "type": "integer",
-      "$comment": "Integer JSON token required by the containing-file profile; integral decimal/exponent spellings refuse before ordinary JSON Schema value comparison."
+      "const": 7
     },
     "skills_root": {
       "$ref": "../rc7-carriers-v1/manager-config-v5.schema.json#/properties/skills_root"
