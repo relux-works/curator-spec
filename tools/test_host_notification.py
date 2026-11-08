@@ -179,6 +179,18 @@ class NotificationTests(unittest.TestCase):
             result = notification.verdict(dict(entry='configuration', input_json=raw), compiled)
             self.assertEqual(result, notification.VALID if token == '8' else ('config_schema_unsupported', 'schema_version'))
 
+    # Version-token strictness must not narrow the published predecessor's
+    # numeric integer fields: integral retention is valid, fractional is not.
+    def test_predecessor_integer_admission(self):
+        compiled = notification.validators(notification.ROOT)
+        for value, expected in ((5.0, True), (5.5, False)):
+            carrier = dict(schema_version=8, skills_root='x', projects={},
+                           environments=dict(backup_retention=value))
+            self.assertEqual(compiled['manager-config-v8'].is_valid(carrier), expected)
+            case = dict(entry='configuration', input_json=json.dumps(carrier))
+            self.assertEqual(notification.verdict(case, compiled), notification.VALID
+                             if expected else ('config_shape_invalid', '$'))
+
     # Target selection is explicit: a clean Windows path is not a POSIX path.
     # Projection tests use the POSIX target on every runner, including Windows CI.
     def test_target_paths(self):

@@ -889,5 +889,23 @@
       "launcher_projection_invalid",
       "schema"
     ]
+  },
+  {
+    "id": "retention-integral-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"backup_retention\":5.0}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "retention-fractional-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"backup_retention\":5.5}}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
   }
 ]

@@ -10,17 +10,25 @@ import sys
 import unicodedata
 from pathlib import Path
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, ValidationError
 from jsonschema.validators import extend
 from referencing import Registry, Resource
 
 ROOT = Path(__file__).resolve().parents[1]
 NAMESPACE = "host-notification-v1"
 VALID = ("ok", "$")
-# The containing-file profile requires integer tokens, not integral float tokens.
-# Stock JSON Schema treats 8 and 8.0 as equal; retain the strict decoder's types.
-IntegerTokenValidator = extend(Draft202012Validator, type_checker=
-    Draft202012Validator.TYPE_CHECKER.redefine("integer", lambda _, value: type(value) is int))
+def version_token_properties(validator, properties, instance, schema):
+    # Only carrier versions have a token-spelling rule. Preserve JSON Schema's
+    # numeric integer admission for unrelated predecessor fields such as retention.
+    if isinstance(instance, dict):
+        for key in ("schema_version", "config_schema"):
+            if key in properties and key in instance and type(instance[key]) is not int:
+                yield ValidationError("must be an integer token", path=[key])
+    yield from Draft202012Validator.VALIDATORS["properties"](
+        validator, properties, instance, schema)
+
+
+IntegerTokenValidator = extend(Draft202012Validator, {"properties": version_token_properties})
 
 
 def strict(raw):
