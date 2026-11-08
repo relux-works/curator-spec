@@ -553,9 +553,12 @@ validation and hosted test gates. Released v1 vectors remain immutable.
 
 [CIP-0029](cips/CIP-0029-machine-claude-output-limit.md) proposes a closed,
 per-account `extensions.claude_env` selection without profile or lock changes.
-Its [member schemas](schemas/machine-claude-env-v1/README.md) and
-[corpus](conformance/machine-claude-env-v1/README.md) are unreleased and allocate
-no complete carrier; proposed schema 9 depends on the pending schema-8 carrier.
+Its [schemas](schemas/machine-claude-env-v1/README.md) and
+[corpus](conformance/machine-claude-env-v1/README.md) remain unreleased.
+Configuration 9 and `curator.launcher-config/3` are conditionally allocated if
+Core #216's schema 8 and `/2` stay as is; CIP-0029 remains Review and Decision
+0035 remains Proposed. Closed containing drafts await final predecessor
+reconciliation before emission and gate Core #238.
 No production or runtime behavior is claimed.
 
 The Go checker uses the pinned JSON Schema dependency in `go.mod` and `go.sum`.
@@ -563,6 +566,11 @@ Run `go run ./tools/validate-claude-env -root .` and
 `go test ./tools/validate-claude-env` from the repository root. It prints fixture
 IDs and stable verdicts; validation logs belong in ignored `.temp/`. These
 checks are also included by the existing `go test ./tools/...` CI lane.
+For the containing drafts run `python3 tools/claude_env_carriers.py` and
+`python3 -B -m unittest discover -s tools -p test_claude_env_carriers.py` with
+`requirements-dev.txt` installed. These use the existing Python schema stack
+for unchanged predecessor regexes; outputs are stable fixture verdicts and a
+summary on stdout, with logs in `.temp/`. Final #216 parity remains unverified.
 
 ## Package-directory overlay range proposal
 

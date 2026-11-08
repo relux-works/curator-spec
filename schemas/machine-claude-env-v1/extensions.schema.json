@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/machine-claude-env-v1/extensions.schema.json",
+  "description": "Draft schema-9 delta on the schema-8 closed selections.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "proxy": {
+      "$ref": "../host-notification-v1/extensions.schema.json#/properties/proxy"
+    },
+    "claude_auth": {
+      "$ref": "../host-notification-v1/extensions.schema.json#/properties/claude_auth"
+    },
+    "notification": {
+      "$ref": "../host-notification-v1/extensions.schema.json#/properties/notification"
+    },
+    "claude_env": {
+      "$ref": "claude-env.schema.json"
+    }
+  },
+  "$defs": {
+    "reference": {
+      "$ref": "../host-notification-v1/extensions.schema.json#/$defs/reference"
+    },
+    "absolutePath": {
+      "$ref": "../host-notification-v1/extensions.schema.json#/$defs/absolutePath"
+    }
+  }
+}

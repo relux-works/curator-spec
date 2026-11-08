@@ -171,7 +171,7 @@
     "id": "unicode-digit",
     "claim": "Section2 requires a JSON string with canonical ASCII integer spelling",
     "entry": "declaration",
-    "input_json": "{\"BASH_MAX_OUTPUT_LENGTH\":\"\u0668\"}",
+    "input_json": "{\"BASH_MAX_OUTPUT_LENGTH\":\"٨\"}",
     "want": "claude_env_value_not_integer",
     "schema_valid": false
   },
@@ -233,7 +233,7 @@
   },
   {
     "id": "duplicate-name",
-    "claim": "Section2 rejects duplicate JSON keys before projection",
+    "claim": "Section2 rejects duplicate JSON keys before projection; an embedding declaration driver maps the neutral file-level diagnostic to claude_env_invalid only after the same carrier accepts a valid member",
     "entry": "declaration",
     "input_json": "{\"BASH_MAX_OUTPUT_LENGTH\":\"8000\",\"BASH_MAX_OUTPUT_LENGTH\":\"1\"}",
     "want": "claude_env_invalid",
@@ -241,7 +241,7 @@
   },
   {
     "id": "malformed",
-    "claim": "Section2 rejects malformed bytes without parser reflection",
+    "claim": "Section2 rejects malformed bytes without parser reflection; an embedding declaration driver maps the neutral file-level diagnostic to claude_env_invalid only after the same carrier accepts a valid member",
     "entry": "declaration",
     "input_json": "{\"BASH_MAX_OUTPUT_LENGTH\":",
     "want": "claude_env_invalid",
@@ -249,7 +249,7 @@
   },
   {
     "id": "trailing-json",
-    "claim": "Section2 rejects a second JSON value",
+    "claim": "Section2 rejects a second JSON value; an embedding declaration driver maps the neutral file-level diagnostic to claude_env_invalid only after the same carrier accepts a valid member",
     "entry": "declaration",
     "input_json": "{} {}",
     "want": "claude_env_invalid",
@@ -301,7 +301,7 @@
     "input_json": "{\"BASH_MAX_OUTPUT_LENGTH\":\"8000\",\"\\u0042ASH_MAX_OUTPUT_LENGTH\":\"1\"}",
     "want": "claude_env_invalid",
     "schema_valid": true,
-    "claim": "Section2 rejects decoded duplicate names, including escaped spellings"
+    "claim": "Section2 rejects decoded duplicate names, including escaped spellings; an embedding declaration driver maps the neutral file-level diagnostic to claude_env_invalid only after the same carrier accepts a valid member"
   },
   {
     "id": "trailing-comma",
@@ -309,7 +309,7 @@
     "input_json": "{\"BASH_MAX_OUTPUT_LENGTH\":\"8000\",}",
     "want": "claude_env_invalid",
     "schema_valid": false,
-    "claim": "Section2 rejects a trailing comma rather than admitting relaxed JSON"
+    "claim": "Section2 rejects a trailing comma rather than admitting relaxed JSON; an embedding declaration driver maps the neutral file-level diagnostic to claude_env_invalid only after the same carrier accepts a valid member"
   },
   {
     "id": "non-claude-invalid-value",

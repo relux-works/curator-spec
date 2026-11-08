@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/machine-claude-env-v1/launcher-config-v3.schema.json",
+  "title": "Draft curator.launcher-config/3 stacked on /2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "config_schema",
+    "config_path",
+    "extensions"
+  ],
+  "properties": {
+    "schema": {
+      "const": "curator.launcher-config/3"
+    },
+    "config_schema": {
+      "const": 9
+    },
+    "config_path": {
+      "$ref": "../host-notification-v1/launcher-config-v2.schema.json#/properties/config_path"
+    },
+    "extensions": {
+      "$ref": "extensions.schema.json"
+    }
+  }
+}

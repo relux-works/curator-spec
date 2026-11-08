@@ -304,3 +304,17 @@ Core follow-ups for the Review carrier: reject integral decimal/exponent version
 tokens (`8.0`/`8e0`) and make selection-lock refusals input-free. Launcher #92
 needs absolute, clean `config_path` validation. These are declared divergences
 in [contract §§3–4](protocol/host-notification-proposal.md), not qualification.
+
+## Machine Claude environment containing-carrier gate
+
+[CIP-0029](cips/CIP-0029-machine-claude-output-limit.md) remains Review and
+[Decision 0035](decisions/0035-machine-claude-output-limit.md) remains Proposed;
+operator adoption is pending. Configuration 9 and `curator.launcher-config/3`
+are allocated conditional on [Core #216](https://github.com/relux-works/curator/pull/216)'s
+schema 8 and `/2` staying as is. The
+[containing-schema drafts](schemas/machine-claude-env-v1/README.md#predecessor-snapshot-and-pending-reconciliation)
+await its final accepted shape, complete predecessor-form preservation and
+reader/schema reconciliation before any producer emits a successor.
+This remains a landing gate for [Core #238](https://github.com/relux-works/curator/pull/238);
+draft publication and scoped validator success do not discharge it. No move
+from pre-emission to release/qualification is authorized by this amendment.

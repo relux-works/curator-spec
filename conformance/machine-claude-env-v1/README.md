@@ -39,3 +39,42 @@ names are case-sensitive. Duplicate (including escaped), missing, unknown,
 case-variant or wrongly typed metadata fields, malformed/invalid-UTF-8 JSON and trailing
 values refuse with fixed corpus-setup output. No last-wins decoding is allowed.
 Paired command controls prove these refusals and nearby valid corpus loading.
+
+## File-level diagnostic mapping and carrier setup
+
+The member semantic code remains `claude_env_invalid`. When a declaration
+vector is embedded in a containing configuration that is not strict JSON,
+including duplicate decoded names, contract §4 maps the neutral diagnostic
+`malformed JSON in config <path>` to that code. The five declaration vectors
+`duplicate-name`, `escaped-duplicate-name`, `malformed`, `trailing-json` and
+`trailing-comma` describe this mapping in their claims; their verdicts and the
+six single-defect plants are unchanged. Invalid UTF-8 has the same strict-file
+rule and remains covered by decoder tests. Member validation still uses its
+fixed member path and code; unrelated containing errors keep their diagnostics.
+Provider-discovery blocking depends on identifiable member declaration, not
+rendered text. A synthetic checker result does not prove Core diagnostics or
+that discovery behavior.
+
+Before interpreting an embedded vector, an implementation declaration driver
+must accept the same carrier with a valid member. An unrelated invalid carrier
+is a setup failure and must not count as detection of any member defect.
+`test_carrier_setup_control` checks a valid containing-schema control,
+an unrelated unknown-field rejection and embedding of declaration cases.
+The production driver must additionally verify the exact neutral file-level
+form for strict-file failures; this repository executes no production driver.
+
+## Containing-schema draft cases
+
+`containing-cases.json` is a separate structural corpus with exactly `id`,
+`claim`, `entry`, `input_json` and `schema_valid` per item. `entry` is
+`configuration` or `launcher`. It covers the complete draft outer shapes,
+predecessor selections/combinations, absent/empty/selected Claude declarations,
+unknown containing fields, version mismatch and malformed predecessor arms.
+Its schema verdicts are not additional `claude_env` diagnostic codes. Metadata
+has strict closed admission controls alongside those of the member corpus. Paired
+wrong-expectation plants must fail the actual checker aggregate and still run
+later cases. None establishes exhaustive final-schema-8 preservation.
+
+The [schema README](../../schemas/machine-claude-env-v1/README.md) lists what
+waits for Core #216. Conditional allocation and draft fixture success do not
+satisfy the unchanged pre-emission gate or permit Core #238 landing.

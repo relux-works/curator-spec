@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/machine-claude-env-v1/manager-config-v9.schema.json",
+  "title": "Draft manager-config-v9 stacked on schema 8",
+  "description": "Schema-9 delta only: complete schema-8 members by reference, plus claude_env; predecessor adoption and qualification remain gated.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "skills_root",
+    "projects"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 9
+    },
+    "skills_root": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/skills_root"
+    },
+    "default_agents": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/default_agents"
+    },
+    "preferred_locale": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/preferred_locale"
+    },
+    "adapter_mode": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/adapter_mode"
+    },
+    "worktree_alias_pattern": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/worktree_alias_pattern"
+    },
+    "projects": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/projects"
+    },
+    "allowed_sources": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/allowed_sources"
+    },
+    "audit": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/audit"
+    },
+    "audit_registries": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/audit_registries"
+    },
+    "disable_builtin_registries": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/disable_builtin_registries"
+    },
+    "security_posture": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/security_posture"
+    },
+    "environments": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/environments"
+    },
+    "build_ssh": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/build_ssh"
+    },
+    "build_https": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/build_https"
+    },
+    "script_interpreters": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/script_interpreters"
+    },
+    "script_diagnostics_dir": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/script_diagnostics_dir"
+    },
+    "execution": {
+      "$ref": "../host-notification-v1/manager-config-v8.schema.json#/properties/execution"
+    },
+    "extensions": {
+      "$ref": "extensions.schema.json"
+    }
+  }
+}

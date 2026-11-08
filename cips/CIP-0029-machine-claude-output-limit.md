@@ -40,7 +40,7 @@ The following are bounded source observations, not native probes:
 | --- | --- |
 | Core main revision `330556ab88278fe7a40f12ff7ae136db8b006798`, [`internal/config/launcher_extensions.go:11`](https://github.com/relux-works/curator/blob/330556ab88278fe7a40f12ff7ae136db8b006798/internal/config/launcher_extensions.go#L11), [`:17`](https://github.com/relux-works/curator/blob/330556ab88278fe7a40f12ff7ae136db8b006798/internal/config/launcher_extensions.go#L17), [`:84`](https://github.com/relux-works/curator/blob/330556ab88278fe7a40f12ff7ae136db8b006798/internal/config/launcher_extensions.go#L84) | Schema 7 defines a closed `extensions` object containing `proxy` and `claude_auth`; the inspected carrier does not declare `claude_env`. This is not an exhaustive search for another launch route. |
 | Same revision, [`internal/config/config.go:583`](https://github.com/relux-works/curator/blob/330556ab88278fe7a40f12ff7ae136db8b006798/internal/config/config.go#L583) and [`launcher_extensions.go:51`](https://github.com/relux-works/curator/blob/330556ab88278fe7a40f12ff7ae136db8b006798/internal/config/launcher_extensions.go#L51) | Configuration schema admission is explicit; the existing typed projection is `curator.launcher-config/1`. No delivery behavior is inferred. |
-| Draft Core [PR #216](https://github.com/relux-works/curator/pull/216), inspected head `f5d7cd472db973b9864f87e5ca4526f20e4a893c`, [`internal/config/launcher_extensions.go:15`](https://github.com/relux-works/curator/blob/f5d7cd472db973b9864f87e5ca4526f20e4a893c/internal/config/launcher_extensions.go#L15) and [`:66`](https://github.com/relux-works/curator/blob/f5d7cd472db973b9864f87e5ca4526f20e4a893c/internal/config/launcher_extensions.go#L66) | The draft uses schema 8 and projection `/2` for notification metadata. It is a landing dependency, not accepted or shipped behavior. Recheck its final shape before allocation. |
+| Draft Core [PR #216](https://github.com/relux-works/curator/pull/216), inspected head `f5d7cd472db973b9864f87e5ca4526f20e4a893c`, [`internal/config/launcher_extensions.go:15`](https://github.com/relux-works/curator/blob/f5d7cd472db973b9864f87e5ca4526f20e4a893c/internal/config/launcher_extensions.go#L15) and [`:66`](https://github.com/relux-works/curator/blob/f5d7cd472db973b9864f87e5ca4526f20e4a893c/internal/config/launcher_extensions.go#L66) | The draft uses schema 8 and projection `/2` for notification metadata. It is a landing dependency, not accepted or shipped behavior. The conditional allocation below still requires final-shape reconciliation before emission. |
 | [Protocol core §1](../protocol/core.md#1-data-model-and-versioning) and [environments §12.1](../protocol/environments.md#121-machine-configuration-knobs), at specification base `a9c5e03b2857a10a66433e1a60bb255a89b9d741` (`1.0.0-rc.14`) | JSON readers reject duplicates, invalid UTF-8 and unsupported versions. `passable_env_names` lists names; it does not assign this setting's value. Existing released surfaces remain closed. |
 | Draft spec [PR #205](https://github.com/relux-works/curator-spec/pull/205), inspected head `ee33b1d601e8a16116b7e91d0aa9b821dd016e25`, [`cips/CIP-0028-claude-read-scope.md:1`](https://github.com/relux-works/curator-spec/blob/ee33b1d601e8a16116b7e91d0aa9b821dd016e25/cips/CIP-0028-claude-read-scope.md#L1) | CIP-0028 is already in use by that proposal; this CIP does not reuse it. |
 
@@ -96,9 +96,13 @@ nonselected environment semantics are preserved. Valid shared configuration
 must remain usable for non-Claude targets with an empty contribution; invalid
 explicit declarations refuse for every target rather than becoming absence.
 
-Propose configuration 9 and projection `curator.launcher-config/3`, after
-Core #216's final schema-8 and `/2` carrier. The maintainer allocates these
-numbers at review; they are not reservations. The separate schema-6 node-source
+Configuration **9** and projection **`curator.launcher-config/3`** are allocated
+for `extensions.claude_env`, conditional on Core #216's schema **8** and
+**`curator.launcher-config/2`** staying as is. This allocation does not adopt the
+proposal: this CIP remains **Review** and Decision 0035 remains **Proposed**;
+acceptance is the operator's decision. A change to #216's versions or admitted
+shape requires re-review of the allocation and coordinated schema/vector changes
+before acceptance or emission. The separate schema-6 node-source
 family is not reused. Old readers reject unsupported containing versions;
 ordinary edits cannot downgrade or discard the selection. No frozen release
 artifact is amended and no existing-session update is provided.
@@ -107,8 +111,9 @@ artifact is amended and no existing-session update is provided.
 
 - [Proposed contract](../protocol/machine-claude-env-proposal.md): declaration,
   authority, contribution compatibility, refusal precedence and runtime evidence.
-- [Member schemas](../schemas/machine-claude-env-v1/README.md): standalone
-  declaration and synthetic contribution schemas, not complete carriers.
+- [Schemas](../schemas/machine-claude-env-v1/README.md): standalone declaration
+  and synthetic contribution schemas, plus closed containing-schema drafts for
+  configuration 9 and projection `/3`, awaiting final #216 reconciliation.
 - [Conformance corpus](../conformance/machine-claude-env-v1/README.md): valid
   controls, semantic reasons, six single-defect plants and checker controls.
 - [Draft Decision 0035](../decisions/0035-machine-claude-output-limit.md): proposed
@@ -123,9 +128,11 @@ protocol ahead of its final schema-8 dependency.
 
 These are relative work sizes, not delivery dates or an implementation assignment.
 
-1. **Small — specification first:** settle the proposed cap, wire type and
-   containing allocations after the schema-8 shape is fixed; land accepted prose,
-   schemas, vectors and decision through normal review.
+1. **Small — specification first:** retain the conditional 9 and `/3` allocation;
+   reconcile the containing-schema drafts against final accepted schema 8 and
+   `/2`, including every predecessor form and refusal. Settle cap and wire type;
+   land accepted prose, complete schemas, vectors and operator decision through
+   normal review. Draft publication alone does not satisfy the pre-emission gate.
 2. **Medium — machine carrier:** add the typed parser/editor/status path and
    predecessor compatibility checks; preserve unrelated settings and old-reader
    refusal. No profile/lock migration.
@@ -164,10 +171,10 @@ each platform for which usable support is claimed. No such effect is claimed her
 1. **Adopt the proposed 65536 cap, admitting the requested 8000?** Recommended:
    yes, as an explicit finite manager-policy budget. Revisit only with schema,
    prose and vectors together; do not describe it as a native maximum.
-2. **Allocate configuration 9 and projection `/3` after final Core #216, and
-   confirm the draft Decision 0035 locator?** Recommended: allocate together only
-   after the predecessor shape is accepted; change every witness together if
-   the maintainer selects other numbers. Never reuse earlier allocations.
+2. **Confirm adoption and the Decision 0035 locator after final Core #216?**
+   Configuration 9 and `/3` are conditionally allocated above. The operator
+   still decides adoption. Keep the allocation only if schema 8 and `/2` stay
+   as is; reconcile all admitted forms before any producer emits the successor.
 3. **Use canonical decimal strings rather than JSON numbers?** Recommended: yes,
    to match environment transport and keep a single exact wire type without
    coercion, signs, leading zeros or exponent spellings.

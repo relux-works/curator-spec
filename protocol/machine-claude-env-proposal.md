@@ -3,8 +3,9 @@
 Status: proposed, unreleased. [CIP-0029](../cips/CIP-0029-machine-claude-output-limit.md)
 and [draft Decision 0035](../decisions/0035-machine-claude-output-limit.md)
 describe this bounded addition. The keywords below specify the proposed
-contract; they do not claim implementation, runtime qualification or allocation
-of a containing carrier. The shell extension is outside this proposal.
+contract; they do not claim implementation or runtime qualification. Containing
+versions are conditionally allocated below; acceptance remains the operator's
+decision. The shell extension is outside this proposal.
 
 ## 1. Authority and containing versions
 
@@ -14,26 +15,34 @@ be read from a context package, profile, lock, overlay, project configuration,
 system configuration, `launcher.json`, or an alternate environment variable.
 It grants no cross-account authority. No profile or lock bytes change.
 
-Propose manager configuration **9**, after the notification carrier **8** in
-[Core PR #216](https://github.com/relux-works/curator/pull/216). Version 7's
-`proxy` and `claude_auth`, and version 8's `notification`, retain their exact
-admitted semantics. This proposal MUST NOT land as an accepted carrier before
-that dependency is accepted and its final containing shape is fixed. The
-maintainer allocates the number at review; **9 is a proposal, not a reservation**.
-If the allocation changes, all witnesses change together before acceptance.
-Schema 6's separate node-source family MUST NOT be repurposed.
+Manager configuration **9** and typed projection **`curator.launcher-config/3`**
+are allocated to `extensions.claude_env` in CIP-0029 and draft Decision 0035,
+conditional on schema **8** and **`curator.launcher-config/2`** in
+[Core PR #216](https://github.com/relux-works/curator/pull/216) staying as is.
+This allocation does not accept the proposal: CIP-0029 remains Review and
+Decision 0035 remains Proposed; adoption is the operator's decision. If #216
+changes those versions or its admitted shape, re-review the allocation and
+update every affected schema and witness together before acceptance or emission.
+Version 7's `proxy` and `claude_auth`, and version 8's `notification`, retain
+their exact admitted semantics. This proposal MUST NOT land as an accepted
+carrier before that dependency is accepted and its final containing shape is
+fixed. Schema 6's separate node-source family MUST NOT be repurposed.
 
-A containing typed projection also needs a successor: propose
-`curator.launcher-config/3`, after #216's `/2`. Old `/1` and `/2` readers MUST NOT
-silently drop the new selection. The complete successor configuration and
-projection schemas must retain all admitted predecessor fields and strict
-unknown-member rejection before any producer emits them. The standalone
-[member schemas](../schemas/machine-claude-env-v1/README.md) here allocate
-neither whole carrier. Earlier carrier bytes and frozen release pins are unchanged.
+Old `/1` and `/2` readers MUST NOT silently drop the new selection. The complete
+successor configuration and projection schemas must retain all admitted
+predecessor fields and strict unknown-member rejection before any producer
+emits them. The [containing-schema drafts](../schemas/machine-claude-env-v1/README.md)
+cover the currently inspected schema-8 shape; final predecessor reconciliation
+and acceptance are still required. Earlier carrier bytes and frozen release
+pins are unchanged.
 
 Ordinary configuration edits MUST preserve unrelated admitted fields and the
 selected configuration version; they MUST NOT downgrade a configuration to
-discard this member. Older readers reject the unsupported version before
+discard this member. Following the owner F3 decision recorded in
+[CIP-0031](../cips/CIP-0031-machine-host-notification.md), the claude-auth editor
+MUST admit schema 9 once admitted, preserve 9 through plan/apply/restore and
+include notification in guarded equivalence. It retains proxy and notification
+during an auth change and all selections during unrelated edits. Older readers reject the unsupported version before
 publishing a projection or starting a child. No fallback to an older file is
 permitted after an explicit selection fails.
 
@@ -99,10 +108,16 @@ contribution, never a full child environment or credentials.
 ## 4. Refusals and observable effects
 
 Diagnostics MUST contain no supplied values, unknown member names, raw input,
-native settings, authentication material or child environment. Use a stable
-code and the fixed path `extensions.claude_env` only. Reader/schema errors must
-be normalized before reaching user-visible diagnostics; parser errors must not
-be passed through verbatim. The conformance codes are:
+native settings, authentication material or child environment. Errors validating
+this member use a stable code and the fixed path `extensions.claude_env` only. A
+containing configuration file that is not strict JSON, including one with
+duplicate decoded names, reports only `malformed JSON in config <path>`, without
+parser detail, member names or values, and this is the file-level form of
+`claude_env_invalid`; other configuration errors keep their own diagnostics.
+Whether a refusal blocks provider discovery depends on whether the file
+identifiably declares the member, not on the rendered diagnostic. Reader/schema
+errors must be normalized before reaching user-visible diagnostics; parser
+errors must not be passed through verbatim. The conformance codes are:
 
 | Condition | Code |
 | --- | --- |
@@ -161,10 +176,11 @@ claimed by a passing schema or corpus check.
 ## 6. Acceptance data
 
 The [corpus](../conformance/machine-claude-env-v1/README.md) contains nearby
-valid controls and the six required single-defect plants: unknown name,
-non-integer, zero, negative, over-bound and non-Claude injection. Each must fail
-for its named reason; an unrelated setup error is not a detected plant. The Go
-checker runs every case, reports each mismatch and returns nonzero if any case
-fails. It validates real JSON Schemas as well as semantic refusal codes, and
-tests its own rejection of a wrong expected verdict. None of these results is
-an implementation or runtime conformance claim.
+valid controls and the six required single-defect plants: unknown name, non-integer, zero, negative, over-bound and non-Claude injection. Each must fail for
+its named reason; an unrelated setup error is not a detected plant. A
+declaration driver that embeds a vector in a containing file must first show
+that the same file accepts a valid member; a carrier that rejects the valid
+member is a setup failure. The Go checker runs every case, reports each mismatch
+and returns nonzero if any case fails. It validates real JSON Schemas as well as
+semantic refusal codes, and tests its own rejection of a wrong expected verdict.
+None of these results is an implementation or runtime conformance claim.

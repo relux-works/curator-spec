@@ -19,9 +19,17 @@ unknown names, malformed/duplicate input and invalid values without reflecting
 input in diagnostics.
 
 The [contract](../protocol/machine-claude-env-proposal.md) is the complete
-proposal. Configuration 9 and projection `/3` are proposed, subject to final
-schema-8 acceptance in [Core #216](https://github.com/relux-works/curator/pull/216)
-and maintainer allocation at review. No complete carrier is published here.
+proposal. Configuration **9** and projection **`curator.launcher-config/3`** are
+allocated to `extensions.claude_env`, conditional on schema **8** and
+**`curator.launcher-config/2`** in
+[Core #216](https://github.com/relux-works/curator/pull/216) staying as is.
+This allocation leaves this decision **Proposed** and CIP-0029 **Review**;
+adoption is the operator's decision. Version or admitted-shape changes in #216
+require re-review and coordinated schema/vector updates. The
+[closed containing-schema drafts](../schemas/machine-claude-env-v1/README.md)
+await #216's accepted final shape. The complete containing schemas must preserve
+every admitted predecessor form before any producer emits the successor;
+draft publication does not satisfy or defer that gate.
 
 ## Alternatives and effects
 
