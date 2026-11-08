@@ -585,3 +585,20 @@ The candidate fixture is `conformance/profile-command-roots-v1/native-admission-
 the pins-only addition is `conformance/profile-command-roots-v1/native-pins-alternative.json`.
 The validator prints model-only results to stdout. No implementation or runtime
 acceptance follows from these checks.
+
+## Machine Host notification proposal
+
+[CIP-0031](cips/CIP-0031-machine-host-notification.md) and
+[draft Decision 0036](decisions/0036-machine-host-notification.md) propose
+configuration 8, `curator.launcher-config/2` and the `curator-host-notification/1`
+selection identifier. Both remain pending adoption. The
+[contract](protocol/host-notification-proposal.md) records the closed grammar,
+predecessor preservation gate, owner F3 editor decision and the open Host
+contract-publisher/doorbell relationship question. It grants no runtime authority.
+
+Tool entrypoints: `python3 -B tools/host_notification.py` checks the separate
+[corpus](conformance/host-notification-v1/README.md) against complete containing
+schemas. `python3 -B -m unittest discover -s tools -p 'test_host_notification.py'
+-v` runs five intended-reason schema plants and checker controls. The standard
+`python3 tools/fixture_environment.py python3 tools/validate.py` also dispatches
+this corpus. Outputs are stdout/stderr; keep local logs under `.temp/`.

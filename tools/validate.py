@@ -12235,12 +12235,22 @@ def validate_profile_command_roots():
         raise ValidationFailure(str(exc)) from exc
 
 
+def validate_host_notification() -> None:
+    """Separate draft notification corpus; no released-carrier changes."""
+    import io
+    import host_notification
+    output = io.StringIO()
+    if host_notification.run(ROOT, output) != 0:
+        raise ValidationFailure("draft notification conformance failed")
+
+
 def main(*, release_history_only: bool = False) -> int:
     checks = [
         validate_released_record_immutability,
         validate_released_schema_immutability,
         validate_build_ssh_project_bin,
         validate_schemas,
+        validate_host_notification,
         validate_managed_home_snapshots,
         validate_login_readiness,
         validate_rc7_carriers,

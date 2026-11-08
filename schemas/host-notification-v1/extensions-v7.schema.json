@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/host-notification-v1/extensions-v7.schema.json",
+  "description": "Closed schema-7 predecessor: proxy and Claude OAuth only.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "proxy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile"
+      ],
+      "properties": {
+        "profile": {
+          "$ref": "#/$defs/reference"
+        }
+      }
+    },
+    "claude_auth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "store"
+      ],
+      "properties": {
+        "type": {
+          "const": "oauth"
+        },
+        "store": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type",
+                "path"
+              ],
+              "properties": {
+                "type": {
+                  "const": "file"
+                },
+                "path": {
+                  "$ref": "#/$defs/absolutePath"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "type",
+                "service",
+                "account"
+              ],
+              "properties": {
+                "type": {
+                  "const": "keychain"
+                },
+                "service": {
+                  "$ref": "#/$defs/reference"
+                },
+                "account": {
+                  "$ref": "#/$defs/reference"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "reference": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "$comment": "UTF-8 byte bound, trim and Unicode control checks are semantic; see contract section 3."
+    },
+    "absolutePath": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/reference"
+        },
+        {
+          "pattern": "^(?:/|[A-Za-z]:[\\\\/]|\\\\\\\\)"
+        }
+      ],
+      "$comment": "Clean absolute path on the target platform; see contract section 3."
+    }
+  }
+}

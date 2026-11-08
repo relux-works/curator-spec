@@ -1,0 +1,686 @@
+[
+  {
+    "id": "absent",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "empty-extensions",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "off",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"off\"}}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "host",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "reference-one",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"a\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "reference-max",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "reference-vocabulary",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"ABCxyz012._:/@+-\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "all-selections-file",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"proxy\":{\"profile\":\"private\"},\"claude_auth\":{\"type\":\"oauth\",\"store\":{\"type\":\"file\",\"path\":\"/example/credential\"}}}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "all-selections-keychain",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"proxy\":{\"profile\":\"private\"},\"claude_auth\":{\"type\":\"oauth\",\"store\":{\"type\":\"keychain\",\"service\":\"example.service\",\"account\":\"example-account\"}}}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "host-extra",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"endpoint\":\"HOSTILE_SECRET_VALUE\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "off-extra",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"off\",\"contract\":\"curator-host-notification/1\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "uppercase-digest",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "digest-prefix",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "short-digest",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "digest-number",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":17}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "wrong-contract",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"other/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "unknown-backend",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"HOSTILE_BACKEND\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "reference-space",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"HOSTILE REF\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "reference-unicode",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"\\u03b1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "reference-empty",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "reference-long",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "reference-newline",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"a\\n\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "host-null",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":null}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "host-array",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":[]}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "off-missing",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "host-missing-backend",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "host-missing-contract",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "host-missing-workflow-reference",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "host-missing-workflow-sha256",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "schema7-admit",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":7,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "old-extensions-1",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":1,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_extensions_schema",
+      "extensions"
+    ]
+  },
+  {
+    "id": "old-extensions-2",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":2,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_extensions_schema",
+      "extensions"
+    ]
+  },
+  {
+    "id": "old-extensions-3",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":3,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_extensions_schema",
+      "extensions"
+    ]
+  },
+  {
+    "id": "old-extensions-5",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":5,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_extensions_schema",
+      "extensions"
+    ]
+  },
+  {
+    "id": "unsupported-6",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":6,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "config_schema_unsupported",
+      "schema_version"
+    ]
+  },
+  {
+    "id": "unsupported-9",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":9,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "config_schema_unsupported",
+      "schema_version"
+    ]
+  },
+  {
+    "id": "extensions-null",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":null}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "extensions-unknown",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"HOSTILE_KEY\":\"HOSTILE_VALUE\"}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "proxy-null",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"proxy\":null}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "proxy-extra",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"proxy\":{\"profile\":\"x\",\"extra\":true}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "proxy-space",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"proxy\":{\"profile\":\" x\"}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "auth-relative",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"claude_auth\":{\"type\":\"oauth\",\"store\":{\"type\":\"file\",\"path\":\"relative\"}}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "auth-unclean",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"claude_auth\":{\"type\":\"oauth\",\"store\":{\"type\":\"file\",\"path\":\"/example/../credential\"}}}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "unknown-outer",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extra\":true}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "missing-projects",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\"}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "projects-null",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":null}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "environments-null",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"environments\":null}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "permissions-null",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"permissions\":null}}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "credential-store-null",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"credential_store\":null}}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "interpreter-unknown",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"script_interpreters\":{\"other-v1\":\"/example/interpreter\"}}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "ssh-dot-segment",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"build_ssh\":{\"example.test/..\":{\"agent\":true}}}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "nullable-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"audit\":null,\"audit_registries\":null,\"build_ssh\":null,\"build_https\":null,\"execution\":null,\"script_interpreters\":null,\"script_diagnostics_dir\":null}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "nullable-env-members",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"overlays\":null,\"scoped_current\":null,\"forms\":null,\"precedence\":null,\"system_prompt_files\":null,\"targets\":null,\"isolation\":null,\"xdg_seed_allowlist\":null,\"mcp_package_allowlist\":null,\"shadow_acknowledged\":null,\"secret_material_waivers\":null,\"in_place_mode\":null,\"provider_directories\":null,\"source_signers\":null}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "scripts-both",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"script_interpreters\":{\"node-v1\":\"/example/node\",\"python3-v1\":\"~/bin/python3\"}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "system-supply",
+    "entry": "system",
+    "input_json": "{\"schema_version\":2,\"locked\":[],\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}}}",
+    "expected": [
+      "launcher_selection_machine_only",
+      "extensions"
+    ]
+  },
+  {
+    "id": "system-lock",
+    "entry": "system",
+    "input_json": "{\"schema_version\":2,\"locked\":[\"extensions.notification\"]}",
+    "expected": [
+      "launcher_selection_machine_only",
+      "extensions"
+    ]
+  },
+  {
+    "id": "system-lock-parent",
+    "entry": "system",
+    "input_json": "{\"schema_version\":2,\"locked\":[\"extensions\"]}",
+    "expected": [
+      "launcher_selection_machine_only",
+      "extensions"
+    ]
+  },
+  {
+    "id": "system-control",
+    "entry": "system",
+    "input_json": "{\"schema_version\":2,\"locked\":[]}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-1",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":1,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-2",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":2,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-3",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":3,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-5",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":5,\"config_path\":\"/example/config.json\",\"extensions\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-7",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":7,\"config_path\":\"/example/config.json\",\"extensions\":{\"proxy\":{\"profile\":\"private\"}}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-8",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/2\",\"config_schema\":8,\"config_path\":\"/example/config.json\",\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"proxy\":{\"profile\":\"private\"},\"claude_auth\":{\"type\":\"oauth\",\"store\":{\"type\":\"file\",\"path\":\"/example/credential\"}}}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "projection-downgrade",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/1\",\"config_schema\":8,\"config_path\":\"/example/config.json\",\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"proxy\":{\"profile\":\"private\"},\"claude_auth\":{\"type\":\"oauth\",\"store\":{\"type\":\"file\",\"path\":\"/example/credential\"}}}}",
+    "expected": [
+      "launcher_projection_invalid",
+      "schema"
+    ]
+  },
+  {
+    "id": "projection-wrong-pair",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/2\",\"config_schema\":7,\"config_path\":\"/example/config.json\",\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"proxy\":{\"profile\":\"private\"},\"claude_auth\":{\"type\":\"oauth\",\"store\":{\"type\":\"file\",\"path\":\"/example/credential\"}}}}",
+    "expected": [
+      "launcher_projection_invalid",
+      "schema"
+    ]
+  },
+  {
+    "id": "duplicate",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"off\",\"backend\":\"host\"}}}",
+    "expected": [
+      "config_json_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "escaped-duplicate",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"off\",\"back\\u0065nd\":\"host\"}}}",
+    "expected": [
+      "config_json_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "trailing",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"off\"}}},",
+    "expected": [
+      "config_json_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "invalid-surrogate",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":{\"backend\":\"\\ud800\"}}}",
+    "expected": [
+      "config_json_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "build-ssh-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"build_ssh\":{\"example.test\":{\"agent\":true},\"example.test/repo\":{\"identity\":\"~/key\"},\"example.test/other\":{\"agent\":\"/example/socket\",\"identity\":\"/example/key\",\"known_hosts\":\"/example/known\"}}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "build-https-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"build_https\":{\"example.test/a\":{\"token\":\"git-credentials\"},\"example.test/b\":{\"token\":\"keyring\",\"username\":\"example\"},\"example.test/c\":{\"token_env\":\"EXAMPLE_TOKEN\"}}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "execution-verified-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"execution\":{\"mode\":\"verified\",\"provider_id\":\"example\",\"provider_version\":\"1.0\",\"provider_binary_sha256\":\"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"provider_trust_evidence\":\"example-trust\"}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "execution-portable-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"execution\":{}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "project-alias-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{\"example\":{\"path\":\"/example/project\",\"agents\":[\"claude_code\"],\"project_alias\":null,\"checkout_alias\":\"checkout\"}}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "waiver-and-store-predecessor",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"credential_store\":{\"example\":{\"claude_code\":\"file\",\"codex_cli\":\"keychain\",\"muse\":\"native\",\"pi\":\"native\",\"opencode\":\"native\"}},\"secret_material_waivers\":[{\"pin\":\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"hash_version\":2,\"file\":\"skill.md\",\"span\":[0,1],\"reason\":\"fixture\"}]}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  }
+]

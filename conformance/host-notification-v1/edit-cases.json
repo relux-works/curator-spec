@@ -1,0 +1,302 @@
+[
+  {
+    "operation": "env-set",
+    "before": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v1",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "after": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v1",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "claim": "Unrelated selections and schema 8 preserved; actual editor qualification required."
+  },
+  {
+    "operation": "env-unset",
+    "before": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v1",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "after": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v1",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "claim": "Unrelated selections and schema 8 preserved; actual editor qualification required."
+  },
+  {
+    "operation": "project-edit",
+    "before": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v1",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "after": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v1",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "claim": "Unrelated selections and schema 8 preserved; actual editor qualification required."
+  },
+  {
+    "operation": "claude-auth-plan",
+    "before": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v1",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "after": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v1",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "claim": "Unrelated selections and schema 8 preserved; actual editor qualification required."
+  },
+  {
+    "operation": "claude-auth-apply",
+    "before": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v1",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "after": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v1",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "claim": "Unrelated selections and schema 8 preserved; actual editor qualification required."
+  },
+  {
+    "operation": "claude-auth-restore",
+    "before": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v1",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "after": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v1",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "claim": "Unrelated selections and schema 8 preserved; actual editor qualification required."
+  }
+]

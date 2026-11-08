@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/schemas/host-notification-v1/launcher-config-v1.schema.json",
+  "title": "Draft curator.launcher-config/1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "config_schema",
+    "config_path",
+    "extensions"
+  ],
+  "properties": {
+    "schema": {
+      "const": "curator.launcher-config/1"
+    },
+    "config_schema": {
+      "enum": [
+        1,
+        2,
+        3,
+        5,
+        7
+      ]
+    },
+    "config_path": {
+      "$ref": "extensions.schema.json#/$defs/absolutePath"
+    },
+    "extensions": {
+      "$ref": "extensions-v7.schema.json"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "config_schema": {
+            "enum": [
+              1,
+              2,
+              3,
+              5
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "extensions": {
+            "maxProperties": 0
+          }
+        }
+      }
+    }
+  ]
+}

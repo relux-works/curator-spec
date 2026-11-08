@@ -283,3 +283,18 @@ Full pins instead needs non-root Linux supervision and request retirement design
 W0 must establish real tool-shell PATH/identity delivery and settings precedence.
 Journal inode preservation/staging paths and actual runtime receipts remain open.
 No production names, numbers, gate opening or capability are allocated here.
+
+
+## Machine Host notification publication (CIP-0031, Review)
+
+The schema-8 and `/2` [proposal](protocol/host-notification-proposal.md#6-contract-ownership-and-cip-0023)
+allocates `curator-host-notification/1` as a selection identifier only. CIP-0023
+assigns protected binding publication to the manager owner and joint
+notification/event publication to launcher and manager owners; it does not
+name this contract. The owner must identify its publisher and decide whether
+it adapts the doorbell binding or defines a separate lifecycle before receiver
+activation. No owner or workflow-digest/binding-digest equivalence is inferred.
+F3's required choice is recorded: the claude-auth editor admits and preserves
+schema 8 (later 9 when admitted); implementation and real-editor qualification
+remain outstanding. Complete predecessor-form reconciliation and acceptance
+remain required before producer emission; draft validation does not waive them.
