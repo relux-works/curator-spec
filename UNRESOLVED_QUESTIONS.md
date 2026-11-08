@@ -294,7 +294,13 @@ notification/event publication to launcher and manager owners; it does not
 name this contract. The owner must identify its publisher and decide whether
 it adapts the doorbell binding or defines a separate lifecycle before receiver
 activation. No owner or workflow-digest/binding-digest equivalence is inferred.
-F3's required choice is recorded: the claude-auth editor admits and preserves
+F3's [source-owner decision](https://github.com/relux-works/curator/pull/216#issuecomment-6716173552)
+by the Curator orchestrator as Curator source owner (2026-11-08) is recorded: the claude-auth editor admits and preserves
 schema 8 (later 9 when admitted); implementation and real-editor qualification
 remain outstanding. Complete predecessor-form reconciliation and acceptance
 remain required before producer emission; draft validation does not waive them.
+
+Core follow-ups for the Review carrier: reject integral decimal/exponent version
+tokens (`8.0`/`8e0`) and make selection-lock refusals input-free. Launcher #92
+needs absolute, clean `config_path` validation. These are declared divergences
+in [contract §§3–4](protocol/host-notification-proposal.md), not qualification.

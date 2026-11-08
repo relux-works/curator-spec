@@ -15,11 +15,13 @@ or exact Host workflow reference/digest; system policy cannot supply or lock it.
 
 The complete containing schemas must preserve every admitted predecessor form
 before any producer emits the successor. Draft publication does not satisfy or
-defer that gate. CIP-0029's 9 and `/3` stack on the accepted final shape.
+defer that gate. CIP-0029's 9 and `/3` are allocated now, conditionally on #216;
+their draft may stack now, while acceptance waits for the accepted final shape.
 
 ## Recorded owner decision and effects
 
-Review F3 is resolved by the owner's choice: **the claude-auth editor admits
+Decision of the Curator orchestrator as Curator source owner, 2026-11-08,
+[recorded on Curator #216](https://github.com/relux-works/curator/pull/216#issuecomment-6716173552) resolves review F3: **the claude-auth editor admits
 schema 8 and preserves it**, including plan/apply/restore and notification-aware
 guarded equivalence. Apply that rule later to admitted schema 9. This records
 the required behavior without claiming an implementation fix or qualification.

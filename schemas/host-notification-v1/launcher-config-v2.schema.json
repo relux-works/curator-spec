@@ -17,7 +17,8 @@
     "config_schema": {
       "enum": [
         8
-      ]
+      ],
+      "type": "integer"
     },
     "config_path": {
       "$ref": "extensions.schema.json#/$defs/absolutePath"

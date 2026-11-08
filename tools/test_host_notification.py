@@ -20,12 +20,13 @@ class NotificationTests(unittest.TestCase):
     # Each plant weakens precisely one published rule; its named independent
     # vector must change from the intended refusal to admission (or vice versa
     # for the /2 identity plant). Compilation/setup failure never counts.
-    def test_five_intended_reason_plants(self):
+    def test_schema_intended_reason_plants(self):
         plants = [
             ('schema7-admit', 'extensions-v7.schema.json', 'schema7'),
             ('host-extra', 'extensions.schema.json', 'host'),
             ('off-extra', 'extensions.schema.json', 'off'),
             ('uppercase-digest', 'extensions.schema.json', 'digest'),
+            ('reference-newline', 'extensions.schema.json', 'newline'),
             ('projection-8', 'launcher-config-v2.schema.json', 'projection'),
         ]
         original_cases = notification.load_cases(notification.ROOT)
@@ -42,6 +43,8 @@ class NotificationTests(unittest.TestCase):
                     schema['properties']['notification']['oneOf'][1 if kind == 'host' else 0]['additionalProperties'] = True
                 elif kind == 'digest':
                     schema['properties']['notification']['oneOf'][1]['properties']['workflow_sha256']['pattern'] = '^[0-9A-Fa-f]{64}$'
+                elif kind == 'newline':
+                    del schema['properties']['notification']['oneOf'][1]['properties']['workflow_reference']['not']
                 else:
                     schema['properties']['schema']['const'] = 'curator.launcher-config/1'
                 path.write_text(json.dumps(schema))
@@ -80,14 +83,110 @@ class NotificationTests(unittest.TestCase):
         compiled = notification.validators(notification.ROOT)
         path = notification.ROOT / 'conformance' / notification.NAMESPACE / 'edit-cases.json'
         for case in notification.strict(path.read_bytes()):
-            self.assertEqual(case['before']['extensions'], case['after']['extensions'])
-            self.assertEqual(case['after']['schema_version'], 8)
+            before, after = case['before'], case['after']
+            old, new = before.get('extensions', {}), after.get('extensions', {})
+            self.assertEqual(old.get('notification'), new.get('notification'))
+            self.assertEqual(old.get('proxy'), new.get('proxy'))
+            self.assertEqual(after['schema_version'], 7 if before['schema_version'] == 2 else before['schema_version'])
+            if case['expected'] == 'stale-plan':
+                self.assertNotEqual(case['planned_before']['extensions']['notification'], old['notification'])
+                self.assertEqual(before, after)
+            elif case['operation'] == 'claude-auth-plan':
+                self.assertEqual(before, after)
+                planned = case['planned_after']['extensions']
+                self.assertNotEqual(old['claude_auth'], planned['claude_auth'])
+                for member in ('proxy', 'notification'):
+                    self.assertEqual(old[member], planned[member])
+            elif case['operation'].startswith('claude-auth-'):
+                self.assertNotEqual(old.get('claude_auth'), new.get('claude_auth'))
+                for member in before.keys() | after.keys():
+                    if member not in ('schema_version', 'extensions'):
+                        self.assertEqual(before.get(member), after.get(member))
+            else:
+                self.assertEqual(old, new)
+                self.assertNotEqual(before, after)
             valid = dict(entry='configuration', input_json=json.dumps(case['after']))
             self.assertEqual(notification.verdict(valid, compiled), notification.VALID)
-            downgrade = copy.deepcopy(case['after'])
-            downgrade['schema_version'] = 7
-            valid['input_json'] = json.dumps(downgrade)
-            self.assertEqual(notification.verdict(valid, compiled), ('launcher_selection_invalid', 'extensions'))
+            if 'notification' in new:
+                downgrade = copy.deepcopy(after)
+                downgrade['schema_version'] = 7
+                valid['input_json'] = json.dumps(downgrade)
+                self.assertEqual(notification.verdict(valid, compiled), ('launcher_selection_invalid', 'extensions'))
+            else:
+                self.assertEqual(after['schema_version'], 7)
+                self.assertNotIn('notification', new)
+
+    # The revised corpus distinguishes Core's name-first order from the former
+    # version/extension-first model. Replaying reviewer E now is a valid control;
+    # reverting that order fails all three original mixed-defect witnesses.
+    def test_precedence_regression_plant(self):
+        compiled = notification.validators(notification.ROOT)
+        cases = notification.load_cases(notification.ROOT)
+        real_verdict = notification.verdict
+        def wrong_order(case, compiled):
+            if case['id'].startswith('precedence-unknown-'):
+                value = notification.strict(case['input_json'])
+                value.pop('unknown')
+                case = dict(case, input_json=json.dumps(value))
+            return real_verdict(case, compiled)
+        for version in (9, 8, 1):
+            case = next(c for c in cases if c['id'] == f'precedence-unknown-{version}')
+            self.assertEqual(real_verdict(case, compiled), ('config_shape_invalid', '$'))
+            expected = {9: ('config_schema_unsupported', 'schema_version'),
+                        8: ('launcher_selection_invalid', 'extensions'),
+                        1: ('launcher_extensions_schema', 'extensions')}[version]
+            self.assertEqual(wrong_order(case, compiled), expected)
+        output = io.StringIO()
+        with patch.object(notification, 'verdict', side_effect=wrong_order):
+            self.assertEqual(notification.run(output=output), 1)
+        for version in (9, 8, 1):
+            self.assertIn(f'FAIL precedence-unknown-{version}\n', output.getvalue())
+        self.assertEqual(notification.run(output=io.StringIO()), 0)
+
+    # Relaxing the two environment members reproduces the review defect, with
+    # valid list/object controls still admitted and both null witnesses detected.
+    def test_environment_null_plant(self):
+        cases = notification.load_cases(notification.ROOT)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            shutil.copytree(notification.ROOT / 'schemas', root / 'schemas')
+            for version in (7, 8):
+                path = root / 'schemas' / notification.NAMESPACE / f'manager-config-v{version}.schema.json'
+                schema = json.loads(path.read_text())
+                members = schema['properties']['environments']['properties']
+                for name in ('provider_directories', 'source_signers'):
+                    members[name] = {'anyOf': [members[name], {'type': 'null'}]}
+                path.write_text(json.dumps(schema))
+            compiled = notification.validators(root)
+            for case in cases:
+                if case['id'].startswith(('env-provider-directories-', 'env-source-signers-')):
+                    self.assertEqual(notification.verdict(case, compiled), notification.VALID)
+            output = io.StringIO()
+            self.assertGreater(notification.check_cases(cases, compiled, output), 0)
+            for version in (7, 8):
+                for member in ('provider-directories', 'source-signers'):
+                    self.assertIn(f'FAIL env-{member}-null-{version}\n', output.getvalue())
+        self.assertEqual(notification.run(output=io.StringIO()), 0)
+
+    # Both the compiled containing schema and checker enforce integer tokens;
+    # ordinary JSON Schema alone cannot distinguish numeric spellings.
+    def test_integer_token_profile(self):
+        compiled = notification.validators(notification.ROOT)
+        for token in ('8', '8.0', '8e0', '"8"', '8.5', 'null', 'true'):
+            raw = '{"schema_version":' + token + ',"skills_root":"x","projects":{}}'
+            value = notification.strict(raw)
+            self.assertEqual(compiled['manager-config-v8'].is_valid(value), token == '8')
+            result = notification.verdict(dict(entry='configuration', input_json=raw), compiled)
+            self.assertEqual(result, notification.VALID if token == '8' else ('config_schema_unsupported', 'schema_version'))
+
+    # Target selection is explicit: a clean Windows path is not a POSIX path.
+    # Projection tests use the POSIX target on every runner, including Windows CI.
+    def test_target_paths(self):
+        for target, good, bad in (('posix', '/example/credential', r'C:\cred'),
+                                  ('windows', r'C:\cred', 'relative/credential')):
+            self.assertTrue(notification.absolute(good, target))
+            self.assertFalse(notification.absolute(bad, target))
+            self.assertFalse(notification.absolute(good + '/..', target))
 
     # Strict decoder detects escaped duplicates and invalid UTF-8 independent
     # of a schema verdict; a nearby valid object still loads.

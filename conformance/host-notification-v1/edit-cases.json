@@ -45,9 +45,13 @@
             "path": "/example/credential"
           }
         }
+      },
+      "environments": {
+        "require_source_signers": true
       }
     },
-    "claim": "Unrelated selections and schema 8 preserved; actual editor qualification required."
+    "claim": "Requested edit changes only its member; schema and unrelated selections survive. No editor execution claimed.",
+    "expected": "ok"
   },
   {
     "operation": "env-unset",
@@ -72,6 +76,9 @@
             "path": "/example/credential"
           }
         }
+      },
+      "environments": {
+        "require_source_signers": true
       }
     },
     "after": {
@@ -97,7 +104,8 @@
         }
       }
     },
-    "claim": "Unrelated selections and schema 8 preserved; actual editor qualification required."
+    "claim": "Requested edit changes only its member; schema and unrelated selections survive. No editor execution claimed.",
+    "expected": "ok"
   },
   {
     "operation": "project-edit",
@@ -127,7 +135,11 @@
     "after": {
       "schema_version": 8,
       "skills_root": "x",
-      "projects": {},
+      "projects": {
+        "example": {
+          "path": "/example/project"
+        }
+      },
       "extensions": {
         "notification": {
           "backend": "host",
@@ -147,7 +159,8 @@
         }
       }
     },
-    "claim": "Unrelated selections and schema 8 preserved; actual editor qualification required."
+    "claim": "Requested edit changes only its member; schema and unrelated selections survive. No editor execution claimed.",
+    "expected": "ok"
   },
   {
     "operation": "claude-auth-plan",
@@ -197,7 +210,32 @@
         }
       }
     },
-    "claim": "Unrelated selections and schema 8 preserved; actual editor qualification required."
+    "claim": "Requested edit changes only its member; schema and unrelated selections survive. No editor execution claimed.",
+    "expected": "ok",
+    "planned_after": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v1",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "keychain",
+            "service": "example-service",
+            "account": "example-account"
+          }
+        }
+      }
+    }
   },
   {
     "operation": "claude-auth-apply",
@@ -241,13 +279,15 @@
         "claude_auth": {
           "type": "oauth",
           "store": {
-            "type": "file",
-            "path": "/example/credential"
+            "type": "keychain",
+            "service": "example-service",
+            "account": "example-account"
           }
         }
       }
     },
-    "claim": "Unrelated selections and schema 8 preserved; actual editor qualification required."
+    "claim": "Requested edit changes only its member; schema and unrelated selections survive. No editor execution claimed.",
+    "expected": "ok"
   },
   {
     "operation": "claude-auth-restore",
@@ -268,8 +308,9 @@
         "claude_auth": {
           "type": "oauth",
           "store": {
-            "type": "file",
-            "path": "/example/credential"
+            "type": "keychain",
+            "service": "example-service",
+            "account": "example-account"
           }
         }
       }
@@ -297,6 +338,213 @@
         }
       }
     },
-    "claim": "Unrelated selections and schema 8 preserved; actual editor qualification required."
+    "claim": "Requested edit changes only its member; schema and unrelated selections survive. No editor execution claimed.",
+    "expected": "ok"
+  },
+  {
+    "operation": "claude-auth-apply-2-to-7",
+    "before": {
+      "schema_version": 2,
+      "skills_root": "x",
+      "projects": {}
+    },
+    "after": {
+      "schema_version": 7,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "keychain",
+            "service": "example-service",
+            "account": "example-account"
+          }
+        }
+      }
+    },
+    "expected": "ok",
+    "claim": "Legacy auth edit promotes 2 to 7 or retains 7; no notification is invented."
+  },
+  {
+    "operation": "claude-auth-apply-7-to-7",
+    "before": {
+      "schema_version": 7,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "proxy": {
+          "profile": "private"
+        }
+      }
+    },
+    "after": {
+      "schema_version": 7,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "keychain",
+            "service": "example-service",
+            "account": "example-account"
+          }
+        }
+      }
+    },
+    "expected": "ok",
+    "claim": "Legacy auth edit promotes 2 to 7 or retains 7; no notification is invented."
+  },
+  {
+    "operation": "claude-auth-stale-apply",
+    "planned_before": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v1",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "before": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v2",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "after": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v2",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "expected": "stale-plan",
+    "claim": "Intervening notification change refuses stale edit and preserves current file unchanged."
+  },
+  {
+    "operation": "claude-auth-stale-restore",
+    "planned_before": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v1",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "before": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v2",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "after": {
+      "schema_version": 8,
+      "skills_root": "x",
+      "projects": {},
+      "extensions": {
+        "notification": {
+          "backend": "host",
+          "contract": "curator-host-notification/1",
+          "workflow_reference": "workflow-v2",
+          "workflow_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "proxy": {
+          "profile": "private"
+        },
+        "claude_auth": {
+          "type": "oauth",
+          "store": {
+            "type": "file",
+            "path": "/example/credential"
+          }
+        }
+      }
+    },
+    "expected": "stale-plan",
+    "claim": "Intervening notification change refuses stale edit and preserves current file unchanged."
   }
 ]

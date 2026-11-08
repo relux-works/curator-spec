@@ -470,7 +470,7 @@
   {
     "id": "nullable-env-members",
     "entry": "configuration",
-    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"overlays\":null,\"scoped_current\":null,\"forms\":null,\"precedence\":null,\"system_prompt_files\":null,\"targets\":null,\"isolation\":null,\"xdg_seed_allowlist\":null,\"mcp_package_allowlist\":null,\"shadow_acknowledged\":null,\"secret_material_waivers\":null,\"in_place_mode\":null,\"provider_directories\":null,\"source_signers\":null}}",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"overlays\":null,\"scoped_current\":null,\"forms\":null,\"precedence\":null,\"system_prompt_files\":null,\"targets\":null,\"isolation\":null,\"xdg_seed_allowlist\":null,\"mcp_package_allowlist\":null,\"shadow_acknowledged\":null,\"secret_material_waivers\":null,\"in_place_mode\":null}}",
     "expected": [
       "ok",
       "$"
@@ -681,6 +681,213 @@
     "expected": [
       "ok",
       "$"
+    ]
+  },
+  {
+    "id": "env-provider-directories-valid-7",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":7,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"provider_directories\":[]}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "env-provider-directories-null-7",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":7,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"provider_directories\":null}}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "env-source-signers-valid-7",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":7,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"source_signers\":{}}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "env-source-signers-null-7",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":7,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"source_signers\":null}}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "env-provider-directories-valid-8",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"provider_directories\":[]}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "env-provider-directories-null-8",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"provider_directories\":null}}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "env-source-signers-valid-8",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"source_signers\":{}}}",
+    "expected": [
+      "ok",
+      "$"
+    ]
+  },
+  {
+    "id": "env-source-signers-null-8",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"source_signers\":null}}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "precedence-unknown-9",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":9,\"skills_root\":\"x\",\"projects\":{},\"unknown\":true,\"extensions\":{\"notification\":{\"backend\":\"wrong\"}}}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "precedence-unknown-8",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":{},\"unknown\":true,\"extensions\":{\"notification\":{\"backend\":\"wrong\"}}}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "precedence-unknown-1",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":1,\"skills_root\":\"x\",\"projects\":{},\"unknown\":true,\"extensions\":{\"notification\":{\"backend\":\"wrong\"}}}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "precedence-unknown-version-type",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":\"8\",\"skills_root\":\"x\",\"projects\":{},\"unknown\":true}",
+    "expected": [
+      "config_shape_invalid",
+      "$"
+    ]
+  },
+  {
+    "id": "precedence-version-before-extension",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":9,\"skills_root\":\"x\",\"projects\":{},\"extensions\":{\"notification\":null}}",
+    "expected": [
+      "config_schema_unsupported",
+      "schema_version"
+    ]
+  },
+  {
+    "id": "precedence-extension-before-shape",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8,\"skills_root\":\"x\",\"projects\":null,\"extensions\":{\"notification\":null}}",
+    "expected": [
+      "launcher_selection_invalid",
+      "extensions"
+    ]
+  },
+  {
+    "id": "version-decimal",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8.0,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "config_schema_unsupported",
+      "schema_version"
+    ]
+  },
+  {
+    "id": "version-string",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":\"8\",\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "config_schema_unsupported",
+      "schema_version"
+    ]
+  },
+  {
+    "id": "version-fraction",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8.5,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "config_schema_unsupported",
+      "schema_version"
+    ]
+  },
+  {
+    "id": "version-null",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":null,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "config_schema_unsupported",
+      "schema_version"
+    ]
+  },
+  {
+    "id": "version-bool",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":true,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "config_schema_unsupported",
+      "schema_version"
+    ]
+  },
+  {
+    "id": "version-missing",
+    "entry": "configuration",
+    "input_json": "{\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "config_schema_unsupported",
+      "schema_version"
+    ]
+  },
+  {
+    "id": "version-exponent",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":8e0,\"skills_root\":\"x\",\"projects\":{}}",
+    "expected": [
+      "config_schema_unsupported",
+      "schema_version"
+    ]
+  },
+  {
+    "id": "projection-path-unclean",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/2\",\"config_schema\":8,\"config_path\":\"/example/../config.json\",\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"proxy\":{\"profile\":\"private\"},\"claude_auth\":{\"type\":\"oauth\",\"store\":{\"type\":\"file\",\"path\":\"/example/credential\"}}}}",
+    "expected": [
+      "launcher_projection_invalid",
+      "config_path"
+    ]
+  },
+  {
+    "id": "projection-path-relative",
+    "entry": "projection",
+    "input_json": "{\"schema\":\"curator.launcher-config/2\",\"config_schema\":8,\"config_path\":\"relative/config.json\",\"extensions\":{\"notification\":{\"backend\":\"host\",\"contract\":\"curator-host-notification/1\",\"workflow_reference\":\"workflow-v1\",\"workflow_sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"},\"proxy\":{\"profile\":\"private\"},\"claude_auth\":{\"type\":\"oauth\",\"store\":{\"type\":\"file\",\"path\":\"/example/credential\"}}}}",
+    "expected": [
+      "launcher_projection_invalid",
+      "schema"
     ]
   }
 ]

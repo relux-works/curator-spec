@@ -17,7 +17,12 @@ Required/default/null forms are explicit: `projects` is required, and
 referenced intact. Optional audit/registries/build/script/execution nulls and
 admitted nullable environment knobs are retained; system-module-waiver,
 permission and credential-store nulls are rejected. `node-v1` and `python3-v1`
-are the admitted script bindings. Schema 6 remains a separate family.
+are the admitted script bindings. `provider_directories:null` and
+`source_signers:null` refuse within `environments` on both 7 and 8. Integer
+versions use the raw-file integer-token profile in contract §3; ordinary JSON
+Schema numerical equality alone cannot reject `8.0`/`8e0`. The checker compiles
+these schemas with strict integer-token typing and applies explicit target-path
+semantics (the corpus target is POSIX). Schema 6 remains a separate family.
 
 Contract §3 supplies reference byte bounds, Unicode trim/control checks,
 platform clean absolute paths and unchanged predecessor semantic validation.

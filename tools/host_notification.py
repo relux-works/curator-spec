@@ -11,11 +11,16 @@ import unicodedata
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
+from jsonschema.validators import extend
 from referencing import Registry, Resource
 
 ROOT = Path(__file__).resolve().parents[1]
 NAMESPACE = "host-notification-v1"
 VALID = ("ok", "$")
+# The containing-file profile requires integer tokens, not integral float tokens.
+# Stock JSON Schema treats 8 and 8.0 as equal; retain the strict decoder's types.
+IntegerTokenValidator = extend(Draft202012Validator, type_checker=
+    Draft202012Validator.TYPE_CHECKER.redefine("integer", lambda _, value: type(value) is int))
 
 
 def strict(raw):
@@ -44,7 +49,7 @@ def validators(root):
     for name in ("manager-config-v7", "manager-config-v8", "launcher-config-v1", "launcher-config-v2"):
         schema = strict((root / "schemas" / NAMESPACE / (name + ".schema.json")).read_bytes())
         Draft202012Validator.check_schema(schema)
-        result[name] = Draft202012Validator(schema, registry=registry)
+        result[name] = IntegerTokenValidator(schema, registry=registry)
     return result
 
 
@@ -54,10 +59,12 @@ def reference(value):
             and not any(unicodedata.category(c) == "Cc" for c in value))
 
 
-def absolute(value):
+def absolute(value, target="posix"):
     if not reference(value):
         return False
-    platform = ntpath if re.match(r"^(?:[A-Za-z]:[\\/]|\\\\)", value) else posixpath
+    if target not in ("posix", "windows"):
+        raise ValueError("target")
+    platform = ntpath if target == "windows" else posixpath
     # Match target-platform Clean rather than converting separator spelling.
     cleaned = platform.normpath(value)
     if platform is ntpath:
@@ -65,13 +72,13 @@ def absolute(value):
     return platform.isabs(value) and cleaned == value and not (platform is posixpath and value.startswith("//"))
 
 
-def extension_semantics(ext):
+def extension_semantics(ext, target="posix"):
     if "proxy" in ext and not reference(ext["proxy"]["profile"]):
         return False
     if "claude_auth" in ext:
         store = ext["claude_auth"]["store"]
         if store["type"] == "file":
-            if not absolute(store["path"]):
+            if not absolute(store["path"], target):
                 return False
         elif not reference(store["service"]) or not reference(store["account"]):
             return False
@@ -96,9 +103,14 @@ def verdict(case, compiled):
         name = "launcher-config-v2" if version == 8 else "launcher-config-v1"
         if not compiled[name].is_valid(value):
             return ("launcher_projection_invalid", "schema")
-        if not absolute(value["config_path"]) or not extension_semantics(value["extensions"]):
+        if not absolute(value["config_path"]):
+            return ("launcher_projection_invalid", "config_path")
+        if not extension_semantics(value["extensions"]):
             return ("launcher_selection_invalid", "extensions")
         return VALID
+    # Core closes top-level names before reading even a malformed version.
+    if value.keys() - compiled["manager-config-v8"].schema["properties"].keys():
+        return ("config_shape_invalid", "$")
     version = value.get("schema_version")
     if type(version) is not int or version not in (1, 2, 3, 5, 7, 8):
         return ("config_schema_unsupported", "schema_version")

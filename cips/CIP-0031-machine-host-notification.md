@@ -13,7 +13,8 @@ launcher #92 at `802895a2fbbc3e49a7bb01ac59674343ec1f720d` agree on a closed
 Host selection, but implementation agreement does not allocate a protocol
 carrier. The [contract](../protocol/host-notification-proposal.md) records the
 source evidence and the publication/qualification boundaries. CIP-0029 needs
-this predecessor before it can publish configuration 9 and projection `/3`.
+this predecessor before accepting configuration 9 and projection `/3`; they
+are allocated now, conditionally on #216, and may stack as a draft.
 
 ## Recommendation and alternatives
 
@@ -38,7 +39,8 @@ execution forms. Refuse unsupported versions, system selections/locks,
 unknown/mixed fields and malformed JSON without input reflection. Core only
 exports metadata; it neither reads secrets nor enrolls or starts a runtime.
 
-Owner decision on review F3: **the claude-auth editor admits schema 8 and
+Decision of the Curator orchestrator as Curator source owner, 2026-11-08,
+[recorded on Curator #216](https://github.com/relux-works/curator/pull/216#issuecomment-6716173552) (review F3): **the claude-auth editor admits schema 8 and
 preserves it** through plan/apply/restore. Notification participates in guarded
 equivalence, proxy survives auth edits, and no edit writes notification under
 schema 7. The same rule later applies to admitted schema 9. This decision is
@@ -56,9 +58,12 @@ recorded now; the inspected implementation still needs that fix and validation.
    and admitted workflow/member lifecycle, then qualify runtime behavior.
 
 The checker includes positive controls and intended-reason negative vectors.
-Five instrument plants weaken schema-7 admission, host closure, off closure,
+Instrument plants weaken schema-7 admission, host closure, off closure,
 lowercase digest and `/2` identity independently; each must fail its named
-witness, with the restored corpus passing. Specification validation is not an
+witness, with the restored corpus passing. Additional plants restore the rejected
+environment nulls and the former precedence; mixed-defect controls distinguish
+Core's actual name-first order. Core integer-token and launcher path divergences
+remain explicit follow-ups in the contract. Specification validation is not an
 editor, consumer, receiver or runtime witness.
 
 ## Open owner question

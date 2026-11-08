@@ -593,7 +593,7 @@ acceptance follows from these checks.
 configuration 8, `curator.launcher-config/2` and the `curator-host-notification/1`
 selection identifier. Both remain pending adoption. The
 [contract](protocol/host-notification-proposal.md) records the closed grammar,
-predecessor preservation gate, owner F3 editor decision and the open Host
+predecessor preservation gate, source-owner F3 editor decision and the open Host
 contract-publisher/doorbell relationship question. It grants no runtime authority.
 
 Tool entrypoints: `python3 -B tools/host_notification.py` checks the separate

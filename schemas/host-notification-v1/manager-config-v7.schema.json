@@ -12,7 +12,9 @@
   "additionalProperties": false,
   "properties": {
     "schema_version": {
-      "const": 7
+      "const": 7,
+      "type": "integer",
+      "$comment": "Integer JSON token required by the containing-file profile; integral decimal/exponent spellings refuse before ordinary JSON Schema value comparison."
     },
     "skills_root": {
       "$ref": "../rc7-carriers-v1/manager-config-v5.schema.json#/properties/skills_root"
@@ -338,50 +340,36 @@
           ]
         },
         "provider_directories": {
-          "anyOf": [
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 4096,
-                "anyOf": [
-                  {
-                    "pattern": "^/"
-                  },
-                  {
-                    "pattern": "^[A-Za-z]:[\\\\/]"
-                  }
-                ]
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "anyOf": [
+              {
+                "pattern": "^/"
               },
-              "uniqueItems": true,
-              "default": []
-            },
-            {
-              "type": "null"
-            }
-          ]
+              {
+                "pattern": "^[A-Za-z]:[\\\\/]"
+              }
+            ]
+          },
+          "uniqueItems": true,
+          "default": []
         },
         "source_signers": {
-          "anyOf": [
-            {
-              "type": "object",
-              "propertyNames": {
-                "$ref": "https://relux-works.github.io/curator-spec/schemas/v1/common.schema.json#/$defs/nonEmptyString"
-              },
-              "additionalProperties": {
-                "type": "array",
-                "items": {
-                  "$ref": "https://relux-works.github.io/curator-spec/schemas/rc7-carriers-v1/manager-config-v5.schema.json#/$defs/sourceSigner"
-                },
-                "uniqueItems": true
-              },
-              "default": {}
+          "type": "object",
+          "propertyNames": {
+            "$ref": "https://relux-works.github.io/curator-spec/schemas/v1/common.schema.json#/$defs/nonEmptyString"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "https://relux-works.github.io/curator-spec/schemas/rc7-carriers-v1/manager-config-v5.schema.json#/$defs/sourceSigner"
             },
-            {
-              "type": "null"
-            }
-          ]
+            "uniqueItems": true
+          },
+          "default": {}
         },
         "require_source_signers": {
           "type": "boolean",

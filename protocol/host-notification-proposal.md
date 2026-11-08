@@ -17,12 +17,14 @@ projection bytes MUST remain byte-identical to the predecessor implementation,
 including empty extensions for 1, 2, 3 and 5. Configuration 8 emits `/2` even
 when notification is absent or off. A `/2` envelope MUST carry `config_schema:8`;
 a `/1` consumer MUST refuse it rather than silently stripping the selection.
-Unsupported containing versions require a newer-tool refusal.
+Unsupported containing versions require a newer-tool refusal after top-level
+name closure and integer-version validation (see §4).
 
 The complete containing schemas must preserve every admitted predecessor form
 before any producer emits the successor. Draft publication does not satisfy or
-defer that gate. This is the same gate as CIP-0029, which may stack configuration
-9 and `/3` only after the final schema-8 shape is accepted. No frozen release
+defer that gate. This is the same gate as CIP-0029: configuration 9 and `/3`
+are allocated now, conditionally on #216. Their draft may stack on this draft;
+acceptance waits for the final schema-8 shape to be accepted. No frozen release
 schema, vector identity, profile or lock bytes change. Allocation is not adoption.
 
 ## 2. Authority and closed selection
@@ -73,17 +75,33 @@ are retained by reference, including credential-store and hash-version-2 waiver
 forms; the schema-7 reader's build SSH/HTTPS, script bindings and execution
 policy are also retained. Optional predecessor null/default forms are retained
 where the inspected reader admits them; `environments:null`, `projects:null`,
-`permissions:null` and `credential_store:null` remain forbidden.
+`permissions:null` and `credential_store:null` remain forbidden. Within
+`environments`, `provider_directories` must be a list and `source_signers` an
+object; neither admits null in 7 or 8, matching published v5 and Core.
 
 Proxy is exactly `{profile:reference}`. Claude auth is exactly
 `{type:"oauth",store:...}`; file store is exactly `{type:"file",path:absolutePath}`
 and Keychain store exactly `{type:"keychain",service:reference,account:reference}`.
 Reference strings have 1..4096 UTF-8 bytes, valid Unicode, no Unicode control
-characters and no leading/trailing Unicode whitespace. Absolute launcher paths
-add target-platform absolute and clean-path requirements; no relative, tilde,
+characters (Unicode category Cc) and no leading/trailing Unicode whitespace.
+`schema_version` is the integer token 8, not `8.0` or `8e0`. The containing
+schemas declare integer versions; the checker applies an integer-token profile
+to the strict decoder types. Ordinary JSON Schema numeric equality alone cannot
+distinguish those spellings; raw-file token validation is also required.
+Absolute launcher paths add target-platform absolute and clean-path requirements; no relative, tilde,
 dot-segment or unclean repeated-separator path is admitted. These semantic
 constraints supplement JSON Schema's character bounds. They are not new limits
-on unrelated predecessor script or credential-path members.
+on unrelated predecessor script or credential-path members. The checker fixes
+its corpus target to POSIX independent of the runner OS; its path helper accepts
+an explicit Windows target for bounded controls. It does not infer a target
+from path spelling. Core uses the build target OS through `filepath.IsAbs` and
+`filepath.Clean`; cross-platform qualification must choose that same target.
+Launcher #92 at `802895a2fbbc3e49a7bb01ac59674343ec1f720d` validates
+`config_path` only as a reference: it accepts `relative/config.json` and
+`/a/../config.json`. The `/1` and `/2` schemas require an absolute path, and
+the conformance checker additionally requires a clean path; #92 needs a
+follow-up to meet that contract. The relative/unclean projection negatives pin
+this declared consumer divergence, not an observed #92 rejection.
 
 Predecessor semantics also include valid worktree regexes, canonical registry
 URLs/keys, canonical build scopes (host at most 253 bytes, no empty/dot segments),
@@ -104,11 +122,12 @@ vocabulary, never copied from untrusted member names, values or parser details.
 | Condition | Code | Path | Core #216 compatibility text |
 | --- | --- | --- | --- |
 | Malformed/duplicate/invalid-UTF-8 JSON | `config_json_invalid` | `$` | `malformed JSON in config <selected-path>` |
-| Unsupported containing version (including 6 in this reader) | `config_schema_unsupported` | `schema_version` | `unsupported config schema_version N; this config requires a newer tool` |
+| Missing, non-integer or unsupported containing version (including 6 in this reader) | `config_schema_unsupported` | `schema_version` | invalid/missing: `schema_version: must be an integer`; unsupported integer: `unsupported config schema_version N; this config requires a newer tool` |
 | System selection or selection lock | `launcher_selection_machine_only` | `extensions` | supply: `launcher selections belong only to the selected machine configuration`; lock: existing non-lockable-field refusal (see below) |
 | Extensions in schemas 1/2/3/5 | `launcher_extensions_schema` | `extensions` | `extensions: requires manager-config schema_version 7 or 8` |
 | Schema-7 notification, invalid/unknown extension or selection | `launcher_selection_invalid` | `extensions` | `extensions: invalid launcher selection` |
 | Wrong projection identifier/configuration pair | `launcher_projection_invalid` | `schema` | consumer refusal; no downgrade |
+| Invalid projection path semantics | `launcher_projection_invalid` | `config_path` | consumer divergence described in §3 |
 | Invalid unrelated containing shape | `config_shape_invalid` | `$` | retain unrelated configuration diagnostic |
 
 The inspected system-lock diagnostic currently quotes the rejected lock name;
@@ -116,9 +135,20 @@ that is source evidence, not permission to echo arbitrary input under this
 proposal. A conforming input-free selection-lock refusal uses the fixed code/path
 above. Likewise #216's untyped messages do not yet implement this code registry.
 
+**Declared Core divergence:** the inspected `integerValue` accepts integral
+decimal/exponent tokens `8.0` and `8e0` as 8 and emits `/2`. This proposal
+requires the integer token 8. Core must reject those spellings with the integer
+refusal before qualification; the vectors record the required verdict, not the
+current Core verdict. Track this follow-up alongside the system-lock fix.
+
 Strict-file validity precedes interpretation; system authority precedes selected
-machine parsing; supported version precedes extension admission; extension
-admission precedes unrelated configuration shape checks. Unsupported version
+machine parsing. Within a selected machine object, Core closes top-level names
+**before reading `schema_version`**, then checks integer version, supported
+version, extension admission, and finally unrelated configuration shape. Thus
+schema 9 plus an unknown top-level member, schema 8 plus an unknown member and
+bad notification, and schema 1 plus extensions and an unknown member all refuse
+as `config_shape_invalid` at `$`. The mixed-defect vectors distinguish this
+order from the previous version/extension-first model. Unsupported version
 text MAY name only a validated numeric version. The selected config file path
 is an operator-selected source locator, not echoed JSON. Refusals MUST NOT echo
 input names, values, duplicate keys or parser excerpts. There is no partial
@@ -126,11 +156,12 @@ projection, config write, secret read or launch on refusal. A valid containing
 control must pass before a member-negative case can establish its intended
 refusal; a broken carrier or test setup is not successful detection.
 
-## 5. Edit preservation — owner decision F3
+## 5. Edit preservation — source-owner decision F3
 
-Owner decision for review F3: **the claude-auth editor admits schema 8 and
-preserves it**. This supersedes documenting a schema-8 refusal as the chosen
-behavior; it does not assert that #216 implements the editor fix already.
+Decision of the Curator orchestrator as Curator source owner, 2026-11-08,
+[recorded on Curator #216](https://github.com/relux-works/curator/pull/216#issuecomment-6716173552):
+**the claude-auth editor admits schema 8 and preserves it**. This supersedes
+documenting a schema-8 refusal as the chosen behavior; it does not assert that #216 implements the editor fix already.
 Plan, apply and restore MUST keep schema 8 (`SchemaTo` equals the source for
 7/8). Environment/credential-store edits and ordinary project edits also retain
 8. No editor may downgrade a file carrying notification to schema 7 or 5.

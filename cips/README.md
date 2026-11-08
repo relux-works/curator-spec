@@ -121,7 +121,6 @@ Keep operator questions numbered and decision-ready, with a recommended answer.
 | [CIP-0027](CIP-0027-provisioning-origin.md) | Persist managed-home provisioning origin | Accepted |
 | [CIP-0029](CIP-0029-machine-claude-output-limit.md) | Machine-scoped Claude output limit | Review |
 | [CIP-0030](CIP-0030-package-prefixed-overlay-ranges.md) | Package-prefixed version tags for directory overlays | Review |
-
 | [CIP-0031](CIP-0031-machine-host-notification.md) | Machine Host notification carrier | Review |
 
 CIP-0028 remains allocated separately in [PR #205](https://github.com/relux-works/curator-spec/pull/205); these proposals do not reuse it.

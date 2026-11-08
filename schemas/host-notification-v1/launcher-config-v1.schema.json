@@ -21,7 +21,8 @@
         3,
         5,
         7
-      ]
+      ],
+      "type": "integer"
     },
     "config_path": {
       "$ref": "extensions.schema.json#/$defs/absolutePath"
