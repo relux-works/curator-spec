@@ -443,16 +443,18 @@ The handover shape follows **a2a owner design note v0**: the station holds a lin
 and an authentication secret; Courier, under its own OS user, holds all a2a
 credentials, state, mailbox and locks. The grants lane proposes the same station
 link shape, intended as one design. This packet allocates no separate challenge,
-wire protocol or registration owner for either lane.
+wire protocol for either lane. The supplied a2a owner and curator-run answers
+below settle enrollment lifetime and key length for this Review proposal; they
+do not accept the whole proposal or open a root-emission gate.
 
 `M/.a2a` MUST be a directory, not a symlink, mode exactly 0700, owned by the
 station UID. Its closed entry set is exactly:
 
 | Entry | Meaning and launcher observation |
 | --- | --- |
-| `courier.sock` | Regular file, not a symlink, whose non-secret value is the absolute Courier socket path. It is a path file, not the socket object or a symlink to it. |
-| `identity` | Regular file, not a symlink, whose non-secret value equals the registered identity selected by `--a2a`. |
-| `station.key` | Regular file, not a symlink, mode exactly 0600 and the byte size required by the Courier-side handover contract. The launcher checks metadata only and MUST NOT open/read its secret contents. |
+| `courier.sock` | Station-UID-owned regular file, not a symlink, whose non-secret value is the absolute Courier socket path. This file is the only socket-path source: no per-OS default is specified. It is a path file, not the socket object or a symlink to it. |
+| `identity` | Station-UID-owned regular file, not a symlink, containing exactly one line matching `^[a-z0-9._=-]{1,64}\n`: ASCII name followed by one LF, no spaces or BOM. The name before LF equals the registered identity selected by `--a2a`; no trimming or normalization. |
+| `station.key` | Station-UID-owned regular file, not a symlink, mode exactly 0600 and size equal to the versioned **a2a enroll contract** key length, currently **32 bytes** as supplied by the a2a owner for enrollment. This value belongs to a2a, never a launcher constant. Unavailable contract value refuses. The launcher checks metadata only and MUST NOT open/read its secret contents. |
 
 No credentials, state, mailbox, lock or additional entry is allowed. For example,
 `credentials.json` is an extra-entry refusal even if its bytes resemble a valid
@@ -465,10 +467,14 @@ Unavailable metadata or either public-file read refuses `native-station-unreadab
 this does not require or permit reading the key. Implementations must bind
 the checks to the same directory rather than follow a replacement symlink.
 This bounded model receives observations, not live files, and qualifies neither
-OS observation nor TOCTOU handling. Refusals emit only a stable code, never file
-contents, secret bytes or arbitrary extra-entry names:
+OS observation nor TOCTOU handling. A missing or bad station directory/entry
+refuses with stable operator-facing code `native-environment-not-registered`,
+meaning **environment not registered with Courier**. The finer codes below are
+content-free sub-reasons under that code, including unavailable contract value;
+no file contents, secret bytes or arbitrary extra-entry names are echoed. Invalid
+managed-home input retains its separate precondition code:
 
-| Condition | Stable refusal code |
+| Condition | Stable sub-reason (or managed-home precondition code) |
 | --- | --- |
 | Managed home is not an admitted absolute locator | `native-identity-directory` |
 | Courier secret-size contract is unresolved | `native-station-contract-unresolved` |
@@ -481,22 +487,43 @@ contents, secret bytes or arbitrary extra-entry names:
 | Any extra entry, including `credentials.json` | `native-station-extra-entry` |
 | Any of the three required entries missing | `native-station-missing-entry` |
 | Any entry is a symlink or another nonregular object | `native-station-entry-type` |
+| Any entry owner differs from the station UID | `native-station-entry-owner` |
 | Key mode differs from 0600 | `native-station-key-mode` |
 | Key byte size differs from the Courier contract | `native-station-key-size` |
-| Identity value differs from `--a2a` | `native-station-identity` |
+| Identity bytes violate the exact one-line grammar | `native-station-identity-format` |
+| Well-formed identity name differs from `--a2a` | `native-station-identity` |
 | Socket-path value is not absolute | `native-station-socket-absolute` |
 
-Courier operator-side `register-station ... --secret-out` mints the secret and
-writes it to the station link, with the required station ownership and modes.
-Neither the launcher nor the agent mints it. The launcher MUST NOT put the secret
-in argv, environment, logs or the plan; its only delivered a2a values are
-`A2A_AGENT=<identity>` and `A2A_CONFIG_DIR=M/.a2a`. This is a handover proposal,
-not a registration implementation or an authentication receipt.
+#### Station enrollment contract (owner answers folded into Review)
 
-#### Station registration questions (open)
+Registration is **per environment**, not per launch: the station is the managed
+environment. Its key lives for the environment lifetime and rotates on environment
+recreation or explicit rotate. Enrollment is a two-sided pipe **outside launch**:
 
-1. **To the a2a owner and curator-run:** Is station registration per launch or per environment, and which component calls Courier operator-side `register-station ... --secret-out` at launch? No caller or lifecycle is assigned here, and the available note does not ground a recommendation.
-2. **To the a2a owner and curator-run:** What exact `station.key` byte size/encoding does the shared Courier/grants station-link handover require, and how is that contract supplied to launcher admission? The note does not allocate it. The model takes an explicit expected size, refuses when it is unresolved, and uses fixture-only sizes without choosing a production format.
+1. As the Courier OS user, `register-station ... --emit -` mints the station secret
+   and emits exactly one closed JSON line to the pipe.
+2. As the station OS user, `a2a courier enroll --dir <home>/.a2a --from -` consumes
+   that line, creates the 0700 directory and its three entries owned by the caller,
+   and refuses existing entries without `--rotate`. Here `<home>` is M.
+
+The launcher never calls registration/enrollment and never writes `M/.a2a`;
+neither launcher nor agent mints the secret. No enrollment JSON or secret passes
+through the launcher's argv, environment, logs or plan. Only
+`A2A_AGENT=<identity>` and `A2A_CONFIG_DIR=M/.a2a` are delivered at launch.
+This is the supplied a2a owner and curator-run handover contract, not a Courier
+implementation or authentication receipt. The model receives the key length
+from a versioned a2a enroll-contract value (currently 32); it does not read the
+key contents to establish length or choose a format. If that contract value is
+unavailable, admission still refuses `native-station-contract-unresolved` under
+`native-environment-not-registered`.
+
+A later a2a leaf adds an admin socket through which the Curator manager may drive
+the same enrollment pipe. This is a **future seam**, with no admin socket,
+manager-driven enrollment or automatic launch-time enrollment claimed here.
+Both former lifecycle/caller and key-length questions are resolved by these
+answers. Publishing/consuming the versioned a2a contract and qualifying real
+enrollment remain implementation dependencies, not new product decisions in
+this revision. All root-emission gates remain CLOSED.
 
 For native explicit identity, compare exactly `A2A_AGENT` and `A2A_CONFIG_DIR`
 against the identity and derived station-link directory: nonempty differing

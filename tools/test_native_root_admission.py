@@ -563,11 +563,11 @@ class NativeRootAdmission(unittest.TestCase):
 
     @staticmethod
     def station_observation():
-        # Synthetic no-follow metadata; 32 is a fixture parameter, not an allocated format.
+        # Synthetic no-follow metadata; supplied a2a enroll contract length is 32 bytes.
         return dict(path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, entries={
-            'courier.sock': dict(kind='file', value='/run/courier/service.sock'),
-            'identity': dict(kind='file', value='agent-one'),
-            'station.key': dict(kind='file', mode=0o600, size=32)})
+            'courier.sock': dict(kind='file', uid=1000, value='/run/courier/service.sock'),
+            'identity': dict(kind='file', uid=1000, value='agent-one\n'),
+            'station.key': dict(kind='file', uid=1000, mode=0o600, size=32)})
 
     def test_station_link_refusals_and_plants(self):
         # Every failed observation refuses before the carrier step, without
@@ -584,11 +584,12 @@ class NativeRootAdmission(unittest.TestCase):
             ('directory-owner', 'native-station-directory-owner', lambda d: d.update(uid=2000)),
             ('credential-looking-extra', 'native-station-extra-entry', lambda d: d['entries'].update({'credentials.json': dict(kind='file', value='do-not-echo-extra')})),
             ('key-mode', 'native-station-key-mode', lambda d: d['entries']['station.key'].update(mode=0o644)),
-            ('identity-mismatch', 'native-station-identity', lambda d: d['entries']['identity'].update(value='do-not-echo-identity')),
+            ('identity-mismatch', 'native-station-identity', lambda d: d['entries']['identity'].update(value='do-not-echo-identity\n')),
             ('socket-relative', 'native-station-socket-absolute', lambda d: d['entries']['courier.sock'].update(value='do-not-echo-socket')),
         ]
         for name in ['courier.sock', 'identity', 'station.key']:
             rows.append(('missing-'+name, 'native-station-missing-entry', lambda d, n=name: d['entries'].pop(n)))
+            rows.append(('owner-'+name, 'native-station-entry-owner', lambda d, n=name: d['entries'][n].update(uid=2000)))
             rows.append(('symlink-'+name, 'native-station-entry-type', lambda d, n=name: d['entries'][n].update(kind='symlink')))
         rows.append(('fifo-entry', 'native-station-entry-type', lambda d: d['entries']['courier.sock'].update(kind='fifo')))
         for size in [0, 31, 33]:
@@ -603,8 +604,10 @@ class NativeRootAdmission(unittest.TestCase):
                 before = deepcopy((valid, bad, env))
                 self.assertEqual(launch(valid), expected)
                 with patch.object(proposal, 'identity_environment', side_effect=AssertionError('carrier ran before station refusal')):
-                    with self.assertRaisesRegex(model.Refusal, '^'+reason+'$'):
+                    with self.assertRaisesRegex(proposal.StationRegistrationRefusal, '^native-environment-not-registered:'+reason+'$') as refusal:
                         launch(bad)
+                self.assertEqual(refusal.exception.code, 'native-environment-not-registered')
+                self.assertEqual(refusal.exception.subreason, reason)
                 self.assertEqual((valid, bad, env), before)
                 if reason in {'native-station-extra-entry', 'native-station-missing-entry'}:
                     # Namespace removal is detected at its own stage, before
@@ -619,28 +622,63 @@ class NativeRootAdmission(unittest.TestCase):
                 self.assertEqual((valid, bad, env), before)
                 print('plant detected by named vector: station-link-'+label+' ('+reason+')')
 
+    def test_station_identity_line_vectors_and_plants(self):
+        # Exact one-line ASCII identity grammar refuses before delivery, even
+        # when the malformed name matches the selected identity. Valid neighbours
+        # include both length boundaries; no value is echoed or input changed.
+        rows = [
+            ('space', 'agent one', 'agent one\n'),
+            ('bom', '\ufeffagent-one', '\ufeffagent-one\n'),
+            ('uppercase', 'Agent-one', 'Agent-one\n'),
+            ('65-characters', 'a'*65, 'a'*65+'\n'),
+            ('missing-newline', 'agent-one', 'agent-one'),
+            ('two-lines', 'agent-one\nother', 'agent-one\nother\n'),
+        ]
+        for label, selected, raw in rows:
+            with self.subTest(vector=label):
+                for name in ['a', 'agent._=-09', 'a'*64]:
+                    valid = self.station_observation()
+                    valid['entries']['identity']['value'] = name+'\n'
+                    expected = dict(A2A_AGENT=name, A2A_CONFIG_DIR='/managed/home/.a2a')
+                    self.assertEqual(proposal.native_identity_launch(name, '/managed/home', {}, 1000, valid, 32), expected)
+                bad = self.station_observation(); bad['entries']['identity']['value'] = raw
+                before = deepcopy(bad)
+                with patch.object(proposal, 'identity_environment', wraps=proposal.identity_environment) as carrier:
+                    with self.assertRaisesRegex(proposal.StationRegistrationRefusal,
+                            '^native-environment-not-registered:native-station-identity-format$'):
+                        proposal.native_identity_launch(selected, '/managed/home', {}, 1000, bad, 32)
+                    carrier.assert_not_called()
+                self.assertEqual(bad, before)
+                mutant = self.mutant(proposal, 'station_link', 'native-station-identity-format')
+                # Kill the format guard at its validation stage. Missing newline
+                # is sliced for equality here; choose its mutant selected value
+                # to keep that later independent check from masking the plant.
+                mutant_selected = raw[:-1]
+                self.assertEqual(mutant['station_link']('/managed/home', 'a'*64, 1000, valid, 32), '/managed/home/.a2a')
+                self.assertEqual(mutant['station_link']('/managed/home', mutant_selected, 1000, bad, 32), '/managed/home/.a2a')
+                self.assertEqual(bad, before)
+                print('plant detected by named vector: station-identity-'+label+' (native-station-identity-format)')
+
     def test_station_secret_metadata_only_and_unresolved_contract(self):
         # The launcher model consumes only key metadata, never secret contents.
-        # An unresolved size contract refuses before delivery; two supplied
-        # fixture sizes work and allocate no production size/encoding.
+        # The supplied versioned a2a enroll contract length admits 32 bytes;
+        # unavailable length refuses before delivery, without inventing a value.
         class SecretMetadata(dict):
             def __getitem__(self, key):
-                if key not in {'kind', 'mode', 'size'}:
+                if key not in {'kind', 'uid', 'mode', 'size'}:
                     raise AssertionError('station-secret-content-read')
                 return super().__getitem__(key)
         link = self.station_observation()
         link['entries']['station.key'] = SecretMetadata(link['entries']['station.key'])
         expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
-        for size in [32, 64]:
-            link['entries']['station.key']['size'] = size
-            self.assertEqual(proposal.native_identity_launch('agent-one', '/managed/home', {}, 1000, link, size), expected)
+        self.assertEqual(proposal.native_identity_launch('agent-one', '/managed/home', {}, 1000, link, 32), expected)
         before = deepcopy(link)
-        with self.assertRaisesRegex(model.Refusal, '^native-station-contract-unresolved$'):
+        with self.assertRaisesRegex(proposal.StationRegistrationRefusal, '^native-environment-not-registered:native-station-contract-unresolved$'):
             proposal.native_identity_launch('agent-one', '/managed/home', {}, 1000, link, None)
         self.assertEqual(link, before)
         mutant = self.mutant(proposal, 'station_link', expression="key['size']", replacement="len(key['value'])")
         with self.assertRaisesRegex(AssertionError, '^station-secret-content-read$'):
-            mutant['native_identity_launch']('agent-one', '/managed/home', {}, 1000, link, 64)
+            mutant['native_identity_launch']('agent-one', '/managed/home', {}, 1000, link, 32)
         print('plant detected by named vector: station-secret-content-read')
 
     def test_native_station_derivation_and_legacy_refusal(self):

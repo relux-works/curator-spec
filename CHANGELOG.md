@@ -10,7 +10,9 @@ Versioning for the complete specification set.
 - Publish Review CIP-0032 and draft Decision 0037 for a closed native Courier
   station link derived from the environment managed home, replacing the proposed
   credential-directory flag. Add metadata/refusal controls and named guard plants;
-  leave registration and secret-contract decisions open and all emission gates CLOSED.
+  fold in per-environment enrollment outside launch, the versioned a2a-owned
+  32-byte key length, exact identity-line checks and unregistered-environment
+  refusal meaning. Both former questions are closed; all emission gates stay CLOSED.
 
 - Restore the frozen rc.14 source document and manifest without re-pinning.
   Maintain later source amendments separately with per-rule status and

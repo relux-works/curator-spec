@@ -1,6 +1,7 @@
 """Unaccepted native admission proposals; never a production trust decision."""
 from copy import deepcopy
 import json
+import re
 from profile_command_roots import ROOT, SCHEMAS, CORPUS, validators, require, absolute, bounded_path, strict_pairs, Refusal
 from jsonschema import Draft202012Validator
 
@@ -202,6 +203,15 @@ def unpinned_launch(record, profile, binding, policy_revision, selection_revisio
     return deepcopy(record)
 
 
+class StationRegistrationRefusal(Refusal):
+    # One operator-facing failure, with a content-free validation sub-reason.
+    code = 'native-environment-not-registered'
+
+    def __init__(self, subreason):
+        self.subreason = subreason
+        super().__init__(self.code+':'+subreason)
+
+
 def station_link_entries(entries):
     # Closed namespace before any entry values are inspected.
     names = {'courier.sock', 'identity', 'station.key'}
@@ -212,6 +222,8 @@ def station_link_entries(entries):
 def station_link(managed_home, identity, station_uid, observed, expected_secret_size):
     # Supplied no-follow metadata and two public values only; no secret bytes,
     # filesystem observation, peer authentication or Courier registration.
+    # expected_secret_size is supplied by the versioned a2a enroll contract
+    # (currently 32 bytes), never a launcher-owned constant.
     require(isinstance(managed_home, str) and absolute(managed_home), 'native-identity-directory')
     require(type(expected_secret_size) is int and expected_secret_size > 0,
             'native-station-contract-unresolved')
@@ -224,10 +236,14 @@ def station_link(managed_home, identity, station_uid, observed, expected_secret_
     entries = observed['entries']
     station_link_entries(entries)
     require(all(entry['kind'] == 'file' for entry in entries.values()), 'native-station-entry-type')
+    require(all(entry['uid'] == station_uid for entry in entries.values()), 'native-station-entry-owner')
     key = entries['station.key']
     require(key['mode'] == 0o600, 'native-station-key-mode')
     require(key['size'] == expected_secret_size, 'native-station-key-size')
-    require(entries['identity']['value'] == identity, 'native-station-identity')
+    identity_line = entries['identity']['value']
+    require(isinstance(identity_line, str) and re.fullmatch(r'[a-z0-9._=-]{1,64}\n', identity_line) is not None,
+            'native-station-identity-format')
+    require(identity_line[:-1] == identity, 'native-station-identity')
     require(isinstance(entries['courier.sock']['value'], str)
             and absolute(entries['courier.sock']['value']), 'native-station-socket-absolute')
     return managed_home.rstrip('/')+'/.a2a'
@@ -256,7 +272,12 @@ def native_identity_launch(identity, managed_home, inherited, station_uid, obser
     # Native-only pre-plan handover: no plan/provider starts or input writes.
     require(not legacy_directory_flag, 'native-a2a-config-dir-unsupported')
     if identity is not None:
-        station_link(managed_home, identity, station_uid, observed, expected_secret_size)
+        try:
+            station_link(managed_home, identity, station_uid, observed, expected_secret_size)
+        except Refusal as exc:
+            if str(exc) == 'native-identity-directory':
+                raise
+            raise StationRegistrationRefusal(str(exc)) from exc
     return identity_environment(identity, managed_home, inherited)
 
 
@@ -285,9 +306,9 @@ def validate():
     check_gate_text((ROOT/'protocol/profile-command-root-admission.md').read_text(encoding='utf-8'))
     check_root_gate_text((ROOT/'protocol/profile-command-roots.md').read_text(encoding='utf-8'))
     station = dict(path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, entries={
-        'courier.sock': dict(kind='file', value='/run/courier/service.sock'),
-        'identity': dict(kind='file', value='agent-one'),
-        'station.key': dict(kind='file', mode=0o600, size=32)})
+        'courier.sock': dict(kind='file', uid=1000, value='/run/courier/service.sock'),
+        'identity': dict(kind='file', uid=1000, value='agent-one\n'),
+        'station.key': dict(kind='file', uid=1000, mode=0o600, size=32)})
     require(native_identity_launch('agent-one', '/managed/home', {}, 1000, station, 32)
             == dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a'), 'native-station-delivery')
-    print('Native admission model: station-link metadata with fixture-only secret size; operator prune and optional pins; seven packet rows and eight named roots gates checked CLOSED; no runtime evidence')
+    print('Native admission model: station-link metadata with a2a enroll contract length and exact identity line; operator prune and optional pins; seven packet rows and eight named roots gates checked CLOSED; no runtime evidence')
