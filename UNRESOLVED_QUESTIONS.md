@@ -329,3 +329,13 @@ qualification, alongside the predecessor schema-8 token follow-up. This is a
 declared Core divergence in the
 [containing-schema contract](schemas/machine-claude-env-v1/README.md), based on
 source inspection; no Core binary or runtime qualification is claimed.
+
+
+## Native a2a station handover (CIP-0032, Review)
+
+The [Review proposal](cips/CIP-0032-native-a2a-station-link.md) and
+[draft Decision 0037](decisions/0037-native-a2a-station-link.md) leave these
+questions open; no registration caller or lifetime is invented.
+
+1. **To the a2a owner and curator-run:** Is station registration per launch or per environment, and which component calls Courier operator-side `register-station ... --secret-out` at launch? No caller or lifecycle is assigned here, and the available note does not ground a recommendation.
+2. **To the a2a owner and curator-run:** What exact `station.key` byte size/encoding does the shared Courier/grants station-link handover require, and how is that contract supplied to launcher admission? The note does not allocate it. The model takes an explicit expected size, refuses when it is unresolved, and uses fixture-only sizes without choosing a production format.

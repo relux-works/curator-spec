@@ -7,6 +7,11 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Publish Review CIP-0032 and draft Decision 0037 for a closed native Courier
+  station link derived from the environment managed home, replacing the proposed
+  credential-directory flag. Add metadata/refusal controls and named guard plants;
+  leave registration and secret-contract decisions open and all emission gates CLOSED.
+
 - Restore the frozen rc.14 source document and manifest without re-pinning.
   Maintain later source amendments separately with per-rule status and
   precedence: canonical ownership remains binding through core section 10;

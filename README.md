@@ -596,6 +596,14 @@ the pins-only addition is `conformance/profile-command-roots-v1/native-pins-alte
 The validator prints model-only results to stdout. No implementation or runtime
 acceptance follows from these checks.
 
+[CIP-0032](cips/CIP-0032-native-a2a-station-link.md), in Review, and
+[draft Decision 0037](decisions/0037-native-a2a-station-link.md) replace the
+unreleased native credential-directory handover with a closed Courier station
+link derived from the environment managed home. The same named Python checks
+cover metadata-only secret handling, each station-link refusal and guard plants;
+no credentials are read and no runtime is qualified. Registration caller/lifetime
+and the secret-size/encoding contract remain [open](protocol/profile-command-root-admission.md#station-registration-questions-open).
+
 ## Machine Host notification proposal
 
 [CIP-0031](cips/CIP-0031-machine-host-notification.md) and

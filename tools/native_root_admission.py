@@ -202,20 +202,62 @@ def unpinned_launch(record, profile, binding, policy_revision, selection_revisio
     return deepcopy(record)
 
 
-def identity_environment(identity, directory, inherited):
+def station_link_entries(entries):
+    # Closed namespace before any entry values are inspected.
+    names = {'courier.sock', 'identity', 'station.key'}
+    require(not (set(entries) - names), 'native-station-extra-entry')
+    require(not (names - set(entries)), 'native-station-missing-entry')
+
+
+def station_link(managed_home, identity, station_uid, observed, expected_secret_size):
+    # Supplied no-follow metadata and two public values only; no secret bytes,
+    # filesystem observation, peer authentication or Courier registration.
+    require(isinstance(managed_home, str) and absolute(managed_home), 'native-identity-directory')
+    require(type(expected_secret_size) is int and expected_secret_size > 0,
+            'native-station-contract-unresolved')
+    require(observed['path'] == managed_home.rstrip('/')+'/.a2a', 'native-station-directory-location')
+    require(observed['complete'], 'native-station-unreadable')
+    require(observed['exists'], 'native-station-directory-missing')
+    require(observed['kind'] == 'directory', 'native-station-directory-type')
+    require(observed['mode'] == 0o700, 'native-station-directory-mode')
+    require(observed['uid'] == station_uid, 'native-station-directory-owner')
+    entries = observed['entries']
+    station_link_entries(entries)
+    require(all(entry['kind'] == 'file' for entry in entries.values()), 'native-station-entry-type')
+    key = entries['station.key']
+    require(key['mode'] == 0o600, 'native-station-key-mode')
+    require(key['size'] == expected_secret_size, 'native-station-key-size')
+    require(entries['identity']['value'] == identity, 'native-station-identity')
+    require(isinstance(entries['courier.sock']['value'], str)
+            and absolute(entries['courier.sock']['value']), 'native-station-socket-absolute')
+    return managed_home.rstrip('/')+'/.a2a'
+
+
+def identity_environment(identity, managed_home, inherited):
     # Every native launch scrubs parent session keys before planning, including resume.
+    # This pure carrier step alone does not admit a station link; use native_identity_launch.
     result = {k:v for k,v in inherited.items() if k not in {'A2A_SESSION_ID','CODEX_THREAD_ID','CLAUDE_CODE_SESSION_ID'}}
-    if identity is None and directory is None:
+    if identity is None:
         return result
-    require(isinstance(identity, str) and bool(identity) and directory is not None,
+    require(isinstance(identity, str) and bool(identity) and managed_home is not None,
             'native-identity-pair')
-    require(isinstance(directory, str) and absolute(directory), 'native-identity-directory')
+    require(isinstance(managed_home, str) and absolute(managed_home), 'native-identity-directory')
+    directory = managed_home.rstrip('/')+'/.a2a'
     values = dict(A2A_AGENT=identity, A2A_CONFIG_DIR=directory)
     for key, value in values.items():
         require(inherited.get(key) in (None, '', value), 'native-identity-conflict')
-    # Recommended explicit-pair variant only; owner may instead choose refusal.
+    # Existing recommended removal variant; the owner choice is unchanged.
     result = {k:v for k,v in result.items() if k not in {'A2A_MATRIX_URL','A2A_MATRIX_SERVER_NAME','A2A_SECRET_STORE','A2A_MATRIX_REGISTRATION_TOKEN'}}
     return dict(result, **values)
+
+
+def native_identity_launch(identity, managed_home, inherited, station_uid, observed,
+                           expected_secret_size, legacy_directory_flag=False):
+    # Native-only pre-plan handover: no plan/provider starts or input writes.
+    require(not legacy_directory_flag, 'native-a2a-config-dir-unsupported')
+    if identity is not None:
+        station_link(managed_home, identity, station_uid, observed, expected_secret_size)
+    return identity_environment(identity, managed_home, inherited)
 
 
 def a2a_published_name(name):
@@ -242,4 +284,10 @@ def validate():
     check_candidate(case,observed)
     check_gate_text((ROOT/'protocol/profile-command-root-admission.md').read_text(encoding='utf-8'))
     check_root_gate_text((ROOT/'protocol/profile-command-roots.md').read_text(encoding='utf-8'))
-    print('Native admission model: operator prune and optional pins; seven packet rows and eight named roots gates checked CLOSED; no runtime evidence')
+    station = dict(path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, entries={
+        'courier.sock': dict(kind='file', value='/run/courier/service.sock'),
+        'identity': dict(kind='file', value='agent-one'),
+        'station.key': dict(kind='file', mode=0o600, size=32)})
+    require(native_identity_launch('agent-one', '/managed/home', {}, 1000, station, 32)
+            == dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a'), 'native-station-delivery')
+    print('Native admission model: station-link metadata with fixture-only secret size; operator prune and optional pins; seven packet rows and eight named roots gates checked CLOSED; no runtime evidence')
