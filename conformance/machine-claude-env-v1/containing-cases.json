@@ -425,5 +425,19 @@
     "entry": "configuration",
     "input_json": "{\"schema_version\":9e0,\"skills_root\":\"/example/skills\",\"projects\":{}}",
     "schema_valid": false
+  },
+  {
+    "id": "configuration-retention-integral",
+    "claim": "Version-token restriction preserves predecessor integer-value admission for retention.",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":9,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"backup_retention\":5.0}}",
+    "schema_valid": true
+  },
+  {
+    "id": "configuration-retention-fractional",
+    "claim": "Version-token restriction preserves predecessor integer-value admission for retention.",
+    "entry": "configuration",
+    "input_json": "{\"schema_version\":9,\"skills_root\":\"x\",\"projects\":{},\"environments\":{\"backup_retention\":5.5}}",
+    "schema_valid": false
   }
 ]
