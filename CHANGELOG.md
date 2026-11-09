@@ -22,8 +22,9 @@ Versioning for the complete specification set.
   owner confirms no enroll-time path is stored and hello authenticates by secret
   and UID. Close the record question; add canonical/aliased/relative reader-path
   controls and a path-equality plant alongside the writable-ancestor plant.
-  This shares canonicalization with the Codex gateway managed-home
-  follow-up without opening that route or any root-emission gate.
+  The reader check is stateless and fixes no location across launches; an
+  input-home alias can yield a new canonical path. All root-emission gates stay
+  CLOSED.
 
 - Restore the frozen rc.14 source document and manifest without re-pinning.
   Maintain later source amendments separately with per-rule status and

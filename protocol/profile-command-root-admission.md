@@ -467,9 +467,6 @@ root through M. Each canonical ancestor MUST be a directory owned by the caller
 (station UID) or by root, and MUST NOT be group- or world-writable unless it is
 **root-owned and sticky**. M itself MUST be owned by the station UID. A sticky
 directory owned by the caller or another user does not get the root exception.
-The same canonical managed-home derivation applies to the Codex gateway
-managed-home follow-up; the [existing gateway exclusion](#managed-codex-gateway-exclusion)
-and route selection are unchanged by this rule.
 
 The **a2a owner statement, Courier protocol version 1** closes the former
 enroll-time record question: there is **no stored enroll-time station path**.
@@ -483,12 +480,16 @@ unequal to its `EvalSymlinks` result refuses under the same operator code with
 `native-station-directory-noncanonical`. Unavailable resolution refuses with
 `native-station-directory-resolution`. Refusals echo no path contents.
 
-“Fixed at enroll time” is met by the reader check: a supplied path that later
-becomes noncanonical refuses, rather than silently following its new target.
-Readers do not rewrite the supplied path, fall back or enroll on launch. Courier
-stores no station path; the hello authenticates the station by secret and UID,
-not by path. No record, storage location, additional link entry or read interface
-is required by this contract.
+This rule is stateless: no location is fixed or recorded across launches. Every
+reader refuses a supplied D that is non-absolute or not its own canonical form.
+Readers do not rewrite the supplied D, fall back or enroll on launch. The
+launcher resolves the input managed home on each launch: re-pointing an
+input-home alias can yield a new canonical M and D that pass the path check.
+That new location has no enrolled entries unless enrollment ran there; station
+link admission still checks those entries. The canonical-ancestor rule checks
+the resolved chain, not alias components outside that chain. Courier hello
+still authenticates by secret and UID, not by path. No record, storage location,
+additional link entry or read interface is required by this contract.
 
 The bounded model consumes supplied home/directory `EvalSymlinks` results and
 complete ancestor facts. These are observations, not live resolution or Courier

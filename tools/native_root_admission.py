@@ -373,4 +373,4 @@ def validate():
         'station.key': StationKeyMetadata(kind='file', uid=1000, mode=0o600, size=32)})
     require(native_identity_launch('agent-one', '/managed/home', {}, 1000, station, dict(ProtocolVersion=1, StationKeyLen=32))
             == dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a'), 'native-station-delivery')
-    print('Native admission model: fixed canonical station path, ancestor checks, Courier v1 file/metadata rules; operator prune and optional pins; seven packet rows and eight named roots gates checked CLOSED; no runtime evidence')
+    print('Native admission model: stateless canonical station-path checks, ancestor checks, Courier v1 file/metadata rules; operator prune and optional pins; seven packet rows and eight named roots gates checked CLOSED; no runtime evidence')

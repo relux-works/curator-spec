@@ -66,9 +66,7 @@ path. Launcher uses the canonical `EvalSymlinks` managed home M, then `M/.a2a`,
 for both delivery and comparison. Input-home ancestor aliases are allowed;
 symlinks at `.a2a` or any entry remain refused. Each canonical ancestor through M
 must be caller/root-owned and not group/world-writable, except root-owned sticky
-directories; M itself must belong to the launching effective UID. This is the
-same canonical managed-home derivation required by the Codex gateway follow-up,
-without changing gateway exclusion.
+directories; M itself must belong to the launching effective UID.
 
 An **a2a owner statement, Courier protocol version 1** closes the former
 record question: no enroll-time station path is stored. Every reader (enroll's
@@ -76,9 +74,13 @@ rotate path, station-side client, launcher admission) requires the supplied D
 to be absolute and `EvalSymlinks(D) == D`; the caller passes canonical form.
 Launcher checks its derived `M/.a2a` before planning. Relative, unavailable
 resolution and noncanonical paths refuse as environment not registered with
-Courier, with stable content-free sub-reasons. A path that later becomes
-noncanonical fails this check; no silent rewrite, fallback or launch enrollment.
-Courier stores no station path: hello authenticates by secret and UID, not path.
+Courier, with stable content-free sub-reasons. No location is fixed or recorded
+across launches; the reader never rewrites its supplied D or enrolls on launch.
+A re-pointed input-home alias can yield a new canonical path that passes this
+path check. That location has no enrolled entries unless enrollment ran there;
+entry admission still applies. Canonical ancestor checks do not cover alias
+components outside the resolved chain. Courier hello still authenticates by
+secret and UID, not path.
 No record storage or read API is needed. Ancestor and link/entry symlink guards
 remain binding.
 
@@ -191,8 +193,10 @@ LF-file probe is admitted; planting the old whole-file absolute check kills
 that positive control.
 Canonical-path vectors pair canonical and canonicalized-aliased-home admission
 with relative/uncanonicalized/later-noncanonical reader-path refusals and
-unavailable resolution. Unsafe ancestor, home-owner and link/entry-symlink
-refusals retain root-sticky positive controls. Each has a valid neighbour and
+unavailable resolution. Mismatched requested-home binding and relative
+canonical-home results refuse by the home-resolution reason; removing only the
+binding conjunct is killed by `requested-home-mismatch`. Unsafe ancestor,
+home-owner and link/entry-symlink refusals retain root-sticky positive controls. Each has a valid neighbour and
 unchanged-input assertion. Dropping path equality is killed by
 `path-later-noncanonical`; dropping the write-permission guard is killed by
 `group-writable-parent`. All facts are

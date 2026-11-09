@@ -34,8 +34,7 @@ The canonical-path rule is an **a2a owner statement, Courier protocol version 1*
 canonical path. Launcher delivers and compares `A2A_CONFIG_DIR` from canonical
 managed home plus `/.a2a`. Canonical ancestors must be caller/root-owned without
 group/world writes, except root-owned sticky directories. The canonical home
-belongs to launching effective UID. Link/entry symlinks still refuse. The same
-canonicalization applies to the Codex gateway managed-home follow-up.
+belongs to launching effective UID. Link/entry symlinks still refuse.
 
 An **a2a owner statement, Courier protocol version 1** closes the former
 record question: no enroll-time station path is stored. Every reader (enroll's
@@ -43,9 +42,13 @@ rotate path, station-side client, launcher admission) requires the supplied D
 to be absolute and `EvalSymlinks(D) == D`; the caller passes canonical form.
 Launcher checks its derived `M/.a2a` before planning. Relative, unavailable
 resolution and noncanonical paths refuse as environment not registered with
-Courier, with stable content-free sub-reasons. A path that later becomes
-noncanonical fails this check; no silent rewrite, fallback or launch enrollment.
-Courier stores no station path: hello authenticates by secret and UID, not path.
+Courier, with stable content-free sub-reasons. No location is fixed or recorded
+across launches; the reader never rewrites its supplied D or enrolls on launch.
+A re-pointed input-home alias can yield a new canonical path that passes this
+path check. That location has no enrolled entries unless enrollment ran there;
+entry admission still applies. Canonical ancestor checks do not cover alias
+components outside the resolved chain. Courier hello still authenticates by
+secret and UID, not path.
 No record storage or read API is needed. Ancestor and link/entry symlink guards
 remain binding.
 

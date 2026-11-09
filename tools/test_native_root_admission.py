@@ -581,7 +581,8 @@ class NativeRootAdmission(unittest.TestCase):
     def test_canonical_station_home_vectors_and_plant(self):
         # Supplied EvalSymlinks facts admit an aliased home after canonicalization.
         # Unsafe ancestors and link/entry symlinks refuse before delivery without
-        # input writes. This proves bounded checks, not live OS resolution.
+        # input writes. A canonical result must be bound to the requested input
+        # home and absolute. This proves bounded checks, not live OS resolution.
         alias = '/alias/home'
         def aliased():
             link = self.station_observation()
@@ -595,6 +596,8 @@ class NativeRootAdmission(unittest.TestCase):
             ('root-owned-home', 'native-station-home-owner', lambda d: d['resolution']['ancestors'][-1].update(uid=0)),
             ('group-writable-home', 'native-station-ancestor-writable', lambda d: d['resolution']['ancestors'][-1].update(mode=0o770)),
             ('unavailable-resolution', 'native-station-home-resolution', lambda d: d.pop('resolution')),
+            ('requested-home-mismatch', 'native-station-home-resolution', lambda d: d['resolution'].update(requested_home='/other/input-home')),
+            ('relative-canonical-home', 'native-station-home-resolution', lambda d: d['resolution'].update(canonical_home='managed/home')),
             ('omitted-canonical-ancestor', 'native-station-ancestor-observation', lambda d: d['resolution']['ancestors'].pop(1)),
             ('symlink-canonical-ancestor', 'native-station-ancestor-observation', lambda d: d['resolution']['ancestors'][1].update(kind='symlink')),
             ('station-directory-symlink', 'native-station-directory-type', lambda d: d.update(kind='symlink')),
