@@ -20,15 +20,29 @@ owned nonsymlink 0700 directory with exactly `courier.sock`, `identity` and
 `station.key`, all regular nonsymlink files. Require an absolute socket-path
 value from that file alone (no per-OS default), an exact one-line identity
 `^[a-z0-9._=-]{1,64}\n` matching the selected name, and a station-owned 0600 key
-whose metadata size equals the versioned a2a enroll contract value (currently
-32 bytes, owned by a2a). Unavailable contract value refuses. The launcher never
-reads key contents.
+whose metadata size equals a2a Go package `courier.StationKeyLen = 32` at pinned
+`courier.ProtocolVersion = 1`, attributed to **a2a owner statements, Courier
+protocol version 1**. It is raw bytes, no encoding or appended newline.
+Unavailable pinned contract refuses. Curator-run accepted either form, preferring
+no size stat; this proposal checks size because a2a publishes the constants.
+The a2a module-version pin/lookup is curator-run implementation work, not claimed.
+The launcher never reads key contents. Station UID is the launching process's
+effective UID on this shared-UID milestone.
+
+The same Courier v1 owner statements bind the socket file: UTF-8 P plus exactly
+one LF, where P starts with `/`, has no NUL, CR, LF or BOM, and is 1..103 bytes
+including `/` but excluding the final LF. This is a byte bound, not a character
+quantifier; non-ASCII paths are allowed. It replaces the earlier socket regex.
 
 Enrollment is per environment, outside launch. As Courier user,
 `register-station ... --emit -` mints the key and emits one closed JSON line;
 as station user, `a2a courier enroll --dir <home>/.a2a --from -` creates the 0700
 link and caller-owned entries, refusing existing entries without `--rotate`.
-The key lasts for the environment and rotates on recreation or explicit rotate.
+The key lasts for the environment and rotates on recreation or explicit rotate
+with `--rotate` on both sides, never per launch. These rotation and closed-JSON
+claims are **a2a owner statements, Courier protocol version 1**: the emitted
+object has exactly `socket`, `identity`, `station`, `secret_b64`, then LF;
+enroll refuses unknown keys.
 Launcher never registers/enrolls, mints the key or writes the link. A later a2a
 admin socket may let Curator manager drive the same pipe; this is a future seam,
 not a claimed feature.
@@ -65,6 +79,6 @@ witnesses remain required.
 
 The [enrollment contract](../protocol/profile-command-root-admission.md#station-enrollment-contract-owner-answers-folded-into-review)
 closes both former questions using supplied a2a owner and curator-run answers.
-No new product question is introduced. Publishing/consuming the versioned a2a
-contract, real enrollment qualification and the later admin-socket integration
+No new product question is introduced. Curator-run module-version pinning and
+contract consumption, real enrollment qualification and later admin-socket integration
 remain implementation work; this draft accepts or qualifies none of them.

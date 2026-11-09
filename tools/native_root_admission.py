@@ -219,14 +219,42 @@ def station_link_entries(entries):
     require(not (names - set(entries)), 'native-station-missing-entry')
 
 
-def station_link(managed_home, identity, station_uid, observed, expected_secret_size):
+class StationKeyMetadata:
+    # Observation of four metadata attributes, never a mapping of key contents.
+    __slots__ = ('kind', 'uid', 'mode', 'size')
+
+    def __init__(self, kind, uid, mode, size):
+        self.kind, self.uid, self.mode, self.size = kind, uid, mode, size
+
+    def __eq__(self, other):
+        return type(self) is type(other) and all(getattr(self, n) == getattr(other, n) for n in StationKeyMetadata.__slots__)
+
+
+def courier_socket_path(raw):
+    # Courier v1 file bytes: UTF-8 P plus exactly one LF; byte bound excludes LF.
+    require(isinstance(raw, bytes), 'native-station-socket-utf8')
+    try:
+        text = raw.decode('utf-8', errors='strict')
+    except UnicodeDecodeError as exc:
+        raise Refusal('native-station-socket-utf8') from exc
+    require(text.endswith('\n'), 'native-station-socket-line')
+    path = text[:-1]
+    require(not any(c in path for c in ('\x00', '\r', '\n', '\ufeff')), 'native-station-socket-line')
+    require(1 <= len(path.encode('utf-8')) <= 103, 'native-station-socket-length')
+    require(path.startswith('/'), 'native-station-socket-absolute')
+    return path
+
+
+def station_link(managed_home, identity, station_uid, observed, pinned_contract):
     # Supplied no-follow metadata and two public values only; no secret bytes,
     # filesystem observation, peer authentication or Courier registration.
-    # expected_secret_size is supplied by the versioned a2a enroll contract
-    # (currently 32 bytes), never a launcher-owned constant.
+    # The supplied pin represents a2a courier.ProtocolVersion/StationKeyLen;
+    # actual Go module-version pinning/lookup is curator-run implementation work.
     require(isinstance(managed_home, str) and absolute(managed_home), 'native-identity-directory')
-    require(type(expected_secret_size) is int and expected_secret_size > 0,
+    require(isinstance(pinned_contract, dict) and pinned_contract.get('ProtocolVersion') == 1
+            and pinned_contract.get('StationKeyLen') == 32,
             'native-station-contract-unresolved')
+    expected_secret_size = pinned_contract['StationKeyLen']
     require(observed['path'] == managed_home.rstrip('/')+'/.a2a', 'native-station-directory-location')
     require(observed['complete'], 'native-station-unreadable')
     require(observed['exists'], 'native-station-directory-missing')
@@ -235,17 +263,18 @@ def station_link(managed_home, identity, station_uid, observed, expected_secret_
     require(observed['uid'] == station_uid, 'native-station-directory-owner')
     entries = observed['entries']
     station_link_entries(entries)
-    require(all(entry['kind'] == 'file' for entry in entries.values()), 'native-station-entry-type')
-    require(all(entry['uid'] == station_uid for entry in entries.values()), 'native-station-entry-owner')
     key = entries['station.key']
-    require(key['mode'] == 0o600, 'native-station-key-mode')
-    require(key['size'] == expected_secret_size, 'native-station-key-size')
+    require(key.kind == 'file' and all(entries[n]['kind'] == 'file' for n in ('courier.sock', 'identity')),
+            'native-station-entry-type')
+    require(key.uid == station_uid and all(entries[n]['uid'] == station_uid for n in ('courier.sock', 'identity')),
+            'native-station-entry-owner')
+    require(key.mode == 0o600, 'native-station-key-mode')
+    require(key.size == expected_secret_size, 'native-station-key-size')
     identity_line = entries['identity']['value']
     require(isinstance(identity_line, str) and re.fullmatch(r'[a-z0-9._=-]{1,64}\n', identity_line) is not None,
             'native-station-identity-format')
     require(identity_line[:-1] == identity, 'native-station-identity')
-    require(isinstance(entries['courier.sock']['value'], str)
-            and absolute(entries['courier.sock']['value']), 'native-station-socket-absolute')
+    courier_socket_path(entries['courier.sock']['value'])
     return managed_home.rstrip('/')+'/.a2a'
 
 
@@ -268,12 +297,12 @@ def identity_environment(identity, managed_home, inherited):
 
 
 def native_identity_launch(identity, managed_home, inherited, station_uid, observed,
-                           expected_secret_size, legacy_directory_flag=False):
+                           pinned_contract, legacy_directory_flag=False):
     # Native-only pre-plan handover: no plan/provider starts or input writes.
     require(not legacy_directory_flag, 'native-a2a-config-dir-unsupported')
     if identity is not None:
         try:
-            station_link(managed_home, identity, station_uid, observed, expected_secret_size)
+            station_link(managed_home, identity, station_uid, observed, pinned_contract)
         except Refusal as exc:
             if str(exc) == 'native-identity-directory':
                 raise
@@ -306,9 +335,9 @@ def validate():
     check_gate_text((ROOT/'protocol/profile-command-root-admission.md').read_text(encoding='utf-8'))
     check_root_gate_text((ROOT/'protocol/profile-command-roots.md').read_text(encoding='utf-8'))
     station = dict(path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, entries={
-        'courier.sock': dict(kind='file', uid=1000, value='/run/courier/service.sock'),
+        'courier.sock': dict(kind='file', uid=1000, value=b'/run/courier/service.sock\n'),
         'identity': dict(kind='file', uid=1000, value='agent-one\n'),
-        'station.key': dict(kind='file', uid=1000, mode=0o600, size=32)})
-    require(native_identity_launch('agent-one', '/managed/home', {}, 1000, station, 32)
+        'station.key': StationKeyMetadata(kind='file', uid=1000, mode=0o600, size=32)})
+    require(native_identity_launch('agent-one', '/managed/home', {}, 1000, station, dict(ProtocolVersion=1, StationKeyLen=32))
             == dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a'), 'native-station-delivery')
     print('Native admission model: station-link metadata with a2a enroll contract length and exact identity line; operator prune and optional pins; seven packet rows and eight named roots gates checked CLOSED; no runtime evidence')

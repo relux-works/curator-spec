@@ -337,7 +337,10 @@ The [Review proposal](cips/CIP-0032-native-a2a-station-link.md) and
 [draft Decision 0037](decisions/0037-native-a2a-station-link.md) fold in the supplied
 a2a owner and curator-run answers. Both former questions are closed: enrollment
 is per environment through the external Courier-user/station-user pipe, never
-at launch; the versioned a2a enroll contract owns the current 32-byte key length.
-No new product question is introduced. Publishing/consuming that contract, real
+at launch; **a2a owner statements, Courier protocol version 1** now name Go
+package `courier.StationKeyLen = 32` and `ProtocolVersion = 1`. The launcher
+checks the published size; curator-run accepted either form and preferred no size
+stat. Its module-version pin/lookup remains curator-run implementation work.
+No new product question is introduced. Consuming that pinned contract, real
 enrollment qualification and the future admin-socket seam remain implementation
 dependencies; no root-emission gate opens or status becomes Accepted.

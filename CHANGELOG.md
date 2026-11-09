@@ -11,8 +11,10 @@ Versioning for the complete specification set.
   station link derived from the environment managed home, replacing the proposed
   credential-directory flag. Add metadata/refusal controls and named guard plants;
   fold in per-environment enrollment outside launch, the versioned a2a-owned
-  32-byte key length, exact identity-line checks and unregistered-environment
-  refusal meaning. Both former questions are closed; all emission gates stay CLOSED.
+  32-byte key length at pinned Courier v1, exact identity/socket-file checks and
+  unregistered-environment refusal meaning. Attribute constants, wire shape and
+  rotation to a2a owner statements, Courier protocol version 1; retain curator-run
+  module pinning as implementation work. Pin exact modes and metadata-only controls. Both former questions are closed; all emission gates stay CLOSED.
 
 - Restore the frozen rc.14 source document and manifest without re-pinning.
   Maintain later source amendments separately with per-rule status and

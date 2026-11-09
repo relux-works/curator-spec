@@ -604,7 +604,10 @@ cover metadata-only secret handling, each station-link refusal and guard plants;
 no credentials are read and no runtime is qualified. Supplied owner/launcher
 answers close the two former questions: [enrollment is per environment outside
 launch, with an a2a-owned versioned key length](protocol/profile-command-root-admission.md#station-enrollment-contract-owner-answers-folded-into-review),
-currently 32 bytes. Missing/bad entries mean environment not registered with
+a2a package `courier.StationKeyLen = 32` at pinned `ProtocolVersion = 1` per
+**a2a owner statements, Courier protocol version 1**. Curator-run module-version
+pinning is implementation work. Socket files use UTF-8 P+LF with an explicit
+1..103-byte P bound. Missing/bad entries mean environment not registered with
 Courier; identity-line grammar and key-size/owner checks have named controls.
 
 ## Machine Host notification proposal

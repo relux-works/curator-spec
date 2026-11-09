@@ -33,9 +33,10 @@ an explicit native identity plus credential-directory pair; its bounded
 The packet is unreleased and all seven root-emission gates are CLOSED. Released
 rc.14 conformance and existing hosted routing are unchanged by this proposal.
 The a2a owner design note v0 supplies the station-link custody shape, not
-a runtime receipt. Subsequent supplied owner/launcher answers settle the enrollment
-shape and current key length below; no implementation source or runtime was
-inspected to refresh those answers.
+a runtime receipt. The subsequent **a2a owner statements, Courier protocol
+version 1** bind the file grammars, wire shape, rotation and published constants below. These replace
+the earlier socket regex proposal. No implementation source or runtime was
+inspected to qualify those statements.
 
 ## Design
 
@@ -70,18 +71,31 @@ launch: as Courier user, `register-station ... --emit -` emits one closed JSON
 line; as station user, `a2a courier enroll --dir <home>/.a2a --from -` consumes it,
 creates the 0700 directory and caller-owned entries, refusing existing entries
 without `--rotate`. Keys last for the environment and rotate on recreation or
-explicit rotate. Launcher never registers/enrolls, mints secrets or writes the
-link. A later a2a admin socket may let the Curator manager drive the same pipe;
+explicit rotate with `--rotate` on both sides, never per launch. The emitted
+JSON object has exactly `socket`, `identity`, `station`, `secret_b64`, followed
+by LF; enroll refuses unknown keys. Wire shape and rotation are **a2a owner
+statements, Courier protocol version 1**. Launcher never registers/enrolls,
+mints secrets or writes the link. A later a2a admin socket may let the Curator manager drive the same pipe;
 this future seam is not implemented or claimed here.
 
-The versioned a2a enroll contract owns the key length, currently 32 bytes per
-the a2a owner's enrollment answer. Admission checks regular file, no symlink,
-station ownership, 0600 mode and metadata size against that supplied contract
-value; it never reads key contents and still refuses an unavailable contract.
+Per **a2a owner statements, Courier protocol version 1**, the a2a Go module
+package `courier` publishes `StationKeyLen = 32` and `ProtocolVersion = 1`.
+The key is 32 raw bytes with no encoding or appended newline. Admission checks
+regular file, no symlink, station ownership, exactly 0600 and metadata size
+against `courier.StationKeyLen` at that pinned protocol version because a2a
+publishes it; this is not a launcher-owned size. Curator-run accepted either
+form and preferred no size stat; the mandatory size check is not attributed to
+that preference. Which a2a module version is pinned and the pin/lookup mechanism
+are curator-run implementation work, not claimed here. The model consumes
+supplied pinned constants, never key contents, and refuses an unavailable pin.
 `identity` is exactly one ASCII line matching `^[a-z0-9._=-]{1,64}\n`, whose
 name equals the selected identity; spaces, BOM and extra/missing lines refuse.
-The only socket-path source is the absolute value in `courier.sock`, with no
-per-OS default here. Missing/bad link facts use operator-facing code
+Courier v1 states `courier.sock` is a regular nonsymlink file containing UTF-8 P
+plus exactly one LF. P starts with `/`, has no NUL, CR, LF or BOM, and has byte
+length 1..103 including `/`, excluding LF. Check bytes explicitly; non-ASCII
+paths are allowed. This replaces the earlier socket regex statement. The file
+is the only socket-path source; no per-OS default is assigned here. Missing/bad
+link facts use operator-facing code
 `native-environment-not-registered` (environment not registered with Courier),
 with the packet's finer codes as content-free sub-reasons. Courier and grants
 review one handover shape, not separate invented authentication designs.
@@ -89,6 +103,7 @@ review one handover shape, not separate invented authentication designs.
 ## Security considerations
 
 Courier's separate OS user keeps credentials and state outside station reach.
+Station UID is the launching process's effective UID for this milestone.
 Under a shared station UID, stations can read each other's 0600 `station.key`
 and impersonate each other to Courier. Real isolation requires one OS user per
 station; private modes alone do not provide it. The station secret authenticates
@@ -135,8 +150,8 @@ future admin-socket seam.
 
 The bounded model takes no-follow metadata plus only the identity/socket public
 values. Each directory/entry/key/identity/socket negative has an unchanged-input
-assertion, a valid positive neighbour and a guard-removal plant exposing that
-specific forbidden case at its validation stage. Closed-entry-set plants exercise
+assertion and a valid positive neighbour. Named guard-removal plants expose
+forbidden cases at their validation stages. Closed-entry-set plants exercise
 the namespace helper before later value checks; they do not claim a complete
 mutated launch succeeds. A credential-looking extra is explicit. Additional
 controls cover derived-home delivery, the removed flag, inherited credential
@@ -144,7 +159,14 @@ conflicts, unresolved size and an attempted secret-content read. Existing
 session-selector and four-key scrub plants remain. Identity-line vectors cover
 space, BOM, uppercase, 65 characters, missing LF and two lines with valid length
 1/64 neighbours and named format-guard plants. Key sizes 31/33 refuse against the
-supplied a2a contract value 32; ownership and unavailable-contract controls remain.
+supplied a2a contract value 32; ownership and unavailable-pinned-contract controls
+remain. Exact-mode vectors include directory 0500/0300/0711 and key 0400/0640.
+The key observation exposes only four metadata attributes; attribute, get, items,
+values and iteration secret-read plants fail by name. Socket vectors cover
+ASCII 103/104-byte and Unicode 103/105-byte boundaries, LF, CRLF, embedded LF,
+NUL, BOM, missing LF, empty/relative/invalid UTF-8 and symlink refusal. P9's valid
+LF-file probe is admitted; planting the old whole-file absolute check kills
+that positive control.
 Run the named Python tests and repository validator; outputs
 are model checks, not filesystem, SAM, Courier or Linux runtime qualification.
 
@@ -154,8 +176,9 @@ Both questions from the first round are closed by supplied a2a owner and
 curator-run answers: registration is per environment through the external
 Courier-user/station-user pipe, with no launch caller; the a2a enroll contract
 owns the current 32-byte key length. No new product question is introduced.
-The concrete published versioned contract and its launcher consumption, real
-enrollment qualification and the later admin-socket seam still need separate
-implementation work. An unavailable contract value refuses; no launcher-owned
+The a2a owner now states the published constants; the launcher module-version
+pin and contract consumption remain curator-run implementation work. Real
+enrollment qualification and the later admin-socket seam also remain future work.
+An unavailable contract value refuses; no launcher-owned
 fallback or implicit admin integration is permitted. Review status, draft
 Decision and CLOSED gates are unchanged.

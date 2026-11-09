@@ -442,19 +442,22 @@ handover or new hook/doorbell behavior.
 The handover shape follows **a2a owner design note v0**: the station holds a link
 and an authentication secret; Courier, under its own OS user, holds all a2a
 credentials, state, mailbox and locks. The grants lane proposes the same station
-link shape, intended as one design. This packet allocates no separate challenge,
-wire protocol for either lane. The supplied a2a owner and curator-run answers
-below settle enrollment lifetime and key length for this Review proposal; they
-do not accept the whole proposal or open a root-emission gate.
+link shape, intended as one design. This packet does not allocate a separate
+challenge or wire protocol for either lane. The file grammar, enrollment wire
+shape, rotation and published constants below are attributed to **a2a owner
+statements, Courier protocol version 1**. These binding Courier v1 statements
+replace the earlier socket regex proposal; they do not accept this whole Curator
+proposal or open a root-emission gate.
 
 `M/.a2a` MUST be a directory, not a symlink, mode exactly 0700, owned by the
-station UID. Its closed entry set is exactly:
+station UID. On this shared-UID milestone, **station UID means the launching
+process's effective UID**. Its closed entry set is exactly:
 
 | Entry | Meaning and launcher observation |
 | --- | --- |
-| `courier.sock` | Station-UID-owned regular file, not a symlink, whose non-secret value is the absolute Courier socket path. This file is the only socket-path source: no per-OS default is specified. It is a path file, not the socket object or a symlink to it. |
+| `courier.sock` | Station-UID-owned regular file, not a symlink, containing UTF-8 P followed by exactly one LF. P starts with `/`, contains no NUL, CR, LF or BOM, and has byte length 1..103 including `/` and excluding the final LF. This is an explicit UTF-8 byte-length check, not a regex character count; P is not restricted to ASCII. This file is the only socket-path source, with no per-OS default. It is a path file, not the socket object. |
 | `identity` | Station-UID-owned regular file, not a symlink, containing exactly one line matching `^[a-z0-9._=-]{1,64}\n`: ASCII name followed by one LF, no spaces or BOM. The name before LF equals the registered identity selected by `--a2a`; no trimming or normalization. |
-| `station.key` | Station-UID-owned regular file, not a symlink, mode exactly 0600 and size equal to the versioned **a2a enroll contract** key length, currently **32 bytes** as supplied by the a2a owner for enrollment. This value belongs to a2a, never a launcher constant. Unavailable contract value refuses. The launcher checks metadata only and MUST NOT open/read its secret contents. |
+| `station.key` | Station-UID-owned regular file, not a symlink, mode exactly 0600, containing exactly 32 raw bytes, no encoding or appended newline. Size comes from a2a Go module package `courier.StationKeyLen = 32` at pinned `courier.ProtocolVersion = 1`, owned and published by a2a according to its Courier v1 statements. Unavailable pinned contract refuses. The launcher checks metadata only and MUST NOT open/read its secret contents. |
 
 No credentials, state, mailbox, lock or additional entry is allowed. For example,
 `credentials.json` is an extra-entry refusal even if its bytes resemble a valid
@@ -492,36 +495,49 @@ managed-home input retains its separate precondition code:
 | Key byte size differs from the Courier contract | `native-station-key-size` |
 | Identity bytes violate the exact one-line grammar | `native-station-identity-format` |
 | Well-formed identity name differs from `--a2a` | `native-station-identity` |
-| Socket-path value is not absolute | `native-station-socket-absolute` |
+| Socket file is not valid UTF-8 | `native-station-socket-utf8` |
+| Socket file lacks its final LF, or P contains NUL, CR, LF or BOM | `native-station-socket-line` |
+| Socket P byte length is outside 1..103 | `native-station-socket-length` |
+| Socket P does not start with `/` | `native-station-socket-absolute` |
 
 #### Station enrollment contract (owner answers folded into Review)
 
 Registration is **per environment**, not per launch: the station is the managed
 environment. Its key lives for the environment lifetime and rotates on environment
-recreation or explicit rotate. Enrollment is a two-sided pipe **outside launch**:
+recreation or explicit rotate using `--rotate` on **both sides**, never per launch.
+These rotation and enrollment details are **a2a owner statements, Courier protocol
+version 1**. Enrollment is a two-sided pipe **outside launch**:
 
 1. As the Courier OS user, `register-station ... --emit -` mints the station secret
-   and emits exactly one closed JSON line to the pipe.
+   and emits exactly one closed JSON object with keys `socket`, `identity`,
+   `station`, `secret_b64`, followed by LF. No other keys are admitted.
 2. As the station OS user, `a2a courier enroll --dir <home>/.a2a --from -` consumes
    that line, creates the 0700 directory and its three entries owned by the caller,
-   and refuses existing entries without `--rotate`. Here `<home>` is M.
+   and refuses unknown JSON keys and existing entries without `--rotate`.
+   Here `<home>` is M.
 
 The launcher never calls registration/enrollment and never writes `M/.a2a`;
 neither launcher nor agent mints the secret. No enrollment JSON or secret passes
 through the launcher's argv, environment, logs or plan. Only
 `A2A_AGENT=<identity>` and `A2A_CONFIG_DIR=M/.a2a` are delivered at launch.
-This is the supplied a2a owner and curator-run handover contract, not a Courier
-implementation or authentication receipt. The model receives the key length
-from a versioned a2a enroll-contract value (currently 32); it does not read the
-key contents to establish length or choose a format. If that contract value is
+The a2a owner states that its Go module package `courier` publishes
+`StationKeyLen = 32` and `ProtocolVersion = 1`. Admission checks size because a2a
+publishes that contract; it does not choose a launcher-owned number. Curator-run
+accepted either form and preferred admission without a size stat; record that
+preference without attributing the mandatory check to it. This proposal uses
+the published a2a length. Which a2a Go module version the launcher pins, and the
+pin/lookup mechanism, remain **curator-run implementation work**, not claimed
+implemented here. The model consumes supplied pinned Courier v1 constants, not
+a real module lookup, and never reads key contents. If that pinned contract is
 unavailable, admission still refuses `native-station-contract-unresolved` under
-`native-environment-not-registered`.
+`native-environment-not-registered`. These are owner statements, not an inspected
+implementation or an authentication receipt.
 
 A later a2a leaf adds an admin socket through which the Curator manager may drive
 the same enrollment pipe. This is a **future seam**, with no admin socket,
 manager-driven enrollment or automatic launch-time enrollment claimed here.
 Both former lifecycle/caller and key-length questions are resolved by these
-answers. Publishing/consuming the versioned a2a contract and qualifying real
+answers. Pinning/consuming the published a2a module contract and qualifying real
 enrollment remain implementation dependencies, not new product decisions in
 this revision. All root-emission gates remain CLOSED.
 
@@ -529,8 +545,8 @@ For native explicit identity, compare exactly `A2A_AGENT` and `A2A_CONFIG_DIR`
 against the identity and derived station-link directory: nonempty differing
 inherited values refuse `native-identity-conflict`; identical or empty/unset
 values pass only after link admission. An orchestrator launching another identity
-must scrub its own pair first. The existing four-key rule is unchanged: on the
-native route **with an explicit identity**, remove inherited `A2A_MATRIX_URL`,
+must scrub its inherited identity/config values first. The existing four-key
+rule is unchanged: on the native route **with an explicit identity**, remove inherited `A2A_MATRIX_URL`,
 `A2A_MATRIX_SERVER_NAME`, `A2A_SECRET_STORE` and `A2A_MATRIX_REGISTRATION_TOKEN`
 before planning, or refuse on a nonempty value. **Recommend removing all four**,
 including matching/empty values; the launcher owner's removal versus nonempty-value
@@ -555,7 +571,7 @@ runtime-detection inputs, not session selectors, and need no scrub under this ru
 A missed selector makes bind refuse, but lease-taking commands can use the
 inherited session, so refusal alone is not a substitute for scrubbing.
 Whether Claude Code overwrites an inherited selector is unverified.
-Without identity flags the identity/config pair passes through without a new claim.
+Without identity flags inherited identity/config values pass through without a new claim.
 For Codex `inherit=core`, the launcher passes typed per-launch values to the
 **SAM Codex plugin**, which revalidates and renders a `-c` block separate from
 `codex_settings`: `shell_environment_policy.set.A2A_AGENT` and `.A2A_CONFIG_DIR`
@@ -569,7 +585,7 @@ provider block after planning, nor mutates shared daemon configuration.
 For Claude, retain the existing Claude environment carrier and precedence
 requirements for these same two non-secret values; this proposal introduces no
 secret-bearing settings or new Claude carrier. The final tool-shell keys must
-match the selected pair when present and the home
+match the selected identity/derived station link when present and the home
 locator on every H launch; parent-env inheritance alone does not deliver it under
 `inherit=core`. This carrier integration,
 PATH survival through shell startup and provider settings precedence are **W0 open
@@ -650,11 +666,11 @@ workstation. The W0 observations above are navigation only.
 | Native witness | Required observation and negative control |
 | --- | --- |
 | W0 tool-shell delivery | Real Claude and Codex Linux tool shells: profile PATH survives startup; Codex `inherit=core` receives selected identity/config. Settings `env.A2A_AGENT`/config override conflict is prevented or refuses; valid matching settings work. Record actual precedence and carrier, not parent env alone. |
-| Real launch and identity | Two profiles with different sentinel bytes, two identities/config directories, one UID. Actual tool shells find selected commands and report selected identity. Nonempty inherited conflict refuses; empty values pass. New sessions never reuse inherited `A2A_SESSION_ID`/`CODEX_THREAD_ID`/`CLAUDE_CODE_SESSION_ID`; valid runtime-owned metadata works. No ambient decoy executes. |
-| Explicit native pair transport/store | Inherit `A2A_MATRIX_URL` differing from selected `matrix.env`: it must not reach the new identity; under recommended removal a matching inherited URL still permits selected routing. Under the open nonempty-value refusal variant, matching as well as differing nonempty URLs refuse with zero starts; unset is its launch control. Exercise the other three named overrides as well. Recommended removal drops all four before planning; the launcher owner may instead choose nonempty-value refusal, witnessed as zero starts. Unset control launches; without an explicit pair the new four-key rule is not applied. |
+| Real launch and identity | Two profiles with different sentinel bytes, two selected identities with distinct managed-home station links, one effective UID. Actual tool shells find selected commands and report selected identity. Nonempty inherited conflict refuses; empty values pass. New sessions never reuse inherited `A2A_SESSION_ID`/`CODEX_THREAD_ID`/`CLAUDE_CODE_SESSION_ID`; valid runtime-owned metadata works. No ambient decoy executes. |
+| Explicit native identity transport/store | Inherit `A2A_MATRIX_URL` differing from selected `matrix.env`: it must not reach the new identity; under recommended removal a matching inherited URL still permits selected routing. Under the open nonempty-value refusal variant, matching as well as differing nonempty URLs refuse with zero starts; unset is its launch control. Exercise the other three named overrides as well. Recommended removal drops all four before planning; the launcher owner may instead choose nonempty-value refusal, witnessed as zero starts. Unset control launches; without an explicit native identity the new four-key rule is not applied. |
 | a2a image guard across generations | Linux image identity is dev/inode of `/proc/<pid>/exe`. Any live own-UID `a2a` process with the same identity and canonical config root, regardless of command, participates in the different-image refusal: a byte-identical copy in a new root is refused as a different image; a hard link to the same inode passes the image comparison (other bind and command-root admission guards still apply). The scan covers only own-UID processes whose executable name starts with `a2a`, so the published executable name MUST retain that prefix; a differently named copy is invisible to this scan and is not a bypass claim. Nearby distinct identity/config-root controls behave as current a2a permits. With immutable roots the consumer does not refresh to a newly published generation. Stop all conflicting old-image processes, not only the consumer. For the proposed per-generation hook source, install settings using G2, complete required trust, start a new session and assert the consumer's `/proc/<pid>/exe` dev/inode equals G2's image, not merely successful bind or G2 on PATH. Stale G1 settings with G2 on PATH and no old process can successfully bind G1: this MUST fail the upgrade witness. Rewritten G2 settings plus an observed G2 consumer are the positive control. Hook-source choice and settings/trust/restart cost await a2a-owner acceptance. |
-| Carrier/admission age pairs | Every old/new manager/launcher pair, explicit H with missing/corrupt/stale policy, unsupported mode, policy CAS mismatch: named refusal, zero starts, unchanged state; admitted pair starts. Hosted `--a2a` alone still works; native `--a2a` uses the derived station link and refuses the removed directory flag. Missing/symlink/wrong-owner/wrong-mode directories, credential-looking extras, missing or symlink/nonregular entries, key mode/size errors, identity mismatch and relative socket values each refuse before planning, with zero starts and unchanged files; a valid station link is the positive control. Secret contents are never read by the launcher or reflected in a plan, environment, argv or log. |
-| Managed Codex gateway exclusion | Exercise each selector on launcher main: explicit `--network`, launcher proxy profile, and the operator gateway default without either explicit selector. Main computes these after `plan.Build`; the proposed refusal must determine the effective gateway route before building the plan rather than reuse that later variable. B-a pair or explicit native a2a identity: `native_root_gateway_unsupported` before planning, zero starts and unchanged state. Nearby supported plain-native pair/identity and ordinary gateway without either input remain admitted. Scrub is already in the planning environment. |
+| Carrier/admission age pairs | Every old/new manager/launcher pair, explicit H with missing/corrupt/stale policy, unsupported mode, policy CAS mismatch: named refusal, zero starts, unchanged state; admitted pair starts. Hosted `--a2a` alone still works; native `--a2a` uses the derived station link and refuses the removed directory flag. Missing/symlink/wrong-owner/wrong-mode directories, credential-looking extras, missing or symlink/nonregular entries, exact directory modes 0500/0300/0711 and key modes 0400/0640, key size errors, malformed/mismatched identity lines and malformed or overlong UTF-8 socket files each refuse before planning, with zero starts and unchanged files; a valid station link is the positive control. Secret contents are never read by the launcher or reflected in a plan, environment, argv or log. |
+| Managed Codex gateway exclusion | Exercise each selector on launcher main: explicit `--network`, launcher proxy profile, and the operator gateway default without either explicit selector. Main computes these after `plan.Build`; the proposed refusal must determine the effective gateway route before building the plan rather than reuse that later variable. B-a pair or explicit native a2a identity: `native_root_gateway_unsupported` before planning, zero starts and unchanged state. Nearby supported plain-native launches with B-a or explicit native identity, and ordinary gateway launches with neither input, remain admitted. Scrub is already in the planning environment. |
 | Every-native pre-plan scrub | New/resume, with/without B-a or native identity flags: all three inherited session selectors are absent from the planning environment; runtime-owned metadata still works. `TMUX`/`TMUX_PANE` remain intact for bind; the three onboard-only runtime markers are not scrubbed as selectors. No forwarded-argv inspection or fabricated replacement. Separate launcher change and review. |
 | H in a tool shell | Exercise Claude, Codex default-inherit and Codex `inherit=core`, with and without identity flags; SAM's typed block supplies the locator where needed under `inherit=core`. The planning environment, provider child and actual tool-shell `curator` receive `CURATOR_CONFIG=H/config.json` and use H. Witness settings `env.CURATOR_CONFIG` precedence: a conflicting override is prevented or refuses, and matching settings work where SAM admits settings env. Claude V3 yolo refuses any nonempty explicit settings `env`, including a matching locator. Missing or different delivery fails the witness; absent/matching inherited values pass and a conflicting inherited locator refuses. H-only managed gateway includes the locator in the admitted plan or refuses without a post-plan overlay. Verify launcher flag before `--`, pinned absolute manager, legacy control and the same-home lock-update consequence. Launcher and SAM owners accept this wider input before implementation. |
 | Base PATH recheck | Same retained ordered list passes; reordering/addition/removal refuses with no start, no replacement fallback. A shell holding a current/older or pruned root passes by canonical spelling within H's command-root namespace before filesystem checks, giving up identity/existence/safety checks on excluded entries; a readable recognized alias also passes. Outside the spelling exclusion, missing/unreadable/world-writable entries refuse and require fixing the launching shell, not policy. H selects unattended policy. Put a provider-named `codex` or `claude` decoy in an excluded H-namespace spelling **before the real provider in the launching shell's PATH**: it is neither release-probed nor started; provider resolution, release probing and planning use the admitted PATH or refuse. The nearby provider outside the excluded namespace is resolved/probed/started. Also inherit `CODEX_MANAGED_PACKAGE_ROOT` naming an installed Codex layout both under an excluded spelling and **outside H**: it is removed before resolution/release probing/planning or launch refuses; that binary is neither probed nor started. With the selector absent, the admitted-PATH provider works. Observe policy/selection change during verification: spawn-boundary recheck refuses without taking the manager lock. |

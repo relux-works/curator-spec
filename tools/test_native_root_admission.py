@@ -562,12 +562,17 @@ class NativeRootAdmission(unittest.TestCase):
         self.assertEqual(env,before)
 
     @staticmethod
+    def courier_contract():
+        # Supplied a2a package courier constants, not an implemented module pin.
+        return dict(ProtocolVersion=1, StationKeyLen=32)
+
+    @staticmethod
     def station_observation():
         # Synthetic no-follow metadata; supplied a2a enroll contract length is 32 bytes.
         return dict(path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, entries={
-            'courier.sock': dict(kind='file', uid=1000, value='/run/courier/service.sock'),
+            'courier.sock': dict(kind='file', uid=1000, value=b'/run/courier/service.sock\n'),
             'identity': dict(kind='file', uid=1000, value='agent-one\n'),
-            'station.key': dict(kind='file', uid=1000, mode=0o600, size=32)})
+            'station.key': proposal.StationKeyMetadata(kind='file', uid=1000, mode=0o600, size=32)})
 
     def test_station_link_refusals_and_plants(self):
         # Every failed observation refuses before the carrier step, without
@@ -583,29 +588,33 @@ class NativeRootAdmission(unittest.TestCase):
             ('directory-mode', 'native-station-directory-mode', lambda d: d.update(mode=0o755)),
             ('directory-owner', 'native-station-directory-owner', lambda d: d.update(uid=2000)),
             ('credential-looking-extra', 'native-station-extra-entry', lambda d: d['entries'].update({'credentials.json': dict(kind='file', value='do-not-echo-extra')})),
-            ('key-mode', 'native-station-key-mode', lambda d: d['entries']['station.key'].update(mode=0o644)),
+            ('key-mode', 'native-station-key-mode', lambda d: setattr(d['entries']['station.key'], 'mode', 0o644)),
             ('identity-mismatch', 'native-station-identity', lambda d: d['entries']['identity'].update(value='do-not-echo-identity\n')),
-            ('socket-relative', 'native-station-socket-absolute', lambda d: d['entries']['courier.sock'].update(value='do-not-echo-socket')),
         ]
         for name in ['courier.sock', 'identity', 'station.key']:
             rows.append(('missing-'+name, 'native-station-missing-entry', lambda d, n=name: d['entries'].pop(n)))
-            rows.append(('owner-'+name, 'native-station-entry-owner', lambda d, n=name: d['entries'][n].update(uid=2000)))
-            rows.append(('symlink-'+name, 'native-station-entry-type', lambda d, n=name: d['entries'][n].update(kind='symlink')))
+            rows.append(('owner-'+name, 'native-station-entry-owner', lambda d, n=name: setattr(d['entries'][n], 'uid', 2000) if n == 'station.key' else d['entries'][n].update(uid=2000)))
+            rows.append(('symlink-'+name, 'native-station-entry-type', lambda d, n=name: setattr(d['entries'][n], 'kind', 'symlink') if n == 'station.key' else d['entries'][n].update(kind='symlink')))
         rows.append(('fifo-entry', 'native-station-entry-type', lambda d: d['entries']['courier.sock'].update(kind='fifo')))
         for size in [0, 31, 33]:
-            rows.append(('key-size-'+str(size), 'native-station-key-size', lambda d, n=size: d['entries']['station.key'].update(size=n)))
+            rows.append(('key-size-'+str(size), 'native-station-key-size', lambda d, n=size: setattr(d['entries']['station.key'], 'size', n)))
+        for mode in [0o500, 0o300, 0o711]:
+            rows.append(('directory-mode-'+oct(mode), 'native-station-directory-mode', lambda d, m=mode: d.update(mode=m)))
+        for mode in [0o400, 0o640]:
+            rows.append(('key-mode-'+oct(mode), 'native-station-key-mode', lambda d, m=mode: setattr(d['entries']['station.key'], 'mode', m)))
         env = dict(PATH='/usr/bin', A2A_SESSION_ID='parent', A2A_MATRIX_URL='https://parent.invalid')
         expected = dict(PATH='/usr/bin', A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
         def launch(link):
-            return proposal.native_identity_launch('agent-one', '/managed/home', env, 1000, link, 32)
+            return proposal.native_identity_launch('agent-one', '/managed/home', env, 1000, link, self.courier_contract())
         for label, reason, change in rows:
             with self.subTest(vector=label, refusal=reason):
                 valid = self.station_observation(); bad = deepcopy(valid); change(bad)
                 before = deepcopy((valid, bad, env))
                 self.assertEqual(launch(valid), expected)
-                with patch.object(proposal, 'identity_environment', side_effect=AssertionError('carrier ran before station refusal')):
+                with patch.object(proposal, 'identity_environment', wraps=proposal.identity_environment) as carrier:
                     with self.assertRaisesRegex(proposal.StationRegistrationRefusal, '^native-environment-not-registered:'+reason+'$') as refusal:
                         launch(bad)
+                    carrier.assert_not_called()
                 self.assertEqual(refusal.exception.code, 'native-environment-not-registered')
                 self.assertEqual(refusal.exception.subreason, reason)
                 self.assertEqual((valid, bad, env), before)
@@ -617,8 +626,8 @@ class NativeRootAdmission(unittest.TestCase):
                     self.assertIsNone(mutant['station_link_entries'](bad['entries']))
                 else:
                     mutant = self.mutant(proposal, 'station_link', reason)
-                    self.assertEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, valid, 32), expected)
-                    self.assertEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, bad, 32), expected)
+                    self.assertEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, valid, self.courier_contract()), expected)
+                    self.assertEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, bad, self.courier_contract()), expected)
                 self.assertEqual((valid, bad, env), before)
                 print('plant detected by named vector: station-link-'+label+' ('+reason+')')
 
@@ -640,13 +649,13 @@ class NativeRootAdmission(unittest.TestCase):
                     valid = self.station_observation()
                     valid['entries']['identity']['value'] = name+'\n'
                     expected = dict(A2A_AGENT=name, A2A_CONFIG_DIR='/managed/home/.a2a')
-                    self.assertEqual(proposal.native_identity_launch(name, '/managed/home', {}, 1000, valid, 32), expected)
+                    self.assertEqual(proposal.native_identity_launch(name, '/managed/home', {}, 1000, valid, self.courier_contract()), expected)
                 bad = self.station_observation(); bad['entries']['identity']['value'] = raw
                 before = deepcopy(bad)
                 with patch.object(proposal, 'identity_environment', wraps=proposal.identity_environment) as carrier:
                     with self.assertRaisesRegex(proposal.StationRegistrationRefusal,
                             '^native-environment-not-registered:native-station-identity-format$'):
-                        proposal.native_identity_launch(selected, '/managed/home', {}, 1000, bad, 32)
+                        proposal.native_identity_launch(selected, '/managed/home', {}, 1000, bad, self.courier_contract())
                     carrier.assert_not_called()
                 self.assertEqual(bad, before)
                 mutant = self.mutant(proposal, 'station_link', 'native-station-identity-format')
@@ -654,32 +663,105 @@ class NativeRootAdmission(unittest.TestCase):
                 # is sliced for equality here; choose its mutant selected value
                 # to keep that later independent check from masking the plant.
                 mutant_selected = raw[:-1]
-                self.assertEqual(mutant['station_link']('/managed/home', 'a'*64, 1000, valid, 32), '/managed/home/.a2a')
-                self.assertEqual(mutant['station_link']('/managed/home', mutant_selected, 1000, bad, 32), '/managed/home/.a2a')
+                self.assertEqual(mutant['station_link']('/managed/home', 'a'*64, 1000, valid, self.courier_contract()), '/managed/home/.a2a')
+                self.assertEqual(mutant['station_link']('/managed/home', mutant_selected, 1000, bad, self.courier_contract()), '/managed/home/.a2a')
                 self.assertEqual(bad, before)
                 print('plant detected by named vector: station-identity-'+label+' (native-station-identity-format)')
 
-    def test_station_secret_metadata_only_and_unresolved_contract(self):
-        # The launcher model consumes only key metadata, never secret contents.
-        # The supplied versioned a2a enroll contract length admits 32 bytes;
-        # unavailable length refuses before delivery, without inventing a value.
-        class SecretMetadata(dict):
-            def __getitem__(self, key):
-                if key not in {'kind', 'uid', 'mode', 'size'}:
-                    raise AssertionError('station-secret-content-read')
-                return super().__getitem__(key)
-        link = self.station_observation()
-        link['entries']['station.key'] = SecretMetadata(link['entries']['station.key'])
+    def test_courier_socket_bytes_vectors_and_plants(self):
+        # Courier v1 accepts UTF-8 P+LF at 1/103 bytes, including non-ASCII;
+        # malformed/overlong files refuse by a content-free sub-reason before
+        # delivery, preserving all observations. No filesystem is exercised.
+        valid_values = [b'/\n', b'/'+b'a'*102+b'\n', ('/'+'é'*51+'\n').encode('utf-8')]
+        rows = [
+            ('ascii-104-bytes', b'/'+b'a'*103+b'\n', 'native-station-socket-length'),
+            ('unicode-105-bytes', ('/'+'é'*52+'\n').encode('utf-8'), 'native-station-socket-length'),
+            ('crlf', b'/path\r\n', 'native-station-socket-line'),
+            ('embedded-lf', b'/path\nother\n', 'native-station-socket-line'),
+            ('nul', b'/path\x00other\n', 'native-station-socket-line'),
+            ('bom', '/\ufeffpath\n'.encode('utf-8'), 'native-station-socket-line'),
+            ('leading-bom', '\ufeff/path\n'.encode('utf-8'), 'native-station-socket-line'),
+            ('missing-lf', b'/path', 'native-station-socket-line'),
+            ('empty-file', b'', 'native-station-socket-line'),
+            ('empty-path', b'\n', 'native-station-socket-length'),
+            ('relative', b'relative\n', 'native-station-socket-absolute'),
+            ('invalid-utf8', b'/path\xff\n', 'native-station-socket-utf8'),
+        ]
+        def launch(raw):
+            link = self.station_observation(); link['entries']['courier.sock']['value'] = raw
+            before = deepcopy(link)
+            try:
+                return proposal.native_identity_launch('agent-one', '/managed/home', {}, 1000, link, self.courier_contract())
+            finally:
+                self.assertEqual(link, before)
         expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
-        self.assertEqual(proposal.native_identity_launch('agent-one', '/managed/home', {}, 1000, link, 32), expected)
+        for label, raw, reason in rows:
+            with self.subTest(vector=label):
+                for control in valid_values:
+                    self.assertEqual(launch(control), expected)
+                with patch.object(proposal, 'identity_environment', wraps=proposal.identity_environment) as carrier:
+                    with self.assertRaisesRegex(proposal.StationRegistrationRefusal,
+                            '^native-environment-not-registered:'+reason+'$'):
+                        launch(raw)
+                    carrier.assert_not_called()
+        # Independent plants target the explicit byte bound, UTF-8 decoder and
+        # line/absolute checks. Each retains every valid control.
+        for label, raw, reason, expression, replacement in [
+            ('byte-bound', rows[1][1], 'native-station-socket-length', "len(path.encode('utf-8'))", 'len(path)'),
+            ('crlf', rows[2][1], 'native-station-socket-line', "not any(c in path for c in ('\\x00', '\\r', '\\n', '\\ufeff'))", 'True'),
+            ('relative', b'relative\n', 'native-station-socket-absolute', None, None),
+            ('utf8', b'/path\xff\n', 'native-station-socket-utf8', "errors='strict'", "errors='replace'")]:
+            if expression:
+                mutant = self.mutant(proposal, 'courier_socket_path', expression=expression, replacement=replacement)
+            else:
+                mutant = self.mutant(proposal, 'courier_socket_path', reason)
+            for control in valid_values:
+                self.assertEqual(mutant['courier_socket_path'](control), control[:-1].decode('utf-8'))
+            mutant['courier_socket_path'](raw)
+            print('plant detected by named vector: courier-socket-'+label+' ('+reason+')')
+        # P9 was a valid LF-file probe, not a mutant. Keep it admitted and kill
+        # the old whole-file absolute() check that incorrectly rejected its LF.
+        raw = b'/run/courier/service.sock\n'
+        self.assertEqual(launch(raw), expected)
+        old = self.mutant(proposal, 'courier_socket_path', expression='return path',
+                         replacement="require(absolute(text), 'native-station-socket-absolute')\n    return path")
+        with self.assertRaisesRegex(model.Refusal, '^native-station-socket-absolute$'):
+            old['courier_socket_path'](raw)
+        print('plant detected by named vector: P9-old-whole-file-absolute-refusal')
+
+    def test_station_secret_metadata_only_and_unresolved_contract(self):
+        # Only metadata attributes are exposed. Attribute, get and iteration
+        # secret-read plants fail explicitly, with a valid launch beside them.
+        class SecretMetadata(proposal.StationKeyMetadata):
+            __slots__ = ()
+
+            def __getattr__(self, name):
+                if name.startswith('__'):
+                    raise AttributeError(name)
+                raise AssertionError('station-secret-content-read')
+
+            def __iter__(self):
+                raise AssertionError('station-secret-content-read')
+
+        link = self.station_observation()
+        link['entries']['station.key'] = SecretMetadata(kind='file', uid=1000, mode=0o600, size=32)
+        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
         before = deepcopy(link)
-        with self.assertRaisesRegex(proposal.StationRegistrationRefusal, '^native-environment-not-registered:native-station-contract-unresolved$'):
-            proposal.native_identity_launch('agent-one', '/managed/home', {}, 1000, link, None)
-        self.assertEqual(link, before)
-        mutant = self.mutant(proposal, 'station_link', expression="key['size']", replacement="len(key['value'])")
-        with self.assertRaisesRegex(AssertionError, '^station-secret-content-read$'):
-            mutant['native_identity_launch']('agent-one', '/managed/home', {}, 1000, link, 32)
-        print('plant detected by named vector: station-secret-content-read')
+        self.assertEqual(proposal.native_identity_launch('agent-one', '/managed/home', {}, 1000, link, self.courier_contract()), expected)
+        for contract in [None, {}, dict(ProtocolVersion=1), dict(ProtocolVersion=2, StationKeyLen=32)]:
+            with self.subTest(contract=contract):
+                with self.assertRaisesRegex(proposal.StationRegistrationRefusal, '^native-environment-not-registered:native-station-contract-unresolved$'):
+                    proposal.native_identity_launch('agent-one', '/managed/home', {}, 1000, link, contract)
+                self.assertEqual(link, before)
+        for label, expression in [('attribute', 'key.value'), ('get', "key.get('value')"),
+                                  ('iteration', 'list(key)'), ('items', 'key.items()'),
+                                  ('values', 'key.values()')]:
+            mutant = self.mutant(proposal, 'station_link', expression="    key = entries['station.key']",
+                                 replacement="    key = entries['station.key']\n    _probe = "+expression)
+            with self.assertRaisesRegex(AssertionError, '^station-secret-content-read$'):
+                mutant['native_identity_launch']('agent-one', '/managed/home', {}, 1000, link, self.courier_contract())
+            self.assertEqual(link, before)
+            print('plant detected by named vector: station-secret-content-read-'+label)
 
     def test_native_station_derivation_and_legacy_refusal(self):
         # The removed flag cannot select credentials; an inherited credential
@@ -688,23 +770,23 @@ class NativeRootAdmission(unittest.TestCase):
         link = self.station_observation(); env = dict(PATH='/usr/bin', A2A_SESSION_ID='parent')
         before = deepcopy((link, env))
         expected = dict(PATH='/usr/bin', A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
-        self.assertEqual(proposal.native_identity_launch('agent-one', '/managed/home', env, 1000, link, 32), expected)
+        self.assertEqual(proposal.native_identity_launch('agent-one', '/managed/home', env, 1000, link, self.courier_contract()), expected)
         with self.assertRaisesRegex(model.Refusal, '^native-a2a-config-dir-unsupported$'):
-            proposal.native_identity_launch('agent-one', '/managed/home', env, 1000, link, 32, legacy_directory_flag=True)
+            proposal.native_identity_launch('agent-one', '/managed/home', env, 1000, link, self.courier_contract(), legacy_directory_flag=True)
         mutant = self.mutant(proposal, 'native_identity_launch', 'native-a2a-config-dir-unsupported')
-        self.assertEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, link, 32), expected)
-        self.assertEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, link, 32, legacy_directory_flag=True), expected)
+        self.assertEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, link, self.courier_contract()), expected)
+        self.assertEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, link, self.courier_contract(), legacy_directory_flag=True), expected)
         for key, value in [('A2A_AGENT', 'other'), ('A2A_CONFIG_DIR', '/legacy/credentials')]:
             bad = dict(env, **{key: value}); saved = deepcopy(bad)
             with self.assertRaisesRegex(model.Refusal, '^native-identity-conflict$'):
-                proposal.native_identity_launch('agent-one', '/managed/home', bad, 1000, link, 32)
+                proposal.native_identity_launch('agent-one', '/managed/home', bad, 1000, link, self.courier_contract())
             self.assertEqual(bad, saved)
         self.assertEqual(proposal.native_identity_launch(None, '/managed/home', env, 1000, None, None), dict(PATH='/usr/bin'))
         self.assertEqual((link, env), before)
         print('plant detected by named vector: removed-native-directory-flag')
         # Deriving from the parent of the managed home is a different namespace.
         mutant = self.mutant(proposal, 'identity_environment', expression="managed_home.rstrip('/')+'/.a2a'", replacement="managed_home.rstrip('/').rsplit('/', 1)[0]+'/.a2a'")
-        self.assertNotEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, link, 32), expected)
+        self.assertNotEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, link, self.courier_contract()), expected)
         print('plant detected by named vector: station-link-managed-home-derivation')
 
     def test_a2a_upgrade_image_and_plant(self):
