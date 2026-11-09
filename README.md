@@ -600,8 +600,12 @@ acceptance follows from these checks.
 [draft Decision 0037](decisions/0037-native-a2a-station-link.md) replace the
 unreleased native credential-directory handover with a closed Courier station
 link at `M/.a2a`, with `A2A_CONFIG_DIR=M` for canonical environment managed
-home M. This corrects #217/#219; a2a-owned state/mailbox/config siblings under
-M are outside launcher link admission. The same named Python checks
+home M. This corrects #217/#219. The binding a2a owner decision (Courier v1,
+2026-11-09 about 08:35Z) keeps all a2a credentials, State, mailbox, journals,
+saved inbox files and locks only in the Courier home/user; in station mode the
+client writes only `M/state/courier-hook-failures.log` under M. A full run leaves
+exactly `.a2a/` (four entries) plus that log (in `state/`). Launcher admission
+does not inspect or refuse `M/state/` or other siblings. The same named Python checks
 cover metadata-only secret handling, each station-link refusal and guard plants;
 no credentials are read and no runtime is qualified. Supplied owner/launcher
 answers close the two former questions: [enrollment is per environment outside

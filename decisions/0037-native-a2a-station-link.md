@@ -8,11 +8,12 @@ is in Review. All root-emission gates remain CLOSED.
 ## Context
 
 Native identity delivery previously proposed a caller-selected credential
-location. The a2a owner design note v0 instead puts credentials and operational
-daemon-owned state under a separate Courier OS user and supplies a station
-link; station-local state, mailbox and config files remain under the managed
-home. The grants
-lane proposes the same handover shape, intended as one design.
+location. The a2a owner design note v0 instead puts credentials under a separate
+Courier OS user and supplies a station link. The binding a2a owner decision,
+Courier protocol version 1, 2026-11-09 about 08:35Z places all a2a credentials,
+State, mailbox, journals, saved inbox files and locks only in that Courier home;
+the station-side client writes only `M/state/courier-hook-failures.log` under M.
+The grants lane proposes the same handover shape, intended as one design.
 
 ## Proposed decision
 
@@ -108,9 +109,11 @@ base M, through the existing typed SAM Codex `-c` and Claude carriers.
 This corrects #217/#219 per the a2a owner's clarification and
 [a2a #377](https://github.com/relux-works/a2a-swarm/pull/377): `A2A_CONFIG_DIR`
 is `Paths.Base`, and the client reads `filepath.Join(paths.Base, ".a2a")`.
-The four-entry closed set applies to `M/.a2a` only. Station-local `state/`,
-mailbox, config files and `state/courier-hook-failures.log` are siblings under M;
-the launcher does not inspect or refuse them.
+The four-entry closed set applies to `M/.a2a` only. In Courier station mode,
+the only client write under M is `M/state/courier-hook-failures.log`. A full run
+leaves exactly `.a2a/` (four entries) plus that log file (in `state/`). The launcher
+does not inspect or refuse `M/state/` or any sibling; that admission scope is not
+authority for additional a2a station-side writes.
 
 ## Alternatives
 
@@ -127,8 +130,9 @@ route selection are unchanged. No automatic migration or fallback is authorized.
 
 ## Security impact
 
-Credentials and daemon-owned state/mailbox/locks leave station reach;
-station-local state/mailbox/config remain under M. Shared-UID stations can
+All a2a credentials, State, mailbox, journals, saved inbox files and locks stay
+only in the Courier home/user, outside station reach. The station-side client
+writes only the hook-failure log under M. Shared-UID stations can
 still read each other's station secrets; real station isolation needs one OS
 user per station. The bounded model provides no OS, authentication, live
 filesystem, provider-carrier or runtime receipt. Separate adoption and native

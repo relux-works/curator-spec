@@ -12,8 +12,9 @@ Replace native identity selection's proposed credential-directory flag with a
 Courier station link derived from the canonical environment managed home. The native route
 takes `--native --a2a <identity>` and delivers the two existing non-secret a2a
 variables, with `A2A_CONFIG_DIR=M`, after validating `M/.a2a`. Courier holds
-credentials and daemon-owned state under a separate OS user; station-local
-state/mailbox/config remain under M. This Review proposal opens no root-emission gate,
+all a2a credentials, State, mailbox, journals, saved inbox files and locks only
+in the Courier home under its separate OS user. In station mode the client writes
+only `M/state/courier-hook-failures.log` under M. This Review proposal opens no root-emission gate,
 claims no adoption or runtime support. Supplied a2a owner and curator-run answers
 settle per-environment enrollment outside launch and the a2a-owned key length.
 
@@ -47,9 +48,10 @@ inspected to qualify those statements.
    station reach and does not meet the requested custody boundary; reject it for
    this native route.
 2. Derive a closed station link at `M/.a2a`, where M is the environment managed
-   home M, delivered as `A2A_CONFIG_DIR=M`. Courier retains credentials and
-   daemon-owned state/mailbox/locks; station-local state/mailbox/config remain
-   under M outside `.a2a/`. Its operator mints the station secret. This matches the supplied handover shape and keeps
+   home M, delivered as `A2A_CONFIG_DIR=M`. Courier retains all a2a credentials,
+   State, mailbox, journals, saved inbox files and locks only in its home under
+   the Courier user. The station-side client writes only the hook-failure log
+   under M; its operator mints the station secret. This matches the supplied handover shape and keeps
    secrets out of launcher argv, environment, logs and plans.
 3. Make the launcher mint or register stations automatically. This conflicts with
    the supplied per-environment enrollment contract; do not select it.
@@ -152,11 +154,14 @@ review one handover shape, not separate invented authentication designs.
 
 ## Security considerations
 
-Courier's separate OS user keeps credentials and daemon-owned state outside
-station reach. Station-local state, mailbox and config files remain under M;
-the launcher does not inspect or refuse siblings of `M/.a2a`, including `state/`
-and `state/courier-hook-failures.log`. The four-entry closed set applies only
-inside the station link.
+The **a2a owner decision, Courier protocol version 1, 2026-11-09 about 08:35Z**
+places all a2a credentials, State, mailbox, journals, saved inbox files and locks
+only in the Courier home under the Courier user, outside station reach. In
+Courier station mode the client writes exactly `M/state/courier-hook-failures.log`
+under M. A full run leaves exactly `.a2a/` (four entries) plus that one log file
+(in `state/`). The launcher does not inspect or refuse `M/state/` or any other
+sibling of `M/.a2a`; this does not authorize additional a2a client writes. The
+closed four-entry set applies only inside the station link.
 Station UID is the launching process's effective UID for this milestone.
 Under a shared station UID, stations can read each other's 0600 `station.key`
 and impersonate each other to Courier. Real isolation requires one OS user per
@@ -178,10 +183,10 @@ config base; a2a reads its `.a2a` child. This follows the a2a owner's clarificat
 and [a2a #377](https://github.com/relux-works/a2a-swarm/pull/377), where
 `ResolvePaths` returns `Paths.Base` and the client reads
 `filepath.Join(paths.Base, ".a2a")`. The launcher admits the closed link at
-`M/.a2a` without inspecting a2a-owned siblings under M. There is no automatic
+`M/.a2a` without inspecting `M/state/` or any other sibling. There is no automatic
 credential copy, migration, registration or fallback. An inherited credential
-locator conflicts with the derived locator; credentials under the derived path
-are an extra-entry refusal. Existing hosted `--a2a`, doorbell wiring and route
+locator conflicts with canonical M; credentials inside `M/.a2a` are an
+extra-entry refusal. Existing hosted `--a2a`, doorbell wiring and route
 selection stay unchanged. No released schema, signed bytes or rc.14 vectors change.
 
 ## Specification changes
@@ -213,7 +218,8 @@ forbidden cases at their validation stages. Closed-entry-set plants exercise
 the namespace helper before later value checks; they do not claim a complete
 mutated launch succeeds. A credential-looking extra is explicit. Additional
 controls cover config-base M delivery (planting M/.a2a must fail), sibling
-state admission without inspection, the unchanged four-entry link checks,
+hook-failure-log sibling admission without inspection, refusal of links at M
+and M/.a2a/.a2a with targeted location plants, the unchanged four-entry link checks,
 canonical delivered-home equality, the removed flag, inherited credential
 conflicts, unresolved size and an attempted secret-content read. Existing
 session-selector and four-key scrub plants remain. Identity-line vectors cover

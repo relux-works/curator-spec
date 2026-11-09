@@ -698,6 +698,9 @@ class NativeRootAdmission(unittest.TestCase):
         # exercise the shape helper; no real filesystem/Courier is tested.
         rows = [
             ('directory-location', 'native-station-directory-location', lambda d: d.update(path='/legacy/credentials', resolved_path='/legacy/credentials')),
+            # Config base and a double-appended child cannot stand in for M/.a2a.
+            ('directory-location-at-home', 'native-station-directory-location', lambda d: d.update(path='/managed/home', resolved_path='/managed/home')),
+            ('directory-location-double-a2a', 'native-station-directory-location', lambda d: d.update(path='/managed/home/.a2a/.a2a', resolved_path='/managed/home/.a2a/.a2a')),
             ('observation-unreadable', 'native-station-unreadable', lambda d: d.update(complete=False)),
             ('directory-missing', 'native-station-directory-missing', lambda d: d.update(exists=False)),
             ('directory-symlink', 'native-station-directory-type', lambda d: d.update(kind='symlink')),
@@ -765,6 +768,40 @@ class NativeRootAdmission(unittest.TestCase):
                     self.assertEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, bad, self.courier_contract()), expected)
                 self.assertEqual((valid, bad, env), before)
                 print('plant detected by named vector: station-link-'+label+' ('+reason+')')
+
+    def test_station_directory_location_permissive_plants(self):
+        # Each permissive-location plant admits one forbidden spelling while
+        # retaining the real M/.a2a positive. Baseline refuses by the exact code,
+        # without carrier calls, path reflection or writes. Supplied facts only.
+        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home')
+        expression = "directory == managed_home.rstrip('/')+'/.a2a'"
+        rows = [
+            ('directory-location-at-home', '/managed/home',
+             "directory in (managed_home, managed_home.rstrip('/')+'/.a2a')"),
+            ('directory-location-double-a2a', '/managed/home/.a2a/.a2a',
+             "directory in (managed_home.rstrip('/')+'/.a2a', managed_home.rstrip('/')+'/.a2a/.a2a')"),
+        ]
+        for label, path, replacement in rows:
+            with self.subTest(vector=label):
+                valid = self.station_observation(); bad = deepcopy(valid)
+                bad.update(path=path, resolved_path=path)
+                before = deepcopy((valid, bad))
+                self.assertEqual(proposal.native_identity_launch('agent-one', '/managed/home', {},
+                    1000, valid, self.courier_contract()), expected)
+                with patch.object(proposal, 'identity_environment', wraps=proposal.identity_environment) as carrier:
+                    with self.assertRaisesRegex(proposal.StationRegistrationRefusal,
+                            '^native-environment-not-registered:native-station-directory-location$') as refusal:
+                        proposal.native_identity_launch('agent-one', '/managed/home', {},
+                            1000, bad, self.courier_contract())
+                    carrier.assert_not_called()
+                self.assertEqual(str(refusal.exception),
+                    'native-environment-not-registered:native-station-directory-location')
+                mutant = self.mutant(proposal, 'station_link', expression=expression, replacement=replacement)
+                for control in [valid, bad]:
+                    self.assertEqual(mutant['native_identity_launch']('agent-one', '/managed/home', {},
+                        1000, control, self.courier_contract()), expected)
+                self.assertEqual((valid, bad), before)
+                print('plant detected by named vector: '+label+' (native-station-directory-location)')
 
     def test_pre_station_three_file_namespace_refusal(self):
         # A pre-station three-file namespace is incomplete, beside a valid
@@ -953,12 +990,12 @@ class NativeRootAdmission(unittest.TestCase):
     def test_native_config_base_delivery_and_siblings(self):
         # The admitted link remains M/.a2a, but the delivered config base is M.
         # Supplied parent-sibling observations are outside that closed namespace:
-        # state/mailbox/config siblings neither enter its checker nor get changed.
+        # The station client's sole hook-failure log neither enters the link's
+        # checker nor gets changed. No station mailbox/State/config is implied.
         # This is a bounded observation/carrier check, not live filesystem I/O.
         expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home')
         sibling_facts = {
-            'state': dict(kind='directory', entries={'courier-hook-failures.log': dict(kind='file')}),
-            'mailbox': dict(kind='directory'), 'matrix.env': dict(kind='file')}
+            'state': dict(kind='directory', entries={'courier-hook-failures.log': dict(kind='file')})}
         for label, siblings in [('link-only', {}), ('state-sibling-outside-link', sibling_facts)]:
             with self.subTest(vector=label):
                 link = self.station_observation()

@@ -11,10 +11,15 @@ Versioning for the complete specification set.
   config base, not `M/.a2a`. Admit the four-entry station link at `M/.a2a`;
   compare/deliver M through the existing SAM Codex and Claude carriers. The
   a2a owner's clarification and [a2a #377](https://github.com/relux-works/a2a-swarm/pull/377)
-  distinguish the base from its link child. Station-local state, mailbox, config
-  files and `state/courier-hook-failures.log` remain under M as siblings outside
-  launcher inspection. Add config-base delivery, sibling-state and canonical
-  home controls, and a plant reverting delivery to M/.a2a. Existing entry rules,
+  distinguish the base from its link child. The binding a2a owner decision
+  (Courier v1, 2026-11-09 about 08:35Z) corrects the earlier custody wording:
+  all a2a credentials, State, mailbox, journals, saved inbox files and locks live
+  only in the Courier home/user. The station-side client writes only
+  `M/state/courier-hook-failures.log`; a full run leaves exactly `.a2a/` with
+  four entries plus that log (in `state/`). Launcher admission still does not
+  inspect or refuse `M/state/` or other siblings. Add M and M/.a2a/.a2a link-location
+  refusal vectors with targeted plants and a valid M/.a2a control. Retain
+  config-base delivery, hook-failure-log sibling and canonical-home controls, and a plant reverting delivery to M/.a2a. Existing entry rules,
   Review/draft status and CLOSED gates remain unchanged.
 
 - Fold the a2a owner statement (Courier v1, 2026-11-09) into the native station
