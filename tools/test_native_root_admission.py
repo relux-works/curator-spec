@@ -576,6 +576,7 @@ class NativeRootAdmission(unittest.TestCase):
                 dict(path='/managed/home', kind='directory', uid=1000, mode=0o700)]), entries={
             'courier.sock': dict(kind='file', uid=1000, mode=0o600, nlink=1, value=b'/run/courier/service.sock\n'),
             'identity': dict(kind='file', uid=1000, mode=0o600, nlink=1, value='agent-one\n'),
+            'station': dict(kind='file', uid=1000, mode=0o600, nlink=1, value='station-one\n'),
             'station.key': proposal.StationKeyMetadata(kind='file', uid=1000, mode=0o600, size=32, nlink=1)})
 
     def test_canonical_station_home_vectors_and_plant(self):
@@ -602,7 +603,7 @@ class NativeRootAdmission(unittest.TestCase):
             ('symlink-canonical-ancestor', 'native-station-ancestor-observation', lambda d: d['resolution']['ancestors'][1].update(kind='symlink')),
             ('station-directory-symlink', 'native-station-directory-type', lambda d: d.update(kind='symlink')),
         ]
-        for name in ['courier.sock', 'identity', 'station.key']:
+        for name in ['courier.sock', 'identity', 'station', 'station.key']:
             rows.append(('station-entry-symlink-'+name, 'native-station-entry-type',
                          lambda d, n=name: setattr(d['entries'][n], 'kind', 'symlink') if n == 'station.key' else d['entries'][n].update(kind='symlink')))
         env = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a', A2A_SESSION_ID='parent')
@@ -704,7 +705,7 @@ class NativeRootAdmission(unittest.TestCase):
             ('key-mode', 'native-station-key-mode', lambda d: setattr(d['entries']['station.key'], 'mode', 0o644)),
             ('identity-mismatch', 'native-station-identity', lambda d: d['entries']['identity'].update(value='do-not-echo-identity\n')),
         ]
-        for name in ['courier.sock', 'identity', 'station.key']:
+        for name in ['courier.sock', 'identity', 'station', 'station.key']:
             rows.append(('missing-'+name, 'native-station-missing-entry', lambda d, n=name: d['entries'].pop(n)))
             rows.append(('owner-'+name, 'native-station-entry-owner', lambda d, n=name: setattr(d['entries'][n], 'uid', 2000) if n == 'station.key' else d['entries'][n].update(uid=2000)))
             rows.append(('symlink-'+name, 'native-station-entry-type', lambda d, n=name: setattr(d['entries'][n], 'kind', 'symlink') if n == 'station.key' else d['entries'][n].update(kind='symlink')))
@@ -717,11 +718,11 @@ class NativeRootAdmission(unittest.TestCase):
             rows.append(('key-mode-'+oct(mode), 'native-station-key-mode', lambda d, m=mode: setattr(d['entries']['station.key'], 'mode', m)))
         # Exact single-link/0600 rules include owner-only 0400/0700 refusals;
         # both new codes use the same valid-neighbour and in-tree guard plants.
-        for name in ['courier.sock', 'identity', 'station.key']:
+        for name in ['courier.sock', 'identity', 'station', 'station.key']:
             rows.append(('nlink-2-'+name, 'native-station-entry-links',
                 lambda d, n=name: setattr(d['entries'][n], 'nlink', 2) if n == 'station.key'
                     else d['entries'][n].update(nlink=2)))
-        for name in ['courier.sock', 'identity']:
+        for name in ['courier.sock', 'identity', 'station']:
             for mode in [0o644, 0o640, 0o400, 0o700]:
                 rows.append(('mode-'+oct(mode)+'-'+name, 'native-station-entry-mode',
                     lambda d, n=name, m=mode: d['entries'][n].update(mode=m)))
@@ -747,12 +748,72 @@ class NativeRootAdmission(unittest.TestCase):
                     mutant = self.mutant(proposal, 'station_link_entries', reason)
                     self.assertIsNone(mutant['station_link_entries'](valid['entries']))
                     self.assertIsNone(mutant['station_link_entries'](bad['entries']))
+                    if label == 'missing-station':
+                        # Only station becomes optional; the allowed set stays
+                        # four entries. This plant proves the namespace guard.
+                        optional = self.mutant(proposal, 'station_link_entries',
+                            expression='names - set(entries)',
+                            replacement="(names - {'station'}) - set(entries)")
+                        self.assertIsNone(optional['station_link_entries'](valid['entries']))
+                        self.assertIsNone(optional['station_link_entries'](bad['entries']))
                 else:
                     mutant = self.mutant(proposal, 'station_link', reason)
                     self.assertEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, valid, self.courier_contract()), expected)
                     self.assertEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, bad, self.courier_contract()), expected)
                 self.assertEqual((valid, bad, env), before)
                 print('plant detected by named vector: station-link-'+label+' ('+reason+')')
+
+    def test_pre_station_three_file_namespace_refusal(self):
+        # A pre-station three-file namespace is incomplete, beside a valid
+        # four-file control. This targets namespace admission before value reads;
+        # the full-launch missing-station row above proves the wrapped refusal.
+        valid = self.station_observation()['entries']
+        legacy = deepcopy(valid); legacy.pop('station')
+        self.assertEqual(set(valid), {'courier.sock', 'identity', 'station', 'station.key'})
+        self.assertEqual(set(legacy), {'courier.sock', 'identity', 'station.key'})
+        before = deepcopy((valid, legacy))
+        self.assertIsNone(proposal.station_link_entries(valid))
+        with self.subTest(vector='pre-station-three-file-directory'):
+            with self.assertRaisesRegex(proposal.Refusal, '^native-station-missing-entry$'):
+                proposal.station_link_entries(legacy)
+        self.assertEqual((valid, legacy), before)
+
+    def test_station_registry_name_vectors_and_plants(self):
+        # Registry station grammar is checked without delivering the name.
+        # Malformed names refuse unchanged before the carrier; distinct valid
+        # station names at both length boundaries produce only the identity pair.
+        rows = [
+            ('space', 'station one\n'), ('uppercase', 'Station-one\n'),
+            ('65-characters', 's'*65+'\n'), ('missing-lf', 'station-one'),
+            ('two-lines', 'station-one\nother\n'), ('bom', '\ufeffstation-one\n'),
+        ]
+        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
+        def launch(link):
+            return proposal.native_identity_launch('agent-one', '/managed/home', {},
+                1000, link, self.courier_contract())
+        for label, raw in rows:
+            with self.subTest(vector='station-name-'+label):
+                for name in ['a', 'station._=-09', 's'*64]:
+                    valid = self.station_observation(); valid['entries']['station']['value'] = name+'\n'
+                    before = deepcopy(valid)
+                    with patch.object(proposal, 'identity_environment', wraps=proposal.identity_environment) as carrier:
+                        self.assertEqual(launch(valid), expected)
+                        carrier.assert_called_once_with('agent-one', '/managed/home', {})
+                    self.assertEqual(valid, before)
+                bad = self.station_observation(); bad['entries']['station']['value'] = raw
+                before = deepcopy(bad)
+                with patch.object(proposal, 'identity_environment', wraps=proposal.identity_environment) as carrier:
+                    with self.assertRaisesRegex(proposal.StationRegistrationRefusal,
+                            '^native-environment-not-registered:native-station-name-format$'):
+                        launch(bad)
+                    carrier.assert_not_called()
+                self.assertEqual(bad, before)
+                mutant = self.mutant(proposal, 'station_link', 'native-station-name-format')
+                for control in [valid, bad]:
+                    self.assertEqual(mutant['native_identity_launch']('agent-one', '/managed/home', {},
+                        1000, control, self.courier_contract()), expected)
+                self.assertEqual(bad, before)
+                print('plant detected by named vector: station-name-'+label+' (native-station-name-format)')
 
     def test_station_identity_line_vectors_and_plants(self):
         # Exact one-line ASCII identity grammar refuses before delivery, even

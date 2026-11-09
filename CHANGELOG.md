@@ -7,6 +7,15 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Fold the a2a owner statement (Courier v1, 2026-11-09) into the native station
+  link: exactly four entries, adding `station` with registry-line grammar,
+  ownership, single-link and exact-0600 checks in the same atomic publication.
+  Three-file links refuse as unregistered/incomplete: re-run enroll, no migration.
+  Launcher checks the name without echoing or delivering it; C1 hello/HMAC and
+  identity-based connection resolution remain unchanged. Add refusal vectors,
+  valid four-file neighbours and a named namespace-requirement plant. All
+  emission gates and Review/draft status remain unchanged.
+
 - Align native Courier station entry metadata with public
   [a2a enroll #366](https://github.com/relux-works/a2a-swarm/pull/366) and
   [C1 #367](https://github.com/relux-works/a2a-swarm/pull/367): every entry is a

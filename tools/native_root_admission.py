@@ -215,7 +215,7 @@ class StationRegistrationRefusal(Refusal):
 
 def station_link_entries(entries):
     # Closed namespace before any entry values are inspected.
-    names = {'courier.sock', 'identity', 'station.key'}
+    names = {'courier.sock', 'identity', 'station', 'station.key'}
     require(not (set(entries) - names), 'native-station-extra-entry')
     require(not (names - set(entries)), 'native-station-missing-entry')
 
@@ -269,7 +269,7 @@ def canonical_station_home(managed_home, station_uid, resolution):
 
 
 def station_link(managed_home, identity, station_uid, observed, pinned_contract):
-    # Supplied no-follow metadata and two public values only; no secret bytes,
+    # Supplied no-follow metadata and three public values only; no secret bytes,
     # filesystem observation, peer authentication or Courier registration.
     # The supplied pin represents a2a courier.ProtocolVersion/StationKeyLen;
     # actual Go module-version pinning/lookup is curator-run implementation work.
@@ -292,13 +292,13 @@ def station_link(managed_home, identity, station_uid, observed, pinned_contract)
     entries = observed['entries']
     station_link_entries(entries)
     key = entries['station.key']
-    require(key.kind == 'file' and all(entries[n]['kind'] == 'file' for n in ('courier.sock', 'identity')),
+    require(key.kind == 'file' and all(entries[n]['kind'] == 'file' for n in ('courier.sock', 'identity', 'station')),
             'native-station-entry-type')
-    require(key.uid == station_uid and all(entries[n]['uid'] == station_uid for n in ('courier.sock', 'identity')),
+    require(key.uid == station_uid and all(entries[n]['uid'] == station_uid for n in ('courier.sock', 'identity', 'station')),
             'native-station-entry-owner')
-    require(key.nlink == 1 and all(entries[n]['nlink'] == 1 for n in ('courier.sock', 'identity')),
+    require(key.nlink == 1 and all(entries[n]['nlink'] == 1 for n in ('courier.sock', 'identity', 'station')),
             'native-station-entry-links')
-    require(all(entries[n]['mode'] == 0o600 for n in ('courier.sock', 'identity')),
+    require(all(entries[n]['mode'] == 0o600 for n in ('courier.sock', 'identity', 'station')),
             'native-station-entry-mode')
     require(key.mode == 0o600, 'native-station-key-mode')
     require(key.size == expected_secret_size, 'native-station-key-size')
@@ -306,6 +306,10 @@ def station_link(managed_home, identity, station_uid, observed, pinned_contract)
     require(isinstance(identity_line, str) and re.fullmatch(r'[a-z0-9._=-]{1,64}\n', identity_line) is not None,
             'native-station-identity-format')
     require(identity_line[:-1] == identity, 'native-station-identity')
+    station_line = entries['station']['value']
+    require(isinstance(station_line, str) and re.fullmatch(r'[a-z0-9._=-]{1,64}\n', station_line) is not None,
+            'native-station-name-format')
+    # Admission checks station syntax only; no station name reaches the carrier.
     courier_socket_path(entries['courier.sock']['value'])
     return managed_home.rstrip('/')+'/.a2a'
 
@@ -374,6 +378,7 @@ def validate():
             dict(path='/managed/home', kind='directory', uid=1000, mode=0o700)]), entries={
         'courier.sock': dict(kind='file', uid=1000, mode=0o600, nlink=1, value=b'/run/courier/service.sock\n'),
         'identity': dict(kind='file', uid=1000, mode=0o600, nlink=1, value='agent-one\n'),
+        'station': dict(kind='file', uid=1000, mode=0o600, nlink=1, value='station-one\n'),
         'station.key': StationKeyMetadata(kind='file', uid=1000, mode=0o600, size=32, nlink=1)})
     require(native_identity_launch('agent-one', '/managed/home', {}, 1000, station, dict(ProtocolVersion=1, StationKeyLen=32))
             == dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a'), 'native-station-delivery')

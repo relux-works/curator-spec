@@ -55,16 +55,27 @@ inspected to qualify those statements.
 ### Recommendation
 
 Use option 2 for handover shape. The [packet's refusal table](../protocol/profile-command-root-admission.md#native-station-link-handover-review)
-requires the private station-owned directory, exactly three regular nonsymlink
-entries, key metadata, matching identity and an absolute socket-path value.
-All three entries have link count exactly 1 and mode exactly 0600, as required
-by the public [a2a enroll PR #366](https://github.com/relux-works/a2a-swarm/pull/366)
+requires the private station-owned directory, exactly four regular nonsymlink
+entries (`courier.sock`, `identity`, `station`, `station.key`), key metadata, matching identity and an absolute socket-path value.
+All four entries have link count exactly 1 and mode exactly 0600. The original
+entries follow the public [a2a enroll PR #366](https://github.com/relux-works/a2a-swarm/pull/366)
 and [C1 PR #367](https://github.com/relux-works/a2a-swarm/pull/367). Any entry with
-another link count refuses `native-station-entry-links`; socket/identity modes
+another link count refuses `native-station-entry-links`; socket/identity/station modes
 other than 0600 refuse `native-station-entry-mode`, retaining the key-mode code.
 These are content-free sub-reasons under `native-environment-not-registered`.
 `courier.sock` is a regular path file, not the socket itself. The removed directory
 flag and legacy credential-directory handover are refused.
+
+The **a2a owner statement, Courier protocol version 1, 2026-11-09** adds
+`station` with that same metadata, atomically published with the other entries.
+Its content is exactly one registry-grammar line `^[a-z0-9._=-]{1,64}\n`.
+Launcher checks it without echo or delivery in argv, environment or plan.
+A pre-station three-file directory is incomplete and refuses under
+`native-environment-not-registered:native-station-missing-entry`: re-run enroll.
+No migration is defined because this decision precedes Courier deployment.
+C1 hello/HMAC input is unchanged; the daemon resolves connection by authenticated
+identity alone. Forwarded profile/fingerprint are equality assertions against
+that identity's resolved binding, not connection selection inputs.
 
 The canonical-path rule is an **a2a owner statement, Courier protocol version 1**.
 Enrollment resolves D's parent once with `EvalSymlinks` and works on the canonical
@@ -141,8 +152,8 @@ a station but is not an a2a credential store. This proposal neither provisions O
 users nor qualifies Courier authentication.
 
 Validate directory/entry metadata without following symlinks and bind observations
-to the same directory before planning. Read only the two public values; inspect
-`station.key` owner, mode and size without reading its bytes. Refusal codes do not echo
+to the same directory before planning. Read only the three public values; inspect
+`station.key` owner, mode, link count and size without reading its bytes. Refusal codes do not echo
 file contents or extra-entry names. Registration, secret rotation/revocation,
 atomic operator publication and real TOCTOU/peer-credential handling require
 owner integration and runtime evidence; the bounded model proves none of those.
@@ -178,7 +189,7 @@ future admin-socket seam.
 
 ## Test plan
 
-The bounded model takes no-follow metadata plus only the identity/socket public
+The bounded model takes no-follow metadata plus only the identity/station/socket public
 values. Each directory/entry/key/identity/socket negative has an unchanged-input
 assertion and a valid positive neighbour. Named guard-removal plants expose
 forbidden cases at their validation stages. Closed-entry-set plants exercise
@@ -191,6 +202,10 @@ space, BOM, uppercase, 65 characters, missing LF and two lines with valid length
 1/64 neighbours and named format-guard plants. Key sizes 31/33 refuse against the
 supplied a2a contract value 32; ownership and unavailable-pinned-contract controls
 remain. Exact-mode vectors include directory 0500/0300/0711 and key 0400/0640.
+Station-name vectors cover space, uppercase, 65 characters, missing LF, two
+lines and BOM beside valid 1/64-character neighbours; the station name never
+reaches the carrier. A named pre-station namespace plant drops only the new
+required name; full-launch missing-station refusal is separately checked.
 Link-count vectors reject 2 for each entry; socket/identity mode vectors reject
 0644 and 0640, each beside a valid complete station. Removing the link-count
 guard must lose those named refusals. The key observation exposes only five

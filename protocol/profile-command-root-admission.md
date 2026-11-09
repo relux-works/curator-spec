@@ -460,7 +460,7 @@ and operates only on that canonical path. The launcher derives M by
 hand that canonical locator as `A2A_CONFIG_DIR` and use it for comparison.
 An input home under a symlinked ancestor can therefore be admitted through its
 canonical result. This does not permit a symlink at `.a2a` itself or at any
-of its three entries: each still refuses by the no-follow checks below.
+of its four entries: each still refuses by the no-follow checks below.
 
 Before planning, the launcher checks the complete canonical ancestor chain from
 root through M. Each canonical ancestor MUST be a directory owned by the caller
@@ -497,11 +497,13 @@ authentication qualification.
 The inherited two-key comparison uses the canonical derived directory; its
 existing nonempty-conflict rule and all carrier/scrub rules remain unchanged.
 
-The entry metadata requirement follows the public a2a enroll/C1 PR text:
+The **a2a owner statement, Courier protocol version 1, 2026-11-09** adds
+`station` as a fourth entry, written in the same atomic namespace publication.
+The original entries' metadata rule was published in
 [a2a #366](https://github.com/relux-works/a2a-swarm/pull/366) and
-[a2a #367](https://github.com/relux-works/a2a-swarm/pull/367). Every one of the three
-entries MUST be a station-UID-owned regular file, not a symlink, with link count
-exactly 1 and mode exactly 0600. This includes `courier.sock` and `identity`.
+[a2a #367](https://github.com/relux-works/a2a-swarm/pull/367); the owner statement
+requires the same rule for `station`. All four entries MUST be station-UID-owned
+regular files, not symlinks, with link count exactly 1 and mode exactly 0600.
 
 `M/.a2a` MUST be a directory, not a symlink, mode exactly 0700, owned by the
 station UID. On this shared-UID milestone, **station UID means the launching
@@ -511,7 +513,17 @@ process's effective UID**. Its closed entry set is exactly:
 | --- | --- |
 | `courier.sock` | Station-UID-owned regular file, not a symlink, link count exactly 1, mode exactly 0600, containing UTF-8 P followed by exactly one LF. P starts with `/`, contains no NUL, CR, LF or BOM, and has byte length 1..103 including `/` and excluding the final LF. This is an explicit UTF-8 byte-length check, not a regex character count; P is not restricted to ASCII. This file is the only socket-path source, with no per-OS default. It is a path file, not the socket object. |
 | `identity` | Station-UID-owned regular file, not a symlink, link count exactly 1, mode exactly 0600, containing exactly one line matching `^[a-z0-9._=-]{1,64}\n`: ASCII name followed by one LF, no spaces or BOM. The name before LF equals the registered identity selected by `--a2a`; no trimming or normalization. |
+| `station` | Station-UID-owned regular file, not a symlink, link count exactly 1, mode exactly 0600, containing exactly one line matching `^[a-z0-9._=-]{1,64}\n`, the registry grammar also used by `identity`. No spaces, BOM, trimming or normalization. The launcher checks this value only; it MUST NOT deliver the station name in argv, environment or plan, or echo its contents. |
 | `station.key` | Station-UID-owned regular file, not a symlink, link count exactly 1, mode exactly 0600, containing exactly 32 raw bytes, no encoding or appended newline. Size comes from a2a Go module package `courier.StationKeyLen = 32` at pinned `courier.ProtocolVersion = 1`, owned and published by a2a according to its Courier v1 statements. Unavailable pinned contract refuses. The launcher checks metadata only and MUST NOT open/read its secret contents. |
+
+A three-file pre-`station` directory is incomplete and refuses
+`native-environment-not-registered:native-station-missing-entry`; the operator
+action is **re-run enroll**. No migration is defined: this owner decision
+precedes Courier deployment. A missing `station` has that same stable refusal.
+The dated owner statement leaves C1 hello and its HMAC input unchanged. The
+daemon resolves the connection from authenticated identity alone; forwarded
+`--profile` and `--connection-fingerprint` are assertions that MUST equal that
+identity's resolved binding. This allocates no new launcher selector or wire.
 
 No credentials, state, mailbox, lock or additional entry is allowed. For example,
 `credentials.json` is an extra-entry refusal even if its bytes resemble a valid
@@ -519,7 +531,7 @@ old credential store. The legacy credential-directory pair is not admitted on
 this native route. A matching inherited pair alone proves no station admission.
 
 Before constructing a plan or starting a provider, the launcher checks the
-no-follow directory and entry observations and the two non-secret file values.
+no-follow directory and entry observations and the three non-secret file values.
 Unavailable metadata or either public-file read refuses `native-station-unreadable`;
 this does not require or permit reading the key. Implementations must bind
 the checks to the same directory rather than follow a replacement symlink.
@@ -550,13 +562,14 @@ managed-home input retains its separate precondition code:
 | Directory mode differs from 0700 | `native-station-directory-mode` |
 | Directory owner differs from the station UID | `native-station-directory-owner` |
 | Any extra entry, including `credentials.json` | `native-station-extra-entry` |
-| Any of the three required entries missing | `native-station-missing-entry` |
+| Any of the four required entries missing | `native-station-missing-entry` |
 | Any entry is a symlink or another nonregular object | `native-station-entry-type` |
 | Any entry owner differs from the station UID | `native-station-entry-owner` |
 | Any entry link count differs from 1 | `native-station-entry-links` |
-| Socket-path or identity file mode differs from 0600 | `native-station-entry-mode` |
+| Socket-path, identity or station file mode differs from 0600 | `native-station-entry-mode` |
 | Key mode differs from 0600 | `native-station-key-mode` |
 | Key byte size differs from the Courier contract | `native-station-key-size` |
+| Station name violates the exact registry one-line grammar | `native-station-name-format` |
 | Identity bytes violate the exact one-line grammar | `native-station-identity-format` |
 | Well-formed identity name differs from `--a2a` | `native-station-identity` |
 | Socket file is not valid UTF-8 | `native-station-socket-utf8` |
@@ -576,8 +589,9 @@ version 1**. Enrollment is a two-sided pipe **outside launch**:
    and emits exactly one closed JSON object with keys `socket`, `identity`,
    `station`, `secret_b64`, followed by LF. No other keys are admitted.
 2. As the station OS user, `a2a courier enroll --dir <home>/.a2a --from -` consumes
-   that line, creates the 0700 directory and its three entries owned by the caller,
-   and refuses unknown JSON keys and existing entries without `--rotate`.
+   that line, creates the 0700 directory and its four caller-owned entries in one
+   atomic namespace publication, and refuses unknown JSON keys and existing
+   entries without `--rotate`.
    Here `<home>` is M.
 
 The launcher never calls registration/enrollment and never writes `M/.a2a`;

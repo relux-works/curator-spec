@@ -615,8 +615,9 @@ The Courier v1 canonical-path amendment resolves the managed home with
 exception), and requires the derived station directory D to be absolute with
 `EvalSymlinks(D) == D`, as every Courier v1 reader must. The a2a owner statement
 closes the former record question: no station path is stored; hello authenticates
-by secret and UID. Link/entry symlinks still refuse. No fourth station entry or
-live resolution witness is claimed.
+by secret and UID. Link/entry symlinks still refuse. The Courier v1 owner
+statement of 2026-11-09 adds the fourth `station` entry; it holds a checked
+registry name, not a location record. No live resolution witness is claimed.
 
 ## Machine Host notification proposal
 

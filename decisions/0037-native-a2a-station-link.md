@@ -16,12 +16,12 @@ lane proposes the same handover shape, intended as one design.
 
 Use `--native --a2a <identity>` and derive the link at the environment managed
 home's canonical `EvalSymlinks` result, then its `.a2a` directory. Refuse the removed directory flag. Require a station-UID
-owned nonsymlink 0700 directory with exactly `courier.sock`, `identity` and
+owned nonsymlink 0700 directory with exactly `courier.sock`, `identity`, `station` and
 `station.key`, all regular nonsymlink files, each with link count exactly 1 and
-mode exactly 0600. This matches the public
+mode exactly 0600. The original entries' metadata rule matches the public
 [a2a enroll PR #366](https://github.com/relux-works/a2a-swarm/pull/366) and
 [C1 PR #367](https://github.com/relux-works/a2a-swarm/pull/367). Refuse link-count
-violations as `native-station-entry-links` and socket/identity mode violations
+violations as `native-station-entry-links` and socket/identity/station mode violations
 as `native-station-entry-mode`, retaining the key-mode code; all are content-free
 sub-reasons under `native-environment-not-registered`. Require an absolute socket-path
 value from that file alone (no per-OS default), an exact one-line identity
@@ -34,6 +34,17 @@ no size stat; this proposal checks size because a2a publishes the constants.
 The a2a module-version pin/lookup is curator-run implementation work, not claimed.
 The launcher never reads key contents. Station UID is the launching process's
 effective UID on this shared-UID milestone.
+
+The **a2a owner statement, Courier protocol version 1, 2026-11-09** adds the
+fourth `station` file under the same metadata rule and atomic publication.
+Its registry-grammar line is `^[a-z0-9._=-]{1,64}\n`; launcher checks but never
+echoes or delivers the name in argv, environment or plan. Pre-station three-file
+links are incomplete: refuse `native-environment-not-registered` with
+`native-station-missing-entry`, instruct re-run enroll. Invalid station grammar
+refuses with `native-station-name-format`. No migration: the decision precedes
+Courier deployment. C1 hello/HMAC input stays unchanged; daemon connection
+resolution uses authenticated identity alone, with forwarded profile/fingerprint
+as assertions equal to its resolved binding, not alternate selection.
 
 The canonical-path rule is an **a2a owner statement, Courier protocol version 1**:
 `enroll --dir D` resolves D's parent once using `EvalSymlinks` and uses only that
