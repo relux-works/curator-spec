@@ -574,9 +574,9 @@ class NativeRootAdmission(unittest.TestCase):
                 dict(path='/', kind='directory', uid=0, mode=0o755),
                 dict(path='/managed', kind='directory', uid=0, mode=0o755),
                 dict(path='/managed/home', kind='directory', uid=1000, mode=0o700)]), entries={
-            'courier.sock': dict(kind='file', uid=1000, value=b'/run/courier/service.sock\n'),
-            'identity': dict(kind='file', uid=1000, value='agent-one\n'),
-            'station.key': proposal.StationKeyMetadata(kind='file', uid=1000, mode=0o600, size=32)})
+            'courier.sock': dict(kind='file', uid=1000, mode=0o600, nlink=1, value=b'/run/courier/service.sock\n'),
+            'identity': dict(kind='file', uid=1000, mode=0o600, nlink=1, value='agent-one\n'),
+            'station.key': proposal.StationKeyMetadata(kind='file', uid=1000, mode=0o600, size=32, nlink=1)})
 
     def test_canonical_station_home_vectors_and_plant(self):
         # Supplied EvalSymlinks facts admit an aliased home after canonicalization.
@@ -686,6 +686,37 @@ class NativeRootAdmission(unittest.TestCase):
                 1000, control, self.courier_contract()), env)
         self.assertEqual(bad, before)
         print('plant detected by named vector: path-later-noncanonical (native-station-directory-noncanonical)')
+
+    def test_station_entry_link_counts_and_public_modes(self):
+        # Supplied no-follow metadata pins single-link regular entries at 0600.
+        # Each invalid count/mode refuses before delivery, without content echo
+        # or input writes; the complete valid station is its positive neighbour.
+        rows = []
+        for name in ['courier.sock', 'identity', 'station.key']:
+            rows.append(('nlink-2-'+name, 'native-station-entry-links',
+                lambda d, n=name: setattr(d['entries'][n], 'nlink', 2) if n == 'station.key'
+                    else d['entries'][n].update(nlink=2)))
+        for name in ['courier.sock', 'identity']:
+            for mode in [0o644, 0o640]:
+                rows.append(('mode-'+oct(mode)+'-'+name, 'native-station-entry-mode',
+                    lambda d, n=name, m=mode: d['entries'][n].update(mode=m)))
+        env = dict(A2A_SESSION_ID='parent')
+        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
+        def launch(link):
+            return proposal.native_identity_launch('agent-one', '/managed/home', env,
+                1000, link, self.courier_contract())
+        for label, reason, change in rows:
+            with self.subTest(vector=label):
+                valid = self.station_observation(); bad = deepcopy(valid); change(bad)
+                before = deepcopy((valid, bad, env))
+                self.assertEqual(launch(valid), expected)
+                with patch.object(proposal, 'identity_environment', wraps=proposal.identity_environment) as carrier:
+                    with self.assertRaisesRegex(proposal.StationRegistrationRefusal,
+                            '^native-environment-not-registered:'+reason+'$') as refusal:
+                        launch(bad)
+                    carrier.assert_not_called()
+                self.assertEqual(str(refusal.exception), 'native-environment-not-registered:'+reason)
+                self.assertEqual((valid, bad, env), before)
 
     def test_station_link_refusals_and_plants(self):
         # Every failed observation refuses before the carrier step, without
@@ -857,7 +888,7 @@ class NativeRootAdmission(unittest.TestCase):
                 raise AssertionError('station-secret-content-read')
 
         link = self.station_observation()
-        link['entries']['station.key'] = SecretMetadata(kind='file', uid=1000, mode=0o600, size=32)
+        link['entries']['station.key'] = SecretMetadata(kind='file', uid=1000, mode=0o600, size=32, nlink=1)
         expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
         before = deepcopy(link)
         self.assertEqual(proposal.native_identity_launch('agent-one', '/managed/home', {}, 1000, link, self.courier_contract()), expected)

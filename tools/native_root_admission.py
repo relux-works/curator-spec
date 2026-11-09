@@ -221,11 +221,11 @@ def station_link_entries(entries):
 
 
 class StationKeyMetadata:
-    # Observation of four metadata attributes, never a mapping of key contents.
-    __slots__ = ('kind', 'uid', 'mode', 'size')
+    # Observation of five metadata attributes, never a mapping of key contents.
+    __slots__ = ('kind', 'uid', 'mode', 'size', 'nlink')
 
-    def __init__(self, kind, uid, mode, size):
-        self.kind, self.uid, self.mode, self.size = kind, uid, mode, size
+    def __init__(self, kind, uid, mode, size, nlink):
+        self.kind, self.uid, self.mode, self.size, self.nlink = kind, uid, mode, size, nlink
 
     def __eq__(self, other):
         return type(self) is type(other) and all(getattr(self, n) == getattr(other, n) for n in StationKeyMetadata.__slots__)
@@ -296,6 +296,10 @@ def station_link(managed_home, identity, station_uid, observed, pinned_contract)
             'native-station-entry-type')
     require(key.uid == station_uid and all(entries[n]['uid'] == station_uid for n in ('courier.sock', 'identity')),
             'native-station-entry-owner')
+    require(key.nlink == 1 and all(entries[n]['nlink'] == 1 for n in ('courier.sock', 'identity')),
+            'native-station-entry-links')
+    require(all(entries[n]['mode'] == 0o600 for n in ('courier.sock', 'identity')),
+            'native-station-entry-mode')
     require(key.mode == 0o600, 'native-station-key-mode')
     require(key.size == expected_secret_size, 'native-station-key-size')
     identity_line = entries['identity']['value']
@@ -368,9 +372,9 @@ def validate():
             dict(path='/', kind='directory', uid=0, mode=0o755),
             dict(path='/managed', kind='directory', uid=0, mode=0o755),
             dict(path='/managed/home', kind='directory', uid=1000, mode=0o700)]), entries={
-        'courier.sock': dict(kind='file', uid=1000, value=b'/run/courier/service.sock\n'),
-        'identity': dict(kind='file', uid=1000, value='agent-one\n'),
-        'station.key': StationKeyMetadata(kind='file', uid=1000, mode=0o600, size=32)})
+        'courier.sock': dict(kind='file', uid=1000, mode=0o600, nlink=1, value=b'/run/courier/service.sock\n'),
+        'identity': dict(kind='file', uid=1000, mode=0o600, nlink=1, value='agent-one\n'),
+        'station.key': StationKeyMetadata(kind='file', uid=1000, mode=0o600, size=32, nlink=1)})
     require(native_identity_launch('agent-one', '/managed/home', {}, 1000, station, dict(ProtocolVersion=1, StationKeyLen=32))
             == dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a'), 'native-station-delivery')
     print('Native admission model: stateless canonical station-path checks, ancestor checks, Courier v1 file/metadata rules; operator prune and optional pins; seven packet rows and eight named roots gates checked CLOSED; no runtime evidence')

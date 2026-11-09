@@ -17,7 +17,13 @@ lane proposes the same handover shape, intended as one design.
 Use `--native --a2a <identity>` and derive the link at the environment managed
 home's canonical `EvalSymlinks` result, then its `.a2a` directory. Refuse the removed directory flag. Require a station-UID
 owned nonsymlink 0700 directory with exactly `courier.sock`, `identity` and
-`station.key`, all regular nonsymlink files. Require an absolute socket-path
+`station.key`, all regular nonsymlink files, each with link count exactly 1 and
+mode exactly 0600. This matches the public
+[a2a enroll PR #366](https://github.com/relux-works/a2a-swarm/pull/366) and
+[C1 PR #367](https://github.com/relux-works/a2a-swarm/pull/367). Refuse link-count
+violations as `native-station-entry-links` and socket/identity mode violations
+as `native-station-entry-mode`, retaining the key-mode code; all are content-free
+sub-reasons under `native-environment-not-registered`. Require an absolute socket-path
 value from that file alone (no per-OS default), an exact one-line identity
 `^[a-z0-9._=-]{1,64}\n` matching the selected name, and a station-owned 0600 key
 whose metadata size equals a2a Go package `courier.StationKeyLen = 32` at pinned

@@ -57,6 +57,12 @@ inspected to qualify those statements.
 Use option 2 for handover shape. The [packet's refusal table](../protocol/profile-command-root-admission.md#native-station-link-handover-review)
 requires the private station-owned directory, exactly three regular nonsymlink
 entries, key metadata, matching identity and an absolute socket-path value.
+All three entries have link count exactly 1 and mode exactly 0600, as required
+by the public [a2a enroll PR #366](https://github.com/relux-works/a2a-swarm/pull/366)
+and [C1 PR #367](https://github.com/relux-works/a2a-swarm/pull/367). Any entry with
+another link count refuses `native-station-entry-links`; socket/identity modes
+other than 0600 refuse `native-station-entry-mode`, retaining the key-mode code.
+These are content-free sub-reasons under `native-environment-not-registered`.
 `courier.sock` is a regular path file, not the socket itself. The removed directory
 flag and legacy credential-directory handover are refused.
 
@@ -185,7 +191,10 @@ space, BOM, uppercase, 65 characters, missing LF and two lines with valid length
 1/64 neighbours and named format-guard plants. Key sizes 31/33 refuse against the
 supplied a2a contract value 32; ownership and unavailable-pinned-contract controls
 remain. Exact-mode vectors include directory 0500/0300/0711 and key 0400/0640.
-The key observation exposes only four metadata attributes; attribute, get, items,
+Link-count vectors reject 2 for each entry; socket/identity mode vectors reject
+0644 and 0640, each beside a valid complete station. Removing the link-count
+guard must lose those named refusals. The key observation exposes only five
+metadata attributes (including link count); attribute, get, items,
 values and iteration secret-read plants fail by name. Socket vectors cover
 ASCII 103/104-byte and Unicode 103/105-byte boundaries, LF, CRLF, embedded LF,
 NUL, BOM, missing LF, empty/relative/invalid UTF-8 and symlink refusal. P9's valid

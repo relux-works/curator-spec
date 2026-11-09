@@ -501,11 +501,17 @@ existing nonempty-conflict rule and all carrier/scrub rules remain unchanged.
 station UID. On this shared-UID milestone, **station UID means the launching
 process's effective UID**. Its closed entry set is exactly:
 
+The entry metadata requirement follows the public a2a enroll/C1 PR text:
+[a2a #366](https://github.com/relux-works/a2a-swarm/pull/366) and
+[a2a #367](https://github.com/relux-works/a2a-swarm/pull/367). Every one of the three
+entries MUST be a station-UID-owned regular file, not a symlink, with link count
+exactly 1 and mode exactly 0600. This includes `courier.sock` and `identity`.
+
 | Entry | Meaning and launcher observation |
 | --- | --- |
-| `courier.sock` | Station-UID-owned regular file, not a symlink, containing UTF-8 P followed by exactly one LF. P starts with `/`, contains no NUL, CR, LF or BOM, and has byte length 1..103 including `/` and excluding the final LF. This is an explicit UTF-8 byte-length check, not a regex character count; P is not restricted to ASCII. This file is the only socket-path source, with no per-OS default. It is a path file, not the socket object. |
-| `identity` | Station-UID-owned regular file, not a symlink, containing exactly one line matching `^[a-z0-9._=-]{1,64}\n`: ASCII name followed by one LF, no spaces or BOM. The name before LF equals the registered identity selected by `--a2a`; no trimming or normalization. |
-| `station.key` | Station-UID-owned regular file, not a symlink, mode exactly 0600, containing exactly 32 raw bytes, no encoding or appended newline. Size comes from a2a Go module package `courier.StationKeyLen = 32` at pinned `courier.ProtocolVersion = 1`, owned and published by a2a according to its Courier v1 statements. Unavailable pinned contract refuses. The launcher checks metadata only and MUST NOT open/read its secret contents. |
+| `courier.sock` | Station-UID-owned regular file, not a symlink, link count exactly 1, mode exactly 0600, containing UTF-8 P followed by exactly one LF. P starts with `/`, contains no NUL, CR, LF or BOM, and has byte length 1..103 including `/` and excluding the final LF. This is an explicit UTF-8 byte-length check, not a regex character count; P is not restricted to ASCII. This file is the only socket-path source, with no per-OS default. It is a path file, not the socket object. |
+| `identity` | Station-UID-owned regular file, not a symlink, link count exactly 1, mode exactly 0600, containing exactly one line matching `^[a-z0-9._=-]{1,64}\n`: ASCII name followed by one LF, no spaces or BOM. The name before LF equals the registered identity selected by `--a2a`; no trimming or normalization. |
+| `station.key` | Station-UID-owned regular file, not a symlink, link count exactly 1, mode exactly 0600, containing exactly 32 raw bytes, no encoding or appended newline. Size comes from a2a Go module package `courier.StationKeyLen = 32` at pinned `courier.ProtocolVersion = 1`, owned and published by a2a according to its Courier v1 statements. Unavailable pinned contract refuses. The launcher checks metadata only and MUST NOT open/read its secret contents. |
 
 No credentials, state, mailbox, lock or additional entry is allowed. For example,
 `credentials.json` is an extra-entry refusal even if its bytes resemble a valid
@@ -547,6 +553,8 @@ managed-home input retains its separate precondition code:
 | Any of the three required entries missing | `native-station-missing-entry` |
 | Any entry is a symlink or another nonregular object | `native-station-entry-type` |
 | Any entry owner differs from the station UID | `native-station-entry-owner` |
+| Any entry link count differs from 1 | `native-station-entry-links` |
+| Socket-path or identity file mode differs from 0600 | `native-station-entry-mode` |
 | Key mode differs from 0600 | `native-station-key-mode` |
 | Key byte size differs from the Courier contract | `native-station-key-size` |
 | Identity bytes violate the exact one-line grammar | `native-station-identity-format` |

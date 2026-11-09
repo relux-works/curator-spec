@@ -7,6 +7,13 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Align native Courier station entry metadata with public
+  [a2a enroll #366](https://github.com/relux-works/a2a-swarm/pull/366) and
+  [C1 #367](https://github.com/relux-works/a2a-swarm/pull/367): every entry is a
+  station-owned single-link regular nonsymlink file at exactly 0600. Add stable
+  link-count and socket/identity-mode refusals, negative/positive controls and
+  a named link-count guard plant. Existing Review/draft/CLOSED status is unchanged.
+
 - Publish Review CIP-0032 and draft Decision 0037 for a closed native Courier
   station link derived from the environment managed home, replacing the proposed
   credential-directory flag. Add metadata/refusal controls and named guard plants;
