@@ -72,10 +72,16 @@ Its content is exactly one registry-grammar line `^[a-z0-9._=-]{1,64}\n`.
 Launcher checks it without echo or delivery in argv, environment or plan.
 A pre-station three-file directory is incomplete and refuses under
 `native-environment-not-registered:native-station-missing-entry`: re-run enroll.
-No migration is defined because this decision precedes Courier deployment.
-C1 hello/HMAC input is unchanged; the daemon resolves connection by authenticated
-identity alone. Forwarded profile/fingerprint are equality assertions against
-that identity's resolved binding, not connection selection inputs.
+The same **a2a owner statement, Courier protocol version 1, 2026-11-09**
+specifies no migration because Courier is deployed nowhere yet, and leaves C1
+hello/HMAC input unchanged.
+
+**Informative daemon context** from part (b) of that owner statement: neither
+registry nor client chooses the connection; the daemon resolves it from the
+authenticated identity alone. Forwarded `--profile` and
+`--connection-fingerprint` are equal-only assertions against that identity's
+resolved binding; mismatch refuses with identity-mismatch, with no fallback.
+This context adds no launcher requirement. The launcher makes no connection choice.
 
 The canonical-path rule is an **a2a owner statement, Courier protocol version 1**.
 Enrollment resolves D's parent once with `EvalSymlinks` and works on the canonical
@@ -206,8 +212,8 @@ Station-name vectors cover space, uppercase, 65 characters, missing LF, two
 lines and BOM beside valid 1/64-character neighbours; the station name never
 reaches the carrier. A named pre-station namespace plant drops only the new
 required name; full-launch missing-station refusal is separately checked.
-Link-count vectors reject 2 for each entry; socket/identity mode vectors reject
-0644 and 0640, each beside a valid complete station. Removing the link-count
+Link-count vectors reject 2 for each entry; socket/identity/station mode vectors
+reject 0644, 0640, 0400 and 0700, each beside a valid complete station. Removing the link-count
 guard must lose those named refusals. The key observation exposes only five
 metadata attributes (including link count); attribute, get, items,
 values and iteration secret-read plants fail by name. Socket vectors cover

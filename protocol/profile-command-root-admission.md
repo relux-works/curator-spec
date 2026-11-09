@@ -518,12 +518,18 @@ process's effective UID**. Its closed entry set is exactly:
 
 A three-file pre-`station` directory is incomplete and refuses
 `native-environment-not-registered:native-station-missing-entry`; the operator
-action is **re-run enroll**. No migration is defined: this owner decision
-precedes Courier deployment. A missing `station` has that same stable refusal.
-The dated owner statement leaves C1 hello and its HMAC input unchanged. The
-daemon resolves the connection from authenticated identity alone; forwarded
-`--profile` and `--connection-fingerprint` are assertions that MUST equal that
-identity's resolved binding. This allocates no new launcher selector or wire.
+action is **re-run enroll**. A missing `station` has that same stable refusal.
+The **a2a owner statement, Courier protocol version 1, 2026-11-09** specifies
+no migration because Courier is deployed nowhere yet, and leaves C1 hello and
+its HMAC input unchanged.
+
+**Informative daemon context**, from part (b) of that same a2a owner statement:
+neither the registry nor the client chooses the connection. The daemon resolves
+it from the authenticated identity alone. Forwarded `--profile` and
+`--connection-fingerprint` are assertions that equal the identity's resolved
+binding; otherwise the daemon refuses with identity-mismatch, with no fallback.
+These describe a2a behaviour, not additional launcher requirements. The launcher
+makes no connection choice; this adds no launcher selector or wire.
 
 No credentials, state, mailbox, lock or additional entry is allowed. For example,
 `credentials.json` is an extra-entry refusal even if its bytes resemble a valid
@@ -532,7 +538,7 @@ this native route. A matching inherited pair alone proves no station admission.
 
 Before constructing a plan or starting a provider, the launcher checks the
 no-follow directory and entry observations and the three non-secret file values.
-Unavailable metadata or either public-file read refuses `native-station-unreadable`;
+Unavailable metadata or any public-file read refuses `native-station-unreadable`;
 this does not require or permit reading the key. Implementations must bind
 the checks to the same directory rather than follow a replacement symlink.
 This bounded model receives observations, not live files, and qualifies neither
@@ -556,7 +562,7 @@ managed-home input retains its separate precondition code:
 | Supplied station directory differs from its EvalSymlinks result | `native-station-directory-noncanonical` |
 | Courier secret-size contract is unresolved | `native-station-contract-unresolved` |
 | Observed directory is not the derived managed-home locator | `native-station-directory-location` |
-| Required metadata or either public-file value unavailable | `native-station-unreadable` |
+| Required metadata or any public-file value unavailable | `native-station-unreadable` |
 | Directory missing | `native-station-directory-missing` |
 | Directory is a symlink or another non-directory | `native-station-directory-type` |
 | Directory mode differs from 0700 | `native-station-directory-mode` |

@@ -41,10 +41,17 @@ Its registry-grammar line is `^[a-z0-9._=-]{1,64}\n`; launcher checks but never
 echoes or delivers the name in argv, environment or plan. Pre-station three-file
 links are incomplete: refuse `native-environment-not-registered` with
 `native-station-missing-entry`, instruct re-run enroll. Invalid station grammar
-refuses with `native-station-name-format`. No migration: the decision precedes
-Courier deployment. C1 hello/HMAC input stays unchanged; daemon connection
-resolution uses authenticated identity alone, with forwarded profile/fingerprint
-as assertions equal to its resolved binding, not alternate selection.
+refuses with `native-station-name-format`. The same **a2a owner statement,
+Courier protocol version 1, 2026-11-09** specifies no migration because Courier
+is deployed nowhere yet, and leaves C1 hello/HMAC input unchanged.
+
+**Informative daemon context** from part (b) of that owner statement: neither
+registry nor client chooses the connection. The daemon resolves it from the
+authenticated identity alone; forwarded `--profile` and
+`--connection-fingerprint` are equal-only assertions against that identity's
+resolved binding. Mismatch refuses with identity-mismatch, with no fallback.
+This is a2a context, not an added launcher requirement. The launcher makes no
+connection choice.
 
 The canonical-path rule is an **a2a owner statement, Courier protocol version 1**:
 `enroll --dir D` resolves D's parent once using `EvalSymlinks` and uses only that
