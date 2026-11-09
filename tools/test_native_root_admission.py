@@ -687,37 +687,6 @@ class NativeRootAdmission(unittest.TestCase):
         self.assertEqual(bad, before)
         print('plant detected by named vector: path-later-noncanonical (native-station-directory-noncanonical)')
 
-    def test_station_entry_link_counts_and_public_modes(self):
-        # Supplied no-follow metadata pins single-link regular entries at 0600.
-        # Each invalid count/mode refuses before delivery, without content echo
-        # or input writes; the complete valid station is its positive neighbour.
-        rows = []
-        for name in ['courier.sock', 'identity', 'station.key']:
-            rows.append(('nlink-2-'+name, 'native-station-entry-links',
-                lambda d, n=name: setattr(d['entries'][n], 'nlink', 2) if n == 'station.key'
-                    else d['entries'][n].update(nlink=2)))
-        for name in ['courier.sock', 'identity']:
-            for mode in [0o644, 0o640]:
-                rows.append(('mode-'+oct(mode)+'-'+name, 'native-station-entry-mode',
-                    lambda d, n=name, m=mode: d['entries'][n].update(mode=m)))
-        env = dict(A2A_SESSION_ID='parent')
-        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
-        def launch(link):
-            return proposal.native_identity_launch('agent-one', '/managed/home', env,
-                1000, link, self.courier_contract())
-        for label, reason, change in rows:
-            with self.subTest(vector=label):
-                valid = self.station_observation(); bad = deepcopy(valid); change(bad)
-                before = deepcopy((valid, bad, env))
-                self.assertEqual(launch(valid), expected)
-                with patch.object(proposal, 'identity_environment', wraps=proposal.identity_environment) as carrier:
-                    with self.assertRaisesRegex(proposal.StationRegistrationRefusal,
-                            '^native-environment-not-registered:'+reason+'$') as refusal:
-                        launch(bad)
-                    carrier.assert_not_called()
-                self.assertEqual(str(refusal.exception), 'native-environment-not-registered:'+reason)
-                self.assertEqual((valid, bad, env), before)
-
     def test_station_link_refusals_and_plants(self):
         # Every failed observation refuses before the carrier step, without
         # echoing values or mutating inputs. Each guard plant admits its own bad
@@ -746,6 +715,16 @@ class NativeRootAdmission(unittest.TestCase):
             rows.append(('directory-mode-'+oct(mode), 'native-station-directory-mode', lambda d, m=mode: d.update(mode=m)))
         for mode in [0o400, 0o640]:
             rows.append(('key-mode-'+oct(mode), 'native-station-key-mode', lambda d, m=mode: setattr(d['entries']['station.key'], 'mode', m)))
+        # Exact single-link/0600 rules include owner-only 0400/0700 refusals;
+        # both new codes use the same valid-neighbour and in-tree guard plants.
+        for name in ['courier.sock', 'identity', 'station.key']:
+            rows.append(('nlink-2-'+name, 'native-station-entry-links',
+                lambda d, n=name: setattr(d['entries'][n], 'nlink', 2) if n == 'station.key'
+                    else d['entries'][n].update(nlink=2)))
+        for name in ['courier.sock', 'identity']:
+            for mode in [0o644, 0o640, 0o400, 0o700]:
+                rows.append(('mode-'+oct(mode)+'-'+name, 'native-station-entry-mode',
+                    lambda d, n=name, m=mode: d['entries'][n].update(mode=m)))
         env = dict(PATH='/usr/bin', A2A_SESSION_ID='parent', A2A_MATRIX_URL='https://parent.invalid')
         expected = dict(PATH='/usr/bin', A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
         def launch(link):

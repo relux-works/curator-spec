@@ -497,15 +497,15 @@ authentication qualification.
 The inherited two-key comparison uses the canonical derived directory; its
 existing nonempty-conflict rule and all carrier/scrub rules remain unchanged.
 
-`M/.a2a` MUST be a directory, not a symlink, mode exactly 0700, owned by the
-station UID. On this shared-UID milestone, **station UID means the launching
-process's effective UID**. Its closed entry set is exactly:
-
 The entry metadata requirement follows the public a2a enroll/C1 PR text:
 [a2a #366](https://github.com/relux-works/a2a-swarm/pull/366) and
 [a2a #367](https://github.com/relux-works/a2a-swarm/pull/367). Every one of the three
 entries MUST be a station-UID-owned regular file, not a symlink, with link count
 exactly 1 and mode exactly 0600. This includes `courier.sock` and `identity`.
+
+`M/.a2a` MUST be a directory, not a symlink, mode exactly 0700, owned by the
+station UID. On this shared-UID milestone, **station UID means the launching
+process's effective UID**. Its closed entry set is exactly:
 
 | Entry | Meaning and launcher observation |
 | --- | --- |
