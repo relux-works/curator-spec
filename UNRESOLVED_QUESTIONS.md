@@ -346,6 +346,7 @@ Consuming that pinned contract, real
 enrollment qualification and the future admin-socket seam remain implementation
 dependencies; no root-emission gate opens or status becomes Accepted.
 
-The fixed canonical enrollment binding has a new unresolved owner question:
-
-**To the a2a owner:** Where does Courier v1 record the fixed enroll-time canonical station-directory path, and through which specified read interface can readers and launcher admission obtain that value? The closed `.a2a` entry set stays exactly three; this proposal allocates no additional entry or storage location.
+The canonical enrollment-record question is closed by the **a2a owner statement,
+Courier protocol version 1**: no station path is stored. Every reader requires
+an absolute supplied D with `EvalSymlinks(D) == D`. Courier hello authenticates
+by secret and UID, not path. No new owner question is introduced here.

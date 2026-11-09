@@ -17,10 +17,12 @@ Versioning for the complete specification set.
   module pinning as implementation work. Pin exact modes and metadata-only controls. Both former questions are closed; all emission gates stay CLOSED.
 
 - Fold the Courier v1 canonical-path owner statement into native station admission:
-  derive from the EvalSymlinks managed home, check canonical ancestors and compare
-  the fixed enroll-time locator. Add refusal/positive controls and a writable-
-  ancestor plant; keep the enroll-record location/read interface an open a2a
-  question. This shares canonicalization with the Codex gateway managed-home
+  derive from the EvalSymlinks managed home and check canonical ancestors.
+  Courier v1 readers require an absolute D with EvalSymlinks(D) == D; the a2a
+  owner confirms no enroll-time path is stored and hello authenticates by secret
+  and UID. Close the record question; add canonical/aliased/relative reader-path
+  controls and a path-equality plant alongside the writable-ancestor plant.
+  This shares canonicalization with the Codex gateway managed-home
   follow-up without opening that route or any root-emission gate.
 
 - Restore the frozen rc.14 source document and manifest without re-pinning.

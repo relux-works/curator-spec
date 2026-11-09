@@ -612,10 +612,11 @@ Courier; identity-line grammar and key-size/owner checks have named controls.
 
 The Courier v1 canonical-path amendment resolves the managed home with
 `EvalSymlinks`, checks canonical ancestor ownership/writes (root-owned sticky
-exception), and compares the derived station locator to the fixed enroll-time
-binding. Link/entry symlinks still refuse. The binding's recording location/read
-interface remains an [open a2a owner question](protocol/profile-command-root-admission.md#canonical-enrollment-record-open-question);
-no fourth station entry or live resolution witness is claimed.
+exception), and requires the derived station directory D to be absolute with
+`EvalSymlinks(D) == D`, as every Courier v1 reader must. The a2a owner statement
+closes the former record question: no station path is stored; hello authenticates
+by secret and UID. Link/entry symlinks still refuse. No fourth station entry or
+live resolution witness is claimed.
 
 ## Machine Host notification proposal
 

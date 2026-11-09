@@ -569,8 +569,8 @@ class NativeRootAdmission(unittest.TestCase):
     @staticmethod
     def station_observation():
         # Synthetic no-follow metadata; supplied a2a enroll contract length is 32 bytes.
-        return dict(path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, resolution=dict(requested_home='/managed/home', canonical_home='/managed/home',
-            enrolled_directory='/managed/home/.a2a', ancestors=[
+        return dict(path='/managed/home/.a2a', resolved_path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, resolution=dict(requested_home='/managed/home', canonical_home='/managed/home',
+            ancestors=[
                 dict(path='/', kind='directory', uid=0, mode=0o755),
                 dict(path='/managed', kind='directory', uid=0, mode=0o755),
                 dict(path='/managed/home', kind='directory', uid=1000, mode=0o700)]), entries={
@@ -579,20 +579,14 @@ class NativeRootAdmission(unittest.TestCase):
             'station.key': proposal.StationKeyMetadata(kind='file', uid=1000, mode=0o600, size=32)})
 
     def test_canonical_station_home_vectors_and_plant(self):
-        # Supplied EvalSymlinks facts admit an aliased input through the fixed
-        # canonical home. Unsafe ancestors, changed/missing enrollment binding
-        # and link/entry symlinks refuse before delivery without input writes.
-        # This proves the bounded checks, not OS resolution or record custody.
+        # Supplied EvalSymlinks facts admit an aliased home after canonicalization.
+        # Unsafe ancestors and link/entry symlinks refuse before delivery without
+        # input writes. This proves bounded checks, not live OS resolution.
         alias = '/alias/home'
         def aliased():
             link = self.station_observation()
             link['resolution']['requested_home'] = alias
             return link
-        def retarget(link):
-            r = link['resolution']; r['canonical_home'] = '/other/home'
-            r['ancestors'][1]['path'] = '/other'
-            r['ancestors'][2]['path'] = '/other/home'
-            link['path'] = '/other/home/.a2a'
         rows = [
             ('group-writable-parent', 'native-station-ancestor-writable', lambda d: d['resolution']['ancestors'][1].update(mode=0o775)),
             ('world-writable-parent', 'native-station-ancestor-writable', lambda d: d['resolution']['ancestors'][1].update(mode=0o757)),
@@ -603,8 +597,6 @@ class NativeRootAdmission(unittest.TestCase):
             ('unavailable-resolution', 'native-station-home-resolution', lambda d: d.pop('resolution')),
             ('omitted-canonical-ancestor', 'native-station-ancestor-observation', lambda d: d['resolution']['ancestors'].pop(1)),
             ('symlink-canonical-ancestor', 'native-station-ancestor-observation', lambda d: d['resolution']['ancestors'][1].update(kind='symlink')),
-            ('unavailable-enrolled-path', 'native-station-enrollment-path-unavailable', lambda d: d['resolution'].update(enrolled_directory=None)),
-            ('canonical-target-changed', 'native-station-enrollment-path-changed', retarget),
             ('station-directory-symlink', 'native-station-directory-type', lambda d: d.update(kind='symlink')),
         ]
         for name in ['courier.sock', 'identity', 'station.key']:
@@ -642,13 +634,63 @@ class NativeRootAdmission(unittest.TestCase):
         self.assertEqual(bad, before)
         print('plant detected by named vector: group-writable-parent (native-station-ancestor-writable)')
 
+    def test_station_directory_canonical_readers_and_plant(self):
+        # Supplied directory EvalSymlinks observations reject relative and aliased
+        # reader paths before delivery, without writes or path reflection. The
+        # canonical form of the same aliased home passes; no stored path is used.
+        alias = '/alias/home'
+        env = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
+        def valid():
+            link = self.station_observation()
+            link['resolution']['requested_home'] = alias
+            return link
+        def launch(link):
+            return proposal.native_identity_launch('agent-one', alias, env, 1000, link, self.courier_contract())
+        rows = [
+            ('uncanonicalized-ancestor-alias', 'native-station-directory-noncanonical',
+             lambda d: d.update(path='/alias/home/.a2a')),
+            ('relative-directory', 'native-station-directory-absolute',
+             lambda d: d.update(path='home/.a2a')),
+            ('resolution-unavailable', 'native-station-directory-resolution',
+             lambda d: d.pop('resolved_path')),
+            ('path-later-noncanonical', 'native-station-directory-noncanonical',
+             lambda d: d.update(resolved_path='/other/home/.a2a')),
+        ]
+        for label, reason, change in rows:
+            with self.subTest(vector=label):
+                control = valid(); before = deepcopy((control, env))
+                self.assertEqual(launch(control), env)
+                self.assertEqual((control, env), before)
+                # Already canonical input is the same positive with no alias.
+                canonical = self.station_observation(); before_canonical = deepcopy(canonical)
+                self.assertEqual(proposal.native_identity_launch('agent-one', '/managed/home', env,
+                    1000, canonical, self.courier_contract()), env)
+                self.assertEqual(canonical, before_canonical)
+                bad = valid(); change(bad); before = deepcopy((bad, env))
+                with patch.object(proposal, 'identity_environment', wraps=proposal.identity_environment) as carrier:
+                    with self.assertRaisesRegex(proposal.StationRegistrationRefusal,
+                            '^native-environment-not-registered:'+reason+'$') as error:
+                        launch(bad)
+                    carrier.assert_not_called()
+                self.assertEqual(str(error.exception), 'native-environment-not-registered:'+reason)
+                self.assertEqual((bad, env), before)
+        # Removing equality admits a path that became noncanonical despite a
+        # still-valid canonical-home observation; its canonical neighbour passes.
+        mutant = self.mutant(proposal, 'station_link', 'native-station-directory-noncanonical')
+        bad = valid(); bad['resolved_path'] = '/other/home/.a2a'; before = deepcopy(bad)
+        for control in [valid(), bad]:
+            self.assertEqual(mutant['native_identity_launch']('agent-one', alias, env,
+                1000, control, self.courier_contract()), env)
+        self.assertEqual(bad, before)
+        print('plant detected by named vector: path-later-noncanonical (native-station-directory-noncanonical)')
+
     def test_station_link_refusals_and_plants(self):
         # Every failed observation refuses before the carrier step, without
         # echoing values or mutating inputs. Each guard plant admits its own bad
         # validation-stage row and the nearby valid control. Namespace plants
         # exercise the shape helper; no real filesystem/Courier is tested.
         rows = [
-            ('directory-location', 'native-station-directory-location', lambda d: d.update(path='/legacy/credentials')),
+            ('directory-location', 'native-station-directory-location', lambda d: d.update(path='/legacy/credentials', resolved_path='/legacy/credentials')),
             ('observation-unreadable', 'native-station-unreadable', lambda d: d.update(complete=False)),
             ('directory-missing', 'native-station-directory-missing', lambda d: d.update(exists=False)),
             ('directory-symlink', 'native-station-directory-type', lambda d: d.update(kind='symlink')),

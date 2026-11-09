@@ -471,20 +471,28 @@ The same canonical managed-home derivation applies to the Codex gateway
 managed-home follow-up; the [existing gateway exclusion](#managed-codex-gateway-exclusion)
 and route selection are unchanged by this rule.
 
-The canonical station-directory resolution is **fixed at enrollment**. Readers
-and launcher admission MUST compare the launcher-derived canonical locator with
-the value recorded at enroll time; if the current canonical path differs, refuse
-`native-environment-not-registered` with sub-reason
-`native-station-enrollment-path-changed`. Never silently re-resolve to a new
-target, update the binding, fall back to a different locator or enroll on launch.
-Unavailable fixed binding also refuses under that operator code, with sub-reason
-`native-station-enrollment-path-unavailable`. The recording location/read interface
-has not been stated by a2a and is an [open owner question](#canonical-enrollment-record-open-question);
-this proposal does not add a fourth station-link entry or assign storage.
+The **a2a owner statement, Courier protocol version 1** closes the former
+enroll-time record question: there is **no stored enroll-time station path**.
+Every reader of `.a2a/` — enroll's rotate path, the station-side client and
+launcher admission — takes the directory path D it was given and MUST refuse
+unless D is absolute and `EvalSymlinks(D) == D`. Callers always pass the canonical
+form. Launcher admission applies this check to its derived `M/.a2a` before
+planning or delivery. A relative path refuses
+`native-environment-not-registered:native-station-directory-absolute`; a path
+unequal to its `EvalSymlinks` result refuses under the same operator code with
+`native-station-directory-noncanonical`. Unavailable resolution refuses with
+`native-station-directory-resolution`. Refusals echo no path contents.
 
-The bounded model consumes supplied resolution, complete ancestor facts and an
-enroll-time canonical locator observation. Those are model inputs, not a proposed
-record schema, storage location or live `EvalSymlinks`/filesystem qualification.
+“Fixed at enroll time” is met by the reader check: a supplied path that later
+becomes noncanonical refuses, rather than silently following its new target.
+Readers do not rewrite the supplied path, fall back or enroll on launch. Courier
+stores no station path; the hello authenticates the station by secret and UID,
+not by path. No record, storage location, additional link entry or read interface
+is required by this contract.
+
+The bounded model consumes supplied home/directory `EvalSymlinks` results and
+complete ancestor facts. These are observations, not live resolution or Courier
+authentication qualification.
 The inherited two-key comparison uses the canonical derived directory; its
 existing nonempty-conflict rule and all carrier/scrub rules remain unchanged.
 
@@ -524,8 +532,9 @@ managed-home input retains its separate precondition code:
 | Canonical managed home not owned by the station UID | `native-station-home-owner` |
 | Canonical ancestor owned by neither station UID nor root | `native-station-ancestor-owner` |
 | Canonical ancestor group/world-writable without root-owned sticky exception | `native-station-ancestor-writable` |
-| Enroll-time canonical locator unavailable | `native-station-enrollment-path-unavailable` |
-| Derived canonical station locator differs from enroll-time locator | `native-station-enrollment-path-changed` |
+| Supplied station directory is not absolute | `native-station-directory-absolute` |
+| Station directory EvalSymlinks result unavailable or invalid | `native-station-directory-resolution` |
+| Supplied station directory differs from its EvalSymlinks result | `native-station-directory-noncanonical` |
 | Courier secret-size contract is unresolved | `native-station-contract-unresolved` |
 | Observed directory is not the derived managed-home locator | `native-station-directory-location` |
 | Required metadata or either public-file value unavailable | `native-station-unreadable` |
@@ -585,12 +594,9 @@ manager-driven enrollment or automatic launch-time enrollment claimed here.
 Both former lifecycle/caller and key-length questions are resolved by these
 answers. Pinning/consuming the published a2a module contract and qualifying real
 enrollment remain implementation dependencies, not new product decisions in
-this revision. The new canonical enrollment-record question below remains open.
+this revision. The canonical enrollment-record question is also closed by the
+a2a Courier v1 owner statement above; there is no stored path or read interface.
 All root-emission gates remain CLOSED.
-
-#### Canonical enrollment record (open question)
-
-**To the a2a owner:** Where does Courier v1 record the fixed enroll-time canonical station-directory path, and through which specified read interface can readers and launcher admission obtain that value? The closed `.a2a` entry set stays exactly three; this proposal allocates no additional entry or storage location.
 
 For native explicit identity, compare exactly `A2A_AGENT` and `A2A_CONFIG_DIR`
 against the identity and derived station-link directory: nonempty differing
@@ -717,7 +723,7 @@ workstation. The W0 observations above are navigation only.
 | Native witness | Required observation and negative control |
 | --- | --- |
 | W0 tool-shell delivery | Real Claude and Codex Linux tool shells: profile PATH survives startup; Codex `inherit=core` receives selected identity/config. Settings `env.A2A_AGENT`/config override conflict is prevented or refuses; valid matching settings work. Record actual precedence and carrier, not parent env alone. |
-| Canonical station path | Admit a home under a symlinked ancestor through its fixed canonical home; deliver/compare canonical `A2A_CONFIG_DIR`. Reject link/entry symlinks, group/world-writable or foreign-owned canonical ancestors, unavailable enroll binding and a coherent change of canonical target, with zero starts and unchanged files. Root-owned sticky and caller-owned safe ancestors are positive controls; root-owned M is not. No path contents are echoed in refusals. |
+| Canonical station path | Admit a home under a symlinked ancestor through its canonical home; deliver/compare canonical `A2A_CONFIG_DIR`. Reject link/entry symlinks, group/world-writable or foreign-owned canonical ancestors, relative or uncanonicalized reader paths, unavailable resolution and a supplied path that later becomes noncanonical, with zero starts and unchanged files. Root-owned sticky and caller-owned safe ancestors are positive controls; root-owned M is not. No path contents are echoed in refusals. |
 | Real launch and identity | Two profiles with different sentinel bytes, two selected identities with distinct managed-home station links, one effective UID. Actual tool shells find selected commands and report selected identity. Nonempty inherited conflict refuses; empty values pass. New sessions never reuse inherited `A2A_SESSION_ID`/`CODEX_THREAD_ID`/`CLAUDE_CODE_SESSION_ID`; valid runtime-owned metadata works. No ambient decoy executes. |
 | Explicit native identity transport/store | Inherit `A2A_MATRIX_URL` differing from selected `matrix.env`: it must not reach the new identity; under recommended removal a matching inherited URL still permits selected routing. Under the open nonempty-value refusal variant, matching as well as differing nonempty URLs refuse with zero starts; unset is its launch control. Exercise the other three named overrides as well. Recommended removal drops all four before planning; the launcher owner may instead choose nonempty-value refusal, witnessed as zero starts. Unset control launches; without an explicit native identity the new four-key rule is not applied. |
 | a2a image guard across generations | Linux image identity is dev/inode of `/proc/<pid>/exe`. Any live own-UID `a2a` process with the same identity and canonical config root, regardless of command, participates in the different-image refusal: a byte-identical copy in a new root is refused as a different image; a hard link to the same inode passes the image comparison (other bind and command-root admission guards still apply). The scan covers only own-UID processes whose executable name starts with `a2a`, so the published executable name MUST retain that prefix; a differently named copy is invisible to this scan and is not a bypass claim. Nearby distinct identity/config-root controls behave as current a2a permits. With immutable roots the consumer does not refresh to a newly published generation. Stop all conflicting old-image processes, not only the consumer. For the proposed per-generation hook source, install settings using G2, complete required trust, start a new session and assert the consumer's `/proc/<pid>/exe` dev/inode equals G2's image, not merely successful bind or G2 on PATH. Stale G1 settings with G2 on PATH and no old process can successfully bind G1: this MUST fail the upgrade witness. Rewritten G2 settings plus an observed G2 consumer are the positive control. Hook-source choice and settings/trust/restart cost await a2a-owner acceptance. |

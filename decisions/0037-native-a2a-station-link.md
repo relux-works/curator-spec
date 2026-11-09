@@ -37,11 +37,17 @@ group/world writes, except root-owned sticky directories. The canonical home
 belongs to launching effective UID. Link/entry symlinks still refuse. The same
 canonicalization applies to the Codex gateway managed-home follow-up.
 
-Compare against the fixed enroll-time canonical station locator. A changed or
-unavailable binding refuses as environment not registered with Courier, with
-stable sub-reasons, no path reflection, silent retarget, fallback or update.
-The binding's storage/read interface remains an a2a owner question; no additional
-station entry or record location is allocated here.
+An **a2a owner statement, Courier protocol version 1** closes the former
+record question: no enroll-time station path is stored. Every reader (enroll's
+rotate path, station-side client, launcher admission) requires the supplied D
+to be absolute and `EvalSymlinks(D) == D`; the caller passes canonical form.
+Launcher checks its derived `M/.a2a` before planning. Relative, unavailable
+resolution and noncanonical paths refuse as environment not registered with
+Courier, with stable content-free sub-reasons. A path that later becomes
+noncanonical fails this check; no silent rewrite, fallback or launch enrollment.
+Courier stores no station path: hello authenticates by secret and UID, not path.
+No record storage or read API is needed. Ancestor and link/entry symlink guards
+remain binding.
 
 The same Courier v1 owner statements bind the socket file: UTF-8 P plus exactly
 one LF, where P starts with `/`, has no NUL, CR, LF or BOM, and is 1..103 bytes
@@ -93,10 +99,12 @@ witnesses remain required.
 
 The [enrollment contract](../protocol/profile-command-root-admission.md#station-enrollment-contract-owner-answers-folded-into-review)
 closes both former questions using supplied a2a owner and curator-run answers.
-The canonical enrollment-record question below is open. Curator-run module-version pinning and
+The canonical enrollment-record question is also closed by the Courier v1
+owner statement: absolute canonical reader paths, no stored path. Curator-run
+module-version pinning and
 contract consumption, real enrollment qualification and later admin-socket integration
 remain implementation work; this draft accepts or qualifies none of them.
 
-## Canonical enrollment record: open owner question
+## Open questions
 
-**To the a2a owner:** Where does Courier v1 record the fixed enroll-time canonical station-directory path, and through which specified read interface can readers and launcher admission obtain that value? The closed `.a2a` entry set stays exactly three; this proposal allocates no additional entry or storage location.
+No new owner question is introduced by this revision.

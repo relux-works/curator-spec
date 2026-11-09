@@ -247,8 +247,8 @@ def courier_socket_path(raw):
 
 
 def canonical_station_home(managed_home, station_uid, resolution):
-    # Supplied EvalSymlinks result, complete canonical ancestor facts and fixed
-    # enroll-time binding only. No live resolution or invented record location.
+    # Supplied EvalSymlinks result and complete canonical ancestor facts only.
+    # No live resolution; Courier stores no enroll-time station path.
     require(isinstance(managed_home, str) and absolute(managed_home), 'native-identity-directory')
     require(isinstance(resolution, dict) and resolution.get('requested_home') == managed_home
             and isinstance(resolution.get('canonical_home'), str) and absolute(resolution['canonical_home']),
@@ -265,9 +265,6 @@ def canonical_station_home(managed_home, station_uid, resolution):
     require(all(a['uid'] in (0, station_uid) for a in ancestors), 'native-station-ancestor-owner')
     require(all(a['mode'] & 0o022 == 0 or (a['uid'] == 0 and a['mode'] & 0o1000 != 0)
                 for a in ancestors), 'native-station-ancestor-writable')
-    enrolled = resolution.get('enrolled_directory')
-    require(isinstance(enrolled, str) and bool(enrolled), 'native-station-enrollment-path-unavailable')
-    require(enrolled == canonical.rstrip('/')+'/.a2a', 'native-station-enrollment-path-changed')
     return canonical
 
 
@@ -281,7 +278,12 @@ def station_link(managed_home, identity, station_uid, observed, pinned_contract)
             and pinned_contract.get('StationKeyLen') == 32,
             'native-station-contract-unresolved')
     expected_secret_size = pinned_contract['StationKeyLen']
-    require(observed['path'] == managed_home.rstrip('/')+'/.a2a', 'native-station-directory-location')
+    directory = observed['path']
+    require(isinstance(directory, str) and absolute(directory), 'native-station-directory-absolute')
+    require(isinstance(observed.get('resolved_path'), str) and absolute(observed['resolved_path']),
+            'native-station-directory-resolution')
+    require(observed['resolved_path'] == directory, 'native-station-directory-noncanonical')
+    require(directory == managed_home.rstrip('/')+'/.a2a', 'native-station-directory-location')
     require(observed['complete'], 'native-station-unreadable')
     require(observed['exists'], 'native-station-directory-missing')
     require(observed['kind'] == 'directory', 'native-station-directory-type')
@@ -361,8 +363,8 @@ def validate():
     check_candidate(case,observed)
     check_gate_text((ROOT/'protocol/profile-command-root-admission.md').read_text(encoding='utf-8'))
     check_root_gate_text((ROOT/'protocol/profile-command-roots.md').read_text(encoding='utf-8'))
-    station = dict(path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, resolution=dict(requested_home='/managed/home', canonical_home='/managed/home',
-        enrolled_directory='/managed/home/.a2a', ancestors=[
+    station = dict(path='/managed/home/.a2a', resolved_path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, resolution=dict(requested_home='/managed/home', canonical_home='/managed/home',
+        ancestors=[
             dict(path='/', kind='directory', uid=0, mode=0o755),
             dict(path='/managed', kind='directory', uid=0, mode=0o755),
             dict(path='/managed/home', kind='directory', uid=1000, mode=0o700)]), entries={
