@@ -254,6 +254,9 @@ def canonical_station_home(managed_home, station_uid, resolution):
             and isinstance(resolution.get('canonical_home'), str) and absolute(resolution['canonical_home']),
             'native-station-home-resolution')
     canonical = resolution['canonical_home']
+    require(isinstance(resolution.get('resolved_home'), str) and absolute(resolution['resolved_home']),
+            'native-station-home-resolution')
+    require(resolution['resolved_home'] == canonical, 'native-station-home-noncanonical')
     expected = [str(p) for p in reversed(PurePosixPath(canonical).parents)] + [canonical]
     ancestors = resolution.get('ancestors')
     require(isinstance(ancestors, list) and all(isinstance(a, dict) for a in ancestors)
@@ -271,6 +274,7 @@ def canonical_station_home(managed_home, station_uid, resolution):
 def station_link(managed_home, identity, station_uid, observed, pinned_contract):
     # Supplied no-follow metadata and three public values only; no secret bytes,
     # filesystem observation, peer authentication or Courier registration.
+    # Parent home_siblings are outside this link namespace and are not inspected.
     # The supplied pin represents a2a courier.ProtocolVersion/StationKeyLen;
     # actual Go module-version pinning/lookup is curator-run implementation work.
     require(isinstance(managed_home, str) and absolute(managed_home), 'native-identity-directory')
@@ -323,7 +327,8 @@ def identity_environment(identity, managed_home, inherited):
     require(isinstance(identity, str) and bool(identity) and managed_home is not None,
             'native-identity-pair')
     require(isinstance(managed_home, str) and absolute(managed_home), 'native-identity-directory')
-    directory = managed_home.rstrip('/')+'/.a2a'
+    # A2A_CONFIG_DIR is the canonical config base; a2a appends .a2a itself.
+    directory = managed_home
     values = dict(A2A_AGENT=identity, A2A_CONFIG_DIR=directory)
     for key, value in values.items():
         require(inherited.get(key) in (None, '', value), 'native-identity-conflict')
@@ -371,7 +376,7 @@ def validate():
     check_candidate(case,observed)
     check_gate_text((ROOT/'protocol/profile-command-root-admission.md').read_text(encoding='utf-8'))
     check_root_gate_text((ROOT/'protocol/profile-command-roots.md').read_text(encoding='utf-8'))
-    station = dict(path='/managed/home/.a2a', resolved_path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, resolution=dict(requested_home='/managed/home', canonical_home='/managed/home',
+    station = dict(path='/managed/home/.a2a', resolved_path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, resolution=dict(requested_home='/managed/home', canonical_home='/managed/home', resolved_home='/managed/home',
         ancestors=[
             dict(path='/', kind='directory', uid=0, mode=0o755),
             dict(path='/managed', kind='directory', uid=0, mode=0o755),
@@ -381,5 +386,5 @@ def validate():
         'station': dict(kind='file', uid=1000, mode=0o600, nlink=1, value='station-one\n'),
         'station.key': StationKeyMetadata(kind='file', uid=1000, mode=0o600, size=32, nlink=1)})
     require(native_identity_launch('agent-one', '/managed/home', {}, 1000, station, dict(ProtocolVersion=1, StationKeyLen=32))
-            == dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a'), 'native-station-delivery')
+            == dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home'), 'native-station-delivery')
     print('Native admission model: stateless canonical station-path checks, ancestor checks, Courier v1 file/metadata rules; operator prune and optional pins; seven packet rows and eight named roots gates checked CLOSED; no runtime evidence')

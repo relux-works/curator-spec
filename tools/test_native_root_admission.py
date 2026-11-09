@@ -545,7 +545,7 @@ class NativeRootAdmission(unittest.TestCase):
                        CODEX_SANDBOX_NETWORK_DISABLED='1',PATH='/usr/bin')
         env=dict(preserved,**inherited);before=deepcopy(env)
         def effective(result):return {key:result.get(key) or value for key,value in selected.items()}
-        expected=dict(preserved,A2A_AGENT='agent-one',A2A_CONFIG_DIR='/identities/one/.a2a')
+        expected=dict(preserved,A2A_AGENT='agent-one',A2A_CONFIG_DIR='/identities/one')
         result=proposal.identity_environment('agent-one','/identities/one',env)
         self.assertEqual(result,expected);self.assertEqual(effective(result),selected)
         for control in [preserved,dict(preserved,**selected),dict(preserved,**{k:'' for k in selected})]:
@@ -569,7 +569,7 @@ class NativeRootAdmission(unittest.TestCase):
     @staticmethod
     def station_observation():
         # Synthetic no-follow metadata; supplied a2a enroll contract length is 32 bytes.
-        return dict(path='/managed/home/.a2a', resolved_path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, resolution=dict(requested_home='/managed/home', canonical_home='/managed/home',
+        return dict(path='/managed/home/.a2a', resolved_path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, resolution=dict(requested_home='/managed/home', canonical_home='/managed/home', resolved_home='/managed/home',
             ancestors=[
                 dict(path='/', kind='directory', uid=0, mode=0o755),
                 dict(path='/managed', kind='directory', uid=0, mode=0o755),
@@ -598,6 +598,9 @@ class NativeRootAdmission(unittest.TestCase):
             ('group-writable-home', 'native-station-ancestor-writable', lambda d: d['resolution']['ancestors'][-1].update(mode=0o770)),
             ('unavailable-resolution', 'native-station-home-resolution', lambda d: d.pop('resolution')),
             ('requested-home-mismatch', 'native-station-home-resolution', lambda d: d['resolution'].update(requested_home='/other/input-home')),
+            ('home-self-resolution-unavailable', 'native-station-home-resolution', lambda d: d['resolution'].pop('resolved_home')),
+            ('home-self-resolution-relative', 'native-station-home-resolution', lambda d: d['resolution'].update(resolved_home='managed/home')),
+            ('home-self-resolution-noncanonical', 'native-station-home-noncanonical', lambda d: d['resolution'].update(resolved_home='/other/canonical/home')),
             ('relative-canonical-home', 'native-station-home-resolution', lambda d: d['resolution'].update(canonical_home='managed/home')),
             ('omitted-canonical-ancestor', 'native-station-ancestor-observation', lambda d: d['resolution']['ancestors'].pop(1)),
             ('symlink-canonical-ancestor', 'native-station-ancestor-observation', lambda d: d['resolution']['ancestors'][1].update(kind='symlink')),
@@ -606,8 +609,8 @@ class NativeRootAdmission(unittest.TestCase):
         for name in ['courier.sock', 'identity', 'station', 'station.key']:
             rows.append(('station-entry-symlink-'+name, 'native-station-entry-type',
                          lambda d, n=name: setattr(d['entries'][n], 'kind', 'symlink') if n == 'station.key' else d['entries'][n].update(kind='symlink')))
-        env = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a', A2A_SESSION_ID='parent')
-        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
+        env = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home', A2A_SESSION_ID='parent')
+        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home')
         def launch(link):
             return proposal.native_identity_launch('agent-one', alias, env, 1000, link, self.courier_contract())
         for label, reason, change in rows:
@@ -643,7 +646,7 @@ class NativeRootAdmission(unittest.TestCase):
         # reader paths before delivery, without writes or path reflection. The
         # canonical form of the same aliased home passes; no stored path is used.
         alias = '/alias/home'
-        env = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
+        env = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home')
         def valid():
             link = self.station_observation()
             link['resolution']['requested_home'] = alias
@@ -727,7 +730,7 @@ class NativeRootAdmission(unittest.TestCase):
                 rows.append(('mode-'+oct(mode)+'-'+name, 'native-station-entry-mode',
                     lambda d, n=name, m=mode: d['entries'][n].update(mode=m)))
         env = dict(PATH='/usr/bin', A2A_SESSION_ID='parent', A2A_MATRIX_URL='https://parent.invalid')
-        expected = dict(PATH='/usr/bin', A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
+        expected = dict(PATH='/usr/bin', A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home')
         def launch(link):
             return proposal.native_identity_launch('agent-one', '/managed/home', env, 1000, link, self.courier_contract())
         for label, reason, change in rows:
@@ -787,7 +790,7 @@ class NativeRootAdmission(unittest.TestCase):
             ('65-characters', 's'*65+'\n'), ('missing-lf', 'station-one'),
             ('two-lines', 'station-one\nother\n'), ('bom', '\ufeffstation-one\n'),
         ]
-        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
+        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home')
         def launch(link):
             return proposal.native_identity_launch('agent-one', '/managed/home', {},
                 1000, link, self.courier_contract())
@@ -832,7 +835,7 @@ class NativeRootAdmission(unittest.TestCase):
                 for name in ['a', 'agent._=-09', 'a'*64]:
                     valid = self.station_observation()
                     valid['entries']['identity']['value'] = name+'\n'
-                    expected = dict(A2A_AGENT=name, A2A_CONFIG_DIR='/managed/home/.a2a')
+                    expected = dict(A2A_AGENT=name, A2A_CONFIG_DIR='/managed/home')
                     self.assertEqual(proposal.native_identity_launch(name, '/managed/home', {}, 1000, valid, self.courier_contract()), expected)
                 bad = self.station_observation(); bad['entries']['identity']['value'] = raw
                 before = deepcopy(bad)
@@ -878,7 +881,7 @@ class NativeRootAdmission(unittest.TestCase):
                 return proposal.native_identity_launch('agent-one', '/managed/home', {}, 1000, link, self.courier_contract())
             finally:
                 self.assertEqual(link, before)
-        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
+        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home')
         for label, raw, reason in rows:
             with self.subTest(vector=label):
                 for control in valid_values:
@@ -929,7 +932,7 @@ class NativeRootAdmission(unittest.TestCase):
 
         link = self.station_observation()
         link['entries']['station.key'] = SecretMetadata(kind='file', uid=1000, mode=0o600, size=32, nlink=1)
-        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
+        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home')
         before = deepcopy(link)
         self.assertEqual(proposal.native_identity_launch('agent-one', '/managed/home', {}, 1000, link, self.courier_contract()), expected)
         for contract in [None, {}, dict(ProtocolVersion=1), dict(ProtocolVersion=2, StationKeyLen=32)]:
@@ -947,20 +950,89 @@ class NativeRootAdmission(unittest.TestCase):
             self.assertEqual(link, before)
             print('plant detected by named vector: station-secret-content-read-'+label)
 
+    def test_native_config_base_delivery_and_siblings(self):
+        # The admitted link remains M/.a2a, but the delivered config base is M.
+        # Supplied parent-sibling observations are outside that closed namespace:
+        # state/mailbox/config siblings neither enter its checker nor get changed.
+        # This is a bounded observation/carrier check, not live filesystem I/O.
+        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home')
+        sibling_facts = {
+            'state': dict(kind='directory', entries={'courier-hook-failures.log': dict(kind='file')}),
+            'mailbox': dict(kind='directory'), 'matrix.env': dict(kind='file')}
+        for label, siblings in [('link-only', {}), ('state-sibling-outside-link', sibling_facts)]:
+            with self.subTest(vector=label):
+                link = self.station_observation()
+                link['home_siblings'] = deepcopy(siblings)
+                before = deepcopy(link)
+                # Positive location control distinguishes link admission from env delivery.
+                self.assertEqual(proposal.station_link('/managed/home', 'agent-one',
+                    1000, link, self.courier_contract()), '/managed/home/.a2a')
+                with patch.object(proposal, 'station_link_entries', wraps=proposal.station_link_entries) as namespace:
+                    delivered = proposal.native_identity_launch('agent-one', '/managed/home', {},
+                        1000, link, self.courier_contract())
+                    namespace.assert_called_once_with(link['entries'])
+                self.assertEqual(delivered, expected, 'native-config-base-delivery: config base must be M')
+                self.assertEqual(link, before)
+        # The same directory name inside the closed link is still forbidden;
+        # this negative scopes the admitted state-sibling control to its parent.
+        bad = deepcopy(link)
+        bad['entries']['state'] = dict(kind='directory')
+        saved = deepcopy(bad)
+        with patch.object(proposal, 'identity_environment', wraps=proposal.identity_environment) as carrier:
+            with self.assertRaisesRegex(proposal.StationRegistrationRefusal,
+                    '^native-environment-not-registered:native-station-extra-entry$'):
+                proposal.native_identity_launch('agent-one', '/managed/home', {},
+                    1000, bad, self.courier_contract())
+            carrier.assert_not_called()
+        self.assertEqual(bad, saved)
+
+    def test_native_config_base_delivery_plant(self):
+        # Reverting just delivery to the child loses the output claim while
+        # station-link admission and unchanged input controls still pass.
+        link = self.station_observation(); before = deepcopy(link)
+        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home')
+        self.assertEqual(proposal.native_identity_launch('agent-one', '/managed/home', {},
+            1000, link, self.courier_contract()), expected)
+        mutant = self.mutant(proposal, 'identity_environment', expression='directory = managed_home',
+                             replacement="directory = managed_home.rstrip('/')+'/.a2a'")
+        bad = mutant['native_identity_launch']('agent-one', '/managed/home', {},
+            1000, link, self.courier_contract())
+        self.assertEqual(bad['A2A_CONFIG_DIR'], '/managed/home/.a2a')
+        self.assertNotEqual(bad, expected)
+        self.assertEqual(link, before)
+        print('plant detected by named vector: native-config-base-delivery (M/.a2a is not M)')
+
+        # Wrongly checking parent siblings as link entries rejects a legitimate
+        # state directory. The clean four-entry link still admits under this plant.
+        scope = self.mutant(proposal, 'station_link', expression='station_link_entries(entries)',
+            replacement="station_link_entries(dict(entries, **observed.get('home_siblings', {})))")
+        self.assertEqual(scope['native_identity_launch']('agent-one', '/managed/home', {},
+            1000, link, self.courier_contract()), expected)
+        link['home_siblings'] = {'state': dict(kind='directory')}
+        before = deepcopy(link)
+        self.assertEqual(proposal.native_identity_launch('agent-one', '/managed/home', {},
+            1000, link, self.courier_contract()), expected)
+        with self.assertRaisesRegex(scope['StationRegistrationRefusal'],
+                '^native-environment-not-registered:native-station-extra-entry$'):
+            scope['native_identity_launch']('agent-one', '/managed/home', {},
+                1000, link, self.courier_contract())
+        self.assertEqual(link, before)
+        print('plant detected by named vector: state-sibling-outside-link (namespace scope)')
+
     def test_native_station_derivation_and_legacy_refusal(self):
         # The removed flag cannot select credentials; an inherited credential
-        # directory conflicts with the derived link. No-identity launches still
+        # directory conflicts with the canonical config base. No-identity launches still
         # scrub session selectors without requiring station-link observations.
         link = self.station_observation(); env = dict(PATH='/usr/bin', A2A_SESSION_ID='parent')
         before = deepcopy((link, env))
-        expected = dict(PATH='/usr/bin', A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
+        expected = dict(PATH='/usr/bin', A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home')
         self.assertEqual(proposal.native_identity_launch('agent-one', '/managed/home', env, 1000, link, self.courier_contract()), expected)
         with self.assertRaisesRegex(model.Refusal, '^native-a2a-config-dir-unsupported$'):
             proposal.native_identity_launch('agent-one', '/managed/home', env, 1000, link, self.courier_contract(), legacy_directory_flag=True)
         mutant = self.mutant(proposal, 'native_identity_launch', 'native-a2a-config-dir-unsupported')
         self.assertEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, link, self.courier_contract()), expected)
         self.assertEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, link, self.courier_contract(), legacy_directory_flag=True), expected)
-        for key, value in [('A2A_AGENT', 'other'), ('A2A_CONFIG_DIR', '/legacy/credentials')]:
+        for key, value in [('A2A_AGENT', 'other'), ('A2A_CONFIG_DIR', '/legacy/credentials'), ('A2A_CONFIG_DIR', '/managed/home/.a2a')]:
             bad = dict(env, **{key: value}); saved = deepcopy(bad)
             with self.assertRaisesRegex(model.Refusal, '^native-identity-conflict$'):
                 proposal.native_identity_launch('agent-one', '/managed/home', bad, 1000, link, self.courier_contract())
@@ -968,8 +1040,8 @@ class NativeRootAdmission(unittest.TestCase):
         self.assertEqual(proposal.native_identity_launch(None, '/managed/home', env, 1000, None, None), dict(PATH='/usr/bin'))
         self.assertEqual((link, env), before)
         print('plant detected by named vector: removed-native-directory-flag')
-        # Deriving from the parent of the managed home is a different namespace.
-        mutant = self.mutant(proposal, 'identity_environment', expression="managed_home.rstrip('/')+'/.a2a'", replacement="managed_home.rstrip('/').rsplit('/', 1)[0]+'/.a2a'")
+        # Delivering the parent of M is also the wrong config base.
+        mutant = self.mutant(proposal, 'identity_environment', expression='directory = managed_home', replacement="directory = managed_home.rstrip('/').rsplit('/', 1)[0]")
         self.assertNotEqual(mutant['native_identity_launch']('agent-one', '/managed/home', env, 1000, link, self.courier_contract()), expected)
         print('plant detected by named vector: station-link-managed-home-derivation')
 
@@ -1001,9 +1073,9 @@ class NativeRootAdmission(unittest.TestCase):
     def test_identity_keys_and_plants(self):
         # Every native launch scrubs three old session keys, accepts empty selectors,
         # and rejects only nonempty mismatches in the two documented identity keys.
-        # The directory is derived from the supplied resolved managed home.
+        # The config base is the supplied canonical managed home; .a2a is its child.
         env={'PATH':'/tools:/usr/bin','A2A_SESSION_ID':'old','CODEX_THREAD_ID':'old-thread','CLAUDE_CODE_SESSION_ID':'old-claude'};before=deepcopy(env)
-        base={'PATH':env['PATH']};expected=dict(base,A2A_AGENT='agent-one',A2A_CONFIG_DIR='/identities/one/.a2a')
+        base={'PATH':env['PATH']};expected=dict(base,A2A_AGENT='agent-one',A2A_CONFIG_DIR='/identities/one')
         self.assertEqual(proposal.identity_environment(None,None,env),base)
         self.assertEqual(proposal.identity_environment('agent-one','/identities/one',env),expected)
         self.assertEqual(proposal.identity_environment('agent-one','/identities/one',dict(env,A2A_AGENT='',A2A_CONFIG_DIR='')),expected)

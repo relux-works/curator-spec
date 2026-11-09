@@ -7,6 +7,16 @@ Versioning for the complete specification set.
 
 ### Added
 
+- Corrects #217/#219: native `A2A_CONFIG_DIR=M` is the canonical managed-home
+  config base, not `M/.a2a`. Admit the four-entry station link at `M/.a2a`;
+  compare/deliver M through the existing SAM Codex and Claude carriers. The
+  a2a owner's clarification and [a2a #377](https://github.com/relux-works/a2a-swarm/pull/377)
+  distinguish the base from its link child. Station-local state, mailbox, config
+  files and `state/courier-hook-failures.log` remain under M as siblings outside
+  launcher inspection. Add config-base delivery, sibling-state and canonical
+  home controls, and a plant reverting delivery to M/.a2a. Existing entry rules,
+  Review/draft status and CLOSED gates remain unchanged.
+
 - Fold the a2a owner statement (Courier v1, 2026-11-09) into the native station
   link: exactly four entries, adding `station` with registry-line grammar,
   ownership, single-link and exact-0600 checks in the same atomic publication.

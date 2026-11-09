@@ -599,7 +599,9 @@ acceptance follows from these checks.
 [CIP-0032](cips/CIP-0032-native-a2a-station-link.md), in Review, and
 [draft Decision 0037](decisions/0037-native-a2a-station-link.md) replace the
 unreleased native credential-directory handover with a closed Courier station
-link derived from the canonical environment managed home. The same named Python checks
+link at `M/.a2a`, with `A2A_CONFIG_DIR=M` for canonical environment managed
+home M. This corrects #217/#219; a2a-owned state/mailbox/config siblings under
+M are outside launcher link admission. The same named Python checks
 cover metadata-only secret handling, each station-link refusal and guard plants;
 no credentials are read and no runtime is qualified. Supplied owner/launcher
 answers close the two former questions: [enrollment is per environment outside

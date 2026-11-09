@@ -11,8 +11,9 @@
 Replace native identity selection's proposed credential-directory flag with a
 Courier station link derived from the canonical environment managed home. The native route
 takes `--native --a2a <identity>` and delivers the two existing non-secret a2a
-variables after validating the link. Courier holds credentials and operational
-state under a separate OS user. This Review proposal opens no root-emission gate,
+variables, with `A2A_CONFIG_DIR=M`, after validating `M/.a2a`. Courier holds
+credentials and daemon-owned state under a separate OS user; station-local
+state/mailbox/config remain under M. This Review proposal opens no root-emission gate,
 claims no adoption or runtime support. Supplied a2a owner and curator-run answers
 settle per-environment enrollment outside launch and the a2a-owned key length.
 
@@ -46,8 +47,9 @@ inspected to qualify those statements.
    station reach and does not meet the requested custody boundary; reject it for
    this native route.
 2. Derive a closed station link at `M/.a2a`, where M is the environment managed
-   home. Courier retains all credentials/state/mailbox/locks, and its operator
-   mints the station secret. This matches the supplied handover shape and keeps
+   home M, delivered as `A2A_CONFIG_DIR=M`. Courier retains credentials and
+   daemon-owned state/mailbox/locks; station-local state/mailbox/config remain
+   under M outside `.a2a/`. Its operator mints the station secret. This matches the supplied handover shape and keeps
    secrets out of launcher argv, environment, logs and plans.
 3. Make the launcher mint or register stations automatically. This conflicts with
    the supplied per-environment enrollment contract; do not select it.
@@ -85,8 +87,9 @@ This context adds no launcher requirement. The launcher makes no connection choi
 
 The canonical-path rule is an **a2a owner statement, Courier protocol version 1**.
 Enrollment resolves D's parent once with `EvalSymlinks` and works on the canonical
-path. Launcher uses the canonical `EvalSymlinks` managed home M, then `M/.a2a`,
-for both delivery and comparison. Input-home ancestor aliases are allowed;
+path. Launcher uses canonical managed home M with `EvalSymlinks(M) == M` for
+`A2A_CONFIG_DIR=M` delivery and comparison, checking the link at `M/.a2a`.
+Input-home ancestor aliases are allowed;
 symlinks at `.a2a` or any entry remain refused. Each canonical ancestor through M
 must be caller/root-owned and not group/world-writable, except root-owned sticky
 directories; M itself must belong to the launching effective UID.
@@ -109,7 +112,7 @@ remain binding.
 
 Retain exactly the existing two-key inherited comparison, named four-key
 transport/store/token removal choice and every-native session-selector scrub.
-Deliver `A2A_AGENT` and derived `A2A_CONFIG_DIR` using the existing typed SAM
+Deliver `A2A_AGENT=<identity>` and `A2A_CONFIG_DIR=M` using the existing typed SAM
 Codex `-c` carrier and Claude carrier, with their existing settings-precedence
 and tool-shell witness requirements. No secret enters either carrier.
 
@@ -149,7 +152,11 @@ review one handover shape, not separate invented authentication designs.
 
 ## Security considerations
 
-Courier's separate OS user keeps credentials and state outside station reach.
+Courier's separate OS user keeps credentials and daemon-owned state outside
+station reach. Station-local state, mailbox and config files remain under M;
+the launcher does not inspect or refuse siblings of `M/.a2a`, including `state/`
+and `state/courier-hook-failures.log`. The four-entry closed set applies only
+inside the station link.
 Station UID is the launching process's effective UID for this milestone.
 Under a shared station UID, stations can read each other's 0600 `station.key`
 and impersonate each other to Courier. Real isolation requires one OS user per
@@ -166,8 +173,12 @@ owner integration and runtime evidence; the bounded model proves none of those.
 
 ## Compatibility and migration
 
-The environment variable names stay unchanged, but native `A2A_CONFIG_DIR` now
-names a closed link, never a legacy credential store. There is no automatic
+This corrects #217/#219: `A2A_CONFIG_DIR=M` is the canonical managed-home
+config base; a2a reads its `.a2a` child. This follows the a2a owner's clarification
+and [a2a #377](https://github.com/relux-works/a2a-swarm/pull/377), where
+`ResolvePaths` returns `Paths.Base` and the client reads
+`filepath.Join(paths.Base, ".a2a")`. The launcher admits the closed link at
+`M/.a2a` without inspecting a2a-owned siblings under M. There is no automatic
 credential copy, migration, registration or fallback. An inherited credential
 locator conflicts with the derived locator; credentials under the derived path
 are an extra-entry refusal. Existing hosted `--a2a`, doorbell wiring and route
@@ -201,7 +212,9 @@ assertion and a valid positive neighbour. Named guard-removal plants expose
 forbidden cases at their validation stages. Closed-entry-set plants exercise
 the namespace helper before later value checks; they do not claim a complete
 mutated launch succeeds. A credential-looking extra is explicit. Additional
-controls cover derived-home delivery, the removed flag, inherited credential
+controls cover config-base M delivery (planting M/.a2a must fail), sibling
+state admission without inspection, the unchanged four-entry link checks,
+canonical delivered-home equality, the removed flag, inherited credential
 conflicts, unresolved size and an attempted secret-content read. Existing
 session-selector and four-key scrub plants remain. Identity-line vectors cover
 space, BOM, uppercase, 65 characters, missing LF and two lines with valid length
