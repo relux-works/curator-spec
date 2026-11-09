@@ -599,7 +599,7 @@ acceptance follows from these checks.
 [CIP-0032](cips/CIP-0032-native-a2a-station-link.md), in Review, and
 [draft Decision 0037](decisions/0037-native-a2a-station-link.md) replace the
 unreleased native credential-directory handover with a closed Courier station
-link derived from the environment managed home. The same named Python checks
+link derived from the canonical environment managed home. The same named Python checks
 cover metadata-only secret handling, each station-link refusal and guard plants;
 no credentials are read and no runtime is qualified. Supplied owner/launcher
 answers close the two former questions: [enrollment is per environment outside
@@ -609,6 +609,13 @@ a2a package `courier.StationKeyLen = 32` at pinned `ProtocolVersion = 1` per
 pinning is implementation work. Socket files use UTF-8 P+LF with an explicit
 1..103-byte P bound. Missing/bad entries mean environment not registered with
 Courier; identity-line grammar and key-size/owner checks have named controls.
+
+The Courier v1 canonical-path amendment resolves the managed home with
+`EvalSymlinks`, checks canonical ancestor ownership/writes (root-owned sticky
+exception), and compares the derived station locator to the fixed enroll-time
+binding. Link/entry symlinks still refuse. The binding's recording location/read
+interface remains an [open a2a owner question](protocol/profile-command-root-admission.md#canonical-enrollment-record-open-question);
+no fourth station entry or live resolution witness is claimed.
 
 ## Machine Host notification proposal
 

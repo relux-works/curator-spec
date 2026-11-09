@@ -16,6 +16,13 @@ Versioning for the complete specification set.
   rotation to a2a owner statements, Courier protocol version 1; retain curator-run
   module pinning as implementation work. Pin exact modes and metadata-only controls. Both former questions are closed; all emission gates stay CLOSED.
 
+- Fold the Courier v1 canonical-path owner statement into native station admission:
+  derive from the EvalSymlinks managed home, check canonical ancestors and compare
+  the fixed enroll-time locator. Add refusal/positive controls and a writable-
+  ancestor plant; keep the enroll-record location/read interface an open a2a
+  question. This shares canonicalization with the Codex gateway managed-home
+  follow-up without opening that route or any root-emission gate.
+
 - Restore the frozen rc.14 source document and manifest without re-pinning.
   Maintain later source amendments separately with per-rule status and
   precedence: canonical ownership remains binding through core section 10;

@@ -9,7 +9,7 @@
 ## Summary
 
 Replace native identity selection's proposed credential-directory flag with a
-Courier station link derived from the environment managed home. The native route
+Courier station link derived from the canonical environment managed home. The native route
 takes `--native --a2a <identity>` and delivers the two existing non-secret a2a
 variables after validating the link. Courier holds credentials and operational
 state under a separate OS user. This Review proposal opens no root-emission gate,
@@ -59,6 +59,23 @@ requires the private station-owned directory, exactly three regular nonsymlink
 entries, key metadata, matching identity and an absolute socket-path value.
 `courier.sock` is a regular path file, not the socket itself. The removed directory
 flag and legacy credential-directory handover are refused.
+
+The canonical-path rule is an **a2a owner statement, Courier protocol version 1**.
+Enrollment resolves D's parent once with `EvalSymlinks` and works on the canonical
+path. Launcher uses the canonical `EvalSymlinks` managed home M, then `M/.a2a`,
+for both delivery and comparison. Input-home ancestor aliases are allowed;
+symlinks at `.a2a` or any entry remain refused. Each canonical ancestor through M
+must be caller/root-owned and not group/world-writable, except root-owned sticky
+directories; M itself must belong to the launching effective UID. This is the
+same canonical managed-home derivation required by the Codex gateway follow-up,
+without changing gateway exclusion.
+
+The enroll-time resolution stays fixed. A derived canonical locator differing
+from that fixed value refuses as environment not registered with Courier; no
+silent retarget, fallback or binding update. Unavailable binding also refuses.
+The a2a owner has not stated where the binding lives or how readers obtain it;
+see the new question below. Model resolution/ancestor/enrolled-locator fields
+are supplied observations, not a storage or wire schema.
 
 Retain exactly the existing two-key inherited comparison, named four-key
 transport/store/token removal choice and every-native session-selector scrub.
@@ -167,6 +184,11 @@ ASCII 103/104-byte and Unicode 103/105-byte boundaries, LF, CRLF, embedded LF,
 NUL, BOM, missing LF, empty/relative/invalid UTF-8 and symlink refusal. P9's valid
 LF-file probe is admitted; planting the old whole-file absolute check kills
 that positive control.
+Canonical-path vectors pair aliased-home and root-sticky admission with unsafe
+ancestor, home-owner, link/entry-symlink, unavailable-binding and changed-target
+refusals. Each has a valid neighbour and unchanged-input assertion; dropping the
+write-permission guard is killed by `group-writable-parent`. All facts are
+supplied: no live resolution or enrollment-record storage is qualified.
 Run the named Python tests and repository validator; outputs
 are model checks, not filesystem, SAM, Courier or Linux runtime qualification.
 
@@ -175,10 +197,15 @@ are model checks, not filesystem, SAM, Courier or Linux runtime qualification.
 Both questions from the first round are closed by supplied a2a owner and
 curator-run answers: registration is per environment through the external
 Courier-user/station-user pipe, with no launch caller; the a2a enroll contract
-owns the current 32-byte key length. No new product question is introduced.
+owns the current 32-byte key length. The new canonical enrollment-record
+location/read-interface question remains open below.
 The a2a owner now states the published constants; the launcher module-version
 pin and contract consumption remain curator-run implementation work. Real
 enrollment qualification and the later admin-socket seam also remain future work.
 An unavailable contract value refuses; no launcher-owned
 fallback or implicit admin integration is permitted. Review status, draft
 Decision and CLOSED gates are unchanged.
+
+## Canonical enrollment record: open owner question
+
+**To the a2a owner:** Where does Courier v1 record the fixed enroll-time canonical station-directory path, and through which specified read interface can readers and launcher admission obtain that value? The closed `.a2a` entry set stays exactly three; this proposal allocates no additional entry or storage location.

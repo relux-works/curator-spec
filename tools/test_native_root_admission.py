@@ -569,10 +569,78 @@ class NativeRootAdmission(unittest.TestCase):
     @staticmethod
     def station_observation():
         # Synthetic no-follow metadata; supplied a2a enroll contract length is 32 bytes.
-        return dict(path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, entries={
+        return dict(path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, resolution=dict(requested_home='/managed/home', canonical_home='/managed/home',
+            enrolled_directory='/managed/home/.a2a', ancestors=[
+                dict(path='/', kind='directory', uid=0, mode=0o755),
+                dict(path='/managed', kind='directory', uid=0, mode=0o755),
+                dict(path='/managed/home', kind='directory', uid=1000, mode=0o700)]), entries={
             'courier.sock': dict(kind='file', uid=1000, value=b'/run/courier/service.sock\n'),
             'identity': dict(kind='file', uid=1000, value='agent-one\n'),
             'station.key': proposal.StationKeyMetadata(kind='file', uid=1000, mode=0o600, size=32)})
+
+    def test_canonical_station_home_vectors_and_plant(self):
+        # Supplied EvalSymlinks facts admit an aliased input through the fixed
+        # canonical home. Unsafe ancestors, changed/missing enrollment binding
+        # and link/entry symlinks refuse before delivery without input writes.
+        # This proves the bounded checks, not OS resolution or record custody.
+        alias = '/alias/home'
+        def aliased():
+            link = self.station_observation()
+            link['resolution']['requested_home'] = alias
+            return link
+        def retarget(link):
+            r = link['resolution']; r['canonical_home'] = '/other/home'
+            r['ancestors'][1]['path'] = '/other'
+            r['ancestors'][2]['path'] = '/other/home'
+            link['path'] = '/other/home/.a2a'
+        rows = [
+            ('group-writable-parent', 'native-station-ancestor-writable', lambda d: d['resolution']['ancestors'][1].update(mode=0o775)),
+            ('world-writable-parent', 'native-station-ancestor-writable', lambda d: d['resolution']['ancestors'][1].update(mode=0o757)),
+            ('foreign-owned-parent', 'native-station-ancestor-owner', lambda d: d['resolution']['ancestors'][1].update(uid=2000)),
+            ('caller-owned-sticky-writable', 'native-station-ancestor-writable', lambda d: d['resolution']['ancestors'][1].update(uid=1000, mode=0o1777)),
+            ('root-owned-home', 'native-station-home-owner', lambda d: d['resolution']['ancestors'][-1].update(uid=0)),
+            ('group-writable-home', 'native-station-ancestor-writable', lambda d: d['resolution']['ancestors'][-1].update(mode=0o770)),
+            ('unavailable-resolution', 'native-station-home-resolution', lambda d: d.pop('resolution')),
+            ('omitted-canonical-ancestor', 'native-station-ancestor-observation', lambda d: d['resolution']['ancestors'].pop(1)),
+            ('symlink-canonical-ancestor', 'native-station-ancestor-observation', lambda d: d['resolution']['ancestors'][1].update(kind='symlink')),
+            ('unavailable-enrolled-path', 'native-station-enrollment-path-unavailable', lambda d: d['resolution'].update(enrolled_directory=None)),
+            ('canonical-target-changed', 'native-station-enrollment-path-changed', retarget),
+            ('station-directory-symlink', 'native-station-directory-type', lambda d: d.update(kind='symlink')),
+        ]
+        for name in ['courier.sock', 'identity', 'station.key']:
+            rows.append(('station-entry-symlink-'+name, 'native-station-entry-type',
+                         lambda d, n=name: setattr(d['entries'][n], 'kind', 'symlink') if n == 'station.key' else d['entries'][n].update(kind='symlink')))
+        env = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a', A2A_SESSION_ID='parent')
+        expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a')
+        def launch(link):
+            return proposal.native_identity_launch('agent-one', alias, env, 1000, link, self.courier_contract())
+        for label, reason, change in rows:
+            with self.subTest(vector=label):
+                valid = aliased(); sticky = aliased(); caller = aliased()
+                sticky['resolution']['ancestors'][1].update(uid=0, mode=0o1777)
+                caller['resolution']['ancestors'][1].update(uid=1000, mode=0o755)
+                for control in [valid, sticky, caller]:
+                    before = deepcopy((control, env))
+                    self.assertEqual(launch(control), expected)
+                    self.assertEqual((control, env), before)
+                bad = aliased(); change(bad); before = deepcopy((bad, env))
+                with patch.object(proposal, 'identity_environment', wraps=proposal.identity_environment) as carrier:
+                    with self.assertRaisesRegex(proposal.StationRegistrationRefusal,
+                            '^native-environment-not-registered:'+reason+'$'):
+                        launch(bad)
+                    carrier.assert_not_called()
+                self.assertEqual((bad, env), before)
+        # Dropping the group/world-write guard admits the named bad vector;
+        # owner-safe and root-sticky controls still pass. No unrelated failure.
+        valid = aliased(); bad = aliased()
+        bad['resolution']['ancestors'][1]['mode'] = 0o775
+        before = deepcopy(bad)
+        mutant = self.mutant(proposal, 'canonical_station_home', 'native-station-ancestor-writable')
+        for control in [valid, sticky]:
+            self.assertEqual(mutant['native_identity_launch']('agent-one', alias, env, 1000, control, self.courier_contract()), expected)
+        self.assertEqual(mutant['native_identity_launch']('agent-one', alias, env, 1000, bad, self.courier_contract()), expected)
+        self.assertEqual(bad, before)
+        print('plant detected by named vector: group-writable-parent (native-station-ancestor-writable)')
 
     def test_station_link_refusals_and_plants(self):
         # Every failed observation refuses before the carrier step, without

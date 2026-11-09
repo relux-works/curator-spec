@@ -331,7 +331,7 @@ declared Core divergence in the
 source inspection; no Core binary or runtime qualification is claimed.
 
 
-## Native a2a station handover (CIP-0032, Review): questions resolved
+## Native a2a station handover (CIP-0032, Review)
 
 The [Review proposal](cips/CIP-0032-native-a2a-station-link.md) and
 [draft Decision 0037](decisions/0037-native-a2a-station-link.md) fold in the supplied
@@ -341,6 +341,11 @@ at launch; **a2a owner statements, Courier protocol version 1** now name Go
 package `courier.StationKeyLen = 32` and `ProtocolVersion = 1`. The launcher
 checks the published size; curator-run accepted either form and preferred no size
 stat. Its module-version pin/lookup remains curator-run implementation work.
-No new product question is introduced. Consuming that pinned contract, real
+The canonical-path rule is an a2a owner statement, Courier protocol version 1.
+Consuming that pinned contract, real
 enrollment qualification and the future admin-socket seam remain implementation
 dependencies; no root-emission gate opens or status becomes Accepted.
+
+The fixed canonical enrollment binding has a new unresolved owner question:
+
+**To the a2a owner:** Where does Courier v1 record the fixed enroll-time canonical station-directory path, and through which specified read interface can readers and launcher admission obtain that value? The closed `.a2a` entry set stays exactly three; this proposal allocates no additional entry or storage location.

@@ -2,6 +2,7 @@
 from copy import deepcopy
 import json
 import re
+from pathlib import PurePosixPath
 from profile_command_roots import ROOT, SCHEMAS, CORPUS, validators, require, absolute, bounded_path, strict_pairs, Refusal
 from jsonschema import Draft202012Validator
 
@@ -245,6 +246,31 @@ def courier_socket_path(raw):
     return path
 
 
+def canonical_station_home(managed_home, station_uid, resolution):
+    # Supplied EvalSymlinks result, complete canonical ancestor facts and fixed
+    # enroll-time binding only. No live resolution or invented record location.
+    require(isinstance(managed_home, str) and absolute(managed_home), 'native-identity-directory')
+    require(isinstance(resolution, dict) and resolution.get('requested_home') == managed_home
+            and isinstance(resolution.get('canonical_home'), str) and absolute(resolution['canonical_home']),
+            'native-station-home-resolution')
+    canonical = resolution['canonical_home']
+    expected = [str(p) for p in reversed(PurePosixPath(canonical).parents)] + [canonical]
+    ancestors = resolution.get('ancestors')
+    require(isinstance(ancestors, list) and all(isinstance(a, dict) for a in ancestors)
+            and [a.get('path') for a in ancestors] == expected
+            and all(a.get('kind') == 'directory' and type(a.get('uid')) is int
+                    and type(a.get('mode')) is int for a in ancestors),
+            'native-station-ancestor-observation')
+    require(ancestors[-1]['uid'] == station_uid, 'native-station-home-owner')
+    require(all(a['uid'] in (0, station_uid) for a in ancestors), 'native-station-ancestor-owner')
+    require(all(a['mode'] & 0o022 == 0 or (a['uid'] == 0 and a['mode'] & 0o1000 != 0)
+                for a in ancestors), 'native-station-ancestor-writable')
+    enrolled = resolution.get('enrolled_directory')
+    require(isinstance(enrolled, str) and bool(enrolled), 'native-station-enrollment-path-unavailable')
+    require(enrolled == canonical.rstrip('/')+'/.a2a', 'native-station-enrollment-path-changed')
+    return canonical
+
+
 def station_link(managed_home, identity, station_uid, observed, pinned_contract):
     # Supplied no-follow metadata and two public values only; no secret bytes,
     # filesystem observation, peer authentication or Courier registration.
@@ -302,6 +328,7 @@ def native_identity_launch(identity, managed_home, inherited, station_uid, obser
     require(not legacy_directory_flag, 'native-a2a-config-dir-unsupported')
     if identity is not None:
         try:
+            managed_home = canonical_station_home(managed_home, station_uid, observed.get('resolution'))
             station_link(managed_home, identity, station_uid, observed, pinned_contract)
         except Refusal as exc:
             if str(exc) == 'native-identity-directory':
@@ -334,10 +361,14 @@ def validate():
     check_candidate(case,observed)
     check_gate_text((ROOT/'protocol/profile-command-root-admission.md').read_text(encoding='utf-8'))
     check_root_gate_text((ROOT/'protocol/profile-command-roots.md').read_text(encoding='utf-8'))
-    station = dict(path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, entries={
+    station = dict(path='/managed/home/.a2a', complete=True, exists=True, kind='directory', mode=0o700, uid=1000, resolution=dict(requested_home='/managed/home', canonical_home='/managed/home',
+        enrolled_directory='/managed/home/.a2a', ancestors=[
+            dict(path='/', kind='directory', uid=0, mode=0o755),
+            dict(path='/managed', kind='directory', uid=0, mode=0o755),
+            dict(path='/managed/home', kind='directory', uid=1000, mode=0o700)]), entries={
         'courier.sock': dict(kind='file', uid=1000, value=b'/run/courier/service.sock\n'),
         'identity': dict(kind='file', uid=1000, value='agent-one\n'),
         'station.key': StationKeyMetadata(kind='file', uid=1000, mode=0o600, size=32)})
     require(native_identity_launch('agent-one', '/managed/home', {}, 1000, station, dict(ProtocolVersion=1, StationKeyLen=32))
             == dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home/.a2a'), 'native-station-delivery')
-    print('Native admission model: station-link metadata with a2a enroll contract length and exact identity line; operator prune and optional pins; seven packet rows and eight named roots gates checked CLOSED; no runtime evidence')
+    print('Native admission model: fixed canonical station path, ancestor checks, Courier v1 file/metadata rules; operator prune and optional pins; seven packet rows and eight named roots gates checked CLOSED; no runtime evidence')
