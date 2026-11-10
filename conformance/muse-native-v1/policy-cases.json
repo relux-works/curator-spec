@@ -1,0 +1,194 @@
+[
+  {
+    "name": "darwin-shared-absent",
+    "platform": "darwin",
+    "isolation": "shared",
+    "configured": "absent",
+    "supported_route": true,
+    "expected": {
+      "effective_store": "native",
+      "fixture": "valid-muse-native.json"
+    }
+  },
+  {
+    "name": "darwin-shared-native",
+    "platform": "darwin",
+    "isolation": "shared",
+    "configured": "native",
+    "supported_route": true,
+    "expected": {
+      "effective_store": "native",
+      "fixture": "valid-muse-native.json"
+    }
+  },
+  {
+    "name": "darwin-shared-file",
+    "platform": "darwin",
+    "isolation": "shared",
+    "configured": "file",
+    "supported_route": true,
+    "expected": {
+      "effective_store": "file",
+      "fixture": "valid-muse-file.json"
+    }
+  },
+  {
+    "name": "darwin-shared-keychain",
+    "platform": "darwin",
+    "isolation": "shared",
+    "configured": "keychain",
+    "supported_route": true,
+    "expected": {
+      "diagnostic": "environment_credential_store_unsupported"
+    }
+  },
+  {
+    "name": "darwin-isolated-absent",
+    "platform": "darwin",
+    "isolation": "isolated",
+    "configured": "absent",
+    "supported_route": true,
+    "expected": {
+      "effective_store": "file",
+      "fixture": "valid-muse-file.json"
+    }
+  },
+  {
+    "name": "darwin-isolated-native",
+    "platform": "darwin",
+    "isolation": "isolated",
+    "configured": "native",
+    "supported_route": true,
+    "expected": {
+      "effective_store": "file",
+      "fixture": "valid-muse-file.json"
+    }
+  },
+  {
+    "name": "darwin-isolated-file",
+    "platform": "darwin",
+    "isolation": "isolated",
+    "configured": "file",
+    "supported_route": true,
+    "expected": {
+      "effective_store": "file",
+      "fixture": "valid-muse-file.json"
+    }
+  },
+  {
+    "name": "darwin-isolated-keychain",
+    "platform": "darwin",
+    "isolation": "isolated",
+    "configured": "keychain",
+    "supported_route": true,
+    "expected": {
+      "diagnostic": "environment_credential_store_unsupported"
+    }
+  },
+  {
+    "name": "linux-shared-absent",
+    "platform": "linux",
+    "isolation": "shared",
+    "configured": "absent",
+    "supported_route": true,
+    "expected": {
+      "effective_store": "file",
+      "fixture": "valid-muse-file.json"
+    }
+  },
+  {
+    "name": "linux-shared-native",
+    "platform": "linux",
+    "isolation": "shared",
+    "configured": "native",
+    "supported_route": true,
+    "expected": {
+      "effective_store": "file",
+      "fixture": "valid-muse-file.json"
+    }
+  },
+  {
+    "name": "linux-shared-file",
+    "platform": "linux",
+    "isolation": "shared",
+    "configured": "file",
+    "supported_route": true,
+    "expected": {
+      "effective_store": "file",
+      "fixture": "valid-muse-file.json"
+    }
+  },
+  {
+    "name": "linux-shared-keychain",
+    "platform": "linux",
+    "isolation": "shared",
+    "configured": "keychain",
+    "supported_route": true,
+    "expected": {
+      "diagnostic": "environment_credential_store_unsupported"
+    }
+  },
+  {
+    "name": "linux-isolated-absent",
+    "platform": "linux",
+    "isolation": "isolated",
+    "configured": "absent",
+    "supported_route": true,
+    "expected": {
+      "effective_store": "file",
+      "fixture": "valid-muse-file.json"
+    }
+  },
+  {
+    "name": "linux-isolated-native",
+    "platform": "linux",
+    "isolation": "isolated",
+    "configured": "native",
+    "supported_route": true,
+    "expected": {
+      "effective_store": "file",
+      "fixture": "valid-muse-file.json"
+    }
+  },
+  {
+    "name": "linux-isolated-file",
+    "platform": "linux",
+    "isolation": "isolated",
+    "configured": "file",
+    "supported_route": true,
+    "expected": {
+      "effective_store": "file",
+      "fixture": "valid-muse-file.json"
+    }
+  },
+  {
+    "name": "linux-isolated-keychain",
+    "platform": "linux",
+    "isolation": "isolated",
+    "configured": "keychain",
+    "supported_route": true,
+    "expected": {
+      "diagnostic": "environment_credential_store_unsupported"
+    }
+  },
+  {
+    "name": "native-route-unavailable",
+    "platform": "darwin",
+    "isolation": "shared",
+    "configured": "native",
+    "supported_route": false,
+    "expected": {
+      "diagnostic": "environment_credential_store_unsupported"
+    }
+  },
+  {
+    "name": "unknown-machine-store",
+    "platform": "linux",
+    "isolation": "shared",
+    "configured": "unknown",
+    "supported_route": true,
+    "expected": {
+      "diagnostic": "environment_credential_store_unsupported"
+    }
+  }
+]

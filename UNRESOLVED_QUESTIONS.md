@@ -77,6 +77,17 @@ additional undecided ownership choices.
 
 ## Muse managed-context residuals
 
+**Proposed native amendment.** [CIP-0033](cips/CIP-0033-muse-native-credential-form.md)
+is Draft.
+
+**Origin:** Requested by Ivan on 2026-11-09: shared homes reuse the ordinary Keychain login; Linux support is required.
+
+The shared-macOS native form,
+Linux native-to-file mapping, explicit successor selection and joint qualification await
+contract review and acceptance. It is not an adopted change to the file-only
+baseline below. Native readiness, actual default-store behavior and consumer
+activation remain unqualified; no prior decision is asserted.
+
 The revision-1 admission in [environments §§7.1, 7.9, and 10.2](protocol/environments.md)
 records the Muse Code 1.4.7 monolithic own-file target, measured foreign
 personal-context sources, and target-bound `exec` and interactive exclusion.

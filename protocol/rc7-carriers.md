@@ -196,6 +196,31 @@ not evidence that any runtime entrypoint has executed them here.
 
 ## 4. One Muse decision table
 
+**Proposed native exception (PROPOSAL).** [CIP-0033](../cips/CIP-0033-muse-native-credential-form.md)
+is not adopted.
+
+**Origin:** Requested by Ivan on 2026-11-09: shared homes reuse the ordinary Keychain login; Linux support is required.
+
+After acceptance and explicit joint qualification of the [separate v4 successor](../schemas/muse-native-v1/README.md),
+the following rows take precedence only for that successor. The original
+file-only table below, v5/later carriers and section 2's readiness grammar
+remain unchanged for their existing readers.
+
+| Proposed input | Effective result / diagnostic | Required bound |
+|---|---|---|
+| Shared macOS, configured absent/native | effective native; stored selector unchanged | Default global Keychain-first lookup with existing file fallback; exactly four XDG paths and no backend variable; no isolation claim |
+| Linux absent/native | effective file; selector unchanged | Existing native-file path and file-form literal; Linux has no Keychain here and MUST NOT refuse native selection for that reason |
+| Explicit file on macOS or Linux; isolated or other non-macOS absent/native | effective file | Retain file literal and existing passthrough/isolation checks |
+| Native form unsupported by selected route | `environment_credential_store_unsupported` | No fragment, login or execution; no silent file fallback/migration |
+| Backend admitted into native plan/owned/prompt/network Set, including case variants | `environment_credential_conflict` | Refuse before execution; do not strip it; raw-parent allowlist filtering precedes plan admission |
+| Explicit keychain / unknown native storage | Existing store-unsupported / credential-unsupported refusal, respectively | No reinterpretation as native and no source stripping |
+
+Section 7.4 of [environments](environments.md#74-credential-passthrough-provisioning-seeds-and-isolation)
+retains credential-source, readable-target and migration checks. Native is
+an effective vendor-default selection, not proof of Keychain access or
+readiness. Published file-only status cannot claim the proposed native store;
+qualification and any needed readiness successor remain separate.
+
 This table is consumed by resolve, login and every direct/hosted launch path.
 It supersedes the earlier contradictory explicit-map diagnostic and generic
 backend-conflict wording for adopting implementations. Credential-source
