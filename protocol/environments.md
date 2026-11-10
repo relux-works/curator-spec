@@ -1664,6 +1664,52 @@ pinned release that the strategy answers to:
 | `pi` | `auth.json` | `file-link` — the managed `auth.json` is a symlink to the native `~/.pi/agent/auth.json` (native root `~/.pi/agent`, not `~/.pi`), re-checked by the liveness row | **verified** in-place: pi 0.84.2 rewrites its agent-root `auth.json` with a single in-place write, mode 0600, under its own lockfile, never temp-and-rename (installed `core/auth-storage.js`) |
 | `muse` | `shared`: `config/muse/auth.json`; `isolated`: none | Managed launches set `TBH_CREDENTIAL_BACKEND=file`. `shared` uses `file-link` to native effective `$XDG_CONFIG_HOME/muse/auth.json` (default `~/.config/muse/auth.json`), captured before managed overrides and requiring a native file-backed login. `isolated` logs in inside the managed XDG home. Both modes are admitted optimistically. | Muse 1.4.8 on macOS 27: file-backed login at mode 0600, subsequent backend `file` with zero Keychain access, and a link to another home's file worked (owner decision 2026-10-15 measured facts). Default backend is global Keychain-first and fails to save without Keychain access. Token-refresh and concurrent refresh behavior remain unmeasured; every-resolve liveness and conflict-preserving repair remain mandatory. |
 
+**Proposed native-Muse amendment (PROPOSAL).** [CIP-0033](../cips/CIP-0033-muse-native-credential-form.md)
+and [Draft Decision 0038](../decisions/0038-muse-native-credential-form.md)
+are not adopted.
+
+**Origin:** Requested by Ivan on 2026-11-09: shared homes reuse the ordinary Keychain login; Linux support is required.
+
+The following exception applies only after acceptance and explicit joint successor qualification;
+until then the file-only rules below remain authoritative.
+
+For a shared macOS Muse home with absent/native machine selection, effective
+selection MUST remain `native`: Muse's default operator-global Keychain-first
+lookup with its existing file fallback. This is not explicit `keychain`, a
+promise that Keychain succeeds, or home/account isolation. The fragment MUST
+omit `TBH_CREDENTIAL_BACKEND` and carry exactly the four managed XDG parents;
+`HOME` remains unchanged. Isolated homes, explicit file and non-macOS
+native/unset selection retain effective file and its literal.
+On Linux there is no Keychain in this contract: native/unset resolves to
+effective `file`, using the existing shared native-file path and file-form
+fragment with `TBH_CREDENTIAL_BACKEND=file`. It MUST NOT refuse merely because
+the configured selector is native or Linux lacks Keychain. Explicit `file`
+remains valid on macOS and Linux. Existing missing/unreadable native-file and
+conflict refusals remain, without a new login-readiness launch gate. The stored
+selector MUST NOT be rewritten. Explicit keychain remains unsupported.
+
+A requested native form that the selected producer/consumer/platform route
+cannot honor MUST refuse `environment_credential_store_unsupported`, without
+emission, login or execution, with supported-file guidance and no silent
+fallback or migration. Unknown native storage retains
+`environment_credential_unsupported`. A backend variable already admitted
+into a native plan, owned environment, prompt overlay or network Set MUST
+refuse `environment_credential_conflict`, including case variants; absence
+cannot be created by stripping an admitted value. Filtering raw parent
+exports through the existing parent allowlist precedes plan admission and
+is not a credential-source override. Credential-source conflicts retain
+their existing refusal and MUST NOT be stripped. A network Unset of an
+already absent backend is harmless.
+
+The native exception changes backend selection only. Existing readable
+native-file target/passthrough checks, explicit inspect → plan → apply store
+changes, no credential export/copy, private modes and preservation rules
+remain. The file-only refresh rules below still apply wherever the link is
+used; native selection establishes no refresh safety or login readiness.
+Published file-only readiness carriers MUST NOT report a native source as
+file or present merely because schema validation succeeds; use unknown until
+an applicable readiness contract and platform qualification exist.
+
 **Managed Muse backend selection.** The user-owned per-profile × environment
 `credential_store` selector is coordinated with CIP-0015. Its compatibility
 default remains `native` for other adapters. For a managed Muse home only,
@@ -4059,8 +4105,8 @@ revision, inferring missing policy or synthesizing a v4 fact.
 
 V4 `credential_store` is a closed object with REQUIRED `selection`
 (`native`, `file`, or `keychain`) and OPTIONAL closed `config_overrides`.
-For Muse it is REQUIRED and exactly `{"selection":"file"}`: selection is
-the effective backend after section 7.4's native/unset mapping. Its `env`
+For the frozen file-only Muse contract it is REQUIRED and exactly
+`{"selection":"file"}`: selection is the effective backend after section 7.4's native/unset mapping. Its `env`
 MUST contain exactly the four XDG parent paths plus
 `"TBH_CREDENTIAL_BACKEND":"file"`; only the XDG entries are paths and
 retain the one-parent suffix rule. `HOME` MUST NOT be changed. Muse still
@@ -4087,6 +4133,22 @@ JSON, env and shell renderers MUST emit the same five Muse values, with the
 XDG variables in section 7.1 order followed by the backend constant. Env and
 shell output are environment projections, not substitutes for the typed v4
 JSON contract required by a managed launcher.
+
+**Proposed native-Muse successor (PROPOSAL).** Section 7.4's proposed
+exception uses the [separate complete v4 successor schema](../schemas/muse-native-v1/README.md).
+After acceptance and explicit joint qualification, Muse MUST carry exactly
+one form: `{"selection":"file"}` with the four XDG paths plus
+`TBH_CREDENTIAL_BACKEND=file`, or `{"selection":"native"}` with only those
+four XDG paths and no backend variable. No config overrides, keychain
+selection, extra variables or mixed form is admitted. JSON/env/shell
+projections MUST agree: four XDG values in declared order for native, or
+those four followed by the file literal. Root-context, one-parent, HOME,
+permission, provenance and no-filesystem-inference rules are unchanged.
+The native merge/refusal rules are in section 7.4. The frozen v4 schema and
+its hash remain byte-identical; v5 and later allocated carriers retain their
+original file-only Muse meaning. The v4 token alone does not establish
+successor support. An old reader MUST reject native; no downgrade, retry or
+relabeling is allowed. This proposal publishes no runtime qualification.
 
 V4's OPTIONAL `root_context` is Muse-only and exactly
 `{"exclusive":true}`. Reject null, empty objects, false, strings, extra

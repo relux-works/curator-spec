@@ -7,6 +7,13 @@ Versioning for the complete specification set.
 
 ### Added
 
+- 2026-11-10: propose the shared macOS Muse native credential form in Draft CIP-0033 and
+  Draft Decision 0038, with a separate v4 successor schema and paired cases.
+  Frozen schemas/pins and file-only behavior remain; acceptance and joint
+  qualification precede emission. Linux native/unset still resolves to file;
+  explicit file remains valid on both platforms. The request does not waive
+  spec-first review or frozen-schema requirements.
+
 - 2026-11-10: follow [a2a PR #438](https://github.com/relux-works/a2a-swarm/pull/438)
   naming for a2ad (the a2a daemon): station `daemon.sock`,
   `state/daemon-hook-failures.log`, `a2a daemon enroll` and package `daemon`
