@@ -215,7 +215,7 @@ class StationRegistrationRefusal(Refusal):
 
 def station_link_entries(entries):
     # Closed namespace before any entry values are inspected.
-    names = {'courier.sock', 'identity', 'station', 'station.key'}
+    names = {'daemon.sock', 'identity', 'station', 'station.key'}
     require(not (set(entries) - names), 'native-station-extra-entry')
     require(not (names - set(entries)), 'native-station-missing-entry')
 
@@ -232,7 +232,7 @@ class StationKeyMetadata:
 
 
 def courier_socket_path(raw):
-    # Courier v1 file bytes: UTF-8 P plus exactly one LF; byte bound excludes LF.
+    # a2ad (the a2a daemon) v1 file bytes: UTF-8 P plus exactly one LF; byte bound excludes LF.
     require(isinstance(raw, bytes), 'native-station-socket-utf8')
     try:
         text = raw.decode('utf-8', errors='strict')
@@ -248,7 +248,7 @@ def courier_socket_path(raw):
 
 def canonical_station_home(managed_home, station_uid, resolution):
     # Supplied EvalSymlinks result and complete canonical ancestor facts only.
-    # No live resolution; Courier stores no enroll-time station path.
+    # No live resolution; a2ad (the a2a daemon) stores no enroll-time station path.
     require(isinstance(managed_home, str) and absolute(managed_home), 'native-identity-directory')
     require(isinstance(resolution, dict) and resolution.get('requested_home') == managed_home
             and isinstance(resolution.get('canonical_home'), str) and absolute(resolution['canonical_home']),
@@ -273,9 +273,9 @@ def canonical_station_home(managed_home, station_uid, resolution):
 
 def station_link(managed_home, identity, station_uid, observed, pinned_contract):
     # Supplied no-follow metadata and three public values only; no secret bytes,
-    # filesystem observation, peer authentication or Courier registration.
+    # filesystem observation, peer authentication or a2ad (the a2a daemon) registration.
     # Parent home_siblings are outside this link namespace and are not inspected.
-    # The supplied pin represents a2a courier.ProtocolVersion/StationKeyLen;
+    # The supplied pin represents a2a daemon.ProtocolVersion/StationKeyLen;
     # actual Go module-version pinning/lookup is curator-run implementation work.
     require(isinstance(managed_home, str) and absolute(managed_home), 'native-identity-directory')
     require(isinstance(pinned_contract, dict) and pinned_contract.get('ProtocolVersion') == 1
@@ -296,13 +296,13 @@ def station_link(managed_home, identity, station_uid, observed, pinned_contract)
     entries = observed['entries']
     station_link_entries(entries)
     key = entries['station.key']
-    require(key.kind == 'file' and all(entries[n]['kind'] == 'file' for n in ('courier.sock', 'identity', 'station')),
+    require(key.kind == 'file' and all(entries[n]['kind'] == 'file' for n in ('daemon.sock', 'identity', 'station')),
             'native-station-entry-type')
-    require(key.uid == station_uid and all(entries[n]['uid'] == station_uid for n in ('courier.sock', 'identity', 'station')),
+    require(key.uid == station_uid and all(entries[n]['uid'] == station_uid for n in ('daemon.sock', 'identity', 'station')),
             'native-station-entry-owner')
-    require(key.nlink == 1 and all(entries[n]['nlink'] == 1 for n in ('courier.sock', 'identity', 'station')),
+    require(key.nlink == 1 and all(entries[n]['nlink'] == 1 for n in ('daemon.sock', 'identity', 'station')),
             'native-station-entry-links')
-    require(all(entries[n]['mode'] == 0o600 for n in ('courier.sock', 'identity', 'station')),
+    require(all(entries[n]['mode'] == 0o600 for n in ('daemon.sock', 'identity', 'station')),
             'native-station-entry-mode')
     require(key.mode == 0o600, 'native-station-key-mode')
     require(key.size == expected_secret_size, 'native-station-key-size')
@@ -314,7 +314,7 @@ def station_link(managed_home, identity, station_uid, observed, pinned_contract)
     require(isinstance(station_line, str) and re.fullmatch(r'[a-z0-9._=-]{1,64}\n', station_line) is not None,
             'native-station-name-format')
     # Admission checks station syntax only; no station name reaches the carrier.
-    courier_socket_path(entries['courier.sock']['value'])
+    courier_socket_path(entries['daemon.sock']['value'])
     return managed_home.rstrip('/')+'/.a2a'
 
 
@@ -381,10 +381,10 @@ def validate():
             dict(path='/', kind='directory', uid=0, mode=0o755),
             dict(path='/managed', kind='directory', uid=0, mode=0o755),
             dict(path='/managed/home', kind='directory', uid=1000, mode=0o700)]), entries={
-        'courier.sock': dict(kind='file', uid=1000, mode=0o600, nlink=1, value=b'/run/courier/service.sock\n'),
+        'daemon.sock': dict(kind='file', uid=1000, mode=0o600, nlink=1, value=b'/run/courier/service.sock\n'),
         'identity': dict(kind='file', uid=1000, mode=0o600, nlink=1, value='agent-one\n'),
         'station': dict(kind='file', uid=1000, mode=0o600, nlink=1, value='station-one\n'),
         'station.key': StationKeyMetadata(kind='file', uid=1000, mode=0o600, size=32, nlink=1)})
     require(native_identity_launch('agent-one', '/managed/home', {}, 1000, station, dict(ProtocolVersion=1, StationKeyLen=32))
             == dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home'), 'native-station-delivery')
-    print('Native admission model: stateless canonical station-path checks, ancestor checks, Courier v1 file/metadata rules; operator prune and optional pins; seven packet rows and eight named roots gates checked CLOSED; no runtime evidence')
+    print('Native admission model: stateless canonical station-path checks, ancestor checks, a2ad (the a2a daemon) v1 file/metadata rules; operator prune and optional pins; seven packet rows and eight named roots gates checked CLOSED; no runtime evidence')

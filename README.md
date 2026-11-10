@@ -598,30 +598,30 @@ acceptance follows from these checks.
 
 [CIP-0032](cips/CIP-0032-native-a2a-station-link.md), in Review, and
 [draft Decision 0037](decisions/0037-native-a2a-station-link.md) replace the
-unreleased native credential-directory handover with a closed Courier station
+unreleased native credential-directory handover with a closed a2ad (the a2a daemon) station
 link at `M/.a2a`, with `A2A_CONFIG_DIR=M` for canonical environment managed
-home M. This corrects #217/#219. The binding a2a owner decision (Courier v1,
+home M. This corrects #217/#219. The binding a2a owner decision (a2ad (the a2a daemon) v1,
 2026-11-09 about 08:35Z) keeps all a2a credentials, State, mailbox, journals,
-saved inbox files and locks only in the Courier home/user; in station mode the
-client writes only `M/state/courier-hook-failures.log` under M. A full run leaves
+saved inbox files and locks only in the a2ad (the a2a daemon) home/user; in station mode the
+client writes only `M/state/daemon-hook-failures.log` under M. A full run leaves
 exactly `.a2a/` (four entries) plus that log (in `state/`). Launcher admission
 does not inspect or refuse `M/state/` or other siblings. The same named Python checks
 cover metadata-only secret handling, each station-link refusal and guard plants;
 no credentials are read and no runtime is qualified. Supplied owner/launcher
 answers close the two former questions: [enrollment is per environment outside
 launch, with an a2a-owned versioned key length](protocol/profile-command-root-admission.md#station-enrollment-contract-owner-answers-folded-into-review),
-a2a package `courier.StationKeyLen = 32` at pinned `ProtocolVersion = 1` per
-**a2a owner statements, Courier protocol version 1**. Curator-run module-version
+a2a package `daemon.StationKeyLen = 32` at pinned `ProtocolVersion = 1` per
+**a2a owner statements, a2ad (the a2a daemon) protocol version 1**. Curator-run module-version
 pinning is implementation work. Socket files use UTF-8 P+LF with an explicit
 1..103-byte P bound. Missing/bad entries mean environment not registered with
-Courier; identity-line grammar and key-size/owner checks have named controls.
+a2ad (the a2a daemon); identity-line grammar and key-size/owner checks have named controls.
 
-The Courier v1 canonical-path amendment resolves the managed home with
+The a2ad (the a2a daemon) v1 canonical-path amendment resolves the managed home with
 `EvalSymlinks`, checks canonical ancestor ownership/writes (root-owned sticky
 exception), and requires the derived station directory D to be absolute with
-`EvalSymlinks(D) == D`, as every Courier v1 reader must. The a2a owner statement
+`EvalSymlinks(D) == D`, as every a2ad (the a2a daemon) v1 reader must. The a2a owner statement
 closes the former record question: no station path is stored; hello authenticates
-by secret and UID. Link/entry symlinks still refuse. The Courier v1 owner
+by secret and UID. Link/entry symlinks still refuse. The a2ad (the a2a daemon) v1 owner
 statement of 2026-11-09 adds the fourth `station` entry; it holds a checked
 registry name, not a location record. No live resolution witness is claimed.
 

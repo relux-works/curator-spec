@@ -336,17 +336,28 @@ source inspection; no Core binary or runtime qualification is claimed.
 The [Review proposal](cips/CIP-0032-native-a2a-station-link.md) and
 [draft Decision 0037](decisions/0037-native-a2a-station-link.md) fold in the supplied
 a2a owner and curator-run answers. Both former questions are closed: enrollment
-is per environment through the external Courier-user/station-user pipe, never
-at launch; **a2a owner statements, Courier protocol version 1** now name Go
-package `courier.StationKeyLen = 32` and `ProtocolVersion = 1`. The launcher
+is per environment through the external pipe between the a2ad (the a2a daemon) user and station user, never
+at launch; **a2a owner statements, a2ad (the a2a daemon) protocol version 1** now name Go
+package `daemon.StationKeyLen = 32` and `ProtocolVersion = 1`. The launcher
 checks the published size; curator-run accepted either form and preferred no size
 stat. Its module-version pin/lookup remains curator-run implementation work.
-The canonical-path rule is an a2a owner statement, Courier protocol version 1.
+The canonical-path rule is an a2a owner statement, a2ad (the a2a daemon) protocol version 1.
 Consuming that pinned contract, real
 enrollment qualification and the future admin-socket seam remain implementation
 dependencies; no root-emission gate opens or status becomes Accepted.
 
 The canonical enrollment-record question is closed by the **a2a owner statement,
-Courier protocol version 1**: no station path is stored. Every reader requires
-an absolute supplied D with `EvalSymlinks(D) == D`. Courier hello authenticates
+a2ad (the a2a daemon) protocol version 1**: no station path is stored. Every reader requires
+an absolute supplied D with `EvalSymlinks(D) == D`. a2ad (the a2a daemon) hello authenticates
 by secret and UID, not path. No new owner question is introduced here.
+
+
+### 2026-11-10 name-map follow-up
+
+The Source rename map does not name the model's example socket value
+`/run/courier/service.sock`, its private Python helpers `courier_socket_path`
+and `courier_contract`, the test selector
+`test_courier_socket_bytes_vectors_and_plants`, or the `courier-socket-*` plant
+label. These remain unchanged pending an explicit mapping; they are not
+additional admitted station entries or daemon default paths. The station
+pointer filename and failure-log filename do follow the supplied map.

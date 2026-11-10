@@ -34,7 +34,7 @@ skill-agents-management, whose provider plugins build launcher plans and argv.
   receives no warning from prune. There is no process-safety claim.
 - **a2a identity and upgrades (owner decisions):** recommend removing inherited
   server/store overrides for an explicit native identity. The revised handover
-  derives a Courier station link from the environment managed home; it does not
+  derives an a2ad (the a2a daemon) station link from the environment managed home; it does not
   admit a credential directory or a separate directory flag. The launcher owner
   may instead refuse nonempty overrides; that choice stays open, but a stale
   keeper-shell variable would then stop launch. Immutable roots end automatic
@@ -92,8 +92,8 @@ skill-agents-management, whose provider plugins build launcher plans and argv.
   accept actual receipts separately for emission and adoption. No receipt is claimed.
 
 The scope is one non-root Linux OS user with several profiles and a2a identities.
-Courier runs under its own OS user and retains all a2a credentials, State,
-mailbox, journals, saved inbox files and locks in the Courier home, outside
+a2ad (the a2a daemon) runs under its own OS user and retains all a2a credentials, State,
+mailbox, journals, saved inbox files and locks in the a2ad (the a2a daemon) home, outside
 station reach. Stations sharing one UID can still read and use each other's
 `station.key` and rewrite policy. Station identity isolation is real only with one
 OS user per station; the shared-UID milestone claims no such isolation.
@@ -335,10 +335,10 @@ The operator attests that legacy entry points are excluded from this workflow an
 Packages must not nominate admission authority; package/profile/provider data is
 not read as an authority source. Their code can nevertheless rewrite policy under
 the same UID. In the station-link proposal, all a2a credentials, State, mailbox,
-journals, saved inbox files and locks stay in the Courier home under its separate
+journals, saved inbox files and locks stay in the a2ad (the a2a daemon) home under its separate
 OS user, outside station reach. Under one
 shared station UID, any station can still read another's `station.key` and
-impersonate its identity to Courier. Mode 0600 and `A2A_CONFIG_DIR` scope configuration
+impersonate its identity to a2ad (the a2a daemon). Mode 0600 and `A2A_CONFIG_DIR` scope configuration
 but cannot isolate stations sharing a UID; real station isolation needs one OS
 user per station. Legacy binaries outside the controlled workflow are unqualified.
 
@@ -431,6 +431,12 @@ changes the resolve call. This is source reading, not timing.
 
 ### Native station-link handover (Review)
 
+Naming note (2026-11-10): the former Courier names follow
+[a2a PR #438](https://github.com/relux-works/a2a-swarm/pull/438): a2ad (the a2a daemon).
+`ProtocolVersion = 1`, `session-evidence/1` and the wire are unchanged apart
+from the mapped names; the a2a owner statements below retain their original
+protocol version, dates and authority. No compatibility alias is added.
+
 Native identity launch takes `--native --a2a <identity>`. The launcher derives
 `A2A_CONFIG_DIR=M`, the environment's **canonical (EvalSymlinks) managed home**,
 and checks the station link at `M/.a2a`. It never selects the config base from an
@@ -443,11 +449,11 @@ wiring and route selection are unchanged; this revision admits no hosted station
 handover or new hook/doorbell behavior.
 
 The handover shape follows **a2a owner design note v0**: the station holds a link
-and an authentication secret. The **a2a owner decision, Courier protocol version
+and an authentication secret. The **a2a owner decision, a2ad (the a2a daemon) protocol version
 1, 2026-11-09 about 08:35Z** clarifies custody: all a2a credentials, State,
-mailbox, journals, saved inbox files and locks live only in the Courier home
-under the Courier user. In Courier station mode the station-side client writes
-exactly one thing under M: `M/state/courier-hook-failures.log`. After a full
+mailbox, journals, saved inbox files and locks live only in the a2ad (the a2a daemon) home
+under the a2ad (the a2a daemon) user. In a2ad (the a2a daemon) station mode the station-side client writes
+exactly one thing under M: `M/state/daemon-hook-failures.log`. After a full
 station run, M contains exactly `.a2a/` with its four entries plus that one log
 file (in `state/`). The launcher does not inspect or refuse `M/state/` or any
 other sibling of `M/.a2a`; the closed entry rule applies only inside `M/.a2a`.
@@ -458,13 +464,13 @@ and the station client reads `filepath.Join(paths.Base, ".a2a")` in
 link shape, intended as one design. This packet does not allocate a separate
 challenge or wire protocol for either lane. The file grammar, enrollment wire
 shape, rotation and published constants below are attributed to **a2a owner
-statements, Courier protocol version 1**. These binding Courier v1 statements
+statements, a2ad (the a2a daemon) protocol version 1**. These binding a2ad (the a2a daemon) v1 statements
 replace the earlier socket regex proposal; they do not accept this whole Curator
 proposal or open a root-emission gate.
 
-#### Canonical station path (Courier v1)
+#### Canonical station path (a2ad (the a2a daemon) v1)
 
-The canonical-path rule is an **a2a owner statement, Courier protocol version 1**,
+The canonical-path rule is an **a2a owner statement, a2ad (the a2a daemon) protocol version 1**,
 binding enrollment, launcher admission and this proposal. `enroll --dir D`
 resolves D's parent once with `EvalSymlinks`, appends the final directory name,
 and operates only on that canonical path. The launcher derives M by
@@ -481,7 +487,7 @@ root through M. Each canonical ancestor MUST be a directory owned by the caller
 **root-owned and sticky**. M itself MUST be owned by the station UID. A sticky
 directory owned by the caller or another user does not get the root exception.
 
-The **a2a owner statement, Courier protocol version 1** closes the former
+The **a2a owner statement, a2ad (the a2a daemon) protocol version 1** closes the former
 enroll-time record question: there is **no stored enroll-time station path**.
 Every reader of `.a2a/` — enroll's rotate path, the station-side client and
 launcher admission — takes the directory path D it was given and MUST refuse
@@ -500,17 +506,17 @@ launcher resolves the input managed home on each launch: re-pointing an
 input-home alias can yield a new canonical M and D that pass the path check.
 That new location has no enrolled entries unless enrollment ran there; station
 link admission still checks those entries. The canonical-ancestor rule checks
-the resolved chain, not alias components outside that chain. Courier hello
+the resolved chain, not alias components outside that chain. a2ad (the a2a daemon) hello
 still authenticates by secret and UID, not by path. No record, storage location,
 additional link entry or read interface is required by this contract.
 
 The bounded model consumes supplied home/directory `EvalSymlinks` results and
-complete ancestor facts. These are observations, not live resolution or Courier
+complete ancestor facts. These are observations, not live resolution or a2ad (the a2a daemon)
 authentication qualification.
 The inherited two-key comparison uses the selected identity and canonical M; its
 existing nonempty-conflict rule and all carrier/scrub rules remain unchanged.
 
-The **a2a owner statement, Courier protocol version 1, 2026-11-09** adds
+The **a2a owner statement, a2ad (the a2a daemon) protocol version 1, 2026-11-09** adds
 `station` as a fourth entry, written in the same atomic namespace publication.
 The original entries' metadata rule was published in
 [a2a #366](https://github.com/relux-works/a2a-swarm/pull/366) and
@@ -524,16 +530,16 @@ process's effective UID**. Its closed entry set is exactly:
 
 | Entry | Meaning and launcher observation |
 | --- | --- |
-| `courier.sock` | Station-UID-owned regular file, not a symlink, link count exactly 1, mode exactly 0600, containing UTF-8 P followed by exactly one LF. P starts with `/`, contains no NUL, CR, LF or BOM, and has byte length 1..103 including `/` and excluding the final LF. This is an explicit UTF-8 byte-length check, not a regex character count; P is not restricted to ASCII. This file is the only socket-path source, with no per-OS default. It is a path file, not the socket object. |
+| `daemon.sock` | Station-UID-owned regular file, not a symlink, link count exactly 1, mode exactly 0600, containing UTF-8 P followed by exactly one LF. P starts with `/`, contains no NUL, CR, LF or BOM, and has byte length 1..103 including `/` and excluding the final LF. This is an explicit UTF-8 byte-length check, not a regex character count; P is not restricted to ASCII. This file is the only socket-path source, with no per-OS default. It is a path file, not the socket object. |
 | `identity` | Station-UID-owned regular file, not a symlink, link count exactly 1, mode exactly 0600, containing exactly one line matching `^[a-z0-9._=-]{1,64}\n`: ASCII name followed by one LF, no spaces or BOM. The name before LF equals the registered identity selected by `--a2a`; no trimming or normalization. |
 | `station` | Station-UID-owned regular file, not a symlink, link count exactly 1, mode exactly 0600, containing exactly one line matching `^[a-z0-9._=-]{1,64}\n`, the registry grammar also used by `identity`. No spaces, BOM, trimming or normalization. The launcher checks this value only; it MUST NOT deliver the station name in argv, environment or plan, or echo its contents. |
-| `station.key` | Station-UID-owned regular file, not a symlink, link count exactly 1, mode exactly 0600, containing exactly 32 raw bytes, no encoding or appended newline. Size comes from a2a Go module package `courier.StationKeyLen = 32` at pinned `courier.ProtocolVersion = 1`, owned and published by a2a according to its Courier v1 statements. Unavailable pinned contract refuses. The launcher checks metadata only and MUST NOT open/read its secret contents. |
+| `station.key` | Station-UID-owned regular file, not a symlink, link count exactly 1, mode exactly 0600, containing exactly 32 raw bytes, no encoding or appended newline. Size comes from a2a Go module package `daemon.StationKeyLen = 32` at pinned `daemon.ProtocolVersion = 1`, owned and published by a2a according to its a2ad (the a2a daemon) v1 statements. Unavailable pinned contract refuses. The launcher checks metadata only and MUST NOT open/read its secret contents. |
 
 A three-file pre-`station` directory is incomplete and refuses
 `native-environment-not-registered:native-station-missing-entry`; the operator
 action is **re-run enroll**. A missing `station` has that same stable refusal.
-The **a2a owner statement, Courier protocol version 1, 2026-11-09** specifies
-no migration because Courier is deployed nowhere yet, and leaves C1 hello and
+The **a2a owner statement, a2ad (the a2a daemon) protocol version 1, 2026-11-09** specifies
+no migration because a2ad (the a2a daemon) is deployed nowhere yet, and leaves C1 hello and
 its HMAC input unchanged.
 
 **Informative daemon context**, from part (b) of that same a2a owner statement:
@@ -560,7 +566,7 @@ the checks to the same directory rather than follow a replacement symlink.
 This bounded model receives observations, not live files, and qualifies neither
 OS observation nor TOCTOU handling. A missing or bad station directory/entry
 refuses with stable operator-facing code `native-environment-not-registered`,
-meaning **environment not registered with Courier**. The finer codes below are
+meaning **environment not registered with a2ad (the a2a daemon)**. The finer codes below are
 content-free sub-reasons under that code, including unavailable contract value;
 no file contents, secret bytes or arbitrary extra-entry names are echoed. Invalid
 managed-home input retains its separate precondition code:
@@ -577,7 +583,7 @@ managed-home input retains its separate precondition code:
 | Supplied station directory is not absolute | `native-station-directory-absolute` |
 | Station directory EvalSymlinks result unavailable or invalid | `native-station-directory-resolution` |
 | Supplied station directory differs from its EvalSymlinks result | `native-station-directory-noncanonical` |
-| Courier secret-size contract is unresolved | `native-station-contract-unresolved` |
+| a2ad (the a2a daemon) secret-size contract is unresolved | `native-station-contract-unresolved` |
 | Observed station directory is not M/.a2a (M is the delivered config base) | `native-station-directory-location` |
 | Required metadata or any public-file value unavailable | `native-station-unreadable` |
 | Directory missing | `native-station-directory-missing` |
@@ -591,7 +597,7 @@ managed-home input retains its separate precondition code:
 | Any entry link count differs from 1 | `native-station-entry-links` |
 | Socket-path, identity or station file mode differs from 0600 | `native-station-entry-mode` |
 | Key mode differs from 0600 | `native-station-key-mode` |
-| Key byte size differs from the Courier contract | `native-station-key-size` |
+| Key byte size differs from the a2ad (the a2a daemon) contract | `native-station-key-size` |
 | Station name violates the exact registry one-line grammar | `native-station-name-format` |
 | Identity bytes violate the exact one-line grammar | `native-station-identity-format` |
 | Well-formed identity name differs from `--a2a` | `native-station-identity` |
@@ -605,13 +611,13 @@ managed-home input retains its separate precondition code:
 Registration is **per environment**, not per launch: the station is the managed
 environment. Its key lives for the environment lifetime and rotates on environment
 recreation or explicit rotate using `--rotate` on **both sides**, never per launch.
-These rotation and enrollment details are **a2a owner statements, Courier protocol
+These rotation and enrollment details are **a2a owner statements, a2ad (the a2a daemon) protocol
 version 1**. Enrollment is a two-sided pipe **outside launch**:
 
-1. As the Courier OS user, `register-station ... --emit -` mints the station secret
+1. As the a2ad (the a2a daemon) OS user, `register-station ... --emit -` mints the station secret
    and emits exactly one closed JSON object with keys `socket`, `identity`,
    `station`, `secret_b64`, followed by LF. No other keys are admitted.
-2. As the station OS user, `a2a courier enroll --dir <home>/.a2a --from -` consumes
+2. As the station OS user, `a2a daemon enroll --dir <home>/.a2a --from -` consumes
    that line, creates the 0700 directory and its four caller-owned entries in one
    atomic namespace publication, and refuses unknown JSON keys and existing
    entries without `--rotate`.
@@ -621,14 +627,14 @@ The launcher never calls registration/enrollment and never writes `M/.a2a`;
 neither launcher nor agent mints the secret. No enrollment JSON or secret passes
 through the launcher's argv, environment, logs or plan. Only
 `A2A_AGENT=<identity>` and `A2A_CONFIG_DIR=M` are delivered at launch.
-The a2a owner states that its Go module package `courier` publishes
+The a2a owner states that its Go module package `daemon` publishes
 `StationKeyLen = 32` and `ProtocolVersion = 1`. Admission checks size because a2a
 publishes that contract; it does not choose a launcher-owned number. Curator-run
 accepted either form and preferred admission without a size stat; record that
 preference without attributing the mandatory check to it. This proposal uses
 the published a2a length. Which a2a Go module version the launcher pins, and the
 pin/lookup mechanism, remain **curator-run implementation work**, not claimed
-implemented here. The model consumes supplied pinned Courier v1 constants, not
+implemented here. The model consumes supplied pinned a2ad (the a2a daemon) v1 constants, not
 a real module lookup, and never reads key contents. If that pinned contract is
 unavailable, admission still refuses `native-station-contract-unresolved` under
 `native-environment-not-registered`. These are owner statements, not an inspected
@@ -641,7 +647,7 @@ Both former lifecycle/caller and key-length questions are resolved by these
 answers. Pinning/consuming the published a2a module contract and qualifying real
 enrollment remain implementation dependencies, not new product decisions in
 this revision. The canonical enrollment-record question is also closed by the
-a2a Courier v1 owner statement above; there is no stored path or read interface.
+a2ad (the a2a daemon) v1 owner statement above; there is no stored path or read interface.
 All root-emission gates remain CLOSED.
 
 For native explicit identity, compare exactly `A2A_AGENT` and `A2A_CONFIG_DIR`
@@ -774,7 +780,7 @@ workstation. The W0 observations above are navigation only.
 | Real launch and identity | Two profiles with different sentinel bytes, two selected identities with distinct managed-home station links, one effective UID. Actual tool shells find selected commands and report selected identity. Nonempty inherited conflict refuses; empty values pass. New sessions never reuse inherited `A2A_SESSION_ID`/`CODEX_THREAD_ID`/`CLAUDE_CODE_SESSION_ID`; valid runtime-owned metadata works. No ambient decoy executes. |
 | Explicit native identity transport/store | Inherit `A2A_MATRIX_URL` differing from selected `matrix.env`: it must not reach the new identity; under recommended removal a matching inherited URL still permits selected routing. Under the open nonempty-value refusal variant, matching as well as differing nonempty URLs refuse with zero starts; unset is its launch control. Exercise the other three named overrides as well. Recommended removal drops all four before planning; the launcher owner may instead choose nonempty-value refusal, witnessed as zero starts. Unset control launches; without an explicit native identity the new four-key rule is not applied. |
 | a2a image guard across generations | Linux image identity is dev/inode of `/proc/<pid>/exe`. Any live own-UID `a2a` process with the same identity and canonical config root, regardless of command, participates in the different-image refusal: a byte-identical copy in a new root is refused as a different image; a hard link to the same inode passes the image comparison (other bind and command-root admission guards still apply). The scan covers only own-UID processes whose executable name starts with `a2a`, so the published executable name MUST retain that prefix; a differently named copy is invisible to this scan and is not a bypass claim. Nearby distinct identity/config-root controls behave as current a2a permits. With immutable roots the consumer does not refresh to a newly published generation. Stop all conflicting old-image processes, not only the consumer. For the proposed per-generation hook source, install settings using G2, complete required trust, start a new session and assert the consumer's `/proc/<pid>/exe` dev/inode equals G2's image, not merely successful bind or G2 on PATH. Stale G1 settings with G2 on PATH and no old process can successfully bind G1: this MUST fail the upgrade witness. Rewritten G2 settings plus an observed G2 consumer are the positive control. Hook-source choice and settings/trust/restart cost await a2a-owner acceptance. |
-| Config base versus station link | Deliver A2A_CONFIG_DIR=M through SAM Codex -c and the Claude carrier; delivering M/.a2a fails the witness. Matching inherited M passes; nonempty M/.a2a conflicts. A sibling M/state/ does not cause refusal and is not inspected by the launcher. The a2a-side full-run observation is exactly .a2a/ (four entries) plus state/courier-hook-failures.log under M; all credentials, State, mailbox, journals, saved inbox files and locks remain only in the Courier home/user. Link observations at M or M/.a2a/.a2a refuse by directory-location with zero starts and unchanged input; M/.a2a is the positive control. All four-entry controls still apply inside M/.a2a. |
+| Config base versus station link | Deliver A2A_CONFIG_DIR=M through SAM Codex -c and the Claude carrier; delivering M/.a2a fails the witness. Matching inherited M passes; nonempty M/.a2a conflicts. A sibling M/state/ does not cause refusal and is not inspected by the launcher. The a2a-side full-run observation is exactly .a2a/ (four entries) plus state/daemon-hook-failures.log under M; all credentials, State, mailbox, journals, saved inbox files and locks remain only in the a2ad (the a2a daemon) home/user. Link observations at M or M/.a2a/.a2a refuse by directory-location with zero starts and unchanged input; M/.a2a is the positive control. All four-entry controls still apply inside M/.a2a. |
 | Carrier/admission age pairs | Every old/new manager/launcher pair, explicit H with missing/corrupt/stale policy, unsupported mode, policy CAS mismatch: named refusal, zero starts, unchanged state; admitted pair starts. Hosted `--a2a` alone still works; native `--a2a` uses the derived station link and refuses the removed directory flag. Missing/symlink/wrong-owner/wrong-mode directories, credential-looking extras, missing or symlink/nonregular entries, exact directory modes 0500/0300/0711 and key modes 0400/0640, key size errors, malformed/mismatched identity lines and malformed or overlong UTF-8 socket files each refuse before planning, with zero starts and unchanged files; a valid station link is the positive control. Secret contents are never read by the launcher or reflected in a plan, environment, argv or log. |
 | Managed Codex gateway exclusion | Exercise each selector on launcher main: explicit `--network`, launcher proxy profile, and the operator gateway default without either explicit selector. Main computes these after `plan.Build`; the proposed refusal must determine the effective gateway route before building the plan rather than reuse that later variable. B-a pair or explicit native a2a identity: `native_root_gateway_unsupported` before planning, zero starts and unchanged state. Nearby supported plain-native launches with B-a or explicit native identity, and ordinary gateway launches with neither input, remain admitted. Scrub is already in the planning environment. |
 | Every-native pre-plan scrub | New/resume, with/without B-a or native identity flags: all three inherited session selectors are absent from the planning environment; runtime-owned metadata still works. `TMUX`/`TMUX_PANE` remain intact for bind; the three onboard-only runtime markers are not scrubbed as selectors. No forwarded-argv inspection or fabricated replacement. Separate launcher change and review. |

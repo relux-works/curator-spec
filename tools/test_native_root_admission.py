@@ -563,7 +563,7 @@ class NativeRootAdmission(unittest.TestCase):
 
     @staticmethod
     def courier_contract():
-        # Supplied a2a package courier constants, not an implemented module pin.
+        # Supplied a2a package daemon constants, not an implemented module pin.
         return dict(ProtocolVersion=1, StationKeyLen=32)
 
     @staticmethod
@@ -574,7 +574,7 @@ class NativeRootAdmission(unittest.TestCase):
                 dict(path='/', kind='directory', uid=0, mode=0o755),
                 dict(path='/managed', kind='directory', uid=0, mode=0o755),
                 dict(path='/managed/home', kind='directory', uid=1000, mode=0o700)]), entries={
-            'courier.sock': dict(kind='file', uid=1000, mode=0o600, nlink=1, value=b'/run/courier/service.sock\n'),
+            'daemon.sock': dict(kind='file', uid=1000, mode=0o600, nlink=1, value=b'/run/courier/service.sock\n'),
             'identity': dict(kind='file', uid=1000, mode=0o600, nlink=1, value='agent-one\n'),
             'station': dict(kind='file', uid=1000, mode=0o600, nlink=1, value='station-one\n'),
             'station.key': proposal.StationKeyMetadata(kind='file', uid=1000, mode=0o600, size=32, nlink=1)})
@@ -606,7 +606,7 @@ class NativeRootAdmission(unittest.TestCase):
             ('symlink-canonical-ancestor', 'native-station-ancestor-observation', lambda d: d['resolution']['ancestors'][1].update(kind='symlink')),
             ('station-directory-symlink', 'native-station-directory-type', lambda d: d.update(kind='symlink')),
         ]
-        for name in ['courier.sock', 'identity', 'station', 'station.key']:
+        for name in ['daemon.sock', 'identity', 'station', 'station.key']:
             rows.append(('station-entry-symlink-'+name, 'native-station-entry-type',
                          lambda d, n=name: setattr(d['entries'][n], 'kind', 'symlink') if n == 'station.key' else d['entries'][n].update(kind='symlink')))
         env = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home', A2A_SESSION_ID='parent')
@@ -695,7 +695,7 @@ class NativeRootAdmission(unittest.TestCase):
         # Every failed observation refuses before the carrier step, without
         # echoing values or mutating inputs. Each guard plant admits its own bad
         # validation-stage row and the nearby valid control. Namespace plants
-        # exercise the shape helper; no real filesystem/Courier is tested.
+        # exercise the shape helper; no real filesystem/a2ad (the a2a daemon) is tested.
         rows = [
             ('directory-location', 'native-station-directory-location', lambda d: d.update(path='/legacy/credentials', resolved_path='/legacy/credentials')),
             # Config base and a double-appended child cannot stand in for M/.a2a.
@@ -711,11 +711,11 @@ class NativeRootAdmission(unittest.TestCase):
             ('key-mode', 'native-station-key-mode', lambda d: setattr(d['entries']['station.key'], 'mode', 0o644)),
             ('identity-mismatch', 'native-station-identity', lambda d: d['entries']['identity'].update(value='do-not-echo-identity\n')),
         ]
-        for name in ['courier.sock', 'identity', 'station', 'station.key']:
+        for name in ['daemon.sock', 'identity', 'station', 'station.key']:
             rows.append(('missing-'+name, 'native-station-missing-entry', lambda d, n=name: d['entries'].pop(n)))
             rows.append(('owner-'+name, 'native-station-entry-owner', lambda d, n=name: setattr(d['entries'][n], 'uid', 2000) if n == 'station.key' else d['entries'][n].update(uid=2000)))
             rows.append(('symlink-'+name, 'native-station-entry-type', lambda d, n=name: setattr(d['entries'][n], 'kind', 'symlink') if n == 'station.key' else d['entries'][n].update(kind='symlink')))
-        rows.append(('fifo-entry', 'native-station-entry-type', lambda d: d['entries']['courier.sock'].update(kind='fifo')))
+        rows.append(('fifo-entry', 'native-station-entry-type', lambda d: d['entries']['daemon.sock'].update(kind='fifo')))
         for size in [0, 31, 33]:
             rows.append(('key-size-'+str(size), 'native-station-key-size', lambda d, n=size: setattr(d['entries']['station.key'], 'size', n)))
         for mode in [0o500, 0o300, 0o711]:
@@ -724,11 +724,11 @@ class NativeRootAdmission(unittest.TestCase):
             rows.append(('key-mode-'+oct(mode), 'native-station-key-mode', lambda d, m=mode: setattr(d['entries']['station.key'], 'mode', m)))
         # Exact single-link/0600 rules include owner-only 0400/0700 refusals;
         # both new codes use the same valid-neighbour and in-tree guard plants.
-        for name in ['courier.sock', 'identity', 'station', 'station.key']:
+        for name in ['daemon.sock', 'identity', 'station', 'station.key']:
             rows.append(('nlink-2-'+name, 'native-station-entry-links',
                 lambda d, n=name: setattr(d['entries'][n], 'nlink', 2) if n == 'station.key'
                     else d['entries'][n].update(nlink=2)))
-        for name in ['courier.sock', 'identity', 'station']:
+        for name in ['daemon.sock', 'identity', 'station']:
             for mode in [0o644, 0o640, 0o400, 0o700]:
                 rows.append(('mode-'+oct(mode)+'-'+name, 'native-station-entry-mode',
                     lambda d, n=name, m=mode: d['entries'][n].update(mode=m)))
@@ -809,8 +809,8 @@ class NativeRootAdmission(unittest.TestCase):
         # the full-launch missing-station row above proves the wrapped refusal.
         valid = self.station_observation()['entries']
         legacy = deepcopy(valid); legacy.pop('station')
-        self.assertEqual(set(valid), {'courier.sock', 'identity', 'station', 'station.key'})
-        self.assertEqual(set(legacy), {'courier.sock', 'identity', 'station.key'})
+        self.assertEqual(set(valid), {'daemon.sock', 'identity', 'station', 'station.key'})
+        self.assertEqual(set(legacy), {'daemon.sock', 'identity', 'station.key'})
         before = deepcopy((valid, legacy))
         self.assertIsNone(proposal.station_link_entries(valid))
         with self.subTest(vector='pre-station-three-file-directory'):
@@ -893,7 +893,7 @@ class NativeRootAdmission(unittest.TestCase):
                 print('plant detected by named vector: station-identity-'+label+' (native-station-identity-format)')
 
     def test_courier_socket_bytes_vectors_and_plants(self):
-        # Courier v1 accepts UTF-8 P+LF at 1/103 bytes, including non-ASCII;
+        # a2ad (the a2a daemon) v1 accepts UTF-8 P+LF at 1/103 bytes, including non-ASCII;
         # malformed/overlong files refuse by a content-free sub-reason before
         # delivery, preserving all observations. No filesystem is exercised.
         valid_values = [b'/\n', b'/'+b'a'*102+b'\n', ('/'+'é'*51+'\n').encode('utf-8')]
@@ -912,7 +912,7 @@ class NativeRootAdmission(unittest.TestCase):
             ('invalid-utf8', b'/path\xff\n', 'native-station-socket-utf8'),
         ]
         def launch(raw):
-            link = self.station_observation(); link['entries']['courier.sock']['value'] = raw
+            link = self.station_observation(); link['entries']['daemon.sock']['value'] = raw
             before = deepcopy(link)
             try:
                 return proposal.native_identity_launch('agent-one', '/managed/home', {}, 1000, link, self.courier_contract())
@@ -995,7 +995,7 @@ class NativeRootAdmission(unittest.TestCase):
         # This is a bounded observation/carrier check, not live filesystem I/O.
         expected = dict(A2A_AGENT='agent-one', A2A_CONFIG_DIR='/managed/home')
         sibling_facts = {
-            'state': dict(kind='directory', entries={'courier-hook-failures.log': dict(kind='file')})}
+            'state': dict(kind='directory', entries={'daemon-hook-failures.log': dict(kind='file')})}
         for label, siblings in [('link-only', {}), ('state-sibling-outside-link', sibling_facts)]:
             with self.subTest(vector=label):
                 link = self.station_observation()

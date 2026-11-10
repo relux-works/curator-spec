@@ -4,17 +4,17 @@
 - **Owner:** Curator protocol proposal; decision: operator
 - **Created:** 2026-11-09
 - **Related:** [Draft Decision 0037](../decisions/0037-native-a2a-station-link.md); [CIP-0024](CIP-0024-agent-stations.md); a2a owner design note v0
-- **Affects:** [native command-root admission](../protocol/profile-command-root-admission.md#native-station-link-handover-review); curator-run launcher; SAM typed environment carriers; a2a Courier; grants station-link coordination
+- **Affects:** [native command-root admission](../protocol/profile-command-root-admission.md#native-station-link-handover-review); curator-run launcher; SAM typed environment carriers; a2ad (the a2a daemon); grants station-link coordination
 
 ## Summary
 
 Replace native identity selection's proposed credential-directory flag with a
-Courier station link derived from the canonical environment managed home. The native route
+a2ad (the a2a daemon) station link derived from the canonical environment managed home. The native route
 takes `--native --a2a <identity>` and delivers the two existing non-secret a2a
-variables, with `A2A_CONFIG_DIR=M`, after validating `M/.a2a`. Courier holds
+variables, with `A2A_CONFIG_DIR=M`, after validating `M/.a2a`. a2ad (the a2a daemon) holds
 all a2a credentials, State, mailbox, journals, saved inbox files and locks only
-in the Courier home under its separate OS user. In station mode the client writes
-only `M/state/courier-hook-failures.log` under M. This Review proposal opens no root-emission gate,
+in the a2ad (the a2a daemon) home under its separate OS user. In station mode the client writes
+only `M/state/daemon-hook-failures.log` under M. This Review proposal opens no root-emission gate,
 claims no adoption or runtime support. Supplied a2a owner and curator-run answers
 settle per-environment enrollment outside launch and the a2a-owned key length.
 
@@ -35,7 +35,7 @@ an explicit native identity plus credential-directory pair; its bounded
 The packet is unreleased and all seven root-emission gates are CLOSED. Released
 rc.14 conformance and existing hosted routing are unchanged by this proposal.
 The a2a owner design note v0 supplies the station-link custody shape, not
-a runtime receipt. The subsequent **a2a owner statements, Courier protocol
+a runtime receipt. The subsequent **a2a owner statements, a2ad (the a2a daemon) protocol
 version 1** bind the file grammars, wire shape, rotation and published constants below. These replace
 the earlier socket regex proposal. No implementation source or runtime was
 inspected to qualify those statements.
@@ -48,9 +48,9 @@ inspected to qualify those statements.
    station reach and does not meet the requested custody boundary; reject it for
    this native route.
 2. Derive a closed station link at `M/.a2a`, where M is the environment managed
-   home M, delivered as `A2A_CONFIG_DIR=M`. Courier retains all a2a credentials,
+   home M, delivered as `A2A_CONFIG_DIR=M`. a2ad (the a2a daemon) retains all a2a credentials,
    State, mailbox, journals, saved inbox files and locks only in its home under
-   the Courier user. The station-side client writes only the hook-failure log
+   the a2ad (the a2a daemon) user. The station-side client writes only the hook-failure log
    under M; its operator mints the station secret. This matches the supplied handover shape and keeps
    secrets out of launcher argv, environment, logs and plans.
 3. Make the launcher mint or register stations automatically. This conflicts with
@@ -60,24 +60,24 @@ inspected to qualify those statements.
 
 Use option 2 for handover shape. The [packet's refusal table](../protocol/profile-command-root-admission.md#native-station-link-handover-review)
 requires the private station-owned directory, exactly four regular nonsymlink
-entries (`courier.sock`, `identity`, `station`, `station.key`), key metadata, matching identity and an absolute socket-path value.
+entries (`daemon.sock`, `identity`, `station`, `station.key`), key metadata, matching identity and an absolute socket-path value.
 All four entries have link count exactly 1 and mode exactly 0600. The original
 entries follow the public [a2a enroll PR #366](https://github.com/relux-works/a2a-swarm/pull/366)
 and [C1 PR #367](https://github.com/relux-works/a2a-swarm/pull/367). Any entry with
 another link count refuses `native-station-entry-links`; socket/identity/station modes
 other than 0600 refuse `native-station-entry-mode`, retaining the key-mode code.
 These are content-free sub-reasons under `native-environment-not-registered`.
-`courier.sock` is a regular path file, not the socket itself. The removed directory
+`daemon.sock` is a regular path file, not the socket itself. The removed directory
 flag and legacy credential-directory handover are refused.
 
-The **a2a owner statement, Courier protocol version 1, 2026-11-09** adds
+The **a2a owner statement, a2ad (the a2a daemon) protocol version 1, 2026-11-09** adds
 `station` with that same metadata, atomically published with the other entries.
 Its content is exactly one registry-grammar line `^[a-z0-9._=-]{1,64}\n`.
 Launcher checks it without echo or delivery in argv, environment or plan.
 A pre-station three-file directory is incomplete and refuses under
 `native-environment-not-registered:native-station-missing-entry`: re-run enroll.
-The same **a2a owner statement, Courier protocol version 1, 2026-11-09**
-specifies no migration because Courier is deployed nowhere yet, and leaves C1
+The same **a2a owner statement, a2ad (the a2a daemon) protocol version 1, 2026-11-09**
+specifies no migration because a2ad (the a2a daemon) is deployed nowhere yet, and leaves C1
 hello/HMAC input unchanged.
 
 **Informative daemon context** from part (b) of that owner statement: neither
@@ -87,7 +87,7 @@ authenticated identity alone. Forwarded `--profile` and
 resolved binding; mismatch refuses with identity-mismatch, with no fallback.
 This context adds no launcher requirement. The launcher makes no connection choice.
 
-The canonical-path rule is an **a2a owner statement, Courier protocol version 1**.
+The canonical-path rule is an **a2a owner statement, a2ad (the a2a daemon) protocol version 1**.
 Enrollment resolves D's parent once with `EvalSymlinks` and works on the canonical
 path. Launcher uses canonical managed home M with `EvalSymlinks(M) == M` for
 `A2A_CONFIG_DIR=M` delivery and comparison, checking the link at `M/.a2a`.
@@ -96,18 +96,18 @@ symlinks at `.a2a` or any entry remain refused. Each canonical ancestor through 
 must be caller/root-owned and not group/world-writable, except root-owned sticky
 directories; M itself must belong to the launching effective UID.
 
-An **a2a owner statement, Courier protocol version 1** closes the former
+An **a2a owner statement, a2ad (the a2a daemon) protocol version 1** closes the former
 record question: no enroll-time station path is stored. Every reader (enroll's
 rotate path, station-side client, launcher admission) requires the supplied D
 to be absolute and `EvalSymlinks(D) == D`; the caller passes canonical form.
 Launcher checks its derived `M/.a2a` before planning. Relative, unavailable
 resolution and noncanonical paths refuse as environment not registered with
-Courier, with stable content-free sub-reasons. No location is fixed or recorded
+a2ad (the a2a daemon), with stable content-free sub-reasons. No location is fixed or recorded
 across launches; the reader never rewrites its supplied D or enrolls on launch.
 A re-pointed input-home alias can yield a new canonical path that passes this
 path check. That location has no enrolled entries unless enrollment ran there;
 entry admission still applies. Canonical ancestor checks do not cover alias
-components outside the resolved chain. Courier hello still authenticates by
+components outside the resolved chain. a2ad (the a2a daemon) hello still authenticates by
 secret and UID, not path.
 No record storage or read API is needed. Ancestor and link/entry symlink guards
 remain binding.
@@ -119,22 +119,22 @@ Codex `-c` carrier and Claude carrier, with their existing settings-precedence
 and tool-shell witness requirements. No secret enters either carrier.
 
 The station is the managed environment. Enrollment is per environment, outside
-launch: as Courier user, `register-station ... --emit -` emits one closed JSON
-line; as station user, `a2a courier enroll --dir <home>/.a2a --from -` consumes it,
+launch: as a2ad (the a2a daemon) user, `register-station ... --emit -` emits one closed JSON
+line; as station user, `a2a daemon enroll --dir <home>/.a2a --from -` consumes it,
 creates the 0700 directory and caller-owned entries, refusing existing entries
 without `--rotate`. Keys last for the environment and rotate on recreation or
 explicit rotate with `--rotate` on both sides, never per launch. The emitted
 JSON object has exactly `socket`, `identity`, `station`, `secret_b64`, followed
 by LF; enroll refuses unknown keys. Wire shape and rotation are **a2a owner
-statements, Courier protocol version 1**. Launcher never registers/enrolls,
+statements, a2ad (the a2a daemon) protocol version 1**. Launcher never registers/enrolls,
 mints secrets or writes the link. A later a2a admin socket may let the Curator manager drive the same pipe;
 this future seam is not implemented or claimed here.
 
-Per **a2a owner statements, Courier protocol version 1**, the a2a Go module
-package `courier` publishes `StationKeyLen = 32` and `ProtocolVersion = 1`.
+Per **a2a owner statements, a2ad (the a2a daemon) protocol version 1**, the a2a Go module
+package `daemon` publishes `StationKeyLen = 32` and `ProtocolVersion = 1`.
 The key is 32 raw bytes with no encoding or appended newline. Admission checks
 regular file, no symlink, station ownership, exactly 0600 and metadata size
-against `courier.StationKeyLen` at that pinned protocol version because a2a
+against `daemon.StationKeyLen` at that pinned protocol version because a2a
 publishes it; this is not a launcher-owned size. Curator-run accepted either
 form and preferred no size stat; the mandatory size check is not attributed to
 that preference. Which a2a module version is pinned and the pin/lookup mechanism
@@ -142,32 +142,32 @@ are curator-run implementation work, not claimed here. The model consumes
 supplied pinned constants, never key contents, and refuses an unavailable pin.
 `identity` is exactly one ASCII line matching `^[a-z0-9._=-]{1,64}\n`, whose
 name equals the selected identity; spaces, BOM and extra/missing lines refuse.
-Courier v1 states `courier.sock` is a regular nonsymlink file containing UTF-8 P
+a2ad (the a2a daemon) v1 states `daemon.sock` is a regular nonsymlink file containing UTF-8 P
 plus exactly one LF. P starts with `/`, has no NUL, CR, LF or BOM, and has byte
 length 1..103 including `/`, excluding LF. Check bytes explicitly; non-ASCII
 paths are allowed. This replaces the earlier socket regex statement. The file
 is the only socket-path source; no per-OS default is assigned here. Missing/bad
 link facts use operator-facing code
-`native-environment-not-registered` (environment not registered with Courier),
-with the packet's finer codes as content-free sub-reasons. Courier and grants
+`native-environment-not-registered` (environment not registered with a2ad (the a2a daemon)),
+with the packet's finer codes as content-free sub-reasons. a2ad (the a2a daemon) and grants
 review one handover shape, not separate invented authentication designs.
 
 ## Security considerations
 
-The **a2a owner decision, Courier protocol version 1, 2026-11-09 about 08:35Z**
+The **a2a owner decision, a2ad (the a2a daemon) protocol version 1, 2026-11-09 about 08:35Z**
 places all a2a credentials, State, mailbox, journals, saved inbox files and locks
-only in the Courier home under the Courier user, outside station reach. In
-Courier station mode the client writes exactly `M/state/courier-hook-failures.log`
+only in the a2ad (the a2a daemon) home under the a2ad (the a2a daemon) user, outside station reach. In
+a2ad (the a2a daemon) station mode the client writes exactly `M/state/daemon-hook-failures.log`
 under M. A full run leaves exactly `.a2a/` (four entries) plus that one log file
 (in `state/`). The launcher does not inspect or refuse `M/state/` or any other
 sibling of `M/.a2a`; this does not authorize additional a2a client writes. The
 closed four-entry set applies only inside the station link.
 Station UID is the launching process's effective UID for this milestone.
 Under a shared station UID, stations can read each other's 0600 `station.key`
-and impersonate each other to Courier. Real isolation requires one OS user per
+and impersonate each other to a2ad (the a2a daemon). Real isolation requires one OS user per
 station; private modes alone do not provide it. The station secret authenticates
 a station but is not an a2a credential store. This proposal neither provisions OS
-users nor qualifies Courier authentication.
+users nor qualifies a2ad (the a2a daemon) authentication.
 
 Validate directory/entry metadata without following symlinks and bind observations
 to the same directory before planning. Read only the three public values; inspect
@@ -200,10 +200,10 @@ new Review proposal; no status becomes Accepted.
 
 1. Carry the supplied per-environment enrollment and a2a-owned length answers
    into implementation review; the two former questions are closed.
-2. Review one Courier/grants handover shape and operator-side publication contract.
+2. Review one a2ad (the a2a daemon)/grants handover shape and operator-side publication contract.
 3. Separately implement launcher no-follow checks and typed carrier integration
    behind the existing gates; preserve hosted routing and scrubs.
-4. Obtain native non-root Linux tool-shell/Courier receipts, including refusals,
+4. Obtain native non-root Linux tool-shell/a2ad (the a2a daemon) receipts, including refusals,
    unchanged state and UID boundaries, before root emission or runtime adoption.
 
 These are implementation dependencies, not runtime receipts or adoption of the
@@ -249,17 +249,17 @@ home-owner and link/entry-symlink refusals retain root-sticky positive controls.
 unchanged-input assertion. Dropping path equality is killed by
 `path-later-noncanonical`; dropping the write-permission guard is killed by
 `group-writable-parent`. All facts are
-supplied: no live resolution or Courier authentication is qualified.
+supplied: no live resolution or a2ad (the a2a daemon) authentication is qualified.
 Run the named Python tests and repository validator; outputs
-are model checks, not filesystem, SAM, Courier or Linux runtime qualification.
+are model checks, not filesystem, SAM, a2ad (the a2a daemon) or Linux runtime qualification.
 
 ## Resolved questions and remaining dependencies
 
 Both questions from the first round are closed by supplied a2a owner and
 curator-run answers: registration is per environment through the external
-Courier-user/station-user pipe, with no launch caller; the a2a enroll contract
+pipe between the a2ad (the a2a daemon) user and station user, with no launch caller; the a2a enroll contract
 owns the current 32-byte key length. The canonical enrollment-record question
-is also closed: readers check absolute canonical paths; Courier stores none.
+is also closed: readers check absolute canonical paths; a2ad (the a2a daemon) stores none.
 The a2a owner now states the published constants; the launcher module-version
 pin and contract consumption remain curator-run implementation work. Real
 enrollment qualification and the later admin-socket seam also remain future work.

@@ -7,6 +7,14 @@ Versioning for the complete specification set.
 
 ### Added
 
+- 2026-11-10: follow [a2a PR #438](https://github.com/relux-works/a2a-swarm/pull/438)
+  naming for a2ad (the a2a daemon): station `daemon.sock`,
+  `state/daemon-hook-failures.log`, `a2a daemon enroll` and package `daemon`
+  constants in the Review station-link proposal and model. ProtocolVersion 1
+  and the wire remain unchanged apart from mapped names; owner provenance,
+  admission rules, modes, path shapes and Curator refusal codes are unchanged.
+  Earlier entries retain the names used when they were recorded.
+
 - Corrects #217/#219: native `A2A_CONFIG_DIR=M` is the canonical managed-home
   config base, not `M/.a2a`. Admit the four-entry station link at `M/.a2a`;
   compare/deliver M through the existing SAM Codex and Claude carriers. The
