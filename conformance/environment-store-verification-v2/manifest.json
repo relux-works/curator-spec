@@ -1,0 +1,395 @@
+{
+  "schema": "curator.environment-store-corpus/2",
+  "capability": "agent-environments",
+  "capability_revision": 2,
+  "status": "proposal-unreleased",
+  "cases": "vectors/environments-store-boundary.json",
+  "case_count": 104,
+  "predecessor": {
+    "commit": "43bf0a2506d5c354a73bbc3ea4623d4653db10c7",
+    "path": "conformance/v1/vectors/environments-store-boundary.json",
+    "sha256": "7efa5b09e450162cfb2937f25b3e29fab4699602e0990cfd295a4f695cb60413"
+  },
+  "migration": [
+    {
+      "group": "resolve_cases",
+      "name": "intact-resolve-emits-fragment",
+      "disposition": "retained",
+      "old_diagnostic": null,
+      "old_outcome": null,
+      "new_required_diagnostic": null,
+      "successor_case": "legacy-intact-resolve-emits-fragment",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "swapped-system-prompt-bytes-untrusted",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-swapped-system-prompt-bytes-untrusted",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "swapped-root-context-bytes-untrusted",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-swapped-root-context-bytes-untrusted",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "symlinked-entry-root-untrusted",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-symlinked-entry-root-untrusted",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "wrong-ownership-untrusted",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-wrong-ownership-untrusted",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "wrong-permissions-untrusted",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-wrong-permissions-untrusted",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "containment-escape-untrusted",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-containment-escape-untrusted",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "non-regular-component-untrusted",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-non-regular-component-untrusted",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "lock-file-wrong-owner-untrusted",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-lock-file-wrong-owner-untrusted",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "marker-symlink-untrusted",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-marker-symlink-untrusted",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "environments-root-wrong-owner-untrusted",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-environments-root-wrong-owner-untrusted",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "store-root-symlinked-untrusted",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-store-root-symlinked-untrusted",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "intact-updated-store-old-marker-stale",
+      "disposition": "retained",
+      "old_diagnostic": "environment_home_stale",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_home_stale",
+      "successor_case": "legacy-intact-updated-store-old-marker-stale",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "swapped-updated-store-old-marker-untrusted",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-swapped-updated-store-old-marker-untrusted",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "unprovisioned-intact-stale",
+      "disposition": "retained",
+      "old_diagnostic": "environment_home_stale",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_home_stale",
+      "successor_case": "legacy-unprovisioned-intact-stale",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "unprovisioned-swapped-untrusted",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-unprovisioned-swapped-untrusted",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "unreadable-marker-non-current",
+      "disposition": "retained",
+      "old_diagnostic": "environment_marker_unreadable",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_marker_unreadable",
+      "successor_case": "legacy-unreadable-marker-non-current",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "resolve_cases",
+      "name": "swapped-bytes-emits-fragment",
+      "disposition": "retained-negative-control",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-swapped-bytes-emits-fragment",
+      "known_bad_remains_negative": true
+    },
+    {
+      "group": "resolve_cases",
+      "name": "untrusted-reported-current",
+      "disposition": "retained-negative-control",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-untrusted-reported-current",
+      "known_bad_remains_negative": true
+    },
+    {
+      "group": "resolve_cases",
+      "name": "untrusted-without-diagnostic",
+      "disposition": "retained-negative-control",
+      "old_diagnostic": null,
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-untrusted-without-diagnostic",
+      "known_bad_remains_negative": true
+    },
+    {
+      "group": "dry_run_cases",
+      "name": "dry-run-untrusted-reports-would-rebuild",
+      "disposition": "tightened",
+      "old_diagnostic": null,
+      "old_outcome": "would-rebuild-untrusted-store",
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-dry-run-untrusted-reports-would-rebuild",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "dry_run_cases",
+      "name": "dry-run-intact-plans-nothing",
+      "disposition": "retained",
+      "old_diagnostic": null,
+      "old_outcome": null,
+      "new_required_diagnostic": null,
+      "successor_case": "legacy-dry-run-intact-plans-nothing",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "dry_run_cases",
+      "name": "dry-run-enclosing-no-rebuild",
+      "disposition": "retained",
+      "old_diagnostic": null,
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-dry-run-enclosing-no-rebuild",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "dry_run_cases",
+      "name": "dry-run-mutates",
+      "disposition": "tightened-negative-control",
+      "old_diagnostic": null,
+      "old_outcome": "would-rebuild-untrusted-store",
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-dry-run-mutates",
+      "known_bad_remains_negative": true
+    },
+    {
+      "group": "repair_cases",
+      "name": "repair-rebuilds-git-entry-from-snapshot",
+      "disposition": "retained",
+      "old_diagnostic": null,
+      "old_outcome": null,
+      "new_required_diagnostic": null,
+      "successor_case": "legacy-repair-rebuilds-git-entry-from-snapshot",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "repair_cases",
+      "name": "repair-path-entry-cannot-rebuild",
+      "disposition": "tightened",
+      "old_diagnostic": "environment_repair_failed",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-repair-path-entry-cannot-rebuild",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "repair_cases",
+      "name": "repair-local-entry-cannot-rebuild",
+      "disposition": "tightened",
+      "old_diagnostic": "environment_repair_failed",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-repair-local-entry-cannot-rebuild",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "repair_cases",
+      "name": "repair-rebuilds-entry-boundary-failure",
+      "disposition": "tightened",
+      "old_diagnostic": null,
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-repair-rebuilds-entry-boundary-failure",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "repair_cases",
+      "name": "repair-enclosing-refuses-no-rebuild",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-repair-enclosing-refuses-no-rebuild",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "repair_cases",
+      "name": "repair-stale-old-marker-succeeds",
+      "disposition": "retained",
+      "old_diagnostic": null,
+      "old_outcome": null,
+      "new_required_diagnostic": null,
+      "successor_case": "legacy-repair-stale-old-marker-succeeds",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "repair_cases",
+      "name": "repair-swapped-old-marker-never-adopted",
+      "disposition": "retained",
+      "old_diagnostic": null,
+      "old_outcome": null,
+      "new_required_diagnostic": null,
+      "successor_case": "legacy-repair-swapped-old-marker-never-adopted",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "repair_cases",
+      "name": "repair-unprovisioned-intact-provisions",
+      "disposition": "retained",
+      "old_diagnostic": null,
+      "old_outcome": null,
+      "new_required_diagnostic": null,
+      "successor_case": "legacy-repair-unprovisioned-intact-provisions",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "repair_cases",
+      "name": "repair-unprovisioned-swapped-rebuilds",
+      "disposition": "retained",
+      "old_diagnostic": null,
+      "old_outcome": null,
+      "new_required_diagnostic": null,
+      "successor_case": "legacy-repair-unprovisioned-swapped-rebuilds",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "repair_cases",
+      "name": "repair-reapplies-untrusted",
+      "disposition": "tightened-negative-control",
+      "old_diagnostic": "environment_repair_failed",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-repair-reapplies-untrusted",
+      "known_bad_remains_negative": true
+    },
+    {
+      "group": "status_cases",
+      "name": "status-intact-current",
+      "disposition": "retained",
+      "old_diagnostic": null,
+      "old_outcome": null,
+      "new_required_diagnostic": null,
+      "successor_case": "legacy-status-intact-current",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "status_cases",
+      "name": "status-names-failing-check",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-status-names-failing-check",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "status_cases",
+      "name": "status-enclosing-names-boundary",
+      "disposition": "retained",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-status-enclosing-names-boundary",
+      "known_bad_remains_negative": false
+    },
+    {
+      "group": "status_cases",
+      "name": "status-hides-failing-check",
+      "disposition": "retained-negative-control",
+      "old_diagnostic": "environment_store_untrusted",
+      "old_outcome": null,
+      "new_required_diagnostic": "environment_store_untrusted",
+      "successor_case": "legacy-status-hides-failing-check",
+      "known_bad_remains_negative": true
+    }
+  ]
+}

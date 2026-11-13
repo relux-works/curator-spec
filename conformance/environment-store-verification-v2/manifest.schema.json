@@ -1,0 +1,139 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "capability",
+    "capability_revision",
+    "status",
+    "cases",
+    "case_count",
+    "predecessor",
+    "migration"
+  ],
+  "properties": {
+    "schema": {
+      "const": "curator.environment-store-corpus/2"
+    },
+    "capability": {
+      "const": "agent-environments"
+    },
+    "capability_revision": {
+      "const": 2,
+      "type": "integer"
+    },
+    "status": {
+      "const": "proposal-unreleased"
+    },
+    "cases": {
+      "const": "vectors/environments-store-boundary.json"
+    },
+    "case_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "predecessor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit",
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "commit": {
+          "const": "43bf0a2506d5c354a73bbc3ea4623d4653db10c7"
+        },
+        "path": {
+          "const": "conformance/v1/vectors/environments-store-boundary.json"
+        },
+        "sha256": {
+          "const": "7efa5b09e450162cfb2937f25b3e29fab4699602e0990cfd295a4f695cb60413"
+        }
+      }
+    },
+    "migration": {
+      "type": "array",
+      "minItems": 38,
+      "maxItems": 38,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "group",
+          "name",
+          "disposition",
+          "old_diagnostic",
+          "old_outcome",
+          "new_required_diagnostic",
+          "successor_case",
+          "known_bad_remains_negative"
+        ],
+        "properties": {
+          "group": {
+            "enum": [
+              "resolve_cases",
+              "dry_run_cases",
+              "repair_cases",
+              "status_cases"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "disposition": {
+            "enum": [
+              "retained",
+              "retained-negative-control",
+              "tightened",
+              "tightened-negative-control"
+            ]
+          },
+          "old_diagnostic": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "old_outcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "new_required_diagnostic": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "successor_case": {
+            "type": "string",
+            "minLength": 1
+          },
+          "known_bad_remains_negative": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Unreleased environment store revision-2 manifest"
+}

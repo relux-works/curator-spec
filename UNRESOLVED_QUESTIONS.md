@@ -1,5 +1,15 @@
 # Unresolved questions
 
+## Environment store verification revision-2 proposal
+
+The [unreleased proposal](protocol/environment-store-verification-v2.md) records
+structural refusal before repair, retained same-pin/home restoration and a
+separate incompatible qualification carrier. Its revision-2 carrier and reader
+transition await specification acceptance and a landed pin. Runtime consumer
+adoption, all-member hardlink checks, exact post-failure state, both actual reader
+directions and retained positive repair qualification remain implementation
+gates. Metadata checks do not settle these gates or alter revision-1 claims.
+
 ## Opt-in separate managed-home login (Q6)
 
 [Draft Decision 0032](decisions/0032-managed-home-separate-login.md) records the

@@ -1,4 +1,8 @@
-.PHONY: validate regenerate regenerate-check release-check
+.PHONY: validate regenerate regenerate-check release-check store-verification-v2-check
+
+store-verification-v2-check:
+	go test -p=1 -parallel=1 ./tools/check-store-verification-v2
+	go run -p=1 ./tools/check-store-verification-v2 -root .
 
 validate:
 	python3 tools/fixture_environment.py python3 tools/validate.py

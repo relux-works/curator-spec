@@ -29,6 +29,16 @@ executable vectors.
 
 ## Compatibility identifiers
 
+The unreleased [environment store revision-2 proposal](protocol/environment-store-verification-v2.md)
+tightens the behavioral capability without injecting fields into existing
+runtime carriers. Its qualification cases use a separate revision-2 array
+carrier. Revision-1 object readers refuse that carrier; revision-2 readers
+refuse old objects and unknown or mixed discriminators before interpretation.
+The revision-1 corpus remains immutable historical evidence. A historical
+failure is not a skipped case or a full-conformance pass. Canonical revision-2
+claims require a landed specification pin and executable implementation
+qualification; proposal metadata checks alone are insufficient.
+
 The following deployed names are reserved across protocol 1.x and MUST NOT be
 renamed by a conforming implementation when reading or writing shared project
 state:

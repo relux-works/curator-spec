@@ -30,6 +30,13 @@ implementation.
 
 ## Specification set
 
+The unreleased [environment store revision-2 proposal](protocol/environment-store-verification-v2.md)
+requires structural refusal before repair and retains same-pin regular-byte and
+verified-home restoration. Its [separate corpus and checker](conformance/environment-store-verification-v2/README.md)
+record every revision-1 disposition without redefining the released vectors.
+Run `make store-verification-v2-check` for metadata and counterexample checks;
+the tool writes no product artifacts and does not claim runtime qualification.
+
 The release consists of the following documents and artifacts:
 
 | Part | Role |

@@ -5,6 +5,18 @@ Versioning for the complete specification set.
 
 ## Unreleased
 
+### Environment store verification proposal
+
+- Propose `agent-environments` revision 2: structural/path violations refuse at
+  every startup level before repair or dry-run planning; preserve same-pin
+  ordinary-byte and verified-home restoration. Add a separately versioned,
+  incompatible case-array carrier, closed metadata schemas and Go checker with
+  paired counterexamples. Record all 38 predecessor dispositions, including four
+  changed implementation expectations and two retained negative controls with
+  tightened required observations. Released revision-1 bytes and semantics remain
+  unchanged. See the [migration table](conformance/environment-store-verification-v2/README.md).
+  This unreleased proposal establishes no implementation or adoption claim.
+
 ### Added
 
 - 2026-11-10: follow [a2a PR #438](https://github.com/relux-works/a2a-swarm/pull/438)

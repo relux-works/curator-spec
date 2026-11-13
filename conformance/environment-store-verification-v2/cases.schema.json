@@ -1,0 +1,306 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Unreleased environment store revision-2 cases",
+  "type": "array",
+  "minItems": 1,
+  "maxItems": 2048,
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "schema",
+      "capability",
+      "capability_revision",
+      "name",
+      "case_kind",
+      "operation",
+      "condition",
+      "member_kind",
+      "source_kind",
+      "home_state",
+      "verification_levels",
+      "expected",
+      "positive_control",
+      "predecessor",
+      "forbidden_observations"
+    ],
+    "properties": {
+      "schema": {
+        "const": "curator.environment-store-case/2"
+      },
+      "capability": {
+        "const": "agent-environments"
+      },
+      "capability_revision": {
+        "const": 2,
+        "type": "integer"
+      },
+      "name": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "case_kind": {
+        "enum": [
+          "implementation",
+          "checker-control"
+        ]
+      },
+      "operation": {
+        "enum": [
+          "resolve",
+          "repair",
+          "dry-run",
+          "status"
+        ]
+      },
+      "condition": {
+        "enum": [
+          "intact",
+          "pin-drift",
+          "home-stale",
+          "home-absent",
+          "marker-unreadable",
+          "ownership",
+          "permissions",
+          "containment",
+          "symlink",
+          "hardlink",
+          "special"
+        ]
+      },
+      "member_kind": {
+        "enum": [
+          "context",
+          "mcp",
+          "skill"
+        ]
+      },
+      "source_kind": {
+        "enum": [
+          "git",
+          "path",
+          "local"
+        ]
+      },
+      "home_state": {
+        "enum": [
+          "current",
+          "stale-old-marker",
+          "unprovisioned",
+          "unreadable-marker"
+        ]
+      },
+      "verification_levels": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "enum": [
+            1,
+            2,
+            3,
+            4
+          ]
+        }
+      },
+      "expected": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "diagnostic",
+          "failing_check",
+          "fragment_emitted",
+          "row_current",
+          "writes",
+          "store_rebuilt",
+          "lock_unchanged",
+          "plant_preserved",
+          "path_named",
+          "rule_named"
+        ],
+        "properties": {
+          "diagnostic": {
+            "enum": [
+              "",
+              "environment_store_untrusted",
+              "environment_home_stale",
+              "environment_marker_unreadable",
+              "skill_integrity_boundary_invalid"
+            ]
+          },
+          "failing_check": {
+            "enum": [
+              "",
+              "ownership",
+              "permissions",
+              "containment",
+              "regular_types",
+              "link_safety",
+              "single_link",
+              "pin_hash"
+            ]
+          },
+          "fragment_emitted": {
+            "type": "boolean"
+          },
+          "row_current": {
+            "type": "boolean"
+          },
+          "writes": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "store",
+                "home",
+                "marker"
+              ]
+            }
+          },
+          "store_rebuilt": {
+            "type": "boolean"
+          },
+          "lock_unchanged": {
+            "type": "boolean"
+          },
+          "plant_preserved": {
+            "type": "boolean"
+          },
+          "path_named": {
+            "type": "boolean"
+          },
+          "rule_named": {
+            "type": "boolean"
+          }
+        }
+      },
+      "positive_control": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "predecessor": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "group",
+              "name"
+            ],
+            "properties": {
+              "group": {
+                "enum": [
+                  "resolve_cases",
+                  "repair_cases",
+                  "dry_run_cases",
+                  "status_cases"
+                ]
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            }
+          }
+        ]
+      },
+      "forbidden_observations": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "observation"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "observation": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "diagnostic",
+                "failing_check",
+                "fragment_emitted",
+                "row_current",
+                "writes",
+                "store_rebuilt",
+                "lock_unchanged",
+                "plant_preserved",
+                "path_named",
+                "rule_named"
+              ],
+              "properties": {
+                "diagnostic": {
+                  "enum": [
+                    "",
+                    "environment_home_stale",
+                    "environment_marker_unreadable",
+                    "environment_repair_failed",
+                    "environment_store_untrusted",
+                    "skill_integrity_boundary_invalid"
+                  ]
+                },
+                "failing_check": {
+                  "enum": [
+                    "",
+                    "ownership",
+                    "permissions",
+                    "containment",
+                    "regular_types",
+                    "link_safety",
+                    "single_link",
+                    "pin_hash"
+                  ]
+                },
+                "fragment_emitted": {
+                  "type": "boolean"
+                },
+                "row_current": {
+                  "type": "boolean"
+                },
+                "writes": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "enum": [
+                      "store",
+                      "home",
+                      "marker"
+                    ]
+                  }
+                },
+                "store_rebuilt": {
+                  "type": "boolean"
+                },
+                "lock_unchanged": {
+                  "type": "boolean"
+                },
+                "plant_preserved": {
+                  "type": "boolean"
+                },
+                "path_named": {
+                  "type": "boolean"
+                },
+                "rule_named": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
