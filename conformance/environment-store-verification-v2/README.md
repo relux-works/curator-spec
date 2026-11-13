@@ -51,7 +51,12 @@ Managed adapter links remain outside payload-link plants.
 
 Every implementation case has a matching intact member/operation neighbor.
 `expected` describes the required primary diagnostic and observable post-state.
-`writes` lists product-state writes; permitted rejection telemetry is excluded.
+`writes` lists observable product-state changes; permitted rejection telemetry is
+excluded. Same-pin recovery for an already-current home changes only the store;
+stale or absent homes retain their required home and marker restoration.
+Runtime witnesses preserve bytes, types, link targets, identity and mtime, with
+paired known-write controls. These poststate witnesses do not prove the absence
+of every syscall that leaves the same observable state.
 An intact dry-run may return the existing current fragment without writing.
 Every fatal case preserves its plant and lock, performs no repair write and
 emits no fragment. A runtime driver additionally asserts the original home and

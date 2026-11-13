@@ -1958,9 +1958,7 @@
       "fragment_emitted": true,
       "row_current": true,
       "writes": [
-        "store",
-        "home",
-        "marker"
+        "store"
       ],
       "store_rebuilt": true,
       "lock_unchanged": true,
@@ -1982,12 +1980,29 @@
           "fragment_emitted": true,
           "row_current": true,
           "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": false,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
+        }
+      },
+      {
+        "name": "rewrites-current-home",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": true,
+          "writes": [
             "store",
             "home",
             "marker"
           ],
           "store_rebuilt": true,
-          "lock_unchanged": false,
+          "lock_unchanged": true,
           "plant_preserved": false,
           "path_named": false,
           "rule_named": false
@@ -5639,9 +5654,7 @@
       "fragment_emitted": true,
       "row_current": true,
       "writes": [
-        "store",
-        "home",
-        "marker"
+        "store"
       ],
       "store_rebuilt": true,
       "lock_unchanged": true,
@@ -5665,6 +5678,25 @@
           "plant_preserved": false,
           "path_named": true,
           "rule_named": true
+        }
+      },
+      {
+        "name": "rewrites-current-home",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": true,
+          "writes": [
+            "store",
+            "home",
+            "marker"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
         }
       }
     ]
@@ -6184,9 +6216,7 @@
       "fragment_emitted": true,
       "row_current": true,
       "writes": [
-        "store",
-        "home",
-        "marker"
+        "store"
       ],
       "store_rebuilt": true,
       "lock_unchanged": true,
@@ -6210,6 +6240,25 @@
           "plant_preserved": false,
           "path_named": true,
           "rule_named": true
+        }
+      },
+      {
+        "name": "rewrites-current-home",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": true,
+          "writes": [
+            "store",
+            "home",
+            "marker"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
         }
       }
     ]
@@ -6729,9 +6778,7 @@
       "fragment_emitted": true,
       "row_current": true,
       "writes": [
-        "store",
-        "home",
-        "marker"
+        "store"
       ],
       "store_rebuilt": true,
       "lock_unchanged": true,
@@ -6755,6 +6802,25 @@
           "plant_preserved": false,
           "path_named": true,
           "rule_named": true
+        }
+      },
+      {
+        "name": "rewrites-current-home",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": true,
+          "writes": [
+            "store",
+            "home",
+            "marker"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
         }
       }
     ]

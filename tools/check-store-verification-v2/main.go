@@ -185,6 +185,9 @@ func checkObservation(v vector, got observation) error {
 			want.PathNamed, want.RuleNamed = true, true
 			if strict && v.Operation == "repair" && v.Source == "git" {
 				want = observation{Fragment: true, Current: true, Rebuilt: true, Writes: []string{"store", "home", "marker"}, LockUnchanged: true}
+				if v.Home == "current" {
+					want.Writes = []string{"store"}
+				}
 			} else if strict && v.Operation == "repair" {
 				want.Diagnostic = "environment_repair_failed"
 			} else if strict && v.Operation == "dry-run" && v.Source == "git" {
@@ -197,6 +200,9 @@ func checkObservation(v vector, got observation) error {
 			if v.Operation == "repair" && v.Source == "git" {
 				want.Fragment, want.Current, want.Rebuilt = true, true, true
 				want.Writes = []string{"store", "home", "marker"}
+				if v.Home == "current" {
+					want.Writes = []string{"store"}
+				}
 			} else {
 				want.Diagnostic, want.Check = "environment_store_untrusted", "pin_hash"
 			}

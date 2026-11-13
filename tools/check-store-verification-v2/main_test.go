@@ -275,7 +275,7 @@ func TestAvailabilityCoverageControls(t *testing.T) {
 				case "payload-as-absence":
 					plant[i].Condition = "entry-absent"
 				case "permissive-recovery":
-					plant[i].Expected = observation{Fragment: true, Current: true, Rebuilt: true, Writes: []string{"store", "home", "marker"}, LockUnchanged: true}
+					plant[i].Expected = observation{Fragment: true, Current: true, Rebuilt: true, Writes: []string{"store"}, LockUnchanged: true}
 				case "strict-rejection":
 					plant[i].Expected = observation{Diagnostic: "environment_store_untrusted", Check: "regular_types", Writes: []string{}, LockUnchanged: true, PathNamed: true, RuleNamed: true}
 				case "dry-run-write":
@@ -290,5 +290,58 @@ func TestAvailabilityCoverageControls(t *testing.T) {
 				t.Fatalf("wrong availability refusal: %v", err)
 			}
 		})
+	}
+}
+
+// Current-home same-pin recovery changes only the store. The proposal model
+// must accept that observation and reject redundant home/marker changes;
+// stale and absent homes retain their separate required restoration writes.
+// These are metadata controls, not filesystem or syscall observations.
+func TestCurrentHomeRepairWriteScopes(t *testing.T) {
+	_, _, cases := fixture(t)
+	wanted := map[string]bool{
+		"legacy-repair-rebuilds-git-entry-from-snapshot": false,
+		"context-git-repair-strict":                      false,
+		"mcp-git-repair-strict":                          false,
+		"skill-git-repair-strict":                        false,
+	}
+	homeRepairs := 0
+	for _, v := range cases {
+		if _, ok := wanted[v.Name]; ok {
+			wanted[v.Name] = true
+			t.Run(v.Name, func(t *testing.T) {
+				good := v.Expected
+				good.Writes = []string{"store"}
+				if err := checkObservation(v, good); err != nil {
+					t.Errorf("current-home store-only observation refused: %v", err)
+				}
+				bad := good
+				bad.Writes = []string{"store", "home", "marker"}
+				if err := checkObservation(v, bad); err == nil || !strings.Contains(err.Error(), "observation violates") {
+					t.Errorf("redundant current-home writes accepted: %v", err)
+				}
+			})
+		}
+		if v.Operation == "repair" && (v.Home == "stale-old-marker" || v.Home == "unprovisioned") {
+			homeRepairs++
+			t.Run(v.Name, func(t *testing.T) {
+				if err := checkObservation(v, v.Expected); err != nil {
+					t.Fatalf("required home restoration refused: %v", err)
+				}
+				bad := v.Expected
+				bad.Writes = []string{"store"}
+				if err := checkObservation(v, bad); err == nil || !strings.Contains(err.Error(), "observation violates") {
+					t.Errorf("missing home restoration writes accepted: %v", err)
+				}
+			})
+		}
+	}
+	for name, found := range wanted {
+		if !found {
+			t.Errorf("required current-home row missing: %s", name)
+		}
+	}
+	if homeRepairs != 4 {
+		t.Errorf("home restoration controls = %d; want 4", homeRepairs)
 	}
 }
