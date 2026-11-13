@@ -16,6 +16,11 @@ Versioning for the complete specification set.
   tightened required observations. Released revision-1 bytes and semantics remain
   unchanged. See the [migration table](conformance/environment-store-verification-v2/README.md).
   This unreleased proposal establishes no implementation or adoption claim.
+- Correct the proposal's 24 legacy resolve and status source labels
+  from Git to path, matching the released drivers' path/state fixtures. Preserve
+  the four Git dry-run rows, ten explicit repair-source mappings and all released
+  archive bytes and observations. Mapping controls reject both a path row
+  relabelled as Git and a dry-run Git row relabelled as path.
 
 ### Added
 

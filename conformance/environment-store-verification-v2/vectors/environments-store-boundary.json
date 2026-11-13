@@ -596,7 +596,7 @@
     "operation": "resolve",
     "condition": "intact",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,
@@ -648,7 +648,7 @@
     "operation": "resolve",
     "condition": "pin-drift",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       3,
@@ -698,7 +698,7 @@
     "operation": "resolve",
     "condition": "pin-drift",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       3,
@@ -748,7 +748,7 @@
     "operation": "resolve",
     "condition": "symlink",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,
@@ -804,7 +804,7 @@
     "operation": "resolve",
     "condition": "ownership",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,
@@ -860,7 +860,7 @@
     "operation": "resolve",
     "condition": "permissions",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,
@@ -916,7 +916,7 @@
     "operation": "resolve",
     "condition": "containment",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,
@@ -972,7 +972,7 @@
     "operation": "resolve",
     "condition": "special",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,
@@ -1028,7 +1028,7 @@
     "operation": "resolve",
     "condition": "ownership",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,
@@ -1084,7 +1084,7 @@
     "operation": "resolve",
     "condition": "symlink",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,
@@ -1140,7 +1140,7 @@
     "operation": "resolve",
     "condition": "ownership",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,
@@ -1196,7 +1196,7 @@
     "operation": "resolve",
     "condition": "symlink",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,
@@ -1252,7 +1252,7 @@
     "operation": "resolve",
     "condition": "home-stale",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "stale-old-marker",
     "verification_levels": [
       3,
@@ -1302,7 +1302,7 @@
     "operation": "resolve",
     "condition": "pin-drift",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "stale-old-marker",
     "verification_levels": [
       3,
@@ -1352,7 +1352,7 @@
     "operation": "resolve",
     "condition": "home-absent",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "unprovisioned",
     "verification_levels": [
       3,
@@ -1402,7 +1402,7 @@
     "operation": "resolve",
     "condition": "pin-drift",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "unprovisioned",
     "verification_levels": [
       3,
@@ -1452,7 +1452,7 @@
     "operation": "resolve",
     "condition": "marker-unreadable",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "unreadable-marker",
     "verification_levels": [
       3,
@@ -1502,7 +1502,7 @@
     "operation": "resolve",
     "condition": "pin-drift",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       3,
@@ -1567,7 +1567,7 @@
     "operation": "resolve",
     "condition": "ownership",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,
@@ -1638,7 +1638,7 @@
     "operation": "resolve",
     "condition": "symlink",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,
@@ -2530,7 +2530,7 @@
     "operation": "status",
     "condition": "intact",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,
@@ -2582,7 +2582,7 @@
     "operation": "status",
     "condition": "ownership",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,
@@ -2638,7 +2638,7 @@
     "operation": "status",
     "condition": "ownership",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,
@@ -2694,7 +2694,7 @@
     "operation": "status",
     "condition": "ownership",
     "member_kind": "context",
-    "source_kind": "git",
+    "source_kind": "path",
     "home_state": "current",
     "verification_levels": [
       1,

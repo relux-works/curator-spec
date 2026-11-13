@@ -332,7 +332,16 @@ func validateMigration(root string, m manifest, cases []vector) error {
 			}
 			source := old.EntryKind
 			if source == "" {
-				source = "git"
+				// Released Resolve/status drivers pass gitRoot=false
+				// to storeBoundaryFixture: their root is KindPath/StateHash.
+				// Dry-run passes true; repair uses explicit entry_kind.
+				source = "path"
+				if group == "dry_run_cases" {
+					source = "git"
+				}
+			}
+			if v.Source != source {
+				return fmt.Errorf("predecessor fixture source kind %s: got %s, want %s", old.Name, v.Source, source)
 			}
 			operation := map[string]string{"resolve_cases": "resolve", "dry_run_cases": "dry-run", "repair_cases": "repair", "status_cases": "status"}[group]
 			if row.Successor != "legacy-"+old.Name || v.Condition != condition || v.Source != source || v.Home != old.Home || v.Operation != operation {

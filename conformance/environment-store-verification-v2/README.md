@@ -16,6 +16,12 @@ discriminators, duplicate keys, unknown fields and old object carriers refuse
 before case evaluation. `cases.schema.json` and `manifest.schema.json` define
 the closed proposal metadata; the Go reader adds semantic checks.
 
+The 24 legacy resolve and status rows retain the released drivers'
+path/state fixture roots (`source_kind: path`). The four dry-run rows remain Git;
+the ten repair rows retain their explicit Git/path/local mapping. Labelling
+those 24 as Git would replace their predecessor fixture. Mapping controls reject
+both that substitution and a dry-run Git row relabelled as path.
+
 The 104 cases comprise 12 intact neighbors, 38 predecessor dispositions and
 54 structural refusals: context/MCP/skill members, six boundary violations and
 resolve/repair/dry-run, each at levels 1, 2, 3 and 4. For level 4 the fixture has

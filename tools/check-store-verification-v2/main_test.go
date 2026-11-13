@@ -171,19 +171,55 @@ func TestMigrationControls(t *testing.T) {
 			}
 		})
 	}
-	// A retained row cannot silently substitute a different source plant.
+	// The 24 released Resolve/status fixtures are path/state roots; four
+	// dry-run fixtures are Git, and ten repair rows retain their explicit
+	// mapping. Swapping either source kind must fail beside the positive.
 	var m manifest
 	if err := strict(raw, &m); err != nil {
 		t.Fatal(err)
 	}
 	plant := append([]vector{}, cases...)
+	pathPredecessors := 0
+	for _, v := range cases {
+		if v.Predecessor != nil && (v.Predecessor.Group == "resolve_cases" || v.Predecessor.Group == "status_cases") {
+			if v.Source != "path" {
+				t.Fatalf("non-repair predecessor fixture is %s", v.Source)
+			}
+			pathPredecessors++
+		}
+	}
+	if pathPredecessors != 24 {
+		t.Fatalf("path predecessor coverage: %d", pathPredecessors)
+	}
 	for i := range plant {
 		if plant[i].Predecessor != nil {
-			plant[i].Source = "path"
+			if plant[i].Source != "path" {
+				t.Fatal("source control did not select a path predecessor")
+			}
+			plant[i].Source = "git"
 			break
 		}
 	}
-	if err := validateMigration("../..", m, plant); err == nil || !strings.Contains(err.Error(), "changed predecessor plant") {
+	if err := validateMigration("../..", m, plant); err == nil || !strings.Contains(err.Error(), "predecessor fixture source kind") {
 		t.Fatalf("wrong plant refusal: %v", err)
+	}
+	plant = append([]vector{}, cases...)
+	dryRunPredecessors := 0
+	for i, v := range plant {
+		if v.Predecessor != nil && v.Predecessor.Group == "dry_run_cases" {
+			if v.Source != "git" {
+				t.Fatalf("dry-run predecessor fixture is %s", v.Source)
+			}
+			dryRunPredecessors++
+			if dryRunPredecessors == 1 {
+				plant[i].Source = "path"
+			}
+		}
+	}
+	if dryRunPredecessors != 4 {
+		t.Fatalf("Git dry-run predecessor coverage: %d", dryRunPredecessors)
+	}
+	if err := validateMigration("../..", m, plant); err == nil || !strings.Contains(err.Error(), "predecessor fixture source kind") {
+		t.Fatalf("wrong dry-run plant refusal: %v", err)
 	}
 }
