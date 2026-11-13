@@ -46,6 +46,9 @@ An absent state/path entry without a revalidatable Git snapshot retains
 `environment_repair_failed` for strict repair and performs no writes. Strict
 absent-Git dry-run retains `would-rebuild-untrusted-store`, names the absence
 check and performs no writes; permissive dry-run retains the absence refusal.
+Under the retained lock4/lock6 carriers, state pins belong only to context
+members; MCP and skill members require Git source pins. Path/local MCP or skill
+admission is outside this proposal.
 This exception does not weaken the low-level missing-named-target validator,
 change pins or locks, authorize a fetch, or permit repair of missing payloads.
 

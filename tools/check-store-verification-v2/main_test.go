@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -343,5 +344,73 @@ func TestCurrentHomeRepairWriteScopes(t *testing.T) {
 	}
 	if homeRepairs != 4 {
 		t.Errorf("home restoration controls = %d; want 4", homeRepairs)
+	}
+}
+
+// Both metadata entry points refuse unreachable non-context state pins. The
+// complete valid corpus and legal context/Git neighbors must still pass; these
+// checks establish metadata admission, not a runtime store-repair observation.
+func TestMemberSourceCompatibility(t *testing.T) {
+	var admissionRefusal func(*jsonschema.ValidationError) bool
+	admissionRefusal = func(e *jsonschema.ValidationError) bool {
+		if strings.HasPrefix(e.KeywordLocation, "/items/anyOf") && e.InstanceLocation == "/0" {
+			return true
+		}
+		for _, cause := range e.Causes {
+			if admissionRefusal(cause) {
+				return true
+			}
+		}
+		return false
+	}
+	_, schema, cases := fixture(t)
+	if err := validateCases(cases); err != nil {
+		t.Fatal(err)
+	}
+	byName := map[string]vector{}
+	for _, v := range cases {
+		byName[v.Name] = v
+	}
+	for _, name := range []string{"context-path-repair-strict", "context-local-repair-strict", "mcp-git-repair-strict", "skill-git-repair-strict"} {
+		t.Run("valid/"+name, func(t *testing.T) {
+			v, ok := byName[name]
+			if !ok {
+				t.Fatal("valid source neighbor missing")
+			}
+			raw, err := json.Marshal([]vector{v})
+			if err != nil {
+				t.Fatal(err)
+			}
+			got, err := decodeCases(raw, schema)
+			if err != nil || len(got) != 1 {
+				t.Fatalf("valid member/source refused: %v", err)
+			}
+		})
+	}
+	for _, member := range []string{"mcp", "skill"} {
+		for _, source := range []string{"path", "local"} {
+			t.Run("forbidden/"+member+"/"+source, func(t *testing.T) {
+				v, ok := byName[member+"-git-repair-strict"]
+				if !ok {
+					t.Fatal("Git source neighbor missing")
+				}
+				v.Name = "reintroduced-" + member + "-" + source
+				v.Source = source
+				v.Expected = byName["context-path-repair-strict"].Expected
+				raw, err := json.Marshal([]vector{v})
+				if err != nil {
+					t.Fatal(err)
+				}
+				got, err := decodeCases(raw, schema)
+				var schemaErr *jsonschema.ValidationError
+				if err == nil || got != nil || !strings.Contains(err.Error(), unsupported) || !errors.As(err, &schemaErr) || !admissionRefusal(schemaErr) {
+					t.Errorf("closed reader missed member/source admission: %v", err)
+				}
+				plant := append(append([]vector{}, cases...), v)
+				if err := validateCases(plant); err == nil || !strings.Contains(err.Error(), "member/source admission") {
+					t.Errorf("corpus checker missed member/source plant: %v", err)
+				}
+			})
+		}
 	}
 }

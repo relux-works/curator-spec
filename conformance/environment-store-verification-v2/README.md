@@ -29,13 +29,14 @@ no centre configured and must use the specified level-3 fallback with a warning.
 Other local checks pass. Strict ordinary-byte and home restoration cases apply
 at levels 3 and 4. These are not additional runtime diagnostic codes.
 
-Thirty additional cases distinguish whole-entry absence from missing payloads
+Twenty-six additional cases distinguish whole-entry absence from missing payloads
 for context, MCP and skill members: strict Git repair restores the same pin;
 permissive repair and all read-only calls refuse without writes; strict Git
 dry-run reports the existing plan without writing; permissive dry-run refuses;
-strict path/local repair has no Git snapshot and refuses without writing.
+strict context path/local repair has no Git snapshot and refuses without writing.
 Missing named payloads remain structural refusals for resolve, repair and
-dry-run at all four levels. The complete proposal now has 134 cases. These
+dry-run at all four levels. The complete proposal now has 130 cases: 124 implementation rows/444 declared
+level slots and 6 checker controls/22 slots (466 total). These
 fixtures require safe existing ancestors, exact no-follow leaf `ENOENT`, all
 other selected members checked before any write, and repeated authority and
 boundary checks under the lock and before publication. A late structural plant
@@ -66,6 +67,30 @@ marker bytes, no payload-link traversal and zero child execution.
 alternative successful outcomes. Historical known-bad rows remain checker
 controls. The metadata checker rejects each recorded counterexample and accepts
 its required observation; it cannot manufacture a real manager observation.
+
+## Retained member-source admission
+
+The existing lock4/lock6 carriers admit state pins only for context members;
+MCP and skill members retain Git sources. The case schema and Go checker
+reject other member/source combinations before interpreting observations.
+Context path/local and Git MCP/skill cases remain valid positive neighbors.
+
+The following four unreleased rows are removed; no predecessor row is removed.
+Each disposition is **unreachable: lock4/lock6 Validate refuses MCP/skill
+path/local state pins (contextlock.go:294-295)**.
+
+| Removed row | Member/source |
+| --- | --- |
+| `mcp-path-repair-strict` | MCP/path |
+| `mcp-local-repair-strict` | MCP/local |
+| `skill-path-repair-strict` | Skill/path |
+| `skill-local-repair-strict` | Skill/local |
+
+Paired metadata controls reject reintroduction of each forbidden combination.
+Implementation qualification must also assert the exact retained lock refusal
+under both schemas with valid context and Git neighbors. If those carriers
+change to admit a combination, that regression must fail and coverage must be
+reconsidered. This proposal expands no runtime package or lock admission.
 
 ## Changed predecessor expectations
 

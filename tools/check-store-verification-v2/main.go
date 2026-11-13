@@ -227,6 +227,10 @@ func checkObservation(v vector, got observation) error {
 func validateCases(cases []vector) error {
 	byName := map[string]vector{}
 	for _, v := range cases {
+		admitted := v.Member == "context" && (v.Source == "git" || v.Source == "path" || v.Source == "local") || (v.Member == "mcp" || v.Member == "skill") && v.Source == "git"
+		if !admitted {
+			return fmt.Errorf("%s: member/source admission", v.Name)
+		}
 		if _, ok := byName[v.Name]; ok {
 			return fmt.Errorf("duplicate case %s", v.Name)
 		}
@@ -286,6 +290,10 @@ func validateCases(cases []vector) error {
 			{"missing-payload-repair", "git", "repair", "payload-absent", []int{1, 2, 3, 4}},
 			{"missing-payload-dry-run", "git", "dry-run", "payload-absent", []int{1, 2, 3, 4}},
 		} {
+			// Retained lock carriers admit state pins only for context members.
+			if member != "context" && fixture.source != "git" {
+				continue
+			}
 			name := member + "-" + fixture.suffix
 			v, ok := byName[name]
 			if !ok || v.Kind != "implementation" || v.Member != member || v.Source != fixture.source || v.Operation != fixture.operation || v.Condition != fixture.condition || !reflect.DeepEqual(v.Levels, fixture.levels) || v.Predecessor != nil {

@@ -306,6 +306,35 @@
           }
         }
       }
-    }
+    },
+    "anyOf": [
+      {
+        "properties": {
+          "member_kind": {
+            "const": "context"
+          },
+          "source_kind": {
+            "enum": [
+              "git",
+              "path",
+              "local"
+            ]
+          }
+        }
+      },
+      {
+        "properties": {
+          "member_kind": {
+            "enum": [
+              "mcp",
+              "skill"
+            ]
+          },
+          "source_kind": {
+            "const": "git"
+          }
+        }
+      }
+    ]
   }
 }
