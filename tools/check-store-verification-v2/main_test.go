@@ -118,9 +118,9 @@ func TestCoverageControls(t *testing.T) {
 			plant := append([]vector{}, cases...)
 			switch name {
 			case "level":
-				plant[len(plant)-1].Levels = []int{1, 2, 3}
+				plant[103].Levels = []int{1, 2, 3}
 			case "matrix":
-				plant = plant[:len(plant)-1]
+				plant = append(plant[:103], plant[104:]...)
 			case "neighbor":
 				plant[len(plant)-1].Positive = "missing"
 			case "expected":
@@ -221,5 +221,74 @@ func TestMigrationControls(t *testing.T) {
 	}
 	if err := validateMigration("../..", m, plant); err == nil || !strings.Contains(err.Error(), "predecessor fixture source kind") {
 		t.Fatalf("wrong dry-run plant refusal: %v", err)
+	}
+}
+
+// The explicit availability matrix cannot lose a case, change a frozen source
+// fixture, mix strict/permissive levels or relabel a present missing payload.
+// These are metadata controls; no filesystem recovery is exercised here.
+func TestAvailabilityCoverageControls(t *testing.T) {
+	_, _, cases := fixture(t)
+	if err := validateCases(cases); err != nil {
+		t.Fatal(err)
+	}
+	for name, refusal := range map[string]string{
+		"missing": "missing availability case", "source": "missing availability case",
+		"level-partition":    "whole-entry availability level partition",
+		"payload-as-absence": "observation violates", "permissive-recovery": "observation violates",
+		"strict-rejection": "observation violates", "dry-run-write": "observation violates",
+	} {
+		t.Run(name, func(t *testing.T) {
+			plant := append([]vector{}, cases...)
+			target := "context-git-repair-strict"
+			if name == "payload-as-absence" {
+				target = "context-missing-payload-repair"
+			}
+			if name == "permissive-recovery" {
+				target = "context-git-repair-permissive"
+			}
+			if name == "dry-run-write" {
+				target = "context-git-dry-run-strict"
+			}
+			found := false
+			for i := range plant {
+				if plant[i].Name != target {
+					continue
+				}
+				found = true
+				switch name {
+				case "missing":
+					plant = append(plant[:i], plant[i+1:]...)
+				case "source":
+					plant[i].Source = "path"
+					plant[i].Expected.Diagnostic = "environment_repair_failed"
+					plant[i].Expected.Fragment = false
+					plant[i].Expected.Current = false
+					plant[i].Expected.Rebuilt = false
+					plant[i].Expected.Writes = []string{}
+					plant[i].Expected.Check = "regular_types"
+					plant[i].Expected.PathNamed = true
+					plant[i].Expected.RuleNamed = true
+				case "level-partition":
+					plant[i].Levels = []int{1, 2, 3, 4}
+					plant[i].Expected = observation{Diagnostic: "environment_store_untrusted", Check: "regular_types", Writes: []string{}, LockUnchanged: true, PathNamed: true, RuleNamed: true}
+				case "payload-as-absence":
+					plant[i].Condition = "entry-absent"
+				case "permissive-recovery":
+					plant[i].Expected = observation{Fragment: true, Current: true, Rebuilt: true, Writes: []string{"store", "home", "marker"}, LockUnchanged: true}
+				case "strict-rejection":
+					plant[i].Expected = observation{Diagnostic: "environment_store_untrusted", Check: "regular_types", Writes: []string{}, LockUnchanged: true, PathNamed: true, RuleNamed: true}
+				case "dry-run-write":
+					plant[i].Expected.Writes = []string{"store"}
+				}
+				break
+			}
+			if !found {
+				t.Fatal("control target missing")
+			}
+			if err := validateCases(plant); err == nil || !strings.Contains(err.Error(), refusal) {
+				t.Fatalf("wrong availability refusal: %v", err)
+			}
+		})
 	}
 }

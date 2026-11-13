@@ -22,12 +22,25 @@ the ten repair rows retain their explicit Git/path/local mapping. Labelling
 those 24 as Git would replace their predecessor fixture. Mapping controls reject
 both that substitution and a dry-run Git row relabelled as path.
 
-The 104 cases comprise 12 intact neighbors, 38 predecessor dispositions and
+The original 104 cases comprise 12 intact neighbors, 38 predecessor dispositions and
 54 structural refusals: context/MCP/skill members, six boundary violations and
 resolve/repair/dry-run, each at levels 1, 2, 3 and 4. For level 4 the fixture has
 no centre configured and must use the specified level-3 fallback with a warning.
 Other local checks pass. Strict ordinary-byte and home restoration cases apply
 at levels 3 and 4. These are not additional runtime diagnostic codes.
+
+Thirty additional cases distinguish whole-entry absence from missing payloads
+for context, MCP and skill members: strict Git repair restores the same pin;
+permissive repair and all read-only calls refuse without writes; strict Git
+dry-run reports the existing plan without writing; permissive dry-run refuses;
+strict path/local repair has no Git snapshot and refuses without writing.
+Missing named payloads remain structural refusals for resolve, repair and
+dry-run at all four levels. The complete proposal now has 134 cases. These
+fixtures require safe existing ancestors, exact no-follow leaf `ENOENT`, all
+other selected members checked before any write, and repeated authority and
+boundary checks under the lock and before publication. A late structural plant
+must survive its named refusal. Missing ancestors and ambiguous metadata are
+never equivalent to whole-entry absence.
 
 A predecessor pointer is part of the fixture definition: replay MUST preserve
 that row's original `object`, `surface`, source kind, home state and plant,

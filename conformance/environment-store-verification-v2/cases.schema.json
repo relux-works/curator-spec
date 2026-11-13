@@ -66,7 +66,9 @@
           "containment",
           "symlink",
           "hardlink",
-          "special"
+          "special",
+          "entry-absent",
+          "payload-absent"
         ]
       },
       "member_kind": {
@@ -126,7 +128,9 @@
               "environment_store_untrusted",
               "environment_home_stale",
               "environment_marker_unreadable",
-              "skill_integrity_boundary_invalid"
+              "skill_integrity_boundary_invalid",
+              "environment_repair_failed",
+              "would-rebuild-untrusted-store"
             ]
           },
           "failing_check": {
@@ -249,7 +253,8 @@
                     "environment_marker_unreadable",
                     "environment_repair_failed",
                     "environment_store_untrusted",
-                    "skill_integrity_boundary_invalid"
+                    "skill_integrity_boundary_invalid",
+                    "would-rebuild-untrusted-store"
                   ]
                 },
                 "failing_check": {

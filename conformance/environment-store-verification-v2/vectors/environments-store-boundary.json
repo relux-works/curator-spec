@@ -5617,5 +5617,1640 @@
         }
       }
     ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "context-git-repair-strict",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "entry-absent",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": true,
+      "writes": [
+        "store",
+        "home",
+        "marker"
+      ],
+      "store_rebuilt": true,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false
+    },
+    "positive_control": "control-repair-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "rejects-required-recovery",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "context-git-repair-permissive",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "entry-absent",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-repair-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "context-git-read-only",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "entry-absent",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-resolve-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "context-git-dry-run-strict",
+    "case_kind": "implementation",
+    "operation": "dry-run",
+    "condition": "entry-absent",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "would-rebuild-untrusted-store",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-dry-run-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "would-rebuild-untrusted-store",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "context-git-dry-run-permissive",
+    "case_kind": "implementation",
+    "operation": "dry-run",
+    "condition": "entry-absent",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-dry-run-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "context-path-repair-strict",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "entry-absent",
+    "member_kind": "context",
+    "source_kind": "path",
+    "home_state": "current",
+    "verification_levels": [
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_repair_failed",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-repair-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_repair_failed",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "context-local-repair-strict",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "entry-absent",
+    "member_kind": "context",
+    "source_kind": "local",
+    "home_state": "current",
+    "verification_levels": [
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_repair_failed",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-repair-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_repair_failed",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "context-missing-payload-resolve",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "payload-absent",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": true,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-resolve-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      },
+      {
+        "name": "missing-payload-is-not-whole-entry-absence",
+        "observation": {
+          "diagnostic": "would-rebuild-untrusted-store",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "context-missing-payload-repair",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "payload-absent",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": true,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-repair-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      },
+      {
+        "name": "missing-payload-is-not-whole-entry-absence",
+        "observation": {
+          "diagnostic": "would-rebuild-untrusted-store",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "context-missing-payload-dry-run",
+    "case_kind": "implementation",
+    "operation": "dry-run",
+    "condition": "payload-absent",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": true,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-dry-run-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      },
+      {
+        "name": "missing-payload-is-not-whole-entry-absence",
+        "observation": {
+          "diagnostic": "would-rebuild-untrusted-store",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "mcp-git-repair-strict",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "entry-absent",
+    "member_kind": "mcp",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": true,
+      "writes": [
+        "store",
+        "home",
+        "marker"
+      ],
+      "store_rebuilt": true,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false
+    },
+    "positive_control": "control-repair-mcp-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "rejects-required-recovery",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "mcp-git-repair-permissive",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "entry-absent",
+    "member_kind": "mcp",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-repair-mcp-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "mcp-git-read-only",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "entry-absent",
+    "member_kind": "mcp",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-resolve-mcp-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "mcp-git-dry-run-strict",
+    "case_kind": "implementation",
+    "operation": "dry-run",
+    "condition": "entry-absent",
+    "member_kind": "mcp",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "would-rebuild-untrusted-store",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-dry-run-mcp-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "would-rebuild-untrusted-store",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "mcp-git-dry-run-permissive",
+    "case_kind": "implementation",
+    "operation": "dry-run",
+    "condition": "entry-absent",
+    "member_kind": "mcp",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-dry-run-mcp-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "mcp-path-repair-strict",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "entry-absent",
+    "member_kind": "mcp",
+    "source_kind": "path",
+    "home_state": "current",
+    "verification_levels": [
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_repair_failed",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-repair-mcp-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_repair_failed",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "mcp-local-repair-strict",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "entry-absent",
+    "member_kind": "mcp",
+    "source_kind": "local",
+    "home_state": "current",
+    "verification_levels": [
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_repair_failed",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-repair-mcp-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_repair_failed",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "mcp-missing-payload-resolve",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "payload-absent",
+    "member_kind": "mcp",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": true,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-resolve-mcp-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      },
+      {
+        "name": "missing-payload-is-not-whole-entry-absence",
+        "observation": {
+          "diagnostic": "would-rebuild-untrusted-store",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "mcp-missing-payload-repair",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "payload-absent",
+    "member_kind": "mcp",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": true,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-repair-mcp-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      },
+      {
+        "name": "missing-payload-is-not-whole-entry-absence",
+        "observation": {
+          "diagnostic": "would-rebuild-untrusted-store",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "mcp-missing-payload-dry-run",
+    "case_kind": "implementation",
+    "operation": "dry-run",
+    "condition": "payload-absent",
+    "member_kind": "mcp",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": true,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-dry-run-mcp-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      },
+      {
+        "name": "missing-payload-is-not-whole-entry-absence",
+        "observation": {
+          "diagnostic": "would-rebuild-untrusted-store",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "skill-git-repair-strict",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "entry-absent",
+    "member_kind": "skill",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": true,
+      "writes": [
+        "store",
+        "home",
+        "marker"
+      ],
+      "store_rebuilt": true,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false
+    },
+    "positive_control": "control-repair-skill-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "rejects-required-recovery",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "skill-git-repair-permissive",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "entry-absent",
+    "member_kind": "skill",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-repair-skill-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "skill-git-read-only",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "entry-absent",
+    "member_kind": "skill",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-resolve-skill-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "skill-git-dry-run-strict",
+    "case_kind": "implementation",
+    "operation": "dry-run",
+    "condition": "entry-absent",
+    "member_kind": "skill",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "would-rebuild-untrusted-store",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-dry-run-skill-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "would-rebuild-untrusted-store",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "skill-git-dry-run-permissive",
+    "case_kind": "implementation",
+    "operation": "dry-run",
+    "condition": "entry-absent",
+    "member_kind": "skill",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-dry-run-skill-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "skill-path-repair-strict",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "entry-absent",
+    "member_kind": "skill",
+    "source_kind": "path",
+    "home_state": "current",
+    "verification_levels": [
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_repair_failed",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-repair-skill-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_repair_failed",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "skill-local-repair-strict",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "entry-absent",
+    "member_kind": "skill",
+    "source_kind": "local",
+    "home_state": "current",
+    "verification_levels": [
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_repair_failed",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-repair-skill-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_repair_failed",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "skill-missing-payload-resolve",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "payload-absent",
+    "member_kind": "skill",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": true,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-resolve-skill-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      },
+      {
+        "name": "missing-payload-is-not-whole-entry-absence",
+        "observation": {
+          "diagnostic": "would-rebuild-untrusted-store",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "skill-missing-payload-repair",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "payload-absent",
+    "member_kind": "skill",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": true,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-repair-skill-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      },
+      {
+        "name": "missing-payload-is-not-whole-entry-absence",
+        "observation": {
+          "diagnostic": "would-rebuild-untrusted-store",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "skill-missing-payload-dry-run",
+    "case_kind": "implementation",
+    "operation": "dry-run",
+    "condition": "payload-absent",
+    "member_kind": "skill",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": true,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-dry-run-skill-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "unauthorized-materialization",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      },
+      {
+        "name": "missing-payload-is-not-whole-entry-absence",
+        "observation": {
+          "diagnostic": "would-rebuild-untrusted-store",
+          "failing_check": "regular_types",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
   }
 ]

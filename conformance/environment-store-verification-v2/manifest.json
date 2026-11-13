@@ -4,7 +4,7 @@
   "capability_revision": 2,
   "status": "proposal-unreleased",
   "cases": "vectors/environments-store-boundary.json",
-  "case_count": 104,
+  "case_count": 134,
   "predecessor": {
     "commit": "43bf0a2506d5c354a73bbc3ea4623d4653db10c7",
     "path": "conformance/v1/vectors/environments-store-boundary.json",

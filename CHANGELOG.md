@@ -7,6 +7,8 @@ Versioning for the complete specification set.
 
 ### Environment store verification proposal
 
+- Distinguish proven whole-store-entry absence from structural violations in the unreleased environment-store contract; add paired same-pin recovery and missing-payload cases.
+
 - Propose `agent-environments` revision 2: structural/path violations refuse at
   every startup level before repair or dry-run planning; preserve same-pin
   ordinary-byte and verified-home restoration. Add a separately versioned,

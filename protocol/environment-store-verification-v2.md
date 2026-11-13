@@ -29,6 +29,26 @@ separate explicit operation under the existing ownership and transaction rules.
 
 ## 2. Retained regular-file and home restoration
 
+Whole-entry absence is an availability condition, not a regular-file type
+violation, only when no-follow metadata reports exactly `ENOENT` for the selected
+entry leaf after every existing ancestor and every other selected member passes
+its structural checks. Missing intermediate ancestors, dangling links, reparse
+points, unreadable or unknown metadata, and a present entry missing a named
+payload MUST still refuse structurally at all levels. With `--repair`, levels 3
+and 4 MAY recreate a proven absent Git entry from the same revalidated recorded
+pin, using the existing credential authority and mutation lock. Recheck all
+selected boundaries and the entry/parents under that lock before staging and
+before publication; a late structural plant MUST be refused and preserved.
+Verify the recreated entry before emitting a fragment. Levels 1 and 2 and
+read-only invocations MUST NOT recreate it and retain
+`environment_store_untrusted` with the named `regular_types` absence check.
+An absent state/path entry without a revalidatable Git snapshot retains
+`environment_repair_failed` for strict repair and performs no writes. Strict
+absent-Git dry-run retains `would-rebuild-untrusted-store`, names the absence
+check and performs no writes; permissive dry-run retains the absence refusal.
+This exception does not weaken the low-level missing-named-target validator,
+change pins or locks, authorize a fetch, or permit repair of missing payloads.
+
 After all structural checks pass, strict local verification levels 3 and 4 MAY
 restore ordinary regular-file bytes from the same revalidated recorded Git pin.
 Expected evidence, selected closure and pins MUST remain unchanged. A changed

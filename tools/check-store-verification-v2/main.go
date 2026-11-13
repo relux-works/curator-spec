@@ -161,7 +161,7 @@ func structural(condition string) string {
 		return "link_safety"
 	case "hardlink":
 		return "single_link"
-	case "special":
+	case "special", "payload-absent":
 		return "regular_types"
 	}
 	return ""
@@ -179,6 +179,17 @@ func checkObservation(v vector, got observation) error {
 		want.PlantPreserved, want.PathNamed, want.RuleNamed = true, true, true
 	} else {
 		switch v.Condition {
+		case "entry-absent":
+			strict := reflect.DeepEqual(v.Levels, []int{3, 4})
+			want.Diagnostic, want.Check = "environment_store_untrusted", "regular_types"
+			want.PathNamed, want.RuleNamed = true, true
+			if strict && v.Operation == "repair" && v.Source == "git" {
+				want = observation{Fragment: true, Current: true, Rebuilt: true, Writes: []string{"store", "home", "marker"}, LockUnchanged: true}
+			} else if strict && v.Operation == "repair" {
+				want.Diagnostic = "environment_repair_failed"
+			} else if strict && v.Operation == "dry-run" && v.Source == "git" {
+				want.Diagnostic = "would-rebuild-untrusted-store"
+			}
 		case "intact":
 			want.Current = true
 			want.Fragment = v.Operation != "status"
@@ -220,7 +231,14 @@ func validateCases(cases []vector) error {
 		if structural(v.Condition) != "" && !reflect.DeepEqual(v.Levels, []int{1, 2, 3, 4}) {
 			return fmt.Errorf("%s: missing fatal level", v.Name)
 		}
-		if v.Condition != "intact" && structural(v.Condition) == "" && !reflect.DeepEqual(v.Levels, []int{3, 4}) {
+		if v.Condition == "entry-absent" {
+			valid := (v.Operation == "resolve" && reflect.DeepEqual(v.Levels, []int{1, 2, 3, 4})) ||
+				((v.Operation == "repair" || v.Operation == "dry-run") && (reflect.DeepEqual(v.Levels, []int{1, 2}) || reflect.DeepEqual(v.Levels, []int{3, 4})))
+			if !valid {
+				return fmt.Errorf("%s: whole-entry availability level partition", v.Name)
+			}
+		}
+		if v.Condition != "intact" && v.Condition != "entry-absent" && structural(v.Condition) == "" && !reflect.DeepEqual(v.Levels, []int{3, 4}) {
 			return fmt.Errorf("%s: strict fixture level", v.Name)
 		}
 		for _, f := range v.Forbidden {
@@ -243,6 +261,29 @@ func validateCases(cases []vector) error {
 				if !ok || v.Kind != "implementation" || v.Condition != condition || v.Operation != op || v.Member != member {
 					return fmt.Errorf("missing matrix case %s", name)
 				}
+			}
+		}
+	}
+	for _, member := range []string{"context", "mcp", "skill"} {
+		for _, fixture := range []struct {
+			suffix, source, operation, condition string
+			levels                               []int
+		}{
+			{"git-repair-strict", "git", "repair", "entry-absent", []int{3, 4}},
+			{"git-repair-permissive", "git", "repair", "entry-absent", []int{1, 2}},
+			{"git-read-only", "git", "resolve", "entry-absent", []int{1, 2, 3, 4}},
+			{"git-dry-run-strict", "git", "dry-run", "entry-absent", []int{3, 4}},
+			{"git-dry-run-permissive", "git", "dry-run", "entry-absent", []int{1, 2}},
+			{"path-repair-strict", "path", "repair", "entry-absent", []int{3, 4}},
+			{"local-repair-strict", "local", "repair", "entry-absent", []int{3, 4}},
+			{"missing-payload-resolve", "git", "resolve", "payload-absent", []int{1, 2, 3, 4}},
+			{"missing-payload-repair", "git", "repair", "payload-absent", []int{1, 2, 3, 4}},
+			{"missing-payload-dry-run", "git", "dry-run", "payload-absent", []int{1, 2, 3, 4}},
+		} {
+			name := member + "-" + fixture.suffix
+			v, ok := byName[name]
+			if !ok || v.Kind != "implementation" || v.Member != member || v.Source != fixture.source || v.Operation != fixture.operation || v.Condition != fixture.condition || !reflect.DeepEqual(v.Levels, fixture.levels) || v.Predecessor != nil {
+				return fmt.Errorf("missing availability case %s", name)
 			}
 		}
 	}
