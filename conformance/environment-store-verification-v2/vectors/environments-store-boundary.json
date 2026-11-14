@@ -1285,7 +1285,6 @@
     "source_kind": "path",
     "home_state": "stale-old-marker",
     "verification_levels": [
-      1,
       2,
       3,
       4
@@ -7646,7 +7645,7 @@
     "expected": {
       "diagnostic": "environment_home_stale",
       "failing_check": "home_currency",
-      "fragment_emitted": false,
+      "fragment_emitted": true,
       "row_current": false,
       "writes": [],
       "store_rebuilt": false,
@@ -7654,13 +7653,31 @@
       "plant_preserved": false,
       "path_named": false,
       "rule_named": false,
-      "repair_hint": true
+      "repair_hint": true,
+      "warning_emitted": true
     },
     "positive_control": "control-resolve-context-intact",
     "predecessor": null,
     "forbidden_observations": [
       {
         "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "repair-hint-missing",
         "observation": {
           "diagnostic": "environment_home_stale",
           "failing_check": "home_currency",
@@ -7672,23 +7689,8 @@
           "plant_preserved": false,
           "path_named": false,
           "rule_named": false,
-          "repair_hint": true
-        }
-      },
-      {
-        "name": "repair-hint-missing",
-        "observation": {
-          "diagnostic": "environment_home_stale",
-          "failing_check": "home_currency",
-          "fragment_emitted": false,
-          "row_current": false,
-          "writes": [],
-          "store_rebuilt": false,
-          "lock_unchanged": true,
-          "plant_preserved": false,
-          "path_named": false,
-          "rule_named": false,
-          "repair_hint": false
+          "repair_hint": false,
+          "warning_emitted": true
         }
       },
       {
@@ -7696,7 +7698,7 @@
         "observation": {
           "diagnostic": "environment_home_stale",
           "failing_check": "home_currency",
-          "fragment_emitted": false,
+          "fragment_emitted": true,
           "row_current": false,
           "writes": [
             "store"
@@ -7706,7 +7708,25 @@
           "plant_preserved": false,
           "path_named": false,
           "rule_named": false,
-          "repair_hint": true
+          "repair_hint": true,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "missing-home-warning",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true,
+          "warning_emitted": false
         }
       }
     ]
@@ -10721,5 +10741,245 @@
       "centre": "confirmed",
       "global_level": 3
     }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level1-legacy-intact-updated-store-old-marker-stale",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "home-stale",
+    "member_kind": "context",
+    "source_kind": "path",
+    "home_state": "stale-old-marker",
+    "verification_levels": [
+      1
+    ],
+    "expected": {
+      "diagnostic": "environment_home_stale",
+      "failing_check": "home_currency",
+      "fragment_emitted": true,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "repair_hint": true,
+      "warning_emitted": true
+    },
+    "positive_control": "control-resolve-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "missing-repair-hint",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": false,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "drift-reported-current",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": true,
+          "row_current": true,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "implicit-home-write",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [
+            "home"
+          ],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "missing-home-warning",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true,
+          "warning_emitted": false
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level2-home-drift-refuses",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "home-stale",
+    "member_kind": "context",
+    "source_kind": "path",
+    "home_state": "stale-old-marker",
+    "verification_levels": [
+      2
+    ],
+    "expected": {
+      "diagnostic": "environment_home_stale",
+      "failing_check": "home_currency",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "repair_hint": true,
+      "warning_emitted": false
+    },
+    "positive_control": "control-resolve-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true,
+          "warning_emitted": false
+        }
+      },
+      {
+        "name": "missing-repair-hint",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": false,
+          "warning_emitted": false
+        }
+      },
+      {
+        "name": "drift-reported-current",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": false,
+          "row_current": true,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true,
+          "warning_emitted": false
+        }
+      },
+      {
+        "name": "implicit-home-write",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "home"
+          ],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true,
+          "warning_emitted": false
+        }
+      },
+      {
+        "name": "level1-rule-leaks-to-level2",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true,
+          "warning_emitted": true
+        }
+      }
+    ]
   }
 ]

@@ -346,6 +346,11 @@ func checkObservation(v vector, got observation) error {
 	}
 	if want.Diagnostic == "environment_home_stale" {
 		want.RepairHint = true
+		// Level1 may start with a drifted existing home only without --repair.
+		// An absent home is still a missing required input; repair requires verified inputs.
+		if v.Operation == "resolve" && v.Home == "stale-old-marker" && reflect.DeepEqual(v.Levels, []int{1}) {
+			want.Fragment, want.Warning = true, true
+		}
 	}
 	if !reflect.DeepEqual(got, want) {
 		return errors.New("observation violates required diagnostic or post-state")
@@ -384,7 +389,11 @@ func validateCases(cases []vector) error {
 		}
 		switch v.Condition {
 		case "home-stale", "home-absent", "marker-unreadable":
-			if !reflect.DeepEqual(v.Levels, []int{1, 2, 3, 4}) {
+			valid := reflect.DeepEqual(v.Levels, []int{1, 2, 3, 4})
+			if v.Condition == "home-stale" && v.Operation == "resolve" {
+				valid = reflect.DeepEqual(v.Levels, []int{1}) || reflect.DeepEqual(v.Levels, []int{2}) || reflect.DeepEqual(v.Levels, []int{2, 3, 4})
+			}
+			if !valid {
 				return fmt.Errorf("%s: missing home gate level", v.Name)
 			}
 		case "pin-drift":
@@ -445,6 +454,18 @@ func validateCases(cases []vector) error {
 			if !ok || v.Kind != "implementation" || v.Member != member || v.Source != fixture.source || v.Operation != fixture.operation || v.Condition != fixture.condition || !reflect.DeepEqual(v.Levels, fixture.levels) || v.Predecessor != nil {
 				return fmt.Errorf("missing availability case %s", name)
 			}
+		}
+	}
+	for _, boundary := range []struct {
+		name   string
+		levels []int
+	}{
+		{"level1-legacy-intact-updated-store-old-marker-stale", []int{1}},
+		{"level2-home-drift-refuses", []int{2}},
+	} {
+		v, ok := byName[boundary.name]
+		if !ok || v.Condition != "home-stale" || v.Home != "stale-old-marker" || v.Operation != "resolve" || v.Member != "context" || v.Source != "path" || !reflect.DeepEqual(v.Levels, boundary.levels) {
+			return fmt.Errorf("missing home drift boundary %s", boundary.name)
 		}
 	}
 	for _, name := range []string{"precedence-context-first", "precedence-skill-first", "precedence-skill-ownership"} {
@@ -570,7 +591,7 @@ func validateMigration(root string, m manifest, cases []vector) error {
 			if tightened[old.Name] {
 				disposition = "tightened"
 			}
-			if condition == "pin-drift" {
+			if condition == "pin-drift" || (condition == "home-stale" && operation == "resolve") {
 				disposition = "level-scoped"
 			}
 			if negative {
@@ -582,8 +603,12 @@ func validateMigration(root string, m manifest, cases []vector) error {
 			if !reflect.DeepEqual(row.Levels, v.Levels) {
 				return fmt.Errorf("wrong migration levels %s", old.Name)
 			}
-			if condition == "pin-drift" {
-				if len(row.LevelSuccessors) != 2 {
+			if condition == "pin-drift" || (condition == "home-stale" && operation == "resolve") {
+				lowerCount := 2
+				if condition == "home-stale" {
+					lowerCount = 1
+				}
+				if len(row.LevelSuccessors) != lowerCount {
 					return fmt.Errorf("missing level successors %s", old.Name)
 				}
 				for i, name := range row.LevelSuccessors {

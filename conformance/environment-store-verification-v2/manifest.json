@@ -4,7 +4,7 @@
   "capability_revision": 2,
   "status": "proposal-unreleased",
   "cases": "vectors/environments-store-boundary.json",
-  "case_count": 183,
+  "case_count": 185,
   "predecessor": {
     "commit": "43bf0a2506d5c354a73bbc3ea4623d4653db10c7",
     "path": "conformance/v1/vectors/environments-store-boundary.json",
@@ -220,19 +220,20 @@
     {
       "group": "resolve_cases",
       "name": "intact-updated-store-old-marker-stale",
-      "disposition": "retained",
+      "disposition": "level-scoped",
       "old_diagnostic": "environment_home_stale",
       "old_outcome": null,
       "new_required_diagnostic": "environment_home_stale",
       "successor_case": "legacy-intact-updated-store-old-marker-stale",
       "known_bad_remains_negative": false,
       "verification_levels": [
-        1,
         2,
         3,
         4
       ],
-      "level_successors": []
+      "level_successors": [
+        "level1-legacy-intact-updated-store-old-marker-stale"
+      ]
     },
     {
       "group": "resolve_cases",

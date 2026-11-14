@@ -59,13 +59,20 @@ Git byte restoration under §2. Revision-1 archive replay remains unchanged;
 these are explicit revision-2, level-scoped incompatibilities, additional to
 the six structural expectation changes.
 
-**Managed-home gate at every level.** After structural admission, known drift
-or absence of a managed home is `environment_home_stale`, with the `--repair`
-hint, as the leading code on read-only startup, including levels 1 and 2.
-For a stale existing home the named check is `home_currency`. Known home drift
+**Managed-home decision.** After structural admission, drift of an existing
+managed home without `--repair` MUST start at level 1, emitting a warning that
+names `environment_home_stale` and the `--repair` hint. It MUST remain non-current
+and MUST NOT silently repair or adopt home bytes. At levels 2, 3 and 4 the same
+drift MUST refuse with `environment_home_stale` as the leading code and the
+`--repair` hint: at level 2 the drift is a verifiable check that failed. This
+level-1 warning-start explicitly relaxes revision-1 §10.1's stale-home
+no-fragment refusal. The named check is `home_currency`. The home diagnostic
 also takes precedence over pin-evidence errors in a read-only invocation;
 this explicitly replaces §4/§10.1's pin-before-home diagnostic ordering in that
-combination. Structural refusals still lead. An unreadable/malformed marker
+combination. An absent home remains a missing required input and refuses
+`environment_home_stale` with the hint at every level; the drift warning-start
+does not provision a missing home. Structural refusals still lead.
+An unreadable/malformed marker
 retains `environment_marker_unreadable`, never absence or a permissive warning.
 `--repair` MUST restore a drifted or absent managed home from completely verified
 store inputs before launch at **every** level, including 1 and 2. If verified
@@ -73,8 +80,10 @@ inputs are unavailable or mismatching, refuse without home writes; report
 `environment_home_stale` as the leading code. Only levels 3/4 may first restore
 ordinary Git bytes as specified in §2 and then repair the home. A current home
 requires no reapplication merely because the level permits degraded evidence.
-Permissive evidence policy never authorizes execution of drifted derived home
-content, adoption of home bytes, or restoration from unverified store bytes.
+The level-1 drift warning-start grants no home mutation, adoption of home bytes,
+or restoration from unverified store bytes. With `--repair`, permissive evidence
+policy never authorizes launching before the drifted home is restored from
+completely verified inputs.
 
 ## 1. Structural refusal before repair
 
@@ -173,7 +182,8 @@ regular-file link counts.
 | Profile minimum below global floor | `startup_verification_weakening` |
 | Level-4 unreachable/absent centre | `verification_centre_unavailable` warning, then local level 3 |
 | Centre denial / invalid confirmation | `verification_centre_denied` / `verification_centre_invalid` |
-| Stale existing home / absent home | `environment_home_stale`, with `--repair`; existing-home check `home_currency` |
+| Drifted existing home without `--repair`, level 1 | `environment_home_stale` warning and `--repair` hint; start, non-current, no writes; check `home_currency` |
+| Drifted existing home without `--repair`, levels 2–4 / absent home at every level | Leading `environment_home_stale` refusal with `--repair`; existing-home check `home_currency` |
 
 An enclosing-boundary refusal retains its existing class. Lock-file and
 marker-file entry-class boundary failures **retain revision-1 §4(b)/§10.1**:

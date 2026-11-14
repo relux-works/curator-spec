@@ -10,14 +10,17 @@ Versioning for the complete specification set.
 - Define unsigned startup verification levels 1–4 (default 3), local outcome
   aggregation, centre decisions/fallback and the lock-bound profile floor.
   Explicitly relax revision-1 pin refusal at level 1 and missing-evidence refusal
-  at levels 1/2; forbid permissive evidence rebuilding. Make managed-home drift
-  refusal/hint and verified-home repair mandatory at every level, with home-first
-  read-only diagnostics when drift and pin mismatch coexist. Record eight
-  level-scoped predecessor dispositions and 16 low-level successors; restore
+  at levels 1/2; forbid permissive evidence rebuilding. Without `--repair`,
+  managed-home drift warns and starts at level 1 with `environment_home_stale`
+  and the repair hint; levels 2–4 refuse with that leading code and hint.
+  Verified-home repair remains mandatory at every level when requested, with
+  home-first read-only diagnostics when drift and pin mismatch coexist. Record
+  nine level-scoped predecessor dispositions, 16 pin successors and one home
+  successor plus an explicit level-2 home refusal control; restore
   `home_currency`. Keep lock/marker entry-class recovery under revision 1.
   Register the skill boundary diagnostic and `single_link` rule, require first
   failing lock-member precedence, and specify strict absent path/local dry-run.
-  The expanded proposal has 183 rows (177 implementation, 6 checker controls),
+  The expanded proposal has 185 rows (179 implementation, 6 checker controls),
   with paired controls. These additions extend the six structural changes below;
   released revision-1 artifacts remain byte-identical.
 

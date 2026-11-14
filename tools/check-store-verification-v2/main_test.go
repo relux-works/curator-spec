@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -617,5 +618,147 @@ func TestFixtureScopeAndHomeCoverage(t *testing.T) {
 				t.Fatalf("wrong scope/coverage refusal: %v", err)
 			}
 		})
+	}
+}
+
+// Without --repair an existing drifted home starts only at level1, with the
+// named warning/hint and no writes. Level2 refuses the same drift. The paired
+// intact controls pass, and the former refuse-at-all-levels verdict is rejected.
+// These are metadata/model checks, not manager runtime qualification.
+func TestHomeDriftStartupLevelBoundary(t *testing.T) {
+	_, _, cases := fixture(t)
+	byName := map[string]vector{}
+	for _, v := range cases {
+		byName[v.Name] = v
+	}
+	for _, tc := range []struct {
+		name  string
+		level int
+		start bool
+	}{
+		{"level1-legacy-intact-updated-store-old-marker-stale", 1, true},
+		{"level2-home-drift-refuses", 2, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			v, ok := byName[tc.name]
+			if !ok {
+				t.Fatal("boundary fixture missing")
+			}
+			want := observation{Diagnostic: "environment_home_stale", Check: "home_currency", Fragment: tc.start, Warning: tc.start, RepairHint: true, Writes: []string{}, LockUnchanged: true}
+			if !reflect.DeepEqual(v.Levels, []int{tc.level}) || !reflect.DeepEqual(v.Expected, want) {
+				t.Fatalf("wrong level-scoped boundary: %+v", v)
+			}
+			if err := checkObservation(v, want); err != nil {
+				t.Fatal(err)
+			}
+			positive, ok := byName[v.Positive]
+			if !ok {
+				t.Fatal("positive missing")
+			}
+			if err := checkObservation(positive, positive.Expected); err != nil {
+				t.Fatalf("intact positive refused: %v", err)
+			}
+			bad := want
+			bad.Fragment = !tc.start
+			if err := checkObservation(v, bad); err == nil || !strings.Contains(err.Error(), "observation violates") {
+				t.Fatalf("opposite verdict accepted: %v", err)
+			}
+			if tc.start {
+				bad = want
+				bad.Warning = false
+				if err := checkObservation(v, bad); err == nil {
+					t.Fatal("silent degraded startup accepted")
+				}
+			}
+			plant := append([]vector{}, cases...)
+			for i, v := range plant {
+				if v.Name == tc.name {
+					plant = append(plant[:i], plant[i+1:]...)
+					break
+				}
+			}
+			if err := validateCases(plant); err == nil || !strings.Contains(err.Error(), "missing home drift boundary") {
+				t.Fatalf("missing boundary accepted: %v", err)
+			}
+		})
+	}
+}
+
+// The level1 exception does not provision an absent home or repair a stale home
+// from mismatching inputs. Verified home repair still succeeds at every level;
+// simultaneous read-only home/pin drift warns and starts at level1 without writes.
+func TestHomeDriftExceptionDoesNotWeakenRepair(t *testing.T) {
+	_, _, cases := fixture(t)
+	byName := map[string]vector{}
+	for _, v := range cases {
+		byName[v.Name] = v
+	}
+	for _, name := range []string{"level1-legacy-repair-swapped-old-marker-never-adopted", "level2-legacy-repair-swapped-old-marker-never-adopted", "legacy-unprovisioned-intact-stale"} {
+		v, ok := byName[name]
+		if !ok {
+			t.Fatalf("missing control %s", name)
+		}
+		if v.Expected.Fragment || len(v.Expected.Writes) != 0 || v.Expected.Diagnostic != "environment_home_stale" {
+			t.Fatalf("weakened refusal %s", name)
+		}
+		if err := checkObservation(v, v.Expected); err != nil {
+			t.Fatal(err)
+		}
+		bad := v.Expected
+		bad.Fragment = true
+		bad.Warning = true
+		if err := checkObservation(v, bad); err == nil {
+			t.Fatalf("exception leaked to %s", name)
+		}
+	}
+	v := byName["level1-legacy-swapped-updated-store-old-marker-untrusted"]
+	if !v.Expected.Fragment || !v.Expected.Warning || !v.Expected.RepairHint || len(v.Expected.Writes) != 0 {
+		t.Fatal("missing simultaneous home/pin warning-start")
+	}
+	if err := checkObservation(v, v.Expected); err != nil {
+		t.Fatal(err)
+	}
+	repair := byName["legacy-repair-stale-old-marker-succeeds"]
+	if !reflect.DeepEqual(repair.Levels, []int{1, 2, 3, 4}) || !repair.Expected.Fragment || !reflect.DeepEqual(repair.Expected.Writes, []string{"home", "marker"}) {
+		t.Fatal("verified repair scope changed")
+	}
+	if err := checkObservation(repair, repair.Expected); err != nil {
+		t.Fatal(err)
+	}
+}
+
+// The retained stale-home fixture must disclose its level1 successor; removing
+// that link cannot hide the relaxed observation while its valid mapping passes.
+func TestHomeDriftMigrationScope(t *testing.T) {
+	_, _, cases := fixture(t)
+	raw, err := os.ReadFile(filepath.Join("../..", namespace, "manifest.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var m manifest
+	if err := strict(raw, &m); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateMigration("../..", m, cases); err != nil {
+		t.Fatal(err)
+	}
+	found := false
+	for i, row := range m.Migration {
+		if row.Name != "intact-updated-store-old-marker-stale" {
+			continue
+		}
+		found = true
+		if row.Disposition != "level-scoped" || !reflect.DeepEqual(row.Levels, []int{2, 3, 4}) || !reflect.DeepEqual(row.LevelSuccessors, []string{"level1-legacy-intact-updated-store-old-marker-stale"}) {
+			t.Fatal("home scope undisclosed")
+		}
+		plant := m
+		plant.Migration = append([]migration{}, m.Migration...)
+		plant.Migration[i].LevelSuccessors = nil
+		if err := validateMigration("../..", plant, cases); err == nil || !strings.Contains(err.Error(), "missing level successors") {
+			t.Fatalf("hidden home scope accepted: %v", err)
+		}
+	}
+	if !found {
+		t.Fatal("home migration missing")
 	}
 }
