@@ -11,7 +11,8 @@ and qualification scope explicitly replaced here.
 This revision defines unsigned startup verification levels **1, 2, 3 and 4**.
 The global default is **3**. Configuration signing is not required or provided
 by this revision; signed configuration belongs to a later revision. These
-levels govern profile/store evidence only. They never relax structural safety,
+levels govern profile/store evidence and the managed-home decision below.
+They never relax structural safety,
 configuration/lock parsing, source admission, credential authority, executable
 availability, or the managed-home gate below.
 
