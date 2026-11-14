@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/conformance/profile-generations-v1/reuse.schema.json",
+  "title": "Profile generations draft: reuse (conformance only)",
+  "$comment": "Unallocated production carriers remain placeholders. This closed draft validates conformance metadata only, not authority or runtime evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "baseline_oid",
+    "disposition",
+    "input_files"
+  ],
+  "properties": {
+    "baseline_oid": {
+      "const": "ab6b1b0960473b359c84d96e7c7749b9be6011e0"
+    },
+    "disposition": {
+      "const": "reuse-unchanged"
+    },
+    "input_files": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "git_blob",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "pattern": "^(?!(?:[A-Za-z]:|/))(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)(?:[Cc][Oo][Nn]|[Pp][Rr][Nn]|[Aa][Uu][Xx]|[Nn][Uu][Ll]|[Cc][Oo][Mm][1-9]|[Ll][Pp][Tt][1-9])(?:\\.[^/]*)?(?:/|$))(?:[A-Za-z0-9_][A-Za-z0-9._-]*[A-Za-z0-9_-]|[A-Za-z0-9_])(?:/(?:[A-Za-z0-9_][A-Za-z0-9._-]*[A-Za-z0-9_-]|[A-Za-z0-9_]))*$(?![\\s\\S])"
+          },
+          "git_blob": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$(?![\\s\\S])"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+          }
+        }
+      },
+      "uniqueItems": true
+    }
+  }
+}

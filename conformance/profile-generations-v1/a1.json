@@ -1,0 +1,58 @@
+{
+  "parent_pair": "Q4-V12",
+  "contract_sha256": "d2963f34b3a3dd538fb2531cbc2e1594ec9354783b3fb528dc12d076d2a617a3",
+  "design_vector_sha256": "85a52fca84b0a3ecb41d2578a940ab46b25076acd4d1a8d820a95da289f5b092",
+  "execution": "not-run",
+  "steps": [
+    {
+      "step": "Durable prepare; record one start intent; native creation; prepared revision `r`",
+      "expected_outcome": "Prepared remains blocking until authoritative bind; no fabricated pre-exec session",
+      "effects_and_protection": "1 / 0; start slot consumed; descendants protected"
+    },
+    {
+      "step": "Bind with original payload `P` and expected revision `r`; commit; lose reply",
+      "expected_outcome": "Active, committed revision `r+1`; durable outcome retained",
+      "effects_and_protection": "1 / 1; immutable exact tuple protected"
+    },
+    {
+      "step": "Exact retry of that operation, `P`, original expected revision `r`",
+      "expected_outcome": "Retrieve committed nonterminal outcome, `failure_class:null`, `changed:false`, revision `r+1`; no new CAS",
+      "effects_and_protection": "1 / 1; same binding and roots"
+    },
+    {
+      "step": "Same operation, different tuple/payload **or different claimed original revision**",
+      "expected_outcome": "`request_conflict`; state, revision and effects unchanged",
+      "effects_and_protection": "1 / 1; same protection"
+    },
+    {
+      "step": "Distinct new mutation with stale expected revision `r`",
+      "expected_outcome": "`revision_conflict`; no partial effect",
+      "effects_and_protection": "1 / 1; same protection"
+    },
+    {
+      "step": "Exact retry with current registration unavailable/mismatched",
+      "expected_outcome": "`authority_unavailable` / `registration_mismatch` at its applicable gate; no admitting result",
+      "effects_and_protection": "1 / 1; protection retained; replay is no custody bypass"
+    },
+    {
+      "step": "Authoritative all-terminal release, or independently authorized audited break",
+      "expected_outcome": "Current released/broken disposition; its committed revision and roots retained",
+      "effects_and_protection": "No new start/bind; independent sibling/resume roots survive"
+    },
+    {
+      "step": "Retry original bind/prepare after that terminal transition",
+      "expected_outcome": "Current terminal non-admitting disposition, `changed:false`; bind is refused as `terminal_nonadmitting`, never old active success",
+      "effects_and_protection": "1 / 1; zero revival/late exec, tombstone/audit unchanged"
+    },
+    {
+      "step": "Known-bad current-CAS-before-outcome handler / valid neighbor",
+      "expected_outcome": "Detector catches the **wrong `revision_conflict`** on the exact original-revision retry; correct handler retrieves it",
+      "effects_and_protection": "No unrelated setup error accepted as detection"
+    },
+    {
+      "step": "Known-bad replay-exec handler / valid neighbor",
+      "expected_outcome": "Detector catches second exec/logical bind or revision increment; correct handler has none",
+      "effects_and_protection": "Intended duplicate effect must be observed; failure or timeout alone is insufficient"
+    }
+  ]
+}

@@ -1,0 +1,1573 @@
+{
+  "draft_family": "profile-generations-v1",
+  "status": "semantic-stubs",
+  "baseline_oid": "ab6b1b0960473b359c84d96e7c7749b9be6011e0",
+  "pairs": [
+    {
+      "id": "Q1-V1",
+      "clause_refs": [
+        "PG-COMPOSE-01",
+        "PG-COMPOSE-02",
+        "PG-RENDER-01",
+        "PG-RENDER-02",
+        "PG-P-026"
+      ],
+      "paired_requirement": "Equal complete canonical render inputs / changed weight, tie direction or header digest: identical bytes only for equal header/lock/environment/form inputs; proper stable ordering otherwise",
+      "pending_gates": [
+        "PG-P-026"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [],
+      "input_note": "Common render/header witness deferred pending PG-P-026; no baseline file is presented as the new equal-input rendering witness."
+    },
+    {
+      "id": "Q1-V2",
+      "clause_refs": [
+        "PG-RENDER-01",
+        "PG-RENDER-02",
+        "PG-PACKAGE-01",
+        "PG-P-026"
+      ],
+      "paired_requirement": "Absent context / present context with zero applicable modules: no file versus specified header-only result",
+      "pending_gates": [
+        "PG-P-026"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [],
+      "input_note": "Common render/header witness deferred pending PG-P-026; no baseline file is presented as the new equal-input rendering witness."
+    },
+    {
+      "id": "Q1-V3",
+      "clause_refs": [
+        "PG-PACKAGE-01",
+        "PG-PACKAGE-02",
+        "PG-COMPAT-02",
+        "PG-P-021"
+      ],
+      "paired_requirement": "Schema-1 directory / schema-2 selected directory; root omission / literal dot: reject unsupported field, bind exact directory; omitted profile root normalizes empty, profile dot refuses, collection dot remains valid",
+      "pending_gates": [
+        "PG-P-021"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/profile-skill-directories-v1/fixtures.json",
+        "conformance/profile-skill-directories-v1/vectors.json",
+        "conformance/profile-skill-directories-v1/schema-cases.json",
+        "conformance/profile-skill-directories-v1/lock-identity.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Unchanged selected-directory baseline inputs; normalized successor subject still needs an instantiated witness."
+    },
+    {
+      "id": "Q1-V4",
+      "clause_refs": [
+        "PG-HASH-01"
+      ],
+      "paired_requirement": "NUL/collision plant / regular bytes: v2 hashes exact bytes with collision-distinguishing framing; v1 refuses opaque NUL before hashing",
+      "pending_gates": [],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/v1/vectors/content-hashes-v2.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Unchanged independent hash-framing/NUL/collision expectations, not native or acquisition qualification."
+    },
+    {
+      "id": "Q1-V5",
+      "clause_refs": [
+        "PG-HASH-02",
+        "PG-INVENTORY-01"
+      ],
+      "paired_requirement": "Linked/special/colliding acquisition / regular contained tree: refuse extraction before publication; standalone hash vectors keep separate link semantics",
+      "pending_gates": [],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/v1/vectors/content-hashes-v2.json",
+        "conformance/profile-skill-directories-v1/vectors.json",
+        "conformance/profile-skill-directories-v1/schema-cases.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Separate baseline hash and structural acquisition inputs; hashing a path does not authorize acquisition."
+    },
+    {
+      "id": "Q1-V6",
+      "clause_refs": [
+        "PG-SCOPE-01",
+        "PG-COMPAT-01",
+        "PG-COMPOSE-01",
+        "PG-DELIVERY-01",
+        "PG-DELIVERY-02",
+        "PG-PACKAGE-01",
+        "PG-P-021",
+        "PG-P-025",
+        "PG-P-027",
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "paired_requirement": "Required skill/MCP without delivery / explicit contexts-only: refuse without writes versus admit declared context projection with visible omissions, never full audited closure",
+      "pending_gates": [
+        "PG-P-021",
+        "PG-P-025",
+        "PG-P-027",
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/rc7-carriers-v1/index.json",
+        "conformance/rc7-carriers-v1/canonical.json",
+        "conformance/rc7-carriers-v1/compatibility.json",
+        "conformance/rc7-carriers-v1/delivery-vectors.json",
+        "conformance/rc7-carriers-v1/decisions.json"
+      ],
+      "paired_extensions": [
+        "Context-only boundary: unresolved deferred skill/MCP members do not trigger complete-raw-closure admission; a valid delivered context closure passes with visible omissions. Selecting edge filters instead requires the full raw closure and refuses a hidden same-name conflict."
+      ],
+      "input_note": "Baseline closed-reader/delivery controls; successor projection/omission instances remain unmaterialized."
+    },
+    {
+      "id": "Q1-V7",
+      "clause_refs": [
+        "PG-COMPAT-01",
+        "PG-COMPAT-02",
+        "PG-PACKAGE-01",
+        "PG-LOCK-01",
+        "PG-INVENTORY-01",
+        "PG-HASH-03",
+        "PG-GENERATION-01",
+        "PG-P-021",
+        "PG-P-025",
+        "PG-P-027",
+        "PG-P-042",
+        "PG-P-055"
+      ],
+      "paired_requirement": "Unsupported/invalid closed input / supported closed input: precise refusal without publication versus deterministic admitted projection",
+      "pending_gates": [
+        "PG-P-021",
+        "PG-P-025",
+        "PG-P-027",
+        "PG-P-042",
+        "PG-P-055"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/rc7-carriers-v1/index.json",
+        "conformance/rc7-carriers-v1/canonical.json",
+        "conformance/rc7-carriers-v1/compatibility.json",
+        "conformance/rc7-carriers-v1/delivery-vectors.json",
+        "conformance/rc7-carriers-v1/decisions.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline closed-reader/delivery controls; successor projection/omission instances remain unmaterialized."
+    },
+    {
+      "id": "Q2-V1",
+      "clause_refs": [
+        "PG-FILTER-01",
+        "PG-FILTER-02",
+        "PG-FILTER-03",
+        "PG-P-024",
+        "PG-P-025"
+      ],
+      "paired_requirement": "Omitted / empty / overlapping filters on same pinned edge: all / none / exclusion wins",
+      "pending_gates": [
+        "PG-P-024",
+        "PG-P-025"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/profile-skill-directories-v1/fixtures.json",
+        "conformance/profile-skill-directories-v1/vectors.json",
+        "conformance/profile-skill-directories-v1/schema-cases.json",
+        "conformance/profile-skill-directories-v1/lock-identity.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline raw selected-package/lock controls only; the new edge/provenance/filter instances remain deferred to PG-P-024/025."
+    },
+    {
+      "id": "Q2-V2",
+      "clause_refs": [
+        "PG-COMPOSE-01",
+        "PG-FILTER-01",
+        "PG-FILTER-02",
+        "PG-P-024",
+        "PG-P-025",
+        "PG-COMPOSE-02"
+      ],
+      "paired_requirement": "Conflicting same-name raw closure hidden by filter / valid exact selectors: conflict refuses before projection; valid member passes",
+      "pending_gates": [
+        "PG-P-024",
+        "PG-P-025"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/profile-skill-directories-v1/fixtures.json",
+        "conformance/profile-skill-directories-v1/vectors.json",
+        "conformance/profile-skill-directories-v1/schema-cases.json",
+        "conformance/profile-skill-directories-v1/lock-identity.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline raw selected-package/lock controls only; the new edge/provenance/filter instances remain deferred to PG-P-024/025."
+    },
+    {
+      "id": "Q2-V3",
+      "clause_refs": [
+        "PG-FILTER-02",
+        "PG-FILTER-04",
+        "PG-P-024",
+        "PG-P-025"
+      ],
+      "paired_requirement": "Duplicate collection or same edge-list entry / unique entries: both duplicates refuse; include/exclude overlap is permitted and distinct from duplicates",
+      "pending_gates": [
+        "PG-P-024",
+        "PG-P-025"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/profile-skill-directories-v1/fixtures.json",
+        "conformance/profile-skill-directories-v1/vectors.json",
+        "conformance/profile-skill-directories-v1/schema-cases.json",
+        "conformance/profile-skill-directories-v1/lock-identity.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline raw selected-package/lock controls only; the new edge/provenance/filter instances remain deferred to PG-P-024/025."
+    },
+    {
+      "id": "Q2-V4",
+      "clause_refs": [
+        "PG-FILTER-02",
+        "PG-FILTER-04",
+        "PG-P-024",
+        "PG-P-025"
+      ],
+      "paired_requirement": "Missing include even when excluded / missing exclude: first refuses in both grammars, second harmless",
+      "pending_gates": [
+        "PG-P-024",
+        "PG-P-025"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/profile-skill-directories-v1/fixtures.json",
+        "conformance/profile-skill-directories-v1/vectors.json",
+        "conformance/profile-skill-directories-v1/schema-cases.json",
+        "conformance/profile-skill-directories-v1/lock-identity.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline raw selected-package/lock controls only; the new edge/provenance/filter instances remain deferred to PG-P-024/025."
+    },
+    {
+      "id": "Q2-V5",
+      "clause_refs": [
+        "PG-COMPOSE-01",
+        "PG-COMPOSE-02",
+        "PG-FILTER-01",
+        "PG-FILTER-03",
+        "PG-P-024",
+        "PG-P-025",
+        "PG-FILTER-04"
+      ],
+      "paired_requirement": "Edge A excludes, edge B requires full / no B: B retains activation/provenance; without B the excluded contribution is absent, subject to support closure",
+      "pending_gates": [
+        "PG-P-024",
+        "PG-P-025"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/profile-skill-directories-v1/fixtures.json",
+        "conformance/profile-skill-directories-v1/vectors.json",
+        "conformance/profile-skill-directories-v1/schema-cases.json",
+        "conformance/profile-skill-directories-v1/lock-identity.json"
+      ],
+      "paired_extensions": [
+        "Legacy collection neighbor: the new edge case does not relax nonempty acquisition, collection duplicates or missing-member rules; a valid nonempty collection remains usable while malformed legacy acquisition refuses. New filter results and activation union are assessed separately."
+      ],
+      "input_note": "Baseline raw selected-package/lock controls only; the new edge/provenance/filter instances remain deferred to PG-P-024/025."
+    },
+    {
+      "id": "Q2-V6",
+      "clause_refs": [
+        "PG-COMPOSE-02",
+        "PG-P-024",
+        "PG-P-025",
+        "PG-FILTER-04"
+      ],
+      "paired_requirement": "Context plus narrowed runtime edge / full edge: context+selected-command union versus all commands; parser acceptance alone is insufficient",
+      "pending_gates": [
+        "PG-P-024",
+        "PG-P-025"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/profile-skill-directories-v1/fixtures.json",
+        "conformance/profile-skill-directories-v1/vectors.json",
+        "conformance/profile-skill-directories-v1/schema-cases.json",
+        "conformance/profile-skill-directories-v1/lock-identity.json"
+      ],
+      "paired_extensions": [
+        "Legacy collection neighbor: the new edge case does not relax nonempty acquisition, collection duplicates or missing-member rules; a valid nonempty collection remains usable while malformed legacy acquisition refuses. New filter results and activation union are assessed separately."
+      ],
+      "input_note": "Baseline raw selected-package/lock controls only; the new edge/provenance/filter instances remain deferred to PG-P-024/025."
+    },
+    {
+      "id": "Q2-V7",
+      "clause_refs": [
+        "PG-FILTER-03",
+        "PG-P-024",
+        "PG-P-025",
+        "PG-FILTER-04"
+      ],
+      "paired_requirement": "Retained caller with excluded support / caller excluded or support restored: reject broken projection versus valid closure",
+      "pending_gates": [
+        "PG-P-024",
+        "PG-P-025"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/profile-skill-directories-v1/fixtures.json",
+        "conformance/profile-skill-directories-v1/vectors.json",
+        "conformance/profile-skill-directories-v1/schema-cases.json",
+        "conformance/profile-skill-directories-v1/lock-identity.json"
+      ],
+      "paired_extensions": [
+        "Legacy collection neighbor: the new edge case does not relax nonempty acquisition, collection duplicates or missing-member rules; a valid nonempty collection remains usable while malformed legacy acquisition refuses. New filter results and activation union are assessed separately."
+      ],
+      "input_note": "Baseline raw selected-package/lock controls only; the new edge/provenance/filter instances remain deferred to PG-P-024/025."
+    },
+    {
+      "id": "Q2-V8",
+      "clause_refs": [
+        "PG-FILTER-01",
+        "PG-FILTER-03",
+        "PG-LOCK-01",
+        "PG-BINDING-01",
+        "PG-P-024",
+        "PG-P-025",
+        "PG-P-027",
+        "PG-P-044",
+        "PG-COMPOSE-01",
+        "PG-FILTER-04"
+      ],
+      "paired_requirement": "Changed / unchanged selection, including changed selector with same output: bind declared edge semantics/projection pin; raw audit identity unchanged; canonical unchanged input deterministic",
+      "pending_gates": [
+        "PG-P-024",
+        "PG-P-025",
+        "PG-P-027",
+        "PG-P-044"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/profile-skill-directories-v1/fixtures.json",
+        "conformance/profile-skill-directories-v1/vectors.json",
+        "conformance/profile-skill-directories-v1/schema-cases.json",
+        "conformance/profile-skill-directories-v1/lock-identity.json"
+      ],
+      "paired_extensions": [
+        "Legacy collection neighbor: the new edge case does not relax nonempty acquisition, collection duplicates or missing-member rules; a valid nonempty collection remains usable while malformed legacy acquisition refuses. New filter results and activation union are assessed separately."
+      ],
+      "input_note": "Baseline raw selected-package/lock controls only; the new edge/provenance/filter instances remain deferred to PG-P-024/025."
+    },
+    {
+      "id": "Q2-V9",
+      "clause_refs": [
+        "PG-FILTER-02",
+        "PG-FILTER-04",
+        "PG-DELIVERY-01",
+        "PG-DELIVERY-02",
+        "PG-COMPOSE-01",
+        "PG-P-024",
+        "PG-P-025"
+      ],
+      "paired_requirement": "Legacy empty collection include / new empty edge include: legacy refuses, new edge can contribute nothing; first contexts-only carrier refuses unsupported filters",
+      "pending_gates": [
+        "PG-P-024",
+        "PG-P-025"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/profile-skill-directories-v1/fixtures.json",
+        "conformance/profile-skill-directories-v1/vectors.json",
+        "conformance/profile-skill-directories-v1/schema-cases.json",
+        "conformance/profile-skill-directories-v1/lock-identity.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline raw selected-package/lock controls only; the new edge/provenance/filter instances remain deferred to PG-P-024/025."
+    },
+    {
+      "id": "Q3-V1",
+      "clause_refs": [
+        "PG-GRANT-01",
+        "PG-GRANT-02",
+        "PG-GRANT-03",
+        "PG-HASH-03",
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "paired_requirement": "Wrong commit/name/source/kind/directory/type/framing/policy / exact satisfying record: every wrong field denies grant, exact AND permits",
+      "pending_gates": [
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/v1/vectors/registry-resolution.json",
+        "conformance/v1/vectors/registry-client.json",
+        "conformance/v1/vectors/registry-behavior.json",
+        "conformance/v1/vectors/registry-service.json",
+        "conformance/v1/vectors/content-hashes-v2.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline broad negatives, registry retrieval and framing inputs; rejecting successor positives, policy and coverage witnesses remain deferred to PG-P-031/032/036."
+    },
+    {
+      "id": "Q3-V2",
+      "clause_refs": [
+        "PG-HASH-03",
+        "PG-GRANT-02",
+        "PG-GRANT-03",
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "paired_requirement": "Invented Git authority for local input / independently acquired exact Git package: refuse false subject, valid subject can pass",
+      "pending_gates": [
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/v1/vectors/registry-resolution.json",
+        "conformance/v1/vectors/registry-client.json",
+        "conformance/v1/vectors/registry-behavior.json",
+        "conformance/v1/vectors/registry-service.json",
+        "conformance/v1/vectors/content-hashes-v2.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline broad negatives, registry retrieval and framing inputs; rejecting successor positives, policy and coverage witnesses remain deferred to PG-P-031/032/036."
+    },
+    {
+      "id": "Q3-V3",
+      "clause_refs": [
+        "PG-COMPAT-02",
+        "PG-GRANT-01",
+        "PG-GRANT-02",
+        "PG-GRANT-03",
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "paired_requirement": "Successor positive at old schema-1-only and schema-2 ordinary readers / new profile reader: old readers reject and cannot grant a skill; new reader requires complete exact policy",
+      "pending_gates": [
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/v1/vectors/registry-resolution.json",
+        "conformance/v1/vectors/registry-client.json",
+        "conformance/v1/vectors/registry-behavior.json",
+        "conformance/v1/vectors/registry-service.json",
+        "conformance/v1/vectors/content-hashes-v2.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline broad negatives, registry retrieval and framing inputs; rejecting successor positives, policy and coverage witnesses remain deferred to PG-P-031/032/036."
+    },
+    {
+      "id": "Q3-V4",
+      "clause_refs": [
+        "PG-DENY-01",
+        "PG-DENY-02",
+        "PG-GRANT-01",
+        "PG-GRANT-02",
+        "PG-NEGATIVE-01",
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "paired_requirement": "Revoke C1/H plus grant C2/H moved or renamed / no revoke: same-framing hash denial remains broad; no negative leaves exact grant usable",
+      "pending_gates": [
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/v1/vectors/registry-resolution.json",
+        "conformance/v1/vectors/registry-client.json",
+        "conformance/v1/vectors/registry-behavior.json",
+        "conformance/v1/vectors/registry-service.json",
+        "conformance/v1/vectors/content-hashes-v2.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline broad negatives, registry retrieval and framing inputs; rejecting successor positives, policy and coverage witnesses remain deferred to PG-P-031/032/036."
+    },
+    {
+      "id": "Q3-V5",
+      "clause_refs": [
+        "PG-DENY-01",
+        "PG-DENY-02",
+        "PG-GRANT-01",
+        "PG-GRANT-02",
+        "PG-NEGATIVE-01",
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "paired_requirement": "Revoke source/commit/H1 plus grant same source/commit/H2 in another kind/directory / unrelated revoke: source+commit denies; unrelated negative permits neighbor",
+      "pending_gates": [
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/v1/vectors/registry-resolution.json",
+        "conformance/v1/vectors/registry-client.json",
+        "conformance/v1/vectors/registry-behavior.json",
+        "conformance/v1/vectors/registry-service.json",
+        "conformance/v1/vectors/content-hashes-v2.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline broad negatives, registry retrieval and framing inputs; rejecting successor positives, policy and coverage witnesses remain deferred to PG-P-031/032/036."
+    },
+    {
+      "id": "Q3-V6",
+      "clause_refs": [
+        "PG-DENY-01",
+        "PG-DENY-02",
+        "PG-GRANT-03",
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "paired_requirement": "Known valid negative alongside unknown positive semantics / unknown positive alone: first still denies, second never authorizes; unknown handling cannot suppress negative retrieval",
+      "pending_gates": [
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/v1/vectors/registry-resolution.json",
+        "conformance/v1/vectors/registry-client.json",
+        "conformance/v1/vectors/registry-behavior.json",
+        "conformance/v1/vectors/registry-service.json",
+        "conformance/v1/vectors/content-hashes-v2.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline broad negatives, registry retrieval and framing inputs; rejecting successor positives, policy and coverage witnesses remain deferred to PG-P-031/032/036."
+    },
+    {
+      "id": "Q3-V7",
+      "clause_refs": [
+        "PG-NEGATIVE-01",
+        "PG-DENY-01",
+        "PG-DENY-02",
+        "PG-GRANT-01",
+        "PG-GRANT-02",
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "paired_requirement": "Successor-only negative detector / schema-2/hash-2 negative / unrelated control: expose and reject split-lane denial; valid negative denies ordinary and profile hash-2 lanes in both managers; future successor negatives require dual issuance",
+      "pending_gates": [
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/v1/vectors/registry-resolution.json",
+        "conformance/v1/vectors/registry-client.json",
+        "conformance/v1/vectors/registry-behavior.json",
+        "conformance/v1/vectors/registry-service.json",
+        "conformance/v1/vectors/content-hashes-v2.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline broad negatives, registry retrieval and framing inputs; rejecting successor positives, policy and coverage witnesses remain deferred to PG-P-031/032/036."
+    },
+    {
+      "id": "Q3-V8",
+      "clause_refs": [
+        "PG-DENY-01",
+        "PG-DENY-02",
+        "PG-COVERAGE-01",
+        "PG-GRANT-02",
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "paired_requirement": "Schema-2 negative plus successor positive / name-only retrieval drops negative: deny first; second fails completeness; independently test source+commit and hash-only negative lookup including cache/bundle paths",
+      "pending_gates": [
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/v1/vectors/registry-resolution.json",
+        "conformance/v1/vectors/registry-client.json",
+        "conformance/v1/vectors/registry-behavior.json",
+        "conformance/v1/vectors/registry-service.json",
+        "conformance/v1/vectors/content-hashes-v2.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline broad negatives, registry retrieval and framing inputs; rejecting successor positives, policy and coverage witnesses remain deferred to PG-P-031/032/036."
+    },
+    {
+      "id": "Q3-V9",
+      "clause_refs": [
+        "PG-MIGRATION-01",
+        "PG-COVERAGE-01",
+        "PG-NEGATIVE-01",
+        "PG-DENY-01",
+        "PG-GRANT-01",
+        "PG-GRANT-02",
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "paired_requirement": "Retrieved hash-1 negative / actual reissued hash-2 negative: hash-1 never matches hash-2 even with equal digest; incomplete migration blocks required rollout; real v2 negative denies both v2 lanes, unrelated negative permits",
+      "pending_gates": [
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/v1/vectors/registry-resolution.json",
+        "conformance/v1/vectors/registry-client.json",
+        "conformance/v1/vectors/registry-behavior.json",
+        "conformance/v1/vectors/registry-service.json",
+        "conformance/v1/vectors/content-hashes-v2.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline broad negatives, registry retrieval and framing inputs; rejecting successor positives, policy and coverage witnesses remain deferred to PG-P-031/032/036."
+    },
+    {
+      "id": "Q3-V10",
+      "clause_refs": [
+        "PG-REVIEW-01",
+        "PG-GRANT-02",
+        "PG-GRANT-03",
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "paired_requirement": "Static fail+model pass, absent/failed required model / required predicates pass: bad cases refuse, both pass permits; static-only remains default when model not required",
+      "pending_gates": [
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/v1/vectors/registry-resolution.json",
+        "conformance/v1/vectors/registry-client.json",
+        "conformance/v1/vectors/registry-behavior.json",
+        "conformance/v1/vectors/registry-service.json",
+        "conformance/v1/vectors/content-hashes-v2.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline broad negatives, registry retrieval and framing inputs; rejecting successor positives, policy and coverage witnesses remain deferred to PG-P-031/032/036."
+    },
+    {
+      "id": "Q3-V11",
+      "clause_refs": [
+        "PG-COVERAGE-01",
+        "PG-GRANT-02",
+        "PG-LEVEL-02",
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "paired_requirement": "Missing/rolled-back/expired required negatives / timely complete required set: new required policy refuses first; complete set permits otherwise exact grant; no silent legacy-advisory change",
+      "pending_gates": [
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/v1/vectors/registry-resolution.json",
+        "conformance/v1/vectors/registry-client.json",
+        "conformance/v1/vectors/registry-behavior.json",
+        "conformance/v1/vectors/registry-service.json",
+        "conformance/v1/vectors/content-hashes-v2.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline broad negatives, registry retrieval and framing inputs; rejecting successor positives, policy and coverage witnesses remain deferred to PG-P-031/032/036."
+    },
+    {
+      "id": "Q3-V12",
+      "clause_refs": [
+        "PG-GRANT-01",
+        "PG-GRANT-02",
+        "PG-GRANT-03",
+        "PG-DENY-01",
+        "PG-DENY-02",
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "paired_requirement": "Conditional shared-key alternative / independently segregated trust keys: detector exposes unsafe ordinary grant; hypothetical segregation must cover every affected legacy trust set and broad negatives; separate endpoint alone fails",
+      "pending_gates": [
+        "PG-P-031",
+        "PG-P-032",
+        "PG-P-036"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/v1/vectors/registry-resolution.json",
+        "conformance/v1/vectors/registry-client.json",
+        "conformance/v1/vectors/registry-behavior.json",
+        "conformance/v1/vectors/registry-service.json",
+        "conformance/v1/vectors/content-hashes-v2.json"
+      ],
+      "paired_extensions": [],
+      "input_note": "Baseline broad negatives, registry retrieval and framing inputs; rejecting successor positives, policy and coverage witnesses remain deferred to PG-P-031/032/036."
+    },
+    {
+      "id": "Q4-V1",
+      "clause_refs": [
+        "PG-GENERATION-01",
+        "PG-BINDING-01",
+        "PG-UPDATE-01",
+        "PG-ACTIVATE-01",
+        "PG-EVIDENCE-01",
+        "PG-P-042",
+        "PG-P-043",
+        "PG-P-044",
+        "PG-P-051",
+        "PG-P-052",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-072",
+        "PG-P-073",
+        "PG-P-074",
+        "PG-P-104",
+        "PG-PUBLISH-01",
+        "PG-INVENTORY-01"
+      ],
+      "paired_requirement": "Live A after B preparation / fresh B: actual late instruction/skill/MCP reads stay A; prepared B is not activated B",
+      "pending_gates": [
+        "PG-P-042",
+        "PG-P-043",
+        "PG-P-044",
+        "PG-P-051",
+        "PG-P-052",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-072",
+        "PG-P-073",
+        "PG-P-074",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V2",
+      "clause_refs": [
+        "PG-AUTH-01",
+        "PG-GENERATION-01",
+        "PG-BINDING-01",
+        "PG-UPDATE-01",
+        "PG-ACTIVATE-01",
+        "PG-RETENTION-01",
+        "PG-ROOTS-01",
+        "PG-EVIDENCE-01",
+        "PG-P-041",
+        "PG-P-042",
+        "PG-P-043",
+        "PG-P-044",
+        "PG-P-051",
+        "PG-P-052",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-072",
+        "PG-P-073",
+        "PG-P-074",
+        "PG-P-104",
+        "PG-P-093",
+        "PG-STRICT-01"
+      ],
+      "paired_requirement": "A after allowed invocation activation / forbidden fixed-path activation: simultaneous A→A/B→B only if qualified; otherwise pending/refusal while active or retained-resumable A protected",
+      "pending_gates": [
+        "PG-P-041",
+        "PG-P-042",
+        "PG-P-043",
+        "PG-P-044",
+        "PG-P-051",
+        "PG-P-052",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-072",
+        "PG-P-073",
+        "PG-P-074",
+        "PG-P-104",
+        "PG-P-093"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [
+        "Two checkouts, one profile × runtime authority: give each checkout its own admitted binding/generation projection and prepared lease, sharing the same approved auth/session/history authority. A single-checkout same-composition launch is the positive control. Concurrent A→A/B→B across checkouts is permitted only after independent native-channel and state-access qualification; otherwise B stays pending or refuses while A is active/unknown/retained-resumable, without rebinding A or losing either checkout's lease roots. No authority need be provisioned for an unused profile/runtime. Strict trust must not approve the other checkout, and its retained history must not become selected context; those assertions await the strict roster/certification rather than being inferred from native-project success."
+      ],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V3",
+      "clause_refs": [
+        "PG-CONTROL-01",
+        "PG-LOADER-01",
+        "PG-LOADER-02",
+        "PG-VERIFIED-01",
+        "PG-VERIFIED-02",
+        "PG-LEVEL-01",
+        "PG-LEVEL-02",
+        "PG-REPAIR-01",
+        "PG-REPAIR-02",
+        "PG-ROOTS-01",
+        "PG-INVENTORY-01",
+        "PG-P-043",
+        "PG-P-053",
+        "PG-P-054",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-072",
+        "PG-P-074",
+        "PG-P-092",
+        "PG-P-104",
+        "PG-BINDING-01"
+      ],
+      "paired_requirement": "Unapproved loader mutation / typed trust/UI write: refuse or retain non-admission for first, permit measured second; known-bad unsealed-control plant detects effect",
+      "pending_gates": [
+        "PG-P-043",
+        "PG-P-053",
+        "PG-P-054",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-072",
+        "PG-P-074",
+        "PG-P-092",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/environment-store-verification-v2/manifest.json",
+        "conformance/environment-store-verification-v2/vectors/environments-store-boundary.json"
+      ],
+      "paired_extensions": [
+        "Levels/repair: existing nonstructural home drift without repair warns/non-current at L1 and refuses at L2–L4; a current home is the valid neighbor. Unknown loader controls refuse at L3 and L4; a measured typed trust write preserves unrelated approved controls.",
+        "Verified-native inventory: undeclared skill/MCP output, wrong expected hash or an unapproved base refuses; exact declared output plus an explicitly approved base passes. An explicit allowed-extra scope/digest permits only that disclosed extra, never an inferred baseline.",
+        "Seed compatibility: applying the new control policy does not strip/refresh/relabel an existing seed or marker; unsupported controls refuse pending explicit migration. A separately approved migration preserves the old source and follows the seed-owning lifecycle."
+      ],
+      "input_note": "Unchanged startup level/repair inputs for the additional startup subcases; native control/binding observations remain unrun."
+    },
+    {
+      "id": "Q4-V4",
+      "clause_refs": [
+        "PG-LOADER-01",
+        "PG-NATIVE-01",
+        "PG-STRICT-01",
+        "PG-VERIFIED-01",
+        "PG-VERIFIED-02",
+        "PG-P-043",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-081",
+        "PG-P-092",
+        "PG-P-093",
+        "PG-P-104",
+        "PG-ENTRY-01",
+        "PG-STRICT-02",
+        "PG-INVENTORY-01"
+      ],
+      "paired_requirement": "Native global skill / selected profile skill: enforce declared mode/root policy, preserve selected skill; native discovery is not strict exclusion",
+      "pending_gates": [
+        "PG-P-043",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-081",
+        "PG-P-092",
+        "PG-P-093",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [
+        "Verified-native base/extras: compare exact generated skill/MCP inventory against frozen declarations/lock and approved base. Undeclared native extras refuse; valid declared content survives. Explicit extra approval is scoped/digest-bound and disclosed, without a strict-isolation claim."
+      ],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V5",
+      "clause_refs": [
+        "PG-SCOPE-02",
+        "PG-LOADER-01",
+        "PG-LOADER-02",
+        "PG-STRICT-01",
+        "PG-EVIDENCE-01",
+        "PG-P-043",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-093",
+        "PG-P-104"
+      ],
+      "paired_requirement": "Foreign parent memory/rules / selected profile/project instructions: enforce selected memory-off contract at start/late/resume/child without suppressing valid selected instructions",
+      "pending_gates": [
+        "PG-P-043",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-093",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V6",
+      "clause_refs": [
+        "PG-MODE-01",
+        "PG-ENTRY-01",
+        "PG-ENTRY-02",
+        "PG-NATIVE-01",
+        "PG-STRICT-01",
+        "PG-LEVEL-02",
+        "PG-ISOLATION-01",
+        "PG-ISOLATION-02",
+        "PG-EVIDENCE-01",
+        "PG-P-013",
+        "PG-P-044",
+        "PG-P-053",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-063",
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-081",
+        "PG-P-104",
+        "PG-INVENTORY-01"
+      ],
+      "paired_requirement": "Real authorized fresh entry / failed mandatory gate: actual selected consumer starts; missing gate refuses before child, no substitute mode/runtime",
+      "pending_gates": [
+        "PG-P-013",
+        "PG-P-044",
+        "PG-P-053",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-063",
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-081",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [
+        "Qualification-only isolation: a fixture-only agent-socket selector refuses before child/provider creation with zero socket query/signature effects; the empty-to-allowlist canary starts. This fixture gate does not impose a dedicated disposable host on production replay."
+      ],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V7",
+      "clause_refs": [
+        "PG-AUTH-01",
+        "PG-AUTH-02",
+        "PG-TERMS-01",
+        "PG-AUTHFLOW-01",
+        "PG-AUTHFLOW-02",
+        "PG-PRIVACY-01",
+        "PG-PRIVACY-02",
+        "PG-ISOLATION-01",
+        "PG-ISOLATION-02",
+        "PG-P-041",
+        "PG-P-043",
+        "PG-P-044",
+        "PG-P-051",
+        "PG-P-062",
+        "PG-P-072",
+        "PG-P-081",
+        "PG-P-082",
+        "PG-P-104"
+      ],
+      "paired_requirement": "Native disposable login / wrong authority: correct stable authority binds, wrong path/backend refuses; no copied credentials",
+      "pending_gates": [
+        "PG-P-041",
+        "PG-P-043",
+        "PG-P-044",
+        "PG-P-051",
+        "PG-P-062",
+        "PG-P-072",
+        "PG-P-081",
+        "PG-P-082",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [
+        "Authority scope: in one custody namespace, two checkouts and successive generations for one profile × runtime retain the same approved authority and its native auth/sessions/history; per-launch, per-generation or per-checkout authority substitution refuses. A distinct approved profile/runtime may have its own stable authority.",
+        "Compatibility: an old checkout × profile × environment project home retains its old binding and is not silently relabelled. A separately approved successor migration binds the stable authority and preserves the legacy source."
+      ],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V8",
+      "clause_refs": [
+        "PG-GENERATION-01",
+        "PG-INVENTORY-01",
+        "PG-LOADER-01",
+        "PG-LOADER-02",
+        "PG-ENTRY-01",
+        "PG-EVIDENCE-01",
+        "PG-P-042",
+        "PG-P-043",
+        "PG-P-051",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-073",
+        "PG-P-081",
+        "PG-P-104",
+        "PG-ACTIVATE-01"
+      ],
+      "paired_requirement": "Real model turn / broken content protection: actual admitted generation used; attempted shadow/rewrite refuses combination; inert launch insufficient",
+      "pending_gates": [
+        "PG-P-042",
+        "PG-P-043",
+        "PG-P-051",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-073",
+        "PG-P-081",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V9",
+      "clause_refs": [
+        "PG-BINDING-01",
+        "PG-RUNTIME-02",
+        "PG-CONTROL-01",
+        "PG-AUTH-01",
+        "PG-RESUME-01",
+        "PG-RESUME-02",
+        "PG-RETENTION-01",
+        "PG-VERIFIED-01",
+        "PG-VERIFIED-02",
+        "PG-P-042",
+        "PG-P-043",
+        "PG-P-044",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-063",
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-073",
+        "PG-P-081",
+        "PG-P-082",
+        "PG-P-083",
+        "PG-P-092",
+        "PG-P-104",
+        "PG-INVENTORY-01",
+        "PG-TERMS-01"
+      ],
+      "paired_requirement": "Native resume / missing or wrong generation-control receipt: correct resume stays A; bad receipt refuses or explicit stopped readmission, never silent B",
+      "pending_gates": [
+        "PG-P-042",
+        "PG-P-043",
+        "PG-P-044",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-063",
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-073",
+        "PG-P-081",
+        "PG-P-082",
+        "PG-P-083",
+        "PG-P-092",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [
+        "Verified-native resume: changed declarations/lock, generated inventory, approved base or extras refuses before a new native/provider start; unchanged original A with the correct inventory passes. The check neither prevents in-session mutation nor independently validates the renderer."
+      ],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V10",
+      "clause_refs": [
+        "PG-SCOPE-02",
+        "PG-LOADER-01",
+        "PG-STRICT-01",
+        "PG-STRICT-02",
+        "PG-ENTRY-01",
+        "PG-ENTRY-02",
+        "PG-RESUME-01",
+        "PG-RESUME-02",
+        "PG-EVIDENCE-01",
+        "PG-P-044",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-072",
+        "PG-P-081",
+        "PG-P-083",
+        "PG-P-093",
+        "PG-P-104"
+      ],
+      "paired_requirement": "Child entry / unadmitted discovery: selected child binding/context works, external roots never become strict-trusted silently",
+      "pending_gates": [
+        "PG-P-044",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-072",
+        "PG-P-081",
+        "PG-P-083",
+        "PG-P-093",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V11",
+      "clause_refs": [
+        "PG-AUTH-01",
+        "PG-AUTH-02",
+        "PG-AUTHFLOW-01",
+        "PG-AUTHFLOW-02",
+        "PG-PRIVACY-01",
+        "PG-PRIVACY-02",
+        "PG-EVIDENCE-01",
+        "PG-P-041",
+        "PG-P-043",
+        "PG-P-051",
+        "PG-P-062",
+        "PG-P-072",
+        "PG-P-081",
+        "PG-P-082",
+        "PG-P-104"
+      ],
+      "paired_requirement": "Refresh from every reader domain / wrong backend or stale copied credential: each reader follows native rotation at approved authority; no secret payload in receipt",
+      "pending_gates": [
+        "PG-P-041",
+        "PG-P-043",
+        "PG-P-051",
+        "PG-P-062",
+        "PG-P-072",
+        "PG-P-081",
+        "PG-P-082",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [
+        "Source compatibility: an unqualified injected node source refuses on the successor with no native-login fallback or copied material; the legacy adopted node source retains its own behavior outside that capability. Presence-only metadata never certifies usable login.",
+        "Owned logout: explicit logout affects only approved owned authority; foreign/sibling authority remains unchanged. Ordinary profile removal preserves credentials."
+      ],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V12",
+      "clause_refs": [
+        "PG-PUBLISH-01",
+        "PG-PUBLISH-02",
+        "PG-ROOTS-01",
+        "PG-ROOTS-02",
+        "PG-HOLDER-01",
+        "PG-REPLAY-01",
+        "PG-REPLAY-02",
+        "PG-NOSTART-01",
+        "PG-LEVEL-01",
+        "PG-LEVEL-02",
+        "PG-REPAIR-01",
+        "PG-REPAIR-02",
+        "PG-GENERATION-01",
+        "PG-P-042",
+        "PG-P-043",
+        "PG-P-044",
+        "PG-P-051",
+        "PG-P-053",
+        "PG-P-054",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-074",
+        "PG-P-104",
+        "PG-INVENTORY-01"
+      ],
+      "paired_requirement": "Partial / complete publication: preserve prior generation/holder roots versus admit exact complete new generation; no partial success receipt",
+      "pending_gates": [
+        "PG-P-042",
+        "PG-P-043",
+        "PG-P-044",
+        "PG-P-051",
+        "PG-P-053",
+        "PG-P-054",
+        "PG-P-055",
+        "PG-P-062",
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-074",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/environment-store-verification-v2/manifest.json",
+        "conformance/environment-store-verification-v2/vectors/environments-store-boundary.json",
+        "conformance/profile-generations-v1/a1.json"
+      ],
+      "paired_extensions": [
+        "A1: bind at original r commits r+1 and loses its reply. Exact original-payload/revision retry retrieves the nonterminal outcome without CAS, another bind/start or increment; a new stale mutation conflicts. Changed original payload conflicts; terminal bind replay is non-admitting, with independent roots unchanged.",
+        "L4 centre: absent/unconfigured/unreachable centre warns and falls back only to a fully passing L3; a reachable centre with absent/incomplete required confirmation, denial or malformed answer refuses with no fallback. Complete confirmation plus passing local checks is the valid neighbor.",
+        "Repair: absent home without repair refuses every level; explicit repair from completely verified inputs restores it at every level. Unavailable/mismatching inputs or structural failure refuses without repair writes. Store-byte restoration is permitted only at L3/L4 with the same revalidated pin; valid already-present store inputs allow home-only repair at L1/L2.",
+        "Replay boundary: applicable production access/authority/registration gates pass without requiring qualification-fixture host isolation; the qualification A1 leg separately satisfies the fixed fixture preconditions."
+      ],
+      "input_note": "Unchanged startup level/repair inputs for the additional startup subcases; native control/binding observations remain unrun. A1 is a new textual trace, not a baseline runtime input or executed witness."
+    },
+    {
+      "id": "Q4-V13",
+      "clause_refs": [
+        "PG-ROOTS-01",
+        "PG-ROOTS-02",
+        "PG-HOLDER-01",
+        "PG-RETENTION-01",
+        "PG-BINDING-01",
+        "PG-P-042",
+        "PG-P-044",
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-073",
+        "PG-P-074",
+        "PG-P-104"
+      ],
+      "paired_requirement": "Restart/GC with protected A / terminal-unreferenced generation: reconstruct active/unknown/resumable roots; collect only proven unreferenced terminal content",
+      "pending_gates": [
+        "PG-P-042",
+        "PG-P-044",
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-073",
+        "PG-P-074",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V14",
+      "clause_refs": [
+        "PG-HOLDER-01",
+        "PG-REPLAY-01",
+        "PG-REPLAY-02",
+        "PG-OBSERVER-01",
+        "PG-NOSTART-01",
+        "PG-ROOTS-01",
+        "PG-ROOTS-02",
+        "PG-RETENTION-01",
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-074",
+        "PG-P-104",
+        "PG-BINDING-01"
+      ],
+      "paired_requirement": "Launcher crash / authoritative no-start: crash leaves unknown protection; exact no-start allows admitted release",
+      "pending_gates": [
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-074",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V15",
+      "clause_refs": [
+        "PG-OBSERVER-01",
+        "PG-NOSTART-01",
+        "PG-P-072",
+        "PG-P-104"
+      ],
+      "paired_requirement": "Reused PID / exact terminal incarnation: first cannot prove release; exact registered observer/session/generation/process and descendants can",
+      "pending_gates": [
+        "PG-P-072",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V16",
+      "clause_refs": [
+        "PG-OBSERVER-01",
+        "PG-ROOTS-02",
+        "PG-P-072",
+        "PG-P-074",
+        "PG-P-104"
+      ],
+      "paired_requirement": "Detached live/uncertain descendant / all descendants terminal: first retains protection, exact terminal tree permits release",
+      "pending_gates": [
+        "PG-P-072",
+        "PG-P-074",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V17",
+      "clause_refs": [
+        "PG-OBSERVER-01",
+        "PG-REPLAY-01",
+        "PG-ROOTS-01",
+        "PG-HOLDER-01",
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-074",
+        "PG-P-104"
+      ],
+      "paired_requirement": "Missing/stale/re-registered observer / exact current observer: refuse release/bind admission with uncertainty; current authoritative evidence necessary",
+      "pending_gates": [
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-074",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V18",
+      "clause_refs": [
+        "PG-BREAK-01",
+        "PG-BREAK-02",
+        "PG-REPLAY-02",
+        "PG-RETENTION-01",
+        "PG-ROOTS-01",
+        "PG-ROOTS-02",
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-073",
+        "PG-P-074",
+        "PG-P-075",
+        "PG-P-104"
+      ],
+      "paired_requirement": "Audited fenced break / absent fence, exception enablement, reason, CAS or audit: default unfenced break refuses; valid targeted transaction unblocks; explicit abandonment is separate loss-of-protection exception; audit failure retains protection",
+      "pending_gates": [
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-073",
+        "PG-P-074",
+        "PG-P-075",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [],
+      "paired_extensions": [],
+      "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
+    },
+    {
+      "id": "Q4-V19",
+      "clause_refs": [
+        "PG-RUNTIME-01",
+        "PG-RUNTIME-02",
+        "PG-LEVEL-01",
+        "PG-LEVEL-02",
+        "PG-REPAIR-01",
+        "PG-REPAIR-02",
+        "PG-BINDING-01",
+        "PG-CONTROL-01",
+        "PG-P-043",
+        "PG-P-044",
+        "PG-P-053",
+        "PG-P-054",
+        "PG-P-062",
+        "PG-P-063",
+        "PG-P-083",
+        "PG-P-104"
+      ],
+      "paired_requirement": "Compatible native drift / unknown major or capability loss: L1/L2 warn within policy, L3/L4 recorded acceptance; mandatory capability loss/unknown major refuses all levels; strict exact tuple only",
+      "pending_gates": [
+        "PG-P-043",
+        "PG-P-044",
+        "PG-P-053",
+        "PG-P-054",
+        "PG-P-062",
+        "PG-P-063",
+        "PG-P-083",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/environment-store-verification-v2/manifest.json",
+        "conformance/environment-store-verification-v2/vectors/environments-store-boundary.json"
+      ],
+      "paired_extensions": [
+        "Levels remain independent: compatible native drift does not bypass required controls, structural checks or repair preconditions. Pair unavailable evidence at L2 with definite mismatch refusal and fully passing L3; repeat the reachable-centre incomplete-confirmation refusal at L4."
+      ],
+      "input_note": "Unchanged startup level/repair inputs for the additional startup subcases; native control/binding observations remain unrun."
+    },
+    {
+      "id": "Q4-V20",
+      "clause_refs": [
+        "PG-SCOPE-01",
+        "PG-SCOPE-02",
+        "PG-COMPAT-01",
+        "PG-COMPAT-02",
+        "PG-MODE-01",
+        "PG-MODE-02",
+        "PG-NATIVE-01",
+        "PG-VERIFIED-01",
+        "PG-VERIFIED-02",
+        "PG-STRICT-01",
+        "PG-STRICT-02",
+        "PG-REPOSITORY-01",
+        "PG-ENTRY-01",
+        "PG-ENTRY-02",
+        "PG-P-013",
+        "PG-P-044",
+        "PG-P-062",
+        "PG-P-063",
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-081",
+        "PG-P-092",
+        "PG-P-093",
+        "PG-P-094",
+        "PG-P-104"
+      ],
+      "paired_requirement": "No mode / explicit mode / unsupported strict: legacy omission unchanged; actual native start passes its own gates; unsupported strict refuses without discovery selection/downgrade",
+      "pending_gates": [
+        "PG-P-013",
+        "PG-P-044",
+        "PG-P-062",
+        "PG-P-063",
+        "PG-P-071",
+        "PG-P-072",
+        "PG-P-081",
+        "PG-P-092",
+        "PG-P-093",
+        "PG-P-094",
+        "PG-P-104"
+      ],
+      "materialization": "stub",
+      "execution": "not-run",
+      "input_files": [
+        "conformance/rc7-carriers-v1/index.json",
+        "conformance/rc7-carriers-v1/canonical.json",
+        "conformance/rc7-carriers-v1/compatibility.json",
+        "conformance/rc7-carriers-v1/delivery-vectors.json",
+        "conformance/rc7-carriers-v1/decisions.json"
+      ],
+      "paired_extensions": [
+        "Legacy posture: effective-posture/1 none and its independent permission/no-tools semantics retain old meaning outside the capability; omission or none at the new managed entry refuses, while explicit admitted native-project is the valid neighbor. No old protected-generation value is relabelled a content digest.",
+        "Verified-native mode: an explicit variant with complete matching inventory/base/extras passes only after its own capability is adopted; an unsupported or incomplete variant refuses without selecting plain native-project.",
+        "Architecture deferral: repository-profile discovery does not activate composition before joint operator/editor agreement and successor adoption; explicit supported global delivery remains available. Migration previews external native discoveries/omissions rather than adopting them."
+      ],
+      "input_note": "Baseline legacy-reader/delivery controls only; explicit managed mode and verified/repository successor instances remain deferred."
+    }
+  ],
+  "meta_clauses": [
+    {
+      "clause_id": "PG-TERMS-02",
+      "reason": "Publication/capability-claim boundary; not an individual native or package witness."
+    },
+    {
+      "clause_id": "PG-CONFORMANCE-01",
+      "reason": "Corpus publication and checker obligations apply to all paired witnesses; no individual subject pair."
+    },
+    {
+      "clause_id": "PG-CONFORMANCE-02",
+      "reason": "Independent detector/exporter controls are corpus methodology, not a production lifecycle operation."
+    },
+    {
+      "clause_id": "PG-ADOPTION-01",
+      "reason": "Exact-head adoption-receipt publication, distinct from individual native observations."
+    },
+    {
+      "clause_id": "PG-TRACE-01",
+      "reason": "Clause/schema trace-table publication consistency; checked across the entire catalog."
+    },
+    {
+      "clause_id": "PG-TRACE-02",
+      "reason": "Pinned input-corpus identity and stub/result classification; checked across the entire catalog."
+    }
+  ]
+}
