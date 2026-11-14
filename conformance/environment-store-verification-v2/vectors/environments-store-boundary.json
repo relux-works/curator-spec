@@ -686,6 +686,21 @@
           "path_named": false,
           "rule_named": false
         }
+      },
+      {
+        "name": "changes-recorded-lock-or-pin",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "pin_hash",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": false,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
+        }
       }
     ]
   },
@@ -732,6 +747,21 @@
           "writes": [],
           "store_rebuilt": false,
           "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
+        }
+      },
+      {
+        "name": "changes-recorded-lock-or-pin",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "pin_hash",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": false,
           "plant_preserved": false,
           "path_named": false,
           "rule_named": false
@@ -1310,6 +1340,22 @@
           "rule_named": false,
           "repair_hint": false
         }
+      },
+      {
+        "name": "changes-recorded-lock-or-pin",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": false,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
       }
     ]
   },
@@ -1377,6 +1423,22 @@
           "path_named": false,
           "rule_named": false,
           "repair_hint": false
+        }
+      },
+      {
+        "name": "changes-recorded-lock-or-pin",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": false,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
         }
       }
     ]
@@ -1448,6 +1510,22 @@
           "rule_named": false,
           "repair_hint": false
         }
+      },
+      {
+        "name": "changes-recorded-lock-or-pin",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": false,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
       }
     ]
   },
@@ -1515,6 +1593,22 @@
           "path_named": false,
           "rule_named": false,
           "repair_hint": false
+        }
+      },
+      {
+        "name": "changes-recorded-lock-or-pin",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": false,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
         }
       }
     ]
@@ -1611,6 +1705,36 @@
           "failing_check": "pin_hash",
           "fragment_emitted": true,
           "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
+        }
+      },
+      {
+        "name": "changes-recorded-lock-or-pin",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "pin_hash",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": false,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
+        }
+      },
+      {
+        "name": "historical-known-bad-swapped-bytes-emits-fragment",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "pin_hash",
+          "fragment_emitted": true,
+          "row_current": true,
           "writes": [],
           "store_rebuilt": false,
           "lock_unchanged": true,
@@ -2051,6 +2175,42 @@
           "path_named": false,
           "rule_named": false
         }
+      },
+      {
+        "name": "changes-recorded-lock-or-pin",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": true,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": false,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
+        }
+      },
+      {
+        "name": "rewrites-current-home",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": true,
+          "writes": [
+            "store",
+            "home",
+            "marker"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
+        }
       }
     ]
   },
@@ -2333,6 +2493,24 @@
           "path_named": false,
           "rule_named": false
         }
+      },
+      {
+        "name": "changes-recorded-lock-or-pin",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": true,
+          "writes": [
+            "home",
+            "marker"
+          ],
+          "store_rebuilt": false,
+          "lock_unchanged": false,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
+        }
       }
     ]
   },
@@ -2387,6 +2565,25 @@
           ],
           "store_rebuilt": true,
           "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
+        }
+      },
+      {
+        "name": "changes-recorded-lock-or-pin",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": true,
+          "writes": [
+            "store",
+            "home",
+            "marker"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": false,
           "plant_preserved": false,
           "path_named": false,
           "rule_named": false
@@ -2449,6 +2646,24 @@
           "path_named": false,
           "rule_named": false
         }
+      },
+      {
+        "name": "changes-recorded-lock-or-pin",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": true,
+          "writes": [
+            "home",
+            "marker"
+          ],
+          "store_rebuilt": false,
+          "lock_unchanged": false,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
+        }
       }
     ]
   },
@@ -2503,6 +2718,25 @@
           ],
           "store_rebuilt": true,
           "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
+        }
+      },
+      {
+        "name": "changes-recorded-lock-or-pin",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": true,
+          "writes": [
+            "store",
+            "home",
+            "marker"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": false,
           "plant_preserved": false,
           "path_named": false,
           "rule_named": false
