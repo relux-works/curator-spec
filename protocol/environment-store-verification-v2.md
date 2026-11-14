@@ -6,6 +6,76 @@ Publication of this proposal is neither adoption nor implementation qualificatio
 The revision-1 environment contract remains the baseline except for the rules
 and qualification scope explicitly replaced here.
 
+## 0. Startup verification policy (normative)
+
+This revision defines unsigned startup verification levels **1, 2, 3 and 4**.
+The global default is **3**. Configuration signing is not required or provided
+by this revision; signed configuration belongs to a later revision. These
+levels govern profile/store evidence only. They never relax structural safety,
+configuration/lock parsing, source admission, credential authority, executable
+availability, or the managed-home gate below.
+
+| Level | Required local decision | Centre decision |
+| --- | --- | --- |
+| 1 (least safe) | Start on passed, unavailable or definitely mismatching evidence; warn for either non-pass outcome | None |
+| 2 | Start if every check that could complete passed; unavailable checks warn; any definite mismatch refuses | None |
+| 3 (default) | Start only if every required local item completed and passed | None |
+| 4 | Require the level-3 local result and confirmation of every required item by the verification centre | Denied or invalid confirmation refuses; an absent or unreachable centre falls back to level 3 and warns |
+
+Run every applicable local check before aggregating. A completed contradiction
+is a **definite mismatch**; a check that cannot complete or lacks expected
+evidence is **unavailable**, never a pass. In either observation order, mismatch
+wins over unavailable for refusal at levels 2–4. At level 1 both warn. A centre
+confirmation MUST NOT override a failed or incomplete local check. A reachable
+centre's denial, malformed answer or incomplete confirmation is a refusal, not
+unreachability, and MUST NOT trigger fallback. No configured centre/provider is
+unavailable. A fallback invocation MUST satisfy every level-3 requirement.
+Permitted degraded startup MUST emit a warning and MUST NOT report fully
+verified status. A warning does not authenticate the admitted bytes.
+
+The global configuration selects an integer level from 1 through 4; omission
+means 3. Malformed or out-of-range policy MUST refuse
+`startup_verification_invalid` without rewriting configuration.
+System policy MAY lock this selection. Profiles MAY only raise this
+global floor: each explicit root, overlay or transitive context minimum MUST be
+at least the global level, otherwise refuse `startup_verification_weakening`.
+The effective level is the maximum of the global level and every selected
+minimum. Bind those minima in the profile lock; changing a source minimum
+requires explicit recomposition. No per-launch argv or environment override
+may lower the floor or bypass a system lock. This proposal defines the policy,
+not a new machine, manifest or lock wire schema; unsupported successor carriers
+continue to refuse under §4.
+
+At level 1 this explicitly **relaxes** revision-1 `environments.md` §4's
+"Store integrity is verified against the pin" requirement and §10.1's
+"Store-trust verification" pin-hash no-fragment refusal: a definite pin mismatch
+may warn and start, provided the home gate and every independent gate pass.
+At levels 1 and 2 it replaces those sections' missing-hash-is-failure rule with
+unavailable evidence (warning-start only at these levels). At levels 1 and 2 it
+also replaces §4(b)/§10.1's Git pin-mismatch rebuilding with preservation of
+mismatching evidence: `--repair` MUST NOT rewrite the store or expected evidence.
+Level 2 still refuses definite pin mismatch. Levels 3 and 4 retain same-pin
+Git byte restoration under §2. Revision-1 archive replay remains unchanged;
+these are explicit revision-2, level-scoped incompatibilities, additional to
+the six structural expectation changes.
+
+**Managed-home gate at every level.** After structural admission, known drift
+or absence of a managed home is `environment_home_stale`, with the `--repair`
+hint, as the leading code on read-only startup, including levels 1 and 2.
+For a stale existing home the named check is `home_currency`. Known home drift
+also takes precedence over pin-evidence errors in a read-only invocation;
+this explicitly replaces §4/§10.1's pin-before-home diagnostic ordering in that
+combination. Structural refusals still lead. An unreadable/malformed marker
+retains `environment_marker_unreadable`, never absence or a permissive warning.
+`--repair` MUST restore a drifted or absent managed home from completely verified
+store inputs before launch at **every** level, including 1 and 2. If verified
+inputs are unavailable or mismatching, refuse without home writes; report
+`environment_home_stale` as the leading code. Only levels 3/4 may first restore
+ordinary Git bytes as specified in §2 and then repair the home. A current home
+requires no reapplication merely because the level permits degraded evidence.
+Permissive evidence policy never authorizes execution of drifted derived home
+content, adoption of home bytes, or restoration from unverified store bytes.
+
 ## 1. Structural refusal before repair
 
 Every selected immutable store entry MUST satisfy ownership, private mutation
@@ -18,7 +88,14 @@ an independently verified store remain a distinct, permitted surface.
 An observed violation, or inability to prove a required structural boundary,
 MUST refuse at each startup verification level 1 through 4. Neither permissive
 verification nor `--repair` or dry-run repair can convert it to a warning or a
-rebuild plan. The diagnostic MUST name the offending path and violated rule.
+rebuild plan. The diagnostic MUST name the offending path and violated rule. Check enclosing
+boundaries first, then selected members in their recorded lock member order.
+When several members fail, the first failing member determines the primary
+path and diagnostic; a later skill failure MUST NOT replace an earlier
+non-skill failure. Within that member use ownership → permissions → containment
+→ regular types → link safety → single-link → portable-path checks, reporting
+the first violated rule. The skill-integrity class applies only to a skill
+member's hardlink or nonportable/colliding path, not to ownership failure.
 The invocation MUST emit no launch fragment, start no child, follow no payload
 link, and preserve the violating entry, profile lock, existing home and marker.
 It MUST NOT stage, rebuild, replace, reapply or journal a repair first. Reporting
@@ -42,12 +119,16 @@ before publication; a late structural plant MUST be refused and preserved.
 Verify the recreated entry before emitting a fragment. Levels 1 and 2 and
 read-only invocations MUST NOT recreate it and retain
 `environment_store_untrusted` with the named `regular_types` absence check.
-An absent state/path entry without a revalidatable Git snapshot retains
-`environment_repair_failed` for strict repair and performs no writes. Strict
+An absent context path/local entry without a revalidatable Git snapshot retains
+`environment_repair_failed` for both strict repair **and strict dry-run**,
+names the `regular_types` absence check and offending path, and performs no
+writes. It MUST NOT report a rebuild plan, success or a structural violation. Strict
 absent-Git dry-run retains `would-rebuild-untrusted-store`, names the absence
 check and performs no writes; permissive dry-run retains the absence refusal.
-Under the retained lock4/lock6 carriers, state pins belong only to context
-members; MCP and skill members require Git source pins. Path/local MCP or skill
+Under `context-lock-v1`, `context-lock-v2` and rc.7 lock schema 4
+(`environments.md` §1.3 and `rc7-carriers.md`), state pins belong only to context
+members; MCP and skill members require Git source pins (`environments.md`
+§2.2 and §2). No implementation carrier nickname defines a new spec schema. Path/local MCP or skill
 admission is outside this proposal.
 This exception does not weaken the low-level missing-named-target validator,
 change pins or locks, authorize a fetch, or permit repair of missing payloads.
@@ -58,8 +139,9 @@ Expected evidence, selected closure and pins MUST remain unchanged. A changed
 or unavailable expected identity MUST NOT be manufactured from installed bytes.
 Level 1 warning-start and level 2 mismatch-refusal do not authorize rewriting
 their mismatching evidence. Level 4 still requires its separate centre decision;
-an absent or unreachable centre uses the specified local-level-3 warning path.
+an absent or unreachable centre uses the §0 local-level-3 warning path.
 
+The §0 managed-home gate applies independently at all four levels.
 An intact current home remains a no-op. Provisioning an absent home and repairing
 a stale home remain permitted only from structurally valid, completely verified
 inputs under the existing bounded mutation lock and atomic transaction. A stale
@@ -73,14 +155,37 @@ Existing explicit identity-migration rules remain separately versioned.
 | Failure | Required primary diagnostic | Named rule |
 | --- | --- | --- |
 | Ownership, permissions, containment, payload symlink or special file | `environment_store_untrusted` | The corresponding existing boundary check |
-| Skill payload hardlink or nonportable/colliding skill path | `skill_integrity_boundary_invalid` | The exact payload/path rule |
-| Non-skill payload hardlink | `environment_store_untrusted` | Single-link regular-file requirement |
+| Skill payload hardlink or nonportable/colliding skill path | `skill_integrity_boundary_invalid` | `single_link` for hardlinks; the exact portable-path rule otherwise |
+| Non-skill payload hardlink | `environment_store_untrusted` | `single_link` |
 | Unavailable pinned Git object or failed regular-byte restoration | Existing pin/repair refusal | The actual pin/repair rule; never structural restoration |
 
-An enclosing-boundary refusal retains its existing class. Path/local entry
+This table registers `skill_integrity_boundary_invalid` as a runtime primary
+code for the skill-only rules above, and `single_link` as the named check token
+meaning exactly one filesystem link to each payload regular file. Unavailable
+link metadata refuses under that check; directory link counts are not payload
+regular-file link counts.
+
+| Policy/home condition | Required code or warning |
+| --- | --- |
+| Definite local mismatch refused by §0 | `startup_verification_failed` for generic evidence; a pin mismatch retains `environment_store_untrusted` / `pin_hash` as the specific primary code unless the home gate leads |
+| Incomplete local check refused by §0 | `startup_verification_unavailable` |
+| Malformed or out-of-range policy | `startup_verification_invalid` |
+| Profile minimum below global floor | `startup_verification_weakening` |
+| Level-4 unreachable/absent centre | `verification_centre_unavailable` warning, then local level 3 |
+| Centre denial / invalid confirmation | `verification_centre_denied` / `verification_centre_invalid` |
+| Stale existing home / absent home | `environment_home_stale`, with `--repair`; existing-home check `home_currency` |
+
+An enclosing-boundary refusal retains its existing class. Lock-file and
+marker-file entry-class boundary failures **retain revision-1 §4(b)/§10.1**:
+real operations rebuild from revalidated evidence under the existing transaction;
+dry-run reports `would-rebuild-untrusted-store` with no writes. An unreadable or
+malformed lock remains the revision-1 exception: `environment_store_untrusted`,
+no rebuild or plan. This proposal's refuse-first structural change concerns
+immutable **store entries**, not lock/marker entry-class recovery. A reader
+MUST NOT infer that permissive levels bypass any of these carrier checks. Path/local entry
 structural refusals now use `environment_store_untrusted` before any attempted
 rebuild, replacing the revision-1 `environment_repair_failed` result. Dry-run
-structural refusals likewise use `environment_store_untrusted`, rather than
+immutable-store-entry structural refusals likewise use `environment_store_untrusted`, rather than
 `would-rebuild-untrusted-store`. An error after an unauthorized reapplication is
 still non-conforming even if no fragment was emitted.
 

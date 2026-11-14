@@ -68,7 +68,9 @@
           "hardlink",
           "special",
           "entry-absent",
-          "payload-absent"
+          "payload-absent",
+          "verification-policy",
+          "multiple-structural"
         ]
       },
       "member_kind": {
@@ -130,7 +132,12 @@
               "environment_marker_unreadable",
               "skill_integrity_boundary_invalid",
               "environment_repair_failed",
-              "would-rebuild-untrusted-store"
+              "would-rebuild-untrusted-store",
+              "startup_verification_failed",
+              "startup_verification_unavailable",
+              "startup_verification_weakening",
+              "verification_centre_denied",
+              "verification_centre_invalid"
             ]
           },
           "failing_check": {
@@ -142,7 +149,8 @@
               "regular_types",
               "link_safety",
               "single_link",
-              "pin_hash"
+              "pin_hash",
+              "home_currency"
             ]
           },
           "fragment_emitted": {
@@ -175,6 +183,16 @@
             "type": "boolean"
           },
           "rule_named": {
+            "type": "boolean"
+          },
+          "warning_emitted": {
+            "type": "boolean"
+          },
+          "offending_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "repair_hint": {
             "type": "boolean"
           }
         }
@@ -254,7 +272,12 @@
                     "environment_repair_failed",
                     "environment_store_untrusted",
                     "skill_integrity_boundary_invalid",
-                    "would-rebuild-untrusted-store"
+                    "would-rebuild-untrusted-store",
+                    "startup_verification_failed",
+                    "startup_verification_unavailable",
+                    "startup_verification_weakening",
+                    "verification_centre_denied",
+                    "verification_centre_invalid"
                   ]
                 },
                 "failing_check": {
@@ -266,7 +289,8 @@
                     "regular_types",
                     "link_safety",
                     "single_link",
-                    "pin_hash"
+                    "pin_hash",
+                    "home_currency"
                   ]
                 },
                 "fragment_emitted": {
@@ -300,8 +324,103 @@
                 },
                 "rule_named": {
                   "type": "boolean"
+                },
+                "warning_emitted": {
+                  "type": "boolean"
+                },
+                "offending_path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "repair_hint": {
+                  "type": "boolean"
                 }
               }
+            }
+          }
+        }
+      },
+      "policy": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "profile_minimums",
+          "local_evidence",
+          "centre"
+        ],
+        "properties": {
+          "global_level": {
+            "enum": [
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          "profile_minimums": {
+            "type": "array",
+            "items": {
+              "enum": [
+                1,
+                2,
+                3,
+                4
+              ]
+            }
+          },
+          "local_evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "enum": [
+                "pass",
+                "unavailable",
+                "mismatch"
+              ]
+            }
+          },
+          "centre": {
+            "enum": [
+              "confirmed",
+              "unreachable",
+              "denied",
+              "invalid"
+            ]
+          }
+        }
+      },
+      "structural_failures": {
+        "type": "array",
+        "minItems": 2,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "member_kind",
+            "condition",
+            "path"
+          ],
+          "properties": {
+            "member_kind": {
+              "enum": [
+                "context",
+                "mcp",
+                "skill"
+              ]
+            },
+            "condition": {
+              "enum": [
+                "ownership",
+                "permissions",
+                "containment",
+                "symlink",
+                "hardlink",
+                "special"
+              ]
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
             }
           }
         }
@@ -332,6 +451,57 @@
           },
           "source_kind": {
             "const": "git"
+          }
+        }
+      }
+    ],
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "condition": {
+              "const": "verification-policy"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "policy"
+          ],
+          "properties": {
+            "expected": {
+              "required": [
+                "warning_emitted"
+              ]
+            }
+          }
+        },
+        "else": {
+          "not": {
+            "required": [
+              "policy"
+            ]
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "condition": {
+              "const": "multiple-structural"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "structural_failures"
+          ]
+        },
+        "else": {
+          "not": {
+            "required": [
+              "structural_failures"
+            ]
           }
         }
       }

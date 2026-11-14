@@ -7,6 +7,20 @@ Versioning for the complete specification set.
 
 ### Environment store verification proposal
 
+- Define unsigned startup verification levels 1–4 (default 3), local outcome
+  aggregation, centre decisions/fallback and the lock-bound profile floor.
+  Explicitly relax revision-1 pin refusal at level 1 and missing-evidence refusal
+  at levels 1/2; forbid permissive evidence rebuilding. Make managed-home drift
+  refusal/hint and verified-home repair mandatory at every level, with home-first
+  read-only diagnostics when drift and pin mismatch coexist. Record eight
+  level-scoped predecessor dispositions and 16 low-level successors; restore
+  `home_currency`. Keep lock/marker entry-class recovery under revision 1.
+  Register the skill boundary diagnostic and `single_link` rule, require first
+  failing lock-member precedence, and specify strict absent path/local dry-run.
+  The expanded proposal has 183 rows (177 implementation, 6 checker controls),
+  with paired controls. These additions extend the six structural changes below;
+  released revision-1 artifacts remain byte-identical.
+
 - Distinguish proven whole-store-entry absence from structural violations in the unreleased environment-store contract; add paired same-pin recovery and missing-payload cases.
 
 - Propose `agent-environments` revision 2: structural/path violations refuse at

@@ -4,7 +4,7 @@
   "capability_revision": 2,
   "status": "proposal-unreleased",
   "cases": "vectors/environments-store-boundary.json",
-  "case_count": 130,
+  "case_count": 183,
   "predecessor": {
     "commit": "43bf0a2506d5c354a73bbc3ea4623d4653db10c7",
     "path": "conformance/v1/vectors/environments-store-boundary.json",
@@ -19,27 +19,50 @@
       "old_outcome": null,
       "new_required_diagnostic": null,
       "successor_case": "legacy-intact-resolve-emits-fragment",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "resolve_cases",
       "name": "swapped-system-prompt-bytes-untrusted",
-      "disposition": "retained",
+      "disposition": "level-scoped",
       "old_diagnostic": "environment_store_untrusted",
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-swapped-system-prompt-bytes-untrusted",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        3,
+        4
+      ],
+      "level_successors": [
+        "level1-legacy-swapped-system-prompt-bytes-untrusted",
+        "level2-legacy-swapped-system-prompt-bytes-untrusted"
+      ]
     },
     {
       "group": "resolve_cases",
       "name": "swapped-root-context-bytes-untrusted",
-      "disposition": "retained",
+      "disposition": "level-scoped",
       "old_diagnostic": "environment_store_untrusted",
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-swapped-root-context-bytes-untrusted",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        3,
+        4
+      ],
+      "level_successors": [
+        "level1-legacy-swapped-root-context-bytes-untrusted",
+        "level2-legacy-swapped-root-context-bytes-untrusted"
+      ]
     },
     {
       "group": "resolve_cases",
@@ -49,7 +72,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-symlinked-entry-root-untrusted",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "resolve_cases",
@@ -59,7 +89,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-wrong-ownership-untrusted",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "resolve_cases",
@@ -69,7 +106,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-wrong-permissions-untrusted",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "resolve_cases",
@@ -79,7 +123,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-containment-escape-untrusted",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "resolve_cases",
@@ -89,7 +140,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-non-regular-component-untrusted",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "resolve_cases",
@@ -99,7 +157,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-lock-file-wrong-owner-untrusted",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "resolve_cases",
@@ -109,7 +174,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-marker-symlink-untrusted",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "resolve_cases",
@@ -119,7 +191,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-environments-root-wrong-owner-untrusted",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "resolve_cases",
@@ -129,7 +208,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-store-root-symlinked-untrusted",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "resolve_cases",
@@ -139,17 +225,32 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_home_stale",
       "successor_case": "legacy-intact-updated-store-old-marker-stale",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "resolve_cases",
       "name": "swapped-updated-store-old-marker-untrusted",
-      "disposition": "retained",
+      "disposition": "level-scoped",
       "old_diagnostic": "environment_store_untrusted",
       "old_outcome": null,
-      "new_required_diagnostic": "environment_store_untrusted",
+      "new_required_diagnostic": "environment_home_stale",
       "successor_case": "legacy-swapped-updated-store-old-marker-untrusted",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        3,
+        4
+      ],
+      "level_successors": [
+        "level1-legacy-swapped-updated-store-old-marker-untrusted",
+        "level2-legacy-swapped-updated-store-old-marker-untrusted"
+      ]
     },
     {
       "group": "resolve_cases",
@@ -159,17 +260,32 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_home_stale",
       "successor_case": "legacy-unprovisioned-intact-stale",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "resolve_cases",
       "name": "unprovisioned-swapped-untrusted",
-      "disposition": "retained",
+      "disposition": "level-scoped",
       "old_diagnostic": "environment_store_untrusted",
       "old_outcome": null,
-      "new_required_diagnostic": "environment_store_untrusted",
+      "new_required_diagnostic": "environment_home_stale",
       "successor_case": "legacy-unprovisioned-swapped-untrusted",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        3,
+        4
+      ],
+      "level_successors": [
+        "level1-legacy-unprovisioned-swapped-untrusted",
+        "level2-legacy-unprovisioned-swapped-untrusted"
+      ]
     },
     {
       "group": "resolve_cases",
@@ -179,17 +295,32 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_marker_unreadable",
       "successor_case": "legacy-unreadable-marker-non-current",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "resolve_cases",
       "name": "swapped-bytes-emits-fragment",
-      "disposition": "retained-negative-control",
+      "disposition": "level-scoped-negative-control",
       "old_diagnostic": "environment_store_untrusted",
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-swapped-bytes-emits-fragment",
-      "known_bad_remains_negative": true
+      "known_bad_remains_negative": true,
+      "verification_levels": [
+        3,
+        4
+      ],
+      "level_successors": [
+        "level1-legacy-swapped-bytes-emits-fragment",
+        "level2-legacy-swapped-bytes-emits-fragment"
+      ]
     },
     {
       "group": "resolve_cases",
@@ -199,7 +330,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-untrusted-reported-current",
-      "known_bad_remains_negative": true
+      "known_bad_remains_negative": true,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "resolve_cases",
@@ -209,7 +347,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-untrusted-without-diagnostic",
-      "known_bad_remains_negative": true
+      "known_bad_remains_negative": true,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "dry_run_cases",
@@ -219,7 +364,14 @@
       "old_outcome": "would-rebuild-untrusted-store",
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-dry-run-untrusted-reports-would-rebuild",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "dry_run_cases",
@@ -229,7 +381,14 @@
       "old_outcome": null,
       "new_required_diagnostic": null,
       "successor_case": "legacy-dry-run-intact-plans-nothing",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "dry_run_cases",
@@ -239,7 +398,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-dry-run-enclosing-no-rebuild",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "dry_run_cases",
@@ -249,17 +415,32 @@
       "old_outcome": "would-rebuild-untrusted-store",
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-dry-run-mutates",
-      "known_bad_remains_negative": true
+      "known_bad_remains_negative": true,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "repair_cases",
       "name": "repair-rebuilds-git-entry-from-snapshot",
-      "disposition": "retained",
+      "disposition": "level-scoped",
       "old_diagnostic": null,
       "old_outcome": null,
       "new_required_diagnostic": null,
       "successor_case": "legacy-repair-rebuilds-git-entry-from-snapshot",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        3,
+        4
+      ],
+      "level_successors": [
+        "level1-legacy-repair-rebuilds-git-entry-from-snapshot",
+        "level2-legacy-repair-rebuilds-git-entry-from-snapshot"
+      ]
     },
     {
       "group": "repair_cases",
@@ -269,7 +450,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-repair-path-entry-cannot-rebuild",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "repair_cases",
@@ -279,7 +467,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-repair-local-entry-cannot-rebuild",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "repair_cases",
@@ -289,7 +484,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-repair-rebuilds-entry-boundary-failure",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "repair_cases",
@@ -299,7 +501,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-repair-enclosing-refuses-no-rebuild",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "repair_cases",
@@ -309,17 +518,32 @@
       "old_outcome": null,
       "new_required_diagnostic": null,
       "successor_case": "legacy-repair-stale-old-marker-succeeds",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "repair_cases",
       "name": "repair-swapped-old-marker-never-adopted",
-      "disposition": "retained",
+      "disposition": "level-scoped",
       "old_diagnostic": null,
       "old_outcome": null,
       "new_required_diagnostic": null,
       "successor_case": "legacy-repair-swapped-old-marker-never-adopted",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        3,
+        4
+      ],
+      "level_successors": [
+        "level1-legacy-repair-swapped-old-marker-never-adopted",
+        "level2-legacy-repair-swapped-old-marker-never-adopted"
+      ]
     },
     {
       "group": "repair_cases",
@@ -329,17 +553,32 @@
       "old_outcome": null,
       "new_required_diagnostic": null,
       "successor_case": "legacy-repair-unprovisioned-intact-provisions",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "repair_cases",
       "name": "repair-unprovisioned-swapped-rebuilds",
-      "disposition": "retained",
+      "disposition": "level-scoped",
       "old_diagnostic": null,
       "old_outcome": null,
       "new_required_diagnostic": null,
       "successor_case": "legacy-repair-unprovisioned-swapped-rebuilds",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        3,
+        4
+      ],
+      "level_successors": [
+        "level1-legacy-repair-unprovisioned-swapped-rebuilds",
+        "level2-legacy-repair-unprovisioned-swapped-rebuilds"
+      ]
     },
     {
       "group": "repair_cases",
@@ -349,7 +588,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-repair-reapplies-untrusted",
-      "known_bad_remains_negative": true
+      "known_bad_remains_negative": true,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "status_cases",
@@ -359,7 +605,14 @@
       "old_outcome": null,
       "new_required_diagnostic": null,
       "successor_case": "legacy-status-intact-current",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "status_cases",
@@ -369,7 +622,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-status-names-failing-check",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "status_cases",
@@ -379,7 +639,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-status-enclosing-names-boundary",
-      "known_bad_remains_negative": false
+      "known_bad_remains_negative": false,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     },
     {
       "group": "status_cases",
@@ -389,7 +656,14 @@
       "old_outcome": null,
       "new_required_diagnostic": "environment_store_untrusted",
       "successor_case": "legacy-status-hides-failing-check",
-      "known_bad_remains_negative": true
+      "known_bad_remains_negative": true,
+      "verification_levels": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "level_successors": []
     }
   ]
 }

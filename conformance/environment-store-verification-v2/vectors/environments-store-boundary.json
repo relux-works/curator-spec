@@ -673,15 +673,15 @@
     },
     "forbidden_observations": [
       {
-        "name": "changes-recorded-lock-or-pin",
+        "name": "opposite-launch-verdict",
         "observation": {
           "diagnostic": "environment_store_untrusted",
           "failing_check": "pin_hash",
-          "fragment_emitted": false,
+          "fragment_emitted": true,
           "row_current": false,
           "writes": [],
           "store_rebuilt": false,
-          "lock_unchanged": false,
+          "lock_unchanged": true,
           "plant_preserved": false,
           "path_named": false,
           "rule_named": false
@@ -723,15 +723,15 @@
     },
     "forbidden_observations": [
       {
-        "name": "changes-recorded-lock-or-pin",
+        "name": "opposite-launch-verdict",
         "observation": {
           "diagnostic": "environment_store_untrusted",
           "failing_check": "pin_hash",
-          "fragment_emitted": false,
+          "fragment_emitted": true,
           "row_current": false,
           "writes": [],
           "store_rebuilt": false,
-          "lock_unchanged": false,
+          "lock_unchanged": true,
           "plant_preserved": false,
           "path_named": false,
           "rule_named": false
@@ -1255,12 +1255,14 @@
     "source_kind": "path",
     "home_state": "stale-old-marker",
     "verification_levels": [
+      1,
+      2,
       3,
       4
     ],
     "expected": {
       "diagnostic": "environment_home_stale",
-      "failing_check": "",
+      "failing_check": "home_currency",
       "fragment_emitted": false,
       "row_current": false,
       "writes": [],
@@ -1268,7 +1270,8 @@
       "lock_unchanged": true,
       "plant_preserved": false,
       "path_named": false,
-      "rule_named": false
+      "rule_named": false,
+      "repair_hint": true
     },
     "positive_control": "control-resolve-context-intact",
     "predecessor": {
@@ -1277,18 +1280,35 @@
     },
     "forbidden_observations": [
       {
-        "name": "changes-recorded-lock-or-pin",
+        "name": "opposite-launch-verdict",
         "observation": {
           "diagnostic": "environment_home_stale",
-          "failing_check": "",
+          "failing_check": "home_currency",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      },
+      {
+        "name": "repair-hint-missing",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
           "fragment_emitted": false,
           "row_current": false,
           "writes": [],
           "store_rebuilt": false,
-          "lock_unchanged": false,
+          "lock_unchanged": true,
           "plant_preserved": false,
           "path_named": false,
-          "rule_named": false
+          "rule_named": false,
+          "repair_hint": false
         }
       }
     ]
@@ -1309,8 +1329,8 @@
       4
     ],
     "expected": {
-      "diagnostic": "environment_store_untrusted",
-      "failing_check": "pin_hash",
+      "diagnostic": "environment_home_stale",
+      "failing_check": "home_currency",
       "fragment_emitted": false,
       "row_current": false,
       "writes": [],
@@ -1318,7 +1338,8 @@
       "lock_unchanged": true,
       "plant_preserved": false,
       "path_named": false,
-      "rule_named": false
+      "rule_named": false,
+      "repair_hint": true
     },
     "positive_control": "control-resolve-context-intact",
     "predecessor": {
@@ -1327,18 +1348,35 @@
     },
     "forbidden_observations": [
       {
-        "name": "changes-recorded-lock-or-pin",
+        "name": "opposite-launch-verdict",
         "observation": {
-          "diagnostic": "environment_store_untrusted",
-          "failing_check": "pin_hash",
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      },
+      {
+        "name": "repair-hint-missing",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
           "fragment_emitted": false,
           "row_current": false,
           "writes": [],
           "store_rebuilt": false,
-          "lock_unchanged": false,
+          "lock_unchanged": true,
           "plant_preserved": false,
           "path_named": false,
-          "rule_named": false
+          "rule_named": false,
+          "repair_hint": false
         }
       }
     ]
@@ -1355,6 +1393,8 @@
     "source_kind": "path",
     "home_state": "unprovisioned",
     "verification_levels": [
+      1,
+      2,
       3,
       4
     ],
@@ -1368,7 +1408,8 @@
       "lock_unchanged": true,
       "plant_preserved": false,
       "path_named": false,
-      "rule_named": false
+      "rule_named": false,
+      "repair_hint": true
     },
     "positive_control": "control-resolve-context-intact",
     "predecessor": {
@@ -1377,7 +1418,23 @@
     },
     "forbidden_observations": [
       {
-        "name": "changes-recorded-lock-or-pin",
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      },
+      {
+        "name": "repair-hint-missing",
         "observation": {
           "diagnostic": "environment_home_stale",
           "failing_check": "",
@@ -1385,10 +1442,11 @@
           "row_current": false,
           "writes": [],
           "store_rebuilt": false,
-          "lock_unchanged": false,
+          "lock_unchanged": true,
           "plant_preserved": false,
           "path_named": false,
-          "rule_named": false
+          "rule_named": false,
+          "repair_hint": false
         }
       }
     ]
@@ -1409,8 +1467,8 @@
       4
     ],
     "expected": {
-      "diagnostic": "environment_store_untrusted",
-      "failing_check": "pin_hash",
+      "diagnostic": "environment_home_stale",
+      "failing_check": "",
       "fragment_emitted": false,
       "row_current": false,
       "writes": [],
@@ -1418,7 +1476,8 @@
       "lock_unchanged": true,
       "plant_preserved": false,
       "path_named": false,
-      "rule_named": false
+      "rule_named": false,
+      "repair_hint": true
     },
     "positive_control": "control-resolve-context-intact",
     "predecessor": {
@@ -1427,18 +1486,35 @@
     },
     "forbidden_observations": [
       {
-        "name": "changes-recorded-lock-or-pin",
+        "name": "opposite-launch-verdict",
         "observation": {
-          "diagnostic": "environment_store_untrusted",
-          "failing_check": "pin_hash",
+          "diagnostic": "environment_home_stale",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      },
+      {
+        "name": "repair-hint-missing",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "",
           "fragment_emitted": false,
           "row_current": false,
           "writes": [],
           "store_rebuilt": false,
-          "lock_unchanged": false,
+          "lock_unchanged": true,
           "plant_preserved": false,
           "path_named": false,
-          "rule_named": false
+          "rule_named": false,
+          "repair_hint": false
         }
       }
     ]
@@ -1455,6 +1531,8 @@
     "source_kind": "path",
     "home_state": "unreadable-marker",
     "verification_levels": [
+      1,
+      2,
       3,
       4
     ],
@@ -1527,27 +1605,12 @@
     },
     "forbidden_observations": [
       {
-        "name": "changes-recorded-lock-or-pin",
-        "observation": {
-          "diagnostic": "environment_store_untrusted",
-          "failing_check": "pin_hash",
-          "fragment_emitted": false,
-          "row_current": false,
-          "writes": [],
-          "store_rebuilt": false,
-          "lock_unchanged": false,
-          "plant_preserved": false,
-          "path_named": false,
-          "rule_named": false
-        }
-      },
-      {
-        "name": "historical-known-bad-swapped-bytes-emits-fragment",
+        "name": "opposite-launch-verdict",
         "observation": {
           "diagnostic": "environment_store_untrusted",
           "failing_check": "pin_hash",
           "fragment_emitted": true,
-          "row_current": true,
+          "row_current": false,
           "writes": [],
           "store_rebuilt": false,
           "lock_unchanged": true,
@@ -1973,33 +2036,14 @@
     },
     "forbidden_observations": [
       {
-        "name": "changes-recorded-lock-or-pin",
+        "name": "opposite-launch-verdict",
         "observation": {
           "diagnostic": "",
           "failing_check": "",
-          "fragment_emitted": true,
+          "fragment_emitted": false,
           "row_current": true,
           "writes": [
             "store"
-          ],
-          "store_rebuilt": true,
-          "lock_unchanged": false,
-          "plant_preserved": false,
-          "path_named": false,
-          "rule_named": false
-        }
-      },
-      {
-        "name": "rewrites-current-home",
-        "observation": {
-          "diagnostic": "",
-          "failing_check": "",
-          "fragment_emitted": true,
-          "row_current": true,
-          "writes": [
-            "store",
-            "home",
-            "marker"
           ],
           "store_rebuilt": true,
           "lock_unchanged": true,
@@ -2246,6 +2290,8 @@
     "source_kind": "git",
     "home_state": "stale-old-marker",
     "verification_levels": [
+      1,
+      2,
       3,
       4
     ],
@@ -2271,18 +2317,18 @@
     },
     "forbidden_observations": [
       {
-        "name": "changes-recorded-lock-or-pin",
+        "name": "opposite-launch-verdict",
         "observation": {
           "diagnostic": "",
           "failing_check": "",
-          "fragment_emitted": true,
+          "fragment_emitted": false,
           "row_current": true,
           "writes": [
             "home",
             "marker"
           ],
           "store_rebuilt": false,
-          "lock_unchanged": false,
+          "lock_unchanged": true,
           "plant_preserved": false,
           "path_named": false,
           "rule_named": false
@@ -2328,11 +2374,11 @@
     },
     "forbidden_observations": [
       {
-        "name": "changes-recorded-lock-or-pin",
+        "name": "opposite-launch-verdict",
         "observation": {
           "diagnostic": "",
           "failing_check": "",
-          "fragment_emitted": true,
+          "fragment_emitted": false,
           "row_current": true,
           "writes": [
             "store",
@@ -2340,7 +2386,7 @@
             "marker"
           ],
           "store_rebuilt": true,
-          "lock_unchanged": false,
+          "lock_unchanged": true,
           "plant_preserved": false,
           "path_named": false,
           "rule_named": false
@@ -2360,6 +2406,8 @@
     "source_kind": "git",
     "home_state": "unprovisioned",
     "verification_levels": [
+      1,
+      2,
       3,
       4
     ],
@@ -2385,18 +2433,18 @@
     },
     "forbidden_observations": [
       {
-        "name": "changes-recorded-lock-or-pin",
+        "name": "opposite-launch-verdict",
         "observation": {
           "diagnostic": "",
           "failing_check": "",
-          "fragment_emitted": true,
+          "fragment_emitted": false,
           "row_current": true,
           "writes": [
             "home",
             "marker"
           ],
           "store_rebuilt": false,
-          "lock_unchanged": false,
+          "lock_unchanged": true,
           "plant_preserved": false,
           "path_named": false,
           "rule_named": false
@@ -2442,11 +2490,11 @@
     },
     "forbidden_observations": [
       {
-        "name": "changes-recorded-lock-or-pin",
+        "name": "opposite-launch-verdict",
         "observation": {
           "diagnostic": "",
           "failing_check": "",
-          "fragment_emitted": true,
+          "fragment_emitted": false,
           "row_current": true,
           "writes": [
             "store",
@@ -2454,7 +2502,7 @@
             "marker"
           ],
           "store_rebuilt": true,
-          "lock_unchanged": false,
+          "lock_unchanged": true,
           "plant_preserved": false,
           "path_named": false,
           "rule_named": false
@@ -7122,5 +7170,3322 @@
         }
       }
     ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level1-legacy-swapped-system-prompt-bytes-untrusted",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "path",
+    "home_state": "current",
+    "verification_levels": [
+      1
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": true
+    },
+    "positive_control": "control-resolve-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "permissive-rewrites-evidence",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level2-legacy-swapped-system-prompt-bytes-untrusted",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "path",
+    "home_state": "current",
+    "verification_levels": [
+      2
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "pin_hash",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false
+    },
+    "positive_control": "control-resolve-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "pin_hash",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level1-legacy-swapped-root-context-bytes-untrusted",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "path",
+    "home_state": "current",
+    "verification_levels": [
+      1
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": true
+    },
+    "positive_control": "control-resolve-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "permissive-rewrites-evidence",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level2-legacy-swapped-root-context-bytes-untrusted",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "path",
+    "home_state": "current",
+    "verification_levels": [
+      2
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "pin_hash",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false
+    },
+    "positive_control": "control-resolve-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "pin_hash",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level1-legacy-swapped-updated-store-old-marker-untrusted",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "path",
+    "home_state": "stale-old-marker",
+    "verification_levels": [
+      1
+    ],
+    "expected": {
+      "diagnostic": "environment_home_stale",
+      "failing_check": "home_currency",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "repair_hint": true
+    },
+    "positive_control": "control-resolve-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      },
+      {
+        "name": "repair-hint-missing",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": false
+        }
+      },
+      {
+        "name": "permissive-rewrites-evidence",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level2-legacy-swapped-updated-store-old-marker-untrusted",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "path",
+    "home_state": "stale-old-marker",
+    "verification_levels": [
+      2
+    ],
+    "expected": {
+      "diagnostic": "environment_home_stale",
+      "failing_check": "home_currency",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "repair_hint": true
+    },
+    "positive_control": "control-resolve-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      },
+      {
+        "name": "repair-hint-missing",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": false
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level1-legacy-unprovisioned-swapped-untrusted",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "path",
+    "home_state": "unprovisioned",
+    "verification_levels": [
+      1
+    ],
+    "expected": {
+      "diagnostic": "environment_home_stale",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "repair_hint": true
+    },
+    "positive_control": "control-resolve-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      },
+      {
+        "name": "repair-hint-missing",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": false
+        }
+      },
+      {
+        "name": "permissive-rewrites-evidence",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level2-legacy-unprovisioned-swapped-untrusted",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "path",
+    "home_state": "unprovisioned",
+    "verification_levels": [
+      2
+    ],
+    "expected": {
+      "diagnostic": "environment_home_stale",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "repair_hint": true
+    },
+    "positive_control": "control-resolve-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      },
+      {
+        "name": "repair-hint-missing",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": false
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level1-legacy-swapped-bytes-emits-fragment",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "path",
+    "home_state": "current",
+    "verification_levels": [
+      1
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": true
+    },
+    "positive_control": "control-resolve-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "permissive-rewrites-evidence",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level2-legacy-swapped-bytes-emits-fragment",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "path",
+    "home_state": "current",
+    "verification_levels": [
+      2
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "pin_hash",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false
+    },
+    "positive_control": "control-resolve-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "pin_hash",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level1-legacy-repair-rebuilds-git-entry-from-snapshot",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": true
+    },
+    "positive_control": "control-repair-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "permissive-rewrites-evidence",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level2-legacy-repair-rebuilds-git-entry-from-snapshot",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      2
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "pin_hash",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false
+    },
+    "positive_control": "control-repair-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "pin_hash",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level1-legacy-repair-swapped-old-marker-never-adopted",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "stale-old-marker",
+    "verification_levels": [
+      1
+    ],
+    "expected": {
+      "diagnostic": "environment_home_stale",
+      "failing_check": "home_currency",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "repair_hint": true
+    },
+    "positive_control": "control-repair-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      },
+      {
+        "name": "repair-hint-missing",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": false
+        }
+      },
+      {
+        "name": "permissive-rewrites-evidence",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level2-legacy-repair-swapped-old-marker-never-adopted",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "stale-old-marker",
+    "verification_levels": [
+      2
+    ],
+    "expected": {
+      "diagnostic": "environment_home_stale",
+      "failing_check": "home_currency",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "repair_hint": true
+    },
+    "positive_control": "control-repair-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      },
+      {
+        "name": "repair-hint-missing",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "home_currency",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": false
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level1-legacy-repair-unprovisioned-swapped-rebuilds",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "unprovisioned",
+    "verification_levels": [
+      1
+    ],
+    "expected": {
+      "diagnostic": "environment_home_stale",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "repair_hint": true
+    },
+    "positive_control": "control-repair-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      },
+      {
+        "name": "repair-hint-missing",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": false
+        }
+      },
+      {
+        "name": "permissive-rewrites-evidence",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [
+            "store"
+          ],
+          "store_rebuilt": true,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "level2-legacy-repair-unprovisioned-swapped-rebuilds",
+    "case_kind": "implementation",
+    "operation": "repair",
+    "condition": "pin-drift",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "unprovisioned",
+    "verification_levels": [
+      2
+    ],
+    "expected": {
+      "diagnostic": "environment_home_stale",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "repair_hint": true
+    },
+    "positive_control": "control-repair-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": true
+        }
+      },
+      {
+        "name": "repair-hint-missing",
+        "observation": {
+          "diagnostic": "environment_home_stale",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "repair_hint": false
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "context-path-dry-run-strict",
+    "case_kind": "implementation",
+    "operation": "dry-run",
+    "condition": "entry-absent",
+    "member_kind": "context",
+    "source_kind": "path",
+    "home_state": "current",
+    "verification_levels": [
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_repair_failed",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-dry-run-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_repair_failed",
+          "failing_check": "regular_types",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "context-local-dry-run-strict",
+    "case_kind": "implementation",
+    "operation": "dry-run",
+    "condition": "entry-absent",
+    "member_kind": "context",
+    "source_kind": "local",
+    "home_state": "current",
+    "verification_levels": [
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_repair_failed",
+      "failing_check": "regular_types",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": true,
+      "rule_named": true
+    },
+    "positive_control": "control-dry-run-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_repair_failed",
+          "failing_check": "regular_types",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": true,
+          "rule_named": true
+        }
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "precedence-context-first",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "multiple-structural",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "ownership",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": true,
+      "path_named": true,
+      "rule_named": true,
+      "offending_path": "context/payload"
+    },
+    "positive_control": "control-resolve-context-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "ownership",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true,
+          "offending_path": "context/payload"
+        }
+      },
+      {
+        "name": "later-member-wins",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "ownership",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true,
+          "offending_path": "skill/payload"
+        }
+      },
+      {
+        "name": "wrong-member-diagnostic-class",
+        "observation": {
+          "diagnostic": "skill_integrity_boundary_invalid",
+          "failing_check": "ownership",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true,
+          "offending_path": "context/payload"
+        }
+      }
+    ],
+    "structural_failures": [
+      {
+        "member_kind": "context",
+        "condition": "ownership",
+        "path": "context/payload"
+      },
+      {
+        "member_kind": "skill",
+        "condition": "hardlink",
+        "path": "skill/payload"
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "precedence-skill-first",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "multiple-structural",
+    "member_kind": "skill",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "skill_integrity_boundary_invalid",
+      "failing_check": "single_link",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": true,
+      "path_named": true,
+      "rule_named": true,
+      "offending_path": "skill-a/payload"
+    },
+    "positive_control": "control-resolve-skill-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "skill_integrity_boundary_invalid",
+          "failing_check": "single_link",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true,
+          "offending_path": "skill-a/payload"
+        }
+      },
+      {
+        "name": "later-member-wins",
+        "observation": {
+          "diagnostic": "skill_integrity_boundary_invalid",
+          "failing_check": "single_link",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true,
+          "offending_path": "skill-b/payload"
+        }
+      },
+      {
+        "name": "wrong-member-diagnostic-class",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "single_link",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true,
+          "offending_path": "skill-a/payload"
+        }
+      }
+    ],
+    "structural_failures": [
+      {
+        "member_kind": "skill",
+        "condition": "hardlink",
+        "path": "skill-a/payload"
+      },
+      {
+        "member_kind": "skill",
+        "condition": "ownership",
+        "path": "skill-b/payload"
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "precedence-skill-ownership",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "multiple-structural",
+    "member_kind": "skill",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected": {
+      "diagnostic": "environment_store_untrusted",
+      "failing_check": "ownership",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": true,
+      "path_named": true,
+      "rule_named": true,
+      "offending_path": "skill-a/payload"
+    },
+    "positive_control": "control-resolve-skill-intact",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "ownership",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true,
+          "offending_path": "skill-a/payload"
+        }
+      },
+      {
+        "name": "later-member-wins",
+        "observation": {
+          "diagnostic": "environment_store_untrusted",
+          "failing_check": "ownership",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true,
+          "offending_path": "skill-b/payload"
+        }
+      },
+      {
+        "name": "wrong-member-diagnostic-class",
+        "observation": {
+          "diagnostic": "skill_integrity_boundary_invalid",
+          "failing_check": "ownership",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": true,
+          "path_named": true,
+          "rule_named": true,
+          "offending_path": "skill-a/payload"
+        }
+      }
+    ],
+    "structural_failures": [
+      {
+        "member_kind": "skill",
+        "condition": "ownership",
+        "path": "skill-a/payload"
+      },
+      {
+        "member_kind": "skill",
+        "condition": "hardlink",
+        "path": "skill-b/payload"
+      }
+    ]
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level1-pass",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": true,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level1-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": true,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "pass"
+      ],
+      "centre": "confirmed",
+      "global_level": 1
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level1-unavailable",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": true
+    },
+    "positive_control": "policy-level1-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "required-warning-missing",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "unavailable"
+      ],
+      "centre": "confirmed",
+      "global_level": 1
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level1-mismatch",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": true
+    },
+    "positive_control": "policy-level1-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "required-warning-missing",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "mismatch"
+      ],
+      "centre": "confirmed",
+      "global_level": 1
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level1-mismatch-unavailable",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": true
+    },
+    "positive_control": "policy-level1-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "required-warning-missing",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "mismatch",
+        "unavailable"
+      ],
+      "centre": "confirmed",
+      "global_level": 1
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level1-unavailable-mismatch",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      1
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": true
+    },
+    "positive_control": "policy-level1-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "required-warning-missing",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "unavailable",
+        "mismatch"
+      ],
+      "centre": "confirmed",
+      "global_level": 1
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level2-pass",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      2
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": true,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level2-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": true,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "pass"
+      ],
+      "centre": "confirmed",
+      "global_level": 2
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level2-unavailable",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      2
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": true
+    },
+    "positive_control": "policy-level2-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "required-warning-missing",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "unavailable"
+      ],
+      "centre": "confirmed",
+      "global_level": 2
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level2-mismatch",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      2
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_failed",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level2-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_failed",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "mismatch"
+      ],
+      "centre": "confirmed",
+      "global_level": 2
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level2-mismatch-unavailable",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      2
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_failed",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level2-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_failed",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "mismatch",
+        "unavailable"
+      ],
+      "centre": "confirmed",
+      "global_level": 2
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level2-unavailable-mismatch",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      2
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_failed",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level2-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_failed",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "unavailable",
+        "mismatch"
+      ],
+      "centre": "confirmed",
+      "global_level": 2
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level3-pass",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": true,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level3-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": true,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "pass"
+      ],
+      "centre": "confirmed",
+      "global_level": 3
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level3-unavailable",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_unavailable",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level3-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_unavailable",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "unavailable"
+      ],
+      "centre": "confirmed",
+      "global_level": 3
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level3-mismatch",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_failed",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level3-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_failed",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "mismatch"
+      ],
+      "centre": "confirmed",
+      "global_level": 3
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level3-mismatch-unavailable",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_failed",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level3-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_failed",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "mismatch",
+        "unavailable"
+      ],
+      "centre": "confirmed",
+      "global_level": 3
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level3-unavailable-mismatch",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_failed",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level3-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_failed",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "unavailable",
+        "mismatch"
+      ],
+      "centre": "confirmed",
+      "global_level": 3
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level4-pass",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      4
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": true,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level4-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": true,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "pass"
+      ],
+      "centre": "confirmed",
+      "global_level": 4
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level4-unavailable",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      4
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_unavailable",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level4-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_unavailable",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "unavailable"
+      ],
+      "centre": "confirmed",
+      "global_level": 4
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level4-mismatch",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      4
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_failed",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level4-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_failed",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "mismatch"
+      ],
+      "centre": "confirmed",
+      "global_level": 4
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level4-mismatch-unavailable",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      4
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_failed",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level4-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_failed",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "mismatch",
+        "unavailable"
+      ],
+      "centre": "confirmed",
+      "global_level": 4
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-level4-unavailable-mismatch",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      4
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_failed",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level4-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_failed",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "unavailable",
+        "mismatch"
+      ],
+      "centre": "confirmed",
+      "global_level": 4
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-centre-unreachable",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      4
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": true,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": true
+    },
+    "positive_control": "policy-level4-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": true,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": true
+        }
+      },
+      {
+        "name": "required-warning-missing",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": true,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "pass"
+      ],
+      "centre": "unreachable",
+      "global_level": 4
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-centre-unreachable-local-unavailable",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      4
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_unavailable",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level4-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_unavailable",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "unavailable"
+      ],
+      "centre": "unreachable",
+      "global_level": 4
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-centre-denied",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      4
+    ],
+    "expected": {
+      "diagnostic": "verification_centre_denied",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level4-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "verification_centre_denied",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "pass"
+      ],
+      "centre": "denied",
+      "global_level": 4
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-centre-denied-local-unavailable",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      4
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_unavailable",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level4-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_unavailable",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "unavailable"
+      ],
+      "centre": "denied",
+      "global_level": 4
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-centre-invalid",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      4
+    ],
+    "expected": {
+      "diagnostic": "verification_centre_invalid",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level4-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "verification_centre_invalid",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "pass"
+      ],
+      "centre": "invalid",
+      "global_level": 4
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-centre-invalid-local-unavailable",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      4
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_unavailable",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level4-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_unavailable",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "unavailable"
+      ],
+      "centre": "invalid",
+      "global_level": 4
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-default-pass",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": true,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level3-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": true,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "pass"
+      ],
+      "centre": "confirmed"
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-default-unavailable",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_unavailable",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level3-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_unavailable",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [],
+      "local_evidence": [
+        "unavailable"
+      ],
+      "centre": "confirmed"
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-floor-raise-pass",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3
+    ],
+    "expected": {
+      "diagnostic": "",
+      "failing_check": "",
+      "fragment_emitted": true,
+      "row_current": true,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level3-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "",
+          "failing_check": "",
+          "fragment_emitted": false,
+          "row_current": true,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [
+        2,
+        3
+      ],
+      "local_evidence": [
+        "pass"
+      ],
+      "centre": "confirmed",
+      "global_level": 1
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-floor-raise-unavailable",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_unavailable",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level3-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_unavailable",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [
+        2,
+        3
+      ],
+      "local_evidence": [
+        "unavailable"
+      ],
+      "centre": "confirmed",
+      "global_level": 1
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-floor-transitive-centre-denied",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      4
+    ],
+    "expected": {
+      "diagnostic": "verification_centre_denied",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level4-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "verification_centre_denied",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [
+        2,
+        4,
+        3
+      ],
+      "local_evidence": [
+        "pass"
+      ],
+      "centre": "denied",
+      "global_level": 1
+    }
+  },
+  {
+    "schema": "curator.environment-store-case/2",
+    "capability": "agent-environments",
+    "capability_revision": 2,
+    "name": "policy-floor-weakening",
+    "case_kind": "implementation",
+    "operation": "resolve",
+    "condition": "verification-policy",
+    "member_kind": "context",
+    "source_kind": "git",
+    "home_state": "current",
+    "verification_levels": [
+      3
+    ],
+    "expected": {
+      "diagnostic": "startup_verification_weakening",
+      "failing_check": "",
+      "fragment_emitted": false,
+      "row_current": false,
+      "writes": [],
+      "store_rebuilt": false,
+      "lock_unchanged": true,
+      "plant_preserved": false,
+      "path_named": false,
+      "rule_named": false,
+      "warning_emitted": false
+    },
+    "positive_control": "policy-level3-pass",
+    "predecessor": null,
+    "forbidden_observations": [
+      {
+        "name": "opposite-launch-verdict",
+        "observation": {
+          "diagnostic": "startup_verification_weakening",
+          "failing_check": "",
+          "fragment_emitted": true,
+          "row_current": false,
+          "writes": [],
+          "store_rebuilt": false,
+          "lock_unchanged": true,
+          "plant_preserved": false,
+          "path_named": false,
+          "rule_named": false,
+          "warning_emitted": false
+        }
+      }
+    ],
+    "policy": {
+      "profile_minimums": [
+        2
+      ],
+      "local_evidence": [
+        "pass"
+      ],
+      "centre": "confirmed",
+      "global_level": 3
+    }
   }
 ]

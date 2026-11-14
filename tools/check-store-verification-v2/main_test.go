@@ -323,7 +323,7 @@ func TestCurrentHomeRepairWriteScopes(t *testing.T) {
 				}
 			})
 		}
-		if v.Operation == "repair" && (v.Home == "stale-old-marker" || v.Home == "unprovisioned") {
+		if v.Operation == "repair" && v.Expected.Fragment && (v.Home == "stale-old-marker" || v.Home == "unprovisioned") {
 			homeRepairs++
 			t.Run(v.Name, func(t *testing.T) {
 				if err := checkObservation(v, v.Expected); err != nil {
@@ -412,5 +412,210 @@ func TestMemberSourceCompatibility(t *testing.T) {
 				}
 			})
 		}
+	}
+}
+
+// The policy fixtures distinguish both permissive boundaries, order-independent
+// mismatch aggregation, centre fallback/denial, default3 and a monotone floor.
+// Narrowing or broadening each verdict is detected beside the complete positive.
+func TestPolicyBoundaryControls(t *testing.T) {
+	_, _, cases := fixture(t)
+	if err := validateCases(cases); err != nil {
+		t.Fatal(err)
+	}
+	for _, v := range cases {
+		if v.Condition != "verification-policy" {
+			continue
+		}
+		t.Run(v.Name, func(t *testing.T) {
+			if err := checkObservation(v, v.Expected); err != nil {
+				t.Fatal(err)
+			}
+			bad := v.Expected
+			bad.Fragment = !bad.Fragment
+			if err := checkObservation(v, bad); err == nil || !strings.Contains(err.Error(), "observation violates") {
+				t.Fatalf("changed verdict accepted: %v", err)
+			}
+			if v.Expected.Warning {
+				bad = v.Expected
+				bad.Warning = false
+				if err := checkObservation(v, bad); err == nil {
+					t.Fatal("missing warning accepted")
+				}
+			}
+		})
+	}
+	for _, name := range []string{"policy-level1-pass", "policy-level2-unavailable", "policy-level3-unavailable", "policy-centre-unreachable", "policy-floor-weakening"} {
+		plant := append([]vector{}, cases...)
+		for i, v := range plant {
+			if v.Name == name {
+				plant = append(plant[:i], plant[i+1:]...)
+				break
+			}
+		}
+		if err := validateCases(plant); err == nil || !(strings.Contains(err.Error(), "missing policy case") || (name == "policy-level1-pass" && strings.Contains(err.Error(), "invalid positive neighbor"))) {
+			t.Fatalf("missing boundary %s: %v", name, err)
+		}
+	}
+}
+
+// Home currency/hint and repair are mandatory at all levels; level1 pin drift
+// cannot silently rewrite evidence. The scope manifest exposes low-level rows.
+func TestHomeAndLevelScopeControls(t *testing.T) {
+	_, _, cases := fixture(t)
+	raw, err := os.ReadFile(filepath.Join("../..", namespace, "manifest.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var m manifest
+	if err := strict(raw, &m); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateMigration("../..", m, cases); err != nil {
+		t.Fatal(err)
+	}
+	for _, v := range cases {
+		if v.Expected.Diagnostic == "environment_home_stale" {
+			if err := checkObservation(v, v.Expected); err != nil {
+				t.Fatal(err)
+			}
+			bad := v.Expected
+			bad.RepairHint = false
+			if err := checkObservation(v, bad); err == nil {
+				t.Fatalf("%s lost repair hint", v.Name)
+			}
+			if v.Condition == "home-stale" {
+				bad = v.Expected
+				bad.Check = ""
+				if err := checkObservation(v, bad); err == nil {
+					t.Fatalf("%s lost home_currency", v.Name)
+				}
+			}
+		}
+		if v.Condition == "pin-drift" && len(v.Levels) == 1 && v.Levels[0] == 1 {
+			bad := v.Expected
+			bad.Writes = []string{"store"}
+			bad.Rebuilt = true
+			if err := checkObservation(v, bad); err == nil {
+				t.Fatalf("%s rewrote evidence", v.Name)
+			}
+		}
+	}
+	for i, row := range m.Migration {
+		if len(row.LevelSuccessors) == 0 {
+			continue
+		}
+		plant := m
+		plant.Migration = append([]migration{}, m.Migration...)
+		plant.Migration[i].LevelSuccessors = nil
+		if err := validateMigration("../..", plant, cases); err == nil || !strings.Contains(err.Error(), "missing level successors") {
+			t.Fatalf("hidden low-level scope: %v", err)
+		}
+		plant = m
+		plant.Migration = append([]migration{}, m.Migration...)
+		plant.Migration[i].Disposition = "retained"
+		if err := validateMigration("../..", plant, cases); err == nil || !strings.Contains(err.Error(), "wrong disposition") {
+			t.Fatalf("unscoped disposition: %v", err)
+		}
+		break
+	}
+}
+
+// First failing lock member chooses the path and skill-only class; later
+// failures cannot take over. Absent path/local dry-run is repair_failed, not a
+// rebuild plan. These bounded model checks do not exercise manager syscalls.
+func TestPrecedenceAndAbsentDryRunControls(t *testing.T) {
+	_, _, cases := fixture(t)
+	for _, v := range cases {
+		if v.Condition != "multiple-structural" && v.Name != "context-path-dry-run-strict" && v.Name != "context-local-dry-run-strict" {
+			continue
+		}
+		t.Run(v.Name, func(t *testing.T) {
+			if err := checkObservation(v, v.Expected); err != nil {
+				t.Fatal(err)
+			}
+			bad := v.Expected
+			if v.Condition == "multiple-structural" {
+				bad.Path = v.Failures[1].Path
+			} else {
+				bad.Diagnostic = "would-rebuild-untrusted-store"
+			}
+			if err := checkObservation(v, bad); err == nil || !strings.Contains(err.Error(), "observation violates") {
+				t.Fatalf("wrong primary accepted: %v", err)
+			}
+			if v.Condition == "multiple-structural" {
+				bad = v.Expected
+				if bad.Diagnostic == "skill_integrity_boundary_invalid" {
+					bad.Diagnostic = "environment_store_untrusted"
+				} else {
+					bad.Diagnostic = "skill_integrity_boundary_invalid"
+				}
+				if err := checkObservation(v, bad); err == nil {
+					t.Fatal("wrong skill class accepted")
+				}
+			}
+		})
+	}
+	for _, target := range []string{"precedence-context-first", "context-path-dry-run-strict", "context-local-dry-run-strict"} {
+		plant := append([]vector{}, cases...)
+		for i, v := range plant {
+			if v.Name == target {
+				plant = append(plant[:i], plant[i+1:]...)
+				break
+			}
+		}
+		if err := validateCases(plant); err == nil {
+			t.Fatalf("missing fixture accepted: %s", target)
+		}
+	}
+}
+
+// Policy fixture metadata cannot hide a drifted home behind a permissive
+// verdict, and all-level home gates cannot be narrowed to strict-only coverage.
+func TestFixtureScopeAndHomeCoverage(t *testing.T) {
+	_, _, cases := fixture(t)
+	if err := validateCases(cases); err != nil {
+		t.Fatal(err)
+	}
+	for _, plantKind := range []string{"policy-home", "home-levels", "pin-levels", "fixture-kind"} {
+		t.Run(plantKind, func(t *testing.T) {
+			plant := append([]vector{}, cases...)
+			target, refusal := "policy-level1-pass", "policy fixture scope"
+			if plantKind == "home-levels" {
+				target = "legacy-intact-updated-store-old-marker-stale"
+				refusal = "missing home gate level"
+			}
+			if plantKind == "pin-levels" {
+				target = "legacy-swapped-system-prompt-bytes-untrusted"
+				refusal = "pin verdict level partition"
+			}
+			if plantKind == "fixture-kind" {
+				refusal = "fixture discriminator"
+			}
+			found := false
+			for i, v := range plant {
+				if v.Name == target {
+					found = true
+					switch plantKind {
+					case "policy-home":
+						plant[i].Home = "stale-old-marker"
+					case "home-levels":
+						plant[i].Levels = []int{3, 4}
+					case "pin-levels":
+						plant[i].Levels = []int{2, 3, 4}
+					case "fixture-kind":
+						plant[i].Condition = "intact"
+						plant[i].Levels = []int{1, 2, 3, 4}
+					}
+					break
+				}
+			}
+			if !found {
+				t.Fatal("control target missing")
+			}
+			if err := validateCases(plant); err == nil || !strings.Contains(err.Error(), refusal) {
+				t.Fatalf("wrong scope/coverage refusal: %v", err)
+			}
+		})
 	}
 }

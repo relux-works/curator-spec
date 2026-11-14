@@ -67,7 +67,9 @@
           "old_outcome",
           "new_required_diagnostic",
           "successor_case",
-          "known_bad_remains_negative"
+          "known_bad_remains_negative",
+          "verification_levels",
+          "level_successors"
         ],
         "properties": {
           "group": {
@@ -87,7 +89,9 @@
               "retained",
               "retained-negative-control",
               "tightened",
-              "tightened-negative-control"
+              "tightened-negative-control",
+              "level-scoped",
+              "level-scoped-negative-control"
             ]
           },
           "old_diagnostic": {
@@ -129,6 +133,27 @@
           },
           "known_bad_remains_negative": {
             "type": "boolean"
+          },
+          "verification_levels": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                1,
+                2,
+                3,
+                4
+              ]
+            }
+          },
+          "level_successors": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
           }
         }
       }

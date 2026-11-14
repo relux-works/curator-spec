@@ -24,7 +24,21 @@ const predecessorPath = "conformance/v1/vectors/environments-store-boundary.json
 const predecessorHash = "7efa5b09e450162cfb2937f25b3e29fab4699602e0990cfd295a4f695cb60413"
 const unsupported = "store_verification_corpus_unsupported"
 
+type policyFixture struct {
+	Global   *int     `json:"global_level,omitempty"`
+	Minimums []int    `json:"profile_minimums"`
+	Evidence []string `json:"local_evidence"`
+	Centre   string   `json:"centre"`
+}
+type structuralFailure struct {
+	Member    string `json:"member_kind"`
+	Condition string `json:"condition"`
+	Path      string `json:"path"`
+}
 type observation struct {
+	RepairHint     bool     `json:"repair_hint,omitempty"`
+	Warning        bool     `json:"warning_emitted,omitempty"`
+	Path           string   `json:"offending_path,omitempty"`
 	Diagnostic     string   `json:"diagnostic"`
 	Check          string   `json:"failing_check"`
 	Fragment       bool     `json:"fragment_emitted"`
@@ -41,34 +55,38 @@ type predecessor struct {
 	Name  string `json:"name"`
 }
 type vector struct {
-	Schema      string       `json:"schema"`
-	Capability  string       `json:"capability"`
-	Revision    int          `json:"capability_revision"`
-	Name        string       `json:"name"`
-	Kind        string       `json:"case_kind"`
-	Operation   string       `json:"operation"`
-	Condition   string       `json:"condition"`
-	Member      string       `json:"member_kind"`
-	Source      string       `json:"source_kind"`
-	Home        string       `json:"home_state"`
-	Levels      []int        `json:"verification_levels"`
-	Expected    observation  `json:"expected"`
-	Positive    string       `json:"positive_control"`
-	Predecessor *predecessor `json:"predecessor"`
+	Policy      *policyFixture      `json:"policy,omitempty"`
+	Failures    []structuralFailure `json:"structural_failures,omitempty"`
+	Schema      string              `json:"schema"`
+	Capability  string              `json:"capability"`
+	Revision    int                 `json:"capability_revision"`
+	Name        string              `json:"name"`
+	Kind        string              `json:"case_kind"`
+	Operation   string              `json:"operation"`
+	Condition   string              `json:"condition"`
+	Member      string              `json:"member_kind"`
+	Source      string              `json:"source_kind"`
+	Home        string              `json:"home_state"`
+	Levels      []int               `json:"verification_levels"`
+	Expected    observation         `json:"expected"`
+	Positive    string              `json:"positive_control"`
+	Predecessor *predecessor        `json:"predecessor"`
 	Forbidden   []struct {
 		Name        string      `json:"name"`
 		Observation observation `json:"observation"`
 	} `json:"forbidden_observations"`
 }
 type migration struct {
-	Group         string  `json:"group"`
-	Name          string  `json:"name"`
-	Disposition   string  `json:"disposition"`
-	OldDiagnostic *string `json:"old_diagnostic"`
-	OldOutcome    *string `json:"old_outcome"`
-	NewDiagnostic *string `json:"new_required_diagnostic"`
-	Successor     string  `json:"successor_case"`
-	Negative      bool    `json:"known_bad_remains_negative"`
+	Levels          []int    `json:"verification_levels"`
+	LevelSuccessors []string `json:"level_successors"`
+	Group           string   `json:"group"`
+	Name            string   `json:"name"`
+	Disposition     string   `json:"disposition"`
+	OldDiagnostic   *string  `json:"old_diagnostic"`
+	OldOutcome      *string  `json:"old_outcome"`
+	NewDiagnostic   *string  `json:"new_required_diagnostic"`
+	Successor       string   `json:"successor_case"`
+	Negative        bool     `json:"known_bad_remains_negative"`
 }
 type manifest struct {
 	Schema      string `json:"schema"`
@@ -167,18 +185,110 @@ func structural(condition string) string {
 	return ""
 }
 
+// policyObservation aggregates all local evidence; unavailable never masks mismatch.
+// The bounded corpus models decisions, not centre transport or signed configuration.
+func policyObservation(v vector) (observation, error) {
+	want := observation{Writes: []string{}, LockUnchanged: true}
+	p := v.Policy
+	if p == nil || len(p.Evidence) == 0 {
+		return want, errors.New("missing policy fixture")
+	}
+	global := 3
+	if p.Global != nil {
+		global = *p.Global
+	}
+	if global < 1 || global > 4 {
+		return want, errors.New("invalid policy level")
+	}
+	level, weakening := global, false
+	for _, n := range p.Minimums {
+		if n < 1 || n > 4 {
+			return want, errors.New("invalid profile level")
+		}
+		weakening = weakening || n < global
+		if n > level {
+			level = n
+		}
+	}
+	if !reflect.DeepEqual(v.Levels, []int{level}) {
+		return want, errors.New("effective policy level")
+	}
+	if weakening {
+		want.Diagnostic = "startup_verification_weakening"
+		return want, nil
+	}
+	mismatch, unavailable := false, false
+	for _, e := range p.Evidence {
+		switch e {
+		case "pass":
+		case "mismatch":
+			mismatch = true
+		case "unavailable":
+			unavailable = true
+		default:
+			return want, errors.New("invalid local evidence")
+		}
+	}
+	switch p.Centre {
+	case "confirmed", "unreachable", "denied", "invalid":
+	default:
+		return want, errors.New("invalid centre outcome")
+	}
+	switch {
+	case level == 1:
+		want.Fragment = true
+		want.Current = !mismatch && !unavailable
+		want.Warning = mismatch || unavailable
+	case mismatch:
+		want.Diagnostic = "startup_verification_failed"
+	case unavailable && level >= 3:
+		want.Diagnostic = "startup_verification_unavailable"
+	case level == 2:
+		want.Fragment = true
+		want.Current = !unavailable
+		want.Warning = unavailable
+	case level == 4 && (p.Centre == "denied" || p.Centre == "invalid"):
+		want.Diagnostic = "verification_centre_" + p.Centre
+	default:
+		want.Fragment = true
+		want.Warning = level == 4 && p.Centre == "unreachable"
+		want.Current = true
+	}
+	return want, nil
+}
+
 // checkObservation compares a supplied observation to the normative bounded model.
 // It does not produce observations from filesystem operations.
 func checkObservation(v vector, got observation) error {
 	want := observation{Writes: []string{}, LockUnchanged: true}
-	if check := structural(v.Condition); check != "" {
+	condition, member := v.Condition, v.Member
+	if condition == "multiple-structural" {
+		if len(v.Failures) < 2 {
+			return errors.New("missing ordered structural failures")
+		}
+		first := v.Failures[0]
+		condition, member = first.Condition, first.Member
+		want.Path = first.Path
+		for _, f := range v.Failures {
+			if structural(f.Condition) == "" || f.Path == "" || (f.Member != "context" && f.Member != "mcp" && f.Member != "skill") {
+				return errors.New("invalid ordered structural failure")
+			}
+		}
+	}
+	if check := structural(condition); check != "" {
 		want.Diagnostic, want.Check = "environment_store_untrusted", check
-		if v.Member == "skill" && v.Condition == "hardlink" {
+		if member == "skill" && condition == "hardlink" {
 			want.Diagnostic = "skill_integrity_boundary_invalid"
 		}
 		want.PlantPreserved, want.PathNamed, want.RuleNamed = true, true, true
 	} else {
 		switch v.Condition {
+		case "verification-policy":
+			var err error
+			want, err = policyObservation(v)
+			if err != nil {
+				return err
+			}
 		case "entry-absent":
 			strict := reflect.DeepEqual(v.Levels, []int{3, 4})
 			want.Diagnostic, want.Check = "environment_store_untrusted", "regular_types"
@@ -190,14 +300,26 @@ func checkObservation(v vector, got observation) error {
 				}
 			} else if strict && v.Operation == "repair" {
 				want.Diagnostic = "environment_repair_failed"
-			} else if strict && v.Operation == "dry-run" && v.Source == "git" {
-				want.Diagnostic = "would-rebuild-untrusted-store"
+			} else if strict && v.Operation == "dry-run" {
+				want.Diagnostic = "environment_repair_failed"
+				if v.Source == "git" {
+					want.Diagnostic = "would-rebuild-untrusted-store"
+				}
 			}
 		case "intact":
 			want.Current = true
 			want.Fragment = v.Operation != "status"
 		case "pin-drift":
-			if v.Operation == "repair" && v.Source == "git" {
+			level := v.Levels[0]
+			if v.Home != "current" && (v.Operation != "repair" || level < 3) {
+				want.Diagnostic = "environment_home_stale"
+				if v.Home == "stale-old-marker" {
+					want.Check = "home_currency"
+				}
+			} else if level == 1 {
+				want.Fragment = v.Operation != "status"
+				want.Warning = true
+			} else if v.Operation == "repair" && v.Source == "git" && level >= 3 {
 				want.Fragment, want.Current, want.Rebuilt = true, true, true
 				want.Writes = []string{"store", "home", "marker"}
 				if v.Home == "current" {
@@ -212,12 +334,18 @@ func checkObservation(v vector, got observation) error {
 				want.Writes = []string{"home", "marker"}
 			} else {
 				want.Diagnostic = "environment_home_stale"
+				if v.Condition == "home-stale" {
+					want.Check = "home_currency"
+				}
 			}
 		case "marker-unreadable":
 			want.Diagnostic = "environment_marker_unreadable"
 		default:
 			return errors.New("unknown condition")
 		}
+	}
+	if want.Diagnostic == "environment_home_stale" {
+		want.RepairHint = true
 	}
 	if !reflect.DeepEqual(got, want) {
 		return errors.New("observation violates required diagnostic or post-state")
@@ -238,8 +366,14 @@ func validateCases(cases []vector) error {
 		if err := checkObservation(v, v.Expected); err != nil {
 			return fmt.Errorf("%s: %w", v.Name, err)
 		}
-		if structural(v.Condition) != "" && !reflect.DeepEqual(v.Levels, []int{1, 2, 3, 4}) {
+		if (structural(v.Condition) != "" || v.Condition == "multiple-structural") && !reflect.DeepEqual(v.Levels, []int{1, 2, 3, 4}) {
 			return fmt.Errorf("%s: missing fatal level", v.Name)
+		}
+		if v.Condition == "verification-policy" && (v.Home != "current" || v.Operation != "resolve" || v.Member != "context" || v.Source != "git") {
+			return fmt.Errorf("%s: policy fixture scope", v.Name)
+		}
+		if v.Condition == "multiple-structural" && (v.Failures[0].Member != v.Member || v.Operation != "resolve") {
+			return fmt.Errorf("%s: ordered member fixture scope", v.Name)
 		}
 		if v.Condition == "entry-absent" {
 			valid := (v.Operation == "resolve" && reflect.DeepEqual(v.Levels, []int{1, 2, 3, 4})) ||
@@ -248,8 +382,18 @@ func validateCases(cases []vector) error {
 				return fmt.Errorf("%s: whole-entry availability level partition", v.Name)
 			}
 		}
-		if v.Condition != "intact" && v.Condition != "entry-absent" && structural(v.Condition) == "" && !reflect.DeepEqual(v.Levels, []int{3, 4}) {
-			return fmt.Errorf("%s: strict fixture level", v.Name)
+		switch v.Condition {
+		case "home-stale", "home-absent", "marker-unreadable":
+			if !reflect.DeepEqual(v.Levels, []int{1, 2, 3, 4}) {
+				return fmt.Errorf("%s: missing home gate level", v.Name)
+			}
+		case "pin-drift":
+			if !reflect.DeepEqual(v.Levels, []int{3, 4}) && !reflect.DeepEqual(v.Levels, []int{1}) && !reflect.DeepEqual(v.Levels, []int{2}) {
+				return fmt.Errorf("%s: pin verdict level partition", v.Name)
+			}
+		}
+		if (v.Condition == "verification-policy") != (v.Policy != nil) || (v.Condition == "multiple-structural") != (len(v.Failures) > 0) {
+			return fmt.Errorf("%s: fixture discriminator", v.Name)
 		}
 		for _, f := range v.Forbidden {
 			if checkObservation(v, f.Observation) == nil {
@@ -259,7 +403,7 @@ func validateCases(cases []vector) error {
 	}
 	for _, v := range cases {
 		p, ok := byName[v.Positive]
-		if !ok || p.Kind != "implementation" || p.Condition != "intact" || p.Operation != v.Operation || p.Member != v.Member {
+		if !ok || p.Kind != "implementation" || (p.Condition != "intact" && !(p.Condition == "verification-policy" && p.Expected.Fragment && p.Expected.Current)) || p.Operation != v.Operation || p.Member != v.Member {
 			return fmt.Errorf("%s: invalid positive neighbor", v.Name)
 		}
 	}
@@ -286,6 +430,8 @@ func validateCases(cases []vector) error {
 			{"git-dry-run-permissive", "git", "dry-run", "entry-absent", []int{1, 2}},
 			{"path-repair-strict", "path", "repair", "entry-absent", []int{3, 4}},
 			{"local-repair-strict", "local", "repair", "entry-absent", []int{3, 4}},
+			{"path-dry-run-strict", "path", "dry-run", "entry-absent", []int{3, 4}},
+			{"local-dry-run-strict", "local", "dry-run", "entry-absent", []int{3, 4}},
 			{"missing-payload-resolve", "git", "resolve", "payload-absent", []int{1, 2, 3, 4}},
 			{"missing-payload-repair", "git", "repair", "payload-absent", []int{1, 2, 3, 4}},
 			{"missing-payload-dry-run", "git", "dry-run", "payload-absent", []int{1, 2, 3, 4}},
@@ -301,6 +447,23 @@ func validateCases(cases []vector) error {
 			}
 		}
 	}
+	for _, name := range []string{"precedence-context-first", "precedence-skill-first", "precedence-skill-ownership"} {
+		if v, ok := byName[name]; !ok || v.Condition != "multiple-structural" {
+			return fmt.Errorf("missing precedence case %s", name)
+		}
+	}
+	requiredPolicy := []string{"centre-unreachable", "centre-denied", "centre-invalid", "centre-unreachable-local-unavailable", "centre-denied-local-unavailable", "centre-invalid-local-unavailable", "default-pass", "default-unavailable", "floor-raise-pass", "floor-raise-unavailable", "floor-transitive-centre-denied", "floor-weakening"}
+	for level := 1; level <= 4; level++ {
+		for _, suffix := range []string{"pass", "unavailable", "mismatch", "mismatch-unavailable", "unavailable-mismatch"} {
+			requiredPolicy = append(requiredPolicy, fmt.Sprintf("level%d-%s", level, suffix))
+		}
+	}
+	for _, name := range requiredPolicy {
+		if v, ok := byName["policy-"+name]; !ok || v.Condition != "verification-policy" {
+			return fmt.Errorf("missing policy case %s", name)
+		}
+	}
+
 	return nil
 }
 func validateMigration(root string, m manifest, cases []vector) error {
@@ -407,12 +570,32 @@ func validateMigration(root string, m manifest, cases []vector) error {
 			if tightened[old.Name] {
 				disposition = "tightened"
 			}
+			if condition == "pin-drift" {
+				disposition = "level-scoped"
+			}
 			if negative {
 				disposition += "-negative-control"
 			}
 			if row.Disposition != disposition || row.Negative != negative || (v.Kind == "checker-control") != negative || !reflect.DeepEqual(row.OldDiagnostic, old.Diagnostic) || !reflect.DeepEqual(row.OldOutcome, old.Outcome) {
 				return fmt.Errorf("wrong disposition %s", old.Name)
 			}
+			if !reflect.DeepEqual(row.Levels, v.Levels) {
+				return fmt.Errorf("wrong migration levels %s", old.Name)
+			}
+			if condition == "pin-drift" {
+				if len(row.LevelSuccessors) != 2 {
+					return fmt.Errorf("missing level successors %s", old.Name)
+				}
+				for i, name := range row.LevelSuccessors {
+					lower, ok := byName[name]
+					if !ok || name != fmt.Sprintf("level%d-%s", i+1, v.Name) || lower.Predecessor != nil || lower.Kind != "implementation" || lower.Condition != v.Condition || lower.Home != v.Home || lower.Source != v.Source || lower.Member != v.Member || lower.Operation != v.Operation || !reflect.DeepEqual(lower.Levels, []int{i + 1}) {
+						return fmt.Errorf("wrong level successor %s", old.Name)
+					}
+				}
+			} else if len(row.LevelSuccessors) != 0 {
+				return fmt.Errorf("unexpected level successors %s", old.Name)
+			}
+
 			wantDiag := ""
 			if row.NewDiagnostic != nil {
 				wantDiag = *row.NewDiagnostic
