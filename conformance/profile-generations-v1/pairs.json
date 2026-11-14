@@ -801,7 +801,9 @@
       "materialization": "stub",
       "execution": "not-run",
       "input_files": [],
-      "paired_extensions": [],
+      "paired_extensions": [
+        "Independently challenge native-home memory, appended/profile root, native base/role and previously unvisited nested instruction scopes on the same live A at the claimed barriers; record default root snapshot behavior and supported rebuild/compaction, resume and child entries separately. Wrong next-stage source and stale/replayed challenge controls must detect their intended mismatch for each channel beside valid A-to-A controls. Nested reads, generic file echo or a one-shot replacement do not qualify root/base/role continuity; unsupported observations remain inconclusive."
+      ],
       "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
     },
     {
@@ -850,7 +852,8 @@
       "execution": "not-run",
       "input_files": [],
       "paired_extensions": [
-        "Two checkouts, one profile × runtime authority: give each checkout its own admitted binding/generation projection and prepared lease, sharing the same approved auth/session/history authority. A single-checkout same-composition launch is the positive control. Concurrent A→A/B→B across checkouts is permitted only after independent native-channel and state-access qualification; otherwise B stays pending or refuses while A is active/unknown/retained-resumable, without rebinding A or losing either checkout's lease roots. No authority need be provisioned for an unused profile/runtime. Strict trust must not approve the other checkout, and its retained history must not become selected context; those assertions await the strict roster/certification rather than being inferred from native-project success."
+        "Two checkouts, one profile × runtime authority: give each checkout its own admitted binding/generation projection and prepared lease, sharing the same approved auth/session/history authority. A single-checkout same-composition launch is the positive control. Concurrent A→A/B→B across checkouts is permitted only after independent native-channel and state-access qualification; otherwise B stays pending or refuses while A is active/unknown/retained-resumable, without rebinding A or losing either checkout's lease roots. No authority need be provisioned for an unused profile/runtime. Strict trust must not approve the other checkout, and its retained history must not become selected context; those assertions await the strict roster/certification rather than being inferred from native-project success.",
+        "Independently challenge native-home memory, appended/profile root, native base/role and previously unvisited nested instruction scopes on the same live A at the claimed barriers; record default root snapshot behavior and supported rebuild/compaction, resume and child entries separately. Wrong next-stage source and stale/replayed challenge controls must detect their intended mismatch for each channel beside valid A-to-A controls. Nested reads, generic file echo or a one-shot replacement do not qualify root/base/role continuity; unsupported observations remain inconclusive."
       ],
       "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
     },
@@ -1143,7 +1146,8 @@
       "execution": "not-run",
       "input_files": [],
       "paired_extensions": [
-        "Verified-native resume: changed declarations/lock, generated inventory, approved base or extras refuses before a new native/provider start; unchanged original A with the correct inventory passes. The check neither prevents in-session mutation nor independently validates the renderer."
+        "Verified-native resume: changed declarations/lock, generated inventory, approved base or extras refuses before a new native/provider start; unchanged original A with the correct inventory passes. The check neither prevents in-session mutation nor independently validates the renderer.",
+        "Change or remove A's required generation pin, delete or drift A, and substitute its runtime/control/authority tuple independently. Each invalid resume refuses before native/provider creation, preserving the old locator and retention roots; unchanged original A is the valid neighbor. A new required A pin is not permission to resume into B."
       ],
       "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
     },
@@ -1219,7 +1223,7 @@
       "execution": "not-run",
       "input_files": [],
       "paired_extensions": [
-        "Source compatibility: an unqualified injected node source refuses on the successor with no native-login fallback or copied material; the legacy adopted node source retains its own behavior outside that capability. Presence-only metadata never certifies usable login.",
+        "Source compatibility: selecting an existing source without adopted and qualified successor authority/control correspondence refuses before credential retrieval or native/provider creation, without native-login fallback, backend substitution or copying material into a generation. Its legacy consumer retains its own contract outside this capability. An owner-approved, separately qualified source is the positive neighbor; legacy delivery or presence-only metadata alone cannot satisfy that neighbor.",
         "Owned logout: explicit logout affects only approved owned authority; foreign/sibling authority remains unchanged. Ordinary profile removal preserves credentials."
       ],
       "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
@@ -1313,7 +1317,9 @@
       "materialization": "stub",
       "execution": "not-run",
       "input_files": [],
-      "paired_extensions": [],
+      "paired_extensions": [
+        "Race a new holder or retained-resume root against both activation and GC after a prior roots query. Protection/root eligibility and writer revision must be rechecked in the same authority transaction. A planted omitted-root collector must expose the intended premature collection while the valid collector preserves A; terminal content with no remaining roots remains collectable."
+      ],
       "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
     },
     {
@@ -1343,7 +1349,9 @@
       "materialization": "stub",
       "execution": "not-run",
       "input_files": [],
-      "paired_extensions": [],
+      "paired_extensions": [
+        "False no-start evidence refuses and launcher death leaves unknown protection. Close or revoke the exact never-started slot before releasing its holder, then deliver a delayed old launch request: it must refuse before process creation and preserve tombstone/audit and independent roots. The valid closed no-start neighbor releases only its own holder."
+      ],
       "input_note": "Native witness inputs await authorized shared probes, closed carrier allocation and actual custody. No baseline document is substituted for a native observation."
     },
     {
