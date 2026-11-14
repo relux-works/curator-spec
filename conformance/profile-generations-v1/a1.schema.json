@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/conformance/profile-generations-v1/a1.schema.json",
+  "title": "Profile generations draft: a1 (conformance only)",
+  "$comment": "Unallocated production carriers remain placeholders. This closed draft validates conformance metadata only, not authority or runtime evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "parent_pair",
+    "contract_sha256",
+    "design_vector_sha256",
+    "execution",
+    "steps"
+  ],
+  "properties": {
+    "parent_pair": {
+      "const": "Q4-V12"
+    },
+    "contract_sha256": {
+      "const": "d2963f34b3a3dd538fb2531cbc2e1594ec9354783b3fb528dc12d076d2a617a3"
+    },
+    "design_vector_sha256": {
+      "const": "85a52fca84b0a3ecb41d2578a940ab46b25076acd4d1a8d820a95da289f5b092"
+    },
+    "execution": {
+      "const": "not-run"
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "step",
+          "expected_outcome",
+          "effects_and_protection"
+        ],
+        "properties": {
+          "step": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1200,
+            "pattern": "^[^\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]+$(?![\\s\\S])"
+          },
+          "expected_outcome": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1600,
+            "pattern": "^[^\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]+$(?![\\s\\S])"
+          },
+          "effects_and_protection": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1200,
+            "pattern": "^[^\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]+$(?![\\s\\S])"
+          }
+        }
+      }
+    }
+  }
+}

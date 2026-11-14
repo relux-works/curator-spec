@@ -1,0 +1,1016 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://relux-works.github.io/curator-spec/conformance/profile-generations-v1/pairs.schema.json",
+  "title": "Profile generations draft: pairs (conformance only)",
+  "$comment": "Unallocated production carriers remain placeholders. This closed draft validates conformance metadata only, not authority or runtime evidence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "draft_family",
+    "status",
+    "baseline_oid",
+    "pairs",
+    "meta_clauses"
+  ],
+  "properties": {
+    "draft_family": {
+      "const": "profile-generations-v1"
+    },
+    "status": {
+      "const": "semantic-stubs"
+    },
+    "baseline_oid": {
+      "const": "ab6b1b0960473b359c84d96e7c7749b9be6011e0"
+    },
+    "pairs": {
+      "type": "array",
+      "minItems": 48,
+      "maxItems": 48,
+      "uniqueItems": true,
+      "prefixItems": [
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q1-V1"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q1-V2"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q1-V3"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q1-V4"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q1-V5"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q1-V6"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q1-V7"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q2-V1"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q2-V2"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q2-V3"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q2-V4"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q2-V5"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q2-V6"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q2-V7"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q2-V8"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q2-V9"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q3-V1"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q3-V2"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q3-V3"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q3-V4"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q3-V5"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q3-V6"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q3-V7"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q3-V8"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q3-V9"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q3-V10"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q3-V11"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q3-V12"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V1"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V2"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V3"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V4"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V5"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V6"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V7"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V8"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V9"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V10"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V11"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V12"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V13"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V14"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V15"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V16"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V17"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V18"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V19"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/$defs/pair"
+            },
+            {
+              "properties": {
+                "id": {
+                  "const": "Q4-V20"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "items": false
+    },
+    "meta_clauses": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "clause_id",
+          "reason"
+        ],
+        "properties": {
+          "clause_id": {
+            "enum": [
+              "PG-TERMS-02",
+              "PG-CONFORMANCE-01",
+              "PG-CONFORMANCE-02",
+              "PG-ADOPTION-01",
+              "PG-TRACE-01",
+              "PG-TRACE-02"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 800
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "pair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "clause_refs",
+        "paired_requirement",
+        "pending_gates",
+        "materialization",
+        "execution",
+        "input_files",
+        "input_note",
+        "paired_extensions"
+      ],
+      "properties": {
+        "id": {
+          "enum": [
+            "Q1-V1",
+            "Q1-V2",
+            "Q1-V3",
+            "Q1-V4",
+            "Q1-V5",
+            "Q1-V6",
+            "Q1-V7",
+            "Q2-V1",
+            "Q2-V2",
+            "Q2-V3",
+            "Q2-V4",
+            "Q2-V5",
+            "Q2-V6",
+            "Q2-V7",
+            "Q2-V8",
+            "Q2-V9",
+            "Q3-V1",
+            "Q3-V2",
+            "Q3-V3",
+            "Q3-V4",
+            "Q3-V5",
+            "Q3-V6",
+            "Q3-V7",
+            "Q3-V8",
+            "Q3-V9",
+            "Q3-V10",
+            "Q3-V11",
+            "Q3-V12",
+            "Q4-V1",
+            "Q4-V2",
+            "Q4-V3",
+            "Q4-V4",
+            "Q4-V5",
+            "Q4-V6",
+            "Q4-V7",
+            "Q4-V8",
+            "Q4-V9",
+            "Q4-V10",
+            "Q4-V11",
+            "Q4-V12",
+            "Q4-V13",
+            "Q4-V14",
+            "Q4-V15",
+            "Q4-V16",
+            "Q4-V17",
+            "Q4-V18",
+            "Q4-V19",
+            "Q4-V20"
+          ]
+        },
+        "clause_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {
+            "enum": [
+              "PG-SCOPE-01",
+              "PG-SCOPE-02",
+              "PG-COMPAT-01",
+              "PG-COMPAT-02",
+              "PG-MODE-01",
+              "PG-MODE-02",
+              "PG-P-013",
+              "PG-TERMS-01",
+              "PG-TERMS-02",
+              "PG-PACKAGE-01",
+              "PG-PACKAGE-02",
+              "PG-P-021",
+              "PG-HASH-01",
+              "PG-HASH-02",
+              "PG-HASH-03",
+              "PG-COMPOSE-01",
+              "PG-COMPOSE-02",
+              "PG-FILTER-01",
+              "PG-FILTER-02",
+              "PG-FILTER-03",
+              "PG-FILTER-04",
+              "PG-P-024",
+              "PG-DELIVERY-01",
+              "PG-DELIVERY-02",
+              "PG-P-025",
+              "PG-RENDER-01",
+              "PG-RENDER-02",
+              "PG-P-026",
+              "PG-LOCK-01",
+              "PG-P-027",
+              "PG-GRANT-01",
+              "PG-GRANT-02",
+              "PG-GRANT-03",
+              "PG-P-031",
+              "PG-REVIEW-01",
+              "PG-P-032",
+              "PG-DENY-01",
+              "PG-DENY-02",
+              "PG-NEGATIVE-01",
+              "PG-MIGRATION-01",
+              "PG-COVERAGE-01",
+              "PG-P-036",
+              "PG-AUTH-01",
+              "PG-AUTH-02",
+              "PG-P-041",
+              "PG-GENERATION-01",
+              "PG-P-042",
+              "PG-CONTROL-01",
+              "PG-P-043",
+              "PG-BINDING-01",
+              "PG-P-044",
+              "PG-PUBLISH-01",
+              "PG-PUBLISH-02",
+              "PG-P-051",
+              "PG-UPDATE-01",
+              "PG-P-052",
+              "PG-LEVEL-01",
+              "PG-LEVEL-02",
+              "PG-P-053",
+              "PG-REPAIR-01",
+              "PG-REPAIR-02",
+              "PG-P-054",
+              "PG-INVENTORY-01",
+              "PG-P-055",
+              "PG-LOADER-01",
+              "PG-LOADER-02",
+              "PG-P-062",
+              "PG-RUNTIME-01",
+              "PG-RUNTIME-02",
+              "PG-P-063",
+              "PG-HOLDER-01",
+              "PG-REPLAY-01",
+              "PG-REPLAY-02",
+              "PG-P-071",
+              "PG-OBSERVER-01",
+              "PG-NOSTART-01",
+              "PG-P-072",
+              "PG-ACTIVATE-01",
+              "PG-RETENTION-01",
+              "PG-P-073",
+              "PG-ROOTS-01",
+              "PG-ROOTS-02",
+              "PG-P-074",
+              "PG-BREAK-01",
+              "PG-BREAK-02",
+              "PG-P-075",
+              "PG-ENTRY-01",
+              "PG-ENTRY-02",
+              "PG-P-081",
+              "PG-AUTHFLOW-01",
+              "PG-AUTHFLOW-02",
+              "PG-P-082",
+              "PG-RESUME-01",
+              "PG-RESUME-02",
+              "PG-P-083",
+              "PG-PRIVACY-01",
+              "PG-PRIVACY-02",
+              "PG-NATIVE-01",
+              "PG-VERIFIED-01",
+              "PG-VERIFIED-02",
+              "PG-P-092",
+              "PG-STRICT-01",
+              "PG-STRICT-02",
+              "PG-P-093",
+              "PG-REPOSITORY-01",
+              "PG-P-094",
+              "PG-CONFORMANCE-01",
+              "PG-CONFORMANCE-02",
+              "PG-ADOPTION-01",
+              "PG-TRACE-01",
+              "PG-TRACE-02",
+              "PG-EVIDENCE-01",
+              "PG-ISOLATION-01",
+              "PG-ISOLATION-02",
+              "PG-P-104"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "paired_requirement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^[^\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]+$(?![\\s\\S])"
+        },
+        "pending_gates": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 32,
+          "items": {
+            "enum": [
+              "PG-P-013",
+              "PG-P-021",
+              "PG-P-024",
+              "PG-P-025",
+              "PG-P-026",
+              "PG-P-027",
+              "PG-P-031",
+              "PG-P-032",
+              "PG-P-036",
+              "PG-P-041",
+              "PG-P-042",
+              "PG-P-043",
+              "PG-P-044",
+              "PG-P-051",
+              "PG-P-052",
+              "PG-P-053",
+              "PG-P-054",
+              "PG-P-055",
+              "PG-P-062",
+              "PG-P-063",
+              "PG-P-071",
+              "PG-P-072",
+              "PG-P-073",
+              "PG-P-074",
+              "PG-P-075",
+              "PG-P-081",
+              "PG-P-082",
+              "PG-P-083",
+              "PG-P-092",
+              "PG-P-093",
+              "PG-P-094",
+              "PG-P-104"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "materialization": {
+          "const": "stub"
+        },
+        "execution": {
+          "const": "not-run"
+        },
+        "input_files": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 400,
+            "pattern": "^(?!(?:[A-Za-z]:|/))(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*(?:^|/)(?:[Cc][Oo][Nn]|[Pp][Rr][Nn]|[Aa][Uu][Xx]|[Nn][Uu][Ll]|[Cc][Oo][Mm][1-9]|[Ll][Pp][Tt][1-9])(?:\\.[^/]*)?(?:/|$))(?:[A-Za-z0-9_][A-Za-z0-9._-]*[A-Za-z0-9_-]|[A-Za-z0-9_])(?:/(?:[A-Za-z0-9_][A-Za-z0-9._-]*[A-Za-z0-9_-]|[A-Za-z0-9_]))*$(?![\\s\\S])"
+          },
+          "uniqueItems": true
+        },
+        "input_note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1600
+        },
+        "paired_extensions": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2400
+          }
+        }
+      }
+    }
+  }
+}
