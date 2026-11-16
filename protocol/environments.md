@@ -2925,8 +2925,8 @@ or import activation fails after registration and lock publication, the
 operation MUST roll back all adapter-home writes and preserve the prior
 machine and scoped current markers, while keeping the registration and lock.
 It returns a nonzero result with the activation error and tells the operator:
-“installed, not activated; fix and run profile use” (a reinstall keeps its
-update wording: “updated, not activated; fix and run profile use”).
+"installed, not activated; fix and run profile use" (a reinstall keeps its
+update wording: "updated, not activated; fix and run profile use").
 Standalone `profile use` retains the partial-switch behavior specified in
 section 9.2. `--use` takes no name because install names one root.
 
